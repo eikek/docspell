@@ -3,7 +3,9 @@ package docspell.restserver.conv
 import cats.data.NonEmptyList
 import cats.implicits._
 import cats.{ApplicativeError, MonadError}
+
 import docspell.common.Ident
+
 import io.circe.DecodingFailure
 
 trait MultiIdSupport {
