@@ -80,6 +80,7 @@ object RestServer {
       "item"                    -> ItemRoutes(cfg, pools.blocker, restApp.backend, token),
       "items"                   -> ItemMultiRoutes(restApp.backend, token),
       "attachment"              -> AttachmentRoutes(pools.blocker, restApp.backend, token),
+      "attachments"             -> AttachmentMultiRoutes(restApp.backend, token),
       "upload"                  -> UploadRoutes.secured(restApp.backend, cfg, token),
       "checkfile"               -> CheckFileRoutes.secured(restApp.backend, token),
       "email/send"              -> MailSendRoutes(restApp.backend, token),

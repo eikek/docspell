@@ -1,16 +1,14 @@
 package docspell.store.records
 
+import bitpeace.FileMeta
 import cats.data.NonEmptyList
 import cats.implicits._
-import fs2.Stream
-
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
-
-import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
+import fs2.Stream
 
 case class RAttachment(
     id: Ident,
@@ -98,7 +96,6 @@ object RAttachment {
     run(select(T.all), from(T), T.id === attachId).query[RAttachment].option
 
   def findMeta(attachId: Ident): ConnectionIO[Option[FileMeta]] = {
-    import bitpeace.sql._
 
     val m = RFileMeta.as("m")
     val a = RAttachment.as("a")
@@ -191,7 +188,6 @@ object RAttachment {
       id: Ident,
       coll: Ident
   ): ConnectionIO[Vector[(RAttachment, FileMeta)]] = {
-    import bitpeace.sql._
 
     val a = RAttachment.as("a")
     val m = RFileMeta.as("m")
@@ -206,7 +202,6 @@ object RAttachment {
   }
 
   def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachment, FileMeta)]] = {
-    import bitpeace.sql._
 
     val a = RAttachment.as("a")
     val m = RFileMeta.as("m")
@@ -300,5 +295,20 @@ object RAttachment {
         m.mimetype.likes(pdfType) &&?
         coll.map(cid => i.cid === cid)
     ).build.query[RAttachment].streamWithChunkSize(chunkSize)
+  }
+
+  def filterAttachments(
+      attachments: NonEmptyList[Ident],
+      coll: Ident
+  ): ConnectionIO[Vector[Ident]] = {
+    val a = RAttachment.as("a")
+    val i = RItem.as("i")
+
+    Select(
+      select(a.id),
+      from(a)
+        .innerJoin(i, i.id === a.itemId),
+      i.cid === coll && a.id.in(attachments)
+    ).build.query[Ident].to[Vector]
   }
 }

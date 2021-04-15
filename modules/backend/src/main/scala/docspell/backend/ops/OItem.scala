@@ -1,19 +1,15 @@
 package docspell.backend.ops
 
-import cats.data.NonEmptyList
-import cats.data.OptionT
+import cats.data.{NonEmptyList, OptionT}
 import cats.effect.{Effect, Resource}
 import cats.implicits._
-
 import docspell.backend.JobFactory
 import docspell.common._
 import docspell.ftsclient.FtsClient
-import docspell.store.UpdateResult
 import docspell.store.queries.{QAttachment, QItem, QMoveAttachment}
 import docspell.store.queue.JobQueue
 import docspell.store.records._
-import docspell.store.{AddResult, Store}
-
+import docspell.store.{AddResult, Store, UpdateResult}
 import doobie.implicits._
 import org.log4s.getLogger
 
@@ -139,6 +135,11 @@ trait OItem[F[_]] {
   def deleteItemMultiple(items: NonEmptyList[Ident], collective: Ident): F[Int]
 
   def deleteAttachment(id: Ident, collective: Ident): F[Int]
+
+  def deleteAttachmentMultiple(
+      attachments: NonEmptyList[Ident],
+      collective: Ident
+  ): F[Int]
 
   def moveAttachmentBefore(itemId: Ident, source: Ident, target: Ident): F[AddResult]
 
@@ -601,6 +602,20 @@ object OItem {
           QAttachment
             .deleteSingleAttachment(store)(id, collective)
             .flatTap(_ => fts.removeAttachment(logger, id))
+
+        def deleteAttachmentMultiple(
+            attachments: NonEmptyList[Ident],
+            collective: Ident
+        ): F[Int] =
+          for {
+            attachmentIds <- store.transact(
+              RAttachment.filterAttachments(attachments, collective)
+            )
+            results <- attachmentIds.traverse(attachment =>
+              deleteAttachment(attachment, collective)
+            )
+            n = results.sum
+          } yield n
 
         def setAttachmentName(
             attachId: Ident,
