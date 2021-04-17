@@ -2,6 +2,7 @@ module Messages.Comp.SearchMenu exposing (Texts, gb)
 
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
+import Messages.Comp.FolderSelect
 import Messages.Comp.TagSelect
 
 
@@ -9,6 +10,7 @@ type alias Texts =
     { basics : Messages.Basics.Texts
     , customFieldMultiInput : Messages.Comp.CustomFieldMultiInput.Texts
     , tagSelect : Messages.Comp.TagSelect.Texts
+    , folderSelect : Messages.Comp.FolderSelect.Texts
     , chooseDirection : String
     , choosePerson : String
     , chooseEquipment : String
@@ -38,6 +40,7 @@ gb =
     { basics = Messages.Basics.gb
     , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.gb
     , tagSelect = Messages.Comp.TagSelect.gb
+    , folderSelect = Messages.Comp.FolderSelect.gb
     , chooseDirection = "Choose a direction…"
     , choosePerson = "Choose a person"
     , chooseEquipment = "Choose an equipment"

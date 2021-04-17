@@ -1223,6 +1223,7 @@ searchTabs texts ddd flags settings model =
       , body =
             [ Html.map TagSelectMsg
                 (Comp.TagSelect.viewCats2
+                    texts.tagSelect
                     settings
                     tagSelectWM
                     model.tagSelectModel
@@ -1235,7 +1236,8 @@ searchTabs texts ddd flags settings model =
       , info = Nothing
       , body =
             [ Html.map FolderSelectMsg
-                (Comp.FolderSelect.viewDrop2 ddd.model
+                (Comp.FolderSelect.viewDrop2 texts.folderSelect
+                    ddd.model
                     settings.searchMenuFolderCount
                     model.folderList
                 )

@@ -11,11 +11,12 @@ module Comp.FolderSelect exposing
     )
 
 import Api.Model.FolderStats exposing (FolderStats)
+import Comp.ExpandCollapse
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Util.ExpandCollapse
+import Messages.Comp.FolderSelect exposing (Texts)
 import Util.ItemDragDrop as DD
 import Util.List
 
@@ -134,24 +135,28 @@ selectedFolder model =
 --- View2
 
 
-expandToggle : Int -> Model -> List (Html Msg)
-expandToggle max model =
-    Util.ExpandCollapse.expandToggle
-        max
-        (List.length model.all)
+expandToggle : Texts -> Int -> Model -> List (Html Msg)
+expandToggle texts max model =
+    Comp.ExpandCollapse.expandToggle
+        texts.expandCollapse
+        { max = max
+        , all = List.length model.all
+        }
         ToggleExpand
 
 
-collapseToggle : Int -> Model -> List (Html Msg)
-collapseToggle max model =
-    Util.ExpandCollapse.collapseToggle
-        max
-        (List.length model.all)
+collapseToggle : Texts -> Int -> Model -> List (Html Msg)
+collapseToggle texts max model =
+    Comp.ExpandCollapse.collapseToggle
+        texts.expandCollapse
+        { max = max
+        , all = List.length model.all
+        }
         ToggleExpand
 
 
-viewDrop2 : DD.Model -> Int -> Model -> Html Msg
-viewDrop2 dropModel constr model =
+viewDrop2 : Texts -> DD.Model -> Int -> Model -> Html Msg
+viewDrop2 texts dropModel constr model =
     let
         highlightDrop =
             DD.getDropId dropModel == Just DD.FolderRemove
@@ -169,20 +174,20 @@ viewDrop2 dropModel constr model =
             [ text "Folders"
             ]
         , div [ class "flex flex-col space-y-2 md:space-y-1" ]
-            (renderItems2 dropModel constr model)
+            (renderItems2 texts dropModel constr model)
         ]
 
 
-renderItems2 : DD.Model -> Int -> Model -> List (Html Msg)
-renderItems2 dropModel constr model =
+renderItems2 : Texts -> DD.Model -> Int -> Model -> List (Html Msg)
+renderItems2 texts dropModel constr model =
     if constr <= 0 then
         List.map (viewItem2 dropModel model) model.all
 
     else if model.expanded then
-        List.map (viewItem2 dropModel model) model.all ++ collapseToggle constr model
+        List.map (viewItem2 dropModel model) model.all ++ collapseToggle texts constr model
 
     else
-        List.map (viewItem2 dropModel model) (List.take constr model.all) ++ expandToggle constr model
+        List.map (viewItem2 dropModel model) (List.take constr model.all) ++ expandToggle texts constr model
 
 
 viewItem2 : DD.Model -> Model -> FolderStats -> Html Msg
