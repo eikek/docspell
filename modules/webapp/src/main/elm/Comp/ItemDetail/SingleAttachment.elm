@@ -13,6 +13,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Html5.DragDrop as DD
 import Messages.Comp.ItemDetail.SingleAttachment exposing (Texts)
+import Set
 import Styles as S
 import Util.Maybe
 import Util.Size
@@ -349,8 +350,30 @@ menuItem texts model pos attach =
             [ ( "bg-gray-300 dark:bg-bluegray-700 current-drop-target", enable )
             ]
 
-        active =
-            model.visibleAttach == pos
+        iconClass =
+            case model.viewMode of
+                SelectView _ ->
+                    if Set.member attach.id model.selectedAttachments then
+                        "fa fa-check-circle ml-1"
+                    else
+                        "fa fa-circle ml-1"
+                _ ->
+                    "fa fa-check-circle ml-1"
+
+        visible =
+            case model.viewMode of
+                SelectView _ ->
+                    True
+                _ ->
+                    model.visibleAttach == pos
+
+        msg =
+            case model.viewMode of
+                SelectView _ ->
+                    (ToggleAttachment attach.id)
+                _ ->
+                    (SetActiveAttachment pos)
+
     in
     a
         ([ classList <|
@@ -361,18 +384,18 @@ menuItem texts model pos attach =
          , class "flex flex-col relative border rounded px-1 py-1 mr-2"
          , class " hover:shadow dark:hover:border-bluegray-500"
          , href "#"
-         , onClick (SetActiveAttachment pos)
+         , onClick msg
          ]
             ++ DD.draggable AttachDDMsg attach.id
             ++ DD.droppable AttachDDMsg attach.id
         )
         [ div
             [ classList
-                [ ( "hidden", not active )
+                [ ( "hidden", not visible )
                 ]
             , class "absolute right-1 top-1 text-blue-400 dark:text-lightblue-400 text-xl"
             ]
-            [ i [ class "fa fa-check-circle ml-1" ] []
+            [ i [ class iconClass ] []
             ]
         , div [ class "flex-grow" ]
             [ img

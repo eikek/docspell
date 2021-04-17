@@ -108,6 +108,7 @@ type alias Model =
     , attachmentDropdownOpen : Bool
     , editMenuTabsOpen : Set String
     , viewMode : ViewMode
+    , selectedAttachments: Set String
     }
 
 type ViewMode
@@ -201,6 +202,7 @@ emptyModel =
     , attachmentDropdownOpen = False
     , editMenuTabsOpen = Set.empty
     , viewMode = SimpleView
+    , selectedAttachments = Set.empty
     }
 
 initSelectViewModel : SelectViewModel
@@ -216,6 +218,7 @@ type Msg
     | Init
     | SetItem ItemDetail
     | SetActiveAttachment Int
+    | ToggleAttachment String
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | DirDropdownMsg (Comp.Dropdown.Msg Direction)
     | OrgDropdownMsg (Comp.Dropdown.Msg IdName)

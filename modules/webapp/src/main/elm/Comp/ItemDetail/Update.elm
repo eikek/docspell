@@ -280,6 +280,18 @@ update key flags inav settings msg model =
                     , attachRename = Nothing
                 }
 
+        ToggleAttachment id ->
+            if Set.member id model.selectedAttachments then
+                resultModel
+                    { model
+                        | selectedAttachments = Set.remove id model.selectedAttachments
+                    }
+            else
+                resultModel
+                    { model
+                        | selectedAttachments = Set.insert id model.selectedAttachments
+                    }
+
         ToggleMenu ->
             resultModel
                 { model | menuOpen = not model.menuOpen }
@@ -1361,6 +1373,7 @@ update key flags inav settings msg model =
             resultModel { model
                             | attachMenuOpen = not model.attachMenuOpen
                             , viewMode = SimpleView
+                            , selectedAttachments = Set.empty
                         }
 
         UiSettingsUpdated ->
@@ -1585,6 +1598,7 @@ update key flags inav settings msg model =
             withSub
                 ( { model
                     | viewMode = nextView
+                    , selectedAttachments = Set.empty
                   }
                 , cmd
                 )
