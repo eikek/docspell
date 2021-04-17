@@ -102,7 +102,7 @@ makeCustomFieldLink :
     -> (LinkTarget -> msg)
     -> Html msg
 makeCustomFieldLink cv classes tagger =
-    Util.CustomField.renderValue1
+    Util.CustomField.renderValue2
         classes
         (tagger (LinkCustomField cv) |> Just)
         cv

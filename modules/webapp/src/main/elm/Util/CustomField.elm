@@ -1,7 +1,6 @@
 module Util.CustomField exposing
     ( nameOrLabel
     , renderValue
-    , renderValue1
     , renderValue2
     )
 
@@ -20,43 +19,7 @@ nameOrLabel fv =
 
 renderValue : String -> ItemFieldValue -> Html msg
 renderValue classes cv =
-    renderValue1 [ ( classes, True ) ] Nothing cv
-
-
-renderValue1 : List ( String, Bool ) -> Maybe msg -> ItemFieldValue -> Html msg
-renderValue1 classes tagger cv =
-    let
-        renderBool =
-            if cv.value == "true" then
-                i [ class "check icon" ] []
-
-            else
-                i [ class "minus icon" ] []
-
-        el : List (Html msg) -> Html msg
-        el =
-            case tagger of
-                Just t ->
-                    a
-                        [ classList classes
-                        , onClick t
-                        , href "#"
-                        ]
-
-                Nothing ->
-                    div [ classList classes ]
-    in
-    el
-        [ Icons.customFieldTypeIconString "" cv.ftype
-        , nameOrLabel cv |> text
-        , div [ class "detail" ]
-            [ if Data.CustomFieldType.fromString cv.ftype == Just Data.CustomFieldType.Boolean then
-                renderBool
-
-              else
-                text cv.value
-            ]
-        ]
+    renderValue2 [ ( classes, True ) ] Nothing cv
 
 
 renderValue2 : List ( String, Bool ) -> Maybe msg -> ItemFieldValue -> Html msg
