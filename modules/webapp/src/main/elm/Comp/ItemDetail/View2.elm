@@ -7,7 +7,8 @@ import Comp.ItemDetail.AddFilesForm
 import Comp.ItemDetail.ItemInfoHeader
 import Comp.ItemDetail.Model
     exposing
-        ( Model
+        ( MailSendResult(..)
+        , Model
         , Msg(..)
         , NotesField(..)
         , SaveNameState(..)
@@ -257,22 +258,24 @@ sendMailForm texts settings model =
         , Html.map ItemMailMsg (Comp.ItemMail.view2 texts.itemMail settings model.itemMail)
         , div
             [ classList
-                [ ( S.errorMessage
-                  , Maybe.map .success model.mailSendResult
-                        |> Maybe.map not
-                        |> Maybe.withDefault False
-                  )
-                , ( S.successMessage
-                  , Maybe.map .success model.mailSendResult
-                        |> Maybe.withDefault False
-                  )
-                , ( "hidden", model.mailSendResult == Nothing )
+                [ ( S.errorMessage, model.mailSendResult /= MailSendSuccessful )
+                , ( S.successMessage, model.mailSendResult == MailSendSuccessful )
+                , ( "hidden", model.mailSendResult == MailSendResultInitial )
                 ]
             , class "mt-2"
             ]
-            [ Maybe.map .message model.mailSendResult
-                |> Maybe.withDefault ""
-                |> text
+            [ case model.mailSendResult of
+                MailSendSuccessful ->
+                    text texts.mailSendSuccessful
+
+                MailSendHttpError err ->
+                    text (texts.httpError err)
+
+                MailSendFailed m ->
+                    text m
+
+                MailSendResultInitial ->
+                    text ""
             ]
         ]
 

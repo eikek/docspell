@@ -1,5 +1,6 @@
 module Page.Register.Data exposing
-    ( Model
+    ( FormState(..)
+    , Model
     , Msg(..)
     , emptyModel
     )
@@ -9,31 +10,36 @@ import Http
 
 
 type alias Model =
-    { result : Maybe BasicResult
-    , collId : String
+    { collId : String
     , login : String
     , pass1 : String
     , pass2 : String
     , showPass1 : Bool
     , showPass2 : Bool
-    , errorMsg : List String
+    , formState : FormState
     , loading : Bool
-    , successMsg : String
     , invite : Maybe String
     }
 
 
+type FormState
+    = HttpError Http.Error
+    | GenericError String
+    | RegistrationSuccessful
+    | PasswordMismatch
+    | InputValid
+    | FormEmpty
+
+
 emptyModel : Model
 emptyModel =
-    { result = Nothing
-    , collId = ""
+    { collId = ""
     , login = ""
     , pass1 = ""
     , pass2 = ""
     , showPass1 = False
     , showPass2 = False
-    , errorMsg = []
-    , successMsg = ""
+    , formState = FormEmpty
     , loading = False
     , invite = Nothing
     }

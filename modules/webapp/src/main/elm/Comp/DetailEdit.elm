@@ -42,14 +42,12 @@ import Comp.TagForm
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
-import Data.Validated
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Messages.Comp.DetailEdit exposing (Texts)
 import Styles as S
-import Util.Http
 
 
 type alias Model =
@@ -57,8 +55,45 @@ type alias Model =
     , itemId : String
     , submitting : Bool
     , loading : Bool
-    , result : Maybe BasicResult
+    , formState : FormState
     }
+
+
+type FormState
+    = FormStateInitial
+    | FormStateHttpError Http.Error
+    | FormStateSubmitSuccessful
+    | FormStateSubmitError String
+    | FormStateMissingRequiredFields
+
+
+isError : FormState -> Bool
+isError state =
+    case state of
+        FormStateInitial ->
+            False
+
+        FormStateHttpError _ ->
+            True
+
+        FormStateSubmitSuccessful ->
+            False
+
+        FormStateSubmitError _ ->
+            True
+
+        FormStateMissingRequiredFields ->
+            True
+
+
+isSuccess : FormState -> Bool
+isSuccess state =
+    case state of
+        FormStateInitial ->
+            False
+
+        _ ->
+            not (isError state)
 
 
 type FormModel
@@ -105,7 +140,7 @@ init itemId fm =
     , itemId = itemId
     , submitting = False
     , loading = False
-    , result = Nothing
+    , formState = FormStateInitial
     }
 
 
@@ -125,7 +160,7 @@ editOrg flags orgId om =
       , itemId = ""
       , submitting = False
       , loading = True
-      , result = Nothing
+      , formState = FormStateInitial
       }
     , Api.getOrgFull orgId flags GetOrgResp
     )
@@ -137,7 +172,7 @@ editPerson flags persId pm =
       , itemId = ""
       , submitting = False
       , loading = True
-      , result = Nothing
+      , formState = FormStateInitial
       }
     , Cmd.batch
         [ Api.getPersonFull persId flags GetPersonResp
@@ -152,7 +187,7 @@ editEquip flags equipId em =
       , itemId = ""
       , submitting = False
       , loading = True
-      , result = Nothing
+      , formState = FormStateInitial
       }
     , Api.getEquipment flags equipId GetEquipResp
     )
@@ -246,10 +281,10 @@ makeValue fm =
                     Comp.CustomFieldForm.makeField fieldModel
             in
             case cfield of
-                Data.Validated.Valid field ->
+                Ok field ->
                     SubmitCustomField field
 
-                _ ->
+                Err _ ->
                     CancelForm
 
 
@@ -285,7 +320,10 @@ update flags msg model =
                     )
 
         GetOrgResp (Err err) ->
-            ( { model | loading = False, result = Just (BasicResult False (Util.Http.errorToString err)) }
+            ( { model
+                | loading = False
+                , formState = FormStateHttpError err
+              }
             , Cmd.none
             , Nothing
             )
@@ -312,7 +350,10 @@ update flags msg model =
                     )
 
         GetPersonResp (Err err) ->
-            ( { model | loading = False, result = Just (BasicResult False (Util.Http.errorToString err)) }
+            ( { model
+                | loading = False
+                , formState = FormStateHttpError err
+              }
             , Cmd.none
             , Nothing
             )
@@ -349,7 +390,10 @@ update flags msg model =
                     ( { model | loading = False }, Cmd.none, Nothing )
 
         GetOrgsResp (Err err) ->
-            ( { model | loading = False, result = Just (BasicResult False (Util.Http.errorToString err)) }
+            ( { model
+                | loading = False
+                , formState = FormStateHttpError err
+              }
             , Cmd.none
             , Nothing
             )
@@ -376,7 +420,10 @@ update flags msg model =
                     )
 
         GetEquipResp (Err err) ->
-            ( { model | loading = False, result = Just (BasicResult False (Util.Http.errorToString err)) }
+            ( { model
+                | loading = False
+                , formState = FormStateHttpError err
+              }
             , Cmd.none
             , Nothing
             )
@@ -391,7 +438,12 @@ update flags msg model =
                         Nothing
             in
             ( { model
-                | result = Just res
+                | formState =
+                    if res.success then
+                        FormStateSubmitSuccessful
+
+                    else
+                        FormStateSubmitError res.message
                 , submitting = False
               }
             , Cmd.none
@@ -400,7 +452,7 @@ update flags msg model =
 
         SubmitResp (Err err) ->
             ( { model
-                | result = Just (BasicResult False (Util.Http.errorToString err))
+                | formState = FormStateHttpError err
                 , submitting = False
               }
             , Cmd.none
@@ -408,10 +460,6 @@ update flags msg model =
             )
 
         Submit ->
-            let
-                failMsg =
-                    Just (BasicResult False "Please fill required fields.")
-            in
             case model.form of
                 TM tm ->
                     let
@@ -425,7 +473,7 @@ update flags msg model =
                         )
 
                     else
-                        ( { model | result = failMsg }
+                        ( { model | formState = FormStateMissingRequiredFields }
                         , Cmd.none
                         , Nothing
                         )
@@ -446,7 +494,7 @@ update flags msg model =
                         )
 
                     else
-                        ( { model | result = failMsg }
+                        ( { model | formState = FormStateMissingRequiredFields }
                         , Cmd.none
                         , Nothing
                         )
@@ -467,7 +515,7 @@ update flags msg model =
                         )
 
                     else
-                        ( { model | result = failMsg }
+                        ( { model | formState = FormStateMissingRequiredFields }
                         , Cmd.none
                         , Nothing
                         )
@@ -488,7 +536,7 @@ update flags msg model =
                         )
 
                     else
-                        ( { model | result = failMsg }
+                        ( { model | formState = FormStateMissingRequiredFields }
                         , Cmd.none
                         , Nothing
                         )
@@ -509,7 +557,7 @@ update flags msg model =
                         )
 
                     else
-                        ( { model | result = failMsg }
+                        ( { model | formState = FormStateMissingRequiredFields }
                         , Cmd.none
                         , Nothing
                         )
@@ -520,14 +568,14 @@ update flags msg model =
                             Comp.CustomFieldForm.makeField fm
                     in
                     case cfield of
-                        Data.Validated.Valid newField ->
+                        Ok newField ->
                             ( { model | submitting = True }
                             , Api.postCustomField flags newField SubmitResp
                             , Nothing
                             )
 
-                        _ ->
-                            ( { model | result = failMsg }
+                        Err _ ->
+                            ( { model | formState = FormStateMissingRequiredFields }
                             , Cmd.none
                             , Nothing
                             )
@@ -541,7 +589,7 @@ update flags msg model =
                     in
                     ( { model
                         | form = TM tm_
-                        , result = Nothing
+                        , formState = FormStateInitial
                       }
                     , Cmd.map TagMsg tc_
                     , Nothing
@@ -559,7 +607,7 @@ update flags msg model =
                     in
                     ( { model
                         | form = PMR pm_
-                        , result = Nothing
+                        , formState = FormStateInitial
                       }
                     , Cmd.map PersonMsg pc_
                     , Nothing
@@ -572,7 +620,7 @@ update flags msg model =
                     in
                     ( { model
                         | form = PMC pm_
-                        , result = Nothing
+                        , formState = FormStateInitial
                       }
                     , Cmd.map PersonMsg pc_
                     , Nothing
@@ -590,7 +638,7 @@ update flags msg model =
                     in
                     ( { model
                         | form = OM om_
-                        , result = Nothing
+                        , formState = FormStateInitial
                       }
                     , Cmd.map OrgMsg oc_
                     , Nothing
@@ -608,7 +656,7 @@ update flags msg model =
                     in
                     ( { model
                         | form = EM em_
-                        , result = Nothing
+                        , formState = FormStateInitial
                       }
                     , Cmd.map EquipMsg ec_
                     , Nothing
@@ -626,7 +674,7 @@ update flags msg model =
                     in
                     ( { model
                         | form = CFM fm_
-                        , result = Nothing
+                        , formState = FormStateInitial
                       }
                     , Cmd.map CustomFieldMsg fc_
                     , Nothing
@@ -756,14 +804,26 @@ viewIntern2 : Texts -> UiSettings -> Bool -> Model -> List (Html Msg)
 viewIntern2 texts settings withButtons model =
     [ div
         [ classList
-            [ ( S.errorMessage, Maybe.map .success model.result == Just False )
-            , ( S.successMessage, Maybe.map .success model.result == Just True )
-            , ( "hidden", model.result == Nothing )
+            [ ( S.errorMessage, isError model.formState )
+            , ( S.successMessage, isSuccess model.formState )
+            , ( "hidden", model.formState == FormStateInitial )
             ]
         ]
-        [ Maybe.map .message model.result
-            |> Maybe.withDefault ""
-            |> text
+        [ case model.formState of
+            FormStateInitial ->
+                text ""
+
+            FormStateHttpError err ->
+                text (texts.httpError err)
+
+            FormStateSubmitSuccessful ->
+                text texts.submitSuccessful
+
+            FormStateSubmitError m ->
+                text m
+
+            FormStateMissingRequiredFields ->
+                text texts.missingRequiredFields
         ]
     , case model.form of
         TM tm ->

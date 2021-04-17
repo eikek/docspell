@@ -18,7 +18,6 @@ import Html.Events exposing (onClick)
 import Http
 import Messages.Comp.ChangePasswordForm exposing (Texts)
 import Styles as S
-import Util.Http
 
 
 type alias Model =
@@ -28,10 +27,18 @@ type alias Model =
     , newPass1 : Maybe String
     , pass2Model : Comp.PasswordInput.Model
     , newPass2 : Maybe String
-    , errors : List String
+    , formState : FormState
     , loading : Bool
-    , successMsg : String
     }
+
+
+type FormState
+    = FormStateNone
+    | FormStateHttpError Http.Error
+    | FormStateSubmitOk
+    | FormStateRequiredMissing
+    | FormStatePasswordMismatch
+    | FormStateSubmitError String
 
 
 emptyModel : Model
@@ -43,9 +50,8 @@ emptyModel =
         , pass1Model = Comp.PasswordInput.init
         , newPass2 = Nothing
         , pass2Model = Comp.PasswordInput.init
-        , errors = []
         , loading = False
-        , successMsg = ""
+        , formState = FormStateNone
         }
 
 
@@ -57,37 +63,21 @@ type Msg
     | SubmitResp (Result Http.Error BasicResult)
 
 
-validate : Model -> List String
+validate : Model -> FormState
 validate model =
-    List.concat
-        [ if model.newPass1 /= Nothing && model.newPass2 /= Nothing && model.newPass1 /= model.newPass2 then
-            [ "New passwords do not match." ]
+    if model.newPass1 /= Nothing && model.newPass2 /= Nothing && model.newPass1 /= model.newPass2 then
+        FormStatePasswordMismatch
 
-          else
-            []
-        , if model.newPass1 == Nothing || model.newPass2 == Nothing || model.current == Nothing then
-            [ "Please fill in required fields." ]
+    else if model.newPass1 == Nothing || model.newPass2 == Nothing || model.current == Nothing then
+        FormStateRequiredMissing
 
-          else
-            []
-        ]
+    else
+        FormStateNone
 
 
 validateModel : Model -> Model
 validateModel model =
-    let
-        err =
-            validate model
-    in
-    { model
-        | errors = err
-        , successMsg =
-            if err == [] then
-                model.successMsg
-
-            else
-                ""
-    }
+    { model | formState = validate model }
 
 
 
@@ -126,7 +116,7 @@ update flags msg model =
 
         Submit ->
             let
-                valid =
+                state =
                     validate model
 
                 cp =
@@ -134,43 +124,34 @@ update flags msg model =
                         (Maybe.withDefault "" model.current)
                         (Maybe.withDefault "" model.newPass1)
             in
-            if List.isEmpty valid then
-                ( { model | loading = True, errors = [], successMsg = "" }
+            if state == FormStateNone then
+                ( { model | loading = True, formState = state }
                 , Api.changePassword flags cp SubmitResp
                 )
 
             else
-                ( model, Cmd.none )
+                ( { model | formState = state }, Cmd.none )
 
         SubmitResp (Ok res) ->
             let
                 em =
-                    { emptyModel
-                        | errors = []
-                        , successMsg = "Password has been changed."
-                    }
+                    { emptyModel | formState = FormStateSubmitOk }
             in
             if res.success then
                 ( em, Cmd.none )
 
             else
                 ( { model
-                    | errors = [ res.message ]
+                    | formState = FormStateSubmitError res.message
                     , loading = False
-                    , successMsg = ""
                   }
                 , Cmd.none
                 )
 
         SubmitResp (Err err) ->
-            let
-                str =
-                    Util.Http.errorToString err
-            in
             ( { model
-                | errors = [ str ]
+                | formState = FormStateHttpError err
                 , loading = False
-                , successMsg = ""
               }
             , Cmd.none
             )
@@ -235,29 +216,7 @@ view2 texts model =
                     model.pass2Model
                 )
             ]
-        , div
-            [ class S.successMessage
-            , classList [ ( "hidden", model.successMsg == "" ) ]
-            ]
-            [ text model.successMsg
-            ]
-        , div
-            [ class S.errorMessage
-            , classList
-                [ ( "hidden"
-                  , List.isEmpty model.errors
-                        || (currentEmpty && pass1Empty && pass2Empty)
-                  )
-                ]
-            ]
-            [ case model.errors of
-                a :: [] ->
-                    text a
-
-                _ ->
-                    ul [ class "list-disc" ]
-                        (List.map (\em -> li [] [ text em ]) model.errors)
-            ]
+        , renderResultMessage texts model
         , div [ class "flex flex-row" ]
             [ button
                 [ class S.primaryButton
@@ -271,4 +230,34 @@ view2 texts model =
             { active = model.loading
             , label = texts.basics.loading
             }
+        ]
+
+
+renderResultMessage : Texts -> Model -> Html msg
+renderResultMessage texts model =
+    div
+        [ classList
+            [ ( S.errorMessage, model.formState /= FormStateSubmitOk )
+            , ( S.successMessage, model.formState == FormStateSubmitOk )
+            , ( "hidden", model.formState == FormStateNone )
+            ]
+        ]
+        [ case model.formState of
+            FormStateNone ->
+                text ""
+
+            FormStateHttpError err ->
+                text (texts.httpError err)
+
+            FormStateSubmitError m ->
+                text m
+
+            FormStatePasswordMismatch ->
+                text texts.passwordMismatch
+
+            FormStateRequiredMissing ->
+                text texts.fillRequiredFields
+
+            FormStateSubmitOk ->
+                text texts.passwordChangeSuccessful
         ]

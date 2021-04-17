@@ -25,18 +25,23 @@ import Messages.Comp.SourceManage exposing (Texts)
 import Ports
 import QRCode
 import Styles as S
-import Util.Http
-import Util.Maybe
 
 
 type alias Model =
     { formModel : Comp.SourceForm.Model
     , viewMode : SelectMode
-    , formError : Maybe String
+    , formError : FormError
     , loading : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
     , sources : List SourceAndTags
     }
+
+
+type FormError
+    = FormErrorNone
+    | FormErrorHttp Http.Error
+    | FormErrorInvalid
+    | FormErrorSubmit String
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -47,7 +52,7 @@ init flags =
     in
     ( { formModel = fm
       , viewMode = None
-      , formError = Nothing
+      , formError = FormErrorNone
       , loading = False
       , deleteConfirm = Comp.YesNoDimmer.emptyModel
       , sources = []
@@ -103,7 +108,7 @@ update flags msg model =
                                 model.formError
 
                             else
-                                Nothing
+                                FormErrorNone
                       }
                     , Cmd.map TableMsg tc
                     )
@@ -152,7 +157,7 @@ update flags msg model =
                     Api.Model.SourceAndTags.empty
 
                 nm =
-                    { model | viewMode = Edit source, formError = Nothing }
+                    { model | viewMode = Edit source, formError = FormErrorNone }
             in
             update flags (FormMsg (Comp.SourceForm.SetSource source)) nm
 
@@ -168,7 +173,7 @@ update flags msg model =
                 ( { model | loading = True }, Api.postSource flags source SubmitResp )
 
             else
-                ( { model | formError = Just "Please correct the errors in the form." }, Cmd.none )
+                ( { model | formError = FormErrorInvalid }, Cmd.none )
 
         SubmitResp (Ok res) ->
             if res.success then
@@ -182,10 +187,10 @@ update flags msg model =
                 ( { m3 | loading = False }, Cmd.batch [ c2, c3 ] )
 
             else
-                ( { model | formError = Just res.message, loading = False }, Cmd.none )
+                ( { model | formError = FormErrorSubmit res.message, loading = False }, Cmd.none )
 
         SubmitResp (Err err) ->
-            ( { model | formError = Just (Util.Http.errorToString err), loading = False }, Cmd.none )
+            ( { model | formError = FormErrorHttp err, loading = False }, Cmd.none )
 
         RequestDelete ->
             update flags (YesNoMsg Comp.YesNoDimmer.activate) model
@@ -444,10 +449,21 @@ viewForm2 texts flags settings model =
         , div
             [ classList
                 [ ( S.errorMessage, True )
-                , ( "hidden", Util.Maybe.isEmpty model.formError )
+                , ( "hidden", model.formError == FormErrorNone )
                 ]
             ]
-            [ Maybe.withDefault "" model.formError |> text
+            [ case model.formError of
+                FormErrorNone ->
+                    text ""
+
+                FormErrorHttp err ->
+                    text (texts.httpError err)
+
+                FormErrorSubmit m ->
+                    text m
+
+                FormErrorInvalid ->
+                    text texts.correctFormErrors
             ]
         , Html.map YesNoMsg
             (Comp.YesNoDimmer.viewN True

@@ -1,5 +1,6 @@
 module Comp.ItemDetail.Model exposing
     ( AttachmentRename
+    , MailSendResult(..)
     , Model
     , Msg(..)
     , NotesField(..)
@@ -84,7 +85,7 @@ type alias Model =
     , itemMail : Comp.ItemMail.Model
     , mailOpen : Bool
     , mailSending : Bool
-    , mailSendResult : Maybe BasicResult
+    , mailSendResult : MailSendResult
     , sentMails : Comp.SentMails.Model
     , sentMailsOpen : Bool
     , attachMeta : Dict String Comp.AttachmentMeta.Model
@@ -126,6 +127,13 @@ type alias SelectViewModel =
 type SelectActionMode
     = NoneAction
     | DeleteSelected
+
+
+type MailSendResult
+    = MailSendSuccessful
+    | MailSendHttpError Http.Error
+    | MailSendFailed String
+    | MailSendResultInitial
 
 
 type NotesField
@@ -181,7 +189,7 @@ emptyModel =
     , itemMail = Comp.ItemMail.emptyModel
     , mailOpen = False
     , mailSending = False
-    , mailSendResult = Nothing
+    , mailSendResult = MailSendResultInitial
     , sentMails = Comp.SentMails.init
     , sentMailsOpen = False
     , attachMeta = Dict.empty

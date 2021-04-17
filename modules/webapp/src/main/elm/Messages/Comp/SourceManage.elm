@@ -1,6 +1,8 @@
 module Messages.Comp.SourceManage exposing (Texts, gb)
 
+import Http
 import Messages.Basics
+import Messages.Comp.HttpError
 import Messages.Comp.SourceForm
 import Messages.Comp.SourceTable
 
@@ -9,6 +11,7 @@ type alias Texts =
     { basics : Messages.Basics.Texts
     , sourceTable : Messages.Comp.SourceTable.Texts
     , sourceForm : Messages.Comp.SourceForm.Texts
+    , httpError : Http.Error -> String
     , addSourceUrl : String
     , newSource : String
     , publicUploads : String
@@ -22,6 +25,7 @@ type alias Texts =
     , createNewSource : String
     , deleteThisSource : String
     , errorGeneratingQR : String
+    , correctFormErrors : String
     }
 
 
@@ -30,6 +34,7 @@ gb =
     { basics = Messages.Basics.gb
     , sourceTable = Messages.Comp.SourceTable.gb
     , sourceForm = Messages.Comp.SourceForm.gb
+    , httpError = Messages.Comp.HttpError.gb
     , addSourceUrl = "Add a source url"
     , newSource = "New source"
     , publicUploads = "Public Uploads"
@@ -50,4 +55,5 @@ gb =
     , createNewSource = "Create new source"
     , deleteThisSource = "Delete this source"
     , errorGeneratingQR = "Error generating QR Code"
+    , correctFormErrors = "Please correct the errors in the form."
     }

@@ -1,12 +1,15 @@
 module Messages.Page.Queue exposing (Texts, gb)
 
+import Http
 import Messages.Basics
+import Messages.Comp.HttpError
 import Messages.DateFormat as DF
 import Messages.UiLanguage
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
+    , httpError : Http.Error -> String
     , currentlyRunning : String
     , queue : String
     , waiting : String
@@ -32,6 +35,7 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
+    , httpError = Messages.Comp.HttpError.gb
     , currentlyRunning = "Currently Running"
     , queue = "Queue"
     , waiting = "Waiting"

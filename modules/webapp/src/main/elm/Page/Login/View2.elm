@@ -158,17 +158,21 @@ viewContent texts flags versionInfo _ model =
 
 resultMessage : Texts -> Model -> Html Msg
 resultMessage texts model =
-    case model.result of
-        Just r ->
-            if r.success then
-                div [ class ("my-2" ++ S.successMessage) ]
-                    [ text texts.loginSuccessful
-                    ]
+    case model.formState of
+        AuthSuccess _ ->
+            div [ class ("my-2" ++ S.successMessage) ]
+                [ text texts.loginSuccessful
+                ]
 
-            else
-                div [ class ("my-2" ++ S.errorMessage) ]
-                    [ text r.message
-                    ]
+        AuthFailed r ->
+            div [ class ("my-2" ++ S.errorMessage) ]
+                [ text r.message
+                ]
 
-        Nothing ->
+        HttpError err ->
+            div [ class ("my-2" ++ S.errorMessage) ]
+                [ text (texts.httpError err)
+                ]
+
+        FormInitial ->
             span [ class "hidden" ] []

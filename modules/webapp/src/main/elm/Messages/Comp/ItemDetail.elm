@@ -1,6 +1,8 @@
 module Messages.Comp.ItemDetail exposing (Texts, gb)
 
+import Http
 import Messages.Comp.DetailEdit
+import Messages.Comp.HttpError
 import Messages.Comp.ItemDetail.AddFilesForm
 import Messages.Comp.ItemDetail.ItemInfoHeader
 import Messages.Comp.ItemDetail.Notes
@@ -19,6 +21,7 @@ type alias Texts =
     , notes : Messages.Comp.ItemDetail.Notes.Texts
     , itemMail : Messages.Comp.ItemMail.Texts
     , detailEdit : Messages.Comp.DetailEdit.Texts
+    , httpError : Http.Error -> String
     , key : String
     , backToSearchResults : String
     , previousItem : String
@@ -37,6 +40,7 @@ type alias Texts =
     , lastUpdateOn : String
     , sendingMailNow : String
     , formatDateTime : Int -> String
+    , mailSendSuccessful : String
     }
 
 
@@ -49,6 +53,7 @@ gb =
     , notes = Messages.Comp.ItemDetail.Notes.gb
     , itemMail = Messages.Comp.ItemMail.gb
     , detailEdit = Messages.Comp.DetailEdit.gb
+    , httpError = Messages.Comp.HttpError.gb
     , key = "Key"
     , backToSearchResults = "Back to search results"
     , previousItem = "Previous item."
@@ -67,4 +72,5 @@ gb =
     , lastUpdateOn = "Last update on"
     , sendingMailNow = "Sending e-mail…"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , mailSendSuccessful = "Mail sent."
     }

@@ -1,8 +1,12 @@
 module Messages.Page.Login exposing (Texts, gb)
 
+import Http
+import Messages.Comp.HttpError
+
 
 type alias Texts =
-    { loginToDocspell : String
+    { httpError : Http.Error -> String
+    , loginToDocspell : String
     , username : String
     , collectiveSlashLogin : String
     , password : String
@@ -18,7 +22,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { loginToDocspell = "Login to Docspell"
+    { httpError = Messages.Comp.HttpError.gb
+    , loginToDocspell = "Login to Docspell"
     , username = "Username"
     , collectiveSlashLogin = "Collective / Login"
     , password = "Password"

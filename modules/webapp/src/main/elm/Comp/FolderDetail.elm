@@ -26,12 +26,11 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Messages.Comp.FolderDetail exposing (Texts)
 import Styles as S
-import Util.Http
 import Util.Maybe
 
 
 type alias Model =
-    { result : Maybe BasicResult
+    { formState : FormState
     , folder : FolderDetail
     , name : Maybe String
     , members : List IdName
@@ -41,6 +40,59 @@ type alias Model =
     , loading : Bool
     , deleteDimmer : Comp.YesNoDimmer.Model
     }
+
+
+type FormState
+    = FormStateInitial
+    | FormStateHttpError Http.Error
+    | FormStateFolderCreated
+    | FormStateGenericError String
+    | FormStateNameChangeSuccessful
+    | FormStateDeleteSuccessful
+
+
+isError : FormState -> Bool
+isError state =
+    case state of
+        FormStateInitial ->
+            False
+
+        FormStateHttpError _ ->
+            True
+
+        FormStateGenericError _ ->
+            True
+
+        FormStateFolderCreated ->
+            False
+
+        FormStateNameChangeSuccessful ->
+            False
+
+        FormStateDeleteSuccessful ->
+            False
+
+
+isSuccess : FormState -> Bool
+isSuccess state =
+    case state of
+        FormStateInitial ->
+            False
+
+        FormStateHttpError _ ->
+            False
+
+        FormStateGenericError _ ->
+            False
+
+        FormStateFolderCreated ->
+            True
+
+        FormStateNameChangeSuccessful ->
+            True
+
+        FormStateDeleteSuccessful ->
+            True
 
 
 type Msg
@@ -61,7 +113,7 @@ type Msg
 
 init : List User -> FolderDetail -> Model
 init users folder =
-    { result = Nothing
+    { formState = FormStateInitial
     , folder = folder
     , name = Util.Maybe.fromString folder.name
     , members = folder.members
@@ -143,7 +195,7 @@ update flags msg model =
                     in
                     ( { model
                         | loading = True
-                        , result = Nothing
+                        , formState = FormStateInitial
                       }
                     , cmd
                     , False
@@ -159,7 +211,12 @@ update flags msg model =
             else
                 ( { model
                     | loading = False
-                    , result = Just (BasicResult ir.success ir.message)
+                    , formState =
+                        if ir.success then
+                            FormStateFolderCreated
+
+                        else
+                            FormStateGenericError ir.message
                   }
                 , Cmd.none
                 , False
@@ -168,7 +225,7 @@ update flags msg model =
         NewFolderResp (Err err) ->
             ( { model
                 | loading = False
-                , result = Just (BasicResult False (Util.Http.errorToString err))
+                , formState = FormStateHttpError err
               }
             , Cmd.none
             , False
@@ -182,7 +239,7 @@ update flags msg model =
                 )
 
             else
-                ( { model | loading = False, result = Just r }
+                ( { model | loading = False, formState = FormStateGenericError r.message }
                 , Cmd.none
                 , False
                 )
@@ -190,7 +247,7 @@ update flags msg model =
         ChangeFolderResp (Err err) ->
             ( { model
                 | loading = False
-                , result = Just (BasicResult False (Util.Http.errorToString err))
+                , formState = FormStateHttpError err
               }
             , Cmd.none
             , False
@@ -199,13 +256,21 @@ update flags msg model =
         ChangeNameResp (Ok r) ->
             let
                 model_ =
-                    { model | result = Just r, loading = False }
+                    { model
+                        | formState =
+                            if r.success then
+                                FormStateNameChangeSuccessful
+
+                            else
+                                FormStateGenericError r.message
+                        , loading = False
+                    }
             in
             ( model_, Cmd.none, False )
 
         ChangeNameResp (Err err) ->
             ( { model
-                | result = Just (BasicResult False (Util.Http.errorToString err))
+                | formState = FormStateHttpError err
                 , loading = False
               }
             , Cmd.none
@@ -218,7 +283,7 @@ update flags msg model =
         FolderDetailResp (Err err) ->
             ( { model
                 | loading = False
-                , result = Just (BasicResult False (Util.Http.errorToString err))
+                , formState = FormStateHttpError err
               }
             , Cmd.none
             , False
@@ -263,10 +328,20 @@ update flags msg model =
             ( { model | deleteDimmer = dm }, cmd, False )
 
         DeleteResp (Ok r) ->
-            ( { model | result = Just r }, Cmd.none, r.success )
+            ( { model
+                | formState =
+                    if r.success then
+                        FormStateDeleteSuccessful
+
+                    else
+                        FormStateGenericError r.message
+              }
+            , Cmd.none
+            , r.success
+            )
 
         DeleteResp (Err err) ->
-            ( { model | result = Just (BasicResult False (Util.Http.errorToString err)) }
+            ( { model | formState = FormStateHttpError err }
             , Cmd.none
             , False
             )
@@ -350,15 +425,30 @@ view2 texts flags model =
                     ]
                , div
                     [ classList
-                        [ ( "hidden", model.result == Nothing )
-                        , ( S.errorMessage, Maybe.map .success model.result == Just False )
-                        , ( S.successMessage, Maybe.map .success model.result == Just True )
+                        [ ( "hidden", model.formState == FormStateInitial )
+                        , ( S.errorMessage, isError model.formState )
+                        , ( S.successMessage, isSuccess model.formState )
                         ]
                     , class "my-4"
                     ]
-                    [ Maybe.map .message model.result
-                        |> Maybe.withDefault ""
-                        |> text
+                    [ case model.formState of
+                        FormStateInitial ->
+                            text ""
+
+                        FormStateHttpError err ->
+                            text (texts.httpError err)
+
+                        FormStateGenericError m ->
+                            text m
+
+                        FormStateFolderCreated ->
+                            text texts.folderCreated
+
+                        FormStateNameChangeSuccessful ->
+                            text texts.nameChangeSuccessful
+
+                        FormStateDeleteSuccessful ->
+                            text texts.deleteSuccessful
                     ]
                ]
             ++ viewMembers2 texts model

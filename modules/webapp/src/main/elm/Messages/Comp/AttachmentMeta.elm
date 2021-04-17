@@ -1,12 +1,15 @@
 module Messages.Comp.AttachmentMeta exposing (Texts, gb)
 
+import Http
 import Messages.Basics
+import Messages.Comp.HttpError
 import Messages.DateFormat as DF
 import Messages.UiLanguage
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
+    , httpError : Http.Error -> String
     , extractedMetadata : String
     , content : String
     , labels : String
@@ -24,6 +27,7 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
+    , httpError = Messages.Comp.HttpError.gb
     , extractedMetadata = "Extracted Meta Data"
     , content = "Content"
     , labels = "Labels"

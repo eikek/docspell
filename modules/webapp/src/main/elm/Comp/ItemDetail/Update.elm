@@ -24,7 +24,23 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
 import Comp.ItemDetail.FieldTabState as FTabState
-import Comp.ItemDetail.Model exposing (AttachmentRename, Model, Msg(..), NotesField(..), SaveNameState(..), SelectActionMode(..), UpdateResult, ViewMode(..), initSelectViewModel, isEditNotes, resultModel, resultModelCmd, resultModelCmdSub)
+import Comp.ItemDetail.Model
+    exposing
+        ( AttachmentRename
+        , MailSendResult(..)
+        , Model
+        , Msg(..)
+        , NotesField(..)
+        , SaveNameState(..)
+        , SelectActionMode(..)
+        , UpdateResult
+        , ViewMode(..)
+        , initSelectViewModel
+        , isEditNotes
+        , resultModel
+        , resultModelCmd
+        , resultModelCmdSub
+        )
 import Comp.ItemMail
 import Comp.KeyInput
 import Comp.LinkTarget
@@ -48,7 +64,6 @@ import Set exposing (Set)
 import Throttle
 import Time
 import Util.File exposing (makeFileId)
-import Util.Http
 import Util.List
 import Util.Maybe
 import Util.String
@@ -750,7 +765,7 @@ update key flags inav settings msg model =
                         ( { model
                             | itemMail = Comp.ItemMail.clear im
                             , mailOpen = False
-                            , mailSendResult = Nothing
+                            , mailSendResult = MailSendResultInitial
                           }
                         , Cmd.map ItemMailMsg ic
                         )
@@ -788,7 +803,7 @@ update key flags inav settings msg model =
                         model.mailSendResult
 
                     else
-                        Nothing
+                        MailSendResultInitial
             in
             resultModel
                 { model
@@ -810,7 +825,12 @@ update key flags inav settings msg model =
                 ( { model
                     | itemMail = mm
                     , mailSending = False
-                    , mailSendResult = Just br
+                    , mailSendResult =
+                        if br.success then
+                            MailSendSuccessful
+
+                        else
+                            MailSendFailed br.message
                   }
                 , if br.success then
                     Api.itemDetail flags model.item.id GetItemResp
@@ -820,13 +840,9 @@ update key flags inav settings msg model =
                 )
 
         SendMailResp (Err err) ->
-            let
-                errmsg =
-                    Util.Http.errorToString err
-            in
             resultModel
                 { model
-                    | mailSendResult = Just (BasicResult False errmsg)
+                    | mailSendResult = MailSendHttpError err
                     , mailSending = False
                 }
 

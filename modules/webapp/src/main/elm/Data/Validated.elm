@@ -5,14 +5,30 @@ module Data.Validated exposing
     , map2
     , map3
     , map4
+    , toResult
     , value
     )
+
+-- TODO Remove this, use Result
 
 
 type Validated a
     = Valid a
     | Invalid (List String) a
     | Unknown a
+
+
+toResult : Validated a -> Result String a
+toResult va =
+    case va of
+        Valid a ->
+            Ok a
+
+        Invalid errs _ ->
+            Err (String.join ", " errs)
+
+        Unknown a ->
+            Ok a
 
 
 isInvalid : Validated a -> Bool

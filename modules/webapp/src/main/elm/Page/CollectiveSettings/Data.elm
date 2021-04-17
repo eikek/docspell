@@ -1,5 +1,6 @@
 module Page.CollectiveSettings.Data exposing
-    ( Model
+    ( FormState(..)
+    , Model
     , Msg(..)
     , Tab(..)
     , init
@@ -21,8 +22,15 @@ type alias Model =
     , userModel : Comp.UserManage.Model
     , settingsModel : Comp.CollectiveSettingsForm.Model
     , insights : ItemInsights
-    , submitResult : Maybe BasicResult
+    , formState : FormState
     }
+
+
+type FormState
+    = InitialState
+    | SubmitSuccessful
+    | SubmitFailed String
+    | SubmitError Http.Error
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -39,7 +47,7 @@ init flags =
       , userModel = Comp.UserManage.emptyModel
       , settingsModel = cm
       , insights = Api.Model.ItemInsights.empty
-      , submitResult = Nothing
+      , formState = InitialState
       }
     , Cmd.batch
         [ Cmd.map SourceMsg sc

@@ -33,8 +33,8 @@ import Http
 import Markdown
 import Messages.Comp.NotificationForm exposing (Texts)
 import Styles as S
-import Util.Http
 import Util.Maybe
+import Util.Result
 import Util.Tag
 import Util.Update
 
@@ -50,13 +50,26 @@ type alias Model =
     , remindDaysModel : Comp.IntField.Model
     , capOverdue : Bool
     , enabled : Bool
-    , schedule : Validated CalEvent
+    , schedule : Result CalEvent CalEvent
     , scheduleModel : Comp.CalEventInput.Model
-    , formMsg : Maybe BasicResult
+    , formState : FormState
     , loading : Int
     , yesNoDelete : Comp.YesNoDimmer.Model
     , summary : Maybe String
     }
+
+
+type FormState
+    = FormStateInitial
+    | FormStateHttpError Http.Error
+    | FormStateInvalid ValidateError
+
+
+type ValidateError
+    = ValidateConnectionMissing
+    | ValidateRemindDaysRequired
+    | ValidateRecipientsRequired
+    | ValidateCalEventInvalid
 
 
 type Action
@@ -121,9 +134,9 @@ initWith flags s =
         , remindDays = Just s.remindDays
         , enabled = s.enabled
         , capOverdue = s.capOverdue
-        , schedule = Data.Validated.Unknown newSchedule
+        , schedule = Ok newSchedule
         , scheduleModel = sm
-        , formMsg = Nothing
+        , formState = FormStateInitial
         , loading = im.loading
         , yesNoDelete = Comp.YesNoDimmer.emptyModel
         , summary = s.summary
@@ -140,7 +153,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         initialSchedule =
-            Data.Validated.Valid Data.CalEvent.everyMonth
+            Ok Data.CalEvent.everyMonth
 
         sm =
             Comp.CalEventInput.initDefault
@@ -157,7 +170,7 @@ init flags =
       , capOverdue = False
       , schedule = initialSchedule
       , scheduleModel = sm
-      , formMsg = Nothing
+      , formState = FormStateInitial
       , loading = 2
       , yesNoDelete = Comp.YesNoDimmer.emptyModel
       , summary = Nothing
@@ -173,7 +186,7 @@ init flags =
 --- Update
 
 
-makeSettings : Model -> Validated NotificationSettings
+makeSettings : Model -> Result ValidateError NotificationSettings
 makeSettings model =
     let
         prev =
@@ -182,19 +195,22 @@ makeSettings model =
         conn =
             Comp.Dropdown.getSelected model.connectionModel
                 |> List.head
-                |> Maybe.map Valid
-                |> Maybe.withDefault (Invalid [ "Connection missing" ] "")
+                |> Maybe.map Ok
+                |> Maybe.withDefault (Err ValidateConnectionMissing)
 
         recp =
             if List.isEmpty model.recipients then
-                Invalid [ "No recipients" ] []
+                Err ValidateRecipientsRequired
 
             else
-                Valid model.recipients
+                Ok model.recipients
 
         rmdays =
-            Maybe.map Valid model.remindDays
-                |> Maybe.withDefault (Invalid [ "Remind Days is required" ] 0)
+            Maybe.map Ok model.remindDays
+                |> Maybe.withDefault (Err ValidateRemindDaysRequired)
+
+        schedule_ =
+            Result.mapError (\_ -> ValidateCalEventInvalid) model.schedule
 
         make smtp rec days timer =
             { prev
@@ -209,34 +225,24 @@ makeSettings model =
                 , summary = model.summary
             }
     in
-    Data.Validated.map4 make
+    Result.map4 make
         conn
         recp
         rmdays
-        model.schedule
+        schedule_
 
 
 withValidSettings : (NotificationSettings -> Action) -> Model -> ( Model, Action, Cmd Msg )
 withValidSettings mkcmd model =
     case makeSettings model of
-        Valid set ->
-            ( { model | formMsg = Nothing }
+        Ok set ->
+            ( { model | formState = FormStateInitial }
             , mkcmd set
             , Cmd.none
             )
 
-        Invalid errs _ ->
-            let
-                errMsg =
-                    String.join ", " errs
-            in
-            ( { model | formMsg = Just (BasicResult False errMsg) }
-            , NoAction
-            , Cmd.none
-            )
-
-        Unknown _ ->
-            ( { model | formMsg = Just (BasicResult False "An unknown error occured") }
+        Err errs ->
+            ( { model | formState = FormStateInvalid errs }
             , NoAction
             , Cmd.none
             )
@@ -249,14 +255,23 @@ update flags msg model =
             let
                 ( cm, cc, cs ) =
                     Comp.CalEventInput.update flags
-                        (Data.Validated.value model.schedule)
+                        (Util.Result.fold identity identity model.schedule)
                         lmsg
                         model.scheduleModel
             in
             ( { model
-                | schedule = cs
+                | schedule =
+                    case cs of
+                        Data.Validated.Valid e ->
+                            Ok e
+
+                        Data.Validated.Invalid _ e ->
+                            Err e
+
+                        Data.Validated.Unknown e ->
+                            Ok e
                 , scheduleModel = cm
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.map CalEventMsg cc
@@ -270,7 +285,7 @@ update flags msg model =
             ( { model
                 | recipients = rec
                 , recipientsModel = em
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.map RecipientMsg ec
@@ -283,7 +298,7 @@ update flags msg model =
             in
             ( { model
                 | connectionModel = cm
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.map ConnMsg cc
@@ -303,15 +318,12 @@ update flags msg model =
             ( { model
                 | connectionModel = cm
                 , loading = model.loading - 1
-                , formMsg =
+                , formState =
                     if names == [] then
-                        Just
-                            (BasicResult False
-                                "No E-Mail connections configured. Goto E-Mail Settings to add one."
-                            )
+                        FormStateInvalid ValidateConnectionMissing
 
                     else
-                        Nothing
+                        FormStateInitial
               }
             , NoAction
             , Cmd.none
@@ -319,7 +331,7 @@ update flags msg model =
 
         ConnResp (Err err) ->
             ( { model
-                | formMsg = Just (BasicResult False (Util.Http.errorToString err))
+                | formState = FormStateHttpError err
                 , loading = model.loading - 1
               }
             , NoAction
@@ -333,7 +345,7 @@ update flags msg model =
             in
             ( { model
                 | tagInclModel = m2
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.map TagIncMsg c2
@@ -346,7 +358,7 @@ update flags msg model =
             in
             ( { model
                 | tagExclModel = m2
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.map TagExcMsg c2
@@ -372,7 +384,7 @@ update flags msg model =
         GetTagsResp (Err err) ->
             ( { model
                 | loading = model.loading - 1
-                , formMsg = Just (BasicResult False (Util.Http.errorToString err))
+                , formState = FormStateHttpError err
               }
             , NoAction
             , Cmd.none
@@ -386,7 +398,7 @@ update flags msg model =
             ( { model
                 | remindDaysModel = pm
                 , remindDays = val
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.none
@@ -395,7 +407,7 @@ update flags msg model =
         ToggleEnabled ->
             ( { model
                 | enabled = not model.enabled
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.none
@@ -404,7 +416,7 @@ update flags msg model =
         ToggleCapOverdue ->
             ( { model
                 | capOverdue = not model.capOverdue
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.none
@@ -465,15 +477,17 @@ update flags msg model =
 
 isFormError : Model -> Bool
 isFormError model =
-    Maybe.map .success model.formMsg
-        |> Maybe.map not
-        |> Maybe.withDefault False
+    case model.formState of
+        FormStateInitial ->
+            False
+
+        _ ->
+            True
 
 
 isFormSuccess : Model -> Bool
 isFormSuccess model =
-    Maybe.map .success model.formMsg
-        |> Maybe.withDefault False
+    not (isFormError model)
 
 
 view2 : Texts -> String -> UiSettings -> Model -> Html Msg
@@ -547,13 +561,28 @@ view2 texts extraClasses settings model =
             [ classList
                 [ ( S.successMessage, isFormSuccess model )
                 , ( S.errorMessage, isFormError model )
-                , ( "hidden", model.formMsg == Nothing )
+                , ( "hidden", model.formState == FormStateInitial )
                 ]
             , class "mb-4"
             ]
-            [ Maybe.map .message model.formMsg
-                |> Maybe.withDefault ""
-                |> text
+            [ case model.formState of
+                FormStateInitial ->
+                    text ""
+
+                FormStateHttpError err ->
+                    text (texts.httpError err)
+
+                FormStateInvalid ValidateConnectionMissing ->
+                    text texts.connectionMissing
+
+                FormStateInvalid ValidateCalEventInvalid ->
+                    text texts.invalidCalEvent
+
+                FormStateInvalid ValidateRemindDaysRequired ->
+                    text texts.remindDaysRequired
+
+                FormStateInvalid ValidateRecipientsRequired ->
+                    text texts.recipientsRequired
             ]
         , div [ class "mb-4" ]
             [ MB.viewItem <|
@@ -678,7 +707,7 @@ view2 texts extraClasses settings model =
                 (Comp.CalEventInput.view2
                     texts.calEventInput
                     ""
-                    (Data.Validated.value model.schedule)
+                    (Util.Result.fold identity identity model.schedule)
                     model.scheduleModel
                 )
             , span [ class "opacity-50 text-sm" ]

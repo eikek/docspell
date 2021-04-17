@@ -4,10 +4,8 @@ import Api
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Page.Queue.Data exposing (..)
-import Ports
 import Task
 import Time
-import Util.Http
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -42,7 +40,7 @@ update flags msg model =
             ( { model | state = s, stopRefresh = False }, refresh )
 
         StateResp (Err err) ->
-            ( { model | error = Util.Http.errorToString err }, Cmd.none )
+            ( { model | formState = HttpError err }, Cmd.none )
 
         StopRefresh ->
             ( { model | stopRefresh = True, init = False }, Cmd.none )

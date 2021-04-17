@@ -1,12 +1,15 @@
 module Messages.Comp.NotificationForm exposing (Texts, gb)
 
+import Http
 import Messages.Basics
 import Messages.Comp.CalEventInput
+import Messages.Comp.HttpError
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
     , calEventInput : Messages.Comp.CalEventInput.Texts
+    , httpError : Http.Error -> String
     , reallyDeleteTask : String
     , startOnce : String
     , startTaskNow : String
@@ -30,6 +33,10 @@ type alias Texts =
     , schedule : String
     , scheduleClickForHelp : String
     , scheduleInfo : String
+    , connectionMissing : String
+    , invalidCalEvent : String
+    , remindDaysRequired : String
+    , recipientsRequired : String
     }
 
 
@@ -37,6 +44,7 @@ gb : Texts
 gb =
     { basics = Messages.Basics.gb
     , calEventInput = Messages.Comp.CalEventInput.gb
+    , httpError = Messages.Comp.HttpError.gb
     , reallyDeleteTask = "Really delete this notification task?"
     , startOnce = "Start Once"
     , startTaskNow = "Start this task now"
@@ -64,4 +72,8 @@ gb =
             ++ "Use English 3-letter weekdays. Either a single value, "
             ++ "a list (ex. 1,2,3), a range (ex. 1..3) or a '*' (meaning all) "
             ++ "is allowed for each part."
+    , connectionMissing = "No E-Mail connections configured. Goto E-Mail Settings to add one."
+    , invalidCalEvent = "The calendar event is not valid."
+    , remindDaysRequired = "Remind-Days is required."
+    , recipientsRequired = "At least one recipient is required."
     }

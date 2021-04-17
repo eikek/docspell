@@ -9,7 +9,6 @@ module Comp.ScanMailboxForm exposing
     )
 
 import Api
-import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
@@ -44,9 +43,9 @@ import Messages.Data.Language
 import Set exposing (Set)
 import Styles as S
 import Util.Folder exposing (mkFolderOption)
-import Util.Http
 import Util.List
 import Util.Maybe
+import Util.Result
 import Util.Tag
 import Util.Update
 
@@ -62,9 +61,9 @@ type alias Model =
     , foldersModel : Comp.StringListInput.Model
     , folders : List String
     , direction : Maybe Direction
-    , schedule : Validated CalEvent
+    , schedule : Result CalEvent CalEvent
     , scheduleModel : Comp.CalEventInput.Model
-    , formMsg : Maybe BasicResult
+    , formState : FormState
     , loading : Int
     , yesNoDelete : Comp.YesNoDimmer.Model
     , folderModel : Comp.Dropdown.Model IdName
@@ -80,6 +79,18 @@ type alias Model =
     , summary : Maybe String
     , openTabs : Set String
     }
+
+
+type FormState
+    = FormStateInitial
+    | FormStateHttpError Http.Error
+    | FormStateInvalid ValidateError
+
+
+type ValidateError
+    = ValidateNoProcessingFolders
+    | ValidateConnectionMissing
+    | ValidateCalEventInvalid
 
 
 type Action
@@ -179,10 +190,10 @@ initWith flags s =
         , receivedHours = s.receivedSinceHours
         , targetFolder = s.targetFolder
         , folders = s.folders
-        , schedule = Data.Validated.Unknown newSchedule
+        , schedule = Ok newSchedule
         , direction = Maybe.andThen Data.Direction.fromString s.direction
         , scheduleModel = sm
-        , formMsg = Nothing
+        , formState = FormStateInitial
         , yesNoDelete = Comp.YesNoDimmer.emptyModel
         , itemFolderId = s.itemFolder
         , tagModel = Util.Tag.makeDropdownModel
@@ -211,7 +222,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         initialSchedule =
-            Data.Validated.Valid Data.CalEvent.everyMonth
+            Ok Data.CalEvent.everyMonth
 
         sm =
             Comp.CalEventInput.initDefault
@@ -228,7 +239,7 @@ init flags =
       , direction = Nothing
       , schedule = initialSchedule
       , scheduleModel = sm
-      , formMsg = Nothing
+      , formState = FormStateInitial
       , loading = 3
       , yesNoDelete = Comp.YesNoDimmer.emptyModel
       , folderModel = Comp.Dropdown.makeSingle
@@ -257,7 +268,7 @@ init flags =
 --- Update
 
 
-makeSettings : Model -> Validated ScanMailboxSettings
+makeSettings : Model -> Result ValidateError ScanMailboxSettings
 makeSettings model =
     let
         prev =
@@ -266,15 +277,18 @@ makeSettings model =
         conn =
             Comp.Dropdown.getSelected model.connectionModel
                 |> List.head
-                |> Maybe.map Valid
-                |> Maybe.withDefault (Invalid [ "Connection missing" ] "")
+                |> Maybe.map Ok
+                |> Maybe.withDefault (Err ValidateConnectionMissing)
 
         infolders =
             if model.folders == [] then
-                Invalid [ "No processing folders given" ] []
+                Err ValidateNoProcessingFolders
 
             else
-                Valid model.folders
+                Ok model.folders
+
+        schedule_ =
+            Result.mapError (\_ -> ValidateCalEventInvalid) model.schedule
 
         make imap timer folders =
             { prev
@@ -303,33 +317,20 @@ makeSettings model =
                 , summary = model.summary
             }
     in
-    Data.Validated.map3 make
-        conn
-        model.schedule
-        infolders
+    Result.map3 make conn schedule_ infolders
 
 
 withValidSettings : (ScanMailboxSettings -> Action) -> Model -> ( Model, Action, Cmd Msg )
 withValidSettings mkAction model =
     case makeSettings model of
-        Valid set ->
-            ( { model | formMsg = Nothing }
+        Ok set ->
+            ( { model | formState = FormStateInitial }
             , mkAction set
             , Cmd.none
             )
 
-        Invalid errs _ ->
-            let
-                errMsg =
-                    String.join ", " errs
-            in
-            ( { model | formMsg = Just (BasicResult False errMsg) }
-            , NoAction
-            , Cmd.none
-            )
-
-        Unknown _ ->
-            ( { model | formMsg = Just (BasicResult False "An unknown error occured") }
+        Err errs ->
+            ( { model | formState = FormStateInvalid errs }
             , NoAction
             , Cmd.none
             )
@@ -342,14 +343,23 @@ update flags msg model =
             let
                 ( cm, cc, cs ) =
                     Comp.CalEventInput.update flags
-                        (Data.Validated.value model.schedule)
+                        (Util.Result.fold identity identity model.schedule)
                         lmsg
                         model.scheduleModel
             in
             ( { model
-                | schedule = cs
+                | schedule =
+                    case cs of
+                        Data.Validated.Valid e ->
+                            Ok e
+
+                        Data.Validated.Invalid _ e ->
+                            Err e
+
+                        Data.Validated.Unknown e ->
+                            Ok e
                 , scheduleModel = cm
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.map CalEventMsg cc
@@ -362,7 +372,7 @@ update flags msg model =
             in
             ( { model
                 | connectionModel = cm
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.map ConnMsg cc
@@ -394,15 +404,12 @@ update flags msg model =
             ( { model
                 | connectionModel = cm
                 , loading = model.loading - 1
-                , formMsg =
+                , formState =
                     if names == [] then
-                        Just
-                            (BasicResult False
-                                "No E-Mail connections configured. Goto E-Mail Settings to add one."
-                            )
+                        FormStateInvalid ValidateConnectionMissing
 
                     else
-                        Nothing
+                        FormStateInitial
               }
             , NoAction
             , Cmd.none
@@ -410,7 +417,7 @@ update flags msg model =
 
         ConnResp (Err err) ->
             ( { model
-                | formMsg = Just (BasicResult False (Util.Http.errorToString err))
+                | formState = FormStateHttpError err
                 , loading = model.loading - 1
               }
             , NoAction
@@ -420,7 +427,7 @@ update flags msg model =
         ToggleEnabled ->
             ( { model
                 | enabled = not model.enabled
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.none
@@ -429,7 +436,7 @@ update flags msg model =
         ToggleDeleteMail ->
             ( { model
                 | deleteMail = not model.deleteMail
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.none
@@ -443,7 +450,7 @@ update flags msg model =
             ( { model
                 | receivedHoursModel = pm
                 , receivedHours = val
-                , formMsg = Nothing
+                , formState = FormStateInitial
               }
             , NoAction
             , Cmd.none
@@ -714,15 +721,17 @@ update flags msg model =
 
 isFormError : Model -> Bool
 isFormError model =
-    Maybe.map .success model.formMsg
-        |> Maybe.map not
-        |> Maybe.withDefault False
+    case model.formState of
+        FormStateInitial ->
+            False
+
+        _ ->
+            True
 
 
 isFormSuccess : Model -> Bool
 isFormSuccess model =
-    Maybe.map .success model.formMsg
-        |> Maybe.withDefault False
+    not (isFormError model)
 
 
 isFolderMember : Model -> Bool
@@ -796,12 +805,24 @@ view2 texts flags extraClasses settings model =
             [ classList
                 [ ( S.successMessage, isFormSuccess model )
                 , ( S.errorMessage, isFormError model )
-                , ( "hidden", model.formMsg == Nothing )
+                , ( "hidden", model.formState == FormStateInitial )
                 ]
             ]
-            [ Maybe.map .message model.formMsg
-                |> Maybe.withDefault ""
-                |> text
+            [ case model.formState of
+                FormStateInitial ->
+                    text ""
+
+                FormStateHttpError err ->
+                    text (texts.httpError err)
+
+                FormStateInvalid ValidateConnectionMissing ->
+                    text texts.connectionMissing
+
+                FormStateInvalid ValidateNoProcessingFolders ->
+                    text texts.noProcessingFolders
+
+                FormStateInvalid ValidateCalEventInvalid ->
+                    text texts.invalidCalEvent
             ]
         , Comp.Tabs.akkordion
             Comp.Tabs.defaultStyle
@@ -1172,7 +1193,7 @@ viewSchedule2 texts model =
             (Comp.CalEventInput.view2
                 texts.calEventInput
                 ""
-                (Data.Validated.value model.schedule)
+                (Util.Result.fold identity identity model.schedule)
                 model.scheduleModel
             )
         , span [ class "opacity-50 text-sm" ]
