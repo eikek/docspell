@@ -5,12 +5,14 @@ module Comp.ItemDetail.Model exposing
     , NotesField(..)
     , SaveNameState(..)
     , UpdateResult
+    , ViewMode(..)
     , emptyModel
     , isEditNotes
     , personMatchesOrg
     , resultModel
     , resultModelCmd
     , resultModelCmdSub
+    , initSelectViewModel
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
@@ -105,8 +107,21 @@ type alias Model =
     , allPersons : Dict String Person
     , attachmentDropdownOpen : Bool
     , editMenuTabsOpen : Set String
+    , viewMode : ViewMode
     }
 
+type ViewMode
+    = SimpleView
+    | SelectView SelectViewModel
+
+type alias SelectViewModel =
+    { ids : Set String
+    , action : SelectActionMode
+    }
+
+type SelectActionMode
+    = NoneAction
+    | DeleteSelected
 
 type NotesField
     = ViewNotes
@@ -185,6 +200,13 @@ emptyModel =
     , allPersons = Dict.empty
     , attachmentDropdownOpen = False
     , editMenuTabsOpen = Set.empty
+    , viewMode = SimpleView
+    }
+
+initSelectViewModel : SelectViewModel
+initSelectViewModel =
+    { ids = Set.empty
+    , action = NoneAction
     }
 
 
@@ -283,6 +305,7 @@ type Msg
     | ReprocessFileResp (Result Http.Error BasicResult)
     | RequestReprocessItem
     | ReprocessItemConfirmed
+    | ToggleSelectView
 
 
 type SaveNameState

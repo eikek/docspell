@@ -23,7 +23,6 @@ import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
-import Comp.ItemDetail.EditForm
 import Comp.ItemDetail.FieldTabState as FTabState
 import Comp.ItemDetail.Model
     exposing
@@ -54,11 +53,10 @@ import Data.PersonUse
 import Data.UiSettings exposing (UiSettings)
 import DatePicker
 import Dict
-import Html exposing (..)
-import Html.Attributes exposing (..)
 import Html5.DragDrop as DD
 import Http
 import Page exposing (Page(..))
+import Comp.ItemDetail.Model exposing (ViewMode(..), initSelectViewModel)
 import Set exposing (Set)
 import Throttle
 import Time
@@ -1360,7 +1358,10 @@ update key flags inav settings msg model =
                 withSub ( model_, Cmd.none )
 
         ToggleAttachMenu ->
-            resultModel { model | attachMenuOpen = not model.attachMenuOpen }
+            resultModel { model
+                            | attachMenuOpen = not model.attachMenuOpen
+                            , viewMode = SimpleView
+                        }
 
         UiSettingsUpdated ->
             let
@@ -1570,6 +1571,23 @@ update key flags inav settings msg model =
                     Api.reprocessItem flags model.item.id [] ReprocessFileResp
             in
             resultModelCmd ( { model | itemModal = Nothing }, cmd )
+
+        ToggleSelectView ->
+            let
+                ( nextView, cmd ) =
+                    case model.viewMode of
+                        SimpleView ->
+                            ( SelectView initSelectViewModel, Cmd.none )
+
+                        SelectView _ ->
+                            ( SimpleView, Cmd.none )
+            in
+            withSub
+                ( { model
+                    | viewMode = nextView
+                  }
+                , cmd
+                )
 
 
 

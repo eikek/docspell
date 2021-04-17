@@ -4,13 +4,7 @@ import Api
 import Api.Model.Attachment exposing (Attachment)
 import Comp.AttachmentMeta
 import Comp.ConfirmModal
-import Comp.ItemDetail.Model
-    exposing
-        ( Model
-        , Msg(..)
-        , NotesField(..)
-        , SaveNameState(..)
-        )
+import Comp.ItemDetail.Model exposing (Model, Msg(..), NotesField(..), SaveNameState(..), ViewMode(..))
 import Comp.MenuBar as MB
 import Data.UiSettings exposing (UiSettings)
 import Dict
@@ -19,7 +13,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Html5.DragDrop as DD
 import Messages.Comp.ItemDetail.SingleAttachment exposing (Texts)
-import Page exposing (Page(..))
 import Styles as S
 import Util.Maybe
 import Util.Size
@@ -87,6 +80,7 @@ view texts settings model pos attach =
   - toggle thumbs
   - name + size
   - eye icon to open it
+  - toggle multi select
   - menu
       - rename
       - meta data
@@ -111,6 +105,26 @@ attachHeader texts settings model _ attach =
 
         multiAttach =
             List.length model.item.attachments > 1
+
+        selectPossible =
+            multiAttach && model.attachMenuOpen
+
+        selectView =
+            case model.viewMode of
+                SelectView _ ->
+                    True
+                _ ->
+                    False
+
+        selectToggleText =
+            case model.viewMode of
+                SelectView _ ->
+                    texts.exitSelectMode
+                _ ->
+                    texts.selectModeTitle
+
+        noAttachmentsSelected =
+            List.isEmpty model.item.attachments
 
         attachSelectToggle mobile =
             a
@@ -143,8 +157,32 @@ attachHeader texts settings model _ attach =
                 , title texts.openFileInNewTab
                 , class S.secondaryBasicButton
                 , class "ml-2"
+                , classList [ ( "hidden", selectView ) ]
                 ]
                 [ i [ class "fa fa-eye font-thin" ] []
+                ]
+            , a
+                [ classList [ (S.secondaryBasicButton ++ " text-sm", True)
+                , ( "bg-gray-200 dark:bg-bluegray-600", selectView )
+                , ( "hidden", not selectPossible )
+                , ( "ml-2", True )
+                ]
+                , href "#"
+                , title selectToggleText
+                , onClick ToggleSelectView
+                ]
+                [ i [ class "fa fa-tasks" ] []
+                ]
+            , a
+                [ classList [ ( S.deleteButton, True )
+                , ( "disabled", noAttachmentsSelected )
+                , ( "hidden", not selectPossible || not selectView )
+                , ( "ml-2", True )
+                ]
+                , href "#"
+                , title texts.deleteAttachments
+                ]
+                [ i [ class "fa fa-trash" ] []
                 ]
             , MB.viewItem <|
                 MB.Dropdown
@@ -152,6 +190,7 @@ attachHeader texts settings model _ attach =
                     , linkClass =
                         [ ( "ml-2", True )
                         , ( S.secondaryBasicButton, True )
+                        , ( "hidden", selectView )
                         ]
                     , toggleMenu = ToggleAttachmentDropdown
                     , menuOpen = model.attachmentDropdownOpen

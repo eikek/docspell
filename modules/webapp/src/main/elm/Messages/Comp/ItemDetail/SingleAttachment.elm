@@ -15,6 +15,9 @@ type alias Texts =
     , viewExtractedData : String
     , reprocessFile : String
     , deleteThisFile : String
+    , selectModeTitle : String
+    , exitSelectMode : String
+    , deleteAttachments: String
     }
 
 
@@ -31,4 +34,7 @@ gb =
     , viewExtractedData = "View extracted data"
     , reprocessFile = "Re-process this file"
     , deleteThisFile = "Delete this file"
+    , selectModeTitle = "Select Mode"
+    , exitSelectMode = "Exit Select Mode"
+    , deleteAttachments = "Delete attachments"
     }
