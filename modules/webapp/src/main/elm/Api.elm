@@ -19,6 +19,7 @@ module Api exposing
     , createScanMailbox
     , deleteAllItems
     , deleteAttachment
+    , deleteAttachments
     , deleteCustomField
     , deleteCustomValue
     , deleteCustomValueMultiple
@@ -609,6 +610,20 @@ deleteAttachment flags attachId receive =
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
+--- Delete Attachments
+
+deleteAttachments :
+    Flags
+    -> Set String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+deleteAttachments flags attachIds receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/attachments/delete"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (Set.toList attachIds |> IdList))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 --- Attachment Metadata

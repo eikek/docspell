@@ -182,6 +182,7 @@ attachHeader texts settings model _ attach =
                 ]
                 , href "#"
                 , title texts.deleteAttachments
+                , onClick RequestDeleteSelected
                 ]
                 [ i [ class "fa fa-trash" ] []
                 ]
@@ -352,8 +353,8 @@ menuItem texts model pos attach =
 
         iconClass =
             case model.viewMode of
-                SelectView _ ->
-                    if Set.member attach.id model.selectedAttachments then
+                SelectView svm ->
+                    if Set.member attach.id svm.ids then
                         "fa fa-check-circle ml-1"
                     else
                         "fa fa-circle ml-1"

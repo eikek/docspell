@@ -4,15 +4,16 @@ module Comp.ItemDetail.Model exposing
     , Msg(..)
     , NotesField(..)
     , SaveNameState(..)
+    , SelectActionMode(..)
     , UpdateResult
     , ViewMode(..)
     , emptyModel
+    , initSelectViewModel
     , isEditNotes
     , personMatchesOrg
     , resultModel
     , resultModelCmd
     , resultModelCmdSub
-    , initSelectViewModel
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
@@ -108,7 +109,6 @@ type alias Model =
     , attachmentDropdownOpen : Bool
     , editMenuTabsOpen : Set String
     , viewMode : ViewMode
-    , selectedAttachments: Set String
     }
 
 type ViewMode
@@ -202,7 +202,6 @@ emptyModel =
     , attachmentDropdownOpen = False
     , editMenuTabsOpen = Set.empty
     , viewMode = SimpleView
-    , selectedAttachments = Set.empty
     }
 
 initSelectViewModel : SelectViewModel
@@ -264,6 +263,8 @@ type Msg
     | TogglePdfNativeView Bool
     | RequestDeleteAttachment String
     | DeleteAttachConfirmed String
+    | RequestDeleteSelected
+    | DeleteSelectedConfirmed
     | AttachModalCancelled
     | DeleteAttachResp (Result Http.Error BasicResult)
     | AddFilesToggle

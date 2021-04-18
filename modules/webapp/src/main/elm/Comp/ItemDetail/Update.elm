@@ -24,19 +24,7 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
 import Comp.ItemDetail.FieldTabState as FTabState
-import Comp.ItemDetail.Model
-    exposing
-        ( AttachmentRename
-        , Model
-        , Msg(..)
-        , NotesField(..)
-        , SaveNameState(..)
-        , UpdateResult
-        , isEditNotes
-        , resultModel
-        , resultModelCmd
-        , resultModelCmdSub
-        )
+import Comp.ItemDetail.Model exposing (AttachmentRename, Model, Msg(..), NotesField(..), SaveNameState(..), SelectActionMode(..), UpdateResult, isEditNotes, resultModel, resultModelCmd, resultModelCmdSub)
 import Comp.ItemMail
 import Comp.KeyInput
 import Comp.LinkTarget
@@ -281,16 +269,19 @@ update key flags inav settings msg model =
                 }
 
         ToggleAttachment id ->
-            if Set.member id model.selectedAttachments then
-                resultModel
-                    { model
-                        | selectedAttachments = Set.remove id model.selectedAttachments
-                    }
-            else
-                resultModel
-                    { model
-                        | selectedAttachments = Set.insert id model.selectedAttachments
-                    }
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        svm_ =
+                            if Set.member id svm.ids then
+                                { svm | ids = Set.remove id svm.ids }
+                            else
+                                { svm | ids = Set.insert id svm.ids }
+                    in
+                    resultModel
+                        { model | viewMode = SelectView svm_ }
+                _ ->
+                    resultModel model
 
         ToggleMenu ->
             resultModel
@@ -948,6 +939,49 @@ update key flags inav settings msg model =
             in
             resultModel model_
 
+        RequestDeleteSelected ->
+            case model.viewMode of
+                SelectView svm ->
+                    if Set.isEmpty svm.ids then
+                        resultModel model
+
+                    else
+                        let
+                            confirmModal =
+                                Comp.ConfirmModal.defaultSettings
+                                    DeleteSelectedConfirmed
+                                    AttachModalCancelled
+                                    "Ok"
+                                    "Cancel"
+                                    "Really delete these files?"
+
+                            model_ =
+                                { model
+                                    | viewMode =
+                                        SelectView
+                                            { svm
+                                                | action = DeleteSelected
+                                            }
+                                    , attachModal = Just confirmModal
+                                }
+                        in
+                        resultModel model_
+
+                _ ->
+                    resultModel model
+
+        DeleteSelectedConfirmed ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        cmd =
+                            Api.deleteAttachments flags svm.ids DeleteAttachResp
+                    in
+                    resultModelCmd ( { model | attachModal = Nothing, viewMode = SimpleView }, cmd )
+
+                _ ->
+                    resultModel model
+
         AddFilesToggle ->
             resultModel
                 { model
@@ -1373,7 +1407,6 @@ update key flags inav settings msg model =
             resultModel { model
                             | attachMenuOpen = not model.attachMenuOpen
                             , viewMode = SimpleView
-                            , selectedAttachments = Set.empty
                         }
 
         UiSettingsUpdated ->
@@ -1598,7 +1631,6 @@ update key flags inav settings msg model =
             withSub
                 ( { model
                     | viewMode = nextView
-                    , selectedAttachments = Set.empty
                   }
                 , cmd
                 )
