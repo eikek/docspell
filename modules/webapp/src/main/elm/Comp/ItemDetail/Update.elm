@@ -23,21 +23,8 @@ import Comp.DetailEdit
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
-import Comp.ItemDetail.EditForm
 import Comp.ItemDetail.FieldTabState as FTabState
-import Comp.ItemDetail.Model
-    exposing
-        ( AttachmentRename
-        , Model
-        , Msg(..)
-        , NotesField(..)
-        , SaveNameState(..)
-        , UpdateResult
-        , isEditNotes
-        , resultModel
-        , resultModelCmd
-        , resultModelCmdSub
-        )
+import Comp.ItemDetail.Model exposing (AttachmentRename, Model, Msg(..), NotesField(..), SaveNameState(..), SelectActionMode(..), UpdateResult, ViewMode(..), initSelectViewModel, isEditNotes, resultModel, resultModelCmd, resultModelCmdSub)
 import Comp.ItemMail
 import Comp.KeyInput
 import Comp.LinkTarget
@@ -54,8 +41,6 @@ import Data.PersonUse
 import Data.UiSettings exposing (UiSettings)
 import DatePicker
 import Dict
-import Html exposing (..)
-import Html.Attributes exposing (..)
 import Html5.DragDrop as DD
 import Http
 import Page exposing (Page(..))
@@ -281,6 +266,23 @@ update key flags inav settings msg model =
                     , sentMailsOpen = False
                     , attachRename = Nothing
                 }
+
+        ToggleAttachment id ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        svm_ =
+                            if Set.member id svm.ids then
+                                { svm | ids = Set.remove id svm.ids }
+
+                            else
+                                { svm | ids = Set.insert id svm.ids }
+                    in
+                    resultModel
+                        { model | viewMode = SelectView svm_ }
+
+                SimpleView ->
+                    resultModel model
 
         ToggleMenu ->
             resultModel
@@ -938,6 +940,49 @@ update key flags inav settings msg model =
             in
             resultModel model_
 
+        RequestDeleteSelected ->
+            case model.viewMode of
+                SelectView svm ->
+                    if Set.isEmpty svm.ids then
+                        resultModel model
+
+                    else
+                        let
+                            confirmModal =
+                                Comp.ConfirmModal.defaultSettings
+                                    DeleteSelectedConfirmed
+                                    AttachModalCancelled
+                                    "Ok"
+                                    "Cancel"
+                                    "Really delete these files?"
+
+                            model_ =
+                                { model
+                                    | viewMode =
+                                        SelectView
+                                            { svm
+                                                | action = DeleteSelected
+                                            }
+                                    , attachModal = Just confirmModal
+                                }
+                        in
+                        resultModel model_
+
+                SimpleView ->
+                    resultModel model
+
+        DeleteSelectedConfirmed ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        cmd =
+                            Api.deleteAttachments flags svm.ids DeleteAttachResp
+                    in
+                    resultModelCmd ( { model | attachModal = Nothing, viewMode = SimpleView }, cmd )
+
+                SimpleView ->
+                    resultModel model
+
         AddFilesToggle ->
             resultModel
                 { model
@@ -1360,7 +1405,11 @@ update key flags inav settings msg model =
                 withSub ( model_, Cmd.none )
 
         ToggleAttachMenu ->
-            resultModel { model | attachMenuOpen = not model.attachMenuOpen }
+            resultModel
+                { model
+                    | attachMenuOpen = not model.attachMenuOpen
+                    , viewMode = SimpleView
+                }
 
         UiSettingsUpdated ->
             let
@@ -1570,6 +1619,23 @@ update key flags inav settings msg model =
                     Api.reprocessItem flags model.item.id [] ReprocessFileResp
             in
             resultModelCmd ( { model | itemModal = Nothing }, cmd )
+
+        ToggleSelectView ->
+            let
+                ( nextView, cmd ) =
+                    case model.viewMode of
+                        SimpleView ->
+                            ( SelectView initSelectViewModel, Cmd.none )
+
+                        SelectView _ ->
+                            ( SimpleView, Cmd.none )
+            in
+            withSub
+                ( { model
+                    | viewMode = nextView
+                  }
+                , cmd
+                )
 
 
 

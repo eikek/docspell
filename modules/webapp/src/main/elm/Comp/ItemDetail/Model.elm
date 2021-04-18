@@ -4,8 +4,11 @@ module Comp.ItemDetail.Model exposing
     , Msg(..)
     , NotesField(..)
     , SaveNameState(..)
+    , SelectActionMode(..)
     , UpdateResult
+    , ViewMode(..)
     , emptyModel
+    , initSelectViewModel
     , isEditNotes
     , personMatchesOrg
     , resultModel
@@ -105,7 +108,24 @@ type alias Model =
     , allPersons : Dict String Person
     , attachmentDropdownOpen : Bool
     , editMenuTabsOpen : Set String
+    , viewMode : ViewMode
     }
+
+
+type ViewMode
+    = SimpleView
+    | SelectView SelectViewModel
+
+
+type alias SelectViewModel =
+    { ids : Set String
+    , action : SelectActionMode
+    }
+
+
+type SelectActionMode
+    = NoneAction
+    | DeleteSelected
 
 
 type NotesField
@@ -185,6 +205,14 @@ emptyModel =
     , allPersons = Dict.empty
     , attachmentDropdownOpen = False
     , editMenuTabsOpen = Set.empty
+    , viewMode = SimpleView
+    }
+
+
+initSelectViewModel : SelectViewModel
+initSelectViewModel =
+    { ids = Set.empty
+    , action = NoneAction
     }
 
 
@@ -194,6 +222,7 @@ type Msg
     | Init
     | SetItem ItemDetail
     | SetActiveAttachment Int
+    | ToggleAttachment String
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | DirDropdownMsg (Comp.Dropdown.Msg Direction)
     | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
@@ -239,6 +268,8 @@ type Msg
     | TogglePdfNativeView Bool
     | RequestDeleteAttachment String
     | DeleteAttachConfirmed String
+    | RequestDeleteSelected
+    | DeleteSelectedConfirmed
     | AttachModalCancelled
     | DeleteAttachResp (Result Http.Error BasicResult)
     | AddFilesToggle
@@ -283,6 +314,7 @@ type Msg
     | ReprocessFileResp (Result Http.Error BasicResult)
     | RequestReprocessItem
     | ReprocessItemConfirmed
+    | ToggleSelectView
 
 
 type SaveNameState

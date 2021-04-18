@@ -301,4 +301,19 @@ object RAttachment {
         coll.map(cid => i.cid === cid)
     ).build.query[RAttachment].streamWithChunkSize(chunkSize)
   }
+
+  def filterAttachments(
+      attachments: NonEmptyList[Ident],
+      coll: Ident
+  ): ConnectionIO[Vector[Ident]] = {
+    val a = RAttachment.as("a")
+    val i = RItem.as("i")
+
+    Select(
+      select(a.id),
+      from(a)
+        .innerJoin(i, i.id === a.itemId),
+      i.cid === coll && a.id.in(attachments)
+    ).build.query[Ident].to[Vector]
+  }
 }
