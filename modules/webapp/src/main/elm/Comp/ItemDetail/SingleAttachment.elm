@@ -115,7 +115,7 @@ attachHeader texts settings model _ attach =
                 SelectView _ ->
                     True
 
-                _ ->
+                SimpleView ->
                     False
 
         selectToggleText =
@@ -123,7 +123,7 @@ attachHeader texts settings model _ attach =
                 SelectView _ ->
                     texts.exitSelectMode
 
-                _ ->
+                SimpleView ->
                     texts.selectModeTitle
 
         noAttachmentsSelected =
@@ -364,7 +364,7 @@ menuItem texts model pos attach =
                     else
                         "fa fa-circle ml-1"
 
-                _ ->
+                SimpleView ->
                     "fa fa-check-circle ml-1"
 
         visible =
@@ -372,7 +372,7 @@ menuItem texts model pos attach =
                 SelectView _ ->
                     True
 
-                _ ->
+                SimpleView ->
                     model.visibleAttach == pos
 
         msg =
@@ -380,7 +380,7 @@ menuItem texts model pos attach =
                 SelectView _ ->
                     ToggleAttachment attach.id
 
-                _ ->
+                SimpleView ->
                     SetActiveAttachment pos
     in
     a

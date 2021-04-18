@@ -281,7 +281,7 @@ update key flags inav settings msg model =
                     resultModel
                         { model | viewMode = SelectView svm_ }
 
-                _ ->
+                SimpleView ->
                     resultModel model
 
         ToggleMenu ->
@@ -968,7 +968,7 @@ update key flags inav settings msg model =
                         in
                         resultModel model_
 
-                _ ->
+                SimpleView ->
                     resultModel model
 
         DeleteSelectedConfirmed ->
@@ -980,7 +980,7 @@ update key flags inav settings msg model =
                     in
                     resultModelCmd ( { model | attachModal = Nothing, viewMode = SimpleView }, cmd )
 
-                _ ->
+                SimpleView ->
                     resultModel model
 
         AddFilesToggle ->
