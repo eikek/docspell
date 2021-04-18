@@ -610,7 +610,10 @@ deleteAttachment flags attachId receive =
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
+
+
 --- Delete Attachments
+
 
 deleteAttachments :
     Flags
@@ -624,6 +627,7 @@ deleteAttachments flags attachIds receive =
         , body = Http.jsonBody (Api.Model.IdList.encode (Set.toList attachIds |> IdList))
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
+
 
 
 --- Attachment Metadata

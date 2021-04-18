@@ -111,18 +111,22 @@ type alias Model =
     , viewMode : ViewMode
     }
 
+
 type ViewMode
     = SimpleView
     | SelectView SelectViewModel
+
 
 type alias SelectViewModel =
     { ids : Set String
     , action : SelectActionMode
     }
 
+
 type SelectActionMode
     = NoneAction
     | DeleteSelected
+
 
 type NotesField
     = ViewNotes
@@ -203,6 +207,7 @@ emptyModel =
     , editMenuTabsOpen = Set.empty
     , viewMode = SimpleView
     }
+
 
 initSelectViewModel : SelectViewModel
 initSelectViewModel =

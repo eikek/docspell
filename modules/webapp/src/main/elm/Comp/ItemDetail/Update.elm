@@ -24,7 +24,7 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
 import Comp.ItemDetail.FieldTabState as FTabState
-import Comp.ItemDetail.Model exposing (AttachmentRename, Model, Msg(..), NotesField(..), SaveNameState(..), SelectActionMode(..), UpdateResult, isEditNotes, resultModel, resultModelCmd, resultModelCmdSub)
+import Comp.ItemDetail.Model exposing (AttachmentRename, Model, Msg(..), NotesField(..), SaveNameState(..), SelectActionMode(..), UpdateResult, ViewMode(..), initSelectViewModel, isEditNotes, resultModel, resultModelCmd, resultModelCmdSub)
 import Comp.ItemMail
 import Comp.KeyInput
 import Comp.LinkTarget
@@ -44,7 +44,6 @@ import Dict
 import Html5.DragDrop as DD
 import Http
 import Page exposing (Page(..))
-import Comp.ItemDetail.Model exposing (ViewMode(..), initSelectViewModel)
 import Set exposing (Set)
 import Throttle
 import Time
@@ -275,11 +274,13 @@ update key flags inav settings msg model =
                         svm_ =
                             if Set.member id svm.ids then
                                 { svm | ids = Set.remove id svm.ids }
+
                             else
                                 { svm | ids = Set.insert id svm.ids }
                     in
                     resultModel
                         { model | viewMode = SelectView svm_ }
+
                 _ ->
                     resultModel model
 
@@ -1404,10 +1405,11 @@ update key flags inav settings msg model =
                 withSub ( model_, Cmd.none )
 
         ToggleAttachMenu ->
-            resultModel { model
-                            | attachMenuOpen = not model.attachMenuOpen
-                            , viewMode = SimpleView
-                        }
+            resultModel
+                { model
+                    | attachMenuOpen = not model.attachMenuOpen
+                    , viewMode = SimpleView
+                }
 
         UiSettingsUpdated ->
             let

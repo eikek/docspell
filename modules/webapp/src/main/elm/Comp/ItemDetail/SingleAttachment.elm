@@ -114,6 +114,7 @@ attachHeader texts settings model _ attach =
             case model.viewMode of
                 SelectView _ ->
                     True
+
                 _ ->
                     False
 
@@ -121,6 +122,7 @@ attachHeader texts settings model _ attach =
             case model.viewMode of
                 SelectView _ ->
                     texts.exitSelectMode
+
                 _ ->
                     texts.selectModeTitle
 
@@ -163,11 +165,12 @@ attachHeader texts settings model _ attach =
                 [ i [ class "fa fa-eye font-thin" ] []
                 ]
             , a
-                [ classList [ (S.secondaryBasicButton ++ " text-sm", True)
-                , ( "bg-gray-200 dark:bg-bluegray-600", selectView )
-                , ( "hidden", not selectPossible )
-                , ( "ml-2", True )
-                ]
+                [ classList
+                    [ ( S.secondaryBasicButton ++ " text-sm", True )
+                    , ( "bg-gray-200 dark:bg-bluegray-600", selectView )
+                    , ( "hidden", not selectPossible )
+                    , ( "ml-2", True )
+                    ]
                 , href "#"
                 , title selectToggleText
                 , onClick ToggleSelectView
@@ -175,11 +178,12 @@ attachHeader texts settings model _ attach =
                 [ i [ class "fa fa-tasks" ] []
                 ]
             , a
-                [ classList [ ( S.deleteButton, True )
-                , ( "disabled", noAttachmentsSelected )
-                , ( "hidden", not selectPossible || not selectView )
-                , ( "ml-2", True )
-                ]
+                [ classList
+                    [ ( S.deleteButton, True )
+                    , ( "disabled", noAttachmentsSelected )
+                    , ( "hidden", not selectPossible || not selectView )
+                    , ( "ml-2", True )
+                    ]
                 , href "#"
                 , title texts.deleteAttachments
                 , onClick RequestDeleteSelected
@@ -356,8 +360,10 @@ menuItem texts model pos attach =
                 SelectView svm ->
                     if Set.member attach.id svm.ids then
                         "fa fa-check-circle ml-1"
+
                     else
                         "fa fa-circle ml-1"
+
                 _ ->
                     "fa fa-check-circle ml-1"
 
@@ -365,16 +371,17 @@ menuItem texts model pos attach =
             case model.viewMode of
                 SelectView _ ->
                     True
+
                 _ ->
                     model.visibleAttach == pos
 
         msg =
             case model.viewMode of
                 SelectView _ ->
-                    (ToggleAttachment attach.id)
-                _ ->
-                    (SetActiveAttachment pos)
+                    ToggleAttachment attach.id
 
+                _ ->
+                    SetActiveAttachment pos
     in
     a
         ([ classList <|

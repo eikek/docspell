@@ -17,7 +17,7 @@ type alias Texts =
     , deleteThisFile : String
     , selectModeTitle : String
     , exitSelectMode : String
-    , deleteAttachments: String
+    , deleteAttachments : String
     }
 
 
