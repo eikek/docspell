@@ -5,7 +5,6 @@ module Util.Http exposing
     , authPostTrack
     , authPut
     , authTask
-    , errorToString
     , executeIn
     , jsonResolver
     )
@@ -15,11 +14,6 @@ import Http
 import Json.Decode as D
 import Process
 import Task exposing (Task)
-
-
-errorToString : Http.Error -> String
-errorToString _ =
-    Debug.todo "remove me"
 
 
 
