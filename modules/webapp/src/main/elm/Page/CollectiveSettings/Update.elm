@@ -1,13 +1,11 @@
 module Page.CollectiveSettings.Update exposing (update)
 
 import Api
-import Api.Model.BasicResult exposing (BasicResult)
 import Comp.CollectiveSettingsForm
 import Comp.SourceManage
 import Comp.UserManage
 import Data.Flags exposing (Flags)
 import Page.CollectiveSettings.Data exposing (..)
-import Util.Http
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -58,12 +56,12 @@ update flags msg model =
                         Just sett ->
                             Api.setCollectiveSettings flags sett SubmitResp
             in
-            ( { model | settingsModel = m2, submitResult = Nothing }
+            ( { model | settingsModel = m2, formState = InitialState }
             , Cmd.batch [ cmd, Cmd.map SettingsFormMsg c2 ]
             )
 
         Init ->
-            ( { model | submitResult = Nothing }
+            ( { model | formState = InitialState }
             , Cmd.batch
                 [ Api.getInsights flags GetInsightsResp
                 , Api.getCollectiveSettings flags CollectiveSettingsResp
@@ -89,11 +87,16 @@ update flags msg model =
             ( model, Cmd.none )
 
         SubmitResp (Ok res) ->
-            ( { model | submitResult = Just res }, Cmd.none )
+            ( { model
+                | formState =
+                    if res.success then
+                        SubmitSuccessful
+
+                    else
+                        SubmitFailed res.message
+              }
+            , Cmd.none
+            )
 
         SubmitResp (Err err) ->
-            let
-                res =
-                    BasicResult False (Util.Http.errorToString err)
-            in
-            ( { model | submitResult = Just res }, Cmd.none )
+            ( { model | formState = SubmitError err }, Cmd.none )

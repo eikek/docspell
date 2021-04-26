@@ -23,7 +23,6 @@ import Html.Events exposing (onSubmit)
 import Http
 import Messages.Comp.UserManage exposing (Texts)
 import Styles as S
-import Util.Http
 import Util.Maybe
 
 
@@ -45,6 +44,7 @@ type ViewMode
 type FormError
     = FormErrorNone
     | FormErrorSubmit String
+    | FormErrorHttp Http.Error
     | FormErrorInvalid
 
 
@@ -183,7 +183,7 @@ update flags msg model =
 
         SubmitResp (Err err) ->
             ( { model
-                | formError = FormErrorSubmit (Util.Http.errorToString err)
+                | formError = FormErrorHttp err
                 , loading = False
               }
             , Cmd.none
@@ -318,6 +318,9 @@ viewForm2 texts settings model =
 
                 FormErrorSubmit err ->
                     text err
+
+                FormErrorHttp err ->
+                    text (texts.httpError err)
 
                 FormErrorInvalid ->
                     text texts.pleaseCorrectErrors

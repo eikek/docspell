@@ -1,5 +1,7 @@
 module Comp.ItemDetail.Model exposing
     ( AttachmentRename
+    , ConfirmModalValue(..)
+    , MailSendResult(..)
     , Model
     , Msg(..)
     , NotesField(..)
@@ -75,7 +77,7 @@ type alias Model =
     , nameSaveThrottle : Throttle Msg
     , notesModel : Maybe String
     , notesField : NotesField
-    , itemModal : Maybe (Comp.ConfirmModal.Settings Msg)
+    , itemModal : Maybe ConfirmModalValue
     , itemDatePicker : DatePicker
     , itemDate : Maybe Int
     , itemProposals : ItemProposals
@@ -84,13 +86,13 @@ type alias Model =
     , itemMail : Comp.ItemMail.Model
     , mailOpen : Bool
     , mailSending : Bool
-    , mailSendResult : Maybe BasicResult
+    , mailSendResult : MailSendResult
     , sentMails : Comp.SentMails.Model
     , sentMailsOpen : Bool
     , attachMeta : Dict String Comp.AttachmentMeta.Model
     , attachMetaOpen : Bool
     , pdfNativeView : Maybe Bool
-    , attachModal : Maybe (Comp.ConfirmModal.Settings Msg)
+    , attachModal : Maybe ConfirmModalValue
     , addFilesOpen : Bool
     , addFilesModel : Comp.Dropzone.Model
     , selectedFiles : List File
@@ -112,6 +114,14 @@ type alias Model =
     }
 
 
+type ConfirmModalValue
+    = ConfirmModalReprocessItem Msg
+    | ConfirmModalReprocessFile Msg
+    | ConfirmModalDeleteItem Msg
+    | ConfirmModalDeleteFile Msg
+    | ConfirmModalDeleteAllFiles Msg
+
+
 type ViewMode
     = SimpleView
     | SelectView SelectViewModel
@@ -126,6 +136,13 @@ type alias SelectViewModel =
 type SelectActionMode
     = NoneAction
     | DeleteSelected
+
+
+type MailSendResult
+    = MailSendSuccessful
+    | MailSendHttpError Http.Error
+    | MailSendFailed String
+    | MailSendResultInitial
 
 
 type NotesField
@@ -181,7 +198,7 @@ emptyModel =
     , itemMail = Comp.ItemMail.emptyModel
     , mailOpen = False
     , mailSending = False
-    , mailSendResult = Nothing
+    , mailSendResult = MailSendResultInitial
     , sentMails = Comp.SentMails.init
     , sentMailsOpen = False
     , attachMeta = Dict.empty

@@ -1,8 +1,10 @@
 module Messages.Comp.DetailEdit exposing (Texts, gb)
 
+import Http
 import Messages.Basics
 import Messages.Comp.CustomFieldForm
 import Messages.Comp.EquipmentForm
+import Messages.Comp.HttpError
 import Messages.Comp.OrgForm
 import Messages.Comp.PersonForm
 import Messages.Comp.TagForm
@@ -15,6 +17,9 @@ type alias Texts =
     , orgForm : Messages.Comp.OrgForm.Texts
     , equipmentForm : Messages.Comp.EquipmentForm.Texts
     , customFieldForm : Messages.Comp.CustomFieldForm.Texts
+    , httpError : Http.Error -> String
+    , submitSuccessful : String
+    , missingRequiredFields : String
     }
 
 
@@ -26,4 +31,7 @@ gb =
     , orgForm = Messages.Comp.OrgForm.gb
     , equipmentForm = Messages.Comp.EquipmentForm.gb
     , customFieldForm = Messages.Comp.CustomFieldForm.gb
+    , httpError = Messages.Comp.HttpError.gb
+    , submitSuccessful = "Successfully saved."
+    , missingRequiredFields = "Please fill required fields."
     }

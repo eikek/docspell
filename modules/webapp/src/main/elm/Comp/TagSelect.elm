@@ -21,6 +21,7 @@ module Comp.TagSelect exposing
 import Api.Model.NameCount exposing (NameCount)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagCount exposing (TagCount)
+import Comp.ExpandCollapse
 import Data.Icons as I
 import Data.UiSettings exposing (UiSettings)
 import Dict exposing (Dict)
@@ -32,7 +33,6 @@ import Set
 import Simple.Fuzzy
 import String as S
 import Styles as S
-import Util.ExpandCollapse
 import Util.ItemDragDrop as DD
 import Util.Maybe
 
@@ -405,7 +405,7 @@ viewAll2 texts ddm settings sel model =
         wm =
             makeWorkModel sel model
     in
-    viewTagsDrop2 texts ddm wm settings model ++ [ viewCats2 settings wm model ]
+    viewTagsDrop2 texts ddm wm settings model ++ [ viewCats2 texts settings wm model ]
 
 
 viewTagsDrop2 : Texts -> DD.Model -> WorkModel -> UiSettings -> Model -> List (Html Msg)
@@ -440,20 +440,20 @@ viewTagsDrop2 texts ddm wm settings model =
             ]
         ]
     , div [ class "flex flex-col space-y-2 md:space-y-1" ]
-        (renderTagItems2 ddm settings model wm)
+        (renderTagItems2 texts ddm settings model wm)
     ]
 
 
-viewCats2 : UiSettings -> WorkModel -> Model -> Html Msg
-viewCats2 settings wm model =
+viewCats2 : Texts -> UiSettings -> WorkModel -> Model -> Html Msg
+viewCats2 texts settings wm model =
     div [ class "flex flex-col" ]
         [ div [ class "flex flex-col space-y-2 md:space-y-1" ]
-            (renderCatItems2 settings model wm)
+            (renderCatItems2 texts settings model wm)
         ]
 
 
-renderTagItems2 : DD.Model -> UiSettings -> Model -> WorkModel -> List (Html Msg)
-renderTagItems2 ddm settings model wm =
+renderTagItems2 : Texts -> DD.Model -> UiSettings -> Model -> WorkModel -> List (Html Msg)
+renderTagItems2 texts ddm settings model wm =
     let
         tags =
             wm.filteredTags
@@ -462,15 +462,19 @@ renderTagItems2 ddm settings model wm =
             settings.searchMenuTagCount
 
         expLink =
-            Util.ExpandCollapse.expandToggle2
-                max
-                (List.length tags)
+            Comp.ExpandCollapse.expandToggle
+                texts.expandCollapse
+                { max = max
+                , all = List.length tags
+                }
                 ToggleExpandTags
 
         cpsLink =
-            Util.ExpandCollapse.collapseToggle2
-                max
-                (List.length tags)
+            Comp.ExpandCollapse.collapseToggle
+                texts.expandCollapse
+                { max = max
+                , all = List.length tags
+                }
                 ToggleExpandTags
     in
     if max <= 0 then
@@ -557,8 +561,8 @@ viewCategoryItem2 settings model cat =
         ]
 
 
-renderCatItems2 : UiSettings -> Model -> WorkModel -> List (Html Msg)
-renderCatItems2 settings model wm =
+renderCatItems2 : Texts -> UiSettings -> Model -> WorkModel -> List (Html Msg)
+renderCatItems2 texts settings model wm =
     let
         cats =
             wm.filteredCats
@@ -567,15 +571,19 @@ renderCatItems2 settings model wm =
             settings.searchMenuTagCatCount
 
         expLink =
-            Util.ExpandCollapse.expandToggle2
-                max
-                (List.length cats)
+            Comp.ExpandCollapse.expandToggle
+                texts.expandCollapse
+                { max = max
+                , all = List.length cats
+                }
                 ToggleExpandCats
 
         cpsLink =
-            Util.ExpandCollapse.collapseToggle2
-                max
-                (List.length cats)
+            Comp.ExpandCollapse.collapseToggle
+                texts.expandCollapse
+                { max = max
+                , all = List.length cats
+                }
                 ToggleExpandCats
     in
     if max <= 0 then

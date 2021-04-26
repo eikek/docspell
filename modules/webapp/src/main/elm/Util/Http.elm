@@ -5,7 +5,6 @@ module Util.Http exposing
     , authPostTrack
     , authPut
     , authTask
-    , errorToString
     , executeIn
     , jsonResolver
     )
@@ -135,45 +134,6 @@ authDelete req =
         , headers = []
         , tracker = Nothing
         }
-
-
-
--- Error Utilities
-
-
-errorToStringStatus : Http.Error -> (Int -> String) -> String
-errorToStringStatus error statusString =
-    case error of
-        Http.BadUrl url ->
-            "There is something wrong with this url: " ++ url
-
-        Http.Timeout ->
-            "There was a network timeout."
-
-        Http.NetworkError ->
-            "There was a network error."
-
-        Http.BadStatus status ->
-            statusString status
-
-        Http.BadBody str ->
-            "There was an error decoding the response: " ++ str
-
-
-errorToString : Http.Error -> String
-errorToString error =
-    let
-        f sc =
-            if sc == 404 then
-                "The requested resource doesn't exist."
-
-            else if sc >= 400 && sc < 500 then
-                "Invalid input when processing the request."
-
-            else
-                "There was an invalid response status: " ++ String.fromInt sc ++ "."
-    in
-    errorToStringStatus error f
 
 
 

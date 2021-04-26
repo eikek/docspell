@@ -1,6 +1,8 @@
 module Messages.Comp.UserManage exposing (Texts, gb)
 
+import Http
 import Messages.Basics
+import Messages.Comp.HttpError
 import Messages.Comp.UserForm
 import Messages.Comp.UserTable
 
@@ -8,6 +10,7 @@ import Messages.Comp.UserTable
 type alias Texts =
     { userTable : Messages.Comp.UserTable.Texts
     , userForm : Messages.Comp.UserForm.Texts
+    , httpError : Http.Error -> String
     , users : String
     , newUser : String
     , addNewUser : String
@@ -24,6 +27,7 @@ gb =
     { userTable = Messages.Comp.UserTable.gb
     , userForm = Messages.Comp.UserForm.gb
     , basics = Messages.Basics.gb
+    , httpError = Messages.Comp.HttpError.gb
     , users = "Users"
     , newUser = "New user"
     , addNewUser = "Add new user"
@@ -32,8 +36,3 @@ gb =
     , deleteThisUser = "Delete this user"
     , pleaseCorrectErrors = "Please correct the errors in the form."
     }
-
-
-de : Texts
-de =
-    gb

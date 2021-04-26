@@ -20,15 +20,28 @@ import Html.Attributes exposing (..)
 import Http
 import Messages.Comp.NotificationManage exposing (Texts)
 import Styles as S
-import Util.Http
 
 
 type alias Model =
     { listModel : Comp.NotificationList.Model
     , detailModel : Maybe Comp.NotificationForm.Model
     , items : List NotificationSettings
-    , result : Maybe BasicResult
+    , formState : FormState
     }
+
+
+type SubmitType
+    = SubmitDelete
+    | SubmitUpdate
+    | SubmitCreate
+    | SubmitStartOnce
+
+
+type FormState
+    = FormStateInitial
+    | FormHttpError Http.Error
+    | FormSubmitSuccessful SubmitType
+    | FormSubmitFailed String
 
 
 type Msg
@@ -36,8 +49,7 @@ type Msg
     | DetailMsg Comp.NotificationForm.Msg
     | GetDataResp (Result Http.Error NotificationSettingsList)
     | NewTask
-    | SubmitResp Bool (Result Http.Error BasicResult)
-    | DeleteResp (Result Http.Error BasicResult)
+    | SubmitResp SubmitType (Result Http.Error BasicResult)
 
 
 initModel : Model
@@ -45,7 +57,7 @@ initModel =
     { listModel = Comp.NotificationList.init
     , detailModel = Nothing
     , items = []
-    , result = Nothing
+    , formState = FormStateInitial
     }
 
 
@@ -69,13 +81,13 @@ update flags msg model =
         GetDataResp (Ok res) ->
             ( { model
                 | items = res.items
-                , result = Nothing
+                , formState = FormStateInitial
               }
             , Cmd.none
             )
 
         GetDataResp (Err err) ->
-            ( { model | result = Just (BasicResult False (Util.Http.errorToString err)) }
+            ( { model | formState = FormHttpError err }
             , Cmd.none
             )
 
@@ -113,26 +125,29 @@ update flags msg model =
                         ( model_, cmd_ ) =
                             case action of
                                 Comp.NotificationForm.NoAction ->
-                                    ( { model | detailModel = Just mm }
+                                    ( { model
+                                        | detailModel = Just mm
+                                        , formState = FormStateInitial
+                                      }
                                     , Cmd.none
                                     )
 
                                 Comp.NotificationForm.SubmitAction settings ->
                                     ( { model
                                         | detailModel = Just mm
-                                        , result = Nothing
+                                        , formState = FormStateInitial
                                       }
                                     , if settings.id == "" then
-                                        Api.createNotifyDueItems flags settings (SubmitResp True)
+                                        Api.createNotifyDueItems flags settings (SubmitResp SubmitCreate)
 
                                       else
-                                        Api.updateNotifyDueItems flags settings (SubmitResp True)
+                                        Api.updateNotifyDueItems flags settings (SubmitResp SubmitUpdate)
                                     )
 
                                 Comp.NotificationForm.CancelAction ->
                                     ( { model
                                         | detailModel = Nothing
-                                        , result = Nothing
+                                        , formState = FormStateInitial
                                       }
                                     , initCmd flags
                                     )
@@ -140,17 +155,17 @@ update flags msg model =
                                 Comp.NotificationForm.StartOnceAction settings ->
                                     ( { model
                                         | detailModel = Just mm
-                                        , result = Nothing
+                                        , formState = FormStateInitial
                                       }
-                                    , Api.startOnceNotifyDueItems flags settings (SubmitResp False)
+                                    , Api.startOnceNotifyDueItems flags settings (SubmitResp SubmitStartOnce)
                                     )
 
                                 Comp.NotificationForm.DeleteAction id ->
                                     ( { model
                                         | detailModel = Just mm
-                                        , result = Nothing
+                                        , formState = FormStateInitial
                                       }
-                                    , Api.deleteNotifyDueItems flags id DeleteResp
+                                    , Api.deleteNotifyDueItems flags id (SubmitResp SubmitDelete)
                                     )
                     in
                     ( model_
@@ -170,17 +185,22 @@ update flags msg model =
             in
             ( { model | detailModel = Just mm }, Cmd.map DetailMsg mc )
 
-        SubmitResp close (Ok res) ->
+        SubmitResp submitType (Ok res) ->
             ( { model
-                | result = Just res
+                | formState =
+                    if res.success then
+                        FormSubmitSuccessful submitType
+
+                    else
+                        FormSubmitFailed res.message
                 , detailModel =
-                    if close then
+                    if submitType == SubmitDelete then
                         Nothing
 
                     else
                         model.detailModel
               }
-            , if close then
+            , if submitType == SubmitDelete then
                 initCmd flags
 
               else
@@ -188,23 +208,7 @@ update flags msg model =
             )
 
         SubmitResp _ (Err err) ->
-            ( { model | result = Just (BasicResult False (Util.Http.errorToString err)) }
-            , Cmd.none
-            )
-
-        DeleteResp (Ok res) ->
-            if res.success then
-                ( { model | result = Nothing, detailModel = Nothing }
-                , initCmd flags
-                )
-
-            else
-                ( { model | result = Just res }
-                , Cmd.none
-                )
-
-        DeleteResp (Err err) ->
-            ( { model | result = Just (BasicResult False (Util.Http.errorToString err)) }
+            ( { model | formState = FormHttpError err }
             , Cmd.none
             )
 
@@ -218,15 +222,33 @@ view2 texts settings model =
     div [ class "flex flex-col" ]
         (div
             [ classList
-                [ ( S.errorMessage, Maybe.map .success model.result == Just False )
-                , ( S.successMessage, Maybe.map .success model.result == Just True )
-                , ( "hidden", model.result == Nothing )
+                [ ( S.errorMessage, model.formState /= FormStateInitial )
+                , ( S.successMessage, isSuccess model.formState )
+                , ( "hidden", model.formState == FormStateInitial )
                 ]
             , class "mb-2"
             ]
-            [ Maybe.map .message model.result
-                |> Maybe.withDefault ""
-                |> text
+            [ case model.formState of
+                FormStateInitial ->
+                    text ""
+
+                FormSubmitSuccessful SubmitCreate ->
+                    text texts.taskCreated
+
+                FormSubmitSuccessful SubmitUpdate ->
+                    text texts.taskUpdated
+
+                FormSubmitSuccessful SubmitStartOnce ->
+                    text texts.taskStarted
+
+                FormSubmitSuccessful SubmitDelete ->
+                    text texts.taskDeleted
+
+                FormSubmitFailed m ->
+                    text m
+
+                FormHttpError err ->
+                    text (texts.httpError err)
             ]
             :: (case model.detailModel of
                     Just msett ->
@@ -236,6 +258,16 @@ view2 texts settings model =
                         viewList2 texts model
                )
         )
+
+
+isSuccess : FormState -> Bool
+isSuccess state =
+    case state of
+        FormSubmitSuccessful _ ->
+            True
+
+        _ ->
+            False
 
 
 viewForm2 : Texts -> UiSettings -> Comp.NotificationForm.Model -> List (Html Msg)

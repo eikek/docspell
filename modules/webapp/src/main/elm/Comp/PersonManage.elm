@@ -24,7 +24,6 @@ import Html.Events exposing (onSubmit)
 import Http
 import Messages.Comp.PersonManage exposing (Texts)
 import Styles as S
-import Util.Http
 import Util.Maybe
 
 
@@ -32,11 +31,18 @@ type alias Model =
     { tableModel : Comp.PersonTable.Model
     , formModel : Comp.PersonForm.Model
     , viewMode : ViewMode
-    , formError : Maybe String
+    , formError : FormError
     , loading : Int
     , deleteConfirm : Comp.YesNoDimmer.Model
     , query : String
     }
+
+
+type FormError
+    = FormErrorNone
+    | FormErrorHttp Http.Error
+    | FormErrorSubmit String
+    | FormErrorInvalid
 
 
 type ViewMode
@@ -49,7 +55,7 @@ emptyModel =
     { tableModel = Comp.PersonTable.emptyModel
     , formModel = Comp.PersonForm.emptyModel
     , viewMode = Table
-    , formError = Nothing
+    , formError = FormErrorNone
     , loading = 0
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , query = ""
@@ -85,7 +91,7 @@ update flags msg model =
                         , viewMode = Maybe.map (\_ -> Form) tm.selected |> Maybe.withDefault Table
                         , formError =
                             if Util.Maybe.nonEmpty tm.selected then
-                                Nothing
+                                FormErrorNone
 
                             else
                                 model.formError
@@ -156,7 +162,7 @@ update flags msg model =
         InitNewPerson ->
             let
                 nm =
-                    { model | viewMode = Form, formError = Nothing }
+                    { model | viewMode = Form, formError = FormErrorNone }
 
                 org =
                     Api.Model.Person.empty
@@ -177,7 +183,7 @@ update flags msg model =
                 )
 
             else
-                ( { model | formError = Just "Please correct the errors in the form." }, Cmd.none )
+                ( { model | formError = FormErrorInvalid }, Cmd.none )
 
         SubmitResp (Ok res) ->
             if res.success then
@@ -192,7 +198,7 @@ update flags msg model =
 
             else
                 ( { model
-                    | formError = Just res.message
+                    | formError = FormErrorSubmit res.message
                     , loading = Basics.max 0 (model.loading - 1)
                   }
                 , Cmd.none
@@ -200,7 +206,7 @@ update flags msg model =
 
         SubmitResp (Err err) ->
             ( { model
-                | formError = Just (Util.Http.errorToString err)
+                | formError = FormErrorHttp err
                 , loading = Basics.max 0 (model.loading - 1)
               }
             , Cmd.none
@@ -347,12 +353,23 @@ viewForm2 texts settings model =
             }
         , div
             [ classList
-                [ ( "hidden", Util.Maybe.isEmpty model.formError )
+                [ ( "hidden", model.formError == FormErrorNone )
                 ]
             , class S.errorMessage
             , class "my-2"
             ]
-            [ Maybe.withDefault "" model.formError |> text
+            [ case model.formError of
+                FormErrorNone ->
+                    text ""
+
+                FormErrorSubmit m ->
+                    text m
+
+                FormErrorHttp err ->
+                    text (texts.httpError err)
+
+                FormErrorInvalid ->
+                    text texts.correctFormErrors
             ]
         , Html.map FormMsg
             (Comp.PersonForm.view2 texts.personForm

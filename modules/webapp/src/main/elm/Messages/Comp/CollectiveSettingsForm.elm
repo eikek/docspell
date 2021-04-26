@@ -1,14 +1,17 @@
 module Messages.Comp.CollectiveSettingsForm exposing (Texts, gb)
 
 import Data.Language exposing (Language)
+import Http
 import Messages.Basics
 import Messages.Comp.ClassifierSettingsForm
+import Messages.Comp.HttpError
 import Messages.Data.Language
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
     , classifierSettingsForm : Messages.Comp.ClassifierSettingsForm.Texts
+    , httpError : Http.Error -> String
     , save : String
     , saveSettings : String
     , documentLanguage : String
@@ -22,6 +25,9 @@ type alias Texts =
     , autoTagging : String
     , startNow : String
     , languageLabel : Language -> String
+    , classifierTaskStarted : String
+    , fulltextReindexSubmitted : String
+    , fulltextReindexOkMissing : String
     }
 
 
@@ -29,6 +35,7 @@ gb : Texts
 gb =
     { basics = Messages.Basics.gb
     , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.gb
+    , httpError = Messages.Comp.HttpError.gb
     , save = "Save"
     , saveSettings = "Save Settings"
     , documentLanguage = "Document Language"
@@ -46,4 +53,8 @@ gb =
     , autoTagging = "Auto-Tagging"
     , startNow = "Start now"
     , languageLabel = Messages.Data.Language.gb
+    , classifierTaskStarted = "Classifier task started."
+    , fulltextReindexSubmitted = "Fulltext Re-Index started."
+    , fulltextReindexOkMissing =
+        "Please type OK in the field if you really want to start re-indexing your data."
     }

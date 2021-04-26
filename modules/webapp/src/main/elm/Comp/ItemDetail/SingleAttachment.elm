@@ -3,7 +3,7 @@ module Comp.ItemDetail.SingleAttachment exposing (view)
 import Api
 import Api.Model.Attachment exposing (Attachment)
 import Comp.AttachmentMeta
-import Comp.ConfirmModal
+import Comp.ItemDetail.ConfirmModalView
 import Comp.ItemDetail.Model exposing (Model, Msg(..), NotesField(..), SaveNameState(..), ViewMode(..))
 import Comp.MenuBar as MB
 import Data.UiSettings exposing (UiSettings)
@@ -32,7 +32,7 @@ view texts settings model pos attach =
             [ ( "hidden", not (attachmentVisible model pos) )
             ]
         ]
-        [ renderModal model
+        [ renderModal texts model
         , div
             [ class "flex flex-row px-2 py-2 text-sm"
             , class S.border
@@ -420,11 +420,11 @@ menuItem texts model pos attach =
         ]
 
 
-renderModal : Model -> Html Msg
-renderModal model =
+renderModal : Texts -> Model -> Html Msg
+renderModal texts model =
     case model.attachModal of
-        Just confirmModal ->
-            Comp.ConfirmModal.view confirmModal
+        Just mm ->
+            Comp.ItemDetail.ConfirmModalView.view texts.confirmModal mm model
 
         Nothing ->
             span [ class "hidden" ] []

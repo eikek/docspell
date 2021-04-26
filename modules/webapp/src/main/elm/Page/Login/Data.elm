@@ -1,5 +1,6 @@
 module Page.Login.Data exposing
-    ( Model
+    ( FormState(..)
+    , Model
     , Msg(..)
     , emptyModel
     )
@@ -13,8 +14,15 @@ type alias Model =
     { username : String
     , password : String
     , rememberMe : Bool
-    , result : Maybe AuthResult
+    , formState : FormState
     }
+
+
+type FormState
+    = AuthSuccess AuthResult
+    | AuthFailed AuthResult
+    | HttpError Http.Error
+    | FormInitial
 
 
 emptyModel : Model
@@ -22,7 +30,7 @@ emptyModel =
     { username = ""
     , password = ""
     , rememberMe = False
-    , result = Nothing
+    , formState = FormInitial
     }
 
 

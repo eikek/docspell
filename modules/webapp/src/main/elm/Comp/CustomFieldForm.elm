@@ -20,19 +20,17 @@ import Comp.YesNoDimmer
 import Data.CustomFieldType exposing (CustomFieldType)
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
-import Data.Validated exposing (Validated)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Http
 import Messages.Comp.CustomFieldForm exposing (Texts)
 import Styles as S
-import Util.Http
 import Util.Maybe
 
 
 type alias Model =
-    { result : Maybe BasicResult
+    { formState : FormState
     , field : CustomField
     , name : Maybe String
     , label : Maybe String
@@ -43,20 +41,67 @@ type alias Model =
     }
 
 
+type FormState
+    = FormStateInitial
+    | FormStateHttp Http.Error
+    | FormStateNameRequired
+    | FormStateTypeRequired
+    | FormStateUpdateFailed UpdateType String
+    | FormStateUpdateOk UpdateType
+
+
+type UpdateType
+    = UpdateCreate
+    | UpdateChange
+    | UpdateDelete
+
+
+isFormError : FormState -> Bool
+isFormError state =
+    case state of
+        FormStateInitial ->
+            False
+
+        FormStateHttp _ ->
+            True
+
+        FormStateNameRequired ->
+            True
+
+        FormStateTypeRequired ->
+            True
+
+        FormStateUpdateFailed _ _ ->
+            True
+
+        FormStateUpdateOk _ ->
+            False
+
+
+isFormSuccess : FormState -> Bool
+isFormSuccess state =
+    case state of
+        FormStateInitial ->
+            False
+
+        _ ->
+            not (isFormError state)
+
+
 type Msg
     = SetName String
     | SetLabel String
     | FTypeMsg (Comp.FixedDropdown.Msg CustomFieldType)
     | RequestDelete
     | DeleteMsg Comp.YesNoDimmer.Msg
-    | UpdateResp (Result Http.Error BasicResult)
+    | UpdateResp UpdateType (Result Http.Error BasicResult)
     | GoBack
     | SubmitForm
 
 
 init : CustomField -> Model
 init field =
-    { result = Nothing
+    { formState = FormStateInitial
     , field = field
     , name = Util.Maybe.fromString field.name
     , label = field.label
@@ -77,22 +122,22 @@ initEmpty =
 --- Update
 
 
-makeField : Model -> Validated NewCustomField
+makeField : Model -> Result FormState NewCustomField
 makeField model =
     let
         name =
-            Maybe.map Data.Validated.Valid model.name
-                |> Maybe.withDefault (Data.Validated.Invalid [ "A name is required." ] "")
+            Maybe.map Ok model.name
+                |> Maybe.withDefault (Err FormStateNameRequired)
 
         ftype =
             Maybe.map Data.CustomFieldType.asString model.ftype
-                |> Maybe.map Data.Validated.Valid
-                |> Maybe.withDefault (Data.Validated.Invalid [ "A field type is required." ] "")
+                |> Maybe.map Ok
+                |> Maybe.withDefault (Err FormStateTypeRequired)
 
         make n ft =
             NewCustomField n model.label ft
     in
-    Data.Validated.map2 make name ftype
+    Result.map2 make name ftype
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Bool )
@@ -129,28 +174,21 @@ update flags msg model =
                     makeField model
             in
             case newField of
-                Data.Validated.Valid f ->
+                Ok f ->
                     ( model
                     , if model.field.id == "" then
-                        Api.postCustomField flags f UpdateResp
+                        Api.postCustomField flags f (UpdateResp UpdateCreate)
 
                       else
-                        Api.putCustomField flags model.field.id f UpdateResp
+                        Api.putCustomField flags model.field.id f (UpdateResp UpdateChange)
                     , False
                     )
 
-                Data.Validated.Invalid msgs _ ->
-                    let
-                        combined =
-                            String.join "; " msgs
-                    in
-                    ( { model | result = Just (BasicResult False combined) }
+                Err fe ->
+                    ( { model | formState = fe }
                     , Cmd.none
                     , False
                     )
-
-                Data.Validated.Unknown _ ->
-                    ( model, Cmd.none, False )
 
         RequestDelete ->
             let
@@ -166,18 +204,28 @@ update flags msg model =
 
                 cmd =
                     if flag then
-                        Api.deleteCustomField flags model.field.id UpdateResp
+                        Api.deleteCustomField flags model.field.id (UpdateResp UpdateDelete)
 
                     else
                         Cmd.none
             in
             ( { model | deleteDimmer = dm }, cmd, False )
 
-        UpdateResp (Ok r) ->
-            ( { model | result = Just r }, Cmd.none, r.success )
+        UpdateResp updateType (Ok r) ->
+            ( { model
+                | formState =
+                    if r.success then
+                        FormStateUpdateOk updateType
 
-        UpdateResp (Err err) ->
-            ( { model | result = Just (BasicResult False (Util.Http.errorToString err)) }
+                    else
+                        FormStateUpdateFailed updateType r.message
+              }
+            , Cmd.none
+            , r.success
+            )
+
+        UpdateResp _ (Err err) ->
+            ( { model | formState = FormStateHttp err }
             , Cmd.none
             , False
             )
@@ -230,15 +278,30 @@ view2 texts viewSettings model =
                     )
                 , div
                     [ classList
-                        [ ( "hidden", model.result == Nothing )
-                        , ( S.errorMessage, Maybe.map .success model.result == Just False )
-                        , ( S.successMessage, Maybe.map .success model.result == Just True )
+                        [ ( "hidden", model.formState == FormStateInitial )
+                        , ( S.errorMessage, isFormError model.formState )
+                        , ( S.successMessage, isFormSuccess model.formState )
                         ]
                     , class "my-2"
                     ]
-                    [ Maybe.map .message model.result
-                        |> Maybe.withDefault ""
-                        |> text
+                    [ case model.formState of
+                        FormStateInitial ->
+                            text ""
+
+                        FormStateHttp err ->
+                            text (texts.httpError err)
+
+                        FormStateNameRequired ->
+                            text texts.fieldNameRequired
+
+                        FormStateTypeRequired ->
+                            text texts.fieldTypeRequired
+
+                        FormStateUpdateFailed _ m ->
+                            text m
+
+                        FormStateUpdateOk _ ->
+                            text texts.updateSuccessful
                     ]
                 , if model.field.id == "" then
                     div [ class "py-2 text-lg opacity-75" ]

@@ -14,7 +14,6 @@ import Html.Events exposing (onClick)
 import Messages.Page.CollectiveSettings exposing (Texts)
 import Page.CollectiveSettings.Data exposing (..)
 import Styles as S
-import Util.Maybe
 import Util.Size
 
 
@@ -249,6 +248,27 @@ viewSettings texts flags settings model =
             [ text texts.collectiveSettings
             ]
         ]
+    , div
+        [ classList
+            [ ( "hidden", model.formState == InitialState )
+            , ( S.successMessage, model.formState == SubmitSuccessful )
+            , ( S.errorMessage, model.formState /= SubmitSuccessful )
+            ]
+        , class "mb-2"
+        ]
+        [ case model.formState of
+            SubmitSuccessful ->
+                text texts.submitSuccessful
+
+            SubmitError err ->
+                text (texts.httpError err)
+
+            SubmitFailed m ->
+                text m
+
+            InitialState ->
+                text ""
+        ]
     , Html.map SettingsFormMsg
         (Comp.CollectiveSettingsForm.view2
             flags
@@ -256,23 +276,4 @@ viewSettings texts flags settings model =
             settings
             model.settingsModel
         )
-    , div
-        [ classList
-            [ ( "hidden", Util.Maybe.isEmpty model.submitResult )
-            , ( S.successMessage
-              , Maybe.map .success model.submitResult
-                    |> Maybe.withDefault False
-              )
-            , ( S.errorMessage
-              , Maybe.map .success model.submitResult
-                    |> Maybe.map not
-                    |> Maybe.withDefault False
-              )
-            ]
-        , class "mt-2"
-        ]
-        [ Maybe.map .message model.submitResult
-            |> Maybe.withDefault ""
-            |> text
-        ]
     ]

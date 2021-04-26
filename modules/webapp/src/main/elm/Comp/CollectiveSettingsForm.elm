@@ -18,14 +18,12 @@ import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
 import Data.UiSettings exposing (UiSettings)
-import Data.Validated exposing (Validated)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
 import Messages.Comp.CollectiveSettingsForm exposing (Texts)
 import Styles as S
-import Util.Http
 
 
 type alias Model =
@@ -33,10 +31,25 @@ type alias Model =
     , intEnabled : Bool
     , initSettings : CollectiveSettings
     , fullTextConfirmText : String
-    , fullTextReIndexResult : Maybe BasicResult
+    , fullTextReIndexResult : FulltextReindexResult
     , classifierModel : Comp.ClassifierSettingsForm.Model
-    , startClassifierResult : Maybe BasicResult
+    , startClassifierResult : ClassifierResult
     }
+
+
+type ClassifierResult
+    = ClassifierResultInitial
+    | ClassifierResultHttpError Http.Error
+    | ClassifierResultSubmitError String
+    | ClassifierResultOk
+
+
+type FulltextReindexResult
+    = FulltextReindexInitial
+    | FulltextReindexHttpError Http.Error
+    | FulltextReindexSubmitError String
+    | FulltextReindexSubmitOk
+    | FulltextReindexOKMissing
 
 
 init : Flags -> CollectiveSettings -> ( Model, Cmd Msg )
@@ -57,17 +70,17 @@ init flags settings =
       , intEnabled = settings.integrationEnabled
       , initSettings = settings
       , fullTextConfirmText = ""
-      , fullTextReIndexResult = Nothing
+      , fullTextReIndexResult = FulltextReindexInitial
       , classifierModel = cm
-      , startClassifierResult = Nothing
+      , startClassifierResult = ClassifierResultInitial
       }
     , Cmd.map ClassifierSettingMsg cc
     )
 
 
-getSettings : Model -> Validated CollectiveSettings
+getSettings : Model -> Maybe CollectiveSettings
 getSettings model =
-    Data.Validated.map
+    Maybe.map
         (\cls ->
             { language =
                 Comp.Dropdown.getSelected model.langModel
@@ -121,31 +134,36 @@ update flags msg model =
         TriggerReIndex ->
             case String.toLower model.fullTextConfirmText of
                 "ok" ->
-                    ( { model | fullTextReIndexResult = Nothing }
+                    ( { model | fullTextReIndexResult = FulltextReindexInitial }
                     , Api.startReIndex flags TriggerReIndexResult
                     , Nothing
                     )
 
                 _ ->
                     ( { model
-                        | fullTextReIndexResult =
-                            Just
-                                (BasicResult False <|
-                                    "Please type OK in the field if you really "
-                                        ++ "want to start re-indexing your data."
-                                )
+                        | fullTextReIndexResult = FulltextReindexOKMissing
                       }
                     , Cmd.none
                     , Nothing
                     )
 
         TriggerReIndexResult (Ok br) ->
-            ( { model | fullTextReIndexResult = Just br }, Cmd.none, Nothing )
+            ( { model
+                | fullTextReIndexResult =
+                    if br.success then
+                        FulltextReindexSubmitOk
+
+                    else
+                        FulltextReindexSubmitError br.message
+              }
+            , Cmd.none
+            , Nothing
+            )
 
         TriggerReIndexResult (Err err) ->
             ( { model
                 | fullTextReIndexResult =
-                    Just (BasicResult False (Util.Http.errorToString err))
+                    FulltextReindexHttpError err
               }
             , Cmd.none
             , Nothing
@@ -165,26 +183,30 @@ update flags msg model =
 
         SaveSettings ->
             case getSettings model of
-                Data.Validated.Valid s ->
+                Just s ->
                     ( model, Cmd.none, Just s )
 
-                _ ->
+                Nothing ->
                     ( model, Cmd.none, Nothing )
 
         StartClassifierTask ->
             ( model, Api.startClassifier flags StartClassifierResp, Nothing )
 
         StartClassifierResp (Ok br) ->
-            ( { model | startClassifierResult = Just br }
+            ( { model
+                | startClassifierResult =
+                    if br.success then
+                        ClassifierResultOk
+
+                    else
+                        ClassifierResultSubmitError br.message
+              }
             , Cmd.none
             , Nothing
             )
 
         StartClassifierResp (Err err) ->
-            ( { model
-                | startClassifierResult =
-                    Just (BasicResult False (Util.Http.errorToString err))
-              }
+            ( { model | startClassifierResult = ClassifierResultHttpError err }
             , Cmd.none
             , Nothing
             )
@@ -209,12 +231,7 @@ view2 flags texts settings model =
             }
     in
     div
-        [ classList
-            [ ( "ui form error success", True )
-            , ( "error", Maybe.map .success model.fullTextReIndexResult == Just False )
-            , ( "success", Maybe.map .success model.fullTextReIndexResult == Just True )
-            ]
-        , class "flex flex-col relative"
+        [ class "flex flex-col relative"
         ]
         [ MB.view
             { start =
@@ -227,7 +244,7 @@ view2 flags texts settings model =
                             [ title texts.saveSettings
                             , href "#"
                             ]
-                        , disabled = getSettings model |> Data.Validated.isInvalid
+                        , disabled = getSettings model == Nothing
                         }
                 ]
             , end = []
@@ -263,13 +280,13 @@ view2 flags texts settings model =
             , div [ class "mb-4" ]
                 [ label
                     [ class "inline-flex items-center"
-                    , for "intendpoint-enabled"
+                    , for "int-endpoint-enabled"
                     ]
                     [ input
                         [ type_ "checkbox"
                         , onCheck (\_ -> ToggleIntegrationEndpoint)
                         , checked model.intEnabled
-                        , id "intendpoint-enabled"
+                        , id "int-endpoint-enabled"
                         , class S.checkboxInput
                         ]
                         []
@@ -316,7 +333,7 @@ view2 flags texts settings model =
                 , div [ class "opacity-50 text-sm" ]
                     [ text texts.reindexAllDataHelp
                     ]
-                , renderResultMessage2 model.fullTextReIndexResult
+                , renderFulltextReindexResultMessage texts model.fullTextReIndexResult
                 ]
             ]
         , div
@@ -340,26 +357,66 @@ view2 flags texts settings model =
                         { handler = onClick StartClassifierTask
                         , icon = "fa fa-play"
                         , label = texts.startNow
-                        , disabled = Data.Validated.isInvalid model.classifierModel.schedule
+                        , disabled = model.classifierModel.schedule == Nothing
                         , attrs = [ href "#" ]
                         }
-                    , renderResultMessage2 model.startClassifierResult
+                    , renderClassifierResultMessage texts model.startClassifierResult
                     ]
                 ]
             ]
         ]
 
 
-renderResultMessage2 : Maybe BasicResult -> Html msg
-renderResultMessage2 result =
+renderClassifierResultMessage : Texts -> ClassifierResult -> Html msg
+renderClassifierResultMessage texts result =
+    let
+        isSuccess =
+            case result of
+                ClassifierResultOk ->
+                    True
+
+                _ ->
+                    False
+
+        isError =
+            not isSuccess
+    in
     div
         [ classList
-            [ ( S.errorMessage, Maybe.map .success result == Just False )
-            , ( S.successMessage, Maybe.map .success result == Just True )
-            , ( "hidden", result == Nothing )
+            [ ( S.errorMessage, isError )
+            , ( S.successMessage, isSuccess )
+            , ( "hidden", result == ClassifierResultInitial )
             ]
         ]
-        [ Maybe.map .message result
-            |> Maybe.withDefault ""
-            |> text
+        [ case result of
+            ClassifierResultInitial ->
+                text ""
+
+            ClassifierResultOk ->
+                text texts.classifierTaskStarted
+
+            ClassifierResultHttpError err ->
+                text (texts.httpError err)
+
+            ClassifierResultSubmitError m ->
+                text m
         ]
+
+
+renderFulltextReindexResultMessage : Texts -> FulltextReindexResult -> Html msg
+renderFulltextReindexResultMessage texts result =
+    case result of
+        FulltextReindexInitial ->
+            text ""
+
+        FulltextReindexSubmitOk ->
+            text texts.fulltextReindexSubmitted
+
+        FulltextReindexHttpError err ->
+            text (texts.httpError err)
+
+        FulltextReindexOKMissing ->
+            text texts.fulltextReindexOkMissing
+
+        FulltextReindexSubmitError m ->
+            text m

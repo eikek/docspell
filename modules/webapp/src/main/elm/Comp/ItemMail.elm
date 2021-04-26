@@ -25,7 +25,6 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Messages.Comp.ItemMail exposing (Texts)
 import Styles as S
-import Util.Http
 
 
 type alias Model =
@@ -39,8 +38,14 @@ type alias Model =
     , bccRecipientsModel : Comp.EmailInput.Model
     , body : String
     , attachAll : Bool
-    , formError : Maybe String
+    , formError : FormError
     }
+
+
+type FormError
+    = FormErrorNone
+    | FormErrorNoConnection
+    | FormErrorHttp Http.Error
 
 
 type Msg
@@ -80,7 +85,7 @@ emptyModel =
     , bccRecipientsModel = Comp.EmailInput.init
     , body = ""
     , attachAll = True
-    , formError = Nothing
+    , formError = FormErrorNone
     }
 
 
@@ -111,7 +116,10 @@ update flags msg model =
                 ( em, ec, rec ) =
                     Comp.EmailInput.update flags model.recipients m model.recipientsModel
             in
-            ( { model | recipients = rec, recipientsModel = em }
+            ( { model
+                | recipients = rec
+                , recipientsModel = em
+              }
             , Cmd.map RecipientMsg ec
             , FormNone
             )
@@ -121,7 +129,10 @@ update flags msg model =
                 ( em, ec, rec ) =
                     Comp.EmailInput.update flags model.ccRecipients m model.ccRecipientsModel
             in
-            ( { model | ccRecipients = rec, ccRecipientsModel = em }
+            ( { model
+                | ccRecipients = rec
+                , ccRecipientsModel = em
+              }
             , Cmd.map CCRecipientMsg ec
             , FormNone
             )
@@ -165,24 +176,24 @@ update flags msg model =
                 | connectionModel = cm
                 , formError =
                     if names == [] then
-                        Just "No E-Mail connections configured. Goto user settings to add one."
+                        FormErrorNoConnection
 
                     else
-                        Nothing
+                        FormErrorNone
               }
             , Cmd.none
             , FormNone
             )
 
         ConnResp (Err err) ->
-            ( { model | formError = Just (Util.Http.errorToString err) }, Cmd.none, FormNone )
+            ( { model | formError = FormErrorHttp err }, Cmd.none, FormNone )
 
         Cancel ->
             ( model, Cmd.none, FormCancel )
 
         Send ->
             case ( model.formError, Comp.Dropdown.getSelected model.connectionModel ) of
-                ( Nothing, conn :: [] ) ->
+                ( FormErrorNone, conn :: [] ) ->
                     let
                         emptyMail =
                             Api.Model.SimpleMail.empty
@@ -212,7 +223,9 @@ isValid model =
         && model.body
         /= ""
         && model.formError
-        == Nothing
+        == FormErrorNone
+        && Comp.Dropdown.getSelected model.connectionModel
+        /= []
 
 
 
@@ -249,9 +262,17 @@ view2 texts settings model =
             ]
         , div
             [ class S.errorMessage
-            , classList [ ( "hidden", model.formError == Nothing ) ]
+            , classList [ ( "hidden", model.formError == FormErrorNone ) ]
             ]
-            [ Maybe.withDefault "" model.formError |> text
+            [ case model.formError of
+                FormErrorNone ->
+                    text ""
+
+                FormErrorHttp err ->
+                    text (texts.httpError err)
+
+                FormErrorNoConnection ->
+                    text texts.connectionMissing
             ]
         , div [ class "mb-4" ]
             [ label
@@ -320,7 +341,7 @@ view2 texts settings model =
                 }
         , div [ class "flex flex-row space-x-2" ]
             [ B.primaryButton
-                { label = "Send"
+                { label = texts.sendLabel
                 , icon = "fa fa-paper-plane font-thin"
                 , handler = onClick Send
                 , attrs = [ href "#" ]

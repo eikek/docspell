@@ -2,7 +2,6 @@ module Comp.CalEventInput exposing
     ( Model
     , Msg
     , init
-    , initDefault
     , update
     , view2
     )
@@ -19,12 +18,25 @@ import Html.Events exposing (onInput)
 import Http
 import Messages.Comp.CalEventInput exposing (Texts)
 import Styles as S
-import Util.Http
 import Util.Maybe
 
 
 type alias Model =
-    { checkResult : Maybe CalEventCheckResult
+    { checkResult : CheckResult
+    , inner : CalEvent
+    }
+
+
+type CheckResult
+    = CheckResultOk EventData
+    | CheckResultFailed String
+    | CheckResultHttpError Http.Error
+    | CheckResultInitial
+
+
+type alias EventData =
+    { nextEvents : List Int
+    , eventString : Maybe String
     }
 
 
@@ -38,14 +50,23 @@ type Msg
     | CheckInputMsg CalEvent (Result Http.Error CalEventCheckResult)
 
 
-initDefault : Model
-initDefault =
-    Model Nothing
-
-
 init : Flags -> CalEvent -> ( Model, Cmd Msg )
 init flags ev =
-    ( Model Nothing, checkInput flags ev )
+    ( { checkResult = CheckResultInitial
+      , inner = ev
+      }
+    , checkInput flags ev
+    )
+
+
+eventData : Model -> Maybe EventData
+eventData model =
+    case model.checkResult of
+        CheckResultOk data ->
+            Just data
+
+        _ ->
+            Nothing
 
 
 checkInput : Flags -> CalEvent -> Cmd Msg
@@ -60,20 +81,33 @@ checkInput flags ev =
     Api.checkCalEvent flags input (CheckInputMsg ev)
 
 
-withCheckInput : Flags -> CalEvent -> Model -> ( Model, Cmd Msg, Validated CalEvent )
+withCheckInput : Flags -> CalEvent -> Model -> ( Model, Cmd Msg, Maybe CalEvent )
 withCheckInput flags ev model =
-    ( model, checkInput flags ev, Unknown ev )
+    ( model, checkInput flags ev, Nothing )
 
 
 isCheckError : Model -> Bool
 isCheckError model =
-    Maybe.map .success model.checkResult
-        |> Maybe.withDefault True
-        |> not
+    case model.checkResult of
+        CheckResultOk _ ->
+            False
+
+        CheckResultFailed _ ->
+            True
+
+        CheckResultHttpError _ ->
+            True
+
+        CheckResultInitial ->
+            False
 
 
-update : Flags -> CalEvent -> Msg -> Model -> ( Model, Cmd Msg, Validated CalEvent )
-update flags ev msg model =
+update : Flags -> Maybe CalEvent -> Msg -> Model -> ( Model, Cmd Msg, Maybe CalEvent )
+update flags mev msg model =
+    let
+        ev =
+            Maybe.withDefault model.inner mev
+    in
     case msg of
         SetYear str ->
             withCheckInput flags { ev | year = str } model
@@ -96,42 +130,49 @@ update flags ev msg model =
         CheckInputMsg event (Ok res) ->
             let
                 m =
-                    { model | checkResult = Just res }
+                    { model
+                        | checkResult =
+                            if res.success then
+                                CheckResultOk
+                                    { nextEvents = res.next
+                                    , eventString = res.event
+                                    }
+
+                            else
+                                CheckResultFailed res.message
+                        , inner = event
+                    }
             in
             ( m
             , Cmd.none
             , if res.success then
-                Valid event
+                Just event
 
               else
-                Invalid [ res.message ] event
+                Nothing
             )
 
         CheckInputMsg event (Err err) ->
             let
-                emptyResult =
-                    Api.Model.CalEventCheckResult.empty
-
                 m =
                     { model
-                        | checkResult =
-                            Just
-                                { emptyResult
-                                    | success = False
-                                    , message = Util.Http.errorToString err
-                                }
+                        | checkResult = CheckResultHttpError err
+                        , inner = event
                     }
             in
-            ( m, Cmd.none, Unknown event )
+            ( m, Cmd.none, Nothing )
 
 
 
 --- View2
 
 
-view2 : Texts -> String -> CalEvent -> Model -> Html Msg
-view2 texts extraClasses ev model =
+view2 : Texts -> String -> Maybe CalEvent -> Model -> Html Msg
+view2 texts extraClasses mev model =
     let
+        ev =
+            Maybe.withDefault model.inner mev
+
         yearLen =
             Basics.max 4 (String.length ev.year)
 
@@ -255,17 +296,21 @@ view2 texts extraClasses ev model =
             , class S.errorMessage
             ]
             [ text (texts.error ++ ": ")
-            , Maybe.map .message model.checkResult
-                |> Maybe.withDefault ""
-                |> text
+            , case model.checkResult of
+                CheckResultOk _ ->
+                    text ""
+
+                CheckResultFailed str ->
+                    text str
+
+                CheckResultHttpError err ->
+                    text (texts.httpError err)
+
+                CheckResultInitial ->
+                    text ""
             ]
         , div
-            [ classList
-                [ ( "hidden1"
-                  , model.checkResult == Nothing || isCheckError model
-                  )
-                ]
-            , class "px-2 pt-4 pb-2 border-0 border-l border-b border-r bg-gray-50 dark:bg-bluegray-700"
+            [ class "px-2 pt-4 pb-2 border-0 border-l border-b border-r bg-gray-50 dark:bg-bluegray-700"
             , class S.border
             ]
             [ div []
@@ -273,7 +318,8 @@ view2 texts extraClasses ev model =
                     [ text (texts.schedule ++ ": ")
                     ]
                 , div [ class "px-12 font-mono " ]
-                    [ Maybe.andThen .event model.checkResult
+                    [ eventData model
+                        |> Maybe.andThen .eventString
                         |> Maybe.withDefault ""
                         |> text
                     ]
@@ -281,7 +327,8 @@ view2 texts extraClasses ev model =
                     [ text (texts.next ++ ": ")
                     ]
                 , ul [ class "list-decimal list-inside text-sm" ]
-                    (Maybe.map .next model.checkResult
+                    (eventData model
+                        |> Maybe.map .nextEvents
                         |> Maybe.withDefault []
                         |> List.map texts.formatDateTime
                         |> List.map (\s -> li [ class "" ] [ text s ])

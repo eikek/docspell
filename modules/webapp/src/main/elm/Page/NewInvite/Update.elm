@@ -4,7 +4,6 @@ import Api
 import Api.Model.GenInvite exposing (GenInvite)
 import Data.Flags exposing (Flags)
 import Page.NewInvite.Data exposing (..)
-import Util.Http
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -24,7 +23,7 @@ update flags msg model =
                 ( { model | result = Success res }, Cmd.none )
 
             else
-                ( { model | result = Failed res.message }, Cmd.none )
+                ( { model | result = GenericFail res.message }, Cmd.none )
 
         InviteResp (Err err) ->
-            ( { model | result = Failed (Util.Http.errorToString err) }, Cmd.none )
+            ( { model | result = Failed err }, Cmd.none )

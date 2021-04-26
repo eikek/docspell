@@ -1,7 +1,9 @@
 module Messages.Comp.CustomFieldForm exposing (Texts, gb)
 
 import Data.CustomFieldType exposing (CustomFieldType)
+import Http
 import Messages.Basics
+import Messages.Comp.HttpError
 import Messages.Data.CustomFieldType
 
 
@@ -9,6 +11,7 @@ type alias Texts =
     { basics : Messages.Basics.Texts
     , reallyDeleteField : String
     , fieldTypeLabel : CustomFieldType -> String
+    , httpError : Http.Error -> String
     , createCustomField : String
     , modifyTypeWarning : String
     , nameInfo : String
@@ -17,6 +20,9 @@ type alias Texts =
     , label : String
     , labelInfo : String
     , deleteThisField : String
+    , fieldNameRequired : String
+    , fieldTypeRequired : String
+    , updateSuccessful : String
     }
 
 
@@ -25,6 +31,7 @@ gb =
     { basics = Messages.Basics.gb
     , reallyDeleteField = "Really delete this custom field?"
     , fieldTypeLabel = Messages.Data.CustomFieldType.gb
+    , httpError = Messages.Comp.HttpError.gb
     , createCustomField = "Create a new custom field."
     , modifyTypeWarning =
         "Note that changing the format may "
@@ -41,4 +48,7 @@ gb =
         "The user defined label for this field. This is used to represent "
             ++ "this field in the ui. If not present, the name is used."
     , deleteThisField = "Delete this field"
+    , fieldNameRequired = "A name is required."
+    , fieldTypeRequired = "A type is required."
+    , updateSuccessful = "Field has been saved."
     }

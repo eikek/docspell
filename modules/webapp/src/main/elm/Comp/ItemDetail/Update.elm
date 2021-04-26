@@ -24,7 +24,24 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.Dropzone
 import Comp.EquipmentForm
 import Comp.ItemDetail.FieldTabState as FTabState
-import Comp.ItemDetail.Model exposing (AttachmentRename, Model, Msg(..), NotesField(..), SaveNameState(..), SelectActionMode(..), UpdateResult, ViewMode(..), initSelectViewModel, isEditNotes, resultModel, resultModelCmd, resultModelCmdSub)
+import Comp.ItemDetail.Model
+    exposing
+        ( AttachmentRename
+        , ConfirmModalValue(..)
+        , MailSendResult(..)
+        , Model
+        , Msg(..)
+        , NotesField(..)
+        , SaveNameState(..)
+        , SelectActionMode(..)
+        , UpdateResult
+        , ViewMode(..)
+        , initSelectViewModel
+        , isEditNotes
+        , resultModel
+        , resultModelCmd
+        , resultModelCmdSub
+        )
 import Comp.ItemMail
 import Comp.KeyInput
 import Comp.LinkTarget
@@ -48,7 +65,6 @@ import Set exposing (Set)
 import Throttle
 import Time
 import Util.File exposing (makeFileId)
-import Util.Http
 import Util.List
 import Util.Maybe
 import Util.String
@@ -545,19 +561,7 @@ update key flags inav settings msg model =
             resultModel { model | itemModal = Nothing }
 
         RequestDelete ->
-            let
-                confirmMsg =
-                    "Really delete this item? This cannot be undone."
-
-                confirm =
-                    Comp.ConfirmModal.defaultSettings
-                        DeleteItemConfirmed
-                        ItemModalCancelled
-                        "Ok"
-                        "Cancel"
-                        confirmMsg
-            in
-            resultModel { model | itemModal = Just confirm }
+            resultModel { model | itemModal = Just (ConfirmModalDeleteItem DeleteItemConfirmed) }
 
         SetCorrOrgSuggestion idname ->
             resultModelCmd ( model, setCorrOrg flags model (Just idname) )
@@ -750,7 +754,7 @@ update key flags inav settings msg model =
                         ( { model
                             | itemMail = Comp.ItemMail.clear im
                             , mailOpen = False
-                            , mailSendResult = Nothing
+                            , mailSendResult = MailSendResultInitial
                           }
                         , Cmd.map ItemMailMsg ic
                         )
@@ -788,7 +792,7 @@ update key flags inav settings msg model =
                         model.mailSendResult
 
                     else
-                        Nothing
+                        MailSendResultInitial
             in
             resultModel
                 { model
@@ -810,7 +814,12 @@ update key flags inav settings msg model =
                 ( { model
                     | itemMail = mm
                     , mailSending = False
-                    , mailSendResult = Just br
+                    , mailSendResult =
+                        if br.success then
+                            MailSendSuccessful
+
+                        else
+                            MailSendFailed br.message
                   }
                 , if br.success then
                     Api.itemDetail flags model.item.id GetItemResp
@@ -820,13 +829,9 @@ update key flags inav settings msg model =
                 )
 
         SendMailResp (Err err) ->
-            let
-                errmsg =
-                    Util.Http.errorToString err
-            in
             resultModel
                 { model
-                    | mailSendResult = Just (BasicResult False errmsg)
+                    | mailSendResult = MailSendHttpError err
                     , mailSending = False
                 }
 
@@ -924,18 +929,10 @@ update key flags inav settings msg model =
 
         RequestDeleteAttachment id ->
             let
-                confirmModal =
-                    Comp.ConfirmModal.defaultSettings
-                        (DeleteAttachConfirmed id)
-                        AttachModalCancelled
-                        "Ok"
-                        "Cancel"
-                        "Really delete this file?"
-
                 model_ =
                     { model
                         | attachmentDropdownOpen = False
-                        , attachModal = Just confirmModal
+                        , attachModal = Just (ConfirmModalDeleteFile (DeleteAttachConfirmed id))
                     }
             in
             resultModel model_
@@ -948,14 +945,6 @@ update key flags inav settings msg model =
 
                     else
                         let
-                            confirmModal =
-                                Comp.ConfirmModal.defaultSettings
-                                    DeleteSelectedConfirmed
-                                    AttachModalCancelled
-                                    "Ok"
-                                    "Cancel"
-                                    "Really delete these files?"
-
                             model_ =
                                 { model
                                     | viewMode =
@@ -963,7 +952,7 @@ update key flags inav settings msg model =
                                             { svm
                                                 | action = DeleteSelected
                                             }
-                                    , attachModal = Just confirmModal
+                                    , attachModal = Just (ConfirmModalDeleteAllFiles DeleteSelectedConfirmed)
                                 }
                         in
                         resultModel model_
@@ -1551,27 +1540,10 @@ update key flags inav settings msg model =
 
         RequestReprocessFile id ->
             let
-                confirmMsg =
-                    if model.item.state == "created" then
-                        "Reprocessing this file may change metadata of "
-                            ++ "this item, since it is unconfirmed. Do you want to proceed?"
-
-                    else
-                        "Reprocessing this file will not change metadata of "
-                            ++ "this item, since it has been confirmed. Do you want to proceed?"
-
-                confirmModal =
-                    Comp.ConfirmModal.defaultSettings
-                        (ReprocessFileConfirmed id)
-                        AttachModalCancelled
-                        "Ok"
-                        "Cancel"
-                        confirmMsg
-
                 model_ =
                     { model
                         | attachmentDropdownOpen = False
-                        , attachModal = Just confirmModal
+                        , attachModal = Just (ConfirmModalReprocessFile (ReprocessFileConfirmed id))
                     }
             in
             resultModel model_
@@ -1588,27 +1560,10 @@ update key flags inav settings msg model =
 
         RequestReprocessItem ->
             let
-                confirmMsg =
-                    if model.item.state == "created" then
-                        "Reprocessing this item may change its metadata, "
-                            ++ "since it is unconfirmed. Do you want to proceed?"
-
-                    else
-                        "Reprocessing this item will not change its metadata, "
-                            ++ "since it has been confirmed. Do you want to proceed?"
-
-                confirmModal =
-                    Comp.ConfirmModal.defaultSettings
-                        ReprocessItemConfirmed
-                        ItemModalCancelled
-                        "Ok"
-                        "Cancel"
-                        confirmMsg
-
                 model_ =
                     { model
                         | attachmentDropdownOpen = False
-                        , itemModal = Just confirmModal
+                        , itemModal = Just (ConfirmModalReprocessItem ReprocessItemConfirmed)
                     }
             in
             resultModel model_

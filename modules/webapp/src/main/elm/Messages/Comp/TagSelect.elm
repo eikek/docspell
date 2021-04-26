@@ -1,8 +1,11 @@
 module Messages.Comp.TagSelect exposing (Texts, gb)
 
+import Messages.Comp.ExpandCollapse
+
 
 type alias Texts =
-    { hideEmpty : String
+    { expandCollapse : Messages.Comp.ExpandCollapse.Texts
+    , hideEmpty : String
     , showEmpty : String
     , filterPlaceholder : String
     }
@@ -10,7 +13,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { hideEmpty = "Hide empty"
+    { expandCollapse = Messages.Comp.ExpandCollapse.gb
+    , hideEmpty = "Hide empty"
     , showEmpty = "Show empty"
     , filterPlaceholder = "Filter …"
     }
