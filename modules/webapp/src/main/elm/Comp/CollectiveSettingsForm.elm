@@ -18,7 +18,6 @@ import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
 import Data.UiSettings exposing (UiSettings)
-import Data.Validated exposing (Validated)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
@@ -79,9 +78,9 @@ init flags settings =
     )
 
 
-getSettings : Model -> Validated CollectiveSettings
+getSettings : Model -> Maybe CollectiveSettings
 getSettings model =
-    Data.Validated.map
+    Maybe.map
         (\cls ->
             { language =
                 Comp.Dropdown.getSelected model.langModel
@@ -184,10 +183,10 @@ update flags msg model =
 
         SaveSettings ->
             case getSettings model of
-                Data.Validated.Valid s ->
+                Just s ->
                     ( model, Cmd.none, Just s )
 
-                _ ->
+                Nothing ->
                     ( model, Cmd.none, Nothing )
 
         StartClassifierTask ->
@@ -245,7 +244,7 @@ view2 flags texts settings model =
                             [ title texts.saveSettings
                             , href "#"
                             ]
-                        , disabled = getSettings model |> Data.Validated.isInvalid
+                        , disabled = getSettings model == Nothing
                         }
                 ]
             , end = []
@@ -358,7 +357,7 @@ view2 flags texts settings model =
                         { handler = onClick StartClassifierTask
                         , icon = "fa fa-play"
                         , label = texts.startNow
-                        , disabled = Data.Validated.isInvalid model.classifierModel.schedule
+                        , disabled = model.classifierModel.schedule == Nothing
                         , attrs = [ href "#" ]
                         }
                     , renderClassifierResultMessage texts model.startClassifierResult

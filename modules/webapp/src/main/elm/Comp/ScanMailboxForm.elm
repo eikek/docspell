@@ -45,7 +45,6 @@ import Styles as S
 import Util.Folder exposing (mkFolderOption)
 import Util.List
 import Util.Maybe
-import Util.Result
 import Util.Tag
 import Util.Update
 
@@ -61,7 +60,7 @@ type alias Model =
     , foldersModel : Comp.StringListInput.Model
     , folders : List String
     , direction : Maybe Direction
-    , schedule : Result CalEvent CalEvent
+    , schedule : Maybe CalEvent
     , scheduleModel : Comp.CalEventInput.Model
     , formState : FormState
     , loading : Int
@@ -190,7 +189,7 @@ initWith flags s =
         , receivedHours = s.receivedSinceHours
         , targetFolder = s.targetFolder
         , folders = s.folders
-        , schedule = Ok newSchedule
+        , schedule = Just newSchedule
         , direction = Maybe.andThen Data.Direction.fromString s.direction
         , scheduleModel = sm
         , formState = FormStateInitial
@@ -222,10 +221,10 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         initialSchedule =
-            Ok Data.CalEvent.everyMonth
+            Data.CalEvent.everyMonth
 
-        sm =
-            Comp.CalEventInput.initDefault
+        ( sm, scmd ) =
+            Comp.CalEventInput.init flags initialSchedule
     in
     ( { settings = Api.Model.ScanMailboxSettings.empty
       , connectionModel = Comp.Dropdown.makeSingle
@@ -237,7 +236,7 @@ init flags =
       , folders = []
       , targetFolder = Nothing
       , direction = Nothing
-      , schedule = initialSchedule
+      , schedule = Just initialSchedule
       , scheduleModel = sm
       , formState = FormStateInitial
       , loading = 3
@@ -260,6 +259,7 @@ init flags =
         [ Api.getImapSettings flags "" ConnResp
         , Api.getFolders flags "" False GetFolderResp
         , Api.getTags flags "" GetTagResp
+        , Cmd.map CalEventMsg scmd
         ]
     )
 
@@ -288,7 +288,12 @@ makeSettings model =
                 Ok model.folders
 
         schedule_ =
-            Result.mapError (\_ -> ValidateCalEventInvalid) model.schedule
+            case model.schedule of
+                Just s ->
+                    Ok s
+
+                Nothing ->
+                    Err ValidateCalEventInvalid
 
         make imap timer folders =
             { prev
@@ -343,21 +348,12 @@ update flags msg model =
             let
                 ( cm, cc, cs ) =
                     Comp.CalEventInput.update flags
-                        (Util.Result.fold identity identity model.schedule)
+                        model.schedule
                         lmsg
                         model.scheduleModel
             in
             ( { model
-                | schedule =
-                    case cs of
-                        Data.Validated.Valid e ->
-                            Ok e
-
-                        Data.Validated.Invalid _ e ->
-                            Err e
-
-                        Data.Validated.Unknown e ->
-                            Ok e
+                | schedule = cs
                 , scheduleModel = cm
                 , formState = FormStateInitial
               }
@@ -1193,7 +1189,7 @@ viewSchedule2 texts model =
             (Comp.CalEventInput.view2
                 texts.calEventInput
                 ""
-                (Util.Result.fold identity identity model.schedule)
+                model.schedule
                 model.scheduleModel
             )
         , span [ class "opacity-50 text-sm" ]

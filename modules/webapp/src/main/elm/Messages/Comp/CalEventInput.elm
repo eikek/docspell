@@ -1,5 +1,7 @@
 module Messages.Comp.CalEventInput exposing (Texts, gb)
 
+import Http
+import Messages.Comp.HttpError
 import Messages.DateFormat as DF
 import Messages.UiLanguage
 
@@ -15,6 +17,7 @@ type alias Texts =
     , schedule : String
     , next : String
     , formatDateTime : Int -> String
+    , httpError : Http.Error -> String
     }
 
 
@@ -30,4 +33,5 @@ gb =
     , schedule = "Schedule"
     , next = "Next"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , httpError = Messages.Comp.HttpError.gb
     }

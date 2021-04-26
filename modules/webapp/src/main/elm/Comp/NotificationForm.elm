@@ -9,7 +9,6 @@ module Comp.NotificationForm exposing
     )
 
 import Api
-import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.NotificationSettings exposing (NotificationSettings)
 import Api.Model.Tag exposing (Tag)
@@ -34,7 +33,6 @@ import Markdown
 import Messages.Comp.NotificationForm exposing (Texts)
 import Styles as S
 import Util.Maybe
-import Util.Result
 import Util.Tag
 import Util.Update
 
@@ -50,7 +48,7 @@ type alias Model =
     , remindDaysModel : Comp.IntField.Model
     , capOverdue : Bool
     , enabled : Bool
-    , schedule : Result CalEvent CalEvent
+    , schedule : Maybe CalEvent
     , scheduleModel : Comp.CalEventInput.Model
     , formState : FormState
     , loading : Int
@@ -134,7 +132,7 @@ initWith flags s =
         , remindDays = Just s.remindDays
         , enabled = s.enabled
         , capOverdue = s.capOverdue
-        , schedule = Ok newSchedule
+        , schedule = Just newSchedule
         , scheduleModel = sm
         , formState = FormStateInitial
         , loading = im.loading
@@ -153,10 +151,10 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         initialSchedule =
-            Ok Data.CalEvent.everyMonth
+            Data.CalEvent.everyMonth
 
-        sm =
-            Comp.CalEventInput.initDefault
+        ( sm, scmd ) =
+            Comp.CalEventInput.init flags initialSchedule
     in
     ( { settings = Api.Model.NotificationSettings.empty
       , connectionModel = Comp.Dropdown.makeSingle
@@ -168,7 +166,7 @@ init flags =
       , remindDaysModel = Comp.IntField.init (Just 1) Nothing True
       , enabled = False
       , capOverdue = False
-      , schedule = initialSchedule
+      , schedule = Just initialSchedule
       , scheduleModel = sm
       , formState = FormStateInitial
       , loading = 2
@@ -178,6 +176,7 @@ init flags =
     , Cmd.batch
         [ Api.getMailSettings flags "" ConnResp
         , Api.getTags flags "" GetTagsResp
+        , Cmd.map CalEventMsg scmd
         ]
     )
 
@@ -210,7 +209,12 @@ makeSettings model =
                 |> Maybe.withDefault (Err ValidateRemindDaysRequired)
 
         schedule_ =
-            Result.mapError (\_ -> ValidateCalEventInvalid) model.schedule
+            case model.schedule of
+                Just s ->
+                    Ok s
+
+                Nothing ->
+                    Err ValidateCalEventInvalid
 
         make smtp rec days timer =
             { prev
@@ -255,21 +259,12 @@ update flags msg model =
             let
                 ( cm, cc, cs ) =
                     Comp.CalEventInput.update flags
-                        (Util.Result.fold identity identity model.schedule)
+                        model.schedule
                         lmsg
                         model.scheduleModel
             in
             ( { model
-                | schedule =
-                    case cs of
-                        Data.Validated.Valid e ->
-                            Ok e
-
-                        Data.Validated.Invalid _ e ->
-                            Err e
-
-                        Data.Validated.Unknown e ->
-                            Ok e
+                | schedule = cs
                 , scheduleModel = cm
                 , formState = FormStateInitial
               }
@@ -707,7 +702,7 @@ view2 texts extraClasses settings model =
                 (Comp.CalEventInput.view2
                     texts.calEventInput
                     ""
-                    (Util.Result.fold identity identity model.schedule)
+                    model.schedule
                     model.scheduleModel
                 )
             , span [ class "opacity-50 text-sm" ]

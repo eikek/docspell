@@ -19,7 +19,6 @@ import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.ListType exposing (ListType)
 import Data.UiSettings exposing (UiSettings)
-import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
@@ -31,7 +30,7 @@ import Util.Tag
 
 type alias Model =
     { scheduleModel : Comp.CalEventInput.Model
-    , schedule : Validated CalEvent
+    , schedule : Maybe CalEvent
     , itemCountModel : Comp.IntField.Model
     , itemCount : Maybe Int
     , categoryListModel : Comp.Dropdown.Model String
@@ -59,7 +58,7 @@ init flags sett =
             Comp.CalEventInput.init flags newSchedule
     in
     ( { scheduleModel = cem
-      , schedule = Data.Validated.Unknown newSchedule
+      , schedule = Just newSchedule
       , itemCountModel = Comp.IntField.init (Just 0) Nothing True
       , itemCount = Just sett.itemCount
       , categoryListModel =
@@ -90,12 +89,12 @@ init flags sett =
     )
 
 
-getSettings : Model -> Validated ClassifierSetting
+getSettings : Model -> Maybe ClassifierSetting
 getSettings model =
-    Data.Validated.map
-        (\sch ->
+    Maybe.map
+        (\s ->
             { schedule =
-                Data.CalEvent.makeEvent sch
+                Data.CalEvent.makeEvent s
             , itemCount = Maybe.withDefault 0 model.itemCount
             , listType = Data.ListType.toString model.categoryListType
             , categoryList = Comp.Dropdown.getSelected model.categoryListModel
@@ -126,7 +125,7 @@ update flags msg model =
                 ( cm, cc, ce ) =
                     Comp.CalEventInput.update
                         flags
-                        (Data.Validated.value model.schedule)
+                        model.schedule
                         lmsg
                         model.scheduleModel
             in
@@ -240,7 +239,7 @@ view2 texts settings model =
                 (Comp.CalEventInput.view2
                     texts.calEventInput
                     ""
-                    (Data.Validated.value model.schedule)
+                    model.schedule
                     model.scheduleModel
                 )
             ]
