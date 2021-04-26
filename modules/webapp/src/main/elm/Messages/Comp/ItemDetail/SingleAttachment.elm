@@ -1,10 +1,12 @@
 module Messages.Comp.ItemDetail.SingleAttachment exposing (Texts, gb)
 
 import Messages.Comp.AttachmentMeta
+import Messages.Comp.ItemDetail.ConfirmModal
 
 
 type alias Texts =
     { attachmentMeta : Messages.Comp.AttachmentMeta.Texts
+    , confirmModal : Messages.Comp.ItemDetail.ConfirmModal.Texts
     , noName : String
     , openFileInNewTab : String
     , downloadFile : String
@@ -24,6 +26,7 @@ type alias Texts =
 gb : Texts
 gb =
     { attachmentMeta = Messages.Comp.AttachmentMeta.gb
+    , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.gb
     , noName = "No name"
     , openFileInNewTab = "Open file in new tab"
     , downloadFile = "Download file"

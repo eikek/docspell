@@ -1,5 +1,6 @@
 module Comp.ItemDetail.Model exposing
     ( AttachmentRename
+    , ConfirmModalValue(..)
     , MailSendResult(..)
     , Model
     , Msg(..)
@@ -76,7 +77,7 @@ type alias Model =
     , nameSaveThrottle : Throttle Msg
     , notesModel : Maybe String
     , notesField : NotesField
-    , itemModal : Maybe (Comp.ConfirmModal.Settings Msg)
+    , itemModal : Maybe ConfirmModalValue
     , itemDatePicker : DatePicker
     , itemDate : Maybe Int
     , itemProposals : ItemProposals
@@ -91,7 +92,7 @@ type alias Model =
     , attachMeta : Dict String Comp.AttachmentMeta.Model
     , attachMetaOpen : Bool
     , pdfNativeView : Maybe Bool
-    , attachModal : Maybe (Comp.ConfirmModal.Settings Msg)
+    , attachModal : Maybe ConfirmModalValue
     , addFilesOpen : Bool
     , addFilesModel : Comp.Dropzone.Model
     , selectedFiles : List File
@@ -111,6 +112,14 @@ type alias Model =
     , editMenuTabsOpen : Set String
     , viewMode : ViewMode
     }
+
+
+type ConfirmModalValue
+    = ConfirmModalReprocessItem Msg
+    | ConfirmModalReprocessFile Msg
+    | ConfirmModalDeleteItem Msg
+    | ConfirmModalDeleteFile Msg
+    | ConfirmModalDeleteAllFiles Msg
 
 
 type ViewMode
