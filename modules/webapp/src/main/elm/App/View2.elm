@@ -36,7 +36,11 @@ topNavbar : Model -> Html Msg
 topNavbar model =
     case model.flags.account of
         Just acc ->
-            topNavUser acc model
+            if acc.success then
+                topNavUser acc model
+
+            else
+                topNavAnon model
 
         Nothing ->
             topNavAnon model
