@@ -14,21 +14,38 @@ import docspell.query.ItemQuery._
 object FulltextExtract {
 
   sealed trait Result
-  sealed trait SuccessResult extends Result
+  sealed trait SuccessResult extends Result {
+    def getFulltextPart: Option[String]
+    def getExprPart: Option[Expr]
+  }
   sealed trait FailureResult extends Result
   object Result {
-    case class Success(query: Expr, fts: Option[String]) extends SuccessResult
-    case object TooMany                                  extends FailureResult
-    case object UnsupportedPosition                      extends FailureResult
+    final case class SuccessNoFulltext(query: Expr) extends SuccessResult {
+      val getExprPart     = Some(query)
+      val getFulltextPart = None
+    }
+    final case class SuccessNoExpr(fts: String) extends SuccessResult {
+      val getExprPart     = None
+      val getFulltextPart = Some(fts)
+    }
+    final case class SuccessBoth(query: Expr, fts: String) extends SuccessResult {
+      val getExprPart     = Some(query)
+      val getFulltextPart = Some(fts)
+    }
+    final case object TooMany             extends FailureResult
+    final case object UnsupportedPosition extends FailureResult
   }
 
   def findFulltext(expr: Expr): Result =
     lookForFulltext(expr)
 
+  /** Extracts the fulltext node from the given expr and returns it
+    * together with the expr without that node.
+    */
   private def lookForFulltext(expr: Expr): Result =
     expr match {
       case Expr.Fulltext(ftq) =>
-        Result.Success(ItemQuery.all.expr, ftq.some)
+        Result.SuccessNoExpr(ftq)
       case Expr.AndExpr(inner) =>
         inner.collect({ case Expr.Fulltext(fq) => fq }) match {
           case Nil =>
@@ -36,7 +53,7 @@ object FulltextExtract {
           case e :: Nil =>
             val c = foldMap(isFulltextExpr)(expr)
             if (c > 1) Result.TooMany
-            else Result.Success(expr, e.some)
+            else Result.SuccessBoth(expr, e)
           case _ =>
             Result.TooMany
         }
@@ -47,7 +64,7 @@ object FulltextExtract {
   private def checkPosition(expr: Expr, max: Int): Result = {
     val c = foldMap(isFulltextExpr)(expr)
     if (c > max) Result.UnsupportedPosition
-    else Result.Success(expr, None)
+    else Result.SuccessNoFulltext(expr)
   }
 
   private def foldMap[B: Monoid](f: Expr => B)(expr: Expr): B =

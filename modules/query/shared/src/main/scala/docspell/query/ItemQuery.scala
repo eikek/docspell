@@ -17,7 +17,6 @@ final case class ItemQuery(expr: ItemQuery.Expr, raw: Option[String]) {
 }
 
 object ItemQuery {
-  val all = ItemQuery(Expr.Exists(Attr.ItemId), Some(""))
 
   sealed trait Operator
   object Operator {

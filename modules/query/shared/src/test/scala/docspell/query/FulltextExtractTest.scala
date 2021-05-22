@@ -1,7 +1,5 @@
 package docspell.query
 
-import cats.implicits._
-
 import docspell.query.FulltextExtract.Result
 
 import munit._
@@ -16,38 +14,43 @@ class FulltextExtractTest extends FunSuite {
   def assertFts(qstr: String, expect: Result) =
     assertEquals(findFts(qstr), expect)
 
-  def assertFtsSuccess(qstr: String, expect: Option[String]) = {
+  def assertFtsSuccess(qstr: String, expect: String) = {
     val q = ItemQueryParser.parseUnsafe(qstr)
-    assertEquals(findFts(qstr), Result.Success(q.expr, expect))
+    assertEquals(findFts(qstr), Result.SuccessBoth(q.expr, expect))
+  }
+
+  def assertNoFts(qstr: String) = {
+    val q = ItemQueryParser.parseUnsafe(qstr)
+    assertEquals(findFts(qstr), Result.SuccessNoFulltext(q.expr))
   }
 
   test("find fulltext as root") {
-    assertEquals(findFts("content:what"), Result.Success(ItemQuery.all.expr, "what".some))
+    assertEquals(findFts("content:what"), Result.SuccessNoExpr("what"))
     assertEquals(
       findFts("content:\"what hello\""),
-      Result.Success(ItemQuery.all.expr, "what hello".some)
+      Result.SuccessNoExpr("what hello")
     )
     assertEquals(
       findFts("content:\"what OR hello\""),
-      Result.Success(ItemQuery.all.expr, "what OR hello".some)
+      Result.SuccessNoExpr("what OR hello")
     )
 
     assertEquals(
       findFts("(& content:\"what OR hello\" )"),
-      Result.Success(ItemQuery.all.expr, "what OR hello".some)
+      Result.SuccessNoExpr("what OR hello")
     )
   }
 
   test("find no fulltext") {
-    assertFtsSuccess("name:test", None)
+    assertNoFts("name:test")
   }
 
   test("find fulltext within and") {
-    assertFtsSuccess("content:what name:test", "what".some)
-    assertFtsSuccess("names:marc* content:what name:test", "what".some)
+    assertFtsSuccess("content:what name:test", "what")
+    assertFtsSuccess("names:marc* content:what name:test", "what")
     assertFtsSuccess(
       "names:marc* date:2021-02 content:\"what else\" name:test",
-      "what else".some
+      "what else"
     )
   }
 
@@ -59,6 +62,6 @@ class FulltextExtractTest extends FunSuite {
 
   test("wrong fulltext search position") {
     assertFts("name:test (| date:2021-02 content:yes)", Result.UnsupportedPosition)
-    assertFtsSuccess("name:test (& date:2021-02 content:yes)", "yes".some)
+    assertFtsSuccess("name:test (& date:2021-02 content:yes)", "yes")
   }
 }

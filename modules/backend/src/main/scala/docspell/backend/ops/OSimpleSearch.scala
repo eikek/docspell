@@ -1,5 +1,6 @@
 package docspell.backend.ops
 
+import cats.Applicative
 import cats.effect.Sync
 import cats.implicits._
 
@@ -10,24 +11,53 @@ import docspell.store.qb.Batch
 import docspell.store.queries.Query
 import docspell.store.queries.SearchSummary
 
+import org.log4s.getLogger
+
 /** A "porcelain" api on top of OFulltext and OItemSearch. */
 trait OSimpleSearch[F[_]] {
 
+  /** Search for items using the given query and optional fulltext
+    * search.
+    *
+    * When using fulltext search only (the query is empty), only the
+    * index is searched. It is assumed that the index doesn't contain
+    * "invalid" items. When using a query, then a condition to select
+    * only valid items is added to it.
+    */
   def search(settings: Settings)(q: Query, fulltextQuery: Option[String]): F[Items]
+
+  /** Using the same arguments as in `search`, this returns a summary
+    * and not the results.
+    */
   def searchSummary(
       useFTS: Boolean
   )(q: Query, fulltextQuery: Option[String]): F[SearchSummary]
 
-  def searchByString(
+  /** Calls `search` by parsing the given query string into a query that
+    * is then amended wtih the given `fix` query.
+    */
+  final def searchByString(
       settings: Settings
-  )(fix: Query.Fix, q: ItemQueryString): F[StringSearchResult[Items]]
-  def searchSummaryByString(
-      useFTS: Boolean
-  )(fix: Query.Fix, q: ItemQueryString): F[StringSearchResult[SearchSummary]]
+  )(fix: Query.Fix, q: ItemQueryString)(implicit
+      F: Applicative[F]
+  ): F[StringSearchResult[Items]] =
+    OSimpleSearch.applySearch[F, Items](fix, q)((iq, fts) => search(settings)(iq, fts))
 
+  /** Same as `searchByString` but returning a summary instead of the
+    * results.
+    */
+  final def searchSummaryByString(
+      useFTS: Boolean
+  )(fix: Query.Fix, q: ItemQueryString)(implicit
+      F: Applicative[F]
+  ): F[StringSearchResult[SearchSummary]] =
+    OSimpleSearch.applySearch[F, SearchSummary](fix, q)((iq, fts) =>
+      searchSummary(useFTS)(iq, fts)
+    )
 }
 
 object OSimpleSearch {
+  private[this] val logger = getLogger
 
   sealed trait StringSearchResult[+A]
   object StringSearchResult {
@@ -118,51 +148,115 @@ object OSimpleSearch {
   def apply[F[_]: Sync](fts: OFulltext[F], is: OItemSearch[F]): OSimpleSearch[F] =
     new Impl(fts, is)
 
-  final class Impl[F[_]: Sync](fts: OFulltext[F], is: OItemSearch[F])
-      extends OSimpleSearch[F] {
-    def searchByString(
-        settings: Settings
-    )(fix: Query.Fix, q: ItemQueryString): F[StringSearchResult[Items]] = {
-      val parsed: Either[StringSearchResult[Items], ItemQuery] =
-        ItemQueryParser.parse(q.query).leftMap(StringSearchResult.parseFailed)
+  /** Parses the query and calls `run` with the result, which searches items. */
+  private def applySearch[F[_]: Applicative, A](fix: Query.Fix, q: ItemQueryString)(
+      run: (Query, Option[String]) => F[A]
+  ): F[StringSearchResult[A]] = {
+    val parsed: Either[StringSearchResult[A], Option[ItemQuery]] =
+      if (q.isEmpty) Right(None)
+      else
+        ItemQueryParser
+          .parse(q.query)
+          .leftMap(StringSearchResult.parseFailed)
+          .map(_.some)
 
-      def makeQuery(iq: ItemQuery): F[StringSearchResult[Items]] =
-        iq.findFulltext match {
-          case FulltextExtract.Result.Success(expr, ftq) =>
-            search(settings)(Query(fix, Query.QueryExpr(expr.some)), ftq)
-              .map(StringSearchResult.Success.apply)
-          case other: FulltextExtract.FailureResult =>
-            StringSearchResult.fulltextMismatch[Items](other).pure[F]
-        }
-
-      parsed match {
-        case Right(iq) =>
-          makeQuery(iq)
-        case Left(err) =>
-          err.pure[F]
+    def makeQuery(itemQuery: Option[ItemQuery]): F[StringSearchResult[A]] =
+      runQuery[F, A](itemQuery) {
+        case Some(s) =>
+          run(Query(fix, Query.QueryExpr(s.getExprPart)), s.getFulltextPart)
+        case None =>
+          run(Query(fix), None)
       }
+
+    parsed match {
+      case Right(iq) =>
+        makeQuery(iq)
+      case Left(err) =>
+        err.pure[F]
+    }
+  }
+
+  /** Calls `run` with one of the success results when extracting the
+    * fulltext search node from the query.
+    */
+  private def runQuery[F[_]: Applicative, A](
+      itemQuery: Option[ItemQuery]
+  )(run: Option[FulltextExtract.SuccessResult] => F[A]): F[StringSearchResult[A]] =
+    itemQuery match {
+      case Some(iq) =>
+        iq.findFulltext match {
+          case s: FulltextExtract.SuccessResult =>
+            run(Some(s)).map(StringSearchResult.Success.apply)
+          case other: FulltextExtract.FailureResult =>
+            StringSearchResult.fulltextMismatch[A](other).pure[F]
+        }
+      case None =>
+        run(None).map(StringSearchResult.Success.apply)
     }
 
-    def searchSummaryByString(
-        useFTS: Boolean
-    )(fix: Query.Fix, q: ItemQueryString): F[StringSearchResult[SearchSummary]] = {
-      val parsed: Either[StringSearchResult[SearchSummary], ItemQuery] =
-        ItemQueryParser.parse(q.query).leftMap(StringSearchResult.parseFailed)
+  final class Impl[F[_]: Sync](fts: OFulltext[F], is: OItemSearch[F])
+      extends OSimpleSearch[F] {
 
-      def makeQuery(iq: ItemQuery): F[StringSearchResult[SearchSummary]] =
-        iq.findFulltext match {
-          case FulltextExtract.Result.Success(expr, ftq) =>
-            searchSummary(useFTS)(Query(fix, Query.QueryExpr(expr.some)), ftq)
-              .map(StringSearchResult.Success.apply)
-          case other: FulltextExtract.FailureResult =>
-            StringSearchResult.fulltextMismatch[SearchSummary](other).pure[F]
-        }
-
-      parsed match {
-        case Right(iq) =>
-          makeQuery(iq)
-        case Left(err) =>
-          err.pure[F]
+    /** Implements searching like this: it exploits the fact that teh
+      * fulltext index only contains valid items. When searching via
+      * sql the query expression selecting only valid items is added
+      * here.
+      */
+    def search(
+        settings: Settings
+    )(q: Query, fulltextQuery: Option[String]): F[Items] = {
+      // 1. fulltext only   if fulltextQuery.isDefined && q.isEmpty && useFTS
+      // 2. sql+fulltext    if fulltextQuery.isDefined && q.nonEmpty && useFTS
+      // 3. sql-only        else (if fulltextQuery.isEmpty || !useFTS)
+      val validItemQuery = q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+      fulltextQuery match {
+        case Some(ftq) if settings.useFTS =>
+          if (q.isEmpty) {
+            logger.debug(s"Using index only search: $fulltextQuery")
+            fts
+              .findIndexOnly(settings.maxNoteLen)(
+                OFulltext.FtsInput(ftq),
+                q.fix.account,
+                settings.batch
+              )
+              .map(Items.ftsItemsFull(true))
+          } else if (settings.resolveDetails) {
+            logger.debug(
+              s"Using index+sql search with tags: $validItemQuery / $fulltextQuery"
+            )
+            fts
+              .findItemsWithTags(settings.maxNoteLen)(
+                validItemQuery,
+                OFulltext.FtsInput(ftq),
+                settings.batch
+              )
+              .map(Items.ftsItemsFull(false))
+          } else {
+            logger.debug(
+              s"Using index+sql search no tags: $validItemQuery / $fulltextQuery"
+            )
+            fts
+              .findItems(settings.maxNoteLen)(
+                validItemQuery,
+                OFulltext.FtsInput(ftq),
+                settings.batch
+              )
+              .map(Items.ftsItems(false))
+          }
+        case _ =>
+          if (settings.resolveDetails) {
+            logger.debug(
+              s"Using sql only search with tags: $validItemQuery / $fulltextQuery"
+            )
+            is.findItemsWithTags(settings.maxNoteLen)(validItemQuery, settings.batch)
+              .map(Items.itemsFull)
+          } else {
+            logger.debug(
+              s"Using sql only search no tags: $validItemQuery / $fulltextQuery"
+            )
+            is.findItems(settings.maxNoteLen)(validItemQuery, settings.batch)
+              .map(Items.itemsPlain)
+          }
       }
     }
 
@@ -180,42 +274,5 @@ object OSimpleSearch {
         case _ =>
           is.findItemsSummary(q)
       }
-
-    def search(settings: Settings)(q: Query, fulltextQuery: Option[String]): F[Items] =
-      // 1. fulltext only   if fulltextQuery.isDefined && q.isEmpty && useFTS
-      // 2. sql+fulltext    if fulltextQuery.isDefined && q.nonEmpty && useFTS
-      // 3. sql-only        else (if fulltextQuery.isEmpty || !useFTS)
-      fulltextQuery match {
-        case Some(ftq) if settings.useFTS =>
-          if (q.isEmpty)
-            fts
-              .findIndexOnly(settings.maxNoteLen)(
-                OFulltext.FtsInput(ftq),
-                q.fix.account,
-                settings.batch
-              )
-              .map(Items.ftsItemsFull(true))
-          else if (settings.resolveDetails)
-            fts
-              .findItemsWithTags(settings.maxNoteLen)(
-                q,
-                OFulltext.FtsInput(ftq),
-                settings.batch
-              )
-              .map(Items.ftsItemsFull(false))
-          else
-            fts
-              .findItems(settings.maxNoteLen)(q, OFulltext.FtsInput(ftq), settings.batch)
-              .map(Items.ftsItems(false))
-
-        case _ =>
-          if (settings.resolveDetails)
-            is.findItemsWithTags(settings.maxNoteLen)(q, settings.batch)
-              .map(Items.itemsFull)
-          else
-            is.findItems(settings.maxNoteLen)(q, settings.batch)
-              .map(Items.itemsPlain)
-      }
   }
-
 }
