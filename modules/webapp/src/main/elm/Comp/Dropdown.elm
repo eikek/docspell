@@ -569,7 +569,7 @@ viewMultiple2 cfg settings model =
                 (List.map renderSelectMultiple model.selected)
             , input
                 [ type_ "text"
-                , placeholder "Search…"
+                , placeholder cfg.placeholder
                 , onInput (Filter (cfg.makeOption >> .text))
                 , value model.filterString
                 , class "inline-flex w-16 border-0 px-0 focus:ring-0 h-6"
