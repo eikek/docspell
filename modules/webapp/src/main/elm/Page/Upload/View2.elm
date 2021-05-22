@@ -38,7 +38,11 @@ viewContent texts mid _ _ model =
         [ div [ class "container mx-auto" ]
             [ div [ class "px-0 flex flex-col" ]
                 [ div [ class "py-4" ]
-                    [ renderForm texts model
+                    [ if mid == Nothing then
+                        renderForm texts model
+
+                      else
+                        span [ class "hidden" ] []
                     ]
                 , div [ class "py-0" ]
                     [ Html.map DropzoneMsg
