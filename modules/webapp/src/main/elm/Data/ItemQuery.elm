@@ -176,7 +176,7 @@ render q =
             "name" ++ attrMatch m ++ quoteStr str
 
         AllNames str ->
-            "$names:" ++ quoteStr str
+            "names:" ++ quoteStr str
 
         Contents str ->
             "content:" ++ quoteStr str

@@ -24,6 +24,9 @@ case class Query(fix: Query.Fix, cond: Query.QueryCond) {
 
 object Query {
 
+  def apply(fix: Fix): Query =
+    Query(fix, QueryExpr(None))
+
   case class Fix(
       account: AccountId,
       query: Option[ItemQuery.Expr],
@@ -32,6 +35,9 @@ object Query {
 
     def isEmpty: Boolean =
       query.isEmpty
+
+    def andQuery(expr: ItemQuery.Expr): Fix =
+      copy(query = query.map(e => ItemQuery.Expr.and(e, expr)).orElse(Some(expr)))
   }
 
   sealed trait QueryCond {
