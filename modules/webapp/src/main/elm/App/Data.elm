@@ -7,6 +7,7 @@ module App.Data exposing
     )
 
 import Api.Model.AuthResult exposing (AuthResult)
+import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
@@ -155,11 +156,12 @@ type Msg
     | SessionCheckResp (Result Http.Error AuthResult)
     | ToggleNavMenu
     | ToggleUserMenu
-    | GetUiSettings UiSettings
+    | GetUiSettings (Result Http.Error UiSettings)
     | ToggleSidebar
     | ToggleDarkMode
     | ToggleLangMenu
     | SetLanguage UiLanguage
+    | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
 
 
 defaultPage : Flags -> Page

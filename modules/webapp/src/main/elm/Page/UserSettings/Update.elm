@@ -11,7 +11,7 @@ import Data.UiSettings exposing (UiSettings)
 import Page.UserSettings.Data exposing (..)
 
 
-update : Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update : Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Maybe UiSettings )
 update flags settings msg model =
     case msg of
         SetTab t ->
@@ -25,17 +25,23 @@ update flags settings msg model =
                         ( em, c ) =
                             Comp.EmailSettingsManage.init flags
                     in
-                    ( { m | emailSettingsModel = em }, Cmd.map EmailSettingsMsg c, Sub.none )
+                    ( { m | emailSettingsModel = em }
+                    , Cmd.map EmailSettingsMsg c
+                    , Nothing
+                    )
 
                 ImapSettingsTab ->
                     let
                         ( em, c ) =
                             Comp.ImapSettingsManage.init flags
                     in
-                    ( { m | imapSettingsModel = em }, Cmd.map ImapSettingsMsg c, Sub.none )
+                    ( { m | imapSettingsModel = em }
+                    , Cmd.map ImapSettingsMsg c
+                    , Nothing
+                    )
 
                 ChangePassTab ->
-                    ( m, Cmd.none, Sub.none )
+                    ( m, Cmd.none, Nothing )
 
                 NotificationTab ->
                     let
@@ -43,7 +49,7 @@ update flags settings msg model =
                             Cmd.map NotificationMsg
                                 (Tuple.second (Comp.NotificationManage.init flags))
                     in
-                    ( m, initCmd, Sub.none )
+                    ( m, initCmd, Nothing )
 
                 ScanMailboxTab ->
                     let
@@ -51,31 +57,40 @@ update flags settings msg model =
                             Cmd.map ScanMailboxMsg
                                 (Tuple.second (Comp.ScanMailboxManage.init flags))
                     in
-                    ( m, initCmd, Sub.none )
+                    ( m, initCmd, Nothing )
 
                 UiSettingsTab ->
-                    ( m, Cmd.none, Sub.none )
+                    ( m, Cmd.none, Nothing )
 
         ChangePassMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.ChangePasswordForm.update flags m model.changePassModel
             in
-            ( { model | changePassModel = m2 }, Cmd.map ChangePassMsg c2, Sub.none )
+            ( { model | changePassModel = m2 }
+            , Cmd.map ChangePassMsg c2
+            , Nothing
+            )
 
         EmailSettingsMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.EmailSettingsManage.update flags m model.emailSettingsModel
             in
-            ( { model | emailSettingsModel = m2 }, Cmd.map EmailSettingsMsg c2, Sub.none )
+            ( { model | emailSettingsModel = m2 }
+            , Cmd.map EmailSettingsMsg c2
+            , Nothing
+            )
 
         ImapSettingsMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.ImapSettingsManage.update flags m model.imapSettingsModel
             in
-            ( { model | imapSettingsModel = m2 }, Cmd.map ImapSettingsMsg c2, Sub.none )
+            ( { model | imapSettingsModel = m2 }
+            , Cmd.map ImapSettingsMsg c2
+            , Nothing
+            )
 
         NotificationMsg lm ->
             let
@@ -84,7 +99,7 @@ update flags settings msg model =
             in
             ( { model | notificationModel = m2 }
             , Cmd.map NotificationMsg c2
-            , Sub.none
+            , Nothing
             )
 
         ScanMailboxMsg lm ->
@@ -94,17 +109,17 @@ update flags settings msg model =
             in
             ( { model | scanMailboxModel = m2 }
             , Cmd.map ScanMailboxMsg c2
-            , Sub.none
+            , Nothing
             )
 
         UiSettingsMsg lm ->
             let
-                ( m2, c2, s2 ) =
+                res =
                     Comp.UiSettingsManage.update flags settings lm model.uiSettingsModel
             in
-            ( { model | uiSettingsModel = m2 }
-            , Cmd.map UiSettingsMsg c2
-            , Sub.map UiSettingsMsg s2
+            ( { model | uiSettingsModel = res.model }
+            , Cmd.map UiSettingsMsg res.cmd
+            , res.newSettings
             )
 
         UpdateSettings ->

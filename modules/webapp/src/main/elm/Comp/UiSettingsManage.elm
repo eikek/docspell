@@ -1,6 +1,7 @@
 module Comp.UiSettingsManage exposing
     ( Model
     , Msg(..)
+    , UpdateResult
     , init
     , update
     , view2
@@ -14,10 +15,8 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Http
 import Messages.Comp.UiSettingsManage exposing (Texts)
-import Ports
 import Styles as S
 
 
@@ -31,9 +30,8 @@ type alias Model =
 type Msg
     = UiSettingsFormMsg Comp.UiSettingsForm.Msg
     | Submit
-    | SettingsSaved
     | UpdateSettings
-    | SaveSettingsResp (Result Http.Error BasicResult)
+    | SaveSettingsResp UiSettings (Result Http.Error BasicResult)
 
 
 init : Flags -> UiSettings -> ( Model, Cmd Msg )
@@ -54,7 +52,14 @@ init flags settings =
 --- update
 
 
-update : Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+type alias UpdateResult =
+    { model : Model
+    , cmd : Cmd Msg
+    , newSettings : Maybe UiSettings
+    }
+
+
+update : Flags -> UiSettings -> Msg -> Model -> UpdateResult
 update flags settings msg model =
     case msg of
         UiSettingsFormMsg lm ->
@@ -65,60 +70,58 @@ update flags settings msg model =
                 ( m_, sett ) =
                     Comp.UiSettingsForm.update inSettings lm model.formModel
             in
-            ( { model
-                | formModel = m_
-                , settings =
-                    if sett == Nothing then
-                        model.settings
+            { model =
+                { model
+                    | formModel = m_
+                    , settings =
+                        if sett == Nothing then
+                            model.settings
 
-                    else
-                        sett
-                , message =
-                    if sett /= Nothing then
-                        Nothing
+                        else
+                            sett
+                    , message =
+                        if sett /= Nothing then
+                            Nothing
 
-                    else
-                        model.message
-              }
-            , Cmd.none
-            , Sub.none
-            )
+                        else
+                            model.message
+                }
+            , cmd = Cmd.none
+            , newSettings = Nothing
+            }
 
         Submit ->
             case model.settings of
                 Just s ->
-                    ( { model | message = Nothing }
-                    , Api.saveClientSettings flags s SaveSettingsResp
-                    , Ports.onUiSettingsSaved SettingsSaved
-                    )
+                    { model = { model | message = Nothing }
+                    , cmd = Api.saveClientSettings flags s (SaveSettingsResp s)
+                    , newSettings = Nothing
+                    }
 
                 Nothing ->
-                    ( { model | message = Just (BasicResult False "Settings unchanged or invalid.") }
-                    , Cmd.none
-                    , Sub.none
-                    )
+                    { model = { model | message = Just (BasicResult False "Settings unchanged or invalid.") }
+                    , cmd = Cmd.none
+                    , newSettings = Nothing
+                    }
 
-        SettingsSaved ->
-            ( { model | message = Just (BasicResult True "Settings saved.") }
-            , Cmd.none
-            , Sub.none
-            )
+        SaveSettingsResp newSettings (Ok res) ->
+            { model = { model | message = Just res }
+            , cmd = Cmd.none
+            , newSettings = Just newSettings
+            }
 
-        SaveSettingsResp (Ok res) ->
-            ( { model | message = Just res }, Cmd.none, Sub.none )
-
-        SaveSettingsResp (Err err) ->
-            ( model, Cmd.none, Sub.none )
+        SaveSettingsResp _ (Err err) ->
+            UpdateResult model Cmd.none Nothing
 
         UpdateSettings ->
             let
                 ( fm, fc ) =
                     Comp.UiSettingsForm.init flags settings
             in
-            ( { model | formModel = fm }
-            , Cmd.map UiSettingsFormMsg fc
-            , Sub.none
-            )
+            { model = { model | formModel = fm }
+            , cmd = Cmd.map UiSettingsFormMsg fc
+            , newSettings = Nothing
+            }
 
 
 
