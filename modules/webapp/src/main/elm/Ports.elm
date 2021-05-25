@@ -12,7 +12,6 @@ port module Ports exposing
     )
 
 import Api.Model.AuthResult exposing (AuthResult)
-import Api.Model.BasicResult exposing (BasicResult)
 import Data.Flags exposing (Flags)
 import Data.QueryParseResult exposing (QueryParseResult)
 import Data.UiSettings exposing (StoredUiSettings, UiSettings)

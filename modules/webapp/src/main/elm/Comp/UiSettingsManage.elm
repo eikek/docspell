@@ -6,6 +6,7 @@ module Comp.UiSettingsManage exposing
     , view2
     )
 
+import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Comp.MenuBar as MB
 import Comp.UiSettingsForm
@@ -14,6 +15,7 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Http
 import Messages.Comp.UiSettingsManage exposing (Texts)
 import Ports
 import Styles as S
@@ -31,6 +33,7 @@ type Msg
     | Submit
     | SettingsSaved
     | UpdateSettings
+    | SaveSettingsResp (Result Http.Error BasicResult)
 
 
 init : Flags -> UiSettings -> ( Model, Cmd Msg )
@@ -85,7 +88,7 @@ update flags settings msg model =
             case model.settings of
                 Just s ->
                     ( { model | message = Nothing }
-                    , Ports.storeUiSettings flags s
+                    , Api.saveClientSettings flags s SaveSettingsResp
                     , Ports.onUiSettingsSaved SettingsSaved
                     )
 
@@ -100,6 +103,12 @@ update flags settings msg model =
             , Cmd.none
             , Sub.none
             )
+
+        SaveSettingsResp (Ok res) ->
+            ( { model | message = Just res }, Cmd.none, Sub.none )
+
+        SaveSettingsResp (Err err) ->
+            ( model, Cmd.none, Sub.none )
 
         UpdateSettings ->
             let
