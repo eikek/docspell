@@ -23,8 +23,16 @@ import Styles as S
 type alias Model =
     { formModel : Comp.UiSettingsForm.Model
     , settings : Maybe UiSettings
-    , message : Maybe BasicResult
+    , formResult : FormResult
     }
+
+
+type FormResult
+    = FormInit
+    | FormUnchanged
+    | FormSaved
+    | FormHttpError Http.Error
+    | FormUnknownError
 
 
 type Msg
@@ -42,7 +50,7 @@ init flags settings =
     in
     ( { formModel = fm
       , settings = Nothing
-      , message = Nothing
+      , formResult = FormInit
       }
     , Cmd.map UiSettingsFormMsg fc
     )
@@ -79,12 +87,12 @@ update flags settings msg model =
 
                         else
                             sett
-                    , message =
+                    , formResult =
                         if sett /= Nothing then
-                            Nothing
+                            FormInit
 
                         else
-                            model.message
+                            model.formResult
                 }
             , cmd = Cmd.none
             , newSettings = Nothing
@@ -93,25 +101,32 @@ update flags settings msg model =
         Submit ->
             case model.settings of
                 Just s ->
-                    { model = { model | message = Nothing }
+                    { model = { model | formResult = FormInit }
                     , cmd = Api.saveClientSettings flags s (SaveSettingsResp s)
                     , newSettings = Nothing
                     }
 
                 Nothing ->
-                    { model = { model | message = Just (BasicResult False "Settings unchanged or invalid.") }
+                    { model = { model | formResult = FormUnchanged }
                     , cmd = Cmd.none
                     , newSettings = Nothing
                     }
 
         SaveSettingsResp newSettings (Ok res) ->
-            { model = { model | message = Just res }
-            , cmd = Cmd.none
-            , newSettings = Just newSettings
-            }
+            if res.success then
+                { model = { model | formResult = FormSaved }
+                , cmd = Cmd.none
+                , newSettings = Just newSettings
+                }
+
+            else
+                { model = { model | formResult = FormUnknownError }
+                , cmd = Cmd.none
+                , newSettings = Nothing
+                }
 
         SaveSettingsResp _ (Err err) ->
-            UpdateResult model Cmd.none Nothing
+            UpdateResult { model | formResult = FormHttpError err } Cmd.none Nothing
 
         UpdateSettings ->
             let
@@ -130,12 +145,26 @@ update flags settings msg model =
 
 isError : Model -> Bool
 isError model =
-    Maybe.map .success model.message == Just False
+    case model.formResult of
+        FormSaved ->
+            False
+
+        FormInit ->
+            False
+
+        FormUnchanged ->
+            True
+
+        FormHttpError _ ->
+            True
+
+        FormUnknownError ->
+            True
 
 
 isSuccess : Model -> Bool
 isSuccess model =
-    Maybe.map .success model.message == Just True
+    not (isError model)
 
 
 view2 : Texts -> Flags -> UiSettings -> String -> Model -> Html Msg
@@ -157,12 +186,24 @@ view2 texts flags settings classes model =
             [ classList
                 [ ( S.successMessage, isSuccess model )
                 , ( S.errorMessage, isError model )
-                , ( "hidden", model.message == Nothing )
+                , ( "hidden", model.formResult == FormInit )
                 ]
             ]
-            [ Maybe.map .message model.message
-                |> Maybe.withDefault ""
-                |> text
+            [ case model.formResult of
+                FormInit ->
+                    text ""
+
+                FormUnchanged ->
+                    text texts.settingsUnchanged
+
+                FormHttpError err ->
+                    text (texts.httpError err)
+
+                FormSaved ->
+                    text texts.settingsSaved
+
+                FormUnknownError ->
+                    text texts.unknownSaveError
             ]
         , Html.map UiSettingsFormMsg
             (Comp.UiSettingsForm.view2
