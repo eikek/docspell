@@ -10,7 +10,7 @@ object Dependencies {
   val BitpeaceVersion         = "0.8.0"
   val CalevVersion            = "0.4.3"
   val CatsParseVersion        = "0.3.4"
-  val CirceVersion            = "0.14.0"
+  val CirceVersion            = "0.14.1"
   val ClipboardJsVersion      = "2.0.6"
   val DoobieVersion           = "0.13.4"
   val EmilVersion             = "0.9.2"
