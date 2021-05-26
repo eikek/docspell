@@ -85,4 +85,5 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ model.subs
+        , Ports.receiveUiSettings ReceiveBrowserSettings
         ]

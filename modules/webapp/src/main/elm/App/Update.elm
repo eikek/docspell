@@ -275,6 +275,13 @@ updateWithSub msg model =
         GetUiSettings (Err _) ->
             ( model, Cmd.none, Sub.none )
 
+        ReceiveBrowserSettings sett ->
+            let
+                lm =
+                    Page.UserSettings.Data.ReceiveBrowserSettings sett
+            in
+            updateUserSettings lm model
+
 
 applyClientSettings : Model -> UiSettings -> ( Model, Cmd Msg, Sub Msg )
 applyClientSettings model settings =
@@ -379,14 +386,14 @@ updateQueue lmsg model =
 updateUserSettings : Page.UserSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateUserSettings lmsg model =
     let
-        ( lm, lc, newClientSettings ) =
+        result =
             Page.UserSettings.Update.update model.flags model.uiSettings lmsg model.userSettingsModel
 
         model_ =
-            { model | userSettingsModel = lm }
+            { model | userSettingsModel = result.model }
 
         ( lm2, lc2, s2 ) =
-            case newClientSettings of
+            case result.newSettings of
                 Just sett ->
                     applyClientSettings model_ sett
 
@@ -395,10 +402,13 @@ updateUserSettings lmsg model =
     in
     ( lm2
     , Cmd.batch
-        [ Cmd.map UserSettingsMsg lc
+        [ Cmd.map UserSettingsMsg result.cmd
         , lc2
         ]
-    , s2
+    , Sub.batch
+        [ Sub.map UserSettingsMsg result.sub
+        , s2
+        ]
     )
 
 

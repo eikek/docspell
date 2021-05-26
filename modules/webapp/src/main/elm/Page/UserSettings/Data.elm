@@ -12,7 +12,7 @@ import Comp.NotificationManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
-import Data.UiSettings exposing (UiSettings)
+import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 
 
 type alias Model =
@@ -62,3 +62,4 @@ type Msg
     | ScanMailboxMsg Comp.ScanMailboxManage.Msg
     | UiSettingsMsg Comp.UiSettingsManage.Msg
     | UpdateSettings
+    | ReceiveBrowserSettings StoredUiSettings
