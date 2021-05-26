@@ -179,7 +179,7 @@ object Dependencies {
     "org.apache.tika" % "tika-core" % TikaVersion
   )
   val commonsIO = Seq(
-    "commons-io" % "commons-io" % "2.8.0"
+    "commons-io" % "commons-io" % "2.9.0"
   )
   val tikaParser = Seq(
     "org.apache.tika" % "tika-parsers" % TikaVersion
