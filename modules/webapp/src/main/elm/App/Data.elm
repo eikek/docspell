@@ -7,11 +7,12 @@ module App.Data exposing
     )
 
 import Api.Model.AuthResult exposing (AuthResult)
+import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
-import Data.UiSettings exposing (UiSettings)
+import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import Data.UiTheme exposing (UiTheme)
 import Http
 import Messages.UiLanguage exposing (UiLanguage)
@@ -155,11 +156,13 @@ type Msg
     | SessionCheckResp (Result Http.Error AuthResult)
     | ToggleNavMenu
     | ToggleUserMenu
-    | GetUiSettings UiSettings
+    | GetUiSettings (Result Http.Error UiSettings)
     | ToggleSidebar
     | ToggleDarkMode
     | ToggleLangMenu
     | SetLanguage UiLanguage
+    | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
+    | ReceiveBrowserSettings StoredUiSettings
 
 
 defaultPage : Flags -> Page

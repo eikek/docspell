@@ -8,6 +8,7 @@ import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
 import Data.Flags
+import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
@@ -65,11 +66,11 @@ updateWithSub msg model =
                             { settings | uiTheme = next }
                     in
                     -- when authenticated, store it in settings only
-                    -- once new settings arrive via a subscription,
-                    -- the ui is updated. so it is also updated on
-                    -- page refresh
+                    -- once new settings are successfully saved (the
+                    -- response is arrived), the ui is updated. so it
+                    -- is also updated on page refresh
                     ( { model | userMenuOpen = False }
-                    , Ports.storeUiSettings model.flags newSettings
+                    , Api.saveClientSettings model.flags newSettings (ClientSettingsSaveResp newSettings)
                     , Sub.none
                     )
 
@@ -83,6 +84,16 @@ updateWithSub msg model =
                     , Ports.setUiTheme next
                     , Sub.none
                     )
+
+        ClientSettingsSaveResp settings (Ok res) ->
+            if res.success then
+                applyClientSettings model settings
+
+            else
+                ( model, Cmd.none, Sub.none )
+
+        ClientSettingsSaveResp _ (Err _) ->
+            ( model, Cmd.none, Sub.none )
 
         ToggleLangMenu ->
             ( { model | langMenuOpen = not model.langMenuOpen }
@@ -258,22 +269,37 @@ updateWithSub msg model =
             , Sub.none
             )
 
-        GetUiSettings settings ->
+        GetUiSettings (Ok settings) ->
+            applyClientSettings model settings
+
+        GetUiSettings (Err _) ->
+            ( model, Cmd.none, Sub.none )
+
+        ReceiveBrowserSettings sett ->
             let
-                setTheme =
-                    Ports.setUiTheme settings.uiTheme
+                lm =
+                    Page.UserSettings.Data.ReceiveBrowserSettings sett
             in
-            Util.Update.andThen2
-                [ \m ->
-                    ( { m | sidebarVisible = settings.sideMenuVisible }
-                    , setTheme
-                    , Sub.none
-                    )
-                , updateUserSettings Page.UserSettings.Data.UpdateSettings
-                , updateHome Page.Home.Data.UiSettingsUpdated
-                , updateItemDetail Page.ItemDetail.Data.UiSettingsUpdated
-                ]
-                { model | uiSettings = settings }
+            updateUserSettings lm model
+
+
+applyClientSettings : Model -> UiSettings -> ( Model, Cmd Msg, Sub Msg )
+applyClientSettings model settings =
+    let
+        setTheme =
+            Ports.setUiTheme settings.uiTheme
+    in
+    Util.Update.andThen2
+        [ \m ->
+            ( { m | sidebarVisible = settings.sideMenuVisible }
+            , setTheme
+            , Sub.none
+            )
+        , updateUserSettings Page.UserSettings.Data.UpdateSettings
+        , updateHome Page.Home.Data.UiSettingsUpdated
+        , updateItemDetail Page.ItemDetail.Data.UiSettingsUpdated
+        ]
+        { model | uiSettings = settings }
 
 
 updateItemDetail : Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -360,14 +386,29 @@ updateQueue lmsg model =
 updateUserSettings : Page.UserSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateUserSettings lmsg model =
     let
-        ( lm, lc, ls ) =
+        result =
             Page.UserSettings.Update.update model.flags model.uiSettings lmsg model.userSettingsModel
+
+        model_ =
+            { model | userSettingsModel = result.model }
+
+        ( lm2, lc2, s2 ) =
+            case result.newSettings of
+                Just sett ->
+                    applyClientSettings model_ sett
+
+                Nothing ->
+                    ( model_, Cmd.none, Sub.none )
     in
-    ( { model
-        | userSettingsModel = lm
-      }
-    , Cmd.map UserSettingsMsg lc
-    , Sub.map UserSettingsMsg ls
+    ( lm2
+    , Cmd.batch
+        [ Cmd.map UserSettingsMsg result.cmd
+        , lc2
+        ]
+    , Sub.batch
+        [ Sub.map UserSettingsMsg result.sub
+        , s2
+        ]
     )
 
 
@@ -415,14 +456,29 @@ updateHome lmsg model =
                 _ ->
                     Nothing
 
-        ( lm, lc, ls ) =
+        result =
             Page.Home.Update.update mid model.key model.flags model.uiSettings lmsg model.homeModel
+
+        model_ =
+            { model | homeModel = result.model }
+
+        ( lm, lc, ls ) =
+            case result.newSettings of
+                Just sett ->
+                    applyClientSettings model_ sett
+
+                Nothing ->
+                    ( model_, Cmd.none, Sub.none )
     in
-    ( { model
-        | homeModel = lm
-      }
-    , Cmd.map HomeMsg lc
-    , Sub.map HomeMsg ls
+    ( lm
+    , Cmd.batch
+        [ Cmd.map HomeMsg result.cmd
+        , lc
+        ]
+    , Sub.batch
+        [ Sub.map HomeMsg result.sub
+        , ls
+        ]
     )
 
 

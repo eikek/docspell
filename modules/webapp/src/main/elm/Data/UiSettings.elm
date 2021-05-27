@@ -15,6 +15,8 @@ module Data.UiSettings exposing
     , mergeDefaults
     , posFromString
     , posToString
+    , storedUiSettingsDecoder
+    , storedUiSettingsEncode
     , tagColor
     , tagColorFg2
     , tagColorString2
@@ -30,6 +32,9 @@ import Data.UiTheme exposing (UiTheme)
 import Dict exposing (Dict)
 import Html exposing (Attribute)
 import Html.Attributes as HA
+import Json.Decode as Decode
+import Json.Decode.Pipeline as P
+import Json.Encode as Encode
 import Messages
 import Messages.UiLanguage exposing (UiLanguage)
 
@@ -65,6 +70,70 @@ type alias StoredUiSettings =
     , powerSearchEnabled : Bool
     , uiLang : Maybe String
     }
+
+
+storedUiSettingsDecoder : Decode.Decoder StoredUiSettings
+storedUiSettingsDecoder =
+    let
+        maybeInt =
+            Decode.maybe Decode.int
+
+        maybeString =
+            Decode.maybe Decode.string
+    in
+    Decode.succeed StoredUiSettings
+        |> P.optional "itemSearchPageSize" maybeInt Nothing
+        |> P.optional "tagCategoryColors" (Decode.keyValuePairs Decode.string) []
+        |> P.optional "nativePdfPreview" Decode.bool False
+        |> P.optional "itemSearchNoteLength" maybeInt Nothing
+        |> P.optional "itemDetailNotesPosition" maybeString Nothing
+        |> P.optional "searchMenuFolderCount" maybeInt Nothing
+        |> P.optional "searchMenuTagCount" maybeInt Nothing
+        |> P.optional "searchMenuTagCatCount" maybeInt Nothing
+        |> P.optional "formFields" (Decode.maybe <| Decode.list Decode.string) Nothing
+        |> P.optional "itemDetailShortcuts" Decode.bool False
+        |> P.optional "searchMenuVisible" Decode.bool False
+        |> P.optional "editMenuVisible" Decode.bool False
+        |> P.optional "cardPreviewSize" maybeString Nothing
+        |> P.optional "cardTitleTemplate" maybeString Nothing
+        |> P.optional "cardSubtitleTemplate" maybeString Nothing
+        |> P.optional "searchStatsVisible" Decode.bool False
+        |> P.optional "cardPreviewFullWidth" Decode.bool False
+        |> P.optional "uiTheme" maybeString Nothing
+        |> P.optional "sideMenuVisible" Decode.bool False
+        |> P.optional "powerSearchEnabled" Decode.bool False
+        |> P.optional "uiLang" maybeString Nothing
+
+
+storedUiSettingsEncode : StoredUiSettings -> Encode.Value
+storedUiSettingsEncode value =
+    let
+        maybeEnc enca ma =
+            Maybe.map enca ma |> Maybe.withDefault Encode.null
+    in
+    Encode.object
+        [ ( "itemSearchPageSize", maybeEnc Encode.int value.itemSearchPageSize )
+        , ( "tagCategoryColors", Encode.dict identity Encode.string (Dict.fromList value.tagCategoryColors) )
+        , ( "nativePdfPreview", Encode.bool value.nativePdfPreview )
+        , ( "itemSearchNoteLength", maybeEnc Encode.int value.itemSearchNoteLength )
+        , ( "itemDetailNotesPosition", maybeEnc Encode.string value.itemDetailNotesPosition )
+        , ( "searchMenuFolderCount", maybeEnc Encode.int value.searchMenuFolderCount )
+        , ( "searchMenuTagCount", maybeEnc Encode.int value.searchMenuTagCount )
+        , ( "searchMenuTagCatCount", maybeEnc Encode.int value.searchMenuTagCatCount )
+        , ( "formFields", maybeEnc (Encode.list Encode.string) value.formFields )
+        , ( "itemDetailShortcuts", Encode.bool value.itemDetailShortcuts )
+        , ( "searchMenuVisible", Encode.bool value.searchMenuVisible )
+        , ( "editMenuVisible", Encode.bool value.editMenuVisible )
+        , ( "cardPreviewSize", maybeEnc Encode.string value.cardPreviewSize )
+        , ( "cardTitleTemplate", maybeEnc Encode.string value.cardTitleTemplate )
+        , ( "cardSubtitleTemplate", maybeEnc Encode.string value.cardSubtitleTemplate )
+        , ( "searchStatsVisible", Encode.bool value.searchStatsVisible )
+        , ( "cardPreviewFullWidth", Encode.bool value.cardPreviewFullWidth )
+        , ( "uiTheme", maybeEnc Encode.string value.uiTheme )
+        , ( "sideMenuVisible", Encode.bool value.sideMenuVisible )
+        , ( "powerSearchEnabled", Encode.bool value.powerSearchEnabled )
+        , ( "uiLang", maybeEnc Encode.string value.uiLang )
+        ]
 
 
 {-| Settings for the web ui. These fields are all mandatory, since

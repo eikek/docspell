@@ -91,7 +91,8 @@ object RestServer {
       "calevent/check"          -> CalEventCheckRoutes(),
       "fts"                     -> FullTextIndexRoutes.secured(cfg, restApp.backend, token),
       "folder"                  -> FolderRoutes(restApp.backend, token),
-      "customfield"             -> CustomFieldRoutes(restApp.backend, token)
+      "customfield"             -> CustomFieldRoutes(restApp.backend, token),
+      "clientSettings"          -> ClientSettingsRoutes(restApp.backend, token)
     )
 
   def openRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =

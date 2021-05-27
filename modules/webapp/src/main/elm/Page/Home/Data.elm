@@ -193,6 +193,7 @@ type Msg
     | KeyUpPowerSearchbarMsg (Maybe KeyCode)
     | RequestReprocessSelected
     | ReprocessSelectedConfirmed
+    | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
 
 
 type SearchType

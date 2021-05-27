@@ -55,7 +55,7 @@ init flags url key =
 
           else
             Cmd.none
-        , Ports.getUiSettings flags
+        , Api.getClientSettings flags GetUiSettings
         ]
     )
 
@@ -85,5 +85,5 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ model.subs
-        , Ports.loadUiSettings GetUiSettings
+        , Ports.receiveUiSettings ReceiveBrowserSettings
         ]

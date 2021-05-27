@@ -37,6 +37,7 @@ module Api exposing
     , deleteUser
     , fileURL
     , getAttachmentMeta
+    , getClientSettings
     , getCollective
     , getCollectiveSettings
     , getContacts
@@ -51,7 +52,6 @@ module Api exposing
     , getJobQueueState
     , getJobQueueStateIn
     , getMailSettings
-    , getNewUi
     , getNotifyDueItems
     , getOrgFull
     , getOrgLight
@@ -92,6 +92,7 @@ module Api exposing
     , removeTagsMultiple
     , reprocessItem
     , reprocessMultiple
+    , saveClientSettings
     , sendMail
     , setAttachmentName
     , setCollectiveSettings
@@ -124,7 +125,6 @@ module Api exposing
     , startOnceScanMailbox
     , startReIndex
     , submitNotifyDueItems
-    , toggleNewUi
     , toggleTags
     , unconfirmMultiple
     , updateNotifyDueItems
@@ -206,8 +206,10 @@ import Api.Model.VersionInfo exposing (VersionInfo)
 import Data.ContactType exposing (ContactType)
 import Data.Flags exposing (Flags)
 import Data.Priority exposing (Priority)
+import Data.UiSettings exposing (UiSettings)
 import File exposing (File)
 import Http
+import Json.Decode as JsonDecode
 import Json.Encode as JsonEncode
 import Set exposing (Set)
 import Task
@@ -1982,21 +1984,40 @@ getItemProposals flags item receive =
         }
 
 
-toggleNewUi : Flags -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-toggleNewUi flags receive =
-    Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/newui"
+
+--- Client Settings
+
+
+getClientSettings : Flags -> (Result Http.Error UiSettings -> msg) -> Cmd msg
+getClientSettings flags receive =
+    let
+        defaults =
+            Data.UiSettings.defaults
+
+        decoder =
+            JsonDecode.map (\s -> Data.UiSettings.merge s defaults)
+                Data.UiSettings.storedUiSettingsDecoder
+    in
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/webClient"
         , account = getAccount flags
-        , body = Http.emptyBody
-        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        , expect = Http.expectJson receive decoder
         }
 
 
-getNewUi : Flags -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-getNewUi flags receive =
-    Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/newui"
+saveClientSettings : Flags -> UiSettings -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+saveClientSettings flags settings receive =
+    let
+        storedSettings =
+            Data.UiSettings.toStoredUiSettings settings
+
+        encode =
+            Data.UiSettings.storedUiSettingsEncode storedSettings
+    in
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/webClient"
         , account = getAccount flags
+        , body = Http.jsonBody encode
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

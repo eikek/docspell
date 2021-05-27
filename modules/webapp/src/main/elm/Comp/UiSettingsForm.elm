@@ -463,9 +463,13 @@ update sett msg model =
 tagColorViewOpts2 : Texts -> Comp.ColorTagger.ViewOpts
 tagColorViewOpts2 texts =
     { renderItem =
-        \( _, v ) ->
-            span [ class (" label " ++ Data.Color.toString2 v) ]
-                [ text (texts.colorLabel v) ]
+        \( name, v ) ->
+            span [ class "flex inline-flex items-center" ]
+                [ span [ class "mr-2" ] [ text name ]
+                , span [ class (" label " ++ Data.Color.toString2 v) ]
+                    [ text (texts.colorLabel v)
+                    ]
+                ]
     , colorLabel = texts.colorLabel
     , label = texts.chooseTagColorLabel
     , description = Just texts.tagColorDescription

@@ -38,6 +38,7 @@ trait BackendApp[F[_]] {
   def folder: OFolder[F]
   def customFields: OCustomFields[F]
   def simpleSearch: OSimpleSearch[F]
+  def clientSettings: OClientSettings[F]
 }
 
 object BackendApp {
@@ -73,26 +74,28 @@ object BackendApp {
       folderImpl       <- OFolder(store)
       customFieldsImpl <- OCustomFields(store)
       simpleSearchImpl = OSimpleSearch(fulltextImpl, itemSearchImpl)
+      clientSettingsImpl <- OClientSettings(store)
     } yield new BackendApp[F] {
-      val login        = loginImpl
-      val signup       = signupImpl
-      val collective   = collImpl
-      val source       = sourceImpl
-      val tag          = tagImpl
-      val equipment    = equipImpl
-      val organization = orgImpl
-      val upload       = uploadImpl
-      val node         = nodeImpl
-      val job          = jobImpl
-      val item         = itemImpl
-      val itemSearch   = itemSearchImpl
-      val fulltext     = fulltextImpl
-      val mail         = mailImpl
-      val joex         = joexImpl
-      val userTask     = userTaskImpl
-      val folder       = folderImpl
-      val customFields = customFieldsImpl
-      val simpleSearch = simpleSearchImpl
+      val login          = loginImpl
+      val signup         = signupImpl
+      val collective     = collImpl
+      val source         = sourceImpl
+      val tag            = tagImpl
+      val equipment      = equipImpl
+      val organization   = orgImpl
+      val upload         = uploadImpl
+      val node           = nodeImpl
+      val job            = jobImpl
+      val item           = itemImpl
+      val itemSearch     = itemSearchImpl
+      val fulltext       = fulltextImpl
+      val mail           = mailImpl
+      val joex           = joexImpl
+      val userTask       = userTaskImpl
+      val folder         = folderImpl
+      val customFields   = customFieldsImpl
+      val simpleSearch   = simpleSearchImpl
+      val clientSettings = clientSettingsImpl
     }
 
   def apply[F[_]: ConcurrentEffect: ContextShift](
