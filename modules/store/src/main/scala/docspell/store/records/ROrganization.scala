@@ -158,13 +158,14 @@ object ROrganization {
       coll: Ident,
       nameQ: Option[String],
       order: Table => Column[_]
-  ): ConnectionIO[Vector[IdRef]] = {
+  ): ConnectionIO[Vector[IdRefAbbrev]] = {
     val nameFilter = nameQ.map(s =>
       T.name.like(s"%${s.toLowerCase}%") || T.shortName.like(s"%${s.toLowerCase}%")
     )
-    val sql = Select(select(T.oid, T.name), from(T), T.cid === coll &&? nameFilter)
-      .orderBy(order(T))
-    sql.build.query[IdRef].to[Vector]
+    val sql =
+      Select(select(T.oid, T.name, T.shortName), from(T), T.cid === coll &&? nameFilter)
+        .orderBy(order(T))
+    sql.build.query[IdRefAbbrev].to[Vector]
   }
 
   def delete(id: Ident, coll: Ident): ConnectionIO[Int] =

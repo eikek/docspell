@@ -14,6 +14,8 @@ import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
+import Api.Model.OrgReferenceList exposing (OrgReferenceList)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
@@ -79,7 +81,7 @@ type alias Model =
     , itemDate : Maybe Int
     , dueDate : Maybe Int
     , dueDatePicker : DatePicker
-    , corrOrgModel : Comp.Dropdown.Model IdName
+    , corrOrgModel : Comp.Dropdown.Model IdNameAbbrev
     , corrPersonModel : Comp.Dropdown.Model IdName
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipModel : Comp.Dropdown.Model IdName
@@ -103,12 +105,12 @@ type Msg
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | DirDropdownMsg (Comp.Dropdown.Msg Direction)
-    | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
+    | OrgDropdownMsg (Comp.Dropdown.Msg IdNameAbbrev)
     | CorrPersonMsg (Comp.Dropdown.Msg IdName)
     | ConcPersonMsg (Comp.Dropdown.Msg IdName)
     | ConcEquipMsg (Comp.Dropdown.Msg IdName)
     | GetTagsResp (Result Http.Error TagList)
-    | GetOrgResp (Result Http.Error ReferenceList)
+    | GetOrgResp (Result Http.Error OrgReferenceList)
     | GetPersonResp (Result Http.Error PersonList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetFolderResp (Result Http.Error FolderList)

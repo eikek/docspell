@@ -12,7 +12,7 @@ case class ListItem(
     direction: Direction,
     created: Timestamp,
     fileCount: Int,
-    corrOrg: Option[IdRef],
+    corrOrg: Option[IdRefAbbrev],
     corrPerson: Option[IdRef],
     concPerson: Option[IdRef],
     concEquip: Option[IdRef],

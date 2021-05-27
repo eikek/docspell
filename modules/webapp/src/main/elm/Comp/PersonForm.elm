@@ -8,7 +8,7 @@ module Comp.PersonForm exposing
     , view2
     )
 
-import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
 import Api.Model.Person exposing (Person)
 import Comp.AddressForm
 import Comp.Basic as B
@@ -34,7 +34,7 @@ type alias Model =
     , notes : Maybe String
     , use : PersonUse
     , useModel : Comp.FixedDropdown.Model PersonUse
-    , orgModel : Comp.Dropdown.Model IdName
+    , orgModel : Comp.Dropdown.Model IdNameAbbrev
     }
 
 
@@ -83,8 +83,8 @@ type Msg
     | AddressMsg Comp.AddressForm.Msg
     | ContactMsg Comp.ContactField.Msg
     | SetNotes String
-    | SetOrgs (List IdName)
-    | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
+    | SetOrgs (List IdNameAbbrev)
+    | OrgDropdownMsg (Comp.Dropdown.Msg IdNameAbbrev)
     | UseDropdownMsg (Comp.FixedDropdown.Msg PersonUse)
 
 

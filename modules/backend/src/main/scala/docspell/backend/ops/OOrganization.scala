@@ -13,7 +13,7 @@ trait OOrganization[F[_]] {
   def findAllOrg(account: AccountId, query: Option[String]): F[Vector[OrgAndContacts]]
   def findOrg(account: AccountId, orgId: Ident): F[Option[OrgAndContacts]]
 
-  def findAllOrgRefs(account: AccountId, nameQuery: Option[String]): F[Vector[IdRef]]
+  def findAllOrgRefs(account: AccountId, nameQuery: Option[String]): F[Vector[IdRefAbbrev]]
 
   def addOrg(s: OrgAndContacts): F[AddResult]
 
@@ -70,8 +70,9 @@ object OOrganization {
       def findAllOrgRefs(
           account: AccountId,
           nameQuery: Option[String]
-      ): F[Vector[IdRef]] =
-        store.transact(ROrganization.findAllRef(account.collective, nameQuery, _.name))
+      ): F[Vector[IdRefAbbrev]] =
+        store
+          .transact(ROrganization.findAllRef(account.collective, nameQuery, _.name))
 
       def addOrg(s: OrgAndContacts): F[AddResult] =
         QOrganization.addOrg(s.org, s.contacts, s.org.cid)(store)

@@ -115,6 +115,7 @@ object QItem {
         coalesce(attachs.num.s, const(0)).s,
         org.oid.s,
         org.name.s,
+        org.shortName.s,
         pers0.pid.s,
         pers0.name.s,
         pers1.pid.s,

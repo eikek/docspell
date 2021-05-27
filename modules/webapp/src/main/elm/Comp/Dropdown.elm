@@ -18,7 +18,7 @@ module Comp.Dropdown exposing
     , viewSingle2
     )
 
-import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
 import Data.DropdownStyle as DS
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -410,9 +410,9 @@ type alias ViewSettings a =
     }
 
 
-orgFormViewSettings : String -> DS.DropdownStyle -> ViewSettings IdName
+orgFormViewSettings : String -> DS.DropdownStyle -> ViewSettings IdNameAbbrev
 orgFormViewSettings placeholder ds =
-    { makeOption = \e -> { text = e.name, additional = "" }
+    { makeOption = \e -> { text = Maybe.withDefault e.name e.shortName, additional = "" }
     , labelColor = \_ -> \_ -> ""
     , placeholder = placeholder
     , style = ds

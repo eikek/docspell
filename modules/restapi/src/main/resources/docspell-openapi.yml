@@ -553,7 +553,7 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/ReferenceList"
+                  - $ref: "#/components/schemas/OrgReferenceList"
                   - $ref: "#/components/schemas/OrganizationList"
     post:
       tags: [ Organization ]
@@ -4504,7 +4504,7 @@ components:
         corrOrg:
           type: array
           items:
-            $ref: "#/components/schemas/IdName"
+            $ref: "#/components/schemas/IdNameAbbrev"
         corrPerson:
           type: array
           items:
@@ -4619,7 +4619,7 @@ components:
           type: integer
           format: date-time
         corrOrg:
-          $ref: "#/components/schemas/IdName"
+          $ref: "#/components/schemas/IdNameAbbrev"
         corrPerson:
           $ref: "#/components/schemas/IdName"
         concPerson:
@@ -5122,6 +5122,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/IdName"
+    OrgReferenceList:
+      description:
+        Listing of entities with their id and a name.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdNameAbbrev"
     Person:
       description: |
         Basic information about a person.
@@ -5139,7 +5149,7 @@ components:
         name:
           type: string
         organization:
-          $ref: "#/components/schemas/IdName"
+          $ref: "#/components/schemas/IdNameAbbrev"
         address:
           $ref: "#/components/schemas/Address"
         contacts:
@@ -5325,7 +5335,7 @@ components:
             - incoming
             - outgoing
         corrOrg:
-          $ref: "#/components/schemas/IdName"
+          $ref: "#/components/schemas/IdNameAbbrev"
         corrPerson:
           $ref: "#/components/schemas/IdName"
         concPerson:
@@ -5402,6 +5412,20 @@ components:
           type: string
           format: ident
         name:
+          type: string
+    IdNameAbbrev:
+      description: |
+        The identifier and a human readable name of some entity.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        shortName:
           type: string
     BasicResult:
       description: |

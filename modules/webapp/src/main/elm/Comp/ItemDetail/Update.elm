@@ -6,6 +6,7 @@ import Api.Model.CustomField exposing (CustomField)
 import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
@@ -16,7 +17,6 @@ import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
-import Comp.ConfirmModal
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
@@ -1644,7 +1644,7 @@ setFolder flags model mref =
     Api.setFolder flags model.item.id idref SaveResp
 
 
-setCorrOrg : Flags -> Model -> Maybe IdName -> Cmd Msg
+setCorrOrg : Flags -> Model -> Maybe IdNameAbbrev -> Cmd Msg
 setCorrOrg flags model mref =
     let
         idref =

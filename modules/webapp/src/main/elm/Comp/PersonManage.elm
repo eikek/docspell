@@ -8,9 +8,9 @@ module Comp.PersonManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.OrgReferenceList exposing (OrgReferenceList)
 import Api.Model.Person
 import Api.Model.PersonList exposing (PersonList)
-import Api.Model.ReferenceList exposing (ReferenceList)
 import Comp.Basic as B
 import Comp.MenuBar as MB
 import Comp.PersonForm
@@ -74,7 +74,7 @@ type Msg
     | YesNoMsg Comp.YesNoDimmer.Msg
     | RequestDelete
     | SetQuery String
-    | GetOrgResp (Result Http.Error ReferenceList)
+    | GetOrgResp (Result Http.Error OrgReferenceList)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )

@@ -30,6 +30,7 @@ module Data.ItemTemplate exposing
     )
 
 import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
 import Api.Model.ItemLight exposing (ItemLight)
 import Data.Direction exposing (Direction)
 import Set
@@ -246,7 +247,7 @@ fileCount =
 --- Helpers
 
 
-getName : Maybe IdName -> String
+getName : Maybe { a | id : String, name : String } -> String
 getName =
     Maybe.map .name >> Maybe.withDefault ""
 

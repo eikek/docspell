@@ -11,6 +11,7 @@ module Comp.LinkTarget exposing
     )
 
 import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Api.Model.Tag exposing (Tag)
 import Html exposing (..)
@@ -20,7 +21,7 @@ import Util.CustomField
 
 
 type LinkTarget
-    = LinkCorrOrg IdName
+    = LinkCorrOrg IdNameAbbrev
     | LinkCorrPerson IdName
     | LinkConcPerson IdName
     | LinkConcEquip IdName
@@ -32,14 +33,17 @@ type LinkTarget
 
 
 makeCorrLink :
-    { a | corrOrg : Maybe IdName, corrPerson : Maybe IdName }
+    { a | corrOrg : Maybe IdNameAbbrev, corrPerson : Maybe IdName }
     -> List ( String, Bool )
     -> (LinkTarget -> msg)
     -> List (Html msg)
 makeCorrLink item linkClasses tagger =
     let
+        useShortname idref =
+            IdNameAbbrev idref.id (Maybe.withDefault idref.name idref.shortName) idref.shortName
+
         makeOrg idname =
-            makeLink linkClasses (LinkCorrOrg >> tagger) idname
+            makeLink linkClasses (LinkCorrOrg >> tagger) (useShortname idname)
 
         makePerson idname =
             makeLink linkClasses (LinkCorrPerson >> tagger) idname
@@ -149,7 +153,11 @@ combine ma mb =
             [ text "-" ]
 
 
-makeLink : List ( String, Bool ) -> (IdName -> msg) -> IdName -> Html msg
+makeLink :
+    List ( String, Bool )
+    -> ({ x | id : String, name : String } -> msg)
+    -> { x | id : String, name : String }
+    -> Html msg
 makeLink classes tagger idname =
     a
         [ onClick (tagger idname)

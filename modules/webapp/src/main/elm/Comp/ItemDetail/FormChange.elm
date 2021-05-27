@@ -8,6 +8,7 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.CustomField exposing (CustomField)
 import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
 import Api.Model.ItemsAndDate exposing (ItemsAndDate)
 import Api.Model.ItemsAndDirection exposing (ItemsAndDirection)
 import Api.Model.ItemsAndFieldValue exposing (ItemsAndFieldValue)
@@ -28,7 +29,7 @@ type FormChange
     | RemoveTagChange ReferenceList
     | FolderChange (Maybe IdName)
     | DirectionChange Direction
-    | OrgChange (Maybe IdName)
+    | OrgChange (Maybe IdNameAbbrev)
     | CorrPersonChange (Maybe IdName)
     | ConcPersonChange (Maybe IdName)
     | EquipChange (Maybe IdName)

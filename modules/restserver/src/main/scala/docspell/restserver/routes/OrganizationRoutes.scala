@@ -32,7 +32,7 @@ object OrganizationRoutes {
         else
           for {
             data <- backend.organization.findAllOrgRefs(user.account, q.map(_.q))
-            resp <- Ok(ReferenceList(data.map(mkIdName).toList))
+            resp <- Ok(OrgReferenceList(data.map(mkOrgIdRef).toList))
           } yield resp
 
       case req @ POST -> Root =>

@@ -29,9 +29,9 @@ import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.Equipment exposing (Equipment)
 import Api.Model.NewCustomField exposing (NewCustomField)
+import Api.Model.OrgReferenceList exposing (OrgReferenceList)
 import Api.Model.Organization exposing (Organization)
 import Api.Model.Person exposing (Person)
-import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.Tag exposing (Tag)
 import Comp.Basic as B
 import Comp.CustomFieldForm
@@ -245,7 +245,7 @@ type Msg
     | GetOrgResp (Result Http.Error Organization)
     | GetPersonResp (Result Http.Error Person)
     | GetEquipResp (Result Http.Error Equipment)
-    | GetOrgsResp (Result Http.Error ReferenceList)
+    | GetOrgsResp (Result Http.Error OrgReferenceList)
 
 
 type Value

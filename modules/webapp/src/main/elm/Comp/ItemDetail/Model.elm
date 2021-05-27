@@ -24,16 +24,16 @@ import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderItem exposing (FolderItem)
 import Api.Model.FolderList exposing (FolderList)
 import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemProposals exposing (ItemProposals)
+import Api.Model.OrgReferenceList exposing (OrgReferenceList)
 import Api.Model.Person exposing (Person)
 import Api.Model.PersonList exposing (PersonList)
-import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Comp.AttachmentMeta
-import Comp.ConfirmModal
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
@@ -66,7 +66,7 @@ type alias Model =
     , menuOpen : Bool
     , tagModel : Comp.Dropdown.Model Tag
     , directionModel : Comp.Dropdown.Model Direction
-    , corrOrgModel : Comp.Dropdown.Model IdName
+    , corrOrgModel : Comp.Dropdown.Model IdNameAbbrev
     , corrPersonModel : Comp.Dropdown.Model IdName
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipModel : Comp.Dropdown.Model IdName
@@ -242,12 +242,12 @@ type Msg
     | ToggleAttachment String
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | DirDropdownMsg (Comp.Dropdown.Msg Direction)
-    | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
+    | OrgDropdownMsg (Comp.Dropdown.Msg IdNameAbbrev)
     | CorrPersonMsg (Comp.Dropdown.Msg IdName)
     | ConcPersonMsg (Comp.Dropdown.Msg IdName)
     | ConcEquipMsg (Comp.Dropdown.Msg IdName)
     | GetTagsResp (Result Http.Error TagList)
-    | GetOrgResp (Result Http.Error ReferenceList)
+    | GetOrgResp (Result Http.Error OrgReferenceList)
     | GetPersonResp (Result Http.Error PersonList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | SetName String
@@ -257,7 +257,7 @@ type Msg
     | SaveNotes
     | ConfirmItem
     | UnconfirmItem
-    | SetCorrOrgSuggestion IdName
+    | SetCorrOrgSuggestion IdNameAbbrev
     | SetCorrPersonSuggestion IdName
     | SetConcPersonSuggestion IdName
     | SetConcEquipSuggestion IdName

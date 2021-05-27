@@ -18,10 +18,11 @@ import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderStats exposing (FolderStats)
 import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Api.Model.ItemQuery exposing (ItemQuery)
+import Api.Model.OrgReferenceList exposing (OrgReferenceList)
 import Api.Model.PersonList exposing (PersonList)
-import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
@@ -60,7 +61,7 @@ type alias Model =
     { tagSelectModel : Comp.TagSelect.Model
     , tagSelection : Comp.TagSelect.Selection
     , directionModel : Comp.Dropdown.Model Direction
-    , orgModel : Comp.Dropdown.Model IdName
+    , orgModel : Comp.Dropdown.Model IdNameAbbrev
     , corrPersonModel : Comp.Dropdown.Model IdName
     , concPersonModel : Comp.Dropdown.Model IdName
     , concEquipmentModel : Comp.Dropdown.Model Equipment
@@ -327,7 +328,7 @@ type Msg
     = Init
     | TagSelectMsg Comp.TagSelect.Msg
     | DirectionMsg (Comp.Dropdown.Msg Direction)
-    | OrgMsg (Comp.Dropdown.Msg IdName)
+    | OrgMsg (Comp.Dropdown.Msg IdNameAbbrev)
     | CorrPersonMsg (Comp.Dropdown.Msg IdName)
     | ConcPersonMsg (Comp.Dropdown.Msg IdName)
     | ConcEquipmentMsg (Comp.Dropdown.Msg Equipment)
@@ -336,7 +337,7 @@ type Msg
     | FromDueDateMsg Comp.DatePicker.Msg
     | UntilDueDateMsg Comp.DatePicker.Msg
     | ToggleInbox
-    | GetOrgResp (Result Http.Error ReferenceList)
+    | GetOrgResp (Result Http.Error OrgReferenceList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetPersonResp (Result Http.Error PersonList)
     | SetName String
@@ -347,7 +348,7 @@ type Msg
     | ResetForm
     | KeyUpMsg (Maybe KeyCode)
     | FolderSelectMsg Comp.FolderSelect.Msg
-    | SetCorrOrg IdName
+    | SetCorrOrg IdNameAbbrev
     | SetCorrPerson IdName
     | SetConcPerson IdName
     | SetConcEquip IdName

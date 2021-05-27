@@ -180,6 +180,7 @@ import Api.Model.NotificationSettingsList exposing (NotificationSettingsList)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
 import Api.Model.OptionalText exposing (OptionalText)
+import Api.Model.OrgReferenceList exposing (OrgReferenceList)
 import Api.Model.Organization exposing (Organization)
 import Api.Model.OrganizationList exposing (OrganizationList)
 import Api.Model.PasswordChange exposing (PasswordChange)
@@ -1170,12 +1171,12 @@ deleteEquip flags equip receive =
 --- Organization
 
 
-getOrgLight : Flags -> (Result Http.Error ReferenceList -> msg) -> Cmd msg
+getOrgLight : Flags -> (Result Http.Error OrgReferenceList -> msg) -> Cmd msg
 getOrgLight flags receive =
     Http2.authGet
         { url = flags.config.baseUrl ++ "/api/v1/sec/organization"
         , account = getAccount flags
-        , expect = Http.expectJson receive Api.Model.ReferenceList.decoder
+        , expect = Http.expectJson receive Api.Model.OrgReferenceList.decoder
         }
 
 

@@ -93,7 +93,7 @@ trait Conversions {
         .take(5)
 
     ItemProposals(
-      corrOrg = get(MetaProposalType.CorrOrg),
+      corrOrg = get(MetaProposalType.CorrOrg).map(ref => IdNameAbbrev(ref.id, ref.name, None)),
       corrPerson = get(MetaProposalType.CorrPerson),
       concPerson = get(MetaProposalType.ConcPerson),
       concEquipment = get(MetaProposalType.ConcEquip),
@@ -113,7 +113,7 @@ trait Conversions {
       data.item.created,
       data.item.updated,
       data.item.itemDate,
-      data.corrOrg.map(o => IdName(o.oid, o.name)),
+      data.corrOrg.map(o => IdNameAbbrev(o.oid, o.name, o.shortName)),
       data.corrPerson.map(p => IdName(p.pid, p.name)),
       data.concPerson.map(p => IdName(p.pid, p.name)),
       data.concEquip.map(e => IdName(e.eid, e.name)),
@@ -211,7 +211,7 @@ trait Conversions {
       i.dueDate,
       i.source,
       i.direction.name.some,
-      i.corrOrg.map(mkIdName),
+      i.corrOrg.map(mkOrgIdRef),
       i.corrPerson.map(mkIdName),
       i.concPerson.map(mkIdName),
       i.concEquip.map(mkIdName),
@@ -426,7 +426,7 @@ trait Conversions {
     Person(
       rp.pid,
       rp.name,
-      v.org.map(o => IdName(o.oid, o.name)),
+      v.org.map(o => IdNameAbbrev(o.oid, o.name, o.shortName)),
       Address(rp.street, rp.zip, rp.city, rp.country),
       v.contacts.map(mkContact).toList,
       rp.notes,
@@ -621,6 +621,9 @@ trait Conversions {
 
   def mkIdName(ref: IdRef): IdName =
     IdName(ref.id, ref.name)
+
+  def mkOrgIdRef(ref: IdRefAbbrev): IdNameAbbrev =
+    IdNameAbbrev(ref.id, ref.name, ref.shortName)
 
   // basic result
 

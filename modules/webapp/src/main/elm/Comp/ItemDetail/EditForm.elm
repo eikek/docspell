@@ -1,5 +1,7 @@
 module Comp.ItemDetail.EditForm exposing (formTabs, view2)
 
+import Api.Model.IdName exposing (IdName)
+import Api.Model.IdNameAbbrev exposing (IdNameAbbrev)
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.Dropdown
@@ -428,11 +430,25 @@ renderSuggestions texts model mkName idnames tagger =
 
 renderOrgSuggestions : Texts -> Model -> Html Msg
 renderOrgSuggestions texts model =
+    let
+        replaceWithShortname item =
+            case item.shortName of
+                Just sn ->
+                    IdName item.id sn
+
+                Nothing ->
+                    IdName item.id item.name
+
+        toIdNameAbbrev idn =
+            IdNameAbbrev idn.id idn.name Nothing
+    in
     renderSuggestions texts
         model
         .name
-        (List.take 6 model.itemProposals.corrOrg)
-        SetCorrOrgSuggestion
+        (List.take 6 model.itemProposals.corrOrg
+            |> List.map replaceWithShortname
+        )
+        (toIdNameAbbrev >> SetCorrOrgSuggestion)
 
 
 renderCorrPersonSuggestions : Texts -> Model -> Html Msg
