@@ -178,7 +178,7 @@ downloadAttachment() {
         fi
 
         checksum1=$("$CURL_CMD" -s -I -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original" | \
-                        grep -i 'etag' | cut -d' ' -f2 | "$JQ_CMD" -r)
+                        grep -i 'etag' | cut -d':' -f2 | xargs | tr -d '\r')
         "$CURL_CMD" -s -o "$attachOut" -H "X-Docspell-Auth: $auth_token" "$ATTACH_URL/$attachId/original"
         checksum2=$(sha256sum "$attachOut" | cut -d' ' -f1 | xargs)
         if [ "$checksum1" == "$checksum2" ]; then
@@ -212,15 +212,13 @@ downloadItem() {
             errout " - Removing metadata.json as requested"
             rm -f "$out/metadata.json"
         fi
-        echo $itemData | "$JQ_CMD" > "$out/metadata.json"
+        echo $itemData > "$out/metadata.json"
     fi
-
     while read attachId attachName; do
         attachOut="$out/$attachName"
         checkLogin
         downloadAttachment "$attachId"
     done < <(echo $itemData | "$JQ_CMD" -r '.sources[] | [.id,.name] | join(" ")')
-
 }
 
 login
