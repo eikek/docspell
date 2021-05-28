@@ -1,5 +1,67 @@
 # Changelog
 
+## v0.23.0
+
+*Soon*
+
+This release enables deleting multiple files at once of an item. It
+also changes how user settings are stored. Additionally several bugs
+in the ui and server have been fixed.
+
+- Feature: Central user settings (#565): user settings have been
+  stored in the browser but are now stored at the server. This means
+  that all settings are now shared across all devices. See below for
+  notes on migrating your current settings.
+- Feature: Delete multiple attachemnts at once, thanks to
+  @stefan-scheidewig (#626): multiple attachments on an item can be
+  deleted with a single click
+- Feature: Make consumedir-cleaner run on windows, thanks to
+  @JaCoB1123 (#809)
+- Bug: More work externalizing strings (#784, #760): many more strings
+  have been externalized for being translated; also dates are now
+  externalized, too
+- Bug: Better anonymous upload page (#758): the upload page for
+  anonymous users shouldn't show a form to provide any metadata
+- Bug: Tag category color (#835): the input field to specify colors
+  for tag categories didn't show the category name
+- Bug: Search in names (#822): a bug in the webui sent a broken query
+  to the server, making the "search in names" field unusable
+- Bug: Fulltext only search broken (#823): the fulltext only search
+  didn't only consult the solr index, but also the database, making it
+  a lot slower and presenting the results not in the order returned by
+  solr.
+- Bug: Ui switches to logged in state on auth failure (#814)
+- Bug: Broken search summary when tag has no category (#759)
+
+
+### Migrating UI Settings
+
+After the upgrade to this version, your current ui settings are not
+read anymore. That means docspell starts up with a light theme and tag
+colors are gone etc. If there are no settings at the server, but
+docspell finds some at your browser, the *UI Settings* page shows a
+big message and a button. Clicking this button sends your settings to
+the server. This message disappears as soon as there are some settings
+on the server.
+
+If you have multiple devices, you now need to choose one which
+settings you want to migrate to the server. It is currently not
+possible to store settings per device.
+
+***Note**: the button is only there if there are no settings at the
+server. So if you want to migrate, don't set the theme or click on
+other things that are persisted before doing the migration!*
+
+### REST Api Changes
+
+- new routes have been added to delete multiple attachments of an item
+- new routes have been added to manage client settings
+
+### Configuration Changes
+
+- none
+
+
 ## v0.22.0
 
 *Apr 11, 2021*
