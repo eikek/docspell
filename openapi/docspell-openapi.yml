@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.22.0
+  version: 0.23.0
   description: |
     This is the remote API to Docspell, a personal document organizer.
 
@@ -1177,6 +1177,68 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/PasswordChange"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/clientSettings/{clientId}:
+    parameters:
+      - $ref: "#/components/parameters/clientId"
+    get:
+      tags: [ Client Settings ]
+      summary: Return the current user settings
+      description: |
+        Returns the settings for the current user. The `clientId` is
+        an identifier to a client application. It returns a JSON
+        structure. The server doesn't care about the actual data,
+        since it is meant to be interpreted by clients.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema: {}
+    put:
+      tags: [ Client Settings ]
+      summary: Update current user settings
+      description: |
+        Updates (replaces or creates) the current user's settings with
+        the given data. The `clientId` is an identifier to a client
+        application. The request body is expected to be JSON, the
+        structure is not important to the server.
+
+        The data is stored for the current user and given `clientId`.
+
+        The data is only saved without being checked in any way
+        (besides being valid JSON). It is returned "as is" to the
+        client in the corresponding GET endpoint.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Client Settings ]
+      summary: Clears the current user settings
+      description: |
+        Removes all stored user settings for the client identified by
+        `clientId`.
+      security:
+        - authTokenHeader: []
       responses:
         200:
           description: Ok
@@ -2789,6 +2851,28 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/attachments/delete:
+    post:
+      tags:
+        - Attachment (Multi Edit)
+      summary: Delete multiple attachments.
+      description: |
+        Given a list of attachment ids, deletes all of them.
+      security:
+        - authTokenHeader: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/queue/state:
     get:
       tags: [ Job Queue ]
@@ -4382,7 +4466,6 @@ components:
       description: |
         Generic structure for counting something.
       required:
-        - name
         - count
       properties:
         name:
@@ -5550,3 +5633,11 @@ components:
       required: false
       schema:
         type: boolean
+    clientId:
+      name: clientId
+      in: path
+      required: true
+      description: |
+        some identifier for a client application
+      schema:
+        type: string

@@ -2102,7 +2102,7 @@
   "description" : "A set of counters.\n"
 };
             defs["NameCount"] = {
-  "required" : [ "count", "name" ],
+  "required" : [ "count" ],
   "properties" : {
     "name" : {
       "type" : "string"
@@ -2923,6 +2923,10 @@
                     <li data-group="Attachment" data-name="secItemIdPreviewHead" class="">
                       <a href="#api-Attachment-secItemIdPreviewHead">secItemIdPreviewHead</a>
                     </li>
+                  <li class="nav-header" data-group="AttachmentMultiEdit"><a href="#api-AttachmentMultiEdit">API Methods - AttachmentMultiEdit</a></li>
+                    <li data-group="AttachmentMultiEdit" data-name="secAttachmentsDeletePost" class="">
+                      <a href="#api-AttachmentMultiEdit-secAttachmentsDeletePost">secAttachmentsDeletePost</a>
+                    </li>
                   <li class="nav-header" data-group="Authentication"><a href="#api-Authentication">API Methods - Authentication</a></li>
                     <li data-group="Authentication" data-name="openAuthLoginPost" class="">
                       <a href="#api-Authentication-openAuthLoginPost">openAuthLoginPost</a>
@@ -2932,6 +2936,16 @@
                     </li>
                     <li data-group="Authentication" data-name="secAuthSessionPost" class="">
                       <a href="#api-Authentication-secAuthSessionPost">secAuthSessionPost</a>
+                    </li>
+                  <li class="nav-header" data-group="ClientSettings"><a href="#api-ClientSettings">API Methods - ClientSettings</a></li>
+                    <li data-group="ClientSettings" data-name="secClientSettingsClientIdDelete" class="">
+                      <a href="#api-ClientSettings-secClientSettingsClientIdDelete">secClientSettingsClientIdDelete</a>
+                    </li>
+                    <li data-group="ClientSettings" data-name="secClientSettingsClientIdGet" class="">
+                      <a href="#api-ClientSettings-secClientSettingsClientIdGet">secClientSettingsClientIdGet</a>
+                    </li>
+                    <li data-group="ClientSettings" data-name="secClientSettingsClientIdPut" class="">
+                      <a href="#api-ClientSettings-secClientSettingsClientIdPut">secClientSettingsClientIdPut</a>
                     </li>
                   <li class="nav-header" data-group="Collective"><a href="#api-Collective">API Methods - Collective</a></li>
                     <li data-group="Collective" data-name="adminUserResetPasswordPost" class="">
@@ -3398,7 +3412,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.22.0</div>
+              <div class="app-desc">Version: 0.23.0</div>
             <hr>
             <div>This is the remote API to Docspell, a personal document organizer.</div>
           </div>
@@ -9144,6 +9158,361 @@ except ApiException as e:
                       </div>
                       <hr>
                   </section>
+                <section id="api-AttachmentMultiEdit">
+                  <h1>AttachmentMultiEdit</h1>
+                    <div id="api-AttachmentMultiEdit-secAttachmentsDeletePost">
+                      <article id="api-AttachmentMultiEdit-secAttachmentsDeletePost-0" data-group="User" data-name="secAttachmentsDeletePost" data-version="0">
+                        <div class="pull-left">
+                          <h1>secAttachmentsDeletePost</h1>
+                          <p>Delete multiple attachments.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Given a list of attachment ids, deletes all of them.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sec/attachments/delete</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/attachments/delete"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AttachmentMultiEditApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AttachmentMultiEditApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        AttachmentMultiEditApi apiInstance = new AttachmentMultiEditApi();
+        IdList body = ; // IdList | 
+        try {
+            BasicResult result = apiInstance.secAttachmentsDeletePost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AttachmentMultiEditApi#secAttachmentsDeletePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AttachmentMultiEditApi;
+
+public class AttachmentMultiEditApiExample {
+
+    public static void main(String[] args) {
+        AttachmentMultiEditApi apiInstance = new AttachmentMultiEditApi();
+        IdList body = ; // IdList | 
+        try {
+            BasicResult result = apiInstance.secAttachmentsDeletePost(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AttachmentMultiEditApi#secAttachmentsDeletePost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+IdList *body = ; //  (optional)
+
+AttachmentMultiEditApi *apiInstance = [[AttachmentMultiEditApi alloc] init];
+
+// Delete multiple attachments.
+[apiInstance secAttachmentsDeletePostWith:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.AttachmentMultiEditApi()
+var opts = { 
+  'body':  // {{IdList}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secAttachmentsDeletePost(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secAttachmentsDeletePostExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new AttachmentMultiEditApi();
+            var body = new IdList(); // IdList |  (optional) 
+
+            try
+            {
+                // Delete multiple attachments.
+                BasicResult result = apiInstance.secAttachmentsDeletePost(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AttachmentMultiEditApi.secAttachmentsDeletePost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiAttachmentMultiEditApi();
+$body = ; // IdList | 
+
+try {
+    $result = $api_instance->secAttachmentsDeletePost($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling AttachmentMultiEditApi->secAttachmentsDeletePost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AttachmentMultiEditApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::AttachmentMultiEditApi->new();
+my $body = WWW::SwaggerClient::Object::IdList->new(); # IdList | 
+
+eval { 
+    my $result = $api_instance->secAttachmentsDeletePost(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling AttachmentMultiEditApi->secAttachmentsDeletePost: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-AttachmentMultiEdit-secAttachmentsDeletePost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.AttachmentMultiEditApi()
+body =  # IdList |  (optional)
+
+try: 
+    # Delete multiple attachments.
+    api_response = api_instance.sec_attachments_delete_post(body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling AttachmentMultiEditApi->secAttachmentsDeletePost: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/IdList"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secAttachmentsDeletePost_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secAttachmentsDeletePost_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secAttachmentsDeletePost-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secAttachmentsDeletePost-200-schema">
+                                  <div id='responses-secAttachmentsDeletePost-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secAttachmentsDeletePost-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secAttachmentsDeletePost-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secAttachmentsDeletePost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
                 <section id="api-Authentication">
                   <h1>Authentication</h1>
                     <div id="api-Authentication-openAuthLoginPost">
@@ -10007,6 +10376,1102 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secAuthSessionPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-ClientSettings">
+                  <h1>ClientSettings</h1>
+                    <div id="api-ClientSettings-secClientSettingsClientIdDelete">
+                      <article id="api-ClientSettings-secClientSettingsClientIdDelete-0" data-group="User" data-name="secClientSettingsClientIdDelete" data-version="0">
+                        <div class="pull-left">
+                          <h1>secClientSettingsClientIdDelete</h1>
+                          <p>Clears the current user settings</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Removes all stored user settings for the client identified by
+&#x60;clientId&#x60;.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/sec/clientSettings/{clientId}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-java">Java</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdDelete-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/clientSettings/{clientId}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ClientSettingsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ClientSettingsApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ClientSettingsApi apiInstance = new ClientSettingsApi();
+        String clientId = clientId_example; // String | some identifier for a client application
+
+        try {
+            BasicResult result = apiInstance.secClientSettingsClientIdDelete(clientId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ClientSettingsApi#secClientSettingsClientIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ClientSettingsApi;
+
+public class ClientSettingsApiExample {
+
+    public static void main(String[] args) {
+        ClientSettingsApi apiInstance = new ClientSettingsApi();
+        String clientId = clientId_example; // String | some identifier for a client application
+
+        try {
+            BasicResult result = apiInstance.secClientSettingsClientIdDelete(clientId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ClientSettingsApi#secClientSettingsClientIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *clientId = clientId_example; // some identifier for a client application
+
+
+ClientSettingsApi *apiInstance = [[ClientSettingsApi alloc] init];
+
+// Clears the current user settings
+[apiInstance secClientSettingsClientIdDeleteWith:clientId
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ClientSettingsApi()
+var clientId = clientId_example; // {{String}} some identifier for a client application
+
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secClientSettingsClientIdDelete(clientId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secClientSettingsClientIdDeleteExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ClientSettingsApi();
+            var clientId = clientId_example;  // String | some identifier for a client application
+
+
+            try
+            {
+                // Clears the current user settings
+                BasicResult result = apiInstance.secClientSettingsClientIdDelete(clientId);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ClientSettingsApi.secClientSettingsClientIdDelete: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiClientSettingsApi();
+$clientId = clientId_example; // String | some identifier for a client application
+
+
+try {
+    $result = $api_instance->secClientSettingsClientIdDelete($clientId);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ClientSettingsApi->secClientSettingsClientIdDelete: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ClientSettingsApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ClientSettingsApi->new();
+my $clientId = clientId_example; # String | some identifier for a client application
+
+
+eval { 
+    my $result = $api_instance->secClientSettingsClientIdDelete(clientId => $clientId);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ClientSettingsApi->secClientSettingsClientIdDelete: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdDelete-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ClientSettingsApi()
+clientId = clientId_example # String | some identifier for a client application
+
+
+try: 
+    # Clears the current user settings
+    api_response = api_instance.sec_client_settings_client_id_delete(clientId)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ClientSettingsApi->secClientSettingsClientIdDelete: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">clientId*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secClientSettingsClientIdDelete_clientId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          some identifier for a client application
+
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secClientSettingsClientIdDelete-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secClientSettingsClientIdDelete-200-schema">
+                                  <div id='responses-secClientSettingsClientIdDelete-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secClientSettingsClientIdDelete-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secClientSettingsClientIdDelete-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secClientSettingsClientIdDelete-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-ClientSettings-secClientSettingsClientIdGet">
+                      <article id="api-ClientSettings-secClientSettingsClientIdGet-0" data-group="User" data-name="secClientSettingsClientIdGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>secClientSettingsClientIdGet</h1>
+                          <p>Return the current user settings</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Returns the settings for the current user. The &#x60;clientId&#x60; is
+an identifier to a client application. It returns a JSON
+structure. The server doesn&#x27;t care about the actual data,
+since it is meant to be interpreted by clients.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/clientSettings/{clientId}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-ClientSettings-secClientSettingsClientIdGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v1/sec/clientSettings/{clientId}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ClientSettingsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ClientSettingsApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ClientSettingsApi apiInstance = new ClientSettingsApi();
+        String clientId = clientId_example; // String | some identifier for a client application
+
+        try {
+            apiInstance.secClientSettingsClientIdGet(clientId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ClientSettingsApi#secClientSettingsClientIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ClientSettingsApi;
+
+public class ClientSettingsApiExample {
+
+    public static void main(String[] args) {
+        ClientSettingsApi apiInstance = new ClientSettingsApi();
+        String clientId = clientId_example; // String | some identifier for a client application
+
+        try {
+            apiInstance.secClientSettingsClientIdGet(clientId);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ClientSettingsApi#secClientSettingsClientIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *clientId = clientId_example; // some identifier for a client application
+
+
+ClientSettingsApi *apiInstance = [[ClientSettingsApi alloc] init];
+
+// Return the current user settings
+[apiInstance secClientSettingsClientIdGetWith:clientId
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ClientSettingsApi()
+var clientId = clientId_example; // {{String}} some identifier for a client application
+
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.secClientSettingsClientIdGet(clientId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secClientSettingsClientIdGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ClientSettingsApi();
+            var clientId = clientId_example;  // String | some identifier for a client application
+
+
+            try
+            {
+                // Return the current user settings
+                apiInstance.secClientSettingsClientIdGet(clientId);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ClientSettingsApi.secClientSettingsClientIdGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiClientSettingsApi();
+$clientId = clientId_example; // String | some identifier for a client application
+
+
+try {
+    $api_instance->secClientSettingsClientIdGet($clientId);
+} catch (Exception $e) {
+    echo 'Exception when calling ClientSettingsApi->secClientSettingsClientIdGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ClientSettingsApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ClientSettingsApi->new();
+my $clientId = clientId_example; # String | some identifier for a client application
+
+
+eval { 
+    $api_instance->secClientSettingsClientIdGet(clientId => $clientId);
+};
+if ($@) {
+    warn "Exception when calling ClientSettingsApi->secClientSettingsClientIdGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ClientSettingsApi()
+clientId = clientId_example # String | some identifier for a client application
+
+
+try: 
+    # Return the current user settings
+    api_instance.sec_client_settings_client_id_get(clientId)
+except ApiException as e:
+    print("Exception when calling ClientSettingsApi->secClientSettingsClientIdGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">clientId*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secClientSettingsClientIdGet_clientId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          some identifier for a client application
+
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secClientSettingsClientIdGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secClientSettingsClientIdGet-200-schema">
+                                  <div id='responses-secClientSettingsClientIdGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secClientSettingsClientIdGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secClientSettingsClientIdGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secClientSettingsClientIdGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-ClientSettings-secClientSettingsClientIdPut">
+                      <article id="api-ClientSettings-secClientSettingsClientIdPut-0" data-group="User" data-name="secClientSettingsClientIdPut" data-version="0">
+                        <div class="pull-left">
+                          <h1>secClientSettingsClientIdPut</h1>
+                          <p>Update current user settings</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Updates (replaces or creates) the current user&#x27;s settings with
+the given data. The &#x60;clientId&#x60; is an identifier to a client
+application. The request body is expected to be JSON, the
+structure is not important to the server.
+
+The data is stored for the current user and given &#x60;clientId&#x60;.
+
+The data is only saved without being checked in any way
+(besides being valid JSON). It is returned &quot;as is&quot; to the
+client in the corresponding GET endpoint.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="put"><code><span class="pln">/sec/clientSettings/{clientId}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-java">Java</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-ClientSettings-secClientSettingsClientIdPut-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-ClientSettings-secClientSettingsClientIdPut-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PUT\
+-H "X-Docspell-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v1/sec/clientSettings/{clientId}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.ClientSettingsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ClientSettingsApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        ClientSettingsApi apiInstance = new ClientSettingsApi();
+        String clientId = clientId_example; // String | some identifier for a client application
+
+         body = ; //  | 
+        try {
+            BasicResult result = apiInstance.secClientSettingsClientIdPut(clientId, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ClientSettingsApi#secClientSettingsClientIdPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.ClientSettingsApi;
+
+public class ClientSettingsApiExample {
+
+    public static void main(String[] args) {
+        ClientSettingsApi apiInstance = new ClientSettingsApi();
+        String clientId = clientId_example; // String | some identifier for a client application
+
+         body = ; //  | 
+        try {
+            BasicResult result = apiInstance.secClientSettingsClientIdPut(clientId, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ClientSettingsApi#secClientSettingsClientIdPut");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"X-Docspell-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"X-Docspell-Auth"];
+String *clientId = clientId_example; // some identifier for a client application
+
+ *body = ; //  (optional)
+
+ClientSettingsApi *apiInstance = [[ClientSettingsApi alloc] init];
+
+// Update current user settings
+[apiInstance secClientSettingsClientIdPutWith:clientId
+    body:body
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Docspell = require('docspell');
+var defaultClient = Docspell.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['X-Docspell-Auth'] = "Token"
+
+var api = new Docspell.ClientSettingsApi()
+var clientId = clientId_example; // {{String}} some identifier for a client application
+
+var opts = { 
+  'body':  // {{}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secClientSettingsClientIdPut(clientId, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secClientSettingsClientIdPutExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("X-Docspell-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("X-Docspell-Auth", "Bearer");
+
+            var apiInstance = new ClientSettingsApi();
+            var clientId = clientId_example;  // String | some identifier for a client application
+
+            var body = new (); //  |  (optional) 
+
+            try
+            {
+                // Update current user settings
+                BasicResult result = apiInstance.secClientSettingsClientIdPut(clientId, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling ClientSettingsApi.secClientSettingsClientIdPut: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('X-Docspell-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('X-Docspell-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiClientSettingsApi();
+$clientId = clientId_example; // String | some identifier for a client application
+
+$body = ; //  | 
+
+try {
+    $result = $api_instance->secClientSettingsClientIdPut($clientId, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ClientSettingsApi->secClientSettingsClientIdPut: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::ClientSettingsApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'X-Docspell-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'X-Docspell-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::ClientSettingsApi->new();
+my $clientId = clientId_example; # String | some identifier for a client application
+
+my $body = WWW::SwaggerClient::Object::->new(); #  | 
+
+eval { 
+    my $result = $api_instance->secClientSettingsClientIdPut(clientId => $clientId, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ClientSettingsApi->secClientSettingsClientIdPut: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-ClientSettings-secClientSettingsClientIdPut-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['X-Docspell-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['X-Docspell-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.ClientSettingsApi()
+clientId = clientId_example # String | some identifier for a client application
+
+body =  #  |  (optional)
+
+try: 
+    # Update current user settings
+    api_response = api_instance.sec_client_settings_client_id_put(clientId, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ClientSettingsApi->secClientSettingsClientIdPut: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">clientId*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_secClientSettingsClientIdPut_clientId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          some identifier for a client application
+
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : { }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_secClientSettingsClientIdPut_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_secClientSettingsClientIdPut_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secClientSettingsClientIdPut-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secClientSettingsClientIdPut-200-schema">
+                                  <div id='responses-secClientSettingsClientIdPut-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secClientSettingsClientIdPut-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secClientSettingsClientIdPut-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secClientSettingsClientIdPut-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
