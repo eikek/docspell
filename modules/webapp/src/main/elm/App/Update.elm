@@ -288,9 +288,6 @@ applyClientSettings model settings =
     let
         setTheme =
             Ports.setUiTheme settings.uiTheme
-
-        model_ =
-            { model | uiSettings = settings }
     in
     Util.Update.andThen2
         [ \m ->
@@ -302,7 +299,7 @@ applyClientSettings model settings =
         , updateHome Page.Home.Data.UiSettingsUpdated
         , updateItemDetail Page.ItemDetail.Data.UiSettingsUpdated
         ]
-        model_
+        { model | uiSettings = settings }
 
 
 updateItemDetail : Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
