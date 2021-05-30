@@ -556,7 +556,14 @@ val restserver = project
       "-Xmx150M",
       "-XX:+UseG1GC"
     ),
-    Revolver.enableDebugging(port = 5050, suspend = false)
+    Revolver.enableDebugging(port = 5050, suspend = false),
+    Universal / mappings := {
+      val allMappings = (Universal / mappings).value
+      allMappings.filter {
+        //scalajs artifacts are not needed at runtime
+        case (file, name) => !name.contains("_sjs1_")
+      }
+    }
   )
   .dependsOn(restapi, joexapi, backend, webapp, ftssolr)
 
@@ -771,7 +778,7 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
 
 addCommandAlias(
   "make",
-  ";set webapp/elmCompileMode := ElmCompileMode.Production; set webapp/stylesMode := StylesMode.Prod ;root/openapiCodegen ;root/test:compile"
+  ";set webapp/elmCompileMode := ElmCompileMode.Production; set webapp/stylesMode := StylesMode.Prod ;root/openapiCodegen ;root/Test/compile"
 )
 addCommandAlias("make-zip", ";restserver/universal:packageBin ;joex/universal:packageBin")
 addCommandAlias("make-deb", ";restserver/debian:packageBin ;joex/debian:packageBin")
