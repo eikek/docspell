@@ -1,0 +1,80 @@
+version: '3.8'
+services:
+
+  restserver:
+    image: docspell/restserver:latest
+    container_name: docspell-restserver
+    command:
+      - /opt/docspell.conf
+    restart: unless-stopped
+    ports:
+      - "7880:7880"
+    volumes:
+      - ./docspell.conf:/opt/docspell.conf
+    env_file: ./.env
+    depends_on:
+      - solr
+
+  joex:
+    image: docspell/joex:latest
+    container_name: docspell-joex
+    command:
+      - /opt/docspell.conf
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - "7878:7878"
+    volumes:
+      - ./docspell.conf:/opt/docspell.conf
+    depends_on:
+      - solr
+
+  consumedir:
+    image: docspell/tools:latest
+    container_name: docspell-consumedir
+    command:
+      - ds-consumedir
+      - "-vmdi"
+      - "--path"
+      - "/opt/docs"
+      - "--iheader"
+      - "Docspell-Integration:$DOCSPELL_HEADER_VALUE"
+      - "http://docspell-restserver:7880/api/v1/open/integration/item"
+    restart: unless-stopped
+    env_file: ./.env
+    volumes:
+      - ./docs:/opt/docs
+    depends_on:
+      - restserver
+
+  db:
+    image: postgres:13.3
+    container_name: postgres_db
+    restart: unless-stopped
+    volumes:
+      - docspell-postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbpass
+      - POSTGRES_DB=dbname
+
+  solr:
+    image: solr:8
+    container_name: docspell-solr
+    restart: unless-stopped
+    volumes:
+      - docspell-solr_data:/var/solr
+    command:
+      - solr-precreate
+      - docspell
+    healthcheck:
+      test: ["CMD", "curl", "f", "http://localhost:8983/solr/docspell/admin/ping"]
+      interval: 1m
+      timeout: 10s
+      retries: 2
+      start_period: 30s
+
+
+volumes:
+  docspell-postgres_data:
+  docspell-solr_data:
