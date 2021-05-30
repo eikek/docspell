@@ -1,13 +1,13 @@
 let
-    nixpkgsUnstable = builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz";
+  nixpkgs = builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/nixos-20.09.tar.gz";
   };
-  pkgsUnstable = import nixpkgsUnstable { };
-  initScript = pkgsUnstable.writeScript "docspell-build-init" ''
+  pkgs = import nixpkgs { };
+  initScript = pkgs.writeScript "docspell-build-init" ''
      export LD_LIBRARY_PATH=
-     ${pkgsUnstable.bash}/bin/bash -c sbt
+     ${pkgs.bash}/bin/bash -c "sbt -mem 2048 -java-home ${pkgs.openjdk11}/lib/openjdk"
   '';
-in with pkgsUnstable;
+in with pkgs;
 
 buildFHSUserEnv {
   name = "docspell-sbt";
