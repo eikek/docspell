@@ -1,13 +1,14 @@
 let
-    nixpkgsUnstable = builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz";
+  nixpkgs = builtins.fetchTarball {
+    ## need fix to zola-0.11.0 for now
+    url = "https://github.com/NixOS/nixpkgs/archive/92e990a8d6bc35f1089c76dd8ba68b78da90da59.tar.gz";
   };
-  pkgsUnstable = import nixpkgsUnstable { };
-  initScript = pkgsUnstable.writeScript "docspell-build-init" ''
+  pkgs = import nixpkgs { };
+  initScript = pkgs.writeScript "docspell-build-init" ''
      export LD_LIBRARY_PATH=
-     ${pkgsUnstable.bash}/bin/bash -c sbt
+     ${pkgs.bash}/bin/bash -c sbt
   '';
-in with pkgsUnstable;
+in with pkgs;
 
 buildFHSUserEnv {
   name = "docspell-sbt";
