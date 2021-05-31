@@ -18,7 +18,7 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - name: Fetch tags
         run: git fetch --depth=100 origin +refs/tags/*:refs/tags/*
-      - uses: olafurpg/setup-scala@v10
+      - uses: olafurpg/setup-scala@v11
         with:
           java-version: ${{ matrix.java }}
       - name: Coursier cache
