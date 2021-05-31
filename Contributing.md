@@ -63,5 +63,5 @@ nice functional language that compiles to javascript. The frontend is
 included in the http/restserver component. The CSS is provided by
 [TailwindCSS](https://tailwindcss.com/)..
 
-The [development](https://docspell.org/docs/dev/building/) page
-contains some tips to get started.
+The [development](https://docspell.org/docs/dev) pages contains some
+tips to get started.

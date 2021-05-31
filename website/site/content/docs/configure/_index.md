@@ -7,12 +7,63 @@ weight = 40
 mktoc = true
 +++
 
-Docspell's executable can take one argument – a configuration file. If
-that is not given, the defaults are used. The config file overrides
-default values, so only values that differ from the defaults are
-necessary.
+Docspell's executables (restserver and joex) can take one argument – a
+configuration file. If that is not given, the defaults are used. The
+config file overrides default values, so only values that differ from
+the defaults are necessary. The complete default options and their
+documentation is at the end of this page.
 
-This applies to the restserver and the joex as well.
+Besides the config file, another way is to provide individual settings
+via key-value pairs to the executable by the `-D` option. For example
+to override only `base-url` you could add the argument
+`-Ddocspell.server.base-url=…` to the command. Multiple options are
+possible. For more than few values this is very tedious, obviously, so
+the recommended way is to maintain a config file. If these options
+*and* a file is provded, then any setting given via the `-D…` option
+overrides the same setting from the config file.
+
+# File Format
+
+The format of the configuration files can be
+[HOCON](https://github.com/lightbend/config/blob/master/HOCON.md#hocon-human-optimized-config-object-notation),
+JSON or what this [config
+library](https://github.com/lightbend/config) understands. The default
+values below are in HOCON format, which is recommended, since it
+allows comments and has some [advanced
+features](https://github.com/lightbend/config#features-of-hocon).
+Please refer to their documentation for more on this.
+
+A short description (please see the links for better understanding):
+The config consists of key-value pairs and can be written in a
+JSON-like format (called HOCON). Keys are organized in trees, and a
+key defines a full path into the tree. There are two ways:
+
+```
+a.b.c.d=15
+```
+
+or
+
+```
+a {
+  b {
+    c {
+      d = 15
+    }
+  }
+}
+```
+
+Both are exactly the same and these forms are both used at the same
+time. Usually the braces approach is used to group some more settings,
+for better readability.
+
+Strings that contain "not-so-common" characters should be enclosed in
+quotes. It is possible to define values at the top of the file and
+reuse them on different locations via the `${full.path.to.key}`
+syntax. When using these variables, they *must not* be enclosed in
+quotes.
+
 
 # Important Config Options
 
@@ -95,7 +146,7 @@ endpoint.
 
 ## Full-Text Search: SOLR
 
-[Apache SOLR](https://lucene.apache.org/solr) is used to provide the
+[Apache SOLR](https://solr.apache.org) is used to provide the
 full-text search. Both docspell components must provide the same
 connection setup. This is defined in the `full-text-search.solr`
 subsection:
@@ -120,7 +171,7 @@ to `true`.
 
 When installing docspell manually, just install solr and create a core
 as described in the [solr
-documentation](https://lucene.apache.org/solr/guide/8_4/installing-solr.html).
+documentation](https://solr.apache.org/guide/8_4/installing-solr.html).
 That will provide you with the connection url (the last part is the
 core name).
 
@@ -143,7 +194,7 @@ by a joex instance eventually.
 Using this endpoint, the index will be re-created. This is sometimes
 necessary, for example if you upgrade SOLR or delete the core to
 provide a new one (see
-[here](https://lucene.apache.org/solr/guide/8_4/reindexing.html) for
+[here](https://solr.apache.org/guide/8_4/reindexing.html) for
 details). Note that a collective can also re-index their data using a
 similiar endpoint; but this is only deleting their data and doesn't do
 a full re-index.
@@ -394,53 +445,50 @@ The restserver component is very lightweight, here you can use
 defaults.
 
 
-# File Format
+# JVM Options
 
-The format of the configuration files can be
-[HOCON](https://github.com/lightbend/config/blob/master/HOCON.md#hocon-human-optimized-config-object-notation),
-JSON or whatever the used [config
-library](https://github.com/lightbend/config) understands. The default
-values below are in HOCON format, which is recommended, since it
-allows comments and has some [advanced
-features](https://github.com/lightbend/config#features-of-hocon).
-Please refer to their documentation for more on this.
-
-A short description (please see the links for better understanding):
-The config consists of key-value pairs and can be written in a
-JSON-like format (called HOCON). Keys are organized in trees, and a
-key defines a full path into the tree. There are two ways:
+The start scripts support some options to configure the JVM. One often
+used setting is the maximum heap size of the JVM. By default, java
+determines it based on properties of the current machine. You can
+specify it by given java startup options to the command:
 
 ```
-a.b.c.d=15
+$ ./docspell-restserver*/bin/docspell-restserver -J-Xmx1G -- /path/to/server-config.conf
 ```
 
-or
+This would limit the maximum heap to 1GB. The double slash separates
+internal options and the arguments to the program. Another frequently
+used option is to change the default temp directory. Usually it is
+`/tmp`, but it may be desired to have a dedicated temp directory,
+which can be configured:
 
 ```
-a {
-  b {
-    c {
-      d = 15
-    }
-  }
-}
+$ ./docspell-restserver*/bin/docspell-restserver -J-Xmx1G -Djava.io.tmpdir=/path/to/othertemp -- /path/to/server-config.conf
 ```
 
-Both are exactly the same and these forms are both used at the same
-time. Usually the braces approach is used to group some more settings,
-for better readability.
+The command:
 
+```
+$ ./docspell-restserver*/bin/docspell-restserver -h
+```
 
-# Default Config
-## Rest Server
+gives an overview of supported options.
 
-{{ incl_conf(path="templates/shortcodes/server.conf") }}
+It is recommended to run joex with the G1GC enabled. If you use java8,
+you need to add an option to use G1GC (`-XX:+UseG1GC`), for java11
+this is not necessary (but doesn't hurt either). This could look like
+this:
 
+```
+./docspell-joex-{{version()}}/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+```
 
-## Joex
+Using these options you can define how much memory the JVM process is
+able to use. This might be necessary to adopt depending on the usage
+scenario and configured text analysis features.
 
+Please have a look at the corresponding [section](@/docs/configure/_index.md#memory-usage).
 
-{{ incl_conf(path="templates/shortcodes/joex.conf") }}
 
 
 # Logging
@@ -480,3 +528,15 @@ The `<root level="INFO">` means, that only log statements with level
 "INFO" will be printed. But the `<logger name="docspell"
 level="debug">` above says, that for loggers with name "docspell"
 statements with level "DEBUG" will be printed, too.
+
+
+# Default Config
+## Rest Server
+
+{{ incl_conf(path="templates/shortcodes/server.conf") }}
+
+
+## Joex
+
+
+{{ incl_conf(path="templates/shortcodes/joex.conf") }}

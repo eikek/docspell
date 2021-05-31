@@ -1,104 +1,8 @@
 +++
-title = "Installing"
-weight = 20
+title = "Nix / NixOS"
+weight = 24
 +++
 
-# Docker
-
-There is a [docker-compose](https://docs.docker.com/compose/) setup
-available in the `/docker` folder. This setup is also taking care of
-all the necessary [prerequisites](@/docs/install/prereq.md) and
-creates a container to watch a directory for incoming files. It's only
-3 steps:
-
-1. Clone the github repository
-   ```bash
-   $ git clone https://github.com/eikek/docspell
-   ```
-   If you don't have git or don't want to clone the whole repo, use these steps instead:
-   ``` bash
-   mkdir -p docspell/docker
-   cd docspell/docker
-   wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose.yml
-   wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docspell.conf
-   wget https://raw.githubusercontent.com/eikek/docspell/master/docker/.env
-   ```
-2. Change into the `docker` directory:
-   ```bash
-   $ cd docspell/docker
-   ```
-3. Run `docker-compose up`:
-
-   ```bash
-   $ export DOCSPELL_HEADER_VALUE="my-secret-123"
-   $ docker-compose up
-   ```
-
-   The environment variable defines a secret that is shared between
-   some containers. You can define whatever you like. Please see the
-   [consumedir.sh](@/docs/tools/consumedir.md#docker) docs for
-   additional info.
-4. Goto `http://localhost:7880`, signup and login. When signing up,
-   you can choose the same name for collective and user. Then login
-   with this name and the password.
-
-5. (Optional) Create a folder `./docs/<collective-name>` (the name you
-   chose for the collective at registration) and place files in there
-   for importing them.
-
-The directory contains a file `docspell.conf` that you can
-[modify](@/docs/configure/_index.md) as needed.
-
-# Download, Unpack, Run
-
-You can install via zip or deb archives. Please see the
-[prerequisites](@/docs/install/prereq.md) first.
-
-## Using zip files
-
-You need to download the two files:
-
-- [docspell-restserver-{{version()}}.zip](https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-restserver-{{version()}}.zip)
-- [docspell-joex-{{version()}}.zip](https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-joex-{{version()}}.zip)
-
-
-1. Unzip both files:
-   ``` bash
-   $ unzip docspell-*.zip
-   ```
-2. Open two terminal windows and navigate to the the directory
-   containing the zip files.
-3. Start both components executing:
-   ``` bash
-   $ ./docspell-restserver*/bin/docspell-restserver
-   ```
-   in one terminal and
-   ``` bash
-   $ ./docspell-joex*/bin/docspell-joex
-   ```
-   in the other.
-4. Point your browser to: <http://localhost:7880/app>
-5. Register a new account, sign in and try it.
-
-Note, that this setup doesn't include watching a directory. You can
-use the [consumedir.sh](@/docs/tools/consumedir.md) tool for this or
-use the docker variant below.
-
-## Using deb files
-
-The DEB packages can be installed on Debian, or Debian based Distros:
-
-``` bash
-$ sudo dpkg -i docspell*.deb
-```
-
-Then the start scripts are in your `$PATH`. Run `docspell-restserver`
-or `docspell-joex` from a terminal window.
-
-The packages come with a systemd unit file that will be installed to
-autostart the services.
-
-# Nix
 
 ## Install via Nix
 
@@ -158,6 +62,17 @@ selecting the most current release. For example it translates to
 `docspell.pkg docspell.cfg.v{{ pversion() }}` – if the current version
 is `{{version()}}`.
 
+
+
+## Upgrading
+
+Since [downgrading](@/docs/install/downgrading.md) is not supported,
+it is recommended to backup your database before upgrading. Should
+something not work as expected, restore the database backup and go
+back to the previous version.
+
+When using the provided nix setup, the `currentPkg` always points to
+the latest release. Thus it is enough to run `nix-build`.
 
 ## Docspell on NixOS {#nixos}
 

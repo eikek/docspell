@@ -140,7 +140,7 @@ showUsage() {
     echo "$0 --path ~/Downloads -m -dv --once http://localhost:7880/api/v1/open/upload/item/abcde-12345-abcde-12345"
     echo ""
     echo "Example: Integration Endpoint"
-    echo "$0 -i -iheader 'Docspell-Integration:test123' -m -p ~/Downloads/ http://localhost:7880/api/v1/open/integration/item"
+    echo "$0 -i --iheader 'Docspell-Integration:test123' -m -p ~/Downloads/ http://localhost:7880/api/v1/open/integration/item"
     echo ""
 }
 

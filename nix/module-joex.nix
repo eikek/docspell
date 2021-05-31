@@ -1268,7 +1268,7 @@ in {
                     description = ''
                       The defType parameter to lucene that defines the parser to
                       use. You might want to try "edismax" or look here:
-                      https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+                      https://solr.apache.org/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
                     '';
                   };
                   q-op = mkOption {

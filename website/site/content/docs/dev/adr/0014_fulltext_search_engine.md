@@ -20,7 +20,7 @@ work (just the fulltext search is then not working).
 
 # Considered Options
 
-* [Apache SOLR](https://lucene.apache.org/solr)
+* [Apache SOLR](https://solr.apache.org)
 * [ElasticSearch](https://www.elastic.co/elasticsearch/)
 * [PostgreSQL](https://www.postgresql.org/docs/12/textsearch.html)
 * All of them or a subset

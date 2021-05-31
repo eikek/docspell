@@ -20,7 +20,7 @@ getStarted version =
    Alternatively, [download](https://github.com/eikek/docspell/archive/master.zip) the sources and extract the zip file.
 2. Change into the `docker` directory:
    ```bash
-   $ cd docspell/docker
+   $ cd docspell/docker/docker-compose
    ```
 3. Run `docker-compose up`:
 
@@ -34,7 +34,7 @@ getStarted version =
    [`consumedir.sh`](doc/tools/consumedir#docker) docs for additional
    info.
 4. Goto <http://localhost:7880>, signup and login. When signing up,
-   you can choose the same name for collective and user. Then login
+   choose the same name for collective and user. Then login
    with this name and the password.
 
 5. (Optional) Create a folder `./docs/<collective-name>` (the name you

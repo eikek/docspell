@@ -13,7 +13,7 @@ description = "A list of features and limitations."
 - Handle multiple documents as one unit
 - OCR using [tesseract](https://github.com/tesseract-ocr/tesseract)
 - [Full-Text Search](@/docs/webapp/finding.md#full-text-search) based
-  on [Apache SOLR](https://lucene.apache.org/solr)
+  on [Apache SOLR](https://solr.apache.org)
 - Conversion to PDF: all files are converted into a PDF file. PDFs
   with only images (as often returned from scanners) are converted
   into searchable PDF/A pdfs.
