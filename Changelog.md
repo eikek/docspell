@@ -2,7 +2,7 @@
 
 ## v0.23.0
 
-*Soon*
+*May 29, 2021*
 
 This release enables deleting multiple files at once of an item. It
 also changes how user settings are stored. Additionally several bugs
