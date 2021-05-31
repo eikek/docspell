@@ -1,6 +1,5 @@
 import com.github.eikek.sbt.openapi._
 import scala.sys.process._
-import com.typesafe.sbt.site.SitePlugin
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
 
@@ -565,18 +564,15 @@ val restserver = project
 val website = project
   .in(file("website"))
   .disablePlugins(RevolverPlugin, ReleasePlugin)
-  .enablePlugins(ZolaPlugin, GhpagesPlugin)
+  .enablePlugins(ZolaPlugin, GitHubPagesPlugin)
   .settings(sharedSettings)
   .settings(
     name := "docspell-website",
     publishArtifact := false,
     publish / skip := true,
-    ghpagesNoJekyll := true,
-    // the ghpages plugins works together with the site plugin (its a dependency)
-    // to make it publish the zola generated site, override their mappings with the zola output
-    SitePlugin.autoImport.makeSite / mappings :=
-      Path.selectSubpaths(zolaOutputDir.value, _ => true).toSeq,
-    git.remoteRepo := "git@github.com:eikek/docspell",
+    gitHubPagesOrgName := "eikek",
+    gitHubPagesRepoName := "docspell",
+    gitHubPagesSiteDir := zolaOutputDir.value,
     Compile / resourceGenerators += Def.task {
       val templateOut = baseDirectory.value / "site" / "templates" / "shortcodes"
       val staticOut   = baseDirectory.value / "site" / "static" / "openapi"
