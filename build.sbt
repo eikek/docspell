@@ -787,3 +787,5 @@ addCommandAlias(
   "scalafmtSbtCheck; scalafmtCheckAll; Compile/scalafix --check; Test/scalafix --check"
 )
 addCommandAlias("fix", "Compile/scalafix; Test/scalafix; scalafmtSbt; scalafmtAll")
+addCommandAlias("make-website", ";website/clean ;website/zolaBuild ;website/zolaCheck")
+addCommandAlias("publish-website", "website/publishToGitHubPages")

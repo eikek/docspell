@@ -1,0 +1,26 @@
+name: Publish Website
+on:
+  push:
+    branches:
+      - "current-docs"
+jobs:
+  publish-website:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+      - name: Set current version
+        run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
+      - uses: jorelali/setup-elm@v3
+        with:
+          elm-version: 0.19.1
+      - uses: cachix/install-nix-action@v13
+        with:
+          nix_path: nixpkgs=channel:nixos-20.09
+      - name: Print nixpkgs version
+        run: nix-instantiate --eval -E '(import <nixpkgs> {}).lib.version'
+      - name: Build website (${{ env.DOCSPELL_VERSION }})
+        run: nix-shell website/shell.nix --run "sbt make-website"
+      - name: Publish website (${{ env.DOCSPELL_VERSION }})
+        run: sbt publish-website
