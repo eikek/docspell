@@ -139,8 +139,52 @@ sets more memory for the vm):
 
 ``` bash
 export QEMU_OPTS="-m 2048"
+export QEMU_NET_OPTS "hostfwd=tcp::7880-:7880"
 ./result/bin/run-docspelltest-vm
 ```
+
+# Release
+
+The CI and making a release is done via [github
+actions](https://docs.github.com/en/actions). The workflow is roughly
+like this:
+
+- each PR is only merged if the `sbt ci` task returns successfully.
+  This is ensured by the `ci.yml` workflow that triggers on each pull
+  request
+- each commit to the `master` branch is also going through `sbt ci`
+  and then a prerelease is created. The tag `nightly` is used to point
+  to the latest commit in `master`. Note, that this is [discouraged by
+  git](https://git-scm.com/docs/git-tag#_on_re_tagging), but github
+  doesn't allow to create a release without a tag. So this tag moves
+  (and is not really a tag then…). After the prerelease is created,
+  the docker images are built and pushed to docker hub into the
+  [docspell](https://hub.docker.com/u/docspell) organization. The
+  docker images are also tagged with `nightly` at docker hub. This is
+  all done via the `realease-nightly.yml` workflow.
+- A stable release is started by pushing a tag with pattern `v*` to
+  github. This triggers the `release.yml` workflow which builds the
+  packages and creates a release in *draft mode*. The `sbt ci` task
+  *is not* run, because it is meant to only release commits already in
+  the `master` branch. After this completes, the release notes need to
+  be added manually and then the release must be published at github.
+  This then triggers the `docker-images.yml` workflow, which builds
+  the corresponding docker images and pushes them to docker hub. The
+  docker images are tagged with the exact version and the `latest` tag
+  is moved to the new images. Another manual step is to set the branch
+  `current-docs` to its new state and push it to github. This will
+  trigger a build+publish of the website.
+- Publishing the website happens automatically on each push to the
+  branch `current-docs`. Changes to the current website must be based
+  on this branch.
+
+Some notes: I wanted a 2/3 step process when doing a stable release,
+to be able to add release notes manually (I don't want this to be
+automated right now) and to do some testing with the packages before
+publishing the release. However, for the nightly releases, this
+doesn't matter - everything must be automated here obviously. I also
+wanted the docker images to be built from the exact same artifacts
+that have been released at github (in contrast to being built again).
 
 
 # Background Info

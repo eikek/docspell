@@ -75,7 +75,7 @@ no fulltext search.
 
 When installing manually (i.e. not via docker), just install solr and
 create a core as described in the [solr
-documentation](https://lucene.apache.org/solr/guide/8_4/installing-solr.html).
+documentation](https://solr.apache.org/guide/8_4/installing-solr.html).
 That will provide you with the connection url (the last part is the
 core name).
 

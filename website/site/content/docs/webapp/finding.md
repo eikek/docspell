@@ -161,10 +161,10 @@ unless one of the following is true:
 ## The Query
 
 The query string for full text search is very powerful. Docspell
-currently supports [Apache SOLR](https://lucene.apache.org/solr/) as
+currently supports [Apache SOLR](https://solr.apache.org/) as
 full text search backend, so you may want to have a look at their
 [documentation on query
-syntax](https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing)
+syntax](https://solr.apache.org/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing)
 for a in depth guide.
 
 - Wildcards: `?` matches any single character, `*` matches zero or

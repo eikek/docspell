@@ -895,10 +895,9 @@ improvements for processing files.
 - Adds the [full-text
   search](https://docspell.org/docs/webapp/finding/#full-text-search)
   feature (see #69). It requires a separate
-  [Solr](https://lucene.apache.org/solr) instance. Items can be
-  searched by documents contents and item/file names. It is possible
-  to use full-text search to further confine the results via the
-  search menu.
+  [Solr](https://solr.apache.org) instance. Items can be searched by
+  documents contents and item/file names. It is possible to use
+  full-text search to further confine the results via the search menu.
 - Fixes column types for item date and due-date for MariaDB (see #158)
   and adds an upper limit for due-dates (which is configurable).
 - Fixes a bug when cancelling jobs. Stuck jobs were only removed from

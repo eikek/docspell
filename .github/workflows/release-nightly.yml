@@ -1,0 +1,52 @@
+name: Release Nightly
+on:
+  push:
+    branches:
+      - "master"
+jobs:
+  release-nightly:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: true
+      matrix:
+        java: [ 'openjdk@1.11' ]
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+      - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: ${{ matrix.java }}
+      - uses: jorelali/setup-elm@v3
+        with:
+          elm-version: 0.19.1
+      - uses: bahmutov/npm-install@v1
+      - name: Coursier cache
+        uses: coursier/cache-action@v6
+      - name: Set current version
+        run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
+      - name: sbt ci ${{ github.ref }}
+        run: sbt ci
+      - name: sbt make-pkg (${{ env.DOCSPELL_VERSION }})
+        run: sbt make-pkg
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "nightly"
+          prerelease: true
+          title: "Docspell Nightly"
+          files: |
+            modules/restserver/target/docspell-restserver_${{ env.DOCSPELL_VERSION }}_all.deb
+            modules/restserver/target/universal/docspell-restserver-${{ env.DOCSPELL_VERSION }}.zip
+            modules/joex/target/docspell-joex_${{ env.DOCSPELL_VERSION }}_all.deb
+            modules/joex/target/universal/docspell-joex-${{ env.DOCSPELL_VERSION }}.zip
+            tools/target/docspell-tools-${{ env.DOCSPELL_VERSION }}.zip
+      - name: Build Docker Images (${{ env.DOCSPELL_VERSION }})
+        run: ./docker/dockerfiles/build.sh ${{ env.DOCSPELL_VERSION }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Publish Images (${{ env.DOCSPELL_VERSION }})
+        run: ./docker/dockerfiles/push.sh ${{ env.DOCSPELL_VERSION }}

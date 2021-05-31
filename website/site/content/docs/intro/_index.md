@@ -85,7 +85,7 @@ database. And it is also recommended (though not strictly required),
 that all components can reach each other.
 
 The fulltext search index is another separate component, where
-currently only [SOLR](https://lucene.apache.org/solr) is supported.
+currently only [SOLR](https://solr.apache.org) is supported.
 Fulltext search is optional, so the SOLR component is not required if
 docspell is run without fulltext search support.
 

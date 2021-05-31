@@ -776,8 +776,8 @@ addCommandAlias(
   "make",
   ";set webapp/elmCompileMode := ElmCompileMode.Production; set webapp/stylesMode := StylesMode.Prod ;root/openapiCodegen ;root/Test/compile"
 )
-addCommandAlias("make-zip", ";restserver/universal:packageBin ;joex/universal:packageBin")
-addCommandAlias("make-deb", ";restserver/debian:packageBin ;joex/debian:packageBin")
+addCommandAlias("make-zip", ";restserver/Universal/packageBin ;joex/Universal/packageBin")
+addCommandAlias("make-deb", ";restserver/Debian/packageBin ;joex/Debian/packageBin")
 addCommandAlias("make-tools", ";root/toolsPackage")
 addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb ;make-tools")
 
@@ -787,3 +787,5 @@ addCommandAlias(
   "scalafmtSbtCheck; scalafmtCheckAll; Compile/scalafix --check; Test/scalafix --check"
 )
 addCommandAlias("fix", "Compile/scalafix; Test/scalafix; scalafmtSbt; scalafmtAll")
+addCommandAlias("make-website", ";website/clean ;website/zolaBuild ;website/zolaCheck")
+addCommandAlias("publish-website", "website/publishToGitHubPages")
