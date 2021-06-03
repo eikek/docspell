@@ -150,7 +150,7 @@ downloadAttachment() {
         DL_URL="$ATTACH_URL/$attachId"
 
         checksum1=$("$CURL_CMD" -s -I -H "X-Docspell-Auth: $auth_token" "$DL_URL" | \
-                        grep -i 'etag' | cut -d' ' -f2 | "$JQ_CMD" -r)
+                        grep -i 'etag' | cut -d' ' -f2 | xargs | tr -d '\r')
         "$CURL_CMD" -s -o "$attachOut" -H "X-Docspell-Auth: $auth_token" "$DL_URL"
         checksum2=$(sha256sum "$attachOut" | cut -d' ' -f1 | xargs)
         if [ "$checksum1" == "$checksum2" ]; then
