@@ -30,6 +30,9 @@ get lang =
         English ->
             gb
 
+        German ->
+            de
+
 
 format : UiLanguage -> (DateTimeMsg -> List Token) -> Int -> String
 format lang pattern millis =

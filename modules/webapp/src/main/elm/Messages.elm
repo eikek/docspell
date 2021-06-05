@@ -46,6 +46,9 @@ get lang =
         English ->
             gb
 
+        German ->
+            de
+
 
 {-| Get a ISO-3166-1 code of the given lanugage.
 -}
@@ -90,6 +93,26 @@ gb =
     , flagIcon = "flag-icon flag-icon-gb"
     , app = Messages.App.gb
     , collectiveSettings = Messages.Page.CollectiveSettings.gb
+    , login = Messages.Page.Login.gb
+    , register = Messages.Page.Register.gb
+    , newInvite = Messages.Page.NewInvite.gb
+    , upload = Messages.Page.Upload.gb
+    , itemDetail = Messages.Page.ItemDetail.gb
+    , queue = Messages.Page.Queue.gb
+    , userSettings = Messages.Page.UserSettings.gb
+    , manageData = Messages.Page.ManageData.gb
+    , home = Messages.Page.Home.gb
+    }
+
+
+de : Messages
+de =
+    { lang = German
+    , iso2 = "de"
+    , label = "Deutsch"
+    , flagIcon = "flag-icon flag-icon-de"
+    , app = Messages.App.de
+    , collectiveSettings = Messages.Page.CollectiveSettings.de
     , login = Messages.Page.Login.gb
     , register = Messages.Page.Register.gb
     , newInvite = Messages.Page.NewInvite.gb

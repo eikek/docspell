@@ -1,4 +1,7 @@
-module Messages.Data.Language exposing (gb)
+module Messages.Data.Language exposing
+    ( de
+    , gb
+    )
 
 import Data.Language exposing (Language(..))
 
@@ -50,3 +53,52 @@ gb lang =
 
         Latvian ->
             "Latvian"
+
+
+de : Language -> String
+de lang =
+    case lang of
+        German ->
+            "Deutsch"
+
+        English ->
+            "Englisch"
+
+        French ->
+            "Französisch"
+
+        Italian ->
+            "Italienisch"
+
+        Spanish ->
+            "Spanisch"
+
+        Portuguese ->
+            "Portugiesisch"
+
+        Czech ->
+            "Tschechisch"
+
+        Danish ->
+            "Dänisch"
+
+        Finnish ->
+            "Finnisch"
+
+        Norwegian ->
+            "Norwegisch"
+
+        Swedish ->
+            "Schwedisch"
+
+        Russian ->
+            "Russisch"
+
+        Romanian ->
+            "Romänisch"
+
+        Dutch ->
+            "Niederländisch"
+
+        Latvian ->
+            "Lettisch"

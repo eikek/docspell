@@ -1,4 +1,8 @@
-module Messages.Basics exposing (Texts, gb)
+module Messages.Basics exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 
 type alias Texts =
@@ -67,4 +71,39 @@ gb =
     , concerning = "Concerning"
     , customFields = "Custom Fields"
     , direction = "Direction"
+    }
+
+
+de : Texts
+de =
+    { incoming = "Eingehend"
+    , outgoing = "Ausgehend"
+    , tags = "Tags"
+    , items = "Dokumente"
+    , submit = "Absenden"
+    , submitThisForm = "Formular abschicken"
+    , cancel = "Abbrechen"
+    , delete = "Löschen"
+    , created = "Erstellt"
+    , edit = "Ändern"
+    , back = "Zurück"
+    , backToList = "Zurück zur Liste"
+    , searchPlaceholder = "Suche…"
+    , selectPlaceholder = "Auswahl…"
+    , id = "Id"
+    , ok = "Ok"
+    , yes = "Ja"
+    , no = "Nein"
+    , chooseTag = "Wähle enien Tag…"
+    , loading = "Laden…"
+    , name = "Name"
+    , organization = "Organisation"
+    , person = "Person"
+    , equipment = "Zubehör"
+    , folder = "Ordner"
+    , date = "Datum"
+    , correspondent = "Korrespondent"
+    , concerning = "Betreffend"
+    , customFields = "Benutzer-Felder"
+    , direction = "Richtung"
     }

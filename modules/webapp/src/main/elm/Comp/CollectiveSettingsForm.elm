@@ -291,7 +291,7 @@ view2 flags texts settings model =
                         ]
                         []
                     , span [ class "ml-2" ]
-                        [ text texts.integrationEndpointHelp
+                        [ text texts.integrationEndpointLabel
                         ]
                     ]
                 , div [ class "opacity-50 text-sm" ]

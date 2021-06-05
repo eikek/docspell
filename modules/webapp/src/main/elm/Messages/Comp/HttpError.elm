@@ -1,4 +1,7 @@
-module Messages.Comp.HttpError exposing (gb)
+module Messages.Comp.HttpError exposing
+    ( de
+    , gb
+    )
 
 import Http
 
@@ -16,6 +19,24 @@ gb err =
             , invalidInput = "Invalid input when processing the request."
             , notFound = "The requested resource doesn't exist."
             , invalidBody = \str -> "There was an error decoding the response: " ++ str
+            }
+    in
+    errorToString texts err
+
+
+de : Http.Error -> String
+de err =
+    let
+        texts =
+            { badUrl = \url -> "Die URL ist falsch: " ++ url
+            , timeout = "Es gab einen Netzwerk-Timeout."
+            , networkError = "Es gab ein Netzwerk-Fehler."
+            , invalidResponseStatus =
+                \status ->
+                    "Ein ungültiger Antwort-Code: " ++ String.fromInt status ++ "."
+            , invalidInput = "Die Daten im Request waren ungültig."
+            , notFound = "Die angegebene Ressource wurde nicht gefunden."
+            , invalidBody = \str -> "Es gab einen Fehler beim Dekodieren der Antwort: " ++ str
             }
     in
     errorToString texts err

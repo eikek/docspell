@@ -1,4 +1,8 @@
-module Messages.Comp.UserManage exposing (Texts, gb)
+module Messages.Comp.UserManage exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -35,4 +39,20 @@ gb =
     , createNewUser = "Create new user"
     , deleteThisUser = "Delete this user"
     , pleaseCorrectErrors = "Please correct the errors in the form."
+    }
+
+
+de : Texts
+de =
+    { userTable = Messages.Comp.UserTable.de
+    , userForm = Messages.Comp.UserForm.de
+    , basics = Messages.Basics.de
+    , httpError = Messages.Comp.HttpError.de
+    , users = "Benutzer"
+    , newUser = "Neuer Benutzer"
+    , addNewUser = "Neuen Benutzen hinzufügen"
+    , reallyDeleteUser = "Den Benutzer wirklich löschen?"
+    , createNewUser = "Neuen Benutzer erstellen"
+    , deleteThisUser = "Benutzer löschen"
+    , pleaseCorrectErrors = "Bitte korrigiere die Fehler im Formular."
     }
