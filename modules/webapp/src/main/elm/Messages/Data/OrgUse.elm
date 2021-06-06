@@ -1,4 +1,7 @@
-module Messages.Data.OrgUse exposing (gb)
+module Messages.Data.OrgUse exposing
+    ( de
+    , gb
+    )
 
 import Data.OrgUse exposing (OrgUse(..))
 
@@ -11,3 +14,13 @@ gb pu =
 
         Disabled ->
             "Disabled"
+
+
+de : OrgUse -> String
+de pu =
+    case pu of
+        Correspondent ->
+            "Korrespondent"
+
+        Disabled ->
+            "Deaktiviert"

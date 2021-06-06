@@ -1,4 +1,7 @@
-module Messages.Data.PersonUse exposing (gb)
+module Messages.Data.PersonUse exposing
+    ( de
+    , gb
+    )
 
 import Data.PersonUse exposing (PersonUse(..))
 
@@ -17,3 +20,19 @@ gb pu =
 
         Disabled ->
             "Disabled"
+
+
+de : PersonUse -> String
+de pu =
+    case pu of
+        Correspondent ->
+            "Korrespondent"
+
+        Concerning ->
+            "Betreffend"
+
+        Both ->
+            "Beide"
+
+        Disabled ->
+            "Deaktiviert"

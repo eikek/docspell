@@ -1,4 +1,8 @@
-module Messages.Comp.CustomFieldForm exposing (Texts, gb)
+module Messages.Comp.CustomFieldForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Data.CustomFieldType exposing (CustomFieldType)
 import Http
@@ -51,4 +55,32 @@ gb =
     , fieldNameRequired = "A name is required."
     , fieldTypeRequired = "A type is required."
     , updateSuccessful = "Field has been saved."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , reallyDeleteField = "Das Benutzer-Feld wirklich löschen?"
+    , fieldTypeLabel = Messages.Data.CustomFieldType.de
+    , httpError = Messages.Comp.HttpError.de
+    , createCustomField = "Ein neues Benutzer-Feld erstellen."
+    , modifyTypeWarning =
+        "Beachte, dass eine Änderung im Format zu nicht-sichtbare Werten führen kann, falls diese dem "
+            ++ "neuen Format nicht entsprechen!"
+    , nameInfo =
+        "Der Name des Feldes identifiziert es eindeutig und wird im erweiterten Such-Query "
+            ++ "verwendet. Es muss eine gültige ID sein, darf also keine Leerzeichen oder "
+            ++ "andere seltsame Zeichen enthalten."
+    , fieldFormat = "Feld Format"
+    , fieldFormatInfo =
+        "Ein Feld muss ein Format angeben. Werte werden dagegen validiert."
+    , label = "Bezeichnung"
+    , labelInfo =
+        "Diese Bezeichnung erscheint im UI für das Feld. Es kann im Gegensatz zum Namen "
+            ++ "Leerzeichen etc enthalten. Falls nicht angegeben, wird der Name verwendet."
+    , deleteThisField = "Dieses Feld löschen"
+    , fieldNameRequired = "Ein Name ist erforderlich."
+    , fieldTypeRequired = "Ein Format ist erforderlich."
+    , updateSuccessful = "Das Feld wurde gespeichert."
     }

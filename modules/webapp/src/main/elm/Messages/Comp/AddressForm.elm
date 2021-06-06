@@ -1,4 +1,8 @@
-module Messages.Comp.AddressForm exposing (Texts, gb)
+module Messages.Comp.AddressForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 
 type alias Texts =
@@ -17,4 +21,14 @@ gb =
     , zipCode = "Zip Code"
     , city = "City"
     , country = "Country"
+    }
+
+
+de : Texts
+de =
+    { selectCountry = "Land auswählen"
+    , street = "Straße"
+    , zipCode = "Postleitzahl"
+    , city = "Stadt"
+    , country = "Land"
     }

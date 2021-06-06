@@ -241,7 +241,7 @@ formTabs texts flags settings model =
                         , ( "hidden", isFolderMember model )
                         ]
                     ]
-                    [ Markdown.toHtml [] texts.folderNotOwnerWarning
+                    [ Markdown.toHtml [] texts.basics.folderNotOwnerWarning
                     ]
                 ]
             ]

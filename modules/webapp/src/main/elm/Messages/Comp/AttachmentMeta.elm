@@ -1,4 +1,8 @@
-module Messages.Comp.AttachmentMeta exposing (Texts, gb)
+module Messages.Comp.AttachmentMeta exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -39,4 +43,22 @@ gb =
     , itemDate = "Item Date"
     , itemDueDate = "Item Due Date"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.English
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , httpError = Messages.Comp.HttpError.de
+    , extractedMetadata = "Extrahierte Metadaten"
+    , content = "Inhalt"
+    , labels = "Label"
+    , proposals = "Vorschläge"
+    , correspondentOrg = "Korrespondent Organisation"
+    , correspondentPerson = "Korrespondent Person"
+    , concerningPerson = "Betreffend Person"
+    , concerningEquipment = "Betreffend Zubehör"
+    , itemDate = "Dokument Datum"
+    , itemDueDate = "Fälligkeits-Datum"
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.German
     }

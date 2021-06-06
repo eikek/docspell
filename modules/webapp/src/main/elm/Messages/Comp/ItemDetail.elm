@@ -1,4 +1,8 @@
-module Messages.Comp.ItemDetail exposing (Texts, gb)
+module Messages.Comp.ItemDetail exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Comp.DetailEdit
@@ -59,8 +63,8 @@ gb =
     , httpError = Messages.Comp.HttpError.gb
     , key = "Key"
     , backToSearchResults = "Back to search results"
-    , previousItem = "Previous item."
-    , nextItem = "Next item."
+    , previousItem = "Previous item"
+    , nextItem = "Next item"
     , sendMail = "Send Mail"
     , addMoreFiles = "Add more files to this item"
     , confirmItemMetadata = "Confirm item metadata"
@@ -76,4 +80,37 @@ gb =
     , sendingMailNow = "Sending e-mail…"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     , mailSendSuccessful = "Mail sent."
+    }
+
+
+de : Texts
+de =
+    { addFilesForm = Messages.Comp.ItemDetail.AddFilesForm.de
+    , itemInfoHeader = Messages.Comp.ItemDetail.ItemInfoHeader.de
+    , singleAttachment = Messages.Comp.ItemDetail.SingleAttachment.de
+    , sentMails = Messages.Comp.SentMails.de
+    , notes = Messages.Comp.ItemDetail.Notes.de
+    , itemMail = Messages.Comp.ItemMail.de
+    , detailEdit = Messages.Comp.DetailEdit.de
+    , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.de
+    , httpError = Messages.Comp.HttpError.de
+    , key = "Taste"
+    , backToSearchResults = "Zurück zu den Suchresultaten"
+    , previousItem = "Voriges Dokument"
+    , nextItem = "Nächstes Dokument"
+    , sendMail = "E-Mail senden"
+    , addMoreFiles = "Mehr Dateien diesem Dokument anfügen"
+    , confirmItemMetadata = "Metadaten bestätigen"
+    , confirm = "Bestätige"
+    , unconfirmItemMetadata = "Widerrufe Bestätigung"
+    , reprocessItem = "Das Dokument nochmal verarbeiten"
+    , deleteThisItem = "Das Dokument löschen"
+    , sentEmails = "Versendete E-Mails"
+    , sendThisItemViaEmail = "Sende dieses Dokument via E-Mail"
+    , itemId = "Dokument ID"
+    , createdOn = "Erstellt am"
+    , lastUpdateOn = "Letzte Aktualisierung"
+    , sendingMailNow = "E-Mail wird gesendet…"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
+    , mailSendSuccessful = "E-Mail wurde versendet."
     }

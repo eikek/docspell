@@ -1,4 +1,8 @@
-module Messages.Comp.ItemMail exposing (Texts, gb)
+module Messages.Comp.ItemMail exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -35,4 +39,21 @@ gb =
     , includeAllAttachments = "Include all item attachments"
     , connectionMissing = "No E-Mail connections configured. Goto user settings to add one."
     , sendLabel = "Send"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , httpError = Messages.Comp.HttpError.de
+    , selectConnection = "Verbindung wählen..."
+    , sendVia = "Senden via"
+    , recipients = "Empfänger"
+    , ccRecipients = "CC"
+    , bccRecipients = "BCC"
+    , subject = "Betreff"
+    , body = "Inhalt"
+    , includeAllAttachments = "All Anhänge mit einfügen"
+    , connectionMissing = "Keine E-Mail Verbindung definiert. Gehe zu den Benutzer-Einstellungen und füge eine hinzu."
+    , sendLabel = "Senden"
     }

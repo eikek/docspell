@@ -1,4 +1,8 @@
-module Messages.Comp.DetailEdit exposing (Texts, gb)
+module Messages.Comp.DetailEdit exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -34,4 +38,18 @@ gb =
     , httpError = Messages.Comp.HttpError.gb
     , submitSuccessful = "Successfully saved."
     , missingRequiredFields = "Please fill required fields."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , tagForm = Messages.Comp.TagForm.de
+    , personForm = Messages.Comp.PersonForm.de
+    , orgForm = Messages.Comp.OrgForm.de
+    , equipmentForm = Messages.Comp.EquipmentForm.de
+    , customFieldForm = Messages.Comp.CustomFieldForm.de
+    , httpError = Messages.Comp.HttpError.de
+    , submitSuccessful = "Erfolgreich gespeichert."
+    , missingRequiredFields = "Bitte erforderliche Felder ausfüllen."
     }
