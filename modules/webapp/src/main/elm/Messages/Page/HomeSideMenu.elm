@@ -1,4 +1,8 @@
-module Messages.Page.HomeSideMenu exposing (Texts, gb)
+module Messages.Page.HomeSideMenu exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Comp.ItemDetail.MultiEditMenu
 import Messages.Comp.SearchMenu
@@ -24,4 +28,16 @@ gb =
     , multiEditHeader = "Multi-Edit"
     , multiEditInfo = "Note that a change here immediatly affects all selected items on the right!"
     , close = "Close"
+    }
+
+
+de : Texts
+de =
+    { searchMenu = Messages.Comp.SearchMenu.de
+    , multiEdit = Messages.Comp.ItemDetail.MultiEditMenu.de
+    , editMode = "Änderungs-Modus"
+    , resetSearchForm = "Such-Formular zurücksetzen"
+    , multiEditHeader = "Mehre Dokumente ändern"
+    , multiEditInfo = "Beachte, dass eine Änderung hier direkt auf alle gewählten Dokumente angwendet wird!"
+    , close = "Schließen"
     }

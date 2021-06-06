@@ -1,4 +1,8 @@
-module Messages.Comp.ItemCard exposing (Texts, gb)
+module Messages.Comp.ItemCard exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Data.Direction exposing (Direction)
 import Messages.Basics
@@ -31,4 +35,18 @@ gb =
     , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.English
     , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.English
     , directionLabel = Messages.Data.Direction.gb
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , dueOn = "Fällig am"
+    , new = "Neu"
+    , openAttachmentFile = "Öffne Anhang"
+    , gotoDetail = "Gehe zur Detail-Ansicht"
+    , cycleAttachments = "Gehe durch Anhänge"
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.German
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.German
+    , directionLabel = Messages.Data.Direction.de
     }

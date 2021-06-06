@@ -1,4 +1,8 @@
-module Messages.Comp.TagSelect exposing (Texts, gb)
+module Messages.Comp.TagSelect exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Comp.ExpandCollapse
 
@@ -16,5 +20,14 @@ gb =
     { expandCollapse = Messages.Comp.ExpandCollapse.gb
     , hideEmpty = "Hide empty"
     , showEmpty = "Show empty"
+    , filterPlaceholder = "Filter …"
+    }
+
+
+de : Texts
+de =
+    { expandCollapse = Messages.Comp.ExpandCollapse.de
+    , hideEmpty = "Leere ausblenden"
+    , showEmpty = "Leere anzeigen"
     , filterPlaceholder = "Filter …"
     }

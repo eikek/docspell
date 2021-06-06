@@ -36,6 +36,7 @@ type alias Texts =
     , concerning : String
     , customFields : String
     , direction : String
+    , folderNotOwnerWarning : String
     }
 
 
@@ -71,6 +72,12 @@ gb =
     , concerning = "Concerning"
     , customFields = "Custom Fields"
     , direction = "Direction"
+    , folderNotOwnerWarning =
+        """
+You are **not a member** of this folder. This item will be **hidden**
+from any search now. Use a folder where you are a member of to make this
+item visible. This message will disappear then.
+                      """
     }
 
 
@@ -106,4 +113,11 @@ de =
     , concerning = "Betreffend"
     , customFields = "Benutzer-Felder"
     , direction = "Richtung"
+    , folderNotOwnerWarning =
+        """
+Du bist *kein* Mitglied dieses Ordners. Dokumnte, welche durch diese
+URL hochgeladen werden, sind für dich in der Suche *nicht* sichtbar.
+Nutze lieber einen Ordner, dem Du als Mitglied zugeordnet bist. Diese
+Nachricht verschwindet dann.
+                      """
     }

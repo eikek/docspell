@@ -442,7 +442,7 @@ view2 flags texts settings model =
                     ]
                 , class S.message
                 ]
-                [ Markdown.toHtml [] texts.folderForbiddenText
+                [ Markdown.toHtml [] texts.basics.folderNotOwnerWarning
                 ]
             ]
         , div [ class "mb-4" ]

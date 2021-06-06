@@ -1,4 +1,8 @@
-module Messages.Comp.ItemCardList exposing (Texts, gb)
+module Messages.Comp.ItemCardList exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Comp.ItemCard
 
@@ -11,4 +15,10 @@ type alias Texts =
 gb : Texts
 gb =
     { itemCard = Messages.Comp.ItemCard.gb
+    }
+
+
+de : Texts
+de =
+    { itemCard = Messages.Comp.ItemCard.de
     }

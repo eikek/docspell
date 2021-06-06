@@ -121,5 +121,5 @@ de =
     , queue = Messages.Page.Queue.gb
     , userSettings = Messages.Page.UserSettings.gb
     , manageData = Messages.Page.ManageData.gb
-    , home = Messages.Page.Home.gb
+    , home = Messages.Page.Home.de
     }
