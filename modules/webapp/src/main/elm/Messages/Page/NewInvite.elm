@@ -1,4 +1,8 @@
-module Messages.Page.NewInvite exposing (Texts, gb)
+module Messages.Page.NewInvite exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -37,5 +41,32 @@ create one key for each person you want to invite.
 
 Creating an invite requires providing the password
 from the configuration.
+"""
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , httpError = Messages.Comp.HttpError.de
+    , createNewInvitations = "Neue Einladung erstellen"
+    , invitationKey = "Einladungs-ID"
+    , password = "Passwort"
+    , reset = "Zurücksetzen"
+    , newInvitationCreated = "Neue Einladung erstellt."
+    , inviteInfo =
+        """
+Docspell erfordert eine Einladung, wenn ein neues Konto registriert
+wird. Diese Einladungen können hier erstellt und dann an
+Freunde/Bekannte versendet werden, damit diese sich ein Konto
+erstellen können.
+
+Jede Einladung kann genau einmal verwendet werden und läuft nach
+einiger Zeit ab. Es muss also für jede Person eine neue Einladung
+generiert werden.
+
+Um eine Einladung zu erstellen, wird das Passwort aus der
+Konfiguration benötigt.
+
 """
     }

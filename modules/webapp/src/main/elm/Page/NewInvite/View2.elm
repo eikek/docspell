@@ -40,7 +40,7 @@ viewContent texts flags _ model =
                         [ for "invitekey"
                         , class "mb-1 text-xs sm:text-sm tracking-wide "
                         ]
-                        [ text texts.invitationKey
+                        [ text texts.password
                         ]
                     , div [ class "relative" ]
                         [ div
@@ -122,7 +122,8 @@ resultMessage texts model =
 inviteMessage : Texts -> Flags -> Html Msg
 inviteMessage texts flags =
     div
-        [ class (S.message ++ "text-sm")
+        [ class S.message
+        , class "markdown-preview"
         , classList
             [ ( "hidden", flags.config.signupMode /= "invite" )
             ]
