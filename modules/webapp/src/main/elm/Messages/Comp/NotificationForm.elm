@@ -1,4 +1,8 @@
-module Messages.Comp.NotificationForm exposing (Texts, gb)
+module Messages.Comp.NotificationForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -76,4 +80,43 @@ gb =
     , invalidCalEvent = "The calendar event is not valid."
     , remindDaysRequired = "Remind-Days is required."
     , recipientsRequired = "At least one recipient is required."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , calEventInput = Messages.Comp.CalEventInput.de
+    , httpError = Messages.Comp.HttpError.de
+    , reallyDeleteTask = "Diesen Notifizierungs-Auftrag wirklich löschen?"
+    , startOnce = "Jetzt starten"
+    , startTaskNow = "Starte den Auftrag sofort"
+    , selectConnection = "Verbindung auswählen..."
+    , deleteThisTask = "Den Auftrag löschen"
+    , enableDisable = "Aktiviere/Deaktiviere den Auftrag"
+    , summary = "Kurzbeschreibung"
+    , summaryInfo = "Eine kurze lesbare Zusammenfassung, nur für die Anzeige"
+    , sendVia = "Senden via"
+    , sendViaInfo = "Die SMTP Verbindung, dies zum Senden der Notifizierungs E-Mails verwendet werden soll."
+    , recipients = "Empfänger"
+    , recipientsInfo = "Eine oder mehrere E-Mail Adressen, jede mit 'Eingabe' bestätigen."
+    , tagsInclude = "Tags verknüpft (&&)"
+    , tagsIncludeInfo = "Dokuments müssen all diese Tags haben."
+    , tagsExclude = "Tags nicht verknüpft (||)"
+    , tagsExcludeInfo = "Dokumente dürfen keinen dieser Tags haben."
+    , remindDaysLabel = "Fällig in Tagen"
+    , remindDaysInfo = "Wähle Dokumente, die in weniger als diesen Tagen fällig sind."
+    , capOverdue = "Deckle überfällige Dokumente"
+    , capOverdueInfo = "Wenn aktiviert, werden nur Dokumente gesucht, die vor weniger als 'Fällig in Tagen' fällig waren."
+    , schedule = "Zeitplan"
+    , scheduleClickForHelp = "Klicke für Hilfe"
+    , scheduleInfo =
+        "Gib an, wie oft und wann der Auftrag laufen soll. "
+            ++ "Verwende Englische 3-Buchstaben Wochentage. Entweder ein einzelner Wert, "
+            ++ "eine Liste (wie `1,2,3`), eine Bereich (wie `1..3`) oder ein '*' (für alle) "
+            ++ "ist mögich für jeden Teil."
+    , connectionMissing = "Keine E-Mail Verbindung definiert. Gehe zu den E-Mail Einstellungen und füge eine hinzu."
+    , invalidCalEvent = "Das Kalender-Ereignis ist nicht gültig."
+    , remindDaysRequired = "'Fällig in Tagen' ist erforderlich."
+    , recipientsRequired = "Mindestens ein Empfänger muss angegeben werden."
     }

@@ -1,4 +1,8 @@
-module Messages.Comp.EmailSettingsTable exposing (Texts, gb)
+module Messages.Comp.EmailSettingsTable exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Basics
 
@@ -15,4 +19,12 @@ gb =
     { basics = Messages.Basics.gb
     , hostPort = "Host/Port"
     , from = "From"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , hostPort = "Server/Port"
+    , from = "Absender"
     }

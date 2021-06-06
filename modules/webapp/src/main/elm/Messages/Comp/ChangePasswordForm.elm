@@ -1,4 +1,8 @@
-module Messages.Comp.ChangePasswordForm exposing (Texts, gb)
+module Messages.Comp.ChangePasswordForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -33,4 +37,20 @@ gb =
     , passwordMismatch = "The passwords do not match."
     , fillRequiredFields = "Please fill required fields."
     , passwordChangeSuccessful = "Password has been changed."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , httpError = Messages.Comp.HttpError.de
+    , currentPassword = "Passwort ändern"
+    , newPassword = "Neues Passwort"
+    , repeatPassword = "Neues Passwort (Wiederholung)"
+    , currentPasswordPlaceholder = "Passwort"
+    , newPasswordPlaceholder = "Passwort"
+    , repeatPasswordPlaceholder = "Passwort"
+    , passwordMismatch = "Die Passwörter stimmen nicht überein."
+    , fillRequiredFields = "Bitte die erforderlichen Felder ausfüllen."
+    , passwordChangeSuccessful = "Das Passwort wurde geändert."
     }

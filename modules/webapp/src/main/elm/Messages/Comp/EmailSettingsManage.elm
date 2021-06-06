@@ -1,4 +1,8 @@
-module Messages.Comp.EmailSettingsManage exposing (Texts, gb)
+module Messages.Comp.EmailSettingsManage exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -26,9 +30,23 @@ gb =
     , settingsForm = Messages.Comp.EmailSettingsForm.gb
     , settingsTable = Messages.Comp.EmailSettingsTable.gb
     , httpError = Messages.Comp.HttpError.gb
-    , newSettings = "New Settings"
+    , newSettings = "New connection"
     , addNewSmtpSettings = "Add new SMTP settings"
     , reallyDeleteConnection = "Really delete these connection?"
     , deleteThisEntry = "Delete this connection"
     , fillRequiredFields = "Please fill required fields."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , settingsForm = Messages.Comp.EmailSettingsForm.de
+    , settingsTable = Messages.Comp.EmailSettingsTable.de
+    , httpError = Messages.Comp.HttpError.de
+    , newSettings = "Neue Verbindung"
+    , addNewSmtpSettings = "Neue SMTP Einstellungen hinzufügen"
+    , reallyDeleteConnection = "Diese Verbindung wirklich löschen?"
+    , deleteThisEntry = "Verbindung löschen"
+    , fillRequiredFields = "Bitte erforderliche Felder ausfüllen."
     }

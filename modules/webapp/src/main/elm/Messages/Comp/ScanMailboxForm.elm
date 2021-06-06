@@ -1,4 +1,8 @@
-module Messages.Comp.ScanMailboxForm exposing (Texts, gb)
+module Messages.Comp.ScanMailboxForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -50,7 +54,6 @@ type alias Texts =
     , itemDirectionInfo : String
     , itemFolder : String
     , itemFolderInfo : String
-    , folderOwnerWarning : String
     , tagsInfo : String
     , documentLanguage : String
     , documentLanguageInfo : String
@@ -88,7 +91,7 @@ gb =
     , mailbox = "Mailbox"
     , summary = "Summary"
     , summaryInfo = "Some human readable name, only for displaying"
-    , connectionInfo = "The IMAP connection to use when sending notification mails."
+    , connectionInfo = "The IMAP connection to use for fetching mails."
     , folders = "Folders"
     , foldersInfo = "The folders to look for mails."
     , receivedHoursInfo = "Select mails newer than `now - receivedHours`"
@@ -124,12 +127,6 @@ gb =
             ++ "at sender and receiver."
     , itemFolder = "Item Folder"
     , itemFolderInfo = "Put all items from this mailbox into the selected folder"
-    , folderOwnerWarning = """
-You are **not a member** of this folder. Items created from mails in
-this mailbox will be **hidden** from any search results. Use a folder
-where you are a member of to make items visible. This message will
-disappear then.
-                      """
     , tagsInfo = "Choose tags that should be applied to items."
     , documentLanguage = "Language"
     , documentLanguageInfo =
@@ -145,4 +142,78 @@ disappear then.
     , connectionMissing = "No E-Mail connections configured. Goto E-Mail Settings to add one."
     , noProcessingFolders = "No processing folders given."
     , invalidCalEvent = "The calendar event is not valid."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , calEventInput = Messages.Comp.CalEventInput.de
+    , httpError = Messages.Comp.HttpError.de
+    , reallyDeleteTask = "Den Auftrag wirklich löschen?"
+    , startOnce = "Jetzt starten"
+    , startNow = "Den Auftrag sofort starten"
+    , deleteThisTask = "Den Auftrag löschen"
+    , generalTab = "Allgemein"
+    , processingTab = "E-Mails abholen"
+    , additionalFilterTab = "Zusätzliche Filter"
+    , postProcessingTab = "Nachverarbeitung"
+    , metadataTab = "Metadaten"
+    , scheduleTab = "Zeitplan"
+    , processingTabInfo = "Diese Einstellungen legen fest, welche E-Mails aus dem Postfach heruntergeladen werden."
+    , additionalFilterTabInfo = "Diese Filter werden auf die bereits heruntergeladenen E-Mails angewendet und können nochmals E-Mails von der Verarbeitung ausschließen."
+    , postProcessingTabInfo = "Hier wird definiert was mit den E-Mails passiert, die heruntergeladen wurden."
+    , metadataTabInfo = "Gebe an, was für Metadaten an Dokumente geknüpft werden sollen, die durch diesen Auftrag entstehen."
+    , scheduleTabInfo = "Gebe an, wann und wie oft die E-Mails abgeholt werden sollen."
+    , selectConnection = "Verbindung wählen…"
+    , enableDisable = "Aktiviere/Deaktiviere den Auftrag"
+    , mailbox = "Postfach"
+    , summary = "Kurzbeschreibung"
+    , summaryInfo = "Eine kurze lesbare Zusammenfassung, nur für die Anzeige"
+    , connectionInfo = "Die IMAP Verbindung, die zum Abholen der E-Mails verwendet werden soll."
+    , folders = "Postfach Ordner"
+    , foldersInfo = "In diesen Ordner nach E-Mails suchen."
+    , receivedHoursInfo = "E-Mails suchen, die neuer sind als `heute - empfangenSeit`"
+    , receivedHoursLabel = "Empfangen seit (Stunden)"
+    , fileFilter = "Datei Filter"
+    , fileFilterInfo =
+        "Verwende eine Glob zum filtern von Anhängen. Zum Beispiel, um nur PDF Anhänge aus den Mails zu holen: "
+            ++ "`*.pdf`. Wenn auch der E-Mail Inhalt verwendet werden soll, erlaube alle HTML Dateien oder "
+            ++ "`mail.html`. Globs können kombiniert werden mit ODER, wie z.B.: "
+            ++ "`*.pdf|mail.html`. Wird kein Glob angegeben, ist es `*`, es werden alle Dateien verwendet."
+    , subjectFilter = "Betreff Filter"
+    , subjectFilterInfo =
+        "Verwende einen Gblo, um E-Mails anhand des Betreffs zu filtern. Zum Beispiel: "
+            ++ "`*Scanned Document*`. Kein Filter bedeutet `*`, was jeden Betreff zulässt."
+    , postProcessingLabel = "Wende Nachverarbeitung auf alle heruntergeladenen E-Mails an."
+    , postProcessingInfo = """
+Heruntergeladene E-Mails, die aber durch die Filter nicht importiert wurden, können durch dieses Flag von der gesamten Nachverarbeitung ein- oder ausgeschlossen werden. Ist es aktiviert wird die Nachverarbeitung, die hier definiert wird, auf alle E-Mails angewendet. Wenn es deaktiviert ist, wird es nur auf E-Mails angewendet, die importiert wurden.
+"""
+    , targetFolder = "Ziel Ordner"
+    , targetFolderInfo = "E-Mails nach der Verarbeitung in diesen Ordner verschieben."
+    , deleteMailLabel = "Importiete E-Mails löschen"
+    , deleteMailInfo =
+        "Importierte E-Mails auf dem Postfach löschen. Das wird nur dann angewendet, falls *kein* Ziel-Ordner angegeben ist."
+    , itemDirection = "Richtung"
+    , automatic = "Automatisch"
+    , itemDirectionInfo = """
+Setzt die Richtung des Dokuments. Falls sie für all diese Mails schon fest
+steht, dann kann hier ein Wert für alle festgelegt werden. Bei 'Automatisch' wird auf den Sender und Empfänger geschaut, um eine Richtung zu erraten."""
+    , itemFolder = "Dokument Ordner"
+    , itemFolderInfo = "Alle Dokumente aus diesem Auftrag in den Ordner tun"
+    , tagsInfo = "Wähle Tags, die den Dokumenten zugordnet werden"
+    , documentLanguage = "Sprache"
+    , documentLanguageInfo =
+        "Wird für Text-Extraktion und -Analyse verwendet. Die Standard-Sprache des Kollektivs "
+            ++ "wird verwendet, falls hier nicht angegeben."
+    , schedule = "Zeitplan"
+    , scheduleClickForHelp = "Klicke für Hilfe"
+    , scheduleInfo =
+        "Gib an, wie oft und wann der Auftrag laufen soll. "
+            ++ "Verwende Englische 3-Buchstaben Wochentage. Entweder ein einzelner Wert, "
+            ++ "eine Liste (wie `1,2,3`), eine Bereich (wie `1..3`) oder ein '*' (für alle) "
+            ++ "ist mögich für jeden Teil."
+    , connectionMissing = "Keine E-Mail Verbindung definiert. Gehe zu den E-Mail Einstellungen und füge eine hinzu."
+    , noProcessingFolders = "Keine Postfach Ordner ausgewählt."
+    , invalidCalEvent = "Das Kalender-Ereignis ist ungültig."
     }

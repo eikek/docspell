@@ -1123,7 +1123,7 @@ viewMetadata2 texts flags settings model =
                 ]
             , class S.message
             ]
-            [ Markdown.toHtml [] texts.folderOwnerWarning
+            [ Markdown.toHtml [] texts.basics.folderNotOwnerWarning
             ]
         ]
     , div [ class "mb-4" ]

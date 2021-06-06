@@ -1,4 +1,8 @@
-module Messages.Comp.UiSettingsManage exposing (Texts, gb)
+module Messages.Comp.UiSettingsManage exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -26,4 +30,16 @@ gb =
     , settingsSaved = "Settings saved."
     , unknownSaveError = "Unknown error while trying to save settings."
     , httpError = Messages.Comp.HttpError.gb
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , uiSettingsForm = Messages.Comp.UiSettingsForm.de
+    , saveSettings = "Einstellungen speichern"
+    , settingsUnchanged = "Einstellungen nicht verändert oder ungültig."
+    , settingsSaved = "Einstellungen gespeichert"
+    , unknownSaveError = "Unbekannter Fehler beim Speichern der Einstellungen."
+    , httpError = Messages.Comp.HttpError.de
     }

@@ -1,4 +1,8 @@
-module Messages.Comp.NotificationManage exposing (Texts, gb)
+module Messages.Comp.NotificationManage exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -33,4 +37,19 @@ gb =
     , taskUpdated = "Task updated."
     , taskStarted = "Task started."
     , taskDeleted = "Task deleted."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , notificationForm = Messages.Comp.NotificationForm.de
+    , notificationTable = Messages.Comp.NotificationTable.de
+    , httpError = Messages.Comp.HttpError.de
+    , newTask = "Neuer Auftrag"
+    , createNewTask = "Erstelle einen neuen Notifizierungs-Auftrag"
+    , taskCreated = "Auftrag erstellt."
+    , taskUpdated = "Auftrag aktualisiert."
+    , taskStarted = "Auftrag gestartet."
+    , taskDeleted = "Auftrag gelöscht."
     }

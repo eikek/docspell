@@ -119,7 +119,7 @@ de =
     , upload = Messages.Page.Upload.de
     , itemDetail = Messages.Page.ItemDetail.de
     , queue = Messages.Page.Queue.de
-    , userSettings = Messages.Page.UserSettings.gb
+    , userSettings = Messages.Page.UserSettings.de
     , manageData = Messages.Page.ManageData.gb
     , home = Messages.Page.Home.de
     }

@@ -1,4 +1,8 @@
-module Messages.Comp.NotificationTable exposing (Texts, gb)
+module Messages.Comp.NotificationTable exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Basics
 
@@ -19,4 +23,14 @@ gb =
     , schedule = "Schedule"
     , connection = "Connection"
     , recipients = "Recipients"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , summary = "Kurzbeschreibung"
+    , schedule = "Zeitplan"
+    , connection = "Verbindung"
+    , recipients = "Empfänger"
     }
