@@ -28,6 +28,7 @@ type alias Texts =
     , addNewEquipment : String
     , editEquipment : String
     , suggestions : String
+    , noSuggestions : String
     , formatDate : Int -> String
     , direction : Direction -> String
     }
@@ -50,6 +51,7 @@ gb =
     , addNewEquipment = "Add new equipment"
     , editEquipment = "Edit equipment"
     , suggestions = "Suggestions"
+    , noSuggestions = "No suggestions"
     , formatDate = DF.formatDateLong Messages.UiLanguage.English
     , direction = Messages.Data.Direction.gb
     }
@@ -72,6 +74,7 @@ de =
     , addNewEquipment = "Neues Zubehör hinzufügen"
     , editEquipment = "Zubehör ändern"
     , suggestions = "Vorschläge"
+    , noSuggestions = "Keine Vorschläge"
     , formatDate = DF.formatDateLong Messages.UiLanguage.German
     , direction = Messages.Data.Direction.de
     }

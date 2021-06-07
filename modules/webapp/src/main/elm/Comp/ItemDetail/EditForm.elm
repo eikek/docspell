@@ -407,7 +407,11 @@ renderSuggestions texts model mkName idnames tagger =
         , class "flex flex-col text-sm"
         ]
         [ div [ class "font-bold my-1" ]
-            [ text texts.suggestions
+            [ if List.isEmpty idnames then
+                text texts.noSuggestions
+
+              else
+                text texts.suggestions
             ]
         , ul [ class "list-disc ml-6" ] <|
             (idnames
