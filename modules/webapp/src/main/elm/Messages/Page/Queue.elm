@@ -1,4 +1,8 @@
-module Messages.Page.Queue exposing (Texts, gb)
+module Messages.Page.Queue exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -29,6 +33,7 @@ type alias Texts =
     , changePriority : String
     , prio : String
     , formatDateTime : Int -> String
+    , sidebarTitle : String
     }
 
 
@@ -37,7 +42,7 @@ gb =
     { basics = Messages.Basics.gb
     , httpError = Messages.Comp.HttpError.gb
     , currentlyRunning = "Currently Running"
-    , queue = "Queue"
+    , queue = "Jobs"
     , waiting = "Waiting"
     , errored = "Errored"
     , success = "Success"
@@ -46,7 +51,7 @@ gb =
     , noJobsDisplay = "No jobs to display."
     , noJobsWaiting = "No waiting jobs."
     , noJobsFailed = "No failed jobs to display."
-    , noJobsSuccess = "No succesfull jobs to display."
+    , noJobsSuccess = "No succesful jobs to display."
     , noJobsCancelled = "No cancelled jobs to display."
     , deleteThisJob = "Cancel/Delete this job?"
     , showLog = "Show log"
@@ -55,4 +60,32 @@ gb =
     , changePriority = "Change priority of this job"
     , prio = "Prio"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , sidebarTitle = "Processing"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , httpError = Messages.Comp.HttpError.de
+    , currentlyRunning = "Wird ausgeführt"
+    , queue = "Jobs"
+    , waiting = "Wartend"
+    , errored = "Fehlerhaft"
+    , success = "Erfolgreich"
+    , cancelled = "Abgebrochhen"
+    , noJobsRunning = "Es werden keine Jobs ausgeführt."
+    , noJobsDisplay = "Keine Jobs vorhanden."
+    , noJobsWaiting = "Keine wartenden Jobs."
+    , noJobsFailed = "Keine fehlgeschlagenen Jobs vorhanden."
+    , noJobsSuccess = "Keine erfolgreichen Jobs vorhanden."
+    , noJobsCancelled = "Keine abgebrochenen Jobs vorhanden."
+    , deleteThisJob = "Job abbrechen/löschen?"
+    , showLog = "Log anzeigen"
+    , remove = "Entfernen"
+    , retries = "Versuche"
+    , changePriority = "Priorität des Jobs ändern"
+    , prio = "Prio"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
+    , sidebarTitle = "Verarbeitung"
     }

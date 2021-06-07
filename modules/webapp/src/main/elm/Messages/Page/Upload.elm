@@ -1,4 +1,8 @@
-module Messages.Page.Upload exposing (Texts, gb)
+module Messages.Page.Upload exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Data.Language exposing (Language)
 import Messages.Basics
@@ -58,4 +62,34 @@ gb =
         }
     , selectedFiles = "Selected Files"
     , languageLabel = Messages.Data.Language.gb
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , dropzone = Messages.Comp.Dropzone.de
+    , reset = "Zurücksetzen"
+    , allFilesOneItem = "Alle Dateien sind ein Dokument"
+    , skipExistingFiles = "Lasse Dateien aus, die schon in Docspell sind"
+    , language = "Sprache"
+    , languageInfo =
+        "Wird für Text-Extraktion und -Analyse verwendet. Die Standard-Sprache des Kollektivs "
+            ++ "wird verwendet, falls hier nicht angegeben."
+    , uploadErrorMessage = "Es gab Fehler beim Hochladen der Dateien."
+    , successBox =
+        { allFilesUploaded = "Alle Dateien hochgeladen"
+        , line1 =
+            "Deine Dateien wurden erfolgreich hochgeladen und sie werden nun verarbeitet. "
+                ++ "Gehe nachher zur "
+        , itemsPage = "Dokument-Seite"
+        , line2 = " wo die Dateien als Dokumente erscheinen werden. Oder schau zur "
+        , processingPage = "Verarbeitungs-Seite"
+        , line3 = " welche einen Einblick in die Verarbeitung gibt."
+        , resetLine1 = " Klicke "
+        , reset = "Zurücksetzen"
+        , resetLine2 = " um mehr Dateien hochzuladen."
+        }
+    , selectedFiles = "Ausgewählte Dateien"
+    , languageLabel = Messages.Data.Language.de
     }

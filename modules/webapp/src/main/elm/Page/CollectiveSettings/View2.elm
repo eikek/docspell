@@ -158,7 +158,7 @@ viewInsights texts flags model =
         [ class "py-2"
         ]
         [ h4 [ class S.header3 ]
-            [ text "Items"
+            [ text texts.items
             ]
         , div [ class "flex px-4 flex-wrap" ]
             [ stats (String.fromInt (model.insights.incomingCount + model.insights.outgoingCount)) texts.basics.items

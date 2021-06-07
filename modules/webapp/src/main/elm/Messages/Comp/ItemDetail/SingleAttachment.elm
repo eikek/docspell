@@ -1,4 +1,8 @@
-module Messages.Comp.ItemDetail.SingleAttachment exposing (Texts, gb)
+module Messages.Comp.ItemDetail.SingleAttachment exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Comp.AttachmentMeta
 import Messages.Comp.ItemDetail.ConfirmModal
@@ -40,4 +44,24 @@ gb =
     , selectModeTitle = "Select Mode"
     , exitSelectMode = "Exit Select Mode"
     , deleteAttachments = "Delete attachments"
+    }
+
+
+de : Texts
+de =
+    { attachmentMeta = Messages.Comp.AttachmentMeta.de
+    , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.de
+    , noName = "Kein Name"
+    , openFileInNewTab = "Anhang im neuen Tab öffnen"
+    , downloadFile = "Anhang herunterladen"
+    , renameFile = "Anhang umbenennen"
+    , downloadOriginalArchiveFile = "Originale Archiv-Datei herunterladen"
+    , originalFile = "Originale Datei"
+    , renderPdfByBrowser = "PDF nativ durch Browser rendern"
+    , viewExtractedData = "Extrahierte Daten ansehen"
+    , reprocessFile = "Anhang nochmal verarbeiten"
+    , deleteThisFile = "Anhang löschen"
+    , selectModeTitle = "Auswahl Modus"
+    , exitSelectMode = "Auswahl Modus beenden"
+    , deleteAttachments = "Anhänge löschen"
     }

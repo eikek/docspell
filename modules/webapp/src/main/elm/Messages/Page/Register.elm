@@ -1,4 +1,8 @@
-module Messages.Page.Register exposing (Texts, gb)
+module Messages.Page.Register exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -41,4 +45,24 @@ gb =
     , registrationSuccessful = "Registration successful."
     , passwordsDontMatch = "The passwords do not match."
     , allFieldsRequired = "All fields are required!"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , httpError = Messages.Comp.HttpError.de
+    , signupToDocspell = "Registrierung bei Docspell"
+    , collectiveId = "Kollektiv"
+    , collective = "Kollektiv"
+    , userLogin = "Benutzername"
+    , username = "Benutzername"
+    , password = "Passwort"
+    , passwordRepeat = "Passwort (Wiederholung)"
+    , invitationKey = "Einladungs-ID"
+    , alreadySignedUp = "Bereits registriert?"
+    , signIn = "Anmelden"
+    , registrationSuccessful = "Registratierung erfolgreich."
+    , passwordsDontMatch = "Die Passwörten stimmen nicht überein."
+    , allFieldsRequired = "Alle Felder müssen ausgefüllt werden!"
     }

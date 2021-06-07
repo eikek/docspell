@@ -69,7 +69,7 @@ viewSidebar texts visible _ _ model =
         ]
         [ div [ class "" ]
             [ h1 [ class S.header1 ]
-                [ text "Processing Queue"
+                [ text texts.sidebarTitle
                 ]
             ]
         , div [ class "flex flex-col my-2" ]

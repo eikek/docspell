@@ -1,4 +1,8 @@
-module Messages.Comp.ScanMailboxManage exposing (Texts, gb)
+module Messages.Comp.ScanMailboxManage exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -33,4 +37,19 @@ gb =
     , taskUpdated = "Task updated."
     , taskStarted = "Task started."
     , taskDeleted = "Task deleted."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , form = Messages.Comp.ScanMailboxForm.de
+    , table = Messages.Comp.ScanMailboxTable.de
+    , httpError = Messages.Comp.HttpError.de
+    , newTask = "Neuer Auftrag"
+    , createNewTask = "Einen neuen E-Mail Such Auftrag erstellen"
+    , taskCreated = "Auftrag created."
+    , taskUpdated = "Auftrag updated."
+    , taskStarted = "Auftrag started."
+    , taskDeleted = "Auftrag deleted."
     }

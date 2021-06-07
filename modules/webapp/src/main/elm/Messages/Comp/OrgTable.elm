@@ -1,4 +1,8 @@
-module Messages.Comp.OrgTable exposing (Texts, gb)
+module Messages.Comp.OrgTable exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Data.OrgUse exposing (OrgUse)
 import Messages.Basics
@@ -9,6 +13,7 @@ type alias Texts =
     { basics : Messages.Basics.Texts
     , address : String
     , contact : String
+    , use : String
     , orgUseLabel : OrgUse -> String
     }
 
@@ -18,5 +23,16 @@ gb =
     { basics = Messages.Basics.gb
     , address = "Address"
     , contact = "Contact"
+    , use = "Use"
     , orgUseLabel = Messages.Data.OrgUse.gb
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , address = "Addresse"
+    , contact = "Kontakt"
+    , use = "Art"
+    , orgUseLabel = Messages.Data.OrgUse.de
     }

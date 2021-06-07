@@ -629,9 +629,10 @@ settingFormTabs texts flags _ model =
                 ]
             , Markdown.toHtml
                 [ classList
-                    [ ( S.message, True )
-                    , ( "hidden", not model.showPatternHelp )
+                    [ ( "hidden", not model.showPatternHelp )
                     ]
+                , class S.message
+                , class "markdown-preview"
                 ]
                 texts.templateHelpMessage
             ]

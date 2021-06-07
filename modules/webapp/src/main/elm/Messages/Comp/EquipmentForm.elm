@@ -1,4 +1,8 @@
-module Messages.Comp.EquipmentForm exposing (Texts, gb)
+module Messages.Comp.EquipmentForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Data.EquipmentUse exposing (EquipmentUse)
 import Messages.Basics
@@ -23,4 +27,15 @@ gb =
     , useNotSuggestions = "Do not use for suggestions."
     , equipmentUseLabel = Messages.Data.EquipmentUse.gb
     , notes = "Notes"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , use = "Art"
+    , useAsConcerning = "Als betreffendes Zubehör verwenden"
+    , useNotSuggestions = "Nicht für Vorschläge verwenden"
+    , equipmentUseLabel = Messages.Data.EquipmentUse.de
+    , notes = "Notizen"
     }

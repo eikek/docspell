@@ -1,4 +1,8 @@
-module Messages.Comp.SourceTable exposing (Texts, gb)
+module Messages.Comp.SourceTable exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Basics
 
@@ -23,4 +27,16 @@ gb =
     , priority = "Priority"
     , id = "Id"
     , show = "Show"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , abbrev = "Name"
+    , enabled = "Aktiviert"
+    , counter = "Zähler"
+    , priority = "Priorität"
+    , id = "Id"
+    , show = "Anzeigen"
     }

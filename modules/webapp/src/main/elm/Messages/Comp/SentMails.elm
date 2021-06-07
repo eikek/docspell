@@ -1,4 +1,8 @@
-module Messages.Comp.SentMails exposing (Texts, gb)
+module Messages.Comp.SentMails exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.DateFormat as DF
 import Messages.UiLanguage
@@ -24,4 +28,16 @@ gb =
     , sent = "Sent"
     , sender = "Sender"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    }
+
+
+de : Texts
+de =
+    { from = "Von"
+    , date = "Datum"
+    , recipients = "Empfänger"
+    , subject = "Betreff"
+    , sent = "Gesendet"
+    , sender = "Sender"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
     }

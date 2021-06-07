@@ -1,4 +1,8 @@
-module Messages.Page.CollectiveSettings exposing (Texts, gb)
+module Messages.Page.CollectiveSettings exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -22,6 +26,7 @@ type alias Texts =
     , user : String
     , collective : String
     , size : String
+    , items : String
     , submitSuccessful : String
     }
 
@@ -41,5 +46,26 @@ gb =
     , user = "User"
     , collective = "Collective"
     , size = "Size"
+    , items = "Items"
     , submitSuccessful = "Settings saved."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , userManage = Messages.Comp.UserManage.de
+    , collectiveSettingsForm = Messages.Comp.CollectiveSettingsForm.de
+    , sourceManage = Messages.Comp.SourceManage.de
+    , httpError = Messages.Comp.HttpError.de
+    , collectiveSettings = "Kollektiv Einstellungen"
+    , insights = "Einblicke"
+    , sources = "Quellen"
+    , settings = "Einstellungen"
+    , users = "Benuzter"
+    , user = "Benutzer"
+    , collective = "Kollektiv"
+    , size = "Größe"
+    , items = "Dokumente"
+    , submitSuccessful = "Einstellungen gespeichert."
     }

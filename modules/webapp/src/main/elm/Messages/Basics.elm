@@ -1,4 +1,8 @@
-module Messages.Basics exposing (Texts, gb)
+module Messages.Basics exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 
 type alias Texts =
@@ -32,6 +36,7 @@ type alias Texts =
     , concerning : String
     , customFields : String
     , direction : String
+    , folderNotOwnerWarning : String
     }
 
 
@@ -67,4 +72,52 @@ gb =
     , concerning = "Concerning"
     , customFields = "Custom Fields"
     , direction = "Direction"
+    , folderNotOwnerWarning =
+        """
+You are **not a member** of this folder. This item will be **hidden**
+from any search now. Use a folder where you are a member of to make this
+item visible. This message will disappear then.
+                      """
+    }
+
+
+de : Texts
+de =
+    { incoming = "Eingehend"
+    , outgoing = "Ausgehend"
+    , tags = "Tags"
+    , items = "Dokumente"
+    , submit = "Absenden"
+    , submitThisForm = "Formular abschicken"
+    , cancel = "Abbrechen"
+    , delete = "Löschen"
+    , created = "Erstellt"
+    , edit = "Ändern"
+    , back = "Zurück"
+    , backToList = "Zurück zur Liste"
+    , searchPlaceholder = "Suche…"
+    , selectPlaceholder = "Auswahl…"
+    , id = "Id"
+    , ok = "Ok"
+    , yes = "Ja"
+    , no = "Nein"
+    , chooseTag = "Wähle enien Tag…"
+    , loading = "Laden…"
+    , name = "Name"
+    , organization = "Organisation"
+    , person = "Person"
+    , equipment = "Zubehör"
+    , folder = "Ordner"
+    , date = "Datum"
+    , correspondent = "Korrespondent"
+    , concerning = "Betreffend"
+    , customFields = "Benutzer-Felder"
+    , direction = "Richtung"
+    , folderNotOwnerWarning =
+        """
+Du bist *kein* Mitglied dieses Ordners. Dokumnte, welche durch diese
+URL hochgeladen werden, sind für dich in der Suche *nicht* sichtbar.
+Nutze lieber einen Ordner, dem Du als Mitglied zugeordnet bist. Diese
+Nachricht verschwindet dann.
+                      """
     }

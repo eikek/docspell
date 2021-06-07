@@ -61,7 +61,7 @@ view2 texts model =
             [ tr []
                 [ th [ class "" ] []
                 , th [ class "text-left pr-1 md:px-2" ]
-                    [ text "Use"
+                    [ text texts.use
                     ]
                 , th [ class "text-left" ]
                     [ text texts.basics.name

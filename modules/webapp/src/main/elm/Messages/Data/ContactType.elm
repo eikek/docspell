@@ -1,4 +1,7 @@
-module Messages.Data.ContactType exposing (gb)
+module Messages.Data.ContactType exposing
+    ( de
+    , gb
+    )
 
 import Data.ContactType exposing (ContactType(..))
 
@@ -23,3 +26,25 @@ gb ct =
 
         Website ->
             "Website"
+
+
+de : ContactType -> String
+de ct =
+    case ct of
+        Phone ->
+            "Telefon"
+
+        Mobile ->
+            "Mobil"
+
+        Fax ->
+            "Fax"
+
+        Email ->
+            "E-Mail"
+
+        Docspell ->
+            "Docspell"
+
+        Website ->
+            "Webseite"

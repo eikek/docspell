@@ -1,4 +1,7 @@
-module Messages.Data.Fields exposing (gb)
+module Messages.Data.Fields exposing
+    ( de
+    , gb
+    )
 
 import Data.Fields exposing (Field(..))
 
@@ -41,3 +44,43 @@ gb field =
 
         SourceName ->
             "Item Source"
+
+
+de : Field -> String
+de field =
+    case field of
+        Tag ->
+            "Tag"
+
+        Folder ->
+            "Ordner"
+
+        CorrOrg ->
+            "Korrespondent Organisation"
+
+        CorrPerson ->
+            "Korrespondent Person"
+
+        ConcPerson ->
+            "Betreffend Person"
+
+        ConcEquip ->
+            "Betreffend Zubehör"
+
+        Date ->
+            "Datum"
+
+        DueDate ->
+            "Fälligkeits-Datum"
+
+        Direction ->
+            "Richtung"
+
+        PreviewImage ->
+            "Vorschau Bild"
+
+        CustomFields ->
+            "Benutzer Felder"
+
+        SourceName ->
+            "Quelle"

@@ -1,4 +1,8 @@
-module Messages.Comp.ImapSettingsForm exposing (Texts, gb)
+module Messages.Comp.ImapSettingsForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Data.SSLType exposing (SSLType)
 import Messages.Basics
@@ -41,4 +45,24 @@ gb =
     , ignoreCertCheck = "Ignore certificate check"
     , enableOAuth2 = "Enable OAuth2 authentication"
     , oauth2Info = "Enabling this, allows to connect via XOAuth using the password as access token."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , sslTypeLabel = Messages.Data.SSLType.de
+    , connectionNamePlaceholder = "Name der Verbindung, z.B. 'gmail.com'"
+    , connectionNameInfo = "Der Name muss eine gültige ID sein, es dürfen keine Leerzeichen oder andere spezielle Zeichen verwendet werden."
+    , imapHost = "IMAP Server"
+    , imapHostPlaceholder = "IMAP Server Name, z.B. 'mail.gmail.com'"
+    , imapPort = "IMAP Port"
+    , imapUser = "IMAP Benutzer"
+    , imapUserPlaceholder = "IMAP Benutzername, z.B. 'your.name@gmail.com'"
+    , imapPassword = "IMAP Passwort"
+    , imapPasswordPlaceholder = "Passwort"
+    , ssl = "SSL"
+    , ignoreCertCheck = "Zertifikatprüfung ignorieren"
+    , enableOAuth2 = "Aktiviere OAuth2 Authentifizierung"
+    , oauth2Info = "Wenn dies aktiviert ist, wird via XOAuth authentifiziert wobei das Passwort wird als Access-Token verwendet wird."
     }

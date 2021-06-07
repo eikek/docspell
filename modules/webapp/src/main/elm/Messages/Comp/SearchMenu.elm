@@ -1,9 +1,15 @@
-module Messages.Comp.SearchMenu exposing (Texts, gb)
+module Messages.Comp.SearchMenu exposing
+    ( Texts
+    , de
+    , gb
+    )
 
+import Data.Direction exposing (Direction)
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
 import Messages.Comp.FolderSelect
 import Messages.Comp.TagSelect
+import Messages.Data.Direction
 
 
 type alias Texts =
@@ -32,6 +38,7 @@ type alias Texts =
     , dueTo : String
     , sourceTab : String
     , searchInItemSource : String
+    , direction : Direction -> String
     }
 
 
@@ -62,4 +69,36 @@ gb =
     , dueTo = "Due To"
     , sourceTab = "Source"
     , searchInItemSource = "Search in item source…"
+    , direction = Messages.Data.Direction.gb
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.de
+    , tagSelect = Messages.Comp.TagSelect.de
+    , folderSelect = Messages.Comp.FolderSelect.de
+    , chooseDirection = "Wähle eine Richtung…"
+    , choosePerson = "Wähle eine Person…"
+    , chooseEquipment = "Wähle ein Zubehör"
+    , inbox = "Eingang/Neu"
+    , fulltextSearch = "Volltext Suche"
+    , searchInNames = "Suche in Namen"
+    , switchSearchModes = "Zwischen den Such-Modi wechseln"
+    , contentSearch = "Volltext Suche…"
+    , searchInNamesPlaceholder = "Suche in Namen…"
+    , fulltextSearchInfo = "Volltext Suche in Dokument Inhalt and Notizen."
+    , nameSearchInfo = "Sucht in Namen von Korrespondent/Betreffend, Dokument and Notizen."
+    , tagCategoryTab = "Tag Kategorien"
+    , chooseOrganization = "Wähle eine Organisation"
+    , createCustomFieldTitle = "Neues Benutzer-Feld erstellen"
+    , from = "Von"
+    , to = "Zu"
+    , dueDateTab = "Fälligkeits-Datum"
+    , dueFrom = "Fällig von"
+    , dueTo = "Fällig bis"
+    , sourceTab = "Quelle"
+    , searchInItemSource = "Suche in Dokument Quelle…"
+    , direction = Messages.Data.Direction.de
     }

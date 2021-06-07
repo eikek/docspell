@@ -1,4 +1,8 @@
-module Messages.Page.UserSettings exposing (Texts, gb)
+module Messages.Page.UserSettings exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Comp.ChangePasswordForm
 import Messages.Comp.EmailSettingsManage
@@ -69,4 +73,46 @@ gb =
             or to just leave it there. In the latter case you should
             adjust the schedule to avoid reading over the same mails
             again."""
+    }
+
+
+de : Texts
+de =
+    { changePasswordForm = Messages.Comp.ChangePasswordForm.de
+    , uiSettingsManage = Messages.Comp.UiSettingsManage.de
+    , emailSettingsManage = Messages.Comp.EmailSettingsManage.de
+    , imapSettingsManage = Messages.Comp.ImapSettingsManage.de
+    , notificationManage = Messages.Comp.NotificationManage.de
+    , scanMailboxManage = Messages.Comp.ScanMailboxManage.de
+    , userSettings = "Benutzer Einstellung"
+    , uiSettings = "Oberfläche"
+    , notifications = "Notifizierungen"
+    , scanMailbox = "E-Mail Import"
+    , emailSettingSmtp = "E-Mail Einstellung (SMTP)"
+    , emailSettingImap = "E-Mail Einstellung (IMAP)"
+    , changePassword = "Passwort ändern"
+    , uiSettingsInfo =
+        "Diese Einstellungen sind für die Web-Oberfläche."
+    , notificationInfoText =
+        """
+         Docspell kann eine E-Mail versenden, sobald das
+         Fälligkeits-Datum von Dokumenten näher kommt. Dafür muss eine
+         Email SMTP Verbindung konfiguriert werden.."""
+    , notificationRemindDaysInfo =
+        "Docspell sucht Dokumente die in X Tagen fällig sind und sendet diese Liste als E-Mail."
+    , scanMailboxInfo1 =
+        """Docspell kann Postfächer durchsuchen und E-Mails importieren. Dafür sind
+Email (IMAP) Einstellungen notwendig."""
+    , scanMailboxInfo2 =
+        """
+            Docspell durchsucht alle konfigurierten Ordner in einem
+            Postfach nach E-Mails, die den Suchkriterien entsprechen.
+            E-Mails werden übersprungen, falls sie im letzten Lauf
+            schon importiert wurden (und das Dokument noch existiert).
+            Nachdem eine E-Mail in Docspell importiert ist, kann sie
+            gelöscht, in einen anderen Ordner verschoben werden oder
+            sie kann einfach belassen werden. Für den letzteren Fall
+            ist es gut, die Kriterien so zu gestalten, dass die
+            gleichen E-Mails möglichst nicht noch einmal eingelesen
+            werden."""
     }

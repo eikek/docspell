@@ -1,4 +1,8 @@
-module Messages.Comp.EquipmentManage exposing (Texts, gb)
+module Messages.Comp.EquipmentManage exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -31,4 +35,18 @@ gb =
     , reallyDeleteEquipment = "Really delete this equipment?"
     , deleteThisEquipment = "Delete this equipment"
     , correctFormErrors = "Please correct the errors in the form."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , equipmentTable = Messages.Comp.EquipmentTable.de
+    , equipmentForm = Messages.Comp.EquipmentForm.de
+    , httpError = Messages.Comp.HttpError.de
+    , createNewEquipment = "Neues Zubehör anlegen"
+    , newEquipment = "Neues Zubehör"
+    , reallyDeleteEquipment = "Das Zubehör wirklich löschen?"
+    , deleteThisEquipment = "Zubehör löschen"
+    , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     }

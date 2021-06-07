@@ -1,4 +1,8 @@
-module Messages.Comp.ClassifierSettingsForm exposing (Texts, gb)
+module Messages.Comp.ClassifierSettingsForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Basics
 import Messages.Comp.CalEventInput
@@ -39,4 +43,29 @@ Use an empty whitelist to disable auto tagging.
     , itemCount = "Item Count"
     , schedule = "Schedule"
     , itemCountHelp = "The maximum number of items to learn from, order by date newest first. Use 0 to mean all."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , calEventInput = Messages.Comp.CalEventInput.de
+    , autoTaggingText =
+        """
+
+Das Auto-Tagging funktioniert über das Lernen aus bereits
+existierenden Dokumenten. Je mehr Dokumente korrekt getagged sind,
+desto besser. Das Lernen passiert regelmäßig nach einem Zeitplan. Hier
+können Tag-Gruppen definiert werden, die entweder nicht gelernt werden
+sollen (blacklist) oder ausschließlich gelernt werden sollen
+(whitelist).
+
+Eine leere Whitelist stellt das Auto-Tagging ab.
+"""
+    , blacklistOrWhitelist = "Ist das folgende eine Blacklist oder eine Whitelist?"
+    , whitelistLabel = "Nur aus diesen Tag-Katogrien lernen"
+    , blacklistLabel = "Aus diesen Tag-Kategorien nicht lernen"
+    , itemCount = "Anzahl Dokumente"
+    , schedule = "Zeitplan"
+    , itemCountHelp = "Die maximale Anzahl an Dokumenten, von denen gelernt werden soll (sortiert nach Datum, neueste zuerst). Verwende 0 um alle einzuschließen."
     }

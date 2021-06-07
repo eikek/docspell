@@ -60,7 +60,7 @@ view2 texts model =
                 , th [ class "text-left" ] [ text texts.login ]
                 , th [ class "text-center" ] [ text texts.state ]
                 , th [ class "hidden md:table-cell text-left" ] [ text texts.email ]
-                , th [ class "hidden md:table-cell text-center" ] [ text texts.login ]
+                , th [ class "hidden md:table-cell text-center" ] [ text texts.logins ]
                 , th [ class "hidden sm:table-cell text-center" ] [ text texts.lastLogin ]
                 , th [ class "hidden md:table-cell text-center" ]
                     [ text texts.basics.created

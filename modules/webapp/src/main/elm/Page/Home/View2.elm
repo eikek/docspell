@@ -196,7 +196,7 @@ defaultMenuBar texts _ settings model =
                         texts.fullHeightPreviewTitle
 
                     else
-                        texts.fullHeightPreviewTitle
+                        texts.fullWidthPreviewTitle
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "hidden sm:inline-block", False )

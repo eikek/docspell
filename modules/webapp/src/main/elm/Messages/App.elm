@@ -1,5 +1,6 @@
 module Messages.App exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -33,17 +34,16 @@ gb =
     }
 
 
-
--- de : Texts
--- de =
---     { collectiveProfile = "Kollektiv-Profil"
---     , userProfile = "Benutzer-Profil"
---     , lightDark = "Hell/Dunkel"
---     , logout = "Abmelden"
---     , items = "Dokumente"
---     , manageData = "Daten verwalten"
---     , uploadFiles = "Dateien hochladen"
---     , processingQueue = "Verarbeitung"
---     , newInvites = "Neue Einladung"
---     , help = "Hilfe (English)"
---     }
+de : Texts
+de =
+    { collectiveProfile = "Kollektiv-Profil"
+    , userProfile = "Benutzer-Profil"
+    , lightDark = "Hell/Dunkel"
+    , logout = "Abmelden"
+    , items = "Dokumente"
+    , manageData = "Daten verwalten"
+    , uploadFiles = "Dateien hochladen"
+    , processingQueue = "Verarbeitung"
+    , newInvites = "Neue Einladung"
+    , help = "Hilfe (English)"
+    }

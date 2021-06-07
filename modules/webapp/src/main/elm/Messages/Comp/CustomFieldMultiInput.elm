@@ -1,4 +1,8 @@
-module Messages.Comp.CustomFieldMultiInput exposing (Texts, gb)
+module Messages.Comp.CustomFieldMultiInput exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Comp.CustomFieldInput
 
@@ -11,4 +15,10 @@ type alias Texts =
 gb : Texts
 gb =
     { customFieldInput = Messages.Comp.CustomFieldInput.gb
+    }
+
+
+de : Texts
+de =
+    { customFieldInput = Messages.Comp.CustomFieldInput.de
     }

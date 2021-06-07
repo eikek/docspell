@@ -1,4 +1,8 @@
-module Messages.Comp.CollectiveSettingsForm exposing (Texts, gb)
+module Messages.Comp.CollectiveSettingsForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Data.Language exposing (Language)
 import Http
@@ -57,4 +61,33 @@ gb =
     , fulltextReindexSubmitted = "Fulltext Re-Index started."
     , fulltextReindexOkMissing =
         "Please type OK in the field if you really want to start re-indexing your data."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.de
+    , httpError = Messages.Comp.HttpError.de
+    , save = "Speichern"
+    , saveSettings = "Einstellungen speichern"
+    , documentLanguage = "Dokument Sprache"
+    , documentLanguageHelp = "Die Sprache der Dokumente. Das hilft der Text-Extraktion (OCR) und -Analyse."
+    , integrationEndpoint = "Integrations-Endpunkt"
+    , integrationEndpointLabel = "Aktiviere den Integrations-Endpunkt"
+    , integrationEndpointHelp =
+        "Der Integrations-Endpunkt erlaubt es (lokalen) Anwendungen, Dateien einzustellen. "
+            ++ "Dies kann für dieses Kollektiv de-/aktiviert werden."
+    , fulltextSearch = "Volltext Suche"
+    , reindexAllData = "Alle Daten neu indexieren"
+    , reindexAllDataHelp =
+        "Es wird im Hintergrund der Index gelöscht und alle Daten neu indexiert. "
+            ++ "Bitte tippe OK ein vor dem Klicken, um ein versehentliches Neu-Indexieren zu vermeiden."
+    , autoTagging = "Auto-Tagging"
+    , startNow = "Jetzt starten"
+    , languageLabel = Messages.Data.Language.de
+    , classifierTaskStarted = "Auto-Tagger Job gestartet."
+    , fulltextReindexSubmitted = "Volltext Neu-Indexierung gestartet."
+    , fulltextReindexOkMissing =
+        "Bitte tippe OK in das Feld, wenn Du wirklich den Index neu erzeugen möchtest."
     }

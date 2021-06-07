@@ -1,4 +1,8 @@
-module Messages.Comp.DetailEdit exposing (Texts, gb)
+module Messages.Comp.DetailEdit exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -20,6 +24,11 @@ type alias Texts =
     , httpError : Http.Error -> String
     , submitSuccessful : String
     , missingRequiredFields : String
+    , addTagHeader : String
+    , addPersonHeader : String
+    , addOrgHeader : String
+    , addEquipmentHeader : String
+    , addCustomFieldHeader : String
     }
 
 
@@ -34,4 +43,28 @@ gb =
     , httpError = Messages.Comp.HttpError.gb
     , submitSuccessful = "Successfully saved."
     , missingRequiredFields = "Please fill required fields."
+    , addTagHeader = "Add Tag"
+    , addPersonHeader = "Add Person"
+    , addOrgHeader = "Add Organization"
+    , addEquipmentHeader = "Add Equipment"
+    , addCustomFieldHeader = "Add Custom Field"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , tagForm = Messages.Comp.TagForm.de
+    , personForm = Messages.Comp.PersonForm.de
+    , orgForm = Messages.Comp.OrgForm.de
+    , equipmentForm = Messages.Comp.EquipmentForm.de
+    , customFieldForm = Messages.Comp.CustomFieldForm.de
+    , httpError = Messages.Comp.HttpError.de
+    , submitSuccessful = "Erfolgreich gespeichert."
+    , missingRequiredFields = "Bitte erforderliche Felder ausfüllen."
+    , addTagHeader = "Tag anlegen"
+    , addPersonHeader = "Person anlegen"
+    , addOrgHeader = "Organisation anlegen"
+    , addEquipmentHeader = "Zubehör anlegen"
+    , addCustomFieldHeader = "Benutzer-Feld anlegen"
     }

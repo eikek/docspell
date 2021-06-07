@@ -1,5 +1,6 @@
 module Messages.Comp.FolderSelect exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -14,4 +15,10 @@ type alias Texts =
 gb : Texts
 gb =
     { expandCollapse = Messages.Comp.ExpandCollapse.gb
+    }
+
+
+de : Texts
+de =
+    { expandCollapse = Messages.Comp.ExpandCollapse.de
     }

@@ -117,7 +117,7 @@ formTabs texts flags settings model =
         directionCfg =
             { makeOption =
                 \entry ->
-                    { text = Data.Direction.toString entry
+                    { text = texts.direction entry
                     , additional = ""
                     }
             , placeholder = texts.chooseDirection
@@ -241,7 +241,7 @@ formTabs texts flags settings model =
                         , ( "hidden", isFolderMember model )
                         ]
                     ]
-                    [ Markdown.toHtml [] texts.folderNotOwnerWarning
+                    [ Markdown.toHtml [] texts.basics.folderNotOwnerWarning
                     ]
                 ]
             ]
@@ -407,7 +407,11 @@ renderSuggestions texts model mkName idnames tagger =
         , class "flex flex-col text-sm"
         ]
         [ div [ class "font-bold my-1" ]
-            [ text texts.suggestions
+            [ if List.isEmpty idnames then
+                text texts.noSuggestions
+
+              else
+                text texts.suggestions
             ]
         , ul [ class "list-disc ml-6" ] <|
             (idnames

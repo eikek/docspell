@@ -1,4 +1,8 @@
-module Messages.Comp.PersonManage exposing (Texts, gb)
+module Messages.Comp.PersonManage exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -31,4 +35,18 @@ gb =
     , reallyDeletePerson = "Really delete this person?"
     , deleteThisPerson = "Delete this person"
     , correctFormErrors = "Please correct the errors in the form."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , personForm = Messages.Comp.PersonForm.de
+    , personTable = Messages.Comp.PersonTable.de
+    , httpError = Messages.Comp.HttpError.de
+    , newPerson = "Neue Person"
+    , createNewPerson = "Neue Person anlegen"
+    , reallyDeletePerson = "Die Person wirklich löschen?"
+    , deleteThisPerson = "Person löschen"
+    , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     }

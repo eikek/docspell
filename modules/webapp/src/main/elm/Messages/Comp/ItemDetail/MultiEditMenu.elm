@@ -1,7 +1,13 @@
-module Messages.Comp.ItemDetail.MultiEditMenu exposing (Texts, gb)
+module Messages.Comp.ItemDetail.MultiEditMenu exposing
+    ( Texts
+    , de
+    , gb
+    )
 
+import Data.Direction exposing (Direction)
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
+import Messages.Data.Direction
 
 
 type alias Texts =
@@ -15,8 +21,8 @@ type alias Texts =
     , confirm : String
     , unconfirm : String
     , changeTagMode : String
-    , folderNotOwnerWarning : String
     , dueDateTab : String
+    , direction : Direction -> String
     }
 
 
@@ -32,11 +38,23 @@ gb =
     , confirm = "Confirm"
     , unconfirm = "Unconfirm"
     , changeTagMode = "Change tag edit mode"
-    , folderNotOwnerWarning =
-        """
-You are **not a member** of this folder. This item will be **hidden**
-from any search now. Use a folder where you are a member of to make this
-item visible. This message will disappear then.
-                      """
     , dueDateTab = "Due Date"
+    , direction = Messages.Data.Direction.gb
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.de
+    , tagModeAddInfo = "Tags werden zu gewählten Dokumenten *hinzugefügt*."
+    , tagModeRemoveInfo = "Tags werden von gewählten Dokumenten *entfernt*."
+    , tagModeReplaceInfo = "Tags *ersetzen* die der gewählten Dokumente."
+    , chooseDirection = "Wähle eine Richtung…"
+    , confirmUnconfirm = "Bestätige/Widerrufe Metadaten"
+    , confirm = "Bestätige"
+    , unconfirm = "Widerufe Betätigung"
+    , changeTagMode = "Wechsel den Änderungs-Modus für Tags"
+    , dueDateTab = "Fälligkeits-Datum"
+    , direction = Messages.Data.Direction.de
     }

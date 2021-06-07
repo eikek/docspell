@@ -1,4 +1,8 @@
-module Messages.Comp.EmailSettingsForm exposing (Texts, gb)
+module Messages.Comp.EmailSettingsForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Data.SSLType exposing (SSLType)
 import Messages.Basics
@@ -42,7 +46,29 @@ gb =
     , fromAddress = "From Address"
     , fromAddressPlaceholder = "Sender E-Mail address"
     , replyTo = "Reply-To"
-    , replyToPlaceholder = "Optional reply-to E-Mail address"
+    , replyToPlaceholder = "Optional Reply-To E-Mail address"
     , ssl = "SSL"
     , ignoreCertCheck = "Ignore certificate check"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , sslTypeLabel = Messages.Data.SSLType.de
+    , connectionPlaceholder = "Name der Verbindung, z.B. 'gmail.com'"
+    , connectionNameInfo = "Der Name muss eine gültige ID sein, es dürfen keine Leerzeichen oder andere spezielle Zeichen verwendet werden."
+    , smtpHost = "SMTP Server"
+    , smtpHostPlaceholder = "SMTP Server, z.B. 'mail.gmail.com'"
+    , smtpPort = "SMTP Port"
+    , smtpUser = "SMTP Benutzer"
+    , smtpUserPlaceholder = "SMTP Benutzername, z.B. 'your.name@gmail.com'"
+    , smtpPassword = "SMTP Passwort"
+    , smtpPasswordPlaceholder = "Passwort"
+    , fromAddress = "Absender Adresse"
+    , fromAddressPlaceholder = "Absender E-Mail Addresse"
+    , replyTo = "Reply-To"
+    , replyToPlaceholder = "Optionale Reply-To E-Mail Addresse"
+    , ssl = "SSL"
+    , ignoreCertCheck = "Zertifikatsprüfung ignorieren"
     }

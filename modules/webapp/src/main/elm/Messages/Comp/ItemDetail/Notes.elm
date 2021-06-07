@@ -1,4 +1,8 @@
-module Messages.Comp.ItemDetail.Notes exposing (Texts, gb)
+module Messages.Comp.ItemDetail.Notes exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Basics
 
@@ -17,4 +21,13 @@ gb =
     , notes = "Notes"
     , preview = "Preview"
     , supportsMarkdown = "Supports Markdown"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , notes = "Notizen"
+    , preview = "Vorschau"
+    , supportsMarkdown = "Unterstützt Markdown"
     }

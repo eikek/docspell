@@ -1,4 +1,8 @@
-module Messages.Comp.CalEventInput exposing (Texts, gb)
+module Messages.Comp.CalEventInput exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Comp.HttpError
@@ -34,4 +38,20 @@ gb =
     , next = "Next"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     , httpError = Messages.Comp.HttpError.gb
+    }
+
+
+de : Texts
+de =
+    { weekday = "Wochentag"
+    , year = "Jahr"
+    , month = "Monat"
+    , day = "Tag"
+    , hour = "Stunde"
+    , minute = "Minute"
+    , error = "Fehler"
+    , schedule = "Zeitplan"
+    , next = "Nächsten Zeiten"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
+    , httpError = Messages.Comp.HttpError.de
     }

@@ -1,4 +1,7 @@
-module Messages.Data.CustomFieldType exposing (gb)
+module Messages.Data.CustomFieldType exposing
+    ( de
+    , gb
+    )
 
 import Data.CustomFieldType exposing (CustomFieldType(..))
 
@@ -20,3 +23,22 @@ gb ft =
 
         Money ->
             "Money"
+
+
+de : CustomFieldType -> String
+de ft =
+    case ft of
+        Text ->
+            "Text"
+
+        Numeric ->
+            "Numerisch"
+
+        Date ->
+            "Datum"
+
+        Boolean ->
+            "Boolean"
+
+        Money ->
+            "Geldbetrag"

@@ -1,5 +1,6 @@
 module Messages.Comp.ItemDetail.ConfirmModal exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -41,4 +42,32 @@ gb =
         "Really delete this item? This cannot be undone."
     , confirmDeleteFile = "Really delete this file?"
     , confirmDeleteAllFiles = "Really delete these files?"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , confirmReprocessItem =
+        \state ->
+            if state == "created" then
+                "Durch die Neuverarbeitung dieses Dokuments können sich die Metadaten ändern, "
+                    ++ "da sie nicht bestätigt sind. Möchtest du fortfahren?"
+
+            else
+                "Die Neuverarbeitung dieses Dokuments wird dessen Metadaten nicht beeinflussen, "
+                    ++ "da sie nicht bestätigt wurden. Möchtest du fortfahren?"
+    , confirmReprocessFile =
+        \state ->
+            if state == "created" then
+                "Durch die Neuverarbeitung dieses Anhangs können sich die Metadaten des Dokuments ändern, "
+                    ++ " da sie nicht bestätigt sind. Möchtest du fortfahren?"
+
+            else
+                "Die Neuverarbeitung dieses Anhangs wird die Metadaten des Dokuments nicht beeinflussen, "
+                    ++ "da sie bereits bestätigt sind. Möchtest du fortfahren?"
+    , confirmDeleteItem =
+        "Dieses Dokument wirklich löschen? Das kann nicht rückgängig gemacht werden."
+    , confirmDeleteFile = "Diese Datei wirklich löschen?"
+    , confirmDeleteAllFiles = "Die gewählten Dateien wirklich löschen?"
     }

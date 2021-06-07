@@ -1,4 +1,8 @@
-module Messages.Comp.OrgManage exposing (Texts, gb)
+module Messages.Comp.OrgManage exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -31,4 +35,18 @@ gb =
     , reallyDeleteOrg = "Really delete this organization?"
     , deleteThisOrg = "Delete this organization"
     , correctFormErrors = "Please correct the errors in the form."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , orgForm = Messages.Comp.OrgForm.de
+    , orgTable = Messages.Comp.OrgTable.de
+    , httpError = Messages.Comp.HttpError.de
+    , newOrganization = "Neue Organisation"
+    , createNewOrganization = "Neue Organisation anlegen"
+    , reallyDeleteOrg = "Die Organisation wirklich löschen?"
+    , deleteThisOrg = "Organisation löschen"
+    , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     }
