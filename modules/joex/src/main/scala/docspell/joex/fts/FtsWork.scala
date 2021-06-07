@@ -18,7 +18,9 @@ object FtsWork {
   def reInitializeTasks[F[_]: Monad]: FtsWork[F] =
     FtsWork { ctx =>
       val migrations =
-        ctx.fts.initialize.map(fm => fm.changeResult(_ => FtsMigration.Result.workDone))
+        ctx.fts.initializeNew.map(fm =>
+          fm.changeResult(_ => FtsMigration.Result.workDone)
+        )
 
       NonEmptyList.fromList(migrations) match {
         case Some(nel) =>

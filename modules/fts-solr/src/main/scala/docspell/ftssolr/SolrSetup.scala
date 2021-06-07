@@ -4,7 +4,6 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.ftsclient.FtsMigration
 
 import _root_.io.circe._
 import _root_.io.circe.generic.semiauto._
@@ -16,12 +15,14 @@ import org.http4s.client.dsl.Http4sClientDsl
 
 trait SolrSetup[F[_]] {
 
-  def setupSchema: List[FtsMigration[F]]
+  def setupSchema: List[SolrMigration[F]]
+
+  def remainingSetup: F[List[SolrMigration[F]]]
 
 }
 
 object SolrSetup {
-  private val solrEngine = Ident.unsafe("solr")
+  private val versionDocId = "6d8f09f4-8d7e-4bc9-98b8-7c89223b36dd"
 
   def apply[F[_]: ConcurrentEffect](cfg: SolrConfig, client: Client[F]): SolrSetup[F] = {
     val dsl = new Http4sClientDsl[F] {}
@@ -32,62 +33,75 @@ object SolrSetup {
       val url = (Uri.unsafeFromString(cfg.url.asString) / "schema")
         .withQueryParam("commitWithin", cfg.commitWithin.toString)
 
-      def setupSchema: List[FtsMigration[F]] =
+      def remainingSetup: F[List[SolrMigration[F]]] =
+        for {
+          current <- SolrQuery(cfg, client).findVersionDoc(versionDocId)
+          migs = current match {
+            case None => setupSchema
+            case Some(ver) =>
+              val verDoc =
+                VersionDoc(versionDocId, allMigrations.map(_.value.version).max)
+              val solrUp = SolrUpdate(cfg, client)
+              val remain = allMigrations.filter(v => v.value.version > ver.currentVersion)
+              if (remain.isEmpty) remain
+              else remain :+ SolrMigration.writeVersion(solrUp, verDoc)
+          }
+        } yield migs
+
+      def setupSchema: List[SolrMigration[F]] = {
+        val verDoc = VersionDoc(versionDocId, allMigrations.map(_.value.version).max)
+        val solrUp = SolrUpdate(cfg, client)
+        val writeVersion = SolrMigration.writeVersion(solrUp, verDoc)
+        val deleteAll = SolrMigration.deleteData(0, solrUp)
+        val indexAll = SolrMigration.indexAll[F](Int.MaxValue, "Index all data")
+
+        deleteAll :: (allMigrations.filter(_.isSchemaChange) ::: List(indexAll, writeVersion))
+      }
+
+      private def allMigrations: List[SolrMigration[F]] =
         List(
-          FtsMigration[F](
+          SolrMigration[F](
             1,
-            solrEngine,
             "Initialize",
-            setupCoreSchema.map(_ => FtsMigration.Result.workDone)
+            setupCoreSchema
           ),
-          FtsMigration[F](
-            3,
-            solrEngine,
+          SolrMigration[F](
+            2,
             "Add folder field",
-            addFolderField.map(_ => FtsMigration.Result.workDone)
+            addFolderField
           ),
-          FtsMigration[F](
+          SolrMigration.indexAll(3, "Index all from database after adding folder field"),
+          SolrMigration[F](
             4,
-            solrEngine,
-            "Index all from database",
-            FtsMigration.Result.indexAll.pure[F]
-          ),
-          FtsMigration[F](
-            5,
-            solrEngine,
             "Add content_fr field",
-            addContentField(Language.French).map(_ => FtsMigration.Result.workDone)
+            addContentField(Language.French)
           ),
-          FtsMigration[F](
+          SolrMigration
+            .indexAll(5, "Index all from database after adding french content field"),
+          SolrMigration[F](
             6,
-            solrEngine,
-            "Index all from database",
-            FtsMigration.Result.indexAll.pure[F]
-          ),
-          FtsMigration[F](
-            7,
-            solrEngine,
             "Add content_it field",
-            addContentField(Language.Italian).map(_ => FtsMigration.Result.reIndexAll)
+            addContentField(Language.Italian)
           ),
-          FtsMigration[F](
+          SolrMigration.reIndexAll(7, "Re-Index after adding italian content field"),
+          SolrMigration[F](
             8,
-            solrEngine,
             "Add content_es field",
-            addContentField(Language.Spanish).map(_ => FtsMigration.Result.reIndexAll)
+            addContentField(Language.Spanish)
           ),
-          FtsMigration[F](
-            9,
-            solrEngine,
-            "Add more content fields",
-            addMoreContentFields.map(_ => FtsMigration.Result.reIndexAll)
-          ),
-          FtsMigration[F](
+          SolrMigration.reIndexAll(9, "Re-Index after adding spanish content field"),
+          SolrMigration[F](
             10,
-            solrEngine,
+            "Add more content fields",
+            addMoreContentFields
+          ),
+          SolrMigration.reIndexAll(11, "Re-Index after adding more content fields"),
+          SolrMigration[F](
+            12,
             "Add latvian content field",
-            addContentField(Language.Latvian).map(_ => FtsMigration.Result.reIndexAll)
-          )
+            addContentField(Language.Latvian)
+          ),
+          SolrMigration.reIndexAll(13, "Re-Index after adding latvian content field")
         )
 
       def addFolderField: F[Unit] =

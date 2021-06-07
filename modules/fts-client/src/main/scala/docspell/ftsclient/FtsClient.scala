@@ -17,12 +17,26 @@ import org.log4s.getLogger
   */
 trait FtsClient[F[_]] {
 
-  /** Initialization tasks. This is called exactly once at the very
-    * beginning when initializing the full-text index and then never
-    * again (except when re-indexing everything). It may be used to
-    * setup the database.
+  /** Initialization tasks. This can be used to setup the fulltext
+    * search engine. The implementation is expected to keep track of
+    * run migrations, so that running these is idempotent. For
+    * example, it may be run on each application start.
+    *
+    * Initialization may involve re-indexing all data, therefore it
+    * must run outside the scope of this client. The migration may
+    * include a task that applies any work and/or it can return a
+    * result indicating that after this task a re-index is necessary.
     */
-  def initialize: List[FtsMigration[F]]
+  def initialize: F[List[FtsMigration[F]]]
+
+  /** A list of initialization tasks that are meant to run when there
+    * was no setup at all or when re-creating the index.
+    *
+    * This is not run on startup, but only when required, for example
+    * when re-creating the entire index. These tasks don't need to
+    * preserve the data in the index.
+    */
+  def initializeNew: List[FtsMigration[F]]
 
   /** Run a full-text search. */
   def search(q: FtsQuery): F[FtsResult]
@@ -116,7 +130,10 @@ object FtsClient {
     new FtsClient[F] {
       private[this] val logger = Logger.log4s[F](getLogger)
 
-      def initialize: List[FtsMigration[F]] =
+      def initialize: F[List[FtsMigration[F]]] =
+        Sync[F].pure(Nil)
+
+      def initializeNew: List[FtsMigration[F]] =
         Nil
 
       def search(q: FtsQuery): F[FtsResult] =
