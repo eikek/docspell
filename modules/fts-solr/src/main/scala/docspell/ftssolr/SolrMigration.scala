@@ -12,7 +12,10 @@ final case class SolrMigration[F[_]](value: FtsMigration[F], dataChangeOnly: Boo
 object SolrMigration {
   private val solrEngine = Ident.unsafe("solr")
 
-  def deleteData[F[_]: Functor](version: Int, solrUpdate: SolrUpdate[F]): SolrMigration[F] =
+  def deleteData[F[_]: Functor](
+      version: Int,
+      solrUpdate: SolrUpdate[F]
+  ): SolrMigration[F] =
     apply(version, "Delete all data", solrUpdate.delete("*:*", Option(0)))
 
   def writeVersion[F[_]: Functor](

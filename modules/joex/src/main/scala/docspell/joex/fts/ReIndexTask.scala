@@ -40,12 +40,7 @@ object ReIndexTask {
             FtsWork.insertAll[F](collective)
 
         case None =>
-          FtsWork
-            .clearIndex(None)
-            .recoverWith(
-              FtsWork.log[F](_.info("Clearing data failed. Continue re-indexing."))
-            ) ++
-            FtsWork.log[F](_.info("Running index initialize")) ++
+          FtsWork.log[F](_.info("Running re-create index")) ++
             FtsWork.reInitializeTasks[F]
       })
 }

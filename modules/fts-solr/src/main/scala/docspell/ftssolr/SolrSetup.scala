@@ -49,13 +49,14 @@ object SolrSetup {
         } yield migs
 
       def setupSchema: List[SolrMigration[F]] = {
-        val verDoc = VersionDoc(versionDocId, allMigrations.map(_.value.version).max)
-        val solrUp = SolrUpdate(cfg, client)
+        val verDoc       = VersionDoc(versionDocId, allMigrations.map(_.value.version).max)
+        val solrUp       = SolrUpdate(cfg, client)
         val writeVersion = SolrMigration.writeVersion(solrUp, verDoc)
-        val deleteAll = SolrMigration.deleteData(0, solrUp)
-        val indexAll = SolrMigration.indexAll[F](Int.MaxValue, "Index all data")
+        val deleteAll    = SolrMigration.deleteData(0, solrUp)
+        val indexAll     = SolrMigration.indexAll[F](Int.MaxValue, "Index all data")
 
-        deleteAll :: (allMigrations.filter(_.isSchemaChange) ::: List(indexAll, writeVersion))
+        deleteAll :: (allMigrations
+          .filter(_.isSchemaChange) ::: List(indexAll, writeVersion))
       }
 
       private def allMigrations: List[SolrMigration[F]] =

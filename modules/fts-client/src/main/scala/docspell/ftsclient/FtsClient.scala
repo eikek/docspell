@@ -29,12 +29,11 @@ trait FtsClient[F[_]] {
     */
   def initialize: F[List[FtsMigration[F]]]
 
-  /** A list of initialization tasks that are meant to run when there
-    * was no setup at all or when re-creating the index.
+  /** A list of initialization tasks that can be run when re-creating
+    * the index.
     *
     * This is not run on startup, but only when required, for example
-    * when re-creating the entire index. These tasks don't need to
-    * preserve the data in the index.
+    * when re-creating the entire index.
     */
   def initializeNew: List[FtsMigration[F]]
 

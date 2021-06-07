@@ -11,22 +11,23 @@ import docspell.joex.scheduler.Context
 import docspell.store.queries.{QAttachment, QItem}
 
 object FtsWork {
+  import syntax._
+
   def apply[F[_]](f: FtsContext[F] => F[Unit]): FtsWork[F] =
     Kleisli(f)
 
-  /** Runs all migration tasks unconditionally and inserts all data as last step. */
+  /** Runs migration tasks to re-create the index. */
   def reInitializeTasks[F[_]: Monad]: FtsWork[F] =
     FtsWork { ctx =>
-      val migrations =
-        ctx.fts.initializeNew.map(fm =>
-          fm.changeResult(_ => FtsMigration.Result.workDone)
-        )
-
+      val migrations = ctx.fts.initializeNew
       NonEmptyList.fromList(migrations) match {
         case Some(nel) =>
           nel
-            .map(fm => from[F](fm.task))
-            .append(insertAll[F](None))
+            .map(fm =>
+              log[F](_.debug(s"Apply (${fm.engine.id}): ${fm.description}")) ++ from[F](
+                fm.task
+              )
+            )
             .reduce(semigroup[F])
             .run(ctx)
         case None =>
@@ -34,8 +35,6 @@ object FtsWork {
       }
     }
 
-  /**
-    */
   def from[F[_]: FlatMap: Applicative](t: F[FtsMigration.Result]): FtsWork[F] =
     Kleisli.liftF(t).flatMap(transformResult[F])
 
@@ -67,16 +66,20 @@ object FtsWork {
   def log[F[_]](f: Logger[F] => F[Unit]): FtsWork[F] =
     FtsWork(ctx => f(ctx.logger))
 
-  def clearIndex[F[_]](coll: Option[Ident]): FtsWork[F] =
+  def clearIndex[F[_]: FlatMap](coll: Option[Ident]): FtsWork[F] =
     coll match {
       case Some(cid) =>
-        FtsWork(ctx => ctx.fts.clear(ctx.logger, cid))
+        log[F](_.debug(s"Clearing index data for collective '${cid.id}'")) ++ FtsWork(
+          ctx => ctx.fts.clear(ctx.logger, cid)
+        )
       case None =>
-        FtsWork(ctx => ctx.fts.clearAll(ctx.logger))
+        log[F](_.debug("Clearing all index data!")) ++ FtsWork(ctx =>
+          ctx.fts.clearAll(ctx.logger)
+        )
     }
 
   def insertAll[F[_]: FlatMap](coll: Option[Ident]): FtsWork[F] =
-    FtsWork
+    log[F](_.info("Inserting all data to index")) ++ FtsWork
       .all(
         FtsWork(ctx =>
           ctx.fts.indexData(

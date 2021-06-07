@@ -41,10 +41,9 @@ object Migration {
     }
   }
 
-  def applySingle[F[_]: Effect](ctx: FtsContext[F])(m: Migration[F]): F[Unit] = {
+  def applySingle[F[_]: Effect](ctx: FtsContext[F])(m: Migration[F]): F[Unit] =
     for {
-      _   <- ctx.logger.info(s"Apply ${m.version}/${m.description}")
+      _ <- ctx.logger.info(s"Apply ${m.version}/${m.description}")
       _ <- m.task.run(ctx)
     } yield ()
-  }
 }
