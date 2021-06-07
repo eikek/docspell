@@ -17,6 +17,8 @@ trait SolrQuery[F[_]] {
   def query(q: QueryData): F[FtsResult]
 
   def query(q: FtsQuery): F[FtsResult]
+
+  def findVersionDoc(id: String): F[Option[VersionDoc]]
 }
 
 object SolrQuery {
@@ -53,6 +55,16 @@ object SolrQuery {
           q
         )
         query(fq)
+      }
+
+      def findVersionDoc(id: String): F[Option[VersionDoc]] = {
+        val fields = List(
+          Field.id,
+          Field("current_version_i")
+        )
+        val query = QueryData(s"id:$id", "", 1, 0, fields, Map.empty)
+        val req   = Method.POST(query.asJson, url)
+        client.expect[Option[VersionDoc]](req)
       }
     }
   }

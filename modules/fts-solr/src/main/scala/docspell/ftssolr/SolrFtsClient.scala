@@ -17,8 +17,11 @@ final class SolrFtsClient[F[_]: Effect](
     solrQuery: SolrQuery[F]
 ) extends FtsClient[F] {
 
-  def initialize: List[FtsMigration[F]] =
-    solrSetup.setupSchema
+  def initialize: F[List[FtsMigration[F]]] =
+    solrSetup.remainingSetup.map(_.map(_.value))
+
+  def initializeNew: List[FtsMigration[F]] =
+    solrSetup.setupSchema.map(_.value)
 
   def search(q: FtsQuery): F[FtsResult] =
     solrQuery.query(q)

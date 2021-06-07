@@ -20,8 +20,10 @@ object MigrationTask {
       .log[F, Unit](_.info(s"Running full-text-index migrations now"))
       .flatMap(_ =>
         Task(ctx =>
-          Migration[F](cfg, fts, ctx.store, ctx.logger)
-            .run(migrationTasks[F](fts))
+          for {
+            migs <- migrationTasks[F](fts)
+            res  <- Migration[F](cfg, fts, ctx.store, ctx.logger).run(migs)
+          } yield res
         )
       )
 
@@ -44,7 +46,7 @@ object MigrationTask {
       Some(DocspellSystem.migrationTaskTracker)
     )
 
-  def migrationTasks[F[_]: Effect](fts: FtsClient[F]): List[Migration[F]] =
-    fts.initialize.map(fm => Migration.from(fm))
+  def migrationTasks[F[_]: Effect](fts: FtsClient[F]): F[List[Migration[F]]] =
+    fts.initialize.map(_.map(fm => Migration.from(fm)))
 
 }

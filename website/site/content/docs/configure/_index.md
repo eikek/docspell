@@ -191,13 +191,17 @@ it is empty (the default), this call is disabled (all admin routes).
 Otherwise, the POST request will submit a system task that is executed
 by a joex instance eventually.
 
-Using this endpoint, the index will be re-created. This is sometimes
-necessary, for example if you upgrade SOLR or delete the core to
-provide a new one (see
+Using this endpoint, the entire index (including the schema) will be
+re-created. This is sometimes necessary, for example if you upgrade
+SOLR or delete the core to provide a new one (see
 [here](https://solr.apache.org/guide/8_4/reindexing.html) for
-details). Note that a collective can also re-index their data using a
-similiar endpoint; but this is only deleting their data and doesn't do
-a full re-index.
+details). Another way is to restart docspell (while clearing the
+index). If docspell detects an empty index at startup, it will submit
+a task to build the index automatically.
+
+Note that a collective can also re-index their data using a similiar
+endpoint; but this is only deleting their data and doesn't do a full
+re-index.
 
 The solr index doesn't contain any new information, it can be
 regenerated any time using the above REST call. Thus it doesn't need
