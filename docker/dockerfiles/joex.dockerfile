@@ -3,10 +3,13 @@ FROM alpine:latest
 ARG version=
 ARG joex_url=
 ARG UNO_URL=https://raw.githubusercontent.com/unoconv/unoconv/0.9.0/unoconv
+ARG TARGETPLATFORM
 
 ENV JAVA_OPTS="-Xmx1536M"
 
-RUN apk add --no-cache openjdk11 \
+RUN JDKPKG="openjdk11"; \
+    if [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then JDKPKG="openjdk8"; fi; \
+    apk add --no-cache $JDKPKG \
     tzdata \
     bash \
     curl \
@@ -61,7 +64,7 @@ RUN wget ${joex_url:-https://github.com/eikek/docspell/releases/download/v$versi
 
 COPY joex-entrypoint.sh /opt/joex-entrypoint.sh
 
-ENTRYPOINT ["/opt/joex-entrypoint.sh"]
+ENTRYPOINT ["/opt/joex-entrypoint.sh", "-J-XX:+UseG1GC"]
 EXPOSE 7878
 
 HEALTHCHECK --interval=1m --timeout=10s --retries=2 --start-period=10s \
