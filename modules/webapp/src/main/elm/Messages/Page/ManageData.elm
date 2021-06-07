@@ -1,4 +1,8 @@
-module Messages.Page.ManageData exposing (Texts, gb)
+module Messages.Page.ManageData exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Basics
 import Messages.Comp.CustomFieldManage
@@ -31,4 +35,17 @@ gb =
     , folderManage = Messages.Comp.FolderManage.gb
     , customFieldManage = Messages.Comp.CustomFieldManage.gb
     , manageData = "Manage Data"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , tagManage = Messages.Comp.TagManage.de
+    , equipmentManage = Messages.Comp.EquipmentManage.de
+    , orgManage = Messages.Comp.OrgManage.de
+    , personManage = Messages.Comp.PersonManage.de
+    , folderManage = Messages.Comp.FolderManage.de
+    , customFieldManage = Messages.Comp.CustomFieldManage.de
+    , manageData = "Daten verwalten"
     }

@@ -120,6 +120,6 @@ de =
     , itemDetail = Messages.Page.ItemDetail.de
     , queue = Messages.Page.Queue.de
     , userSettings = Messages.Page.UserSettings.de
-    , manageData = Messages.Page.ManageData.gb
+    , manageData = Messages.Page.ManageData.de
     , home = Messages.Page.Home.de
     }

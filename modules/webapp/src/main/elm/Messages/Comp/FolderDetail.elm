@@ -1,4 +1,8 @@
-module Messages.Comp.FolderDetail exposing (Texts, gb)
+module Messages.Comp.FolderDetail exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Http
 import Messages.Basics
@@ -39,4 +43,23 @@ gb =
     , folderCreated = "Folder has been created."
     , nameChangeSuccessful = "Name has been changed."
     , deleteSuccessful = "Folder has been deleted."
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , httpError = Messages.Comp.HttpError.de
+    , reallyDeleteThisFolder = "Den Ordner wirklich löschen?"
+    , autoOwnerInfo = "Du wirst automatisch als Besizter des neuen Ordners gesetzt."
+    , modifyInfo = "Der Ordner Name kann geändert werden, sowie die Mitglieder."
+    , notOwnerInfo = "Du bist nicht der Besitzer des Ordners und kannst ihn daher auch nicht ändern."
+    , members = "Mitglieder"
+    , addMember = "Neues Mitglied hinzufügen"
+    , add = "Hinzufügen"
+    , removeMember = "Mitglied entfernen"
+    , deleteThisFolder = "Den Ordner löschen"
+    , folderCreated = "Der Ordner wurde erstellt."
+    , nameChangeSuccessful = "Der Name wurde aktualisiert."
+    , deleteSuccessful = "Der Ordner wurde gelöscht."
     }

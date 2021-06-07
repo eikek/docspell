@@ -1,4 +1,8 @@
-module Messages.Comp.CustomFieldTable exposing (Texts, gb)
+module Messages.Comp.CustomFieldTable exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.Basics
 import Messages.DateFormat as DF
@@ -21,4 +25,14 @@ gb =
     , format = "Format"
     , usageCount = "#Usage"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.English
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , nameLabel = "Name/Label"
+    , format = "Format"
+    , usageCount = "#Nutzung"
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.German
     }
