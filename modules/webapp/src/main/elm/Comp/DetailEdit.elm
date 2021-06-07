@@ -694,15 +694,15 @@ view2 texts attr settings model =
         (viewIntern2 texts settings True model)
 
 
-formHeading : String -> Model -> Html msg
-formHeading classes model =
+formHeading : Texts -> String -> Model -> Html msg
+formHeading texts classes model =
     let
         heading =
-            fold (\_ -> "Add Tag")
-                (\_ -> "Add Person")
-                (\_ -> "Add Organization")
-                (\_ -> "Add Equipment")
-                (\_ -> "Add Custom Field")
+            fold (\_ -> texts.addTagHeader)
+                (\_ -> texts.addPersonHeader)
+                (\_ -> texts.addOrgHeader)
+                (\_ -> texts.addEquipmentHeader)
+                (\_ -> texts.addCustomFieldHeader)
 
         headIcon =
             fold (\_ -> Icons.tagIcon2 "mr-2")
@@ -724,11 +724,11 @@ viewModal2 texts settings mm =
             mm == Nothing
 
         heading =
-            fold (\_ -> "Add Tag")
-                (\_ -> "Add Person")
-                (\_ -> "Add Organization")
-                (\_ -> "Add Equipment")
-                (\_ -> "Add Custom Field")
+            fold (\_ -> texts.addTagHeader)
+                (\_ -> texts.addPersonHeader)
+                (\_ -> texts.addOrgHeader)
+                (\_ -> texts.addEquipmentHeader)
+                (\_ -> texts.addCustomFieldHeader)
 
         headIcon =
             fold (\_ -> Icons.tagIcon2 "mr-2")

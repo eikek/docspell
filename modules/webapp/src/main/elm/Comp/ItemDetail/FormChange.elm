@@ -104,7 +104,7 @@ multiUpdate flags ids change receive =
         DirectionChange dir ->
             let
                 data =
-                    ItemsAndDirection items (Data.Direction.toString dir)
+                    ItemsAndDirection items (Data.Direction.asString dir)
             in
             Api.setDirectionMultiple flags data receive
 

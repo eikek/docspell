@@ -4,8 +4,10 @@ module Messages.Comp.ItemDetail.EditForm exposing
     , gb
     )
 
+import Data.Direction exposing (Direction)
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
+import Messages.Data.Direction
 import Messages.DateFormat as DF
 import Messages.UiLanguage
 
@@ -27,6 +29,7 @@ type alias Texts =
     , editEquipment : String
     , suggestions : String
     , formatDate : Int -> String
+    , direction : Direction -> String
     }
 
 
@@ -48,6 +51,7 @@ gb =
     , editEquipment = "Edit equipment"
     , suggestions = "Suggestions"
     , formatDate = DF.formatDateLong Messages.UiLanguage.English
+    , direction = Messages.Data.Direction.gb
     }
 
 
@@ -69,4 +73,5 @@ de =
     , editEquipment = "Zubehör ändern"
     , suggestions = "Vorschläge"
     , formatDate = DF.formatDateLong Messages.UiLanguage.German
+    , direction = Messages.Data.Direction.de
     }

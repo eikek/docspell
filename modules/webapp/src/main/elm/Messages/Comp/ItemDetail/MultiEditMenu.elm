@@ -4,8 +4,10 @@ module Messages.Comp.ItemDetail.MultiEditMenu exposing
     , gb
     )
 
+import Data.Direction exposing (Direction)
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
+import Messages.Data.Direction
 
 
 type alias Texts =
@@ -20,6 +22,7 @@ type alias Texts =
     , unconfirm : String
     , changeTagMode : String
     , dueDateTab : String
+    , direction : Direction -> String
     }
 
 
@@ -36,6 +39,7 @@ gb =
     , unconfirm = "Unconfirm"
     , changeTagMode = "Change tag edit mode"
     , dueDateTab = "Due Date"
+    , direction = Messages.Data.Direction.gb
     }
 
 
@@ -52,4 +56,5 @@ de =
     , unconfirm = "Widerufe Betätigung"
     , changeTagMode = "Wechsel den Änderungs-Modus für Tags"
     , dueDateTab = "Fälligkeits-Datum"
+    , direction = Messages.Data.Direction.de
     }

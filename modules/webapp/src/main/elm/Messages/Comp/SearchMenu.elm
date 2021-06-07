@@ -4,10 +4,12 @@ module Messages.Comp.SearchMenu exposing
     , gb
     )
 
+import Data.Direction exposing (Direction)
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
 import Messages.Comp.FolderSelect
 import Messages.Comp.TagSelect
+import Messages.Data.Direction
 
 
 type alias Texts =
@@ -36,6 +38,7 @@ type alias Texts =
     , dueTo : String
     , sourceTab : String
     , searchInItemSource : String
+    , direction : Direction -> String
     }
 
 
@@ -66,6 +69,7 @@ gb =
     , dueTo = "Due To"
     , sourceTab = "Source"
     , searchInItemSource = "Search in item source…"
+    , direction = Messages.Data.Direction.gb
     }
 
 
@@ -96,4 +100,5 @@ de =
     , dueTo = "Fällig bis"
     , sourceTab = "Quelle"
     , searchInItemSource = "Suche in Dokument Quelle…"
+    , direction = Messages.Data.Direction.de
     }

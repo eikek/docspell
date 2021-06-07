@@ -314,7 +314,7 @@ addDetailForm texts settings model =
                 [ class "flex flex-col px-2 py-2 mb-4"
                 , class S.box
                 ]
-                [ Comp.DetailEdit.formHeading S.header3 mm
+                [ Comp.DetailEdit.formHeading texts.detailEdit S.header3 mm
                 , Html.map ModalEditMsg (Comp.DetailEdit.view2 texts.detailEdit [] settings mm)
                 ]
 

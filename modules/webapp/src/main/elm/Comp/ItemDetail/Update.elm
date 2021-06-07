@@ -1628,7 +1628,7 @@ setDirection flags model =
     in
     case dir of
         Just d ->
-            Api.setDirection flags model.item.id (DirectionValue (Data.Direction.toString d)) SaveResp
+            Api.setDirection flags model.item.id (DirectionValue (Data.Direction.asString d)) SaveResp
 
         Nothing ->
             Cmd.none
