@@ -1,6 +1,6 @@
-cfg: {stdenv, fetchzip, file, curl, inotifyTools, fetchurl, jdk11, bash, jq, sqlite}:
+cfg: {stdenv, lib, fetchzip, file, curl, inotifyTools, fetchurl, jdk11, bash, jq, sqlite}:
 let
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Docspell helps to organize and archive your paper documents.";
     homepage = https://github.com/eikek/docspell;
     license = licenses.gpl3;

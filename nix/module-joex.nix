@@ -1311,7 +1311,7 @@ in {
 
     users.users."${user}" = mkIf (cfg.runAs == null) {
       name = user;
-      isSystemUser = false;
+      isSystemUser = true;
       createHome = true;
       home = "/var/docspell";
       description = "Docspell user";
