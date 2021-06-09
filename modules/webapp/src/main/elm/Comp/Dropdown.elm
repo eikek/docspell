@@ -359,7 +359,7 @@ update msg model =
 
                 Just Util.Html.ESC ->
                     if model.menuOpen then
-                        ( model, Cmd.none )
+                        update ToggleMenu model
 
                     else
                         case model.selected of
@@ -374,7 +374,11 @@ update msg model =
                                 ( model, Cmd.none )
 
                 Just Util.Html.Space ->
-                    update ToggleMenu model
+                    if model.menuOpen then
+                        ( model, Cmd.none )
+
+                    else
+                        update ToggleMenu model
 
                 Just Util.Html.Enter ->
                     let
