@@ -22,6 +22,7 @@ import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.CustomFieldInput
 import Comp.FixedDropdown
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
+import Data.CustomFieldType
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Dict exposing (Dict)
@@ -217,8 +218,16 @@ update1 forSearch flags msg model =
 
                 cmd_ =
                     Cmd.map (CustomFieldInputMsg f) fc
+
+                change =
+                    case Data.CustomFieldType.fromString f.ftype of
+                        Just Data.CustomFieldType.Boolean ->
+                            FieldValueChange f "false"
+
+                        _ ->
+                            NoFieldChange
             in
-            UpdateResult model_ cmd_ NoFieldChange
+            UpdateResult model_ cmd_ change
 
         RemoveField f ->
             let
