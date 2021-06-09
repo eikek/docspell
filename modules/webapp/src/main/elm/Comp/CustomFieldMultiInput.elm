@@ -222,7 +222,7 @@ update1 forSearch flags msg model =
                 change =
                     case Data.CustomFieldType.fromString f.ftype of
                         Just Data.CustomFieldType.Boolean ->
-                            FieldValueChange f "false"
+                            FieldValueChange f (Util.CustomField.boolValue False)
 
                         _ ->
                             NoFieldChange

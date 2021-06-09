@@ -1,5 +1,6 @@
 module Util.CustomField exposing
-    ( nameOrLabel
+    ( boolValue
+    , nameOrLabel
     , renderValue
     , renderValue2
     )
@@ -10,6 +11,17 @@ import Data.Icons as Icons
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+
+
+{-| This is how the server wants the value to a bool custom field
+-}
+boolValue : Bool -> String
+boolValue b =
+    if b then
+        "true"
+
+    else
+        "false"
 
 
 nameOrLabel : { r | name : String, label : Maybe String } -> String
