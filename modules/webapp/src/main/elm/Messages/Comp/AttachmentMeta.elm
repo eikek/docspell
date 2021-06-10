@@ -54,11 +54,11 @@ de =
     , content = "Inhalt"
     , labels = "Label"
     , proposals = "Vorschläge"
-    , correspondentOrg = "Korrespondent Organisation"
-    , correspondentPerson = "Korrespondent Person"
-    , concerningPerson = "Betreffend Person"
-    , concerningEquipment = "Betreffend Zubehör"
-    , itemDate = "Dokument Datum"
-    , itemDueDate = "Fälligkeits-Datum"
+    , correspondentOrg = "Absender Unternehmen"
+    , correspondentPerson = "Absender Person"
+    , concerningPerson = "Empfänger Person"
+    , concerningEquipment = "Ausstattung"
+    , itemDate = "Dokumentdatum"
+    , itemDueDate = "Fälligkeit"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.German
     }
