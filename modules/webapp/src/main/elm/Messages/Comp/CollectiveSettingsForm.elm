@@ -78,16 +78,16 @@ de =
     , integrationEndpointHelp =
         "Der Integrations-Endpunkt erlaubt es (lokalen) Anwendungen, Dateien einzustellen. "
             ++ "Dies kann für dieses Kollektiv de-/aktiviert werden."
-    , fulltextSearch = "Volltext Suche"
+    , fulltextSearch = "Volltextsuche"
     , reindexAllData = "Alle Daten neu indexieren"
     , reindexAllDataHelp =
-        "Es wird im Hintergrund der Index gelöscht und alle Daten neu indexiert. "
-            ++ "Bitte tippe OK ein vor dem Klicken, um ein versehentliches Neu-Indexieren zu vermeiden."
+        "Der Index wird im Hintergrund gelöscht und alle Daten neu indexiert. "
+            ++ "Bitte tippe vor dem Klicken OK ein, um ein versehentliches Neu-Indexieren zu vermeiden."
     , autoTagging = "Auto-Tagging"
     , startNow = "Jetzt starten"
     , languageLabel = Messages.Data.Language.de
     , classifierTaskStarted = "Auto-Tagger Job gestartet."
     , fulltextReindexSubmitted = "Volltext Neu-Indexierung gestartet."
     , fulltextReindexOkMissing =
-        "Bitte tippe OK in das Feld, wenn Du wirklich den Index neu erzeugen möchtest."
+        "Bitte tippe OK in das Feld ein, wenn Du wirklich den Index neu erzeugen möchtest."
     }
