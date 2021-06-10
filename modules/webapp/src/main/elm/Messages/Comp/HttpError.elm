@@ -30,7 +30,7 @@ de err =
         texts =
             { badUrl = \url -> "Die URL ist falsch: " ++ url
             , timeout = "Es gab einen Netzwerk-Timeout."
-            , networkError = "Es gab ein Netzwerk-Fehler."
+            , networkError = "Es gab einen Netzwerk-Fehler."
             , invalidResponseStatus =
                 \status ->
                     "Ein ungültiger Antwort-Code: " ++ String.fromInt status ++ "."
