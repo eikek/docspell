@@ -34,7 +34,7 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , use = "Art"
-    , useAsConcerning = "Als betreffendes Zubehör verwenden"
+    , useAsConcerning = "Als betreffende Ausstattung verwenden"
     , useNotSuggestions = "Nicht für Vorschläge verwenden"
     , equipmentUseLabel = Messages.Data.EquipmentUse.de
     , notes = "Notizen"
