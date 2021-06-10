@@ -44,9 +44,9 @@ de =
     , equipmentTable = Messages.Comp.EquipmentTable.de
     , equipmentForm = Messages.Comp.EquipmentForm.de
     , httpError = Messages.Comp.HttpError.de
-    , createNewEquipment = "Neues Zubehör anlegen"
-    , newEquipment = "Neues Zubehör"
-    , reallyDeleteEquipment = "Das Zubehör wirklich löschen?"
-    , deleteThisEquipment = "Zubehör löschen"
+    , createNewEquipment = "Neues Ausstattung anlegen"
+    , newEquipment = "Neue Ausstattung"
+    , reallyDeleteEquipment = "Diese Ausstattung wirklich löschen?"
+    , deleteThisEquipment = "Ausstattung löschen"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     }
