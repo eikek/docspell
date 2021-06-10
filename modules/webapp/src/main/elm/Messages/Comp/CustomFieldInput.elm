@@ -24,7 +24,7 @@ gb =
 
 de : Texts
 de =
-    { errorNoValue = "Bitte gebe einen Wert an"
+    { errorNoValue = "Bitte gib einen Wert an"
     , errorNoNumber = "Keine Zahl angegeben"
     , errorNoAmount = "Kein Betrag angegeben"
     , errorNotANumber = \str -> "Keine Zahl: " ++ str
