@@ -33,6 +33,6 @@ de =
     { basics = Messages.Basics.de
     , address = "Addresse"
     , contact = "Kontakt"
-    , use = "Art"
+    , use = "Typ"
     , orgUseLabel = Messages.Data.OrgUse.de
     }
