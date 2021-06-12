@@ -3,6 +3,16 @@ openapi: 3.0.0
 info:
   title: Docspell JOEX
   version: 0.24.0-SNAPSHOT
+  description: |
+    This is the remote API to the job executor component of Docspell.
+    Docspell is a free document management system focused on small
+    groups or families.
+
+    The routes are not protected by the application. This api is meant
+    to be used by the server component of Docspell.
+  license:
+    name: GPLv3
+    url: https://spdx.org/licenses/GPL-3.0-or-later.html
 
 servers:
   - url: /api/v1
@@ -11,6 +21,7 @@ servers:
 paths:
   /api/info/version:
     get:
+      operationId: "info-version"
       tags: [ Api Info ]
       summary: Get basic information about this software.
       description: |
@@ -22,8 +33,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VersionInfo"
-  /api/v1/notify:
+  /notify:
     post:
+      operationId: "v1-notify"
       tags: [ Job Executor ]
       summary: Notify the job executor.
       description: |
@@ -35,8 +47,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /api/v1/running:
+  /running:
     get:
+      operationId: "v1-running"
       tags: [ Job Executor ]
       summary: Get a list of currently executing jobs.
       description: |
@@ -48,8 +61,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/JobList"
-  /api/v1/shutdownAndExit:
+  /shutdownAndExit:
     post:
+      operationId: "v1-shutdown-and-exit"
       tags: [ Job Executor ]
       summary: Stops this component and exits.
       description: |
@@ -61,8 +75,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /api/v1/job/{id}:
+  /job/{id}:
     get:
+      operationId: "v1-job-by-id"
       tags: [ Current Jobs ]
       summary: Get a job by its id.
       description: |
@@ -76,8 +91,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/JobAndLog"
-  /api/v1/job/{id}/cancel:
+  /job/{id}/cancel:
     post:
+      operationId: "v1-job-cancel"
       tags: [ Current Jobs ]
       summary: Request to cancel a running job.
       description: |
