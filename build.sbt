@@ -785,7 +785,7 @@ addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb ;make-tools")
 addCommandAlias("ci", "make; lint; test")
 addCommandAlias(
   "lint",
-  "scalafmtSbtCheck; scalafmtCheckAll; Compile/scalafix --check; Test/scalafix --check"
+  "restapi/openapiLint; joexapi/openapiLint; scalafmtSbtCheck; scalafmtCheckAll; Compile/scalafix --check; Test/scalafix --check"
 )
 addCommandAlias("fix", "Compile/scalafix; Test/scalafix; scalafmtSbt; scalafmtAll")
 addCommandAlias("make-website", ";website/clean ;website/zolaBuild ;website/zolaCheck")
