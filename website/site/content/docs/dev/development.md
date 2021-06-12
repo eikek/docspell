@@ -102,6 +102,26 @@ $ export DOCSPELL_ENV=dev
 $ sbt "restserver/reStart"
 ```
 
+# Developing Backend
+
+## OpenAPI
+
+The http API is specified in the corresponding `-openapi.yml` file.
+The `component` section is being used to generate code for the client
+and the server, so that both are always in sync. However, the route
+definitions are not checked against the server implementation.
+
+Changes to the openapi files can be checked by running a sbt task:
+
+``` scala
+restapi/openapiLint //and/or
+joexapi/openapiLint
+```
+
+These tasks must not show any errors (it is checked by the CI). The
+warnings should also be fixed.
+
+
 # Nix Expressions
 
 The directory `/nix` contains nix expressions to install docspell via
