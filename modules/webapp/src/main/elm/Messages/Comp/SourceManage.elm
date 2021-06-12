@@ -74,8 +74,8 @@ de =
     , publicUploads = "Öffentlicher Upload"
     , sourceInfoText =
         "Diese Quelle definiert eine zuällige URL, die von jedem genutzt werden kann, um Dateien ins "
-            ++ "Kollektiv zu senden. Es gibt eine Webseite, die Du teilen kannst, oder die API URL "
-            ++ "kann mit anderen Programmen, wie der Android App, verwendet werden."
+            ++ "Kollektiv zu senden. Es gibt eine Webseite die Du teilen kannst oder eine API-URL, "
+            ++ "die mit anderen Programmen wie der Android App, verwendet werden kann."
     , itemsCreatedInfo =
         \n ->
             "Es wurden "
