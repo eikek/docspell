@@ -163,8 +163,8 @@ de =
     , processingTabInfo = "Diese Einstellungen legen fest, welche E-Mails aus dem Postfach heruntergeladen werden."
     , additionalFilterTabInfo = "Diese Filter werden auf die bereits heruntergeladenen E-Mails angewendet und können nochmals E-Mails von der Verarbeitung ausschließen."
     , postProcessingTabInfo = "Hier wird definiert was mit den E-Mails passiert, die heruntergeladen wurden."
-    , metadataTabInfo = "Gebe an, was für Metadaten an Dokumente geknüpft werden sollen, die durch diesen Auftrag entstehen."
-    , scheduleTabInfo = "Gebe an, wann und wie oft die E-Mails abgeholt werden sollen."
+    , metadataTabInfo = "Gib an, was für Metadaten an Dokumente geknüpft werden sollen, die durch diesen Auftrag entstehen."
+    , scheduleTabInfo = "Gib an, wann und wie oft die E-Mails abgeholt werden sollen."
     , selectConnection = "Verbindung wählen…"
     , enableDisable = "Aktiviere/Deaktiviere den Auftrag"
     , mailbox = "Postfach"
@@ -183,24 +183,24 @@ de =
             ++ "`*.pdf|mail.html`. Wird kein Glob angegeben, ist es `*`, es werden alle Dateien verwendet."
     , subjectFilter = "Betreff Filter"
     , subjectFilterInfo =
-        "Verwende einen Gblo, um E-Mails anhand des Betreffs zu filtern. Zum Beispiel: "
+        "Verwende einen Glob, um E-Mails anhand des Betreffs zu filtern. Zum Beispiel: "
             ++ "`*Scanned Document*`. Kein Filter bedeutet `*`, was jeden Betreff zulässt."
     , postProcessingLabel = "Wende Nachverarbeitung auf alle heruntergeladenen E-Mails an."
     , postProcessingInfo = """
-Heruntergeladene E-Mails, die aber durch die Filter nicht importiert wurden, können durch dieses Flag von der gesamten Nachverarbeitung ein- oder ausgeschlossen werden. Ist es aktiviert wird die Nachverarbeitung, die hier definiert wird, auf alle E-Mails angewendet. Wenn es deaktiviert ist, wird es nur auf E-Mails angewendet, die importiert wurden.
+Heruntergeladene E-Mails, die aber durch die Filter nicht importiert wurden, können durch diese Option von der gesamten Nachverarbeitung ein- oder ausgeschlossen werden. Aktiviert: Die Nachbearbeitung wird bei allen Mails durchgeführt. Deaktiviert: Die Nachbearbeitung wird nur bei importierten Mails druchgeführt. 
 """
-    , targetFolder = "Ziel Ordner"
+    , targetFolder = "Ziel-Ordner"
     , targetFolderInfo = "E-Mails nach der Verarbeitung in diesen Ordner verschieben."
-    , deleteMailLabel = "Importiete E-Mails löschen"
+    , deleteMailLabel = "Importierte E-Mails löschen"
     , deleteMailInfo =
-        "Importierte E-Mails auf dem Postfach löschen. Das wird nur dann angewendet, falls *kein* Ziel-Ordner angegeben ist."
+        "Importierte E-Mails aus dem Postfach löschen. E-Mails werden nur gelöscht falls *kein* Zielordner angegeben ist."
     , itemDirection = "Richtung"
     , automatic = "Automatisch"
     , itemDirectionInfo = """
-Setzt die Richtung des Dokuments. Falls sie für all diese Mails schon fest
-steht, dann kann hier ein Wert für alle festgelegt werden. Bei 'Automatisch' wird auf den Sender und Empfänger geschaut, um eine Richtung zu erraten."""
-    , itemFolder = "Dokument Ordner"
-    , itemFolderInfo = "Alle Dokumente aus diesem Auftrag in den Ordner tun"
+Setzt die Senderichtung des Dokuments. Falls sie für all diese Mails schon fest
+steht, kann hier ein Wert für alle festgelegt werden. Bei 'Automatisch' wird auf den Sender und Empfänger geschaut, um eine Richtung zu erraten."""
+    , itemFolder = "Dokumentordner"
+    , itemFolderInfo = "Alle Dokumente aus diesem Auftrag in den Ordner verschieben"
     , tagsInfo = "Wähle Tags, die den Dokumenten zugordnet werden"
     , documentLanguage = "Sprache"
     , documentLanguageInfo =
@@ -214,6 +214,6 @@ steht, dann kann hier ein Wert für alle festgelegt werden. Bei 'Automatisch' wi
             ++ "eine Liste (wie `1,2,3`), eine Bereich (wie `1..3`) oder ein '*' (für alle) "
             ++ "ist mögich für jeden Teil."
     , connectionMissing = "Keine E-Mail Verbindung definiert. Gehe zu den E-Mail Einstellungen und füge eine hinzu."
-    , noProcessingFolders = "Keine Postfach Ordner ausgewählt."
+    , noProcessingFolders = "Keine Postfach-Ordner ausgewählt."
     , invalidCalEvent = "Das Kalender-Ereignis ist ungültig."
     }
