@@ -412,7 +412,7 @@ val restapi = project
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.restapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
-    openapiStaticArgs := Seq("-l", "html2")
+    openapiStaticGen := OpenApiDocGenerator.Redoc
   )
   .dependsOn(common)
 
@@ -431,7 +431,8 @@ val joexapi = project
         Dependencies.http4sClient,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.joexapi.model"),
-    openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml"
+    openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml",
+    openapiStaticGen := OpenApiDocGenerator.Redoc
   )
   .dependsOn(common)
 
