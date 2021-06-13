@@ -129,7 +129,7 @@ de =
     , general = "Allgemein"
     , showSideMenuByDefault = "Seiten-Menü standardmäßig anzeigen"
     , uiLanguage = "Sprache der Oberfläche"
-    , itemSearch = "Dokumenten Suche"
+    , itemSearch = "Dokumenten-Suche"
     , maxResultsPerPageInfo =
         \max ->
             "Maximale Anzahl von Resultaten in einer Seite. Maximal "
@@ -137,29 +137,29 @@ de =
                 ++ "."
     , maxResultsPerPage = "Anzahl pro Seite"
     , showBasicSearchStatsByDefault = "Zeige einfache Statistiken zum Suchresultat an"
-    , enablePowerSearch = "Die 'Power Suche' aktivieren"
-    , itemCards = "Dokumenten Kachel"
+    , enablePowerSearch = "Die 'Power-Suche' aktivieren"
+    , itemCards = "Dokumenten-Kachel"
     , maxNoteSize = "Max. Länge der Notizen"
     , maxNoteSizeInfo =
         \max ->
-            "Maximale Länge der Dokument Notizen, die in der Kachel dargestellt werden. Zwischen 0 - "
+            "Maximale Länge der Dokumentnotizen, die in der Kachel dargestellt werden. Zwischen 0 - "
                 ++ String.fromInt max
                 ++ "."
     , sizeOfItemPreview = "Größe der Vorschau (kann bei Feldern unten ganz ausgeschaltet werden)"
     , cardTitlePattern = "Titel Template der Kachel"
     , togglePatternHelpText = "Template Hilfe anzeigen/ausblenden"
     , cardSubtitlePattern = "Sub-Titel Template der Kachel"
-    , searchMenu = "Such Menü"
+    , searchMenu = "Such-Menü"
     , searchMenuTagCount = "Anzahl von Tags"
-    , searchMenuTagCountInfo = "So viele Tags werden im Such-Menü gleichzeitig dargestellt. Weiter Tags können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
+    , searchMenuTagCountInfo = "So viele Tags werden im Such-Menü gleichzeitig dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
     , searchMenuCatCount = "Anzahl Tag-Kategorien"
-    , searchMenuCatCountInfo = "So viele Tag-Kategorien werden gleichzeitig im Such-Menü dargestellt. Andere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
+    , searchMenuCatCountInfo = "So viele Tag-Kategorien werden gleichzeitig im Such-Menü dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
     , searchMenuFolderCount = "Anzahl von Ordnern"
     , searchMenuFolderCountInfo = "So viele Ordner werden gleichzeitig im Such-Menü dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
-    , itemDetail = "Dokumenten Detail"
+    , itemDetail = "Dokumenten-Detail"
     , browserNativePdfView = "Browser-native PDF Vorschau"
     , keyboardShortcutLabel = "Aktivere Tastenkürzel zur Navigation und zum Bestätigen der Metadaten"
-    , tagCategoryColors = "Tag Kategorie Farben"
+    , tagCategoryColors = "Tag-Kategorie Farben"
     , colorLabel = Messages.Data.Color.de
     , chooseTagColorLabel = "Wähle eine Farbe für eine Tag-Kategorie"
     , tagColorDescription = "Tags können anhand ihrer Kategorie verschieden dargestellt werden."
@@ -168,23 +168,23 @@ de =
     , fieldLabel = Messages.Data.Fields.de
     , templateHelpMessage =
         """
-Ein Template erlaubt es, den Titel und Untertitel eine Kachel
+Ein Template erlaubt es, den Titel und Untertitel einer Kachel
 individuel anzupassen. Dabei werden Variablen innerhalb `{{` und `}}`
 verwendet. Anderer Text wird wörtlich dargestellt. Die folgenden
 Variablen sind verfügbar:
 
-- `{{name}}` Der Dokument Name
+- `{{name}}` Der Dokument-Name
 - `{{source}}` die Quelle durch welche das Dokument entstand
 - `{{folder}}` der Ordner
-- `{{corrOrg}}` die Korrespondent Organisation
-- `{{corrPerson}}` die Korrespondent Person
-- `{{correspondent}}` Organisation und Person, separiert durch ein Komma
+- `{{corrOrg}}` die Korrespondent-Organisation
+- `{{corrPerson}}` die Korrespondent-Person
+- `{{correspondent}}` Organisation und Person, getrennt durch ein Komma
 - `{{concPerson}}` die betreffende Person
-- `{{concEquip}}` das betreffende Zubehör
-- `{{concerning}}` Person und Zubehör, separiert durch ein Komma
-- `{{fileCount}}` die Anzahl an Anhängen des Dokuments
-- `{{dateLong}}` das Dokument Datum lang formatiert
-- `{{dateShort}}` das Dokument Datum kurz formatiert (yyyy/mm/dd)
+- `{{concEquip}}` die betreffende Aussstattung
+- `{{concerning}}` Person und Ausstattung, getrennt durch ein Komma
+- `{{fileCount}}` die Anzahl von Anhängen des Dokuments
+- `{{dateLong}}` das Dokument-Datum lang formatiert
+- `{{dateShort}}` das Dokument-Datum kurz formatiert (yyyy/mm/dd)
 - `{{dueDateLong}}` das Fälligkeits-Datum lang formatiert
 - `{{dueDateShort}}` das Fälligkeits-Datum kurz formatiert (yyyy/mm/dd)
 - `{{direction}}` die Richtung des Dokuments
@@ -193,7 +193,7 @@ Wenn eine Variable nicht vorhanden ist, wird ein leerer String
 geschrieben. Mit einem `|` können mehrere Variablen hintereinander
 versucht werden, bis zur ersten die einen Wert enthält. Zum Beispiel:
 `{{corrOrg|corrPerson|-}}` würde entweder die Organisation darstellen
-oder, wenn die leer ist, die Person. Sind beide leer wird ein `-`
+oder, wenn diese leer ist, die Person. Sind beide leer wird ein `-`
 dargestellt.
 """
     }
