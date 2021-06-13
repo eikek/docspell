@@ -80,7 +80,7 @@ de =
         \n ->
             "Es wurden "
                 ++ String.fromInt n
-                ++ " dokumente durch diese Quelle erzeugt."
+                ++ " Dokumente durch diese Quelle erzeugt."
     , publicUploadPage = "Öffentliche Upload Webseite"
     , copyToClipboard = "In die Zwischenablage kopieren"
     , openInNewTab = "Im neuen Tab/Fenster öffnen"
@@ -88,6 +88,6 @@ de =
     , reallyDeleteSource = "Diese Quelle wirklich entfernen?"
     , createNewSource = "Neue Quelle erstellen"
     , deleteThisSource = "Quelle löschen"
-    , errorGeneratingQR = "Fehler beim Generieren des QR Code"
+    , errorGeneratingQR = "Fehler beim Generieren des QR-Code"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     }
