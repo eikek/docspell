@@ -66,7 +66,7 @@ de =
     , httpError = Messages.Comp.HttpError.de
     , createCustomField = "Ein neues Benutzer-Feld erstellen."
     , modifyTypeWarning =
-        "Beachte, dass eine Änderung im Format zu nicht-sichtbare Werten führen kann, falls diese dem "
+        "Beachte, dass eine Änderung im Format zu nicht sichtbaren Werten führen kann, falls diese dem "
             ++ "neuen Format nicht entsprechen!"
     , nameInfo =
         "Der Name des Feldes identifiziert es eindeutig und wird im erweiterten Such-Query "
@@ -77,7 +77,7 @@ de =
         "Ein Feld muss ein Format angeben. Werte werden dagegen validiert."
     , label = "Bezeichnung"
     , labelInfo =
-        "Diese Bezeichnung erscheint im UI für das Feld. Es kann im Gegensatz zum Namen "
+        "Diese Bezeichnung erscheint in der Benutzeroberfläche für dieses Feld. Es kann im Gegensatz zum Namen "
             ++ "Leerzeichen etc enthalten. Falls nicht angegeben, wird der Name verwendet."
     , deleteThisField = "Dieses Feld löschen"
     , fieldNameRequired = "Ein Name ist erforderlich."

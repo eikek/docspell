@@ -51,7 +51,7 @@ de =
     , minute = "Minute"
     , error = "Fehler"
     , schedule = "Zeitplan"
-    , next = "Nächsten Zeiten"
+    , next = "Nächste Zeiten"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
     , httpError = Messages.Comp.HttpError.de
     }
