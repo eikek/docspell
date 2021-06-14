@@ -63,8 +63,8 @@ sollen (blacklist) oder ausschließlich gelernt werden sollen
 Eine leere Whitelist stellt das Auto-Tagging ab.
 """
     , blacklistOrWhitelist = "Ist das folgende eine Blacklist oder eine Whitelist?"
-    , whitelistLabel = "EINschließen der Tag-Kategorie"
-    , blacklistLabel = "AUSschließen der Tag-Kategorie"
+    , whitelistLabel = "EINschließen der Tag-Kategorien"
+    , blacklistLabel = "AUSschließen der Tag-Kategorien"
     , itemCount = "Anzahl Dokumente"
     , schedule = "Zeitplan"
     , itemCountHelp = "Die maximale Anzahl an Dokumenten, von denen gelernt werden soll (sortiert nach Datum, neueste zuerst). Verwende 0 um alle einzuschließen."
