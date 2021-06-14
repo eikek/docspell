@@ -23,7 +23,9 @@ To get started, here are some quick links:
 - [Unraid](https://www.unraid.net/): There are user provided [notes
   and unraid
   templates](https://github.com/vakilando/unraid-docker-templates)
-  which can get you started. Thanks for providing these!
+  which can get you started. There is also an [installation and help
+  thread](https://forums.unraid.net/topic/103425-docspell-hilfe/) in
+  the German Unraid forum. Thanks for providing these!
 
 Every [component](@/docs/intro/_index.md#components) (restserver, joex,
 consumedir) can run on different machines and multiple times. Most of

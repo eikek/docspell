@@ -1,5 +1,103 @@
 # Changelog
 
+## v0.24.0
+
+This time a translation of the Web-UI in German is included and the
+docker build was overhauled. The releases are now build and tested
+using Java 11.
+
+- Rework Docker setup. Images are now provided for different
+  architectures and have a new home now (see below). The images are
+  now built via a github-action from the official packages of each
+  release. (#635, #643, #840, #687)
+- Translation of the UI into German (thanks to @monnypython for proof
+  reading and applying lots of corrections!) (#292, #683, #870)
+- Improve migration of SOLR (#604)
+  - The information whether solr has been setup, is now stored inside
+    SOLR. This means when upgrading Docspell, all data will be
+    re-indexed.
+- Add `--exclude` and `--include` options to the `consumedir.sh`
+  script (#885)
+- Improved documenation of the http api (#874)
+- Removed unused libraries in the final packages to reduce file size a
+  bit (#841)
+- Bug: Searching by tag category was broken when using upper case
+  letters (#849)
+- Bug: when adding a boolean custom field, it must be applied
+  immediatly (#842)
+- Bug: when entering a space in a dropdown the menu closes (#863)
+- Bug: Some scripts didn't work with earlier versions of `jq` (#851)
+- Bug: The source form was broken in that it didn't load the language
+  correctly (#877)
+- Bug: Tag category options were wrongly populated when narrowing tags
+  via a search (#880)
+
+### Breaking Changes
+
+#### Java 11
+
+Not really a breaking change. Docspell is now build and tested using
+Java 11. Docspell has a small amount of Java source code. This is
+compiled using Java 11 but to target Java 8 JVMs. So it still can run
+under Java 8. However, it is recommended to use at least Java 11 to
+run Docspell.
+
+
+#### Docker Images
+
+The docker images are now pushed to the
+[docspell](https://hub.docker.com/u/docspell) organization at
+docker-hub! So the images are now:
+
+- `docspell/restserver`
+- `docspell/joex`
+- `docspell/tools`
+
+Tags: images are tagged with two floating tags: `nightly` and
+`latest`. The `nightly` tag always points to the latest development
+state (the master branch). The `latest` tag points to the latest
+release. Each release is also tagged with its version number, like
+`v0.24.0`.
+
+Multiarch: Images are now build for `amd64`, `arm64` and `armv7`.
+
+The consumedir is being replaced by the more generic `docspell/tools`
+image which contains all the scripts from the `tools/` section. That
+means it has no special entrypoint for the consumedir script anymore.
+The polling functionality is now provided by the consumedir script.
+And the docker-compose file needs now to specify the complete command
+arguments. This makes it much more flexible to use.
+
+This allows to use this image to run all the other tool scripts, too.
+The scripts are in PATH inside the image and prefixed by `ds-`, so for
+example `ds-consumedir` or `ds-export-files` etc.
+
+#### Docker Compose
+
+The docker-compose setup is now at `docker/docker-compose`. Please
+look at the new [compose
+file](https://github.com/eikek/docspell/blob/master/docker/docker-compose/docker-compose.yml)
+and do the corresponding changes at yours. Especially the consumedir
+container changed significantly.
+
+The `.envrc` has been cleaned from some settings. Since the config
+files is mounted into the image, you can just edit this file instead.
+The only settings left in the .envrc file are those that need to be
+available in the docker-compose file and the application. If some
+settings need to be duplicated for joex and restserver, you can use
+the builtin variable resolution mechanism for this. An example is
+provided in the new config file.
+
+### Configuration Changes
+
+None.
+
+
+### Rest API Changes
+
+None.
+
+
 ## v0.23.0
 
 *May 29, 2021*
