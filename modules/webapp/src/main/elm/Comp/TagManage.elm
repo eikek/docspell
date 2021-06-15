@@ -66,7 +66,7 @@ type Msg
     = TableMsg Comp.TagTable.Msg
     | FormMsg Comp.TagForm.Msg
     | LoadTags
-    | TagResp (Result Http.Error TagList)
+    | TagResp String (Result Http.Error TagList)
     | SetViewMode ViewMode
     | InitNewTag
     | Submit
@@ -116,9 +116,9 @@ update flags msg model =
             ( { model | tagFormModel = m2 }, Cmd.map FormMsg c2 )
 
         LoadTags ->
-            ( { model | loading = True }, Api.getTags flags model.query TagResp )
+            ( { model | loading = True }, Api.getTags flags model.query (TagResp model.query) )
 
-        TagResp (Ok tags) ->
+        TagResp query (Ok tags) ->
             let
                 m2 =
                     { model | viewMode = Table, loading = False }
@@ -128,11 +128,15 @@ update flags msg model =
             in
             Util.Update.andThen1
                 [ update flags (TableMsg (Comp.TagTable.SetTags tags.items))
-                , update flags (FormMsg (Comp.TagForm.SetCategoryOptions cats))
+                , if query == "" then
+                    update flags (FormMsg (Comp.TagForm.SetCategoryOptions cats))
+
+                  else
+                    \m -> ( m, Cmd.none )
                 ]
                 m2
 
-        TagResp (Err _) ->
+        TagResp _ (Err _) ->
             ( { model | loading = False }, Cmd.none )
 
         SetViewMode m ->
@@ -213,7 +217,7 @@ update flags msg model =
                 m =
                     { model | query = str }
             in
-            ( m, Api.getTags flags str TagResp )
+            ( m, Api.getTags flags str (TagResp str) )
 
 
 
