@@ -32,6 +32,7 @@ val sharedSettings = Seq(
     "-Wvalue-discard",
     "-Wnumeric-widen"
   ),
+  javacOptions ++= Seq("-target", "1.8", "-source", "1.8"),
   LocalRootProject / toolsPackage := {
     val v      = version.value
     val logger = streams.value.log
