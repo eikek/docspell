@@ -63,7 +63,6 @@ selecting the most current release. For example it translates to
 is `{{version()}}`.
 
 
-
 ## Upgrading
 
 Since [downgrading](@/docs/install/downgrading.md) is not supported,

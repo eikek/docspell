@@ -21,6 +21,7 @@ configuration file:
   to change the `bind.address` setting to be either `0.0.0.0` or the
   ip address of the network interface that the reverse proxy server
   connects to.
+
   ``` bash
   docspell.server {
     # Where the server binds to.
@@ -32,9 +33,10 @@ configuration file:
   ```
   Note that a value of `0.0.0.0` instead of `192.168.1.11` will bind
   the server to every network interface.
-- Docspell needs to know the external url. The `base-url` setting
-  must point to the external address. Using above values, it must be
-  set to `https://docspell.example.com`.
+- (Optional) Docspell needs to know the external url. The `base-url`
+  setting should point to the external address. Using above values, it
+  would be `https://docspell.example.com`.
+
   ``` bash
   docspell.server {
     # This is the base URL this application is deployed to. This is used
@@ -44,12 +46,15 @@ configuration file:
   }
   ```
 
+  You can also leave the default settings (`localhost`), in this case
+  Docspell uses the request header to determine the external url.
+
 Note that this example assumes that the docspell-joex component is on
 the same machine. This page is only related for exposing the REST
 server and web application.
 
-If you have examples for more servers, please let me know or add it to
-this site.
+If you have examples for more http servers (e.g. apache), please let
+me know or add it to this site.
 
 # Nginx
 
@@ -90,6 +95,8 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
+
+        //client_max_body_size 40M; //to allow larger uploads
     }
 }
 ```

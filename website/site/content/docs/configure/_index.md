@@ -173,7 +173,8 @@ When installing docspell manually, just install solr and create a core
 as described in the [solr
 documentation](https://solr.apache.org/guide/8_4/installing-solr.html).
 That will provide you with the connection url (the last part is the
-core name).
+core name). If Docspell detects an empty core it will run a schema
+setup on start automatically.
 
 The `full-text-search.solr` options are the same for joex and the
 restserver.
@@ -238,7 +239,7 @@ absolute urls and to configure the authenication cookie.
 By default it is build using the information from the `bind` setting,
 which is `http://localhost:7880`.
 
-If the default is not changed, docspell will use the login request to
+If the default is not changed, docspell will use the request to
 determine the base-url. It first inspects the `X-Forwarded-For` header
 that is often used with reverse proxies. If that is not present, the
 `Host` header of the request is used. However, if the `base-url`
@@ -248,6 +249,8 @@ setting is changed, then only this setting is used.
 docspell.server.base-url = ...
 docspell.joex.base-url = ...
 ```
+
+If you are unsure, leave it at its default.
 
 ### Examples
 
@@ -262,7 +265,8 @@ docspell.joex.baseurl = "http://192.168.101.10"
 The `app-id` is the identifier of the corresponding instance. It *must
 be unique* for all instances. By default the REST server uses `rest1`
 and joex `joex1`. It is recommended to overwrite this setting to have
-an explicit and stable identifier.
+an explicit and stable identifier should multiple instances are
+intended.
 
 ``` bash
 docspell.server.app-id = "rest1"
@@ -334,9 +338,9 @@ can be given as Base64 encoded string or in hex form. Use the prefix
 `hex:` and `b64:`, respectively. If no prefix is given, the UTF8 bytes
 of the string are used.
 
-The `session-valid` deterimens how long a token is valid. This can be
+The `session-valid` determines how long a token is valid. This can be
 just some minutes, the web application obtains new ones
-periodically. So a short time is recommended.
+periodically. So a rather short time is recommended.
 
 
 ## File Processing

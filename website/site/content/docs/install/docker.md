@@ -128,18 +128,19 @@ below.
 There is a [docker-compose](https://docs.docker.com/compose/) setup
 available in the `/docker/docker-compose` folder. This setup is
 similiar to the example above, adding fulltext search and a PostgreSQL
-database by using just one command. It's only 3 steps to get started:
+database by using just one command. It's only a few steps to get
+started.
 
 ### Start Docspell
-#### Get the docker-compose files
+#### 1. Get the docker-compose files
 
-Either via cloning the whole repository:
+There are two options. You can clone the whole repository:
 
 ```bash
 $ git clone https://github.com/eikek/docspell
 ```
 
-This downloads all sources. What you need is only one subdirectory. So
+This downloads all sources. What you actually need is only 3 files. So
 if you don't have git or don't want to clone the whole repo, use these
 steps instead:
 
@@ -152,7 +153,11 @@ $ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-com
 ```
 
 You can choose any directory instead of
-`docspell/docker/docker-compose`, of course.
+`docspell/docker/docker-compose`, of course. It's only this folder to
+make the rest of the guide work for both ways of obtaining the
+docker-compose file.
+
+#### 2. Run `docker-compose up`
 
 Change into the new `docker-compose` directory, for example:
 
@@ -160,7 +165,7 @@ Change into the new `docker-compose` directory, for example:
 $ cd docspell/docker/docker-compose
 ```
 
-#### Run `docker-compose up`
+Then run `docker-compose`:
 
 ```bash
 $ export DOCSPELL_HEADER_VALUE="my-secret-123"

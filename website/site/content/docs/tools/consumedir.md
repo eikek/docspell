@@ -26,18 +26,29 @@ files.
 Example for watching two directories:
 
 ``` bash
-./tools/consumedir.sh --path ~/Downloads --path ~/pdfs -m -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+./tools/consumedir.sh --path ~/Downloads --path ~/pdfs -m -dv \
+    http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
 ```
 
 The script by default watches the given directories. If the `-o` or
 `--once` option is used, it will instead go through these directories
-and upload all files in there.
+and upload all files in there. For directory watching the
+`inotifywait` command is used and must be present. Another way is to
+use the `--poll` option. It expects the number of seconds to wait
+between running itself with `--once`.
+
+Example using active polling (at 5 minutes interval):
+``` bash
+./tools/consumedir.sh --poll 300 --path ~/Downloads --path ~/pdfs -m -dv \
+    http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+```
 
 Example for uploading all immediatly (the same as above only with `-o`
 added):
 
 ``` bash
-$ consumedir.sh -o --path ~/Downloads --path ~/pdfs/ -m -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+$ ./tools/consumedir.sh --once --path ~/Downloads --path ~/pdfs/ -m -dv \
+    http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
 ```
 
 
@@ -113,9 +124,9 @@ are some ideas to get around this limitation:
 2. If option 1 is not possible for some reason, and you need to check
    a network filesystem, the only option left (that I know) is to
    periodically poll this directory. This is also possible with
-   consumedir, using the `-o` or `--once` option (see above). You'd
-   need to setup the systemd unit file a bit differently and add a
-   timer to it (or you can use cron or something more fancy…).
+   consumedir, using the `--poll` option (see above). You can also
+   setup a systemd timer to periodically run this script with the
+   `--once` option.
 3. Copy the files to the machine that runs consumedir, via rsync for
    example. Note that this has no advantage over otpion 1, as you now
    need to setup rsync on the other machine to run either periodically

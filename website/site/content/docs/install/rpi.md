@@ -3,14 +3,15 @@ title = "Raspberry-Pi and Similiar"
 weight = 40
 +++
 
-# Raspberry Pi, and similiar
-
-Both component can run next to each other on a raspberry pi or
+Both components can run next to each other on a raspberry pi or
 similiar device.
 
 There is a [project on
 github](https://github.com/docspell/rpi-scripts) that can help with
 setting up a raspberry pi with docspell.
+
+The docker images are built for arm64 and armv7, these can also be
+used on the pi.
 
 
 ## REST Server

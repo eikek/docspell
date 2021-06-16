@@ -520,9 +520,9 @@ Find items with 2 or more attachments:
 attach.count>2
 ```
 
-Find items with at least one tag invoice or todo:
+Find items with at least one tag invoice or todo that are due next:
 ```
-tag:invoice,todo
+tag:invoice,todo due>today
 ```
 
 Find items with at least both tags invoice and todo:
@@ -543,4 +543,15 @@ tag:todo year:2020
 Find items within the last 30 days:
 ```
 date>today;-30d
+```
+
+Find items with a custom field `paid` set to any value:
+```
+f:paid:*
+```
+
+Find items that have been paid with more than $100 (using custom
+fields `paid` as a date and `usd` as money):
+```
+f:paid:* f:usd>100
 ```
