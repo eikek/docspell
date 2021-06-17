@@ -22,7 +22,7 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
 fi
 
 OPTIONS=omhdp:vrmi
-LONGOPTS=once,distinct,help,delete,path:,verbose,recursive,dry,integration,iuser:,iheader:,poll:
+LONGOPTS=once,distinct,help,delete,path:,verbose,recursive,dry,integration,iuser:,iheader:,poll:,exclude:,include:
 
 ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
 if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
@@ -36,7 +36,7 @@ eval set -- "$PARSED"
 
 declare -a watchdir
 help=n verbose=n delete=n once=n distinct=n recursive=n dryrun=n
-integration=n iuser="" iheader="" poll=""
+integration=n iuser="" iheader="" poll="" exclude="" include=""
 while true; do
     case "$1" in
         -h|--help)
@@ -88,6 +88,14 @@ while true; do
             poll="$2"
             shift 2
             ;;
+        --exclude)
+            exclude="$2"
+            shift 2
+            ;;
+        --include)
+            include="$2"
+            shift 2
+            ;;
         --)
             shift
             break
@@ -106,29 +114,32 @@ showUsage() {
     echo "Usage: $0 [options] url url ..."
     echo
     echo "Options:"
-    echo "  -v | --verbose        Print more to stdout. (value: $verbose)"
-    echo "  -d | --delete         Delete the file if successfully uploaded. (value: $delete)"
-    echo "  -p | --path <dir>     The directories to watch. This is required. (value: ${watchdir[@]})"
-    echo "  -h | --help           Prints this help text. (value: $help)"
-    echo "  -m | --distinct       Optional. Upload only if the file doesn't already exist. (value: $distinct)"
-    echo "  -o | --once           Instead of watching, upload all files in that dir. (value: $once)"
-    echo "       --poll <sec>     Run the script periodically instead of watching a directory. This can be"
-    echo "                        used if watching via inotify is not possible."
-    echo "  -r | --recursive      Traverse the directory(ies) recursively (value: $recursive)"
-    echo "  -i | --integration    Upload to the integration endpoint. It implies -r. This puts the script in"
-    echo "                          a different mode, where the first subdirectory of any given starting point"
-    echo "                          is read as the collective name. The url(s) are completed with this name in"
-    echo "                          order to upload files to the respective collective. So each directory"
-    echo "                          given is expected to contain one subdirectory per collective and the urls"
-    echo "                          are expected to identify the integration endpoint, which is"
-    echo "                          /api/v1/open/integration/item/<collective-name>. (value: $integration)"
-    echo "       --iheader        The header name and value to use with the integration endpoint. This must be"
-    echo "                          in form 'headername:value'. Only used if '-i' is supplied."
-    echo "                          (value: $iheader)"
-    echo "       --iuser          The username and password for basic auth to use with the integration"
-    echo "                          endpoint. This must be of form 'user:pass'. Only used if '-i' is supplied."
-    echo "                          (value: $iuser)"
-    echo "       --dry            Do a 'dry run', not uploading anything only printing to stdout (value: $dryrun)"
+    echo "  -v | --verbose      Print more to stdout. (value: $verbose)"
+    echo "  -d | --delete       Delete the file if successfully uploaded. (value: $delete)"
+    echo "  -p | --path <dir>   The directories to watch. This is required. (value: ${watchdir[@]})"
+    echo "  -h | --help         Prints this help text. (value: $help)"
+    echo "  -m | --distinct     Optional. Upload only if the file doesn't already exist. (value: $distinct)"
+    echo "  -o | --once         Instead of watching, upload all files in that dir. (value: $once)"
+    echo "       --poll <sec>   Run the script periodically instead of watching a directory. This can be"
+    echo "                      used if watching via inotify is not possible. (value: $poll)"
+    echo "  -r | --recursive    Traverse the directory(ies) recursively (value: $recursive)"
+    echo "  -i | --integration  Upload to the integration endpoint. It implies -r. This puts the script in"
+    echo "                        a different mode, where the first subdirectory of any given starting point"
+    echo "                        is read as the collective name. The url(s) are completed with this name in"
+    echo "                        order to upload files to the respective collective. So each directory"
+    echo "                        given is expected to contain one subdirectory per collective and the urls"
+    echo "                        are expected to identify the integration endpoint, which is"
+    echo "                        /api/v1/open/integration/item/<collective-name>. (value: $integration)"
+    echo "  --iheader           The header name and value to use with the integration endpoint. This must be"
+    echo "                        in form 'headername:value'. Only used if '-i' is supplied."
+    echo "                        (value: $iheader)"
+    echo "  --iuser             The username and password for basic auth to use with the integration"
+    echo "                        endpoint. This must be of form 'user:pass'. Only used if '-i' is supplied."
+    echo "                        (value: $iuser)"
+    echo "  --exclude <glob>    A shell glob pattern that is used to skip files that match (value: $exclude)."
+    echo "  --include <glob>    A shell glob pattern that is used to find files to upload (value: $include)."
+    echo "                        If --exclude and --include is given, both apply."
+    echo "       --dry          Do a 'dry run', not uploading anything only printing to stdout (value: $dryrun)"
     echo ""
     echo "Arguments:"
     echo "  A list of URLs to upload the files to."
@@ -367,13 +378,33 @@ runOnce() {
     if [ "$recursive" = "y" ]; then
         MD=""
     fi
+    EXCL=""
+    if [ -n "$exclude" ]; then
+        EXCL="-not -name $exclude"
+    fi
+    INCL=""
+    if [ -n "$include" ]; then
+        INCL="-name $include"
+    fi
     for dir in "${watchdir[@]}"; do
-        find "$dir" $MD -type f -not -name ".*" -print0 | while IFS= read -d '' -r file; do
+        find "$dir" $MD -type f $INCL $EXCL -not -name ".*" -print0 | while IFS= read -d '' -r file; do
             process "$file" "$dir"
         done
     done
 }
 
+includeFile() {
+    file="$1"
+    if [ -n "$include" ] && [[ $file != $include ]]; then
+        trace "Skip $file due to include filter"
+        return 1
+    elif [ -n "$exclude" ] && [[ $file == $exclude ]]; then
+        trace "Skip $file due to exclude filter"
+        return 1
+    else
+        [[ "$file" != .* ]]
+    fi
+}
 
 # warn if something seems not correctly configured
 checkSetup
@@ -388,13 +419,13 @@ else
     if [ -z "$poll" ]; then
         $INOTIFY_CMD $REC -m --format '%w%f' -e close_write -e moved_to "${watchdir[@]}" |
             while read pathfile; do
-                if [[ "$(basename "$pathfile")" != .* ]]; then
+                if includeFile "$(basename "$pathfile")"; then
                     dir=$(findDir "$pathfile")
                     trace "The file '$pathfile' appeared below '$dir'"
                     sleep 1
                     process "$(realpath "$pathfile")" "$dir"
                 else
-                    trace "Skip hidden file $(realpath "$pathfile")"
+                    trace "Skip file $(realpath "$pathfile")"
                 fi
             done
     else
