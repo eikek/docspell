@@ -62,7 +62,7 @@ if [[ $version == *SNAPSHOT* ]]; then
 else
     echo ">>>> Building release images for $version <<<<<"
     echo "============ Building Tools ============"
-    docker build \
+    docker buildx build \
            --platform="$platforms" $push \
            --build-arg version=$version \
            --tag docspell/tools:v$version \
@@ -70,7 +70,7 @@ else
            -f tools.dockerfile .
 
     echo "============ Building Restserver ============"
-    docker build \
+    docker buildx build \
            --platform="$platforms" $push \
            --build-arg version=$version \
            --tag docspell/restserver:v$version \
@@ -78,7 +78,7 @@ else
            -f restserver.dockerfile .
 
     echo "============ Building Joex ============"
-    docker build \
+    docker buildx build \
            --platform="$platforms" $push \
            --build-arg version=$version \
            --tag docspell/joex:v$version \
