@@ -2,6 +2,8 @@
 
 ## v0.24.0
 
+*Jun 18, 2021*
+
 This time a translation of the Web-UI in German is included and the
 docker build was overhauled. The releases are now build and tested
 using Java 11.
