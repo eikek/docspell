@@ -620,9 +620,9 @@ look into correspondent names and concerning names.</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1aa;">attach.count&gt;2
 </span></code></pre>
-<p>Find items with at least one tag invoice or todo:</p>
+<p>Find items with at least one tag invoice or todo that are due next:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">tag:invoice,todo
+<code><span style="color:#fdf4c1aa;">tag:invoice,todo due&gt;today
 </span></code></pre>
 <p>Find items with at least both tags invoice and todo:</p>
 <pre style="background-color:#282828;">
@@ -640,6 +640,15 @@ look into correspondent names and concerning names.</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1aa;">date&gt;today;-30d
 </span></code></pre>
+<p>Find items with a custom field <code>paid</code> set to any value:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">f:paid:*
+</span></code></pre>
+<p>Find items that have been paid with more than $100 (using custom
+fields <code>paid</code> as a date and <code>usd</code> as money):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">f:paid:* f:usd&gt;100
+</span></code></pre>
                         </div>
                     </div>
                 </div>
@@ -652,7 +661,7 @@ look into correspondent names and concerning names.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -662,7 +671,7 @@ look into correspondent names and concerning names.</p>
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>

@@ -144,15 +144,6 @@
                                 </ul>
                             </li>
                             
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;intro&#x2F;#rationale">
-                                    Rationale
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
                         </ul>
                     </div>
                 </div>
@@ -225,7 +216,7 @@ order to scale out. It must be ensured, that all connect to the same
 database. And it is also recommended (though not strictly required),
 that all components can reach each other.</p>
 <p>The fulltext search index is another separate component, where
-currently only <a href="https://lucene.apache.org/solr">SOLR</a> is supported.
+currently only <a href="https://solr.apache.org">SOLR</a> is supported.
 Fulltext search is optional, so the SOLR component is not required if
 docspell is run without fulltext search support.</p>
 <h1 id="terms">Terms<a class="zola-anchor" href="#terms" aria-label="Anchor link for: terms">🔗</a></h1>
@@ -280,107 +271,6 @@ create a folder and associate members. It is possible to put items in
 these folders and docspell shows only items that are either in no
 specific folder or in a folder where the current user is owner or
 member.</p>
-<h1 id="rationale">Rationale<a class="zola-anchor" href="#rationale" aria-label="Anchor link for: rationale">🔗</a></h1>
-<p>In 2019, I started to think about creating a dms-like tool that is now
-Docspell. It started at the end of that year with the initial version,
-including the very basic idea around which I want to create some kind
-of document management system.</p>
-<p>The following anecdote summarizes why I thought yet another dms-like
-tool might be useful.</p>
-<p>I tried some DMS at that time, to see whether they could help me with
-the ever growing pile of documents. It's not just postal mail, now it
-gets mixed with invoices via e-mail, bank statements I need to
-download at some &quot;portal&quot; etc. It's all getting a huge mess. When
-looking for a specific document, it's hard to find.</p>
-<p>I found all the enterprisy DMS are way above of what I need. They are
-rather difficult to setup and very hard to explain to non-technical
-people. They offer a lot of features and there is quite some time
-required to extract what's needed. I then discovered tools, that seem
-to better suite my needs. Their design were simple and very close to
-what I was looking for, making it a good fit for single user. There
-were only a few things to nag:</p>
-<ol>
-<li>Often it was not possible to track multiple files as one &quot;unit&quot;.
-For example: reports with accompanying pictures that I would like
-to treat as a single unit. It also more naturally fits to the
-common e-mail.</li>
-<li>Missing good multi-user support; and/or a simple enough interface
-so that non-technical users can also make sense of it.</li>
-<li>Missing some features important to me, like &quot;send this by mail&quot;, a
-full REST api, and some more</li>
-<li>still a lot of &quot;manually&quot; organizing documents</li>
-</ol>
-<p>These are not big complaints, they are solvable somehow. I want to
-focus on the last point: most systems didn't offer help with
-organizing the documents. I didn't find any, that included basic
-machine learning features. On most systems it was possible to organize
-documents into a custom folder structure. But it was all manually. You
-would need to move incoming documents into some subfolder. Some
-systems offered rules that get applied to documents in order to put
-them into the right place. Many offered tags, too, which relieves some
-of weight of this text. But they were also all manual. So the idea
-came to let the computer do a little more to help organize documents.</p>
-<p>Let's start with the rules approach: A rule may look like this:</p>
-<blockquote>
-<p>when the document contains a text 'invoice' and 'repair company x',
-then put it in subfolder B&quot;.</p>
-</blockquote>
-<p>This rule can be applied to all the new documents to get automatically
-placed into this subfolder. I think there are some drawbacks to this
-approach:</p>
-<ul>
-<li>rules may change over time. Then you either must re-apply them all
-to all documents or leave older ones where they are. If re-applying
-them, some documents may not be in places as before which can easily
-confuse coworkers.</li>
-<li>these rules may interfere with each other, then it might get more
-difficult to know where a document is</li>
-<li>rules can become complex, be comprised of regular expressions, which
-are really only suited to technical people and need to be
-maintained.</li>
-</ul>
-<p>I decided to try out a different approach: a &quot;search-only&quot; one¹.
-Instead of using a manual created folder structure, I simply search
-every time using this rule. In essence such a rule is a search query.
-But searching with rules like the one above is not very efficient. One
-would need to do fulltext searches, even extracting dates &quot;on the fly&quot;
-etc. It wouldn't be very reliable either. That's why documents have
-properties (called metadata). In my case most of them have a
-correspondent, a date and so on. If these properties were defined on
-documents, the queries become quite efficient. The idea is now, not to
-use rules for moving documents to some place, but for attaching
-properties, information, to each document. This solves a few issues:
-they can't get easily out of sync, and they can't interfere. Then
-docspell can help with finding some of these properties automatically.
-For example: it can propose properties by looking at the text. It can
-also take existing documents into account when suggesting tags. In
-docspell, it is not possible to define custom rules, instead it tries
-to find these rules for you by looking at the text and your previous
-documents.</p>
-<p>That said, there is still a manual process involved, but I found it
-much lighter. Once in a while, looking at new documents and confirming
-or fixing the metadata is necessary. This doesn't involve deciding for
-a place, though. What properties you are interested to track can be
-configured; should you only need a correspondent and a date,
-everything else can be hidden.</p>
-<p>So in docspell, all documents are just in one big pile… but every
-document has metadata attached that can be used to quickly find what
-you need. There is no folder structure, but it is possible to later
-apply certain hierarchical structures. It would be possible to create
-a &quot;folder structure&quot;, like the one mentioned above: click on
-correspondent <code>repair company x</code>; then on tag <code>invoice</code>, then
-<code>concerning=car</code> and <code>year=2019</code>. A UI could be created to present
-exactly this hierarchy. Since I can't know your preferred structure
-(not even my own…!), the docspell ui allows every combination,
-regardless any hierarchies. You can first select a correspondent, then
-a tag or the other way around. Usually it's not necessary to go very
-deep.</p>
-<p>That's all about it! I thought why not try this approach and at the
-same time learn about some technologies around. In the last year,
-docspell evolved to a quite usable tool, imho. This was only possible,
-because very nice people gave valueable feedback and ideas!</p>
-<p>¹This is inspired by tools like
-<a href="https://www.djcbsoftware.nl/code/mu/">mu</a> and GMail.</p>
 
                         </div>
                     </div>
@@ -394,7 +284,7 @@ because very nice people gave valueable feedback and ideas!</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -404,7 +294,7 @@ because very nice people gave valueable feedback and ideas!</p>
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>

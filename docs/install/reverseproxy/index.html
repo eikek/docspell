@@ -136,27 +136,27 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/installing/"
+                                <a href="https://docspell.org/docs/install/docker/"
                                    >
-                                    Installing
+                                    Docker
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/running/"
+                                <a href="https://docspell.org/docs/install/download-run/"
                                    >
-                                    Running
+                                    Download &amp; Run
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/upgrading/"
+                                <a href="https://docspell.org/docs/install/nix/"
                                    >
-                                    Upgrading
+                                    Nix &#x2F; Nixos
                                 </a>
                                 
                             </li>
@@ -229,10 +229,12 @@ on the same machine as the reverse proxy server, you can set
 <p>These settings require a complement config part in the docspell
 configuration file:</p>
 <ul>
-<li>First, if Docspell REST server is on a different machine, you need
+<li>
+<p>First, if Docspell REST server is on a different machine, you need
 to change the <code>bind.address</code> setting to be either <code>0.0.0.0</code> or the
 ip address of the network interface that the reverse proxy server
-connects to.<pre style="background-color:#282828;">
+connects to.</p>
+<pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1;">docspell.server {
 </span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
 </span><span style="color:#fdf4c1;">  bind {
@@ -240,24 +242,31 @@ connects to.<pre style="background-color:#282828;">
 </span><span style="color:#fdf4c1;">    port = 7880
 </span><span style="color:#fdf4c1;">  }
 </span><span style="color:#fdf4c1;">}
-</span></code></pre>Note that a value of <code>0.0.0.0</code> instead of <code>192.168.1.11</code> will bind
-the server to every network interface.</li>
-<li>Docspell needs to know the external url. The <code>base-url</code> setting
-must point to the external address. Using above values, it must be
-set to <code>https://docspell.example.com</code>.<pre style="background-color:#282828;">
+</span></code></pre>
+<p>Note that a value of <code>0.0.0.0</code> instead of <code>192.168.1.11</code> will bind
+the server to every network interface.</p>
+</li>
+<li>
+<p>(Optional) Docspell needs to know the external url. The <code>base-url</code>
+setting should point to the external address. Using above values, it
+would be <code>https://docspell.example.com</code>.</p>
+<pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1;">docspell.server {
 </span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
 </span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># to create absolute URLs and to configure the cookie.
 </span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;https://docspell.example.com&quot;
 </span><span style="color:#fdf4c1;"> ...
 </span><span style="color:#fdf4c1;">}
-</span></code></pre></li>
+</span></code></pre>
+<p>You can also leave the default settings (<code>localhost</code>), in this case
+Docspell uses the request header to determine the external url.</p>
+</li>
 </ul>
 <p>Note that this example assumes that the docspell-joex component is on
 the same machine. This page is only related for exposing the REST
 server and web application.</p>
-<p>If you have examples for more servers, please let me know or add it to
-this site.</p>
+<p>If you have examples for more http servers (e.g. apache), please let
+me know or add it to this site.</p>
 <h1 id="nginx">Nginx<a class="zola-anchor" href="#nginx" aria-label="Anchor link for: nginx">🔗</a></h1>
 <p>This defines two servers: one listens for http traffic and redirects
 to the https variant. Additionally it defines the let's encrypt
@@ -294,6 +303,8 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
+
+        //client_max_body_size 40M; //to allow larger uploads
     }
 }
 </span></code></pre>
@@ -307,7 +318,7 @@ server {
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -317,7 +328,7 @@ server {
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>

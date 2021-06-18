@@ -182,27 +182,27 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/installing/"
+                                <a href="https://docspell.org/docs/install/docker/"
                                    >
-                                    Installing
+                                    Docker
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/running/"
+                                <a href="https://docspell.org/docs/install/download-run/"
                                    >
-                                    Running
+                                    Download &amp; Run
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/upgrading/"
+                                <a href="https://docspell.org/docs/install/nix/"
                                    >
-                                    Upgrading
+                                    Nix &#x2F; Nixos
                                 </a>
                                 
                             </li>
@@ -254,11 +254,9 @@ other options.</p>
 <p>It is enough to install the JRE. The JDK is required, if you want to
 build docspell from source. For newer versions, the JRE is not shipped
 anymore, simply use JDK then.</p>
-<p>Docspell has been tested with Java version 1.8 (or sometimes referred
-to as JRE 8 and JDK 8, respectively). The pre-build packages are build
-using JDK 8. So at least a JDK/JRE 8 is required. However, it also
-works on newer java versions, I recommend JDK 11 as this has better
-default options. The provided docker images use JDK11, too.</p>
+<p>Docspell has been tested with Java 11 (or sometimes referred to as JDK
+11). The provided packages are build using JDK 11. However, it also
+works on newer java versions. The provided docker images use JDK11.</p>
 <p>The next tools are only required on machines running the <em>Joex</em>
 component.</p>
 <h1 id="external-programs-for-joex">External Programs for Joex<a class="zola-anchor" href="#external-programs-for-joex" aria-label="Anchor link for: external-programs-for-joex">🔗</a></h1>
@@ -298,7 +296,7 @@ therefore avoids starting one each time <code>unoconv</code> is called.</p>
 be disabled, so installing SOLR is optional. But without it, there is
 no fulltext search.</p>
 <p>When installing manually (i.e. not via docker), just install solr and
-create a core as described in the <a href="https://lucene.apache.org/solr/guide/8_4/installing-solr.html">solr
+create a core as described in the <a href="https://solr.apache.org/guide/8_4/installing-solr.html">solr
 documentation</a>.
 That will provide you with the connection url (the last part is the
 core name).</p>
@@ -337,7 +335,7 @@ table) to that database.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -347,7 +345,7 @@ table) to that database.</p>
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>

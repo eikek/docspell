@@ -171,6 +171,21 @@
                                     </li>
                                     
                                     <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#developing-backend">
+                                            Developing Backend
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#openapi">
+                                                    OpenAPI
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
                                         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#nix-expressions">
                                             Nix Expressions
                                         </a>
@@ -181,6 +196,15 @@
                                                     Testing NixOS Modules
                                                 </a>
                                             </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#release">
+                                            Release
+                                        </a>
+                                        <ul>
                                             
                                         </ul>
                                     </li>
@@ -282,7 +306,20 @@ starting the restserver:</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1;">$ export DOCSPELL_ENV=dev
 $ sbt </span><span style="color:#b8bb26;">&quot;restserver/reStart&quot;
-</span></code></pre><h1 id="nix-expressions">Nix Expressions<a class="zola-anchor" href="#nix-expressions" aria-label="Anchor link for: nix-expressions">🔗</a></h1>
+</span></code></pre><h1 id="developing-backend">Developing Backend<a class="zola-anchor" href="#developing-backend" aria-label="Anchor link for: developing-backend">🔗</a></h1>
+<h2 id="openapi">OpenAPI<a class="zola-anchor" href="#openapi" aria-label="Anchor link for: openapi">🔗</a></h2>
+<p>The http API is specified in the corresponding <code>-openapi.yml</code> file.
+The <code>component</code> section is being used to generate code for the client
+and the server, so that both are always in sync. However, the route
+definitions are not checked against the server implementation.</p>
+<p>Changes to the openapi files can be checked by running a sbt task:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">restapi/openapiLint </span><span style="font-style:italic;color:#928374;">//and/or</span><span style="color:#fdf4c1aa;">
+joexapi/openapiLint
+</span></code></pre>
+<p>These tasks must not show any errors (it is checked by the CI). The
+warnings should also be fixed.</p>
+<h1 id="nix-expressions">Nix Expressions<a class="zola-anchor" href="#nix-expressions" aria-label="Anchor link for: nix-expressions">🔗</a></h1>
 <p>The directory <code>/nix</code> contains nix expressions to install docspell via
 the nix package manager and to integrate it into NixOS.</p>
 <h2 id="testing-nixos-modules">Testing NixOS Modules<a class="zola-anchor" href="#testing-nixos-modules" aria-label="Anchor link for: testing-nixos-modules">🔗</a></h2>
@@ -309,8 +346,50 @@ config file can be checked:</p>
 sets more memory for the vm):</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">QEMU_OPTS</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;-m 2048&quot;
+</span><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">QEMU_NET_OPTS </span><span style="color:#b8bb26;">&quot;hostfwd=tcp::7880-:7880&quot;
 </span><span style="color:#fdf4c1;">./result/bin/run-docspelltest-vm
-</span></code></pre><h1 id="background-info">Background Info<a class="zola-anchor" href="#background-info" aria-label="Anchor link for: background-info">🔗</a></h1>
+</span></code></pre><h1 id="release">Release<a class="zola-anchor" href="#release" aria-label="Anchor link for: release">🔗</a></h1>
+<p>The CI and making a release is done via <a href="https://docs.github.com/en/actions">github
+actions</a>. The workflow is roughly
+like this:</p>
+<ul>
+<li>each PR is only merged if the <code>sbt ci</code> task returns successfully.
+This is ensured by the <code>ci.yml</code> workflow that triggers on each pull
+request</li>
+<li>each commit to the <code>master</code> branch is also going through <code>sbt ci</code>
+and then a prerelease is created. The tag <code>nightly</code> is used to point
+to the latest commit in <code>master</code>. Note, that this is <a href="https://git-scm.com/docs/git-tag#_on_re_tagging">discouraged by
+git</a>, but github
+doesn't allow to create a release without a tag. So this tag moves
+(and is not really a tag then…). After the prerelease is created,
+the docker images are built and pushed to docker hub into the
+<a href="https://hub.docker.com/u/docspell">docspell</a> organization. The
+docker images are also tagged with <code>nightly</code> at docker hub. This is
+all done via the <code>realease-nightly.yml</code> workflow.</li>
+<li>A stable release is started by pushing a tag with pattern <code>v*</code> to
+github. This triggers the <code>release.yml</code> workflow which builds the
+packages and creates a release in <em>draft mode</em>. The <code>sbt ci</code> task
+<em>is not</em> run, because it is meant to only release commits already in
+the <code>master</code> branch. After this completes, the release notes need to
+be added manually and then the release must be published at github.
+This then triggers the <code>docker-images.yml</code> workflow, which builds
+the corresponding docker images and pushes them to docker hub. The
+docker images are tagged with the exact version and the <code>latest</code> tag
+is moved to the new images. Another manual step is to set the branch
+<code>current-docs</code> to its new state and push it to github. This will
+trigger a build+publish of the website.</li>
+<li>Publishing the website happens automatically on each push to the
+branch <code>current-docs</code>. Changes to the current website must be based
+on this branch.</li>
+</ul>
+<p>Some notes: I wanted a 2/3 step process when doing a stable release,
+to be able to add release notes manually (I don't want this to be
+automated right now) and to do some testing with the packages before
+publishing the release. However, for the nightly releases, this
+doesn't matter - everything must be automated here obviously. I also
+wanted the docker images to be built from the exact same artifacts
+that have been released at github (in contrast to being built again).</p>
+<h1 id="background-info">Background Info<a class="zola-anchor" href="#background-info" aria-label="Anchor link for: background-info">🔗</a></h1>
 <p>There is a list of <a href="https://docspell.org/docs/dev/adr/">ADRs</a> containing
 internal/background info for various topics.</p>
 
@@ -324,7 +403,7 @@ internal/background info for various topics.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -334,7 +413,7 @@ internal/background info for various topics.</p>
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>

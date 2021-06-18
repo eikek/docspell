@@ -103,10 +103,16 @@
         <loc>https://docspell.org/docs/install/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/install/docker/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/install/downgrading/</loc>
     </url>
     <url>
-        <loc>https://docspell.org/docs/install/installing/</loc>
+        <loc>https://docspell.org/docs/install/download-run/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/install/nix/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/install/prereq/</loc>
@@ -119,12 +125,6 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/install/rpi/</loc>
-    </url>
-    <url>
-        <loc>https://docspell.org/docs/install/running/</loc>
-    </url>
-    <url>
-        <loc>https://docspell.org/docs/install/upgrading/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/intro/</loc>

@@ -288,15 +288,25 @@ text. The help text will also show the values for any given option.</p>
 files.</p>
 <p>Example for watching two directories:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">./tools/consumedir.sh --path ~/Downloads --path ~/pdfs -m -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+<code><span style="color:#fdf4c1;">./tools/consumedir.sh --path ~/Downloads --path ~/pdfs -m -dv \
+    http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
 </span></code></pre>
 <p>The script by default watches the given directories. If the <code>-o</code> or
 <code>--once</code> option is used, it will instead go through these directories
-and upload all files in there.</p>
+and upload all files in there. For directory watching the
+<code>inotifywait</code> command is used and must be present. Another way is to
+use the <code>--poll</code> option. It expects the number of seconds to wait
+between running itself with <code>--once</code>.</p>
+<p>Example using active polling (at 5 minutes interval):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">./tools/consumedir.sh --poll 300 --path ~/Downloads --path ~/pdfs -m -dv \
+    http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+</span></code></pre>
 <p>Example for uploading all immediatly (the same as above only with <code>-o</code>
 added):</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ consumedir.sh -o --path ~/Downloads --path ~/pdfs/ -m -dv http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
+<code><span style="color:#fdf4c1;">$ ./tools/consumedir.sh --once --path ~/Downloads --path ~/pdfs/ -m -dv \
+    http://localhost:7880/api/v1/open/upload/item/5DxhjkvWf9S-CkWqF3Kr892-WgoCspFWDo7-XBykwCyAUxQ
 </span></code></pre>
 <p>The URL can be any docspell url that accepts uploads without
 authentication. This is usually a <a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">source
@@ -355,9 +365,9 @@ no need to first transfer them via a network filesystem or rsync.</li>
 <li>If option 1 is not possible for some reason, and you need to check
 a network filesystem, the only option left (that I know) is to
 periodically poll this directory. This is also possible with
-consumedir, using the <code>-o</code> or <code>--once</code> option (see above). You'd
-need to setup the systemd unit file a bit differently and add a
-timer to it (or you can use cron or something more fancy…).</li>
+consumedir, using the <code>--poll</code> option (see above). You can also
+setup a systemd timer to periodically run this script with the
+<code>--once</code> option.</li>
 <li>Copy the files to the machine that runs consumedir, via rsync for
 example. Note that this has no advantage over otpion 1, as you now
 need to setup rsync on the other machine to run either periodically
@@ -414,7 +424,7 @@ the <code>consumedir</code> container will push it to docspell.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -424,7 +434,7 @@ the <code>consumedir</code> container will push it to docspell.</p>
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>

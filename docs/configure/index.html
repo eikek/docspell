@@ -106,6 +106,15 @@
                         <ul class="menu-list">
                             
                             <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#file-format">
+                                    File Format
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#important-config-options">
                                     Important Config Options
                                 </a>
@@ -169,8 +178,17 @@
                             </li>
                             
                             <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#file-format">
-                                    File Format
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#jvm-options">
+                                    JVM Options
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#logging">
+                                    Logging
                                 </a>
                                 <ul>
                                     
@@ -198,15 +216,6 @@
                                 </ul>
                             </li>
                             
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#logging">
-                                    Logging
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
                         </ul>
                     </div>
                 </div>
@@ -214,11 +223,53 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>Docspell's executable can take one argument – a configuration file. If
-that is not given, the defaults are used. The config file overrides
-default values, so only values that differ from the defaults are
-necessary.</p>
-<p>This applies to the restserver and the joex as well.</p>
+                            <p>Docspell's executables (restserver and joex) can take one argument – a
+configuration file. If that is not given, the defaults are used. The
+config file overrides default values, so only values that differ from
+the defaults are necessary. The complete default options and their
+documentation is at the end of this page.</p>
+<p>Besides the config file, another way is to provide individual settings
+via key-value pairs to the executable by the <code>-D</code> option. For example
+to override only <code>base-url</code> you could add the argument
+<code>-Ddocspell.server.base-url=…</code> to the command. Multiple options are
+possible. For more than few values this is very tedious, obviously, so
+the recommended way is to maintain a config file. If these options
+<em>and</em> a file is provded, then any setting given via the <code>-D…</code> option
+overrides the same setting from the config file.</p>
+<h1 id="file-format">File Format<a class="zola-anchor" href="#file-format" aria-label="Anchor link for: file-format">🔗</a></h1>
+<p>The format of the configuration files can be
+<a href="https://github.com/lightbend/config/blob/master/HOCON.md#hocon-human-optimized-config-object-notation">HOCON</a>,
+JSON or what this <a href="https://github.com/lightbend/config">config
+library</a> understands. The default
+values below are in HOCON format, which is recommended, since it
+allows comments and has some <a href="https://github.com/lightbend/config#features-of-hocon">advanced
+features</a>.
+Please refer to their documentation for more on this.</p>
+<p>A short description (please see the links for better understanding):
+The config consists of key-value pairs and can be written in a
+JSON-like format (called HOCON). Keys are organized in trees, and a
+key defines a full path into the tree. There are two ways:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">a.b.c.d=15
+</span></code></pre>
+<p>or</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">a {
+  b {
+    c {
+      d = 15
+    }
+  }
+}
+</span></code></pre>
+<p>Both are exactly the same and these forms are both used at the same
+time. Usually the braces approach is used to group some more settings,
+for better readability.</p>
+<p>Strings that contain &quot;not-so-common&quot; characters should be enclosed in
+quotes. It is possible to define values at the top of the file and
+reuse them on different locations via the <code>${full.path.to.key}</code>
+syntax. When using these variables, they <em>must not</em> be enclosed in
+quotes.</p>
 <h1 id="important-config-options">Important Config Options<a class="zola-anchor" href="#important-config-options" aria-label="Anchor link for: important-config-options">🔗</a></h1>
 <p>The configuration of both components uses separate namespaces. The
 configuration for the REST server is below <code>docspell.server</code>, while
@@ -278,7 +329,7 @@ enabled by providing a secret:</p>
 <p>This secret must be provided to all requests to a <code>/api/v1/admin/</code>
 endpoint.</p>
 <h2 id="full-text-search-solr">Full-Text Search: SOLR<a class="zola-anchor" href="#full-text-search-solr" aria-label="Anchor link for: full-text-search-solr">🔗</a></h2>
-<p><a href="https://lucene.apache.org/solr">Apache SOLR</a> is used to provide the
+<p><a href="https://solr.apache.org">Apache SOLR</a> is used to provide the
 full-text search. Both docspell components must provide the same
 connection setup. This is defined in the <code>full-text-search.solr</code>
 subsection:</p>
@@ -298,10 +349,11 @@ information about each setting.</p>
 point to your SOLR instance. Then you need to set the <code>enabled</code> flag
 to <code>true</code>.</p>
 <p>When installing docspell manually, just install solr and create a core
-as described in the <a href="https://lucene.apache.org/solr/guide/8_4/installing-solr.html">solr
+as described in the <a href="https://solr.apache.org/guide/8_4/installing-solr.html">solr
 documentation</a>.
 That will provide you with the connection url (the last part is the
-core name).</p>
+core name). If Docspell detects an empty core it will run a schema
+setup on start automatically.</p>
 <p>The <code>full-text-search.solr</code> options are the same for joex and the
 restserver.</p>
 <p>There is an <a href="https://docspell.org/docs/api/intro/#admin">admin route</a> that allows to
@@ -314,13 +366,16 @@ a call:</p>
 it is empty (the default), this call is disabled (all admin routes).
 Otherwise, the POST request will submit a system task that is executed
 by a joex instance eventually.</p>
-<p>Using this endpoint, the index will be re-created. This is sometimes
-necessary, for example if you upgrade SOLR or delete the core to
-provide a new one (see
-<a href="https://lucene.apache.org/solr/guide/8_4/reindexing.html">here</a> for
-details). Note that a collective can also re-index their data using a
-similiar endpoint; but this is only deleting their data and doesn't do
-a full re-index.</p>
+<p>Using this endpoint, the entire index (including the schema) will be
+re-created. This is sometimes necessary, for example if you upgrade
+SOLR or delete the core to provide a new one (see
+<a href="https://solr.apache.org/guide/8_4/reindexing.html">here</a> for
+details). Another way is to restart docspell (while clearing the
+index). If docspell detects an empty index at startup, it will submit
+a task to build the index automatically.</p>
+<p>Note that a collective can also re-index their data using a similiar
+endpoint; but this is only deleting their data and doesn't do a full
+re-index.</p>
 <p>The solr index doesn't contain any new information, it can be
 regenerated any time using the above REST call. Thus it doesn't need
 to be backed up.</p>
@@ -348,7 +403,7 @@ REST server component. The REST server also uses this url to create
 absolute urls and to configure the authenication cookie.</p>
 <p>By default it is build using the information from the <code>bind</code> setting,
 which is <code>http://localhost:7880</code>.</p>
-<p>If the default is not changed, docspell will use the login request to
+<p>If the default is not changed, docspell will use the request to
 determine the base-url. It first inspects the <code>X-Forwarded-For</code> header
 that is often used with reverse proxies. If that is not present, the
 <code>Host</code> header of the request is used. However, if the <code>base-url</code>
@@ -356,7 +411,9 @@ setting is changed, then only this setting is used.</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1aa;">docspell.server.base-url = ...
 docspell.joex.base-url = ...
-</span></code></pre><h3 id="examples-1">Examples<a class="zola-anchor" href="#examples-1" aria-label="Anchor link for: examples-1">🔗</a></h3>
+</span></code></pre>
+<p>If you are unsure, leave it at its default.</p>
+<h3 id="examples-1">Examples<a class="zola-anchor" href="#examples-1" aria-label="Anchor link for: examples-1">🔗</a></h3>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1aa;">docspell.server.baseurl = &quot;https://docspell.example.com&quot;
 docspell.joex.baseurl = &quot;http://192.168.101.10&quot;
@@ -364,7 +421,8 @@ docspell.joex.baseurl = &quot;http://192.168.101.10&quot;
 <p>The <code>app-id</code> is the identifier of the corresponding instance. It <em>must
 be unique</em> for all instances. By default the REST server uses <code>rest1</code>
 and joex <code>joex1</code>. It is recommended to overwrite this setting to have
-an explicit and stable identifier.</p>
+an explicit and stable identifier should multiple instances are
+intended.</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1;">docspell.server.app-id = </span><span style="color:#b8bb26;">&quot;rest1&quot;
 </span><span style="color:#fdf4c1;">docspell.joex.app-id = </span><span style="color:#b8bb26;">&quot;joex1&quot;
@@ -422,9 +480,9 @@ tokens from one instance are not valid on another instance. The secret
 can be given as Base64 encoded string or in hex form. Use the prefix
 <code>hex:</code> and <code>b64:</code>, respectively. If no prefix is given, the UTF8 bytes
 of the string are used.</p>
-<p>The <code>session-valid</code> deterimens how long a token is valid. This can be
+<p>The <code>session-valid</code> determines how long a token is valid. This can be
 just some minutes, the web application obtains new ones
-periodically. So a short time is recommended.</p>
+periodically. So a rather short time is recommended.</p>
 <h2 id="file-processing">File Processing<a class="zola-anchor" href="#file-processing" aria-label="Anchor link for: file-processing">🔗</a></h2>
 <p>Files are being processed by the joex component. So all the respective
 configuration is in this config only.</p>
@@ -511,35 +569,68 @@ are lower, since the model already exists.</p>
 <a href="https://docspell.org/docs/joex/file-processing/#text-analysis">here</a>.</p>
 <p>The restserver component is very lightweight, here you can use
 defaults.</p>
-<h1 id="file-format">File Format<a class="zola-anchor" href="#file-format" aria-label="Anchor link for: file-format">🔗</a></h1>
-<p>The format of the configuration files can be
-<a href="https://github.com/lightbend/config/blob/master/HOCON.md#hocon-human-optimized-config-object-notation">HOCON</a>,
-JSON or whatever the used <a href="https://github.com/lightbend/config">config
-library</a> understands. The default
-values below are in HOCON format, which is recommended, since it
-allows comments and has some <a href="https://github.com/lightbend/config#features-of-hocon">advanced
-features</a>.
-Please refer to their documentation for more on this.</p>
-<p>A short description (please see the links for better understanding):
-The config consists of key-value pairs and can be written in a
-JSON-like format (called HOCON). Keys are organized in trees, and a
-key defines a full path into the tree. There are two ways:</p>
+<h1 id="jvm-options">JVM Options<a class="zola-anchor" href="#jvm-options" aria-label="Anchor link for: jvm-options">🔗</a></h1>
+<p>The start scripts support some options to configure the JVM. One often
+used setting is the maximum heap size of the JVM. By default, java
+determines it based on properties of the current machine. You can
+specify it by given java startup options to the command:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">a.b.c.d=15
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver -J-Xmx1G -- /path/to/server-config.conf
 </span></code></pre>
-<p>or</p>
+<p>This would limit the maximum heap to 1GB. The double slash separates
+internal options and the arguments to the program. Another frequently
+used option is to change the default temp directory. Usually it is
+<code>/tmp</code>, but it may be desired to have a dedicated temp directory,
+which can be configured:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">a {
-  b {
-    c {
-      d = 15
-    }
-  }
-}
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver -J-Xmx1G -Djava.io.tmpdir=/path/to/othertemp -- /path/to/server-config.conf
 </span></code></pre>
-<p>Both are exactly the same and these forms are both used at the same
-time. Usually the braces approach is used to group some more settings,
-for better readability.</p>
+<p>The command:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver -h
+</span></code></pre>
+<p>gives an overview of supported options.</p>
+<p>It is recommended to run joex with the G1GC enabled. If you use java8,
+you need to add an option to use G1GC (<code>-XX:+UseG1GC</code>), for java11
+this is not necessary (but doesn't hurt either). This could look like
+this:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">./docspell-joex-0.24.0/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+</span></code></pre>
+<p>Using these options you can define how much memory the JVM process is
+able to use. This might be necessary to adopt depending on the usage
+scenario and configured text analysis features.</p>
+<p>Please have a look at the corresponding <a href="https://docspell.org/docs/configure/#memory-usage">section</a>.</p>
+<h1 id="logging">Logging<a class="zola-anchor" href="#logging" aria-label="Anchor link for: logging">🔗</a></h1>
+<p>By default, docspell logs to stdout. This works well, when managed by
+systemd or other inits. Logging is done by
+<a href="https://logback.qos.ch/">logback</a>. Please refer to its documentation
+for how to configure logging.</p>
+<p>If you created your logback config file, it can be added as argument
+to the executable using this syntax:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">/path/to/docspell -Dlogback.configurationFile=/path/to/your/logging-config-file
+</span></code></pre>
+<p>To get started, the default config looks like this:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#83a598;">&lt;</span><span style="font-weight:bold;color:#8ec07c;">configuration</span><span style="color:#83a598;">&gt;
+  &lt;</span><span style="font-weight:bold;color:#8ec07c;">appender </span><span style="color:#8ec07c;">name=</span><span style="color:#b8bb26;">&quot;STDOUT&quot; </span><span style="color:#8ec07c;">class=</span><span style="color:#b8bb26;">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span style="color:#83a598;">&gt;
+    &lt;</span><span style="font-weight:bold;color:#8ec07c;">withJansi</span><span style="color:#83a598;">&gt;</span><span style="color:#fdf4c1aa;">true</span><span style="color:#83a598;">&lt;/</span><span style="font-weight:bold;color:#8ec07c;">withJansi</span><span style="color:#83a598;">&gt;
+
+    &lt;</span><span style="font-weight:bold;color:#8ec07c;">encoder</span><span style="color:#83a598;">&gt;
+      &lt;</span><span style="font-weight:bold;color:#8ec07c;">pattern</span><span style="color:#83a598;">&gt;</span><span style="color:#fdf4c1aa;">[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</span><span style="color:#83a598;">&lt;/</span><span style="font-weight:bold;color:#8ec07c;">pattern</span><span style="color:#83a598;">&gt;
+    &lt;/</span><span style="font-weight:bold;color:#8ec07c;">encoder</span><span style="color:#83a598;">&gt;
+  &lt;/</span><span style="font-weight:bold;color:#8ec07c;">appender</span><span style="color:#83a598;">&gt;
+
+  &lt;</span><span style="font-weight:bold;color:#8ec07c;">logger </span><span style="color:#8ec07c;">name=</span><span style="color:#b8bb26;">&quot;docspell&quot; </span><span style="color:#8ec07c;">level=</span><span style="color:#b8bb26;">&quot;debug&quot; </span><span style="color:#83a598;">/&gt;
+  &lt;</span><span style="font-weight:bold;color:#8ec07c;">root </span><span style="color:#8ec07c;">level=</span><span style="color:#b8bb26;">&quot;INFO&quot;</span><span style="color:#83a598;">&gt;
+    &lt;</span><span style="font-weight:bold;color:#8ec07c;">appender-ref </span><span style="color:#8ec07c;">ref=</span><span style="color:#b8bb26;">&quot;STDOUT&quot; </span><span style="color:#83a598;">/&gt;
+  &lt;/</span><span style="font-weight:bold;color:#8ec07c;">root</span><span style="color:#83a598;">&gt;
+&lt;/</span><span style="font-weight:bold;color:#8ec07c;">configuration</span><span style="color:#83a598;">&gt;
+</span></code></pre>
+<p>The <code>&lt;root level=&quot;INFO&quot;&gt;</code> means, that only log statements with level
+&quot;INFO&quot; will be printed. But the <code>&lt;logger name=&quot;docspell&quot; level=&quot;debug&quot;&gt;</code> above says, that for loggers with name &quot;docspell&quot;
+statements with level &quot;DEBUG&quot; will be printed, too.</p>
 <h1 id="default-config">Default Config<a class="zola-anchor" href="#default-config" aria-label="Anchor link for: default-config">🔗</a></h1>
 <h2 id="rest-server">Rest Server<a class="zola-anchor" href="#rest-server" aria-label="Anchor link for: rest-server">🔗</a></h2>
 <pre style="background-color:#282828;">
@@ -669,7 +760,7 @@ for better readability.</p>
 </span><span style="color:#fdf4c1;">      log-verbose = false
       </span><span style="font-style:italic;color:#928374;"># The defType parameter to lucene that defines the parser to
       # use. You might want to try &quot;edismax&quot; or look here:
-      # https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+      # https://solr.apache.org/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
 </span><span style="color:#fdf4c1;">      def-type = </span><span style="color:#b8bb26;">&quot;lucene&quot;
       </span><span style="font-style:italic;color:#928374;"># The default combiner for tokens. One of {AND, OR}.
 </span><span style="color:#fdf4c1;">      q-op = </span><span style="color:#b8bb26;">&quot;OR&quot;
@@ -1242,7 +1333,7 @@ for better readability.</p>
 </span><span style="color:#fdf4c1;">      log-verbose = false
       </span><span style="font-style:italic;color:#928374;"># The defType parameter to lucene that defines the parser to
       # use. You might want to try &quot;edismax&quot; or look here:
-      # https://lucene.apache.org/solr/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
+      # https://solr.apache.org/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing
 </span><span style="color:#fdf4c1;">      def-type = </span><span style="color:#b8bb26;">&quot;lucene&quot;
       </span><span style="font-style:italic;color:#928374;"># The default combiner for tokens. One of {AND, OR}.
 </span><span style="color:#fdf4c1;">      q-op = </span><span style="color:#b8bb26;">&quot;OR&quot;
@@ -1256,37 +1347,7 @@ for better readability.</p>
     }
   }
 }
-</span></code></pre><h1 id="logging">Logging<a class="zola-anchor" href="#logging" aria-label="Anchor link for: logging">🔗</a></h1>
-<p>By default, docspell logs to stdout. This works well, when managed by
-systemd or other inits. Logging is done by
-<a href="https://logback.qos.ch/">logback</a>. Please refer to its documentation
-for how to configure logging.</p>
-<p>If you created your logback config file, it can be added as argument
-to the executable using this syntax:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">/path/to/docspell -Dlogback.configurationFile=/path/to/your/logging-config-file
 </span></code></pre>
-<p>To get started, the default config looks like this:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#83a598;">&lt;</span><span style="font-weight:bold;color:#8ec07c;">configuration</span><span style="color:#83a598;">&gt;
-  &lt;</span><span style="font-weight:bold;color:#8ec07c;">appender </span><span style="color:#8ec07c;">name=</span><span style="color:#b8bb26;">&quot;STDOUT&quot; </span><span style="color:#8ec07c;">class=</span><span style="color:#b8bb26;">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span style="color:#83a598;">&gt;
-    &lt;</span><span style="font-weight:bold;color:#8ec07c;">withJansi</span><span style="color:#83a598;">&gt;</span><span style="color:#fdf4c1aa;">true</span><span style="color:#83a598;">&lt;/</span><span style="font-weight:bold;color:#8ec07c;">withJansi</span><span style="color:#83a598;">&gt;
-
-    &lt;</span><span style="font-weight:bold;color:#8ec07c;">encoder</span><span style="color:#83a598;">&gt;
-      &lt;</span><span style="font-weight:bold;color:#8ec07c;">pattern</span><span style="color:#83a598;">&gt;</span><span style="color:#fdf4c1aa;">[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</span><span style="color:#83a598;">&lt;/</span><span style="font-weight:bold;color:#8ec07c;">pattern</span><span style="color:#83a598;">&gt;
-    &lt;/</span><span style="font-weight:bold;color:#8ec07c;">encoder</span><span style="color:#83a598;">&gt;
-  &lt;/</span><span style="font-weight:bold;color:#8ec07c;">appender</span><span style="color:#83a598;">&gt;
-
-  &lt;</span><span style="font-weight:bold;color:#8ec07c;">logger </span><span style="color:#8ec07c;">name=</span><span style="color:#b8bb26;">&quot;docspell&quot; </span><span style="color:#8ec07c;">level=</span><span style="color:#b8bb26;">&quot;debug&quot; </span><span style="color:#83a598;">/&gt;
-  &lt;</span><span style="font-weight:bold;color:#8ec07c;">root </span><span style="color:#8ec07c;">level=</span><span style="color:#b8bb26;">&quot;INFO&quot;</span><span style="color:#83a598;">&gt;
-    &lt;</span><span style="font-weight:bold;color:#8ec07c;">appender-ref </span><span style="color:#8ec07c;">ref=</span><span style="color:#b8bb26;">&quot;STDOUT&quot; </span><span style="color:#83a598;">/&gt;
-  &lt;/</span><span style="font-weight:bold;color:#8ec07c;">root</span><span style="color:#83a598;">&gt;
-&lt;/</span><span style="font-weight:bold;color:#8ec07c;">configuration</span><span style="color:#83a598;">&gt;
-</span></code></pre>
-<p>The <code>&lt;root level=&quot;INFO&quot;&gt;</code> means, that only log statements with level
-&quot;INFO&quot; will be printed. But the <code>&lt;logger name=&quot;docspell&quot; level=&quot;debug&quot;&gt;</code> above says, that for loggers with name &quot;docspell&quot;
-statements with level &quot;DEBUG&quot; will be printed, too.</p>
-
                         </div>
                     </div>
                 </div>
@@ -1299,7 +1360,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -1309,7 +1370,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>

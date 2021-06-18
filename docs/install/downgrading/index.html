@@ -136,27 +136,27 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/installing/"
+                                <a href="https://docspell.org/docs/install/docker/"
                                    >
-                                    Installing
+                                    Docker
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/running/"
+                                <a href="https://docspell.org/docs/install/download-run/"
                                    >
-                                    Running
+                                    Download &amp; Run
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/upgrading/"
+                                <a href="https://docspell.org/docs/install/nix/"
                                    >
-                                    Upgrading
+                                    Nix &#x2F; Nixos
                                 </a>
                                 
                             </li>
@@ -169,33 +169,6 @@
                                 </a>
                                 
                                 <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;downgrading&#x2F;#docker-compose">
-                                            Docker-Compose
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;downgrading&#x2F;#zip-deb-files">
-                                            ZIP &#x2F; Deb Files
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;downgrading&#x2F;#nix">
-                                            Nix
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
                                     
                                 </ul>
                                 
@@ -226,33 +199,24 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>Downgrading is currently not supported!</p>
-<p>Note, it is not safe to install a previous version, because the
-database will not be compatible. Therefore, it is recommended to take
-a backup of the database before upgrading.</p>
+                            <div class="notification is-info is-light" style="z-index: -1">
+    <div class="content ">
+        <p class="title is-5">
+            ⚠ Please note
+        </p>
+        <div>
+            <p>Downgrading is currently not supported!</p>
+<p>It is not safe to install a previous version, because the database
+will most likely not be compatible. Therefore, it is recommended to
+take a backup of the database before upgrading.</p>
+        </div>
+    </div>
+</div>
 <p>Should something not work out as expected, you need to restore the
 backup and then go back to the previous version.</p>
-<h2 id="docker-compose">Docker-Compose<a class="zola-anchor" href="#docker-compose" aria-label="Anchor link for: docker-compose">🔗</a></h2>
-<p>The default <code>docker-compose.yml</code> file points to images using the
-<code>-LATEST</code> tag. You need to edit this file and replace <code>-LATEST</code> with
-the concrete version, like <code>-v0.20.0</code>.</p>
-<p>Then run the three steps as when upgrading:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ docker-compose down
-$ docker-compose pull
-$ docker-compose up --force-recreate --build -d
-</span></code></pre><h2 id="zip-deb-files">ZIP / Deb Files<a class="zola-anchor" href="#zip-deb-files" aria-label="Anchor link for: zip-deb-files">🔗</a></h2>
-<p>Simply download a concrete version and re-install it using your
-package manager or unpack the zip file.</p>
-<h2 id="nix">Nix<a class="zola-anchor" href="#nix" aria-label="Anchor link for: nix">🔗</a></h2>
-<p>When using the provided nix setup, the <code>currentPkg</code> always points to
-the latest version. But most other versions are also provided and can
-be chosen from:</p>
-<pre style="background-color:#282828;">
-<code><span style="font-style:italic;color:#928374;"># …
-       </span><span style="color:#fdf4c1;">docspell </span><span style="background-color:#932b1e;color:#fdf4c1;">=</span><span style="color:#fdf4c1aa;"> </span><span style="color:#fdf4c1;">callPackage </span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">pkg docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">cfg</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">v0_20_0</span><span style="color:#fdf4c1aa;">) {}</span><span style="background-color:#932b1e;color:#fdf4c1;">;</span><span style="color:#fdf4c1aa;">
-</span><span style="font-style:italic;color:#928374;"># …
-</span></code></pre>
+<p>If you need to downgrade after running for a while, create an issue or
+meet on matrix/gitter. We should be able to find a way.</p>
+
                         </div>
                     </div>
                 </div>
@@ -263,7 +227,7 @@ be chosen from:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -273,7 +237,7 @@ be chosen from:</p>
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>

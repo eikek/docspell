@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Docspell is a Document Management System (DMS), a system that asists in organizing your piles of documents, resulting from scanners, e-mails and other sources with miminal effort.">
+<meta name="keywords" content="document management system dms organizer ocr open source free scan pdf word doc archive gpl machine learning nlp auto tagging"/>
+<meta name="robots" content="index,follow"/>
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Docker - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Docker – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+        <script type="application/javascript" src="/search_index.en.js"></script>
+<script type="application/javascript" src="/elasticlunr.min.js"></script>
+<script type="application/javascript" src="/js/bundle.js"></script>
+<script type="application/javascript" src="/js/searchhelper.js"></script>
+
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h1 class="title">
+                            Docker
+                        </h1>
+                        <h2 class="subtitle">
+                            Docspell Documentation
+                        </h2>
+                    </div>
+                    <div class="column">
+                        <id id="search"></id>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
+             style="position:sticky; top: 0; z-index:10;">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;">Installation and Deployment</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;">Docker</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu"
+                         style="position:sticky; top:2rem; z-index:10;">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Installation and Deployment
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/quickstart/"
+                                   >
+                                    Quickstart
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/prereq/"
+                                   >
+                                    Prerequisites
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/docker/"
+                                   class="is-active">
+                                    Docker
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#docker-images">
+                                            Docker Images
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#examples">
+                                                    Examples
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#docker-compose">
+                                            Docker Compose
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#start-docspell">
+                                                    Start Docspell
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#override-this-setup">
+                                                    Override this setup
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#upgrading">
+                                                    Upgrading
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/download-run/"
+                                   >
+                                    Download &amp; Run
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/nix/"
+                                   >
+                                    Nix &#x2F; Nixos
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/downgrading/"
+                                   >
+                                    Downgrading
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/rpi/"
+                                   >
+                                    Raspberry-Pi And Similiar
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/reverseproxy/"
+                                   >
+                                    Reverse Proxy
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h2 id="docker-images">Docker Images<a class="zola-anchor" href="#docker-images" aria-label="Anchor link for: docker-images">🔗</a></h2>
+<p>The docker images are at
+<a href="https://hub.docker.com/u/docspell">hub.docker.com</a>. The <code>latest</code> tag
+always points to the latest <em>release</em>. The releases are also tagged
+with their respective version number. Additionally, there are images
+tagged with <code>nightly</code> which are built from the <code>master</code> branch.
+Therefore the <code>nightly</code> packages should be used with care, because
+things might break in between. But they are useful for trying out
+something.</p>
+<p>There are images for all components that are available from the github
+release page. The images contain all the necessary
+<a href="https://docspell.org/docs/install/prereq/">prerequisites</a>.</p>
+<ul>
+<li><code>docspell-restserver</code> this images contains the http server</li>
+<li><code>docspell-joex</code> this image contains the job executor and all
+required software (ocrmypdf, unoconv etc) mentioned in
+<a href="https://docspell.org/docs/install/prereq/">prerequisites</a>.</li>
+<li><code>docspell-tools</code> this image simply contains all the scripts from the
+<code>tools/</code> folder. They are installed into a location in <code>$PATH</code>. It
+doesn't specify a <code>CMD</code> or <code>ENTRYPOINT</code>, so you must choose which
+script to run. The scripts are all prefixed by <code>ds-</code>. So to run the
+<code>consumedir.sh</code> script, execute <code>ds-consumedir</code>.</li>
+</ul>
+<h3 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h3>
+<p>These examples use <code>docker run</code> to start the restserver and
+jobexecutor. Both must be connected to the same database. For this
+example, a shared directory is used and the in-process database H2.
+For a real setup, using PostgreSQL is recommended.</p>
+<p>This requires to change the default config. This example creates a new
+config file. Please refer to the <a href="https://docspell.org/docs/configure/">configuration
+page</a> for more details.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ cat </span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> /tmp/docspell.conf </span><span style="color:#fe8019;">&lt;&lt;-</span><span style="color:#fdf4c1;">&quot;</span><span style="color:#fa5c4b;">EOF</span><span style="color:#fdf4c1;">&quot;
+</span><span style="font-style:italic;color:#928374;"># common settings
+</span><span style="color:#fdf4c1;">db_url = </span><span style="color:#b8bb26;">&quot;jdbc:h2:///var/docspell/db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+
+</span><span style="font-style:italic;color:#928374;"># job executor settings
+</span><span style="color:#fdf4c1;">docspell.joex.jdbc.url = ${db_url}
+docspell.joex.base-url = &quot;http://10.4.3.2:7878&quot;
+docspell.joex.bind.address = &quot;0.0.0.0&quot;
+
+# restserver settings
+docspell.server.backend.jdbc.url = ${db_url}
+docspell.server.bind.address = &quot;0.0.0.0&quot;
+docspell.server.integration-endpoint {
+  enabled = true
+  http-header {
+    enabled = true
+    header-value = &quot;test123&quot;
+  }
+}
+</span><span style="color:#fa5c4b;">EOF
+</span></code></pre>
+<p>This sets the db url to the same value for both components; thus we
+can use the same file for both components. It also sets the bind
+address to bind the server socket on all interfaces. Another thing to
+note is the <code>base-url</code> setting for joex. This publishes joex by this
+ip, such that the server component can notify the job executor for new
+work. The <code>integration-endpoint</code> setting is explained later.</p>
+<p>After creating a common network, we start the rest server and joex:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ docker network create --subnet 10.4.3.0/24 dsnet
+$ docker run -d --name ds-restserver \
+    --network dsnet --ip 10.4.3.3 \
+    -p 127.0.0.1:7880:7880 \
+    -v /tmp/testdb:/var/docspell \
+    -v /tmp/docspell.conf:/opt/docspell.conf \
+    docspell/restserver:latest /opt/docspell.conf
+$ docker run -d --name ds-joex \
+    --network dsnet --ip 10.4.3.2 \
+    -v /tmp/testdb:/var/docspell \
+    -v /tmp/docspell.conf:/opt/docspell.conf \
+    docspell/joex:latest /opt/docspell.conf
+</span></code></pre>
+<p>After this <code>docker ps</code> should show these two containers. Go to
+<code>http://localhost:7880</code> and sign up/login and start playing around.
+When signing up, use the same name for collective and user and then
+login with this name.</p>
+<p>For the last part, we use the <code>docspell/tools</code> image to create another
+container that watches a directory and pushes files to docspell.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ docker run -d --name ds-consume \
+    --network dsnet --ip 10.4.3.4 \
+    -v /tmp/inbox:/var/inbox \
+    docspell/tools:latest ds-consumedir -imdv --iheader </span><span style="color:#b8bb26;">&quot;Docspell-Integration:test123&quot; </span><span style="color:#fdf4c1;">\
+      --path /var/inbox </span><span style="color:#b8bb26;">&quot;http://10.4.3.3:7880/api/v1/open/integration/item&quot;
+</span></code></pre>
+<p>This starts the <a href="https://docspell.org/docs/tools/consumedir/">consumedir</a> script that
+watches a directory and uploads arriving files to docspell server.
+This requires the value from the <code>integration-endpoint</code> setting to be
+allowed to upload files. It also requires you to explicitely enable
+this: go to <em>Collective Profile → Settings</em> and enable the
+<em>Integration Endpoint</em>. Then create a subdirectory in <code>/tmp/inbox</code>
+with the name of the <em>collective</em> that you registered and place a file
+into the <code>/tmp/inbox/[collective]</code> directory. The file is pushed to
+docspell and processed shortly after.</p>
+<p>To see all available options, run the script with the <code>--help</code> option:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ docker run docspell/tools:latest ds-consumedir --help
+</span></code></pre>
+<p>Note that this is just an example and is only to demonstrate how to
+use the docker images. For instance, this setup does not provide
+fulltext search. For a more sophisticated docker setup, use
+appropriate tools, for example <code>docker-compose</code> which is explained
+below.</p>
+<h2 id="docker-compose">Docker Compose<a class="zola-anchor" href="#docker-compose" aria-label="Anchor link for: docker-compose">🔗</a></h2>
+<p>There is a <a href="https://docs.docker.com/compose/">docker-compose</a> setup
+available in the <code>/docker/docker-compose</code> folder. This setup is
+similiar to the example above, adding fulltext search and a PostgreSQL
+database by using just one command. It's only a few steps to get
+started.</p>
+<h3 id="start-docspell">Start Docspell<a class="zola-anchor" href="#start-docspell" aria-label="Anchor link for: start-docspell">🔗</a></h3>
+<h4 id="1-get-the-docker-compose-files">1. Get the docker-compose files<a class="zola-anchor" href="#1-get-the-docker-compose-files" aria-label="Anchor link for: 1-get-the-docker-compose-files">🔗</a></h4>
+<p>There are two options. You can clone the whole repository:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ git clone https://github.com/eikek/docspell
+</span></code></pre>
+<p>This downloads all sources. What you actually need is only 3 files. So
+if you don't have git or don't want to clone the whole repo, use these
+steps instead:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ mkdir -p docspell/docker/docker-compose
+$ cd docspell/docker/docker-compose
+$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docker-compose.yml
+$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docspell.conf
+$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/.env
+</span></code></pre>
+<p>You can choose any directory instead of
+<code>docspell/docker/docker-compose</code>, of course. It's only this folder to
+make the rest of the guide work for both ways of obtaining the
+docker-compose file.</p>
+<h4 id="2-run-docker-compose-up">2. Run <code>docker-compose up</code><a class="zola-anchor" href="#2-run-docker-compose-up" aria-label="Anchor link for: 2-run-docker-compose-up">🔗</a></h4>
+<p>Change into the new <code>docker-compose</code> directory, for example:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ cd docspell/docker/docker-compose
+</span></code></pre>
+<p>Then run <code>docker-compose</code>:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ export DOCSPELL_HEADER_VALUE=</span><span style="color:#b8bb26;">&quot;my-secret-123&quot;
+</span><span style="color:#fdf4c1;">$ docker-compose up
+</span></code></pre>
+<p>The environment variable defines a secret that is shared between some
+containers. You can define whatever you like. Please see the
+<a href="https://docspell.org/docs/tools/consumedir/#docker">consumedir.sh</a> docs for additional
+info.</p>
+<p>Goto <code>http://localhost:7880</code>, signup and login. When signing up, you
+choose the same name for collective and user. Then login with this
+name and the password.</p>
+<p>(Optional) Create a folder <code>./docs/&lt;collective-name&gt;</code> (the name you
+chose for the collective at registration) and place files in there for
+importing them.</p>
+<p>The directory contains a file <code>docspell.conf</code> that you can
+<a href="https://docspell.org/docs/configure/">modify</a> as needed.</p>
+<h3 id="override-this-setup">Override this setup<a class="zola-anchor" href="#override-this-setup" aria-label="Anchor link for: override-this-setup">🔗</a></h3>
+<p>If you want to change this setup, you can simply use your own compose
+file or add a <code>docker-compose.override.yml</code> that allows to amend
+certain configs. Look <a href="https://docs.docker.com/compose/extends/">here</a>
+to find more about it.</p>
+<p>As an example, here is a <code>docker-compose.override.yml</code>:</p>
+<pre style="background-color:#282828;">
+<code><span style="font-weight:bold;color:#8ec07c;">version</span><span style="color:#fdf4c1aa;">: </span><span style="color:#b8bb26;">&#39;3.7&#39;
+
+</span><span style="font-weight:bold;color:#8ec07c;">services</span><span style="color:#fdf4c1aa;">:
+  </span><span style="font-weight:bold;color:#8ec07c;">consumedir</span><span style="color:#fdf4c1aa;">:
+    </span><span style="font-weight:bold;color:#8ec07c;">volumes</span><span style="color:#fdf4c1aa;">:
+      - </span><span style="font-weight:bold;color:#8ec07c;">importdocs:/opt/docs
+
+volumes</span><span style="color:#fdf4c1aa;">:
+  </span><span style="font-weight:bold;color:#8ec07c;">docspell-postgres_data</span><span style="color:#fdf4c1aa;">:
+    </span><span style="font-weight:bold;color:#8ec07c;">driver</span><span style="color:#fdf4c1aa;">: </span><span style="font-weight:bold;color:#8ec07c;">local
+    driver_opts</span><span style="color:#fdf4c1aa;">:
+      </span><span style="font-weight:bold;color:#8ec07c;">type</span><span style="color:#fdf4c1aa;">: </span><span style="font-weight:bold;color:#8ec07c;">nfs4
+      o</span><span style="color:#fdf4c1aa;">: </span><span style="font-weight:bold;color:#8ec07c;">addr=192.168.x.y,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14
+      device</span><span style="color:#fdf4c1aa;">: </span><span style="color:#b8bb26;">&quot;:/mnt/FreeNas/docker_vol1/docspell/postgres_data&quot;
+
+  </span><span style="font-weight:bold;color:#8ec07c;">docspell-solr_data</span><span style="color:#fdf4c1aa;">:
+    </span><span style="font-weight:bold;color:#8ec07c;">driver</span><span style="color:#fdf4c1aa;">: </span><span style="font-weight:bold;color:#8ec07c;">local
+    driver_opts</span><span style="color:#fdf4c1aa;">:
+      </span><span style="font-weight:bold;color:#8ec07c;">type</span><span style="color:#fdf4c1aa;">: </span><span style="font-weight:bold;color:#8ec07c;">nfs4
+      o</span><span style="color:#fdf4c1aa;">: </span><span style="font-weight:bold;color:#8ec07c;">addr=192.168.x.y,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14
+      device</span><span style="color:#fdf4c1aa;">: </span><span style="color:#b8bb26;">&quot;:/mnt/FreeNas/docker_vol1/docspell/solr_data&quot;
+
+  </span><span style="font-weight:bold;color:#8ec07c;">importdocs</span><span style="color:#fdf4c1aa;">:
+    </span><span style="font-weight:bold;color:#8ec07c;">driver</span><span style="color:#fdf4c1aa;">: </span><span style="font-weight:bold;color:#8ec07c;">local
+    driver_opts</span><span style="color:#fdf4c1aa;">:
+      </span><span style="font-weight:bold;color:#8ec07c;">type</span><span style="color:#fdf4c1aa;">: </span><span style="font-weight:bold;color:#8ec07c;">nfs4
+      o</span><span style="color:#fdf4c1aa;">: </span><span style="font-weight:bold;color:#8ec07c;">addr=192.168.x.y,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14
+      device</span><span style="color:#fdf4c1aa;">: </span><span style="color:#b8bb26;">&quot;:/mnt/FreeNas/archiv/gescannt/output&quot;
+</span></code></pre><h3 id="upgrading">Upgrading<a class="zola-anchor" href="#upgrading" aria-label="Anchor link for: upgrading">🔗</a></h3>
+<p>Since <a href="https://docspell.org/docs/install/downgrading/">downgrading</a> is not supported,
+it is recommended to backup your database before upgrading. Should
+something not work as expected, restore the database backup and go
+back to the previous version.</p>
+<p>The latest release is always tagged with <code>latest</code>. Should you use this
+tag, then run these commands to upgrade to newer images:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ docker-compose down
+$ docker-compose pull
+$ docker-compose up --force-recreate --build -d
+</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell 0.24.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+    </body>
+</html>

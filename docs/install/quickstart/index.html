@@ -140,27 +140,27 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/installing/"
+                                <a href="https://docspell.org/docs/install/docker/"
                                    >
-                                    Installing
+                                    Docker
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/running/"
+                                <a href="https://docspell.org/docs/install/download-run/"
                                    >
-                                    Running
+                                    Download &amp; Run
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/upgrading/"
+                                <a href="https://docspell.org/docs/install/nix/"
                                    >
-                                    Upgrading
+                                    Nix &#x2F; Nixos
                                 </a>
                                 
                             </li>
@@ -201,31 +201,51 @@
                         <div class="content doc">
                             <p>To get started, here are some quick links:</p>
 <ul>
-<li>Using <a href="https://docspell.org/docs/install/installing/#docker">docker and
-docker-compose</a>. This sets up
-everything: all prerequisites, both docspell components and a
-container running the <a href="https://docspell.org/docs/tools/consumedir/">consumedir.sh</a>
+<li>Using <a href="https://docspell.org/docs/install/docker/">docker and docker-compose</a>. This
+sets up everything: all prerequisites, both docspell components and
+a container running the <a href="https://docspell.org/docs/tools/consumedir/">consumedir.sh</a>
 script to import files that are dropped in a folder.</li>
-<li><a href="https://docspell.org/docs/install/installing/#download-unpack-run">Download, Unpack and
-Run</a>. This option
-is also very quick, but you need to check the
+<li><a href="https://docspell.org/docs/install/download-run/">Download, Unpack and Run</a>. This
+option is also very quick, but you need to check the
 <a href="https://docspell.org/docs/install/prereq/">prerequisites</a> yourself. Database is
 already setup, but you'd need to setup SOLR (when using fulltext
 search) and install some programs for the joex component. This
 applies to the <code>zip</code> and <code>deb</code> files. The files can be downloaded
-from the <a href="https://github.com/eikek/docspell/releases/latest">release page</a>.</li>
-<li>via the <a href="https://docspell.org/docs/install/installing/#nix">nix package manager</a> and/or as a <a href="https://docspell.org/docs/install/installing/#nixos">NixOS
-module</a>. If you use nix/nixos, you
-know what to do. The linked page contains some examples.</li>
-<li><a href="https://www.unraid.net/">Unraid</a>: While not official, there are
-user provided <a href="https://github.com/vakilando/unraid-docker-templates">notes and unraid
+from the <a href="https://github.com/eikek/docspell/releases/latest">release
+page</a>.</li>
+<li>via the <a href="https://docspell.org/docs/install/nix/">nix package manager</a> and/or as a
+<a href="https://docspell.org/docs/install/nix/#nixos">NixOS module</a>. If you use nix/nixos,
+you know what to do. The linked page contains some examples.</li>
+<li><a href="https://www.unraid.net/">Unraid</a>: There are user provided <a href="https://github.com/vakilando/unraid-docker-templates">notes
+and unraid
 templates</a>
-which can get you started. Thanks for providing these!</li>
+which can get you started. There is also an <a href="https://forums.unraid.net/topic/103425-docspell-hilfe/">installation and help
+thread</a> in
+the German Unraid forum. Thanks for providing these!</li>
 </ul>
-<p>Every <a href="@docs/intro/_index.md#components">component</a> (restserver, joex,
+<p>Every <a href="https://docspell.org/docs/intro/#components">component</a> (restserver, joex,
 consumedir) can run on different machines and multiple times. Most of
 the time running all on one machine is sufficient and also for
 simplicity, the docker-compose setup reflects this variant.</p>
+<p>While there are many different ways to run docspell, at some point all
+call docspell binaries. These accept one argument: a <a href="https://docspell.org/docs/configure/">config
+file</a>. If this is not given, the default
+is used, which gets you started on a single machine, but it is very
+likely you want to change these to match your use-case/setup.</p>
+<div class="notification is-info is-light" style="z-index: -1">
+    <div class="content ">
+        <p class="title is-5">
+            ⚠ Please note
+        </p>
+        <div>
+            <p>Please have a look at the <a href="@/docs/configure/_index.md">configuration
+page</a> page, before making docspell
+publicly available. By default, everyone can create an account. This
+is great for trying out and using it in an internal network. But when
+opened up to the outside, it is recommended to lock this down.</p>
+        </div>
+    </div>
+</div>
 
                         </div>
                     </div>
@@ -237,7 +257,7 @@ simplicity, the docker-compose setup reflects this variant.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -247,7 +267,7 @@ simplicity, the docker-compose setup reflects this variant.</p>
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>

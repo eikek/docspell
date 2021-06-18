@@ -13,7 +13,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Upgrading - Docspell">
+<meta name="og:site_name" content="Download &amp; Run - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -25,7 +25,7 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Upgrading – Docspell Documentation</title>
+        <title>Download &amp; Run – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
         <script type="application/javascript" src="/search_index.en.js"></script>
 <script type="application/javascript" src="/elasticlunr.min.js"></script>
@@ -66,7 +66,7 @@
                 <div class="columns is-vcentered">
                     <div class="column is-8">
                         <h1 class="title">
-                            Upgrading
+                            Download &amp; Run
                         </h1>
                         <h2 class="subtitle">
                             Docspell Documentation
@@ -98,7 +98,7 @@
                 </li>
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;upgrading&#x2F;">Upgrading</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;download-run&#x2F;">Download &amp; Run</a>
                 </li>
             </ul>
         </nav>
@@ -136,34 +136,25 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/installing/"
+                                <a href="https://docspell.org/docs/install/docker/"
                                    >
-                                    Installing
+                                    Docker
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/install/running/"
-                                   >
-                                    Running
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/upgrading/"
+                                <a href="https://docspell.org/docs/install/download-run/"
                                    class="is-active">
-                                    Upgrading
+                                    Download &amp; Run
                                 </a>
                                 
                                 <ul class="menu-list">
                                     
                                     <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;upgrading&#x2F;#docker-compose">
-                                            Docker-Compose
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;download-run&#x2F;#using-zip-files">
+                                            Using zip files
                                         </a>
                                         <ul>
                                             
@@ -171,8 +162,8 @@
                                     </li>
                                     
                                     <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;upgrading&#x2F;#zip-deb-files">
-                                            Zip &#x2F; Deb Files
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;download-run&#x2F;#using-deb-files">
+                                            Using deb files
                                         </a>
                                         <ul>
                                             
@@ -180,15 +171,54 @@
                                     </li>
                                     
                                     <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;upgrading&#x2F;#nix">
-                                            Nix
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;download-run&#x2F;#running">
+                                            Running
                                         </a>
                                         <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;download-run&#x2F;#upgrading">
+                                            Upgrading
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;download-run&#x2F;#more">
+                                            More
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;download-run&#x2F;#fulltext-search">
+                                                    Fulltext Search
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;download-run&#x2F;#watching-a-directory">
+                                                    Watching a directory
+                                                </a>
+                                            </li>
                                             
                                         </ul>
                                     </li>
                                     
                                 </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/install/nix/"
+                                   >
+                                    Nix &#x2F; Nixos
+                                </a>
                                 
                             </li>
                             
@@ -226,26 +256,91 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>Upgrading docspell requires to download the newer binaries and
-re-installing them depending on your setup.</p>
-<p>The database is migrated on application start automatically.</p>
+                            <p>You can install via zip or deb archives. Please see the
+<a href="https://docspell.org/docs/install/prereq/">prerequisites</a> first.</p>
+<h2 id="using-zip-files">Using zip files<a class="zola-anchor" href="#using-zip-files" aria-label="Anchor link for: using-zip-files">🔗</a></h2>
+<p>You need to download the two files:</p>
+<ul>
+<li><a href="https://github.com/eikek/docspell/releases/download/v0.24.0/docspell-restserver-0.24.0.zip">docspell-restserver-0.24.0.zip</a></li>
+<li><a href="https://github.com/eikek/docspell/releases/download/v0.24.0/docspell-joex-0.24.0.zip">docspell-joex-0.24.0.zip</a></li>
+</ul>
+<ol>
+<li>Unzip both files:<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ unzip docspell-</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.zip
+</span></code></pre></li>
+<li>Open two terminal windows and navigate to the the directory
+containing the zip files.</li>
+<li>Start both components executing:<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ ./docspell-restserver</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-restserver
+</span></code></pre>in one terminal and<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ ./docspell-joex</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-joex
+</span></code></pre>in the other.</li>
+<li>Point your browser to: <a href="http://localhost:7880/app">http://localhost:7880/app</a></li>
+<li>Register a new account, sign in and try it.</li>
+</ol>
+<p>Note, that this setup doesn't include watching a directory nor
+fulltext search. Using zip/deb files requires to take care of the
+<a href="https://docspell.org/docs/install/prereq/">prerequisites</a> yourself.</p>
+<p>The provided scripts in
+<a href="https://github.com/eikek/docspell/releases/download/v0.24.0/docspell-tools-0.24.0.zip">docspell-tools-0.24.0.zip</a>
+must be extracted and installed manually somewhere in your <code>$PATH</code>.</p>
+<h2 id="using-deb-files">Using deb files<a class="zola-anchor" href="#using-deb-files" aria-label="Anchor link for: using-deb-files">🔗</a></h2>
+<p>Packages are also provided at the release page:</p>
+<ul>
+<li><a href="https://github.com/eikek/docspell/releases/download/v0.24.0/docspell-restserver_0.24.0_all.deb">docspell-restserver_0.24.0_all.deb</a></li>
+<li><a href="https://github.com/eikek/docspell/releases/download/v0.24.0/docspell-joex_0.24.0_all.deb">docspell-joex_0.24.0_all.deb</a></li>
+</ul>
+<p>The DEB packages can be installed on Debian, or Debian based Distros:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">$ sudo dpkg -i docspell</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.deb
+</span></code></pre>
+<p>Then the start scripts are in your <code>$PATH</code>. Run <code>docspell-restserver</code>
+or <code>docspell-joex</code> from a terminal window.</p>
+<p>The packages come with a systemd unit file that will be installed to
+autostart the services.</p>
+<p>The provided scripts in <code>docspell-tools-0.24.0.zip</code> must be
+extracted and installed manually somewhere in your <code>$PATH</code>. There are
+no deb files provided.</p>
+<h2 id="running">Running<a class="zola-anchor" href="#running" aria-label="Anchor link for: running">🔗</a></h2>
+<p>Run the start script (in the corresponding <code>bin/</code> directory when using
+the zip files):</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver
+$ ./docspell-joex*/bin/docspell-joex
+</span></code></pre>
+<p>This will startup both components using the default configuration.
+Please refer to the <a href="https://docspell.org/docs/configure/">configuration page</a>
+for how to create a custom config file. Once you have your config
+file, simply pass it as argument to the command:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver /path/to/server-config.conf
+$ ./docspell-joex*/bin/docspell-joex /path/to/joex-config.conf
+</span></code></pre>
+<p>After starting the rest server, you can reach the web application
+<code>http://localhost:7880/</code>.</p>
+<p>You should be able to create a new account and sign in. When creating
+a new account, use the same name for collective and user and then
+login with this name.</p>
+<h2 id="upgrading">Upgrading<a class="zola-anchor" href="#upgrading" aria-label="Anchor link for: upgrading">🔗</a></h2>
 <p>Since <a href="https://docspell.org/docs/install/downgrading/">downgrading</a> is not supported,
 it is recommended to backup your database before upgrading. Should
 something not work as expected, restore the database backup and go
 back to the previous version.</p>
-<h1 id="docker-compose">Docker-Compose<a class="zola-anchor" href="#docker-compose" aria-label="Anchor link for: docker-compose">🔗</a></h1>
-<p>When using the provided <code>docker-compose</code> setup, you only need to pull
-the new images. The latest release is always tagged with <code>-LATEST</code>.</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ docker-compose down
-$ docker-compose pull
-$ docker-compose up --force-recreate --build -d
-</span></code></pre><h1 id="zip-deb-files">Zip / Deb Files<a class="zola-anchor" href="#zip-deb-files" aria-label="Anchor link for: zip-deb-files">🔗</a></h1>
 <p>When using the zip or deb files, either install the new deb files via
-your package manager or download and unpack the new zip files.</p>
-<h1 id="nix">Nix<a class="zola-anchor" href="#nix" aria-label="Anchor link for: nix">🔗</a></h1>
-<p>When using the provided nix setup, the <code>currentPkg</code> always points to
-the latest release. Thus it is enough to run <code>nix-build</code>.</p>
+your package manager or download and unpack the new zip files. You
+might want to have a look at the changelog, since it is sometimes
+necessary to modify the config file.</p>
+<h2 id="more">More<a class="zola-anchor" href="#more" aria-label="Anchor link for: more">🔗</a></h2>
+<h3 id="fulltext-search">Fulltext Search<a class="zola-anchor" href="#fulltext-search" aria-label="Anchor link for: fulltext-search">🔗</a></h3>
+<p>Fulltext search is powered by <a href="https://solr.apache.org">SOLR</a>. You
+need to install solr and create a core for docspell. Then cange the
+solr url for both components (restserver and joex) accordingly. See
+the relevant section in the <a href="https://docspell.org/docs/configure/#full-text-search-solr">config
+page</a>.</p>
+<h3 id="watching-a-directory">Watching a directory<a class="zola-anchor" href="#watching-a-directory" aria-label="Anchor link for: watching-a-directory">🔗</a></h3>
+<p>The <a href="https://docspell.org/docs/tools/consumedir/">consumedir</a> script can be used for
+this. Using systemd or something similar, it is possible to create a
+system service that runs the script in &quot;watch mode&quot;.</p>
 
                         </div>
                     </div>
@@ -257,7 +352,7 @@ the latest release. Thus it is enough to run <code>nix-build</code>.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell, 0.23.0
+                Docspell 0.24.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
@@ -267,7 +362,7 @@ the latest release. Thus it is enough to run <code>nix-build</code>.</p>
             </a>
             <span class="ml-1 mr-1">•</span>
             <span>
-                <a href="https://gitter.im/eikek/docspell">Chat on Gitter</a>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
             </span>
         </div>
     </div>
