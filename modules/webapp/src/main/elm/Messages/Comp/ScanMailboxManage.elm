@@ -47,9 +47,9 @@ de =
     , table = Messages.Comp.ScanMailboxTable.de
     , httpError = Messages.Comp.HttpError.de
     , newTask = "Neuer Auftrag"
-    , createNewTask = "Einen neuen E-Mail Such Auftrag erstellen"
-    , taskCreated = "Auftrag created."
-    , taskUpdated = "Auftrag updated."
-    , taskStarted = "Auftrag started."
-    , taskDeleted = "Auftrag deleted."
+    , createNewTask = "Einen neuen E-Mail-Suchauftrag erstellen"
+    , taskCreated = "Auftrag erstellt."
+    , taskUpdated = "Auftrag aktualisiert."
+    , taskStarted = "Auftrag gestartet."
+    , taskDeleted = "Auftrag gelöscht."
     }

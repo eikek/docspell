@@ -58,7 +58,7 @@ de =
     , correspondentPerson = "Korrespondent Person"
     , concerningPerson = "Betreffende Person"
     , concerningEquipment = "Ausstattung"
-    , itemDate = "Dokumentdatum"
+    , itemDate = "Dokumentendatum"
     , itemDueDate = "Fälligkeit"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.German
     }

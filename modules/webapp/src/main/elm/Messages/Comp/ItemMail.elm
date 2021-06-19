@@ -53,7 +53,7 @@ de =
     , bccRecipients = "BCC"
     , subject = "Betreff"
     , body = "Inhalt"
-    , includeAllAttachments = "All Anhänge mit einfügen"
-    , connectionMissing = "Keine E-Mail Verbindung definiert. Gehe zu den Benutzer-Einstellungen und füge eine hinzu."
+    , includeAllAttachments = "Alle Anhänge mit einfügen"
+    , connectionMissing = "Keine E-Mail-Verbindung definiert. Gehe zu den Benutzereinstellungen und füge eine hinzu."
     , sendLabel = "Senden"
     }

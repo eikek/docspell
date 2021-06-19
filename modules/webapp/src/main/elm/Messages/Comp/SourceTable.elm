@@ -37,6 +37,6 @@ de =
     , enabled = "Aktiviert"
     , counter = "Zähler"
     , priority = "Priorität"
-    , id = "Id"
+    , id = "ID"
     , show = "Anzeigen"
     }

@@ -61,24 +61,24 @@ gb =
 de : Texts
 de =
     { basics = Messages.Basics.de
-    , reallyDeleteField = "Das Benutzer-Feld wirklich löschen?"
+    , reallyDeleteField = "Das Benutzerfeld wirklich löschen?"
     , fieldTypeLabel = Messages.Data.CustomFieldType.de
     , httpError = Messages.Comp.HttpError.de
-    , createCustomField = "Ein neues Benutzer-Feld erstellen."
+    , createCustomField = "Ein neues Benutzerfeld erstellen."
     , modifyTypeWarning =
         "Beachte, dass eine Änderung im Format zu nicht sichtbaren Werten führen kann, falls diese dem "
             ++ "neuen Format nicht entsprechen!"
     , nameInfo =
-        "Der Name des Feldes identifiziert es eindeutig und wird im erweiterten Such-Query "
+        "Der Name des Feldes identifiziert es eindeutig und wird in erweiterten Suchanfragen "
             ++ "verwendet. Es muss eine gültige ID sein, darf also keine Leerzeichen oder "
-            ++ "andere seltsame Zeichen enthalten."
-    , fieldFormat = "Feld Format"
+            ++ "Sonderzeichen enthalten."
+    , fieldFormat = "Feldformat"
     , fieldFormatInfo =
-        "Ein Feld muss ein Format angeben. Werte werden dagegen validiert."
+        "Ein Feld muss ein Format haben. Werte werden dagegen validiert."
     , label = "Bezeichnung"
     , labelInfo =
         "Diese Bezeichnung erscheint in der Benutzeroberfläche für dieses Feld. Es kann im Gegensatz zum Namen "
-            ++ "Leerzeichen etc enthalten. Falls nicht angegeben, wird der Name verwendet."
+            ++ "Leer- und Sonderzeichen enthalten. Falls nicht angegeben, wird der Name verwendet."
     , deleteThisField = "Dieses Feld löschen"
     , fieldNameRequired = "Ein Name ist erforderlich."
     , fieldTypeRequired = "Ein Format ist erforderlich."

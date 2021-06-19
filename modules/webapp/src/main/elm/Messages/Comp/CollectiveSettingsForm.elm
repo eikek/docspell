@@ -71,22 +71,22 @@ de =
     , httpError = Messages.Comp.HttpError.de
     , save = "Speichern"
     , saveSettings = "Einstellungen speichern"
-    , documentLanguage = "Dokument Sprache"
-    , documentLanguageHelp = "Die Sprache der Dokumente. Das hilft der Text-Extraktion (OCR) und -Analyse."
-    , integrationEndpoint = "Integrations-Endpunkt"
-    , integrationEndpointLabel = "Aktiviere den Integrations-Endpunkt"
+    , documentLanguage = "Dokumentensprache"
+    , documentLanguageHelp = "Die Sprache der Dokumente. Das hilft der Texterkennung (OCR) und -analyse."
+    , integrationEndpoint = "Integrationsendpunkt"
+    , integrationEndpointLabel = "Aktiviere den Integrationsendpunkt"
     , integrationEndpointHelp =
-        "Der Integrations-Endpunkt erlaubt es (lokalen) Anwendungen, Dateien einzustellen. "
+        "Der Integrationsendpunkt erlaubt es (lokalen) Anwendungen Dateien einzustellen. "
             ++ "Dies kann für dieses Kollektiv de-/aktiviert werden."
     , fulltextSearch = "Volltextsuche"
     , reindexAllData = "Alle Daten neu indexieren"
     , reindexAllDataHelp =
         "Der Index wird im Hintergrund gelöscht und alle Daten neu indexiert. "
-            ++ "Bitte tippe vor dem Klicken OK ein, um ein versehentliches Neu-Indexieren zu vermeiden."
-    , autoTagging = "Auto-Tagging"
+            ++ "Bitte tippe vor dem Klicken OK ein, um ein versehentliches erneutes Indexieren zu vermeiden."
+    , autoTagging = "Automatisches Taggen"
     , startNow = "Jetzt starten"
     , languageLabel = Messages.Data.Language.de
-    , classifierTaskStarted = "Auto-Tagger Job gestartet."
+    , classifierTaskStarted = "Kategorisierung gestartet."
     , fulltextReindexSubmitted = "Volltext Neu-Indexierung gestartet."
     , fulltextReindexOkMissing =
         "Bitte tippe OK in das Feld ein, wenn Du wirklich den Index neu erzeugen möchtest."

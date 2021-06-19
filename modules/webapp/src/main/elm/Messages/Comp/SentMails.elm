@@ -38,6 +38,6 @@ de =
     , recipients = "Empfänger"
     , subject = "Betreff"
     , sent = "Gesendet"
-    , sender = "Sender"
+    , sender = "Absender"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
     }

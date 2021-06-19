@@ -127,9 +127,9 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , general = "Allgemein"
-    , showSideMenuByDefault = "Seiten-Menü standardmäßig anzeigen"
+    , showSideMenuByDefault = "Seitenmenü standardmäßig anzeigen"
     , uiLanguage = "Sprache der Oberfläche"
-    , itemSearch = "Dokumenten-Suche"
+    , itemSearch = "Dokumentensuche"
     , maxResultsPerPageInfo =
         \max ->
             "Maximale Anzahl von Resultaten in einer Seite. Maximal "
@@ -138,28 +138,28 @@ de =
     , maxResultsPerPage = "Anzahl pro Seite"
     , showBasicSearchStatsByDefault = "Zeige einfache Statistiken zum Suchresultat an"
     , enablePowerSearch = "Die 'Power-Suche' aktivieren"
-    , itemCards = "Dokumenten-Kachel"
+    , itemCards = "Dokumentenkachel"
     , maxNoteSize = "Max. Länge der Notizen"
     , maxNoteSizeInfo =
         \max ->
-            "Maximale Länge der Dokumentnotizen, die in der Kachel dargestellt werden. Zwischen 0 - "
+            "Maximale Länge der Dokumentennotizen, die in der Kachel dargestellt werden. Zwischen 0 - "
                 ++ String.fromInt max
                 ++ "."
     , sizeOfItemPreview = "Größe der Vorschau (kann bei Feldern unten ganz ausgeschaltet werden)"
-    , cardTitlePattern = "Titel Template der Kachel"
-    , togglePatternHelpText = "Template Hilfe anzeigen/ausblenden"
-    , cardSubtitlePattern = "Sub-Titel Template der Kachel"
-    , searchMenu = "Such-Menü"
+    , cardTitlePattern = "Titelvorlage der Kachel"
+    , togglePatternHelpText = "Hilfe anzeigen/ausblenden"
+    , cardSubtitlePattern = "Untertitelvorlage der Kachel"
+    , searchMenu = "Suchmenü"
     , searchMenuTagCount = "Anzahl von Tags"
-    , searchMenuTagCountInfo = "So viele Tags werden im Such-Menü gleichzeitig dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
+    , searchMenuTagCountInfo = "So viele Tags werden im Suchmenü gleichzeitig dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
     , searchMenuCatCount = "Anzahl Tag-Kategorien"
-    , searchMenuCatCountInfo = "So viele Tag-Kategorien werden gleichzeitig im Such-Menü dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
+    , searchMenuCatCountInfo = "So viele Tag-Kategorien werden gleichzeitig im Suchmenü dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
     , searchMenuFolderCount = "Anzahl von Ordnern"
-    , searchMenuFolderCountInfo = "So viele Ordner werden gleichzeitig im Such-Menü dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
-    , itemDetail = "Dokumenten-Detail"
-    , browserNativePdfView = "Browser-native PDF Vorschau"
+    , searchMenuFolderCountInfo = "So viele Ordner werden gleichzeitig im Suchmenü dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
+    , itemDetail = "Dokumentendetail"
+    , browserNativePdfView = "Browsereigene PDF-Vorschau"
     , keyboardShortcutLabel = "Aktivere Tastenkürzel zur Navigation und zum Bestätigen der Metadaten"
-    , tagCategoryColors = "Tag-Kategorie Farben"
+    , tagCategoryColors = "Tag-Kategoriefarben"
     , colorLabel = Messages.Data.Color.de
     , chooseTagColorLabel = "Wähle eine Farbe für eine Tag-Kategorie"
     , tagColorDescription = "Tags können anhand ihrer Kategorie verschieden dargestellt werden."
@@ -173,7 +173,7 @@ individuel anzupassen. Dabei werden Variablen innerhalb `{{` und `}}`
 verwendet. Anderer Text wird wörtlich dargestellt. Die folgenden
 Variablen sind verfügbar:
 
-- `{{name}}` Der Dokument-Name
+- `{{name}}` Der Dokumentenname
 - `{{source}}` die Quelle durch welche das Dokument entstand
 - `{{folder}}` der Ordner
 - `{{corrOrg}}` die Korrespondent-Organisation
@@ -182,16 +182,16 @@ Variablen sind verfügbar:
 - `{{concPerson}}` die betreffende Person
 - `{{concEquip}}` die betreffende Aussstattung
 - `{{concerning}}` Person und Ausstattung, getrennt durch ein Komma
-- `{{fileCount}}` die Anzahl von Anhängen des Dokuments
-- `{{dateLong}}` das Dokument-Datum lang formatiert
-- `{{dateShort}}` das Dokument-Datum kurz formatiert (yyyy/mm/dd)
-- `{{dueDateLong}}` das Fälligkeits-Datum lang formatiert
-- `{{dueDateShort}}` das Fälligkeits-Datum kurz formatiert (yyyy/mm/dd)
+- `{{fileCount}}` die Anzahl von Anhängen des Dokumentes
+- `{{dateLong}}` das Dokumentendatum lang formatiert
+- `{{dateShort}}` das Dokumentendatum kurz formatiert (yyyy/mm/dd)
+- `{{dueDateLong}}` das Fälligkeitsdatum lang formatiert
+- `{{dueDateShort}}` das Fälligkeitsdatum kurz formatiert (yyyy/mm/dd)
 - `{{direction}}` die Richtung des Dokuments
 
-Wenn eine Variable nicht vorhanden ist, wird ein leerer String
+Wenn eine Variable nicht vorhanden ist, wird eine leere Zeichenkette
 geschrieben. Mit einem `|` können mehrere Variablen hintereinander
-versucht werden, bis zur ersten die einen Wert enthält. Zum Beispiel:
+verknüpft werden, bis zur ersten die einen Wert enthält. Zum Beispiel:
 `{{corrOrg|corrPerson|-}}` würde entweder die Organisation darstellen
 oder, wenn diese leer ist, die Person. Sind beide leer wird ein `-`
 dargestellt.
