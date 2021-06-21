@@ -7,18 +7,19 @@ object Dependencies {
 
   val BcryptVersion           = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BitpeaceVersion         = "0.8.0"
+  val BitpeaceVersion         = "0.9.0-M1"
   val CalevVersion            = "0.5.3"
   val CatsParseVersion        = "0.3.4"
   val CirceVersion            = "0.14.1"
   val ClipboardJsVersion      = "2.0.6"
-  val DoobieVersion           = "0.13.4"
-  val EmilVersion             = "0.9.2"
+  val DoobieVersion           = "1.0.0-M5"
+  val EmilVersion             = "0.10.0-M1"
   val FlexmarkVersion         = "0.62.2"
   val FlywayVersion           = "7.10.0"
-  val Fs2Version              = "2.5.6"
+  val Fs2Version              = "3.0.4"
+  val Fs2CronVersion          = "0.7.1"
   val H2Version               = "1.4.200"
-  val Http4sVersion           = "0.21.24"
+  val Http4sVersion           = "0.23.0-RC1"
   val Icu4jVersion            = "69.1"
   val JsoupVersion            = "1.13.1"
   val KindProjectorVersion    = "0.10.3"
@@ -27,7 +28,6 @@ object Dependencies {
   val Log4sVersion            = "1.10.0"
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.3"
-  val MiniTestVersion         = "2.9.3"
   val MUnitVersion            = "0.7.26"
   val OrganizeImportsVersion  = "0.5.0"
   val PdfboxVersion           = "2.0.24"
@@ -66,7 +66,7 @@ object Dependencies {
     "com.github.eikek" %% "calev-core" % CalevVersion
   )
   val calevFs2 = Seq(
-    "com.github.eikek" %% "calev-fs2" % CalevVersion
+    "eu.timepit" %% "fs2-cron-calev" % Fs2CronVersion
   )
   val calevCirce = Seq(
     "com.github.eikek" %% "calev-circe" % CalevVersion
@@ -263,13 +263,6 @@ object Dependencies {
   val yamusca = Seq(
     "com.github.eikek" %% "yamusca-core" % YamuscaVersion
   )
-
-  val miniTest = Seq(
-    // https://github.com/monix/minitest
-    // Apache 2.0
-    "io.monix" %% "minitest"      % MiniTestVersion,
-    "io.monix" %% "minitest-laws" % MiniTestVersion
-  ).map(_ % Test)
 
   val munit = Seq(
     "org.scalameta" %% "munit"            % MUnitVersion,

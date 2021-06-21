@@ -95,7 +95,7 @@ trait UserTaskStore[F[_]] {
 
 object UserTaskStore {
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, UserTaskStore[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, UserTaskStore[F]] =
     Resource.pure[F, UserTaskStore[F]](new UserTaskStore[F] {
 
       def getAll(account: AccountId): Stream[F, UserTask[String]] =
@@ -126,7 +126,7 @@ object UserTaskStore {
           case AddResult.EntityExists(_) =>
             store.transact(QUserTask.update(account, ut.encode))
           case AddResult.Failure(ex) =>
-            Effect[F].raiseError(ex)
+            Async[F].raiseError(ex)
         }
       }
 
@@ -145,7 +145,7 @@ object UserTaskStore {
             .flatMap {
               case Nil       => (None: Option[UserTask[String]]).pure[F]
               case ut :: Nil => ut.some.pure[F]
-              case _         => Effect[F].raiseError(new Exception("More than one result found"))
+              case _         => Async[F].raiseError(new Exception("More than one result found"))
             }
         )
 
@@ -155,7 +155,7 @@ object UserTaskStore {
         getOneByNameRaw(account, name)
           .semiflatMap(_.decode match {
             case Right(ua) => ua.pure[F]
-            case Left(err) => Effect[F].raiseError(new Exception(err))
+            case Left(err) => Async[F].raiseError(new Exception(err))
           })
 
       def updateOneTask[A](account: AccountId, ut: UserTask[A])(implicit

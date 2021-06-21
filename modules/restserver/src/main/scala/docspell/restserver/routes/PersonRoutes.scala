@@ -21,7 +21,7 @@ import org.log4s._
 object PersonRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Async](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 

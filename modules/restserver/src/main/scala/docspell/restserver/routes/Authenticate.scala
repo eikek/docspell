@@ -14,7 +14,7 @@ import org.http4s.server._
 
 object Authenticate {
 
-  def authenticateRequest[F[_]: Effect](
+  def authenticateRequest[F[_]: Async](
       auth: (String, Option[String]) => F[Login.Result]
   )(req: Request[F]): F[Login.Result] =
     CookieData.authenticator(req) match {
@@ -30,7 +30,7 @@ object Authenticate {
         }
     }
 
-  def of[F[_]: Effect](S: Login[F], cfg: Login.Config)(
+  def of[F[_]: Async](S: Login[F], cfg: Login.Config)(
       pf: PartialFunction[AuthedRequest[F, AuthToken], F[Response[F]]]
   ): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
@@ -47,7 +47,7 @@ object Authenticate {
     middleware(AuthedRoutes.of(pf))
   }
 
-  def apply[F[_]: Effect](S: Login[F], cfg: Login.Config)(
+  def apply[F[_]: Async](S: Login[F], cfg: Login.Config)(
       f: AuthToken => HttpRoutes[F]
   ): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
@@ -64,7 +64,7 @@ object Authenticate {
     middleware(AuthedRoutes(authReq => f(authReq.context).run(authReq.req)))
   }
 
-  private def getUser[F[_]: Effect](
+  private def getUser[F[_]: Async](
       auth: (String, Option[String]) => F[Login.Result]
   ): Kleisli[F, Request[F], Either[String, AuthToken]] =
     Kleisli(r => authenticateRequest(auth)(r).map(_.toEither))

@@ -4,6 +4,7 @@ import java.nio.file.Path
 
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 import fs2.{Pipe, Stream}
 
 import docspell.common._
@@ -12,12 +13,11 @@ import docspell.convert.ConversionResult.{Handler, successPdf, successPdfTxt}
 
 private[extern] object ExternConv {
 
-  def toPDF[F[_]: Sync: ContextShift, A](
+  def toPDF[F[_]: Async, A](
       name: String,
       cmdCfg: SystemCommand.Config,
       wd: Path,
       useStdin: Boolean,
-      blocker: Blocker,
       logger: Logger[F],
       reader: (Path, SystemCommand.Result) => F[ConversionResult[F]]
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] =
@@ -37,13 +37,12 @@ private[extern] object ExternConv {
 
         val createInput: Pipe[F, Byte, Unit] =
           if (useStdin) _ => Stream.emit(())
-          else storeDataToFile(name, blocker, logger, inFile)
+          else storeDataToFile(name, logger, inFile)
 
         in.through(createInput).flatMap { _ =>
           SystemCommand
             .exec[F](
               sysCfg,
-              blocker,
               logger,
               Some(dir),
               if (useStdin) in
@@ -66,8 +65,7 @@ private[extern] object ExternConv {
           handler.run(ConversionResult.failure(ex))
       }
 
-  def readResult[F[_]: Sync: ContextShift](
-      blocker: Blocker,
+  def readResult[F[_]: Async](
       chunkSize: Int,
       logger: Logger[F]
   )(out: Path, result: SystemCommand.Result): F[ConversionResult[F]] =
@@ -77,15 +75,15 @@ private[extern] object ExternConv {
         File.existsNonEmpty[F](outTxt).flatMap {
           case true =>
             successPdfTxt(
-              File.readAll(out, blocker, chunkSize),
-              File.readText(outTxt, blocker)
+              File.readAll(out, chunkSize),
+              File.readText(outTxt)
             ).pure[F]
           case false =>
-            successPdf(File.readAll(out, blocker, chunkSize)).pure[F]
+            successPdf(File.readAll(out, chunkSize)).pure[F]
         }
       case true =>
         logger.warn(s"Command not successful (rc=${result.rc}), but file exists.") *>
-          successPdf(File.readAll(out, blocker, chunkSize)).pure[F]
+          successPdf(File.readAll(out, chunkSize)).pure[F]
 
       case false =>
         ConversionResult
@@ -95,9 +93,8 @@ private[extern] object ExternConv {
           .pure[F]
     }
 
-  def readResultTesseract[F[_]: Sync: ContextShift](
+  def readResultTesseract[F[_]: Async](
       outPrefix: String,
-      blocker: Blocker,
       chunkSize: Int,
       logger: Logger[F]
   )(out: Path, result: SystemCommand.Result): F[ConversionResult[F]] = {
@@ -106,9 +103,9 @@ private[extern] object ExternConv {
       case true =>
         val outTxt = out.resolveSibling(s"$outPrefix.txt")
         File.exists(outTxt).flatMap { txtExists =>
-          val pdfData = File.readAll(out, blocker, chunkSize)
+          val pdfData = File.readAll(out, chunkSize)
           if (result.rc == 0)
-            if (txtExists) successPdfTxt(pdfData, File.readText(outTxt, blocker)).pure[F]
+            if (txtExists) successPdfTxt(pdfData, File.readText(outTxt)).pure[F]
             else successPdf(pdfData).pure[F]
           else
             logger.warn(s"Command not successful (rc=${result.rc}), but file exists.") *>
@@ -124,9 +121,8 @@ private[extern] object ExternConv {
     }
   }
 
-  private def storeDataToFile[F[_]: Sync: ContextShift](
+  private def storeDataToFile[F[_]: Async](
       name: String,
-      blocker: Blocker,
       logger: Logger[F],
       inFile: Path
   ): Pipe[F, Byte, Unit] =
@@ -134,7 +130,7 @@ private[extern] object ExternConv {
       Stream
         .eval(logger.debug(s"Storing input to file ${inFile} for running $name"))
         .drain ++
-        Stream.eval(storeFile(in, inFile, blocker))
+        Stream.eval(storeFile(in, inFile))
 
   private def logResult[F[_]: Sync](
       name: String,
@@ -144,10 +140,9 @@ private[extern] object ExternConv {
     logger.debug(s"$name stdout: ${result.stdout}") *>
       logger.debug(s"$name stderr: ${result.stderr}")
 
-  private def storeFile[F[_]: Sync: ContextShift](
+  private def storeFile[F[_]: Async](
       in: Stream[F, Byte],
-      target: Path,
-      blocker: Blocker
+      target: Path
   ): F[Unit] =
-    in.through(fs2.io.file.writeAll(target, blocker)).compile.drain
+    in.through(Files[F].writeAll(target)).compile.drain
 }

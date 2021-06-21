@@ -1,6 +1,6 @@
 package docspell.extract.ocr
 
-import cats.effect.{Blocker, ContextShift, Sync}
+import cats.effect._
 import fs2.Stream
 
 import docspell.common._
@@ -9,18 +9,16 @@ import docspell.files._
 
 object TextExtract {
 
-  def extract[F[_]: Sync: ContextShift](
+  def extract[F[_]: Async](
       in: Stream[F, Byte],
-      blocker: Blocker,
       logger: Logger[F],
       lang: String,
       config: OcrConfig
   ): Stream[F, Text] =
-    extractOCR(in, blocker, logger, lang, config)
+    extractOCR(in, logger, lang, config)
 
-  def extractOCR[F[_]: Sync: ContextShift](
+  def extractOCR[F[_]: Async](
       in: Stream[F, Byte],
-      blocker: Blocker,
       logger: Logger[F],
       lang: String,
       config: OcrConfig
@@ -29,10 +27,10 @@ object TextExtract {
       .eval(TikaMimetype.detect(in, MimeTypeHint.none))
       .flatMap({
         case MimeType.pdf =>
-          Stream.eval(Ocr.extractPdf(in, blocker, logger, lang, config)).unNoneTerminate
+          Stream.eval(Ocr.extractPdf(in, logger, lang, config)).unNoneTerminate
 
         case mt if mt.primary == "image" =>
-          Ocr.extractImage(in, blocker, logger, lang, config)
+          Ocr.extractImage(in, logger, lang, config)
 
         case mt =>
           raiseError(s"File `$mt` not supported")

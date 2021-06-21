@@ -1,7 +1,7 @@
 package docspell.joex
 
+import cats.effect.Ref
 import cats.effect._
-import cats.effect.concurrent.Ref
 import fs2.Stream
 import fs2.concurrent.SignallingRef
 
@@ -9,9 +9,9 @@ import docspell.common.Pools
 import docspell.joex.routes._
 
 import org.http4s.HttpApp
+import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.Router
-import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
 
 object JoexServer {
@@ -22,17 +22,14 @@ object JoexServer {
       exitRef: Ref[F, ExitCode]
   )
 
-  def stream[F[_]: ConcurrentEffect: ContextShift](
-      cfg: Config,
-      pools: Pools
-  )(implicit T: Timer[F]): Stream[F, Nothing] = {
+  def stream[F[_]: Async](cfg: Config, pools: Pools): Stream[F, Nothing] = {
 
     val app = for {
       signal   <- Resource.eval(SignallingRef[F, Boolean](false))
       exitCode <- Resource.eval(Ref[F].of(ExitCode.Success))
       joexApp <-
         JoexAppImpl
-          .create[F](cfg, signal, pools.connectEC, pools.httpClientEC, pools.blocker)
+          .create[F](cfg, signal, pools.connectEC, pools.httpClientEC)
 
       httpApp = Router(
         "/api/info" -> InfoRoutes(cfg),

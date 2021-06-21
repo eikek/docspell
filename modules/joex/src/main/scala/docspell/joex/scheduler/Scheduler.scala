@@ -1,6 +1,6 @@
 package docspell.joex.scheduler
 
-import cats.effect.{Fiber, Timer}
+import cats.effect._
 import fs2.Stream
 
 import docspell.common.Ident
@@ -30,5 +30,5 @@ trait Scheduler[F[_]] {
     */
   def shutdown(cancelAll: Boolean): F[Unit]
 
-  def periodicAwake(implicit T: Timer[F]): F[Fiber[F, Unit]]
+  def periodicAwake: F[Fiber[F, Throwable, Unit]]
 }

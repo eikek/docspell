@@ -2,7 +2,7 @@ package docspell.restserver.conv
 
 import java.time.{LocalDate, ZoneId}
 
-import cats.effect.{Effect, Sync}
+import cats.effect.{Async, Sync}
 import cats.implicits._
 import fs2.Stream
 
@@ -294,7 +294,7 @@ trait Conversions {
     JobLogEvent(jl.created, jl.level, jl.message)
 
   // upload
-  def readMultipart[F[_]: Effect](
+  def readMultipart[F[_]: Async](
       mp: Multipart[F],
       sourceName: String,
       logger: Logger,
@@ -347,11 +347,11 @@ trait Conversions {
       .filter(p => p.name.forall(s => !s.equalsIgnoreCase("meta")))
       .map(p =>
         OUpload
-          .File(p.filename, p.headers.get(`Content-Type`).map(fromContentType), p.body)
+          .File(p.filename, p.headers.get[`Content-Type`].map(fromContentType), p.body)
       )
     for {
       metaData <- meta
-      _        <- Effect[F].delay(logger.debug(s"Parsed upload meta data: $metaData"))
+      _        <- Async[F].delay(logger.debug(s"Parsed upload meta data: $metaData"))
       tracker  <- Ident.randomId[F]
     } yield UploadData(metaData._1, metaData._2, files, prio, Some(tracker))
   }

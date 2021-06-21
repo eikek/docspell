@@ -4,6 +4,7 @@ import java.nio.file.Paths
 
 import cats.data.Kleisli
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import fs2.Stream
 
@@ -12,13 +13,11 @@ import docspell.convert.ConversionResult.Handler
 import docspell.convert.extern.OcrMyPdfConfig
 import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}
 import docspell.convert.flexmark.MarkdownConfig
-import docspell.files.{ExampleFiles, TestFiles}
+import docspell.files.ExampleFiles
 
 import munit._
 
 class ConversionTest extends FunSuite with FileChecks {
-  val blocker     = TestFiles.blocker
-  implicit val CS = TestFiles.CS
 
   val logger = Logger.log4s[IO](org.log4s.getLogger)
   val target = Paths.get("target")
@@ -73,7 +72,7 @@ class ConversionTest extends FunSuite with FileChecks {
   )
 
   val conversion =
-    Conversion.create[IO](convertConfig, SanitizeHtml.none, blocker, logger)
+    Conversion.create[IO](convertConfig, SanitizeHtml.none, logger)
 
   val bombs = List(
     ExampleFiles.bombs_20K_gray_jpeg,
@@ -167,7 +166,7 @@ class ConversionTest extends FunSuite with FileChecks {
       .covary[IO]
       .zipWithIndex
       .evalMap({ case (uri, index) =>
-        val load     = uri.readURL[IO](8192, blocker)
+        val load     = uri.readURL[IO](8192)
         val dataType = DataType.filename(uri.path.segments.last)
         logger.info(s"Processing file ${uri.path.asString}") *>
           conv.toPDF(dataType, Language.German, handler(index))(load)

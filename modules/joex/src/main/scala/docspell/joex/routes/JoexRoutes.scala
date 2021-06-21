@@ -14,7 +14,7 @@ import org.http4s.dsl.Http4sDsl
 
 object JoexRoutes {
 
-  def apply[F[_]: ConcurrentEffect: Timer](app: JoexApp[F]): HttpRoutes[F] = {
+  def apply[F[_]: Async](app: JoexApp[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
     HttpRoutes.of[F] {
@@ -34,8 +34,8 @@ object JoexRoutes {
 
       case POST -> Root / "shutdownAndExit" =>
         for {
-          _ <- ConcurrentEffect[F].start(
-            Timer[F].sleep(Duration.seconds(1).toScala) *> app.initShutdown
+          _ <- Async[F].start(
+            Temporal[F].sleep(Duration.seconds(1).toScala) *> app.initShutdown
           )
           resp <- Ok(BasicResult(true, "Shutdown initiated."))
         } yield resp

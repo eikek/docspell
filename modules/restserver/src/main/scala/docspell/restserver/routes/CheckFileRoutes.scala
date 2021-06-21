@@ -16,7 +16,7 @@ import org.http4s.dsl.Http4sDsl
 
 object CheckFileRoutes {
 
-  def secured[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
+  def secured[F[_]: Async](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
     import dsl._
 
@@ -30,7 +30,7 @@ object CheckFileRoutes {
     }
   }
 
-  def open[F[_]: Effect](backend: BackendApp[F]): HttpRoutes[F] = {
+  def open[F[_]: Async](backend: BackendApp[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
     import dsl._
 

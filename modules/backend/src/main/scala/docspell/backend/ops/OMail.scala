@@ -141,7 +141,7 @@ object OMail {
       )
   }
 
-  def apply[F[_]: Effect](store: Store[F], emil: Emil[F]): Resource[F, OMail[F]] =
+  def apply[F[_]: Async](store: Store[F], emil: Emil[F]): Resource[F, OMail[F]] =
     Resource.pure[F, OMail[F]](new OMail[F] {
       def getSmtpSettings(
           accId: AccountId,

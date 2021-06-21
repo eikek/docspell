@@ -1,14 +1,13 @@
 package docspell.extract.pdfbox
 
 import cats.effect._
+import cats.effect.unsafe.implicits.global
 
 import docspell.files.{ExampleFiles, TestFiles}
 
 import munit._
 
 class PdfboxExtractTest extends FunSuite {
-  val blocker     = TestFiles.blocker
-  implicit val CS = TestFiles.CS
 
   val textPDFs = List(
     ExampleFiles.letter_de_pdf -> TestFiles.letterDEText,
@@ -27,7 +26,7 @@ class PdfboxExtractTest extends FunSuite {
 
   test("extract text from text PDFs via Stream") {
     textPDFs.foreach { case (file, txt) =>
-      val data     = file.readURL[IO](8192, blocker)
+      val data     = file.readURL[IO](8192)
       val str      = PdfboxExtract.getText(data).unsafeRunSync().fold(throw _, identity)
       val received = removeFormatting(str.value)
       val expect   = removeFormatting(txt)

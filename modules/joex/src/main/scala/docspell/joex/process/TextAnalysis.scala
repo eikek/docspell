@@ -19,7 +19,7 @@ import docspell.store.records.{RAttachmentMeta, RClassifierSetting}
 object TextAnalysis {
   type Args = ProcessItemArgs
 
-  def apply[F[_]: Sync: ContextShift](
+  def apply[F[_]: Async](
       cfg: Config.TextAnalysis,
       analyser: TextAnalyser[F],
       nerFile: RegexNerFile[F]
@@ -78,7 +78,7 @@ object TextAnalysis {
     } yield (rm.copy(nerlabels = labels.all.toList), AttachmentDates(rm, labels.dates))
   }
 
-  def predictTags[F[_]: Sync: ContextShift](
+  def predictTags[F[_]: Async](
       ctx: Context[F, Args],
       cfg: Config.TextAnalysis,
       metas: Vector[RAttachmentMeta],
@@ -97,7 +97,7 @@ object TextAnalysis {
     } yield tags.flatten
   }
 
-  def predictItemEntities[F[_]: Sync: ContextShift](
+  def predictItemEntities[F[_]: Async](
       ctx: Context[F, Args],
       cfg: Config.TextAnalysis,
       metas: Vector[RAttachmentMeta],
@@ -128,13 +128,12 @@ object TextAnalysis {
       .map(MetaProposalList.apply)
   }
 
-  private def makeClassify[F[_]: Sync: ContextShift](
+  private def makeClassify[F[_]: Async](
       ctx: Context[F, Args],
       cfg: Config.TextAnalysis,
       classifier: TextClassifier[F]
   )(text: String): ClassifierName => F[Option[String]] =
     Classify[F](
-      ctx.blocker,
       ctx.logger,
       cfg.workingDir,
       ctx.store,

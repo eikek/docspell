@@ -30,14 +30,12 @@ object TemplateRoutes {
     def serviceWorker: HttpRoutes[F]
   }
 
-  def apply[F[_]: Effect](blocker: Blocker, cfg: Config)(implicit
-      C: ContextShift[F]
-  ): InnerRoutes[F] = {
+  def apply[F[_]: Async](cfg: Config): InnerRoutes[F] = {
     val indexTemplate = memo(
-      loadResource("/index.html").flatMap(loadTemplate(_, blocker))
+      loadResource("/index.html").flatMap(loadTemplate(_))
     )
-    val docTemplate = memo(loadResource("/doc.html").flatMap(loadTemplate(_, blocker)))
-    val swTemplate  = memo(loadResource("/sw.js").flatMap(loadTemplate(_, blocker)))
+    val docTemplate = memo(loadResource("/doc.html").flatMap(loadTemplate(_)))
+    val swTemplate  = memo(loadResource("/sw.js").flatMap(loadTemplate(_)))
 
     val dsl = new Http4sDsl[F] {}
     import dsl._
@@ -84,12 +82,10 @@ object TemplateRoutes {
         r.pure[F]
     }
 
-  def loadUrl[F[_]: Sync](url: URL, blocker: Blocker)(implicit
-      C: ContextShift[F]
-  ): F[String] =
+  def loadUrl[F[_]: Sync](url: URL): F[String] =
     Stream
       .bracket(Sync[F].delay(url.openStream))(in => Sync[F].delay(in.close()))
-      .flatMap(in => fs2.io.readInputStream(in.pure[F], 64 * 1024, blocker, false))
+      .flatMap(in => fs2.io.readInputStream(in.pure[F], 64 * 1024, false))
       .through(text.utf8Decode)
       .compile
       .fold("")(_ + _)
@@ -102,10 +98,8 @@ object TemplateRoutes {
       }
     }
 
-  def loadTemplate[F[_]: Sync](url: URL, blocker: Blocker)(implicit
-      C: ContextShift[F]
-  ): F[Template] =
-    loadUrl[F](url, blocker).flatMap(s => parseTemplate(s)).map { t =>
+  def loadTemplate[F[_]: Sync](url: URL): F[Template] =
+    loadUrl[F](url).flatMap(s => parseTemplate(s)).map { t =>
       logger.info(s"Compiled template $url")
       t
     }

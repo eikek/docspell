@@ -26,10 +26,10 @@ object Responses {
     )
 
   def forbidden[F[_]]: Response[F] =
-    pureForbidden.copy(body = pureForbidden.body.covary[F])
+    pureForbidden.covary[F].copy(body = pureForbidden.body.covary[F])
 
   def unauthorized[F[_]]: Response[F] =
-    pureUnauthorized.copy(body = pureUnauthorized.body.covary[F])
+    pureUnauthorized.covary[F].copy(body = pureUnauthorized.body.covary[F])
 
   def noCache[F[_]](r: Response[F]): Response[F] =
     r.withHeaders(

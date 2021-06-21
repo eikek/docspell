@@ -30,7 +30,7 @@ trait SolrUpdate[F[_]] {
 
 object SolrUpdate {
 
-  def apply[F[_]: ConcurrentEffect](cfg: SolrConfig, client: Client[F]): SolrUpdate[F] = {
+  def apply[F[_]: Async](cfg: SolrConfig, client: Client[F]): SolrUpdate[F] = {
     val dsl = new Http4sClientDsl[F] {}
     import dsl._
 

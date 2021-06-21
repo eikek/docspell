@@ -12,7 +12,7 @@ import docspell.joex.scheduler.Task
 
 object ProcessItem {
 
-  def apply[F[_]: ConcurrentEffect: ContextShift](
+  def apply[F[_]: Async](
       cfg: Config,
       itemOps: OItem[F],
       fts: FtsClient[F],
@@ -27,7 +27,7 @@ object ProcessItem {
       .flatMap(Task.setProgress(99))
       .flatMap(RemoveEmptyItem(itemOps))
 
-  def processAttachments[F[_]: ConcurrentEffect: ContextShift](
+  def processAttachments[F[_]: Async](
       cfg: Config,
       fts: FtsClient[F],
       analyser: TextAnalyser[F],
@@ -35,7 +35,7 @@ object ProcessItem {
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     processAttachments0[F](cfg, fts, analyser, regexNer, (30, 60, 90))(item)
 
-  def analysisOnly[F[_]: Sync: ContextShift](
+  def analysisOnly[F[_]: Async](
       cfg: Config,
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F]
@@ -46,7 +46,7 @@ object ProcessItem {
       .flatMap(CrossCheckProposals[F])
       .flatMap(SaveProposals[F])
 
-  private def processAttachments0[F[_]: ConcurrentEffect: ContextShift](
+  private def processAttachments0[F[_]: Async](
       cfg: Config,
       fts: FtsClient[F],
       analyser: TextAnalyser[F],

@@ -1,8 +1,8 @@
 package docspell.joex.scheduler
 
-import cats.effect.{Concurrent, Sync}
+import cats.effect._
 import cats.implicits._
-import fs2.{Pipe, Stream}
+import fs2.Pipe
 
 import docspell.common._
 import docspell.common.syntax.all._
@@ -45,7 +45,7 @@ object LogSink {
   def printer[F[_]: Sync]: LogSink[F] =
     LogSink(_.evalMap(e => logInternal(e)))
 
-  def db[F[_]: Sync](store: Store[F]): LogSink[F] =
+  def db[F[_]: Async](store: Store[F]): LogSink[F] =
     LogSink(
       _.evalMap(ev =>
         for {
@@ -63,9 +63,6 @@ object LogSink {
       )
     )
 
-  def dbAndLog[F[_]: Concurrent](store: Store[F]): LogSink[F] = {
-    val s: Stream[F, Pipe[F, LogEvent, Unit]] =
-      Stream.emits(Seq(printer[F].receive, db[F](store).receive))
-    LogSink(Pipe.join(s))
-  }
+  def dbAndLog[F[_]: Async](store: Store[F]): LogSink[F] =
+    LogSink(_.broadcastThrough(printer[F].receive, db[F](store).receive))
 }

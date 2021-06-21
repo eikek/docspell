@@ -12,21 +12,19 @@ import docspell.joexapi.client.JoexClient
 import docspell.store.queue._
 import docspell.store.records.RPeriodicTask
 
-import com.github.eikek.fs2calev._
+import eu.timepit.fs2cron.calev.CalevScheduler
 import org.log4s.getLogger
 
-final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect](
+final class PeriodicSchedulerImpl[F[_]: Async](
     val config: PeriodicSchedulerConfig,
     sch: Scheduler[F],
     queue: JobQueue[F],
     store: PeriodicTaskStore[F],
     client: JoexClient[F],
     waiter: SignallingRef[F, Boolean],
-    state: SignallingRef[F, State[F]],
-    timer: Timer[F]
+    state: SignallingRef[F, State[F]]
 ) extends PeriodicScheduler[F] {
-  private[this] val logger              = getLogger
-  implicit private val _timer: Timer[F] = timer
+  private[this] val logger = getLogger
 
   def start: Stream[F, Nothing] =
     logger.sinfo("Starting periodic scheduler") ++
@@ -35,8 +33,8 @@ final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect](
   def shutdown: F[Unit] =
     state.modify(_.requestShutdown)
 
-  def periodicAwake: F[Fiber[F, Unit]] =
-    ConcurrentEffect[F].start(
+  def periodicAwake: F[Fiber[F, Throwable, Unit]] =
+    Async[F].start(
       Stream
         .awakeEvery[F](config.wakeupPeriod.toScala)
         .evalMap(_ => logger.fdebug("Periodic awake reached") *> notifyChange)
@@ -127,10 +125,11 @@ final class PeriodicSchedulerImpl[F[_]: ConcurrentEffect](
           s"Scheduling next notify for timer ${pj.timer.asString} -> ${pj.timer.nextElapse(now.toUtcDateTime)}"
         )
       ) *>
-      ConcurrentEffect[F]
+      Async[F]
         .start(
-          CalevFs2
-            .sleep[F](pj.timer)
+          CalevScheduler
+            .utc[F]
+            .sleep(pj.timer)
             .evalMap(_ => notifyChange)
             .compile
             .drain
@@ -168,15 +167,15 @@ object PeriodicSchedulerImpl {
 
   case class State[F[_]](
       shutdownRequest: Boolean,
-      scheduledNotify: Option[Fiber[F, Unit]]
+      scheduledNotify: Option[Fiber[F, Throwable, Unit]]
   ) {
     def requestShutdown: (State[F], Unit) =
       (copy(shutdownRequest = true), ())
 
-    def setNotify(fb: Fiber[F, Unit]): (State[F], Unit) =
+    def setNotify(fb: Fiber[F, Throwable, Unit]): (State[F], Unit) =
       (copy(scheduledNotify = Some(fb)), ())
 
-    def clearNotify: (State[F], Option[Fiber[F, Unit]]) =
+    def clearNotify: (State[F], Option[Fiber[F, Throwable, Unit]]) =
       (copy(scheduledNotify = None), scheduledNotify)
 
   }

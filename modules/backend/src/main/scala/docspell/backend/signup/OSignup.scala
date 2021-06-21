@@ -1,6 +1,6 @@
 package docspell.backend.signup
 
-import cats.effect.{Effect, Resource}
+import cats.effect.{Async, Resource}
 import cats.implicits._
 
 import docspell.backend.PasswordCrypt
@@ -23,7 +23,7 @@ trait OSignup[F[_]] {
 object OSignup {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OSignup[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, OSignup[F]] =
     Resource.pure[F, OSignup[F]](new OSignup[F] {
 
       def newInvite(cfg: Config)(password: Password): F[NewInviteResult] =
@@ -35,7 +35,7 @@ object OSignup {
               .transact(RInvitation.insertNew)
               .map(ri => NewInviteResult.success(ri.id))
         else
-          Effect[F].pure(NewInviteResult.invitationClosed)
+          Async[F].pure(NewInviteResult.invitationClosed)
 
       def register(cfg: Config)(data: RegisterData): F[SignupResult] =
         cfg.mode match {

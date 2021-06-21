@@ -25,8 +25,7 @@ trait Extraction[F[_]] {
 
 object Extraction {
 
-  def create[F[_]: Sync: ContextShift](
-      blocker: Blocker,
+  def create[F[_]: Async](
       logger: Logger[F],
       cfg: ExtractConfig
   ): Extraction[F] =
@@ -39,7 +38,7 @@ object Extraction {
         TikaMimetype.resolve(dataType, data).flatMap {
           case MimeType.PdfMatch(_) =>
             PdfExtract
-              .get(data, blocker, lang, cfg.pdf.minTextLen, cfg.ocr, logger)
+              .get(data, lang, cfg.pdf.minTextLen, cfg.ocr, logger)
               .map(ExtractResult.fromEitherResult)
 
           case PoiType(mt) =>
@@ -59,7 +58,7 @@ object Extraction {
 
           case OcrType(mt) =>
             val doExtract = TextExtract
-              .extractOCR(data, blocker, logger, lang.iso3, cfg.ocr)
+              .extractOCR(data, logger, lang.iso3, cfg.ocr)
               .compile
               .lastOrError
               .map(_.value)

@@ -12,7 +12,7 @@ import docspell.store.records.RJob
 object MigrationTask {
   val taskName = Ident.unsafe("full-text-index")
 
-  def apply[F[_]: ConcurrentEffect](
+  def apply[F[_]: Async](
       cfg: Config.FullTextSearch,
       fts: FtsClient[F]
   ): Task[F, Unit, Unit] =
@@ -46,7 +46,7 @@ object MigrationTask {
       Some(DocspellSystem.migrationTaskTracker)
     )
 
-  def migrationTasks[F[_]: Effect](fts: FtsClient[F]): F[List[Migration[F]]] =
+  def migrationTasks[F[_]: Async](fts: FtsClient[F]): F[List[Migration[F]]] =
     fts.initialize.map(_.map(fm => Migration.from(fm)))
 
 }

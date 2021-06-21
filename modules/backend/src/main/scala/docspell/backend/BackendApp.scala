@@ -14,8 +14,8 @@ import docspell.store.queue.JobQueue
 import docspell.store.usertask.UserTaskStore
 
 import emil.javamail.{JavaMailEmil, Settings}
+import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
 
 trait BackendApp[F[_]] {
 
@@ -43,12 +43,11 @@ trait BackendApp[F[_]] {
 
 object BackendApp {
 
-  def create[F[_]: ConcurrentEffect: ContextShift](
+  def create[F[_]: Async](
       cfg: Config,
       store: Store[F],
       httpClient: Client[F],
-      ftsClient: FtsClient[F],
-      blocker: Blocker
+      ftsClient: FtsClient[F]
   ): Resource[F, BackendApp[F]] =
     for {
       utStore        <- UserTaskStore(store)
@@ -68,7 +67,7 @@ object BackendApp {
       itemSearchImpl <- OItemSearch(store)
       fulltextImpl   <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
       javaEmil =
-        JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
+        JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
       mailImpl         <- OMail(store, javaEmil)
       userTaskImpl     <- OUserTask(utStore, queue, joexImpl)
       folderImpl       <- OFolder(store)
@@ -98,16 +97,15 @@ object BackendApp {
       val clientSettings = clientSettingsImpl
     }
 
-  def apply[F[_]: ConcurrentEffect: ContextShift](
+  def apply[F[_]: Async](
       cfg: Config,
       connectEC: ExecutionContext,
-      httpClientEc: ExecutionContext,
-      blocker: Blocker
+      httpClientEc: ExecutionContext
   )(ftsFactory: Client[F] => Resource[F, FtsClient[F]]): Resource[F, BackendApp[F]] =
     for {
-      store      <- Store.create(cfg.jdbc, connectEC, blocker)
+      store      <- Store.create(cfg.jdbc, connectEC)
       httpClient <- BlazeClientBuilder[F](httpClientEc).resource
       ftsClient  <- ftsFactory(httpClient)
-      backend    <- create(cfg, store, httpClient, ftsClient, blocker)
+      backend    <- create(cfg, store, httpClient, ftsClient)
     } yield backend
 }

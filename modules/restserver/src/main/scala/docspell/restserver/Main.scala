@@ -52,9 +52,8 @@ object Main extends IOApp {
     val pools = for {
       cec <- connectEC
       bec <- blockingEC
-      blocker = Blocker.liftExecutorService(bec)
       rec <- restserverEC
-    } yield Pools(cec, bec, blocker, rec)
+    } yield Pools(cec, bec, rec)
 
     logger.info(s"\n${banner.render("***>")}")
     if (EnvMode.current.isDev) {

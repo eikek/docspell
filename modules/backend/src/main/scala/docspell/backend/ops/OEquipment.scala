@@ -1,6 +1,6 @@
 package docspell.backend.ops
 
-import cats.effect.{Effect, Resource}
+import cats.effect.{Async, Resource}
 import cats.implicits._
 
 import docspell.common.{AccountId, Ident}
@@ -22,7 +22,7 @@ trait OEquipment[F[_]] {
 
 object OEquipment {
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OEquipment[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, OEquipment[F]] =
     Resource.pure[F, OEquipment[F]](new OEquipment[F] {
       def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[REquipment]] =
         store.transact(REquipment.findAll(account.collective, nameQuery, _.name))

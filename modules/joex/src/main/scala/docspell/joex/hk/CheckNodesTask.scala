@@ -7,19 +7,20 @@ import docspell.common._
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.records._
 
+import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
 
 object CheckNodesTask {
 
-  def apply[F[_]: ConcurrentEffect](
+  def apply[F[_]: Async](
       cfg: HouseKeepingConfig.CheckNodes
   ): Task[F, Unit, Unit] =
     Task { ctx =>
       if (cfg.enabled)
         for {
           _ <- ctx.logger.info("Check nodes reachability")
-          _ <- BlazeClientBuilder[F](ctx.blocker.blockingContext).resource.use { client =>
+          ec = scala.concurrent.ExecutionContext.global
+          _ <- BlazeClientBuilder[F](ec).resource.use { client =>
             checkNodes(ctx, client)
           }
           _ <- ctx.logger.info(
@@ -32,7 +33,7 @@ object CheckNodesTask {
         ctx.logger.info("CheckNodes task is disabled in the configuration")
     }
 
-  def checkNodes[F[_]: Sync](ctx: Context[F, _], client: Client[F]): F[Unit] =
+  def checkNodes[F[_]: Async](ctx: Context[F, _], client: Client[F]): F[Unit] =
     ctx.store
       .transact(RNode.streamAll)
       .evalMap(node =>
@@ -45,7 +46,7 @@ object CheckNodesTask {
       .compile
       .drain
 
-  def checkNode[F[_]: Sync](logger: Logger[F], client: Client[F])(
+  def checkNode[F[_]: Async](logger: Logger[F], client: Client[F])(
       url: LenientUri
   ): F[Boolean] = {
     val apiVersion = url / "api" / "info" / "version"

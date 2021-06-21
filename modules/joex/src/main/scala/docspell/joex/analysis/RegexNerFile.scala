@@ -3,7 +3,7 @@ package docspell.joex.analysis
 import java.nio.file.Path
 
 import cats.effect._
-import cats.effect.concurrent.Semaphore
+import cats.effect.std.Semaphore
 import cats.implicits._
 
 import docspell.common._
@@ -31,19 +31,17 @@ object RegexNerFile {
 
   case class Config(maxEntries: Int, directory: Path, minTime: Duration)
 
-  def apply[F[_]: Concurrent: ContextShift](
+  def apply[F[_]: Async](
       cfg: Config,
-      blocker: Blocker,
       store: Store[F]
   ): Resource[F, RegexNerFile[F]] =
     for {
       dir    <- File.withTempDir[F](cfg.directory, "regexner-")
       writer <- Resource.eval(Semaphore(1))
-    } yield new Impl[F](cfg.copy(directory = dir), blocker, store, writer)
+    } yield new Impl[F](cfg.copy(directory = dir), store, writer)
 
-  final private class Impl[F[_]: Concurrent: ContextShift](
+  final private class Impl[F[_]: Async](
       cfg: Config,
-      blocker: Blocker,
       store: Store[F],
       writer: Semaphore[F] //TODO allow parallelism per collective
   ) extends RegexNerFile[F] {
@@ -55,7 +53,7 @@ object RegexNerFile {
     def doMakeFile(collective: Ident): F[Option[Path]] =
       for {
         now      <- Timestamp.current[F]
-        existing <- NerFile.find[F](collective, cfg.directory, blocker)
+        existing <- NerFile.find[F](collective, cfg.directory)
         result <- existing match {
           case Some(nf) =>
             val dur = Duration.between(nf.creation, now)
@@ -105,11 +103,13 @@ object RegexNerFile {
       } yield result
 
     private def updateTimestamp(nf: NerFile, now: Timestamp): F[Unit] =
-      writer.withPermit(for {
-        file <- Sync[F].pure(nf.jsonFilePath(cfg.directory))
-        _    <- File.mkDir(file.getParent)
-        _    <- File.writeString(file, nf.copy(creation = now).asJson.spaces2)
-      } yield ())
+      writer.permit.use(_ =>
+        for {
+          file <- Sync[F].pure(nf.jsonFilePath(cfg.directory))
+          _    <- File.mkDir(file.getParent)
+          _    <- File.writeString(file, nf.copy(creation = now).asJson.spaces2)
+        } yield ()
+      )
 
     private def createFile(
         lastUpdate: Timestamp,
@@ -117,13 +117,17 @@ object RegexNerFile {
         now: Timestamp
     ): F[NerFile] = {
       def update(nf: NerFile, text: String): F[Unit] =
-        writer.withPermit(for {
-          jsonFile <- Sync[F].pure(nf.jsonFilePath(cfg.directory))
-          _        <- logger.fdebug(s"Writing custom NER file for collective '${collective.id}'")
-          _        <- File.mkDir(jsonFile.getParent)
-          _        <- File.writeString(nf.nerFilePath(cfg.directory), text)
-          _        <- File.writeString(jsonFile, nf.asJson.spaces2)
-        } yield ())
+        writer.permit.use(_ =>
+          for {
+            jsonFile <- Sync[F].pure(nf.jsonFilePath(cfg.directory))
+            _ <- logger.fdebug(
+              s"Writing custom NER file for collective '${collective.id}'"
+            )
+            _ <- File.mkDir(jsonFile.getParent)
+            _ <- File.writeString(nf.nerFilePath(cfg.directory), text)
+            _ <- File.writeString(jsonFile, nf.asJson.spaces2)
+          } yield ()
+        )
 
       for {
         _     <- logger.finfo(s"Generating custom NER file for collective '${collective.id}'")

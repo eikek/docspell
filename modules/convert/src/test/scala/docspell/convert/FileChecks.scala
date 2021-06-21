@@ -5,6 +5,7 @@ import java.nio.file.{Files, Path}
 
 import cats.data.Kleisli
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import fs2.{Pipe, Stream}
 
 import docspell.common.MimeType

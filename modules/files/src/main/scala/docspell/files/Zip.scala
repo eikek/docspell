@@ -13,28 +13,19 @@ import docspell.common.Glob
 
 object Zip {
 
-  def unzipP[F[_]: ConcurrentEffect: ContextShift](
-      chunkSize: Int,
-      blocker: Blocker,
-      glob: Glob
-  ): Pipe[F, Byte, Binary[F]] =
-    s => unzip[F](chunkSize, blocker, glob)(s)
+  def unzipP[F[_]: Async](chunkSize: Int, glob: Glob): Pipe[F, Byte, Binary[F]] =
+    s => unzip[F](chunkSize, glob)(s)
 
-  def unzip[F[_]: ConcurrentEffect: ContextShift](
-      chunkSize: Int,
-      blocker: Blocker,
-      glob: Glob
-  )(
+  def unzip[F[_]: Async](chunkSize: Int, glob: Glob)(
       data: Stream[F, Byte]
   ): Stream[F, Binary[F]] =
     data
       .through(fs2.io.toInputStream[F])
-      .flatMap(in => unzipJava(in, chunkSize, blocker, glob))
+      .flatMap(in => unzipJava(in, chunkSize, glob))
 
-  def unzipJava[F[_]: Sync: ContextShift](
+  def unzipJava[F[_]: Async](
       in: InputStream,
       chunkSize: Int,
-      blocker: Blocker,
       glob: Glob
   ): Stream[F, Binary[F]] = {
     val zin = new ZipInputStream(in)
@@ -52,7 +43,7 @@ object Zip {
       .map { ze =>
         val name = Paths.get(ze.getName()).getFileName.toString
         val data =
-          fs2.io.readInputStream[F]((zin: InputStream).pure[F], chunkSize, blocker, false)
+          fs2.io.readInputStream[F]((zin: InputStream).pure[F], chunkSize, false)
         Binary(name, data)
       }
   }

@@ -10,7 +10,7 @@ import org.http4s._
 import org.http4s.headers._
 
 object NoCacheMiddleware {
-  private val noCacheHeader: Header =
+  private val noCacheHeader =
     `Cache-Control`(
       NonEmptyList.of(
         CacheDirective.`max-age`(Duration.zero.toScala),

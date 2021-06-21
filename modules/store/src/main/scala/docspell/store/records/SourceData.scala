@@ -1,6 +1,6 @@
 package docspell.store.records
 
-import cats.effect.concurrent.Ref
+import cats.effect.Ref
 import cats.implicits._
 import fs2.Stream
 

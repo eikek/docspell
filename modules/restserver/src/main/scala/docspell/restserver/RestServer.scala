@@ -11,36 +11,33 @@ import docspell.restserver.routes._
 import docspell.restserver.webapp._
 
 import org.http4s._
+import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
 import org.http4s.implicits._
 import org.http4s.server.Router
-import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
 
 object RestServer {
 
-  def stream[F[_]: ConcurrentEffect](
-      cfg: Config,
-      pools: Pools
-  )(implicit T: Timer[F], CS: ContextShift[F]): Stream[F, Nothing] = {
+  def stream[F[_]: Async](cfg: Config, pools: Pools): Stream[F, Nothing] = {
 
-    val templates = TemplateRoutes[F](pools.blocker, cfg)
+    val templates = TemplateRoutes[F](cfg)
     val app = for {
       restApp <-
         RestAppImpl
-          .create[F](cfg, pools.connectEC, pools.httpClientEC, pools.blocker)
+          .create[F](cfg, pools.connectEC, pools.httpClientEC)
       httpApp = Router(
         "/api/info"     -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, restApp),
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
-          securedRoutes(cfg, pools, restApp, token)
+          securedRoutes(cfg, restApp, token)
         },
         "/api/v1/admin" -> AdminRoutes(cfg.adminEndpoint) {
           adminRoutes(cfg, restApp)
         },
         "/api/doc"    -> templates.doc,
-        "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F](pools.blocker)),
+        "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F]),
         "/app"        -> EnvMiddleware(templates.app),
         "/sw.js"      -> EnvMiddleware(templates.serviceWorker),
         "/"           -> redirectTo("/app")
@@ -61,9 +58,8 @@ object RestServer {
       )
   }.drain
 
-  def securedRoutes[F[_]: Effect: ContextShift](
+  def securedRoutes[F[_]: Async](
       cfg: Config,
-      pools: Pools,
       restApp: RestApp[F],
       token: AuthToken
   ): HttpRoutes[F] =
@@ -77,9 +73,9 @@ object RestServer {
       "user"                    -> UserRoutes(restApp.backend, token),
       "collective"              -> CollectiveRoutes(restApp.backend, token),
       "queue"                   -> JobQueueRoutes(restApp.backend, token),
-      "item"                    -> ItemRoutes(cfg, pools.blocker, restApp.backend, token),
+      "item"                    -> ItemRoutes(cfg, restApp.backend, token),
       "items"                   -> ItemMultiRoutes(restApp.backend, token),
-      "attachment"              -> AttachmentRoutes(pools.blocker, restApp.backend, token),
+      "attachment"              -> AttachmentRoutes(restApp.backend, token),
       "attachments"             -> AttachmentMultiRoutes(restApp.backend, token),
       "upload"                  -> UploadRoutes.secured(restApp.backend, cfg, token),
       "checkfile"               -> CheckFileRoutes.secured(restApp.backend, token),
@@ -95,7 +91,7 @@ object RestServer {
       "clientSettings"          -> ClientSettingsRoutes(restApp.backend, token)
     )
 
-  def openRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
+  def openRoutes[F[_]: Async](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
     Router(
       "auth"        -> LoginRoutes.login(restApp.backend.login, cfg),
       "signup"      -> RegisterRoutes(restApp.backend, cfg),
@@ -104,14 +100,14 @@ object RestServer {
       "integration" -> IntegrationEndpointRoutes.open(restApp.backend, cfg)
     )
 
-  def adminRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
+  def adminRoutes[F[_]: Async](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
     Router(
       "fts"  -> FullTextIndexRoutes.admin(cfg, restApp.backend),
       "user" -> UserRoutes.admin(restApp.backend),
       "info" -> InfoRoutes.admin(cfg)
     )
 
-  def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] = {
+  def redirectTo[F[_]: Async](path: String): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -119,7 +115,7 @@ object RestServer {
       Response[F](
         Status.SeeOther,
         body = Stream.empty,
-        headers = Headers.of(Location(Uri(path = path)))
+        headers = Headers(Location(Uri(path = Uri.Path.unsafeFromString(path))))
       ).pure[F]
     }
   }

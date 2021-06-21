@@ -77,7 +77,7 @@ object OFulltext {
   case class FtsItem(item: ListItem, ftsData: FtsData)
   case class FtsItemWithTags(item: ListItemWithTags, ftsData: FtsData)
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       itemSearch: OItemSearch[F],
       fts: FtsClient[F],
       store: Store[F],

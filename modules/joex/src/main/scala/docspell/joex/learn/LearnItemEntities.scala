@@ -11,7 +11,7 @@ import docspell.common._
 import docspell.joex.scheduler._
 
 object LearnItemEntities {
-  def learnAll[F[_]: Sync: ContextShift, A](
+  def learnAll[F[_]: Async, A](
       analyser: TextAnalyser[F],
       collective: Ident,
       maxItems: Int,
@@ -22,7 +22,7 @@ object LearnItemEntities {
       .flatMap(_ => learnConcPerson(analyser, collective, maxItems, maxTextLen))
       .flatMap(_ => learnConcEquip(analyser, collective, maxItems, maxTextLen))
 
-  def learnCorrOrg[F[_]: Sync: ContextShift, A](
+  def learnCorrOrg[F[_]: Async, A](
       analyser: TextAnalyser[F],
       collective: Ident,
       maxItems: Int,
@@ -33,7 +33,7 @@ object LearnItemEntities {
       ctx => SelectItems.forCorrOrg(ctx.store, collective, maxItems, maxTextLen)
     )
 
-  def learnCorrPerson[F[_]: Sync: ContextShift, A](
+  def learnCorrPerson[F[_]: Async, A](
       analyser: TextAnalyser[F],
       collective: Ident,
       maxItems: Int,
@@ -44,7 +44,7 @@ object LearnItemEntities {
       ctx => SelectItems.forCorrPerson(ctx.store, collective, maxItems, maxTextLen)
     )
 
-  def learnConcPerson[F[_]: Sync: ContextShift, A](
+  def learnConcPerson[F[_]: Async, A](
       analyser: TextAnalyser[F],
       collective: Ident,
       maxItems: Int,
@@ -55,7 +55,7 @@ object LearnItemEntities {
       ctx => SelectItems.forConcPerson(ctx.store, collective, maxItems, maxTextLen)
     )
 
-  def learnConcEquip[F[_]: Sync: ContextShift, A](
+  def learnConcEquip[F[_]: Async, A](
       analyser: TextAnalyser[F],
       collective: Ident,
       maxItems: Int,
@@ -66,7 +66,7 @@ object LearnItemEntities {
       ctx => SelectItems.forConcEquip(ctx.store, collective, maxItems, maxTextLen)
     )
 
-  private def learn[F[_]: Sync: ContextShift, A](
+  private def learn[F[_]: Async, A](
       analyser: TextAnalyser[F],
       collective: Ident
   )(cname: ClassifierName, data: Context[F, _] => Stream[F, Data]): Task[F, A, Unit] =

@@ -2,6 +2,7 @@ package docspell.joex.learn
 
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.analysis.classifier.ClassifierModel
 import docspell.common._
@@ -13,18 +14,17 @@ import bitpeace.MimetypeHint
 
 object StoreClassifierModel {
 
-  def handleModel[F[_]: Sync: ContextShift](
+  def handleModel[F[_]: Async](
       ctx: Context[F, _],
       collective: Ident,
       modelName: ClassifierName
   )(
       trainedModel: ClassifierModel
   ): F[Unit] =
-    handleModel(ctx.store, ctx.blocker, ctx.logger)(collective, modelName, trainedModel)
+    handleModel(ctx.store, ctx.logger)(collective, modelName, trainedModel)
 
-  def handleModel[F[_]: Sync: ContextShift](
+  def handleModel[F[_]: Async](
       store: Store[F],
-      blocker: Blocker,
       logger: Logger[F]
   )(
       collective: Ident,
@@ -36,7 +36,7 @@ object StoreClassifierModel {
         RClassifierModel.findByName(collective, modelName.name).map(_.map(_.fileId))
       )
       _ <- logger.debug(s"Storing new trained model for: ${modelName.name}")
-      fileData = fs2.io.file.readAll(trainedModel.model, blocker, 4096)
+      fileData = Files[F].readAll(trainedModel.model, 4096)
       newFile <-
         store.bitpeace.saveNew(fileData, 4096, MimetypeHint.none).compile.lastOrError
       _ <- store.transact(

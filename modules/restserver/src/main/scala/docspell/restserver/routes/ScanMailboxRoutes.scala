@@ -18,7 +18,7 @@ import org.http4s.dsl.Http4sDsl
 
 object ScanMailboxRoutes {
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       backend: BackendApp[F],
       user: AuthToken
   ): HttpRoutes[F] = {

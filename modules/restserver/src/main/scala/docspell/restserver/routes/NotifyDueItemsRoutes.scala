@@ -20,7 +20,7 @@ import org.http4s.dsl.Http4sDsl
 
 object NotifyDueItemsRoutes {
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       cfg: Config,
       backend: BackendApp[F],
       user: AuthToken
