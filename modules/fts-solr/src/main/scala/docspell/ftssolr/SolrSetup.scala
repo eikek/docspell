@@ -24,7 +24,7 @@ trait SolrSetup[F[_]] {
 object SolrSetup {
   private val versionDocId = "6d8f09f4-8d7e-4bc9-98b8-7c89223b36dd"
 
-  def apply[F[_]: ConcurrentEffect](cfg: SolrConfig, client: Client[F]): SolrSetup[F] = {
+  def apply[F[_]: Async](cfg: SolrConfig, client: Client[F]): SolrSetup[F] = {
     val dsl = new Http4sClientDsl[F] {}
     import dsl._
 

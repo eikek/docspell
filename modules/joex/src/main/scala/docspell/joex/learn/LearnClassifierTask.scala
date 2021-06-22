@@ -20,7 +20,7 @@ object LearnClassifierTask {
   def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn("Cancelling learn-classifier task"))
 
-  def apply[F[_]: Sync: ContextShift](
+  def apply[F[_]: Async](
       cfg: Config.TextAnalysis,
       analyser: TextAnalyser[F]
   ): Task[F, Args, Unit] =
@@ -28,7 +28,7 @@ object LearnClassifierTask {
       .flatMap(_ => learnItemEntities(cfg, analyser))
       .flatMap(_ => Task(_ => Sync[F].delay(System.gc())))
 
-  private def learnItemEntities[F[_]: Sync: ContextShift](
+  private def learnItemEntities[F[_]: Async](
       cfg: Config.TextAnalysis,
       analyser: TextAnalyser[F]
   ): Task[F, Args, Unit] =
@@ -45,7 +45,7 @@ object LearnClassifierTask {
       else ().pure[F]
     }
 
-  private def learnTags[F[_]: Sync: ContextShift](
+  private def learnTags[F[_]: Async](
       cfg: Config.TextAnalysis,
       analyser: TextAnalyser[F]
   ): Task[F, Args, Unit] =

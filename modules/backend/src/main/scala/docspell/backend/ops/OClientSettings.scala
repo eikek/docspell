@@ -1,7 +1,7 @@
 package docspell.backend.ops
 
 import cats.data.OptionT
-import cats.effect.{Effect, Resource}
+import cats.effect.{Async, Resource}
 import cats.implicits._
 
 import docspell.common.AccountId
@@ -25,7 +25,7 @@ trait OClientSettings[F[_]] {
 object OClientSettings {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OClientSettings[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, OClientSettings[F]] =
     Resource.pure[F, OClientSettings[F]](new OClientSettings[F] {
 
       private def getUserId(account: AccountId): OptionT[F, Ident] =
@@ -58,7 +58,7 @@ object OClientSettings {
             store.transact(RClientSettings.upsert(clientId, userId, data))
           )
           _ <- OptionT.liftF(
-            if (n <= 0) Effect[F].raiseError(new Exception("No rows updated!"))
+            if (n <= 0) Async[F].raiseError(new Exception("No rows updated!"))
             else ().pure[F]
           )
         } yield ()).getOrElse(())

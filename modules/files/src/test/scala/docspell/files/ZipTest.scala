@@ -1,8 +1,7 @@
 package docspell.files
 
-import scala.concurrent.ExecutionContext
-
 import cats.effect._
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 
 import docspell.common.Glob
@@ -11,12 +10,9 @@ import munit._
 
 class ZipTest extends FunSuite {
 
-  val blocker     = Blocker.liftExecutionContext(ExecutionContext.global)
-  implicit val CS = IO.contextShift(ExecutionContext.global)
-
   test("unzip") {
-    val zipFile = ExampleFiles.letters_zip.readURL[IO](8192, blocker)
-    val uncomp  = zipFile.through(Zip.unzip(8192, blocker, Glob.all))
+    val zipFile = ExampleFiles.letters_zip.readURL[IO](8192)
+    val uncomp  = zipFile.through(Zip.unzip(8192, Glob.all))
 
     uncomp
       .evalMap { entry =>

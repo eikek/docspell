@@ -1,7 +1,7 @@
 package docspell.backend.ops
 
 import cats.data.OptionT
-import cats.effect.{Effect, Resource}
+import cats.effect.{Async, Resource}
 import cats.implicits._
 import fs2.Stream
 
@@ -118,7 +118,7 @@ object OItemSearch {
     val fileId = rs.fileId
   }
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OItemSearch[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, OItemSearch[F]] =
     Resource.pure[F, OItemSearch[F]](new OItemSearch[F] {
 
       def findItem(id: Ident, collective: Ident): F[Option[ItemData]] =

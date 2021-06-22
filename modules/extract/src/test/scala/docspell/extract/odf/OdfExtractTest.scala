@@ -1,14 +1,13 @@
 package docspell.extract.odf
 
 import cats.effect._
+import cats.effect.unsafe.implicits.global
 
-import docspell.files.{ExampleFiles, TestFiles}
+import docspell.files.ExampleFiles
 
 import munit._
 
 class OdfExtractTest extends FunSuite {
-  val blocker     = TestFiles.blocker
-  implicit val CS = TestFiles.CS
 
   val files = List(
     ExampleFiles.examples_sample_odt -> 6372,
@@ -21,7 +20,7 @@ class OdfExtractTest extends FunSuite {
       val str1 = OdfExtract.get(is).fold(throw _, identity)
       assertEquals(str1.length, len)
 
-      val data = file.readURL[IO](8192, blocker)
+      val data = file.readURL[IO](8192)
       val str2 = OdfExtract.get[IO](data).unsafeRunSync().fold(throw _, identity)
       assertEquals(str2, str1)
     }

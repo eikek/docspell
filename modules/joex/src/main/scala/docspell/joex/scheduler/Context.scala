@@ -31,45 +31,40 @@ trait Context[F[_], A] { self =>
       last = config.retries == current.getOrElse(0)
     } yield last
 
-  def blocker: Blocker
-
   def map[C](f: A => C)(implicit F: Functor[F]): Context[F, C] =
-    new Context.ContextImpl[F, C](f(args), logger, store, blocker, config, jobId)
+    new Context.ContextImpl[F, C](f(args), logger, store, config, jobId)
 }
 
 object Context {
   private[this] val log = getLogger
 
-  def create[F[_]: Functor, A](
+  def create[F[_]: Async, A](
       jobId: Ident,
       arg: A,
       config: SchedulerConfig,
       log: Logger[F],
-      store: Store[F],
-      blocker: Blocker
+      store: Store[F]
   ): Context[F, A] =
-    new ContextImpl(arg, log, store, blocker, config, jobId)
+    new ContextImpl(arg, log, store, config, jobId)
 
-  def apply[F[_]: Concurrent, A](
+  def apply[F[_]: Async, A](
       job: RJob,
       arg: A,
       config: SchedulerConfig,
       logSink: LogSink[F],
-      blocker: Blocker,
       store: Store[F]
   ): F[Context[F, A]] =
     for {
       _      <- log.ftrace("Creating logger for task run")
       logger <- QueueLogger(job.id, job.info, config.logBufferSize, logSink)
       _      <- log.ftrace("Logger created, instantiating context")
-      ctx = create[F, A](job.id, arg, config, logger, store, blocker)
+      ctx = create[F, A](job.id, arg, config, logger, store)
     } yield ctx
 
   final private class ContextImpl[F[_]: Functor, A](
       val args: A,
       val logger: Logger[F],
       val store: Store[F],
-      val blocker: Blocker,
       val config: SchedulerConfig,
       val jobId: Ident
   ) extends Context[F, A] {

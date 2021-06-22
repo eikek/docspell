@@ -11,7 +11,7 @@ import docspell.store.records.RClassifierSetting
 
 object LearnTags {
 
-  def learnTagCategory[F[_]: Sync: ContextShift, A](
+  def learnTagCategory[F[_]: Async, A](
       analyser: TextAnalyser[F],
       collective: Ident,
       maxItems: Int,
@@ -33,7 +33,7 @@ object LearnTags {
         )
     }
 
-  def learnAllTagCategories[F[_]: Sync: ContextShift, A](analyser: TextAnalyser[F])(
+  def learnAllTagCategories[F[_]: Async, A](analyser: TextAnalyser[F])(
       collective: Ident,
       maxItems: Int,
       maxTextLen: Int

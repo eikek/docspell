@@ -14,7 +14,7 @@ import org.http4s.dsl.Http4sDsl
 
 object CalEventCheckRoutes {
 
-  def apply[F[_]: Effect](): HttpRoutes[F] = {
+  def apply[F[_]: Async](): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 

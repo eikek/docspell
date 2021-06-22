@@ -13,16 +13,15 @@ import docspell.convert.{ConversionResult, SanitizeHtml}
 
 object WkHtmlPdf {
 
-  def toPDF[F[_]: Sync: ContextShift, A](
+  def toPDF[F[_]: Async, A](
       cfg: WkHtmlPdfConfig,
       chunkSize: Int,
       charset: Charset,
       sanitizeHtml: SanitizeHtml,
-      blocker: Blocker,
       logger: Logger[F]
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] = {
     val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
-      ExternConv.readResult[F](blocker, chunkSize, logger)
+      ExternConv.readResult[F](chunkSize, logger)
 
     val cmdCfg = cfg.command.replace(Map("{{encoding}}" -> charset.name()))
 
@@ -40,7 +39,7 @@ object WkHtmlPdf {
     )
 
     ExternConv
-      .toPDF[F, A]("wkhtmltopdf", cmdCfg, cfg.workingDir, true, blocker, logger, reader)(
+      .toPDF[F, A]("wkhtmltopdf", cmdCfg, cfg.workingDir, true, logger, reader)(
         inSane,
         handler
       )

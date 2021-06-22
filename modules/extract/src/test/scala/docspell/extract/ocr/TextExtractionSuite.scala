@@ -1,6 +1,7 @@
 package docspell.extract.ocr
 
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 
 import docspell.common.Logger
 import docspell.files.TestFiles
@@ -14,7 +15,7 @@ class TextExtractionSuite extends FunSuite {
 
   test("extract english pdf".ignore) {
     val text = TextExtract
-      .extract[IO](letterSourceEN, blocker, logger, "eng", OcrConfig.default)
+      .extract[IO](letterSourceEN, logger, "eng", OcrConfig.default)
       .compile
       .lastOrError
       .unsafeRunSync()
@@ -24,7 +25,7 @@ class TextExtractionSuite extends FunSuite {
   test("extract german pdf".ignore) {
     val expect = TestFiles.letterDEText
     val extract = TextExtract
-      .extract[IO](letterSourceDE, blocker, logger, "deu", OcrConfig.default)
+      .extract[IO](letterSourceDE, logger, "deu", OcrConfig.default)
       .compile
       .lastOrError
       .unsafeRunSync()

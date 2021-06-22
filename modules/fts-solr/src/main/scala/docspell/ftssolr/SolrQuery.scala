@@ -22,7 +22,7 @@ trait SolrQuery[F[_]] {
 }
 
 object SolrQuery {
-  def apply[F[_]: ConcurrentEffect](cfg: SolrConfig, client: Client[F]): SolrQuery[F] = {
+  def apply[F[_]: Async](cfg: SolrConfig, client: Client[F]): SolrQuery[F] = {
     val dsl = new Http4sClientDsl[F] {}
     import dsl._
 

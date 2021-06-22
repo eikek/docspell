@@ -57,9 +57,8 @@ object Main extends IOApp {
     val pools = for {
       cec <- connectEC
       bec <- blockingEC
-      blocker = Blocker.liftExecutorService(bec)
       rec <- restserverEC
-    } yield Pools(cec, bec, blocker, rec)
+    } yield Pools(cec, bec, rec)
     pools.use(p =>
       JoexServer
         .stream[IO](cfg, p)

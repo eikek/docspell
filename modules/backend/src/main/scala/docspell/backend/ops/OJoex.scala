@@ -36,7 +36,7 @@ object OJoex {
         } yield cancel.success).getOrElse(false)
     })
 
-  def create[F[_]: ConcurrentEffect](
+  def create[F[_]: Async](
       ec: ExecutionContext,
       store: Store[F]
   ): Resource[F, OJoex[F]] =

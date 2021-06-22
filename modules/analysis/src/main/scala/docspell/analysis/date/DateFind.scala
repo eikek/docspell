@@ -19,7 +19,7 @@ object DateFind {
       .splitToken(text, " \t.,\n\r/".toSet)
       .filter(w => lang != Language.Latvian || w.value != "gada")
       .sliding(3)
-      .filter(_.length == 3)
+      .filter(_.size == 3)
       .flatMap(q =>
         Stream.emits(
           SimpleDate
@@ -28,9 +28,9 @@ object DateFind {
               NerDateLabel(
                 sd.toLocalDate,
                 NerLabel(
-                  text.substring(q.head.begin, q(2).end),
+                  text.substring(q.head.get.begin, q(2).end),
                   NerTag.Date,
-                  q.head.begin,
+                  q.head.get.begin,
                   q(2).end
                 )
               )

@@ -2,9 +2,8 @@ package docspell.analysis.nlp
 
 import scala.concurrent.duration.{Duration => _, _}
 
-import cats.Applicative
+import cats.effect.Ref
 import cats.effect._
-import cats.effect.concurrent.Ref
 import cats.implicits._
 
 import docspell.analysis.NlpSettings
@@ -28,7 +27,7 @@ trait PipelineCache[F[_]] {
 object PipelineCache {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Concurrent: Timer](clearInterval: Duration)(
+  def apply[F[_]: Async](clearInterval: Duration)(
       creator: NlpSettings => Annotator[F],
       release: F[Unit]
   ): F[PipelineCache[F]] =
@@ -38,7 +37,7 @@ object PipelineCache {
       _          <- Logger.log4s(logger).info("Creating nlp pipeline cache")
     } yield new Impl[F](data, creator, cacheClear)
 
-  final private class Impl[F[_]: Sync](
+  final private class Impl[F[_]: Async](
       data: Ref[F, Map[String, Entry[Annotator[F]]]],
       creator: NlpSettings => Annotator[F],
       cacheClear: CacheClearing[F]
@@ -97,20 +96,20 @@ object PipelineCache {
   }
 
   object CacheClearing {
-    def none[F[_]: Applicative]: CacheClearing[F] =
+    def none[F[_]]: CacheClearing[F] =
       new CacheClearing[F] {
         def withCache: Resource[F, Unit] =
           Resource.pure[F, Unit](())
       }
 
-    def create[F[_]: Concurrent: Timer, A](
+    def create[F[_]: Async, A](
         data: Ref[F, Map[String, Entry[A]]],
         interval: Duration,
         release: F[Unit]
     ): F[CacheClearing[F]] =
       for {
         counter  <- Ref.of(0L)
-        cleaning <- Ref.of(None: Option[Fiber[F, Unit]])
+        cleaning <- Ref.of(None: Option[Fiber[F, Throwable, Unit]])
         log = Logger.log4s(logger)
         result <-
           if (interval.millis <= 0)
@@ -135,10 +134,10 @@ object PipelineCache {
   final private class CacheClearingImpl[F[_], A](
       data: Ref[F, Map[String, Entry[A]]],
       counter: Ref[F, Long],
-      cleaningFiber: Ref[F, Option[Fiber[F, Unit]]],
+      cleaningFiber: Ref[F, Option[Fiber[F, Throwable, Unit]]],
       clearInterval: FiniteDuration,
       release: F[Unit]
-  )(implicit T: Timer[F], F: Concurrent[F])
+  )(implicit F: Async[F])
       extends CacheClearing[F] {
     private[this] val log = Logger.log4s[F](logger)
 
@@ -157,8 +156,8 @@ object PipelineCache {
         case None        => ().pure[F]
       }
 
-    private def clearAllLater: F[Fiber[F, Unit]] =
-      F.start(T.sleep(clearInterval) *> clearAll)
+    private def clearAllLater: F[Fiber[F, Throwable, Unit]] =
+      F.start(F.sleep(clearInterval) *> clearAll)
 
     private def logDontClear: F[Unit] =
       log.info("Cancel stanford cache clearing, as it has been used in between.")

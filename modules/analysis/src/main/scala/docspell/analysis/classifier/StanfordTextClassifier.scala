@@ -2,10 +2,11 @@ package docspell.analysis.classifier
 
 import java.nio.file.Path
 
+import cats.effect.Ref
 import cats.effect._
-import cats.effect.concurrent.Ref
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.analysis.classifier
 import docspell.analysis.classifier.TextClassifier._
@@ -15,10 +16,8 @@ import docspell.common.syntax.FileSyntax._
 
 import edu.stanford.nlp.classify.ColumnDataClassifier
 
-final class StanfordTextClassifier[F[_]: Sync: ContextShift](
-    cfg: TextClassifierConfig,
-    blocker: Blocker
-) extends TextClassifier[F] {
+final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
+    extends TextClassifier[F] {
 
   def trainClassifier[A](
       logger: Logger[F],
@@ -28,7 +27,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
       .withTempDir(cfg.workingDir, "trainclassifier")
       .use { dir =>
         for {
-          rawData   <- writeDataFile(blocker, dir, data)
+          rawData   <- writeDataFile(dir, data)
           _         <- logger.debug(s"Learning from ${rawData.count} items.")
           trainData <- splitData(logger, rawData)
           scores    <- cfg.classifierConfigs.traverse(m => train(logger, trainData, m))
@@ -81,8 +80,8 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
       TrainData(in.file.resolveSibling("train.txt"), in.file.resolveSibling("test.txt"))
 
     val fileLines =
-      fs2.io.file
-        .readAll(in.file, blocker, 4096)
+      File
+        .readAll[F](in.file, 4096)
         .through(fs2.text.utf8Decode)
         .through(fs2.text.lines)
 
@@ -95,7 +94,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
           .take(nTest)
           .intersperse("\n")
           .through(fs2.text.utf8Encode)
-          .through(fs2.io.file.writeAll(td.test, blocker))
+          .through(Files[F].writeAll(td.test))
           .compile
           .drain
       _ <-
@@ -103,13 +102,13 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
           .drop(nTest)
           .intersperse("\n")
           .through(fs2.text.utf8Encode)
-          .through(fs2.io.file.writeAll(td.train, blocker))
+          .through(Files[F].writeAll(td.train))
           .compile
           .drain
     } yield td
   }
 
-  def writeDataFile(blocker: Blocker, dir: Path, data: Stream[F, Data]): F[RawData] = {
+  def writeDataFile(dir: Path, data: Stream[F, Data]): F[RawData] = {
     val target = dir.resolve("rawdata")
     for {
       counter <- Ref.of[F, Long](0L)
@@ -120,7 +119,7 @@ final class StanfordTextClassifier[F[_]: Sync: ContextShift](
           .evalTap(_ => counter.update(_ + 1))
           .intersperse("\r\n")
           .through(fs2.text.utf8Encode)
-          .through(fs2.io.file.writeAll(target, blocker))
+          .through(Files[F].writeAll(target))
           .compile
           .drain
       lines <- counter.get

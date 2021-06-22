@@ -19,7 +19,7 @@ import org.http4s.dsl.Http4sDsl
 
 object CollectiveRoutes {
 
-  def apply[F[_]: Effect](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Async](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
     import dsl._
 

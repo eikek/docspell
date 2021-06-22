@@ -11,7 +11,7 @@ import org.http4s.client.Client
 import org.http4s.client.middleware.Logger
 import org.log4s.getLogger
 
-final class SolrFtsClient[F[_]: Effect](
+final class SolrFtsClient[F[_]: Async](
     solrUpdate: SolrUpdate[F],
     solrSetup: SolrSetup[F],
     solrQuery: SolrQuery[F]
@@ -77,7 +77,7 @@ final class SolrFtsClient[F[_]: Effect](
 object SolrFtsClient {
   private[this] val logger = getLogger
 
-  def apply[F[_]: ConcurrentEffect](
+  def apply[F[_]: Async](
       cfg: SolrConfig,
       httpClient: Client[F]
   ): Resource[F, FtsClient[F]] = {
@@ -91,7 +91,7 @@ object SolrFtsClient {
     )
   }
 
-  private def loggingMiddleware[F[_]: Concurrent](
+  private def loggingMiddleware[F[_]: Async](
       cfg: SolrConfig,
       client: Client[F]
   ): Client[F] =

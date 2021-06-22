@@ -32,9 +32,8 @@ import org.log4s._
 object ItemRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect: ContextShift](
+  def apply[F[_]: Async](
       cfg: Config,
-      blocker: Blocker,
       backend: BackendApp[F],
       user: AuthToken
   ): HttpRoutes[F] = {
@@ -331,7 +330,7 @@ object ItemRoutes {
           NotFound(BasicResult(false, "Not found"))
         for {
           preview <- backend.itemSearch.findItemPreview(id, user.account.collective)
-          inm      = req.headers.get(`If-None-Match`).flatMap(_.tags)
+          inm      = req.headers.get[`If-None-Match`].flatMap(_.tags)
           matches  = BinaryUtil.matchETag(preview.map(_.meta), inm)
           fallback = flag.getOrElse(false)
           resp <-
@@ -341,7 +340,7 @@ object ItemRoutes {
                 else BinaryUtil.makeByteResp(dsl)(data).map(Responses.noCache)
               }
               .getOrElse(
-                if (fallback) BinaryUtil.noPreview(blocker, req.some).getOrElseF(notFound)
+                if (fallback) BinaryUtil.noPreview(req.some).getOrElseF(notFound)
                 else notFound
               )
         } yield resp

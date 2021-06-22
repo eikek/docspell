@@ -87,7 +87,7 @@ object OCustomFields {
       collective: Ident
   )
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       store: Store[F]
   ): Resource[F, OCustomFields[F]] =
     Resource.pure[F, OCustomFields[F]](new OCustomFields[F] {

@@ -55,7 +55,7 @@ object OFolder {
   type FolderDetail = QFolder.FolderDetail
   val FolderDetail = QFolder.FolderDetail
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OFolder[F]] =
+  def apply[F[_]](store: Store[F]): Resource[F, OFolder[F]] =
     Resource.pure[F, OFolder[F]](new OFolder[F] {
       def findAll(
           account: AccountId,

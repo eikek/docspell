@@ -1,11 +1,11 @@
 package docspell.restserver
 
-import java.net.InetAddress
-
 import docspell.backend.auth.Login
 import docspell.backend.{Config => BackendConfig}
 import docspell.common._
 import docspell.ftssolr.SolrConfig
+
+import com.comcast.ip4s.IpAddress
 
 case class Config(
     appName: String,
@@ -42,12 +42,14 @@ object Config {
     case class HttpHeader(enabled: Boolean, headerName: String, headerValue: String)
     case class AllowedIps(enabled: Boolean, ips: Set[String]) {
 
-      def containsAddress(inet: InetAddress): Boolean = {
-        val ip           = inet.getHostAddress
+      def containsAddress(inet: IpAddress): Boolean = {
+        val ip           = inet.fold(_.toUriString, _.toUriString) //.getHostAddress
         lazy val ipParts = ip.split('.')
 
         def checkSingle(pattern: String): Boolean =
-          pattern == ip || (inet.isLoopbackAddress && pattern == "127.0.0.1") || (pattern
+          pattern == ip || (ip.contains(
+            "localhost"
+          ) && pattern == "127.0.0.1") || (pattern
             .split('.')
             .zip(ipParts)
             .foldLeft(true) { case (r, (a, b)) =>

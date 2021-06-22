@@ -1,6 +1,6 @@
 package docspell.store.queue
 
-import cats.effect.{Effect, Resource}
+import cats.effect._
 import cats.implicits._
 
 import docspell.common._
@@ -40,7 +40,7 @@ trait JobQueue[F[_]] {
 object JobQueue {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, JobQueue[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, JobQueue[F]] =
     Resource.pure[F, JobQueue[F]](new JobQueue[F] {
 
       def nextJob(
@@ -56,7 +56,7 @@ object JobQueue {
           .transact(RJob.insert(job))
           .flatMap { n =>
             if (n != 1)
-              Effect[F]
+              Async[F]
                 .raiseError(new Exception(s"Inserting job failed. Update count: $n"))
             else ().pure[F]
           }

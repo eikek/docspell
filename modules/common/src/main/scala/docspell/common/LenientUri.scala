@@ -6,7 +6,7 @@ import java.net.URLEncoder
 
 import cats.data.NonEmptyList
 import cats.effect.Resource
-import cats.effect.{Blocker, ContextShift, Sync}
+import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
@@ -66,20 +66,17 @@ case class LenientUri(
         )
     }
 
-  def readURL[F[_]: Sync: ContextShift](
-      chunkSize: Int,
-      blocker: Blocker
-  ): Stream[F, Byte] =
+  def readURL[F[_]: Sync](chunkSize: Int): Stream[F, Byte] =
     Stream
       .emit(Either.catchNonFatal(new URL(asString)))
       .covary[F]
       .rethrow
       .flatMap(url =>
-        fs2.io.readInputStream(Sync[F].delay(url.openStream()), chunkSize, blocker, true)
+        fs2.io.readInputStream(Sync[F].delay(url.openStream()), chunkSize, true)
       )
 
-  def readText[F[_]: Sync: ContextShift](chunkSize: Int, blocker: Blocker): F[String] =
-    readURL[F](chunkSize, blocker).through(fs2.text.utf8Decode).compile.foldMonoid
+  def readText[F[_]: Sync](chunkSize: Int): F[String] =
+    readURL[F](chunkSize).through(fs2.text.utf8Decode).compile.foldMonoid
 
   def host: Option[String] =
     authority.map(a =>

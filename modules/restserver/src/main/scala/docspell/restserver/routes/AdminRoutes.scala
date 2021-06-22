@@ -11,12 +11,12 @@ import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server._
-import org.http4s.util.CaseInsensitiveString
+import org.typelevel.ci.CIString
 
 object AdminRoutes {
-  private val adminHeader = CaseInsensitiveString("Docspell-Admin-Secret")
+  private val adminHeader = CIString("Docspell-Admin-Secret")
 
-  def apply[F[_]: Effect](cfg: Config.AdminEndpoint)(
+  def apply[F[_]: Async](cfg: Config.AdminEndpoint)(
       f: HttpRoutes[F]
   ): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
@@ -34,7 +34,7 @@ object AdminRoutes {
     else middleware(AuthedRoutes(authReq => f.run(authReq.req)))
   }
 
-  private def checkSecret[F[_]: Effect](
+  private def checkSecret[F[_]: Async](
       cfg: Config.AdminEndpoint
   ): Kleisli[F, Request[F], Either[String, Unit]] =
     Kleisli(req =>
@@ -46,7 +46,7 @@ object AdminRoutes {
     )
 
   private def extractSecret[F[_]](req: Request[F]): Option[String] =
-    req.headers.get(adminHeader).map(_.value)
+    req.headers.get(adminHeader).map(_.head.value)
 
   private def compareSecret(s1: String)(s2: String): Boolean =
     s1.length > 0 && s1.length == s2.length &&

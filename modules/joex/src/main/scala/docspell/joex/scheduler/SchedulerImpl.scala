@@ -2,7 +2,7 @@ package docspell.joex.scheduler
 
 import cats.data.OptionT
 import cats.effect._
-import cats.effect.concurrent.Semaphore
+import cats.effect.std.Semaphore
 import cats.implicits._
 import fs2.Stream
 import fs2.concurrent.SignallingRef
@@ -17,9 +17,8 @@ import docspell.store.records.RJob
 
 import org.log4s._
 
-final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
+final class SchedulerImpl[F[_]: Async](
     val config: SchedulerConfig,
-    blocker: Blocker,
     queue: JobQueue[F],
     tasks: JobTaskRegistry[F],
     store: Store[F],
@@ -37,8 +36,8 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
   def init: F[Unit] =
     QJob.runningToWaiting(config.name, store)
 
-  def periodicAwake(implicit T: Timer[F]): F[Fiber[F, Unit]] =
-    ConcurrentEffect[F].start(
+  def periodicAwake: F[Fiber[F, Throwable, Unit]] =
+    Async[F].start(
       Stream
         .awakeEvery[F](config.wakeupPeriod.toScala)
         .evalMap(_ => logger.fdebug("Periodic awake reached") *> notifyChange)
@@ -153,7 +152,7 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
         for {
           _ <-
             logger.fdebug(s"Creating context for job ${job.info} to run cancellation $t")
-          ctx <- Context[F, String](job, job.args, config, logSink, blocker, store)
+          ctx <- Context[F, String](job, job.args, config, logSink, store)
           _   <- t.onCancel.run(ctx)
           _   <- state.modify(_.markCancelled(job))
           _   <- onFinish(job, JobState.Cancelled)
@@ -177,7 +176,7 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
       case Right(t) =>
         for {
           _   <- logger.fdebug(s"Creating context for job ${job.info} to run $t")
-          ctx <- Context[F, String](job, job.args, config, logSink, blocker, store)
+          ctx <- Context[F, String](job, job.args, config, logSink, store)
           jot = wrapTask(job, t.task, ctx)
           tok <- forkRun(job, jot.run(ctx), t.onCancel.run(ctx), ctx)
           _   <- state.modify(_.addRunning(job, tok))
@@ -208,9 +207,7 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
       ctx: Context[F, String]
   ): Task[F, String, Unit] =
     task
-      .mapF(fa =>
-        onStart(job) *> logger.fdebug("Starting task now") *> blocker.blockOn(fa)
-      )
+      .mapF(fa => onStart(job) *> logger.fdebug("Starting task now") *> fa)
       .mapF(_.attempt.flatMap({
         case Right(()) =>
           logger.info(s"Job execution successful: ${job.info}")
@@ -252,11 +249,10 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
       code: F[Unit],
       onCancel: F[Unit],
       ctx: Context[F, String]
-  ): F[F[Unit]] = {
-    val bfa = blocker.blockOn(code)
+  ): F[F[Unit]] =
     logger.fdebug(s"Forking job ${job.info}") *>
-      ConcurrentEffect[F]
-        .start(bfa)
+      Async[F]
+        .start(code)
         .map(fiber =>
           logger.fdebug(s"Cancelling job ${job.info}") *>
             fiber.cancel *>
@@ -271,10 +267,11 @@ final class SchedulerImpl[F[_]: ConcurrentEffect: ContextShift](
             ctx.logger.warn("Job has been cancelled.") *>
             logger.fdebug(s"Job ${job.info} has been cancelled.")
         )
-  }
 }
 
 object SchedulerImpl {
+
+  type CancelToken[F[_]] = F[Unit]
 
   def emptyState[F[_]]: State[F] =
     State(Map.empty, Set.empty, Map.empty, false)

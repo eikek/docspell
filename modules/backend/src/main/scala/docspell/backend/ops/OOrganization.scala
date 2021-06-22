@@ -1,6 +1,6 @@
 package docspell.backend.ops
 
-import cats.effect.{Effect, Resource}
+import cats.effect.{Async, Resource}
 import cats.implicits._
 
 import docspell.backend.ops.OOrganization._
@@ -49,7 +49,7 @@ object OOrganization {
       contacts: Seq[RContact]
   )
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OOrganization[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, OOrganization[F]] =
     Resource.pure[F, OOrganization[F]](new OOrganization[F] {
 
       def findAllOrg(

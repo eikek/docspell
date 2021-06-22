@@ -19,7 +19,7 @@ import org.log4s._
 object QJob {
   private[this] val logger = getLogger
 
-  def takeNextJob[F[_]: Effect](
+  def takeNextJob[F[_]: Async](
       store: Store[F]
   )(
       priority: Ident => F[Priority],
@@ -49,7 +49,7 @@ object QJob {
       .last
       .map(_.flatten)
 
-  private def takeNextJob1[F[_]: Effect](store: Store[F])(
+  private def takeNextJob1[F[_]: Async](store: Store[F])(
       priority: Ident => F[Priority],
       worker: Ident,
       retryPause: Duration,
@@ -147,37 +147,37 @@ object QJob {
     sql.build.query[RJob].option
   }
 
-  def setCancelled[F[_]: Effect](id: Ident, store: Store[F]): F[Unit] =
+  def setCancelled[F[_]: Async](id: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
       _   <- store.transact(RJob.setCancelled(id, now))
     } yield ()
 
-  def setFailed[F[_]: Effect](id: Ident, store: Store[F]): F[Unit] =
+  def setFailed[F[_]: Async](id: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
       _   <- store.transact(RJob.setFailed(id, now))
     } yield ()
 
-  def setSuccess[F[_]: Effect](id: Ident, store: Store[F]): F[Unit] =
+  def setSuccess[F[_]: Async](id: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
       _   <- store.transact(RJob.setSuccess(id, now))
     } yield ()
 
-  def setStuck[F[_]: Effect](id: Ident, store: Store[F]): F[Unit] =
+  def setStuck[F[_]: Async](id: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
       _   <- store.transact(RJob.setStuck(id, now))
     } yield ()
 
-  def setRunning[F[_]: Effect](id: Ident, workerId: Ident, store: Store[F]): F[Unit] =
+  def setRunning[F[_]: Async](id: Ident, workerId: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
       _   <- store.transact(RJob.setRunning(id, workerId, now))
     } yield ()
 
-  def setFinalState[F[_]: Effect](id: Ident, state: JobState, store: Store[F]): F[Unit] =
+  def setFinalState[F[_]: Async](id: Ident, state: JobState, store: Store[F]): F[Unit] =
     state match {
       case JobState.Success =>
         setSuccess(id, store)
@@ -191,10 +191,10 @@ object QJob {
         logger.ferror[F](s"Invalid final state: $state.")
     }
 
-  def exceedsRetries[F[_]: Effect](id: Ident, max: Int, store: Store[F]): F[Boolean] =
+  def exceedsRetries[F[_]: Async](id: Ident, max: Int, store: Store[F]): F[Boolean] =
     store.transact(RJob.getRetries(id)).map(n => n.forall(_ >= max))
 
-  def runningToWaiting[F[_]: Effect](workerId: Ident, store: Store[F]): F[Unit] =
+  def runningToWaiting[F[_]: Async](workerId: Ident, store: Store[F]): F[Unit] =
     store.transact(RJob.setRunningToWaiting(workerId)).map(_ => ())
 
   def findAll[F[_]](ids: Seq[Ident], store: Store[F]): F[Vector[RJob]] =

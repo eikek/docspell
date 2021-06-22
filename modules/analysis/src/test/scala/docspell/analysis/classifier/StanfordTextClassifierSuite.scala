@@ -2,12 +2,12 @@ package docspell.analysis.classifier
 
 import java.nio.file.Paths
 
-import scala.concurrent.ExecutionContext
-
 import cats.data.Kleisli
 import cats.data.NonEmptyList
 import cats.effect._
+import cats.effect.unsafe.implicits.global
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.analysis.classifier.TextClassifier.Data
 import docspell.common._
@@ -16,8 +16,6 @@ import munit._
 
 class StanfordTextClassifierSuite extends FunSuite {
   val logger = Logger.log4s[IO](org.log4s.getLogger)
-
-  implicit val CS = IO.contextShift(ExecutionContext.global)
 
   test("learn from data") {
     val cfg = TextClassifierConfig(Paths.get("target"), NonEmptyList.of(Map()))
@@ -38,34 +36,30 @@ class StanfordTextClassifierSuite extends FunSuite {
         })
         .covary[IO]
 
-    val modelExists =
-      Blocker[IO].use { blocker =>
-        val classifier = new StanfordTextClassifier[IO](cfg, blocker)
-        classifier.trainClassifier[Boolean](logger, data)(
-          Kleisli(result => File.existsNonEmpty[IO](result.model))
-        )
-      }
+    val modelExists = {
+      val classifier = new StanfordTextClassifier[IO](cfg)
+      classifier.trainClassifier[Boolean](logger, data)(
+        Kleisli(result => File.existsNonEmpty[IO](result.model))
+      )
+    }
     assertEquals(modelExists.unsafeRunSync(), true)
   }
 
   test("run classifier") {
-    val cfg = TextClassifierConfig(Paths.get("target"), NonEmptyList.of(Map()))
-    val things = for {
-      dir     <- File.withTempDir[IO](Paths.get("target"), "testcls")
-      blocker <- Blocker[IO]
-    } yield (dir, blocker)
+    val cfg    = TextClassifierConfig(Paths.get("target"), NonEmptyList.of(Map()))
+    val things = File.withTempDir[IO](Paths.get("target"), "testcls")
 
     things
-      .use { case (dir, blocker) =>
-        val classifier = new StanfordTextClassifier[IO](cfg, blocker)
+      .use { dir =>
+        val classifier = new StanfordTextClassifier[IO](cfg)
 
         val modelFile = dir.resolve("test.ser.gz")
         for {
           _ <-
             LenientUri
               .fromJava(getClass.getResource("/test.ser.gz"))
-              .readURL[IO](4096, blocker)
-              .through(fs2.io.file.writeAll(modelFile, blocker))
+              .readURL[IO](4096)
+              .through(Files[IO].writeAll(modelFile))
               .compile
               .drain
           model = ClassifierModel(modelFile)

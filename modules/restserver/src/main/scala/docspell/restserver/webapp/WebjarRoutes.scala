@@ -27,19 +27,18 @@ object WebjarRoutes {
     ".xml"
   )
 
-  def appRoutes[F[_]: Effect](
-      blocker: Blocker
-  )(implicit CS: ContextShift[F]): HttpRoutes[F] =
+  def appRoutes[F[_]: Async]: HttpRoutes[F] =
     Kleisli {
       case req if req.method == Method.GET =>
-        val p = req.pathInfo
-        if (p.contains("..") || !suffixes.exists(p.endsWith(_)))
+        val p             = req.pathInfo.renderString
+        val last          = req.pathInfo.segments.lastOption.map(_.encoded).getOrElse("")
+        val containsColon = req.pathInfo.segments.exists(_.encoded.contains(".."))
+        if (containsColon || !suffixes.exists(last.endsWith(_)))
           OptionT.pure(Response.notFound[F])
         else
           StaticFile
             .fromResource(
               s"/META-INF/resources/webjars$p",
-              blocker,
               Some(req),
               EnvMode.current.isProd
             )

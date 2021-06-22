@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 
 import scala.jdk.CollectionConverters._
 
-import cats.effect.{Blocker, ContextShift, Sync}
+import cats.effect._
 import cats.implicits._
 import fs2.{Stream, io, text}
 
@@ -34,9 +34,8 @@ object SystemCommand {
 
   final case class Result(rc: Int, stdout: String, stderr: String)
 
-  def exec[F[_]: Sync: ContextShift](
+  def exec[F[_]: Sync](
       cmd: Config,
-      blocker: Blocker,
       logger: Logger[F],
       wd: Option[Path] = None,
       stdin: Stream[F, Byte] = Stream.empty
@@ -44,8 +43,8 @@ object SystemCommand {
     startProcess(cmd, wd, logger, stdin) { proc =>
       Stream.eval {
         for {
-          _    <- writeToProcess(stdin, proc, blocker)
-          term <- Sync[F].delay(proc.waitFor(cmd.timeout.seconds, TimeUnit.SECONDS))
+          _    <- writeToProcess(stdin, proc)
+          term <- Sync[F].blocking(proc.waitFor(cmd.timeout.seconds, TimeUnit.SECONDS))
           _ <-
             if (term)
               logger.debug(s"Command `${cmd.cmdString}` finished: ${proc.exitValue}")
@@ -55,23 +54,22 @@ object SystemCommand {
               )
           _ <- if (!term) timeoutError(proc, cmd) else Sync[F].pure(())
           out <-
-            if (term) inputStreamToString(proc.getInputStream, blocker)
+            if (term) inputStreamToString(proc.getInputStream)
             else Sync[F].pure("")
           err <-
-            if (term) inputStreamToString(proc.getErrorStream, blocker)
+            if (term) inputStreamToString(proc.getErrorStream)
             else Sync[F].pure("")
         } yield Result(proc.exitValue, out, err)
       }
     }
 
-  def execSuccess[F[_]: Sync: ContextShift](
+  def execSuccess[F[_]: Sync](
       cmd: Config,
-      blocker: Blocker,
       logger: Logger[F],
       wd: Option[Path] = None,
       stdin: Stream[F, Byte] = Stream.empty
   ): Stream[F, Result] =
-    exec(cmd, blocker, logger, wd, stdin).flatMap { r =>
+    exec(cmd, logger, wd, stdin).flatMap { r =>
       if (r.rc != 0)
         Stream.raiseError[F](
           new Exception(
@@ -92,7 +90,7 @@ object SystemCommand {
     val log      = logger.debug(s"Running external command: ${cmd.cmdString}")
     val hasStdin = stdin.take(1).compile.last.map(_.isDefined)
     val proc = log *> hasStdin.flatMap(flag =>
-      Sync[F].delay {
+      Sync[F].blocking {
         val pb = new ProcessBuilder(cmd.toCmd.asJava)
           .redirectInput(if (flag) Redirect.PIPE else Redirect.INHERIT)
           .redirectError(Redirect.PIPE)
@@ -109,11 +107,8 @@ object SystemCommand {
       .flatMap(f)
   }
 
-  private def inputStreamToString[F[_]: Sync: ContextShift](
-      in: InputStream,
-      blocker: Blocker
-  ): F[String] =
-    io.readInputStream(Sync[F].pure(in), 16 * 1024, blocker, closeAfterUse = false)
+  private def inputStreamToString[F[_]: Sync](in: InputStream): F[String] =
+    io.readInputStream(Sync[F].pure(in), 16 * 1024, closeAfterUse = false)
       .through(text.utf8Decode)
       .chunks
       .map(_.toVector.mkString)
@@ -122,18 +117,17 @@ object SystemCommand {
       .last
       .map(_.getOrElse(""))
 
-  private def writeToProcess[F[_]: Sync: ContextShift](
+  private def writeToProcess[F[_]: Sync](
       data: Stream[F, Byte],
-      proc: Process,
-      blocker: Blocker
+      proc: Process
   ): F[Unit] =
     data
-      .through(io.writeOutputStream(Sync[F].delay(proc.getOutputStream), blocker))
+      .through(io.writeOutputStream(Sync[F].blocking(proc.getOutputStream)))
       .compile
       .drain
 
   private def timeoutError[F[_]: Sync](proc: Process, cmd: Config): F[Unit] =
-    Sync[F].delay(proc.destroyForcibly()).attempt *> {
+    Sync[F].blocking(proc.destroyForcibly()).attempt *> {
       Sync[F].raiseError(
         new Exception(
           s"Command `${cmd.cmdString}` timed out (${cmd.timeout.formatExact})"

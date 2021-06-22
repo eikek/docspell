@@ -13,6 +13,7 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.ETag.EntityTag
 import org.http4s.headers._
+import org.typelevel.ci.CIString
 
 object BinaryUtil {
 
@@ -21,12 +22,15 @@ object BinaryUtil {
   ): F[Response[F]] = {
     import dsl._
 
-    val mt             = MediaType.unsafeParse(data.meta.mimetype.asString)
-    val ctype          = `Content-Type`(mt)
-    val cntLen: Header = `Content-Length`.unsafeFromLong(data.meta.length)
-    val eTag: Header   = ETag(data.meta.checksum)
-    val disp: Header =
-      `Content-Disposition`("inline", Map("filename" -> data.name.getOrElse("")))
+    val mt     = MediaType.unsafeParse(data.meta.mimetype.asString)
+    val ctype  = `Content-Type`(mt)
+    val cntLen = `Content-Length`.unsafeFromLong(data.meta.length)
+    val eTag   = ETag(data.meta.checksum)
+    val disp =
+      `Content-Disposition`(
+        "inline",
+        Map(CIString("filename") -> data.name.getOrElse(""))
+      )
 
     resp.map(r =>
       if (r.status == NotModified) r.withHeaders(ctype, eTag, disp)
@@ -52,13 +56,9 @@ object BinaryUtil {
         false
     }
 
-  def noPreview[F[_]: Sync: ContextShift](
-      blocker: Blocker,
-      req: Option[Request[F]]
-  ): OptionT[F, Response[F]] =
+  def noPreview[F[_]: Async](req: Option[Request[F]]): OptionT[F, Response[F]] =
     StaticFile.fromResource(
       name = "/docspell/restserver/no-preview.svg",
-      blocker = blocker,
       req = req,
       preferGzipped = true,
       classloader = getClass.getClassLoader().some

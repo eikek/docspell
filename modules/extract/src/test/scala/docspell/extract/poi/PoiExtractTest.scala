@@ -1,15 +1,14 @@
 package docspell.extract.poi
 
 import cats.effect._
+import cats.effect.unsafe.implicits.global
 
 import docspell.common.MimeTypeHint
-import docspell.files.{ExampleFiles, TestFiles}
+import docspell.files.ExampleFiles
 
 import munit._
 
 class PoiExtractTest extends FunSuite {
-  val blocker     = TestFiles.blocker
-  implicit val CS = TestFiles.CS
 
   val officeFiles = List(
     ExampleFiles.examples_sample_doc  -> 6241,
@@ -21,13 +20,13 @@ class PoiExtractTest extends FunSuite {
   test("extract text from ms office files") {
     officeFiles.foreach { case (file, len) =>
       val str1 = PoiExtract
-        .get[IO](file.readURL[IO](8192, blocker), MimeTypeHint.none)
+        .get[IO](file.readURL[IO](8192), MimeTypeHint.none)
         .unsafeRunSync()
         .fold(throw _, identity)
 
       val str2 = PoiExtract
         .get[IO](
-          file.readURL[IO](8192, blocker),
+          file.readURL[IO](8192),
           MimeTypeHint(Some(file.path.segments.last), None)
         )
         .unsafeRunSync()

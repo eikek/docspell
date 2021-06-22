@@ -30,10 +30,10 @@ import docspell.store.queue._
 import docspell.store.records.RJobLog
 
 import emil.javamail._
+import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
 
-final class JoexAppImpl[F[_]: ConcurrentEffect: Timer](
+final class JoexAppImpl[F[_]: Async](
     cfg: Config,
     nodeOps: ONode[F],
     store: Store[F],
@@ -49,8 +49,8 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: Timer](
     val prun = periodicScheduler.start.compile.drain
     for {
       _ <- scheduleBackgroundTasks
-      _ <- ConcurrentEffect[F].start(run)
-      _ <- ConcurrentEffect[F].start(prun)
+      _ <- Async[F].start(run)
+      _ <- Async[F].start(prun)
       _ <- scheduler.periodicAwake
       _ <- periodicScheduler.periodicAwake
       _ <- nodeOps.register(cfg.appId, NodeType.Joex, cfg.baseUrl)
@@ -79,17 +79,16 @@ final class JoexAppImpl[F[_]: ConcurrentEffect: Timer](
 
 object JoexAppImpl {
 
-  def create[F[_]: ConcurrentEffect: ContextShift: Timer](
+  def create[F[_]: Async](
       cfg: Config,
       termSignal: SignallingRef[F, Boolean],
       connectEC: ExecutionContext,
-      clientEC: ExecutionContext,
-      blocker: Blocker
+      clientEC: ExecutionContext
   ): Resource[F, JoexApp[F]] =
     for {
       httpClient <- BlazeClientBuilder[F](clientEC).resource
       client = JoexClient(httpClient)
-      store    <- Store.create(cfg.jdbc, connectEC, blocker)
+      store    <- Store.create(cfg.jdbc, connectEC)
       queue    <- JobQueue(store)
       pstore   <- PeriodicTaskStore.create(store)
       nodeOps  <- ONode(store)
@@ -97,11 +96,11 @@ object JoexAppImpl {
       upload   <- OUpload(store, queue, cfg.files, joex)
       fts      <- createFtsClient(cfg)(httpClient)
       itemOps  <- OItem(store, fts, queue, joex)
-      analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig, blocker)
-      regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, blocker, store)
+      analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
+      regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
       javaEmil =
-        JavaMailEmil(blocker, Settings.defaultSettings.copy(debug = cfg.mailDebug))
-      sch <- SchedulerBuilder(cfg.scheduler, blocker, store)
+        JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
+      sch <- SchedulerBuilder(cfg.scheduler, store)
         .withQueue(queue)
         .withTask(
           JobTask.json(
@@ -207,14 +206,13 @@ object JoexAppImpl {
         sch,
         queue,
         pstore,
-        client,
-        Timer[F]
+        client
       )
       app = new JoexAppImpl(cfg, nodeOps, store, queue, pstore, termSignal, sch, psch)
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR
 
-  private def createFtsClient[F[_]: ConcurrentEffect](
+  private def createFtsClient[F[_]: Async](
       cfg: Config
   )(client: Client[F]): Resource[F, FtsClient[F]] =
     if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)

@@ -28,7 +28,7 @@ object Migration {
   def from[F[_]: Applicative: FlatMap](fm: FtsMigration[F]): Migration[F] =
     Migration(fm.version, fm.engine, fm.description, FtsWork.from(fm.task))
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       cfg: Config.FullTextSearch,
       fts: FtsClient[F],
       store: Store[F],
@@ -41,7 +41,7 @@ object Migration {
     }
   }
 
-  def applySingle[F[_]: Effect](ctx: FtsContext[F])(m: Migration[F]): F[Unit] =
+  def applySingle[F[_]: Async](ctx: FtsContext[F])(m: Migration[F]): F[Unit] =
     for {
       _ <- ctx.logger.info(s"Apply ${m.version}/${m.description}")
       _ <- m.task.run(ctx)

@@ -15,7 +15,7 @@ object HouseKeepingTask {
 
   val taskName: Ident = Ident.unsafe("housekeeping")
 
-  def apply[F[_]: ConcurrentEffect](cfg: Config): Task[F, Unit, Unit] =
+  def apply[F[_]: Async](cfg: Config): Task[F, Unit, Unit] =
     Task
       .log[F, Unit](_.info(s"Running house-keeping task now"))
       .flatMap(_ => CleanupInvitesTask(cfg.houseKeeping.cleanupInvites))

@@ -12,6 +12,7 @@ import fs2.Stream
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
+import scodec.bits.ByteVector
 
 trait PdfboxPreview[F[_]] {
 
@@ -50,7 +51,7 @@ object PdfboxPreview {
   private def pngStream[F[_]](img: RenderedImage): Stream[F, Byte] = {
     val out = new ByteArrayOutputStream()
     ImageIO.write(img, "PNG", out)
-    Stream.chunk(Chunk.bytes(out.toByteArray()))
+    Stream.chunk(Chunk.byteVector(ByteVector.view(out.toByteArray())))
   }
 
 }

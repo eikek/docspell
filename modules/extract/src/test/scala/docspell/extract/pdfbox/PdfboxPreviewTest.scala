@@ -3,15 +3,15 @@ package docspell.extract.pdfbox
 import java.nio.file.Path
 
 import cats.effect._
+import cats.effect.unsafe.implicits.global
 import fs2.Stream
+import fs2.io.file.Files
 
-import docspell.files.{ExampleFiles, TestFiles}
+import docspell.files.ExampleFiles
 
 import munit._
 
 class PdfboxPreviewTest extends FunSuite {
-  val blocker     = TestFiles.blocker
-  implicit val CS = TestFiles.CS
 
   val testPDFs = List(
     ExampleFiles.letter_de_pdf     -> "7d98be75b239816d6c751b3f3c56118ebf1a4632c43baf35a68a662f9d595ab8",
@@ -21,7 +21,7 @@ class PdfboxPreviewTest extends FunSuite {
 
   test("extract first page image from PDFs".flaky) {
     testPDFs.foreach { case (file, checksum) =>
-      val data = file.readURL[IO](8192, blocker)
+      val data = file.readURL[IO](8192)
       val sha256out =
         Stream
           .eval(PdfboxPreview[IO](PreviewConfig(48)))
@@ -42,7 +42,7 @@ class PdfboxPreviewTest extends FunSuite {
   def writeToFile(data: Stream[IO, Byte], file: Path): IO[Unit] =
     data
       .through(
-        fs2.io.file.writeAll(file, blocker)
+        Files[IO].writeAll(file)
       )
       .compile
       .drain

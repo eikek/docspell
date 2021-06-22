@@ -33,16 +33,15 @@ object NerFile {
   private def jsonFilePath(directory: Path, collective: Ident): Path =
     directory.resolve(s"${collective.id}.json")
 
-  def find[F[_]: Sync: ContextShift](
+  def find[F[_]: Async](
       collective: Ident,
-      directory: Path,
-      blocker: Blocker
+      directory: Path
   ): F[Option[NerFile]] = {
     val file = jsonFilePath(directory, collective)
     File.existsNonEmpty[F](file).flatMap {
       case true =>
         File
-          .readJson[F, NerFile](file, blocker)
+          .readJson[F, NerFile](file)
           .map(_.some)
       case false =>
         (None: Option[NerFile]).pure[F]

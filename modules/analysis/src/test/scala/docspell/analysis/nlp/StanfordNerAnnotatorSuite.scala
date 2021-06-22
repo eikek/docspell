@@ -3,6 +3,7 @@ package docspell.analysis.nlp
 import java.nio.file.Paths
 
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 
 import docspell.analysis.Env
 import docspell.common._

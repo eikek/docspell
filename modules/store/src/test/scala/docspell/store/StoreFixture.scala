@@ -1,8 +1,7 @@
 package docspell.store
 
-import scala.concurrent.ExecutionContext
-
 import cats.effect._
+import cats.effect.unsafe.implicits.global
 
 import docspell.common.LenientUri
 import docspell.store.impl.StoreImpl
@@ -26,8 +25,6 @@ trait StoreFixture {
 }
 
 object StoreFixture {
-  implicit def contextShift: ContextShift[IO] =
-    IO.contextShift(ExecutionContext.global)
 
   def memoryDB(dbname: String): JdbcConfig =
     JdbcConfig(
@@ -53,10 +50,9 @@ object StoreFixture {
     val makePool = Resource.make(IO(jdbcConnPool))(cp => IO(cp.dispose()))
 
     for {
-      ec      <- ExecutionContexts.cachedThreadPool[IO]
-      blocker <- Blocker[IO]
-      pool    <- makePool
-      xa = Transactor.fromDataSource[IO].apply(pool, ec, blocker)
+      ec   <- ExecutionContexts.cachedThreadPool[IO]
+      pool <- makePool
+      xa = Transactor.fromDataSource[IO].apply(pool, ec)
     } yield xa
   }
 

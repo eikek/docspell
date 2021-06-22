@@ -1,7 +1,7 @@
 package docspell.backend.ops
 
 import cats.data.{NonEmptyList, OptionT}
-import cats.effect.{Effect, Resource}
+import cats.effect.{Async, Resource}
 import cats.implicits._
 
 import docspell.backend.JobFactory
@@ -191,7 +191,7 @@ trait OItem[F[_]] {
 
 object OItem {
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       store: Store[F],
       fts: FtsClient[F],
       queue: JobQueue[F],

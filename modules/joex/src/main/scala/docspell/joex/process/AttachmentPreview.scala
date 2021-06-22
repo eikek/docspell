@@ -98,7 +98,7 @@ object AttachmentPreview {
   def findMime[F[_]: Functor](ctx: Context[F, _])(ra: RAttachment): F[MimeType] =
     OptionT(ctx.store.transact(RFileMeta.findById(ra.fileId)))
       .map(_.mimetype)
-      .getOrElse(Mimetype.`application/octet-stream`)
+      .getOrElse(Mimetype.applicationOctetStream)
       .map(_.toLocal)
 
   def loadFile[F[_]](ctx: Context[F, _])(ra: RAttachment): Stream[F, Byte] =

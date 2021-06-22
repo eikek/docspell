@@ -16,13 +16,13 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.{Authorization, `WWW-Authenticate`}
 import org.http4s.multipart.Multipart
-import org.http4s.util.CaseInsensitiveString
 import org.log4s.getLogger
+import org.typelevel.ci.CIString
 
 object IntegrationEndpointRoutes {
   private[this] val logger = getLogger
 
-  def open[F[_]: Effect](backend: BackendApp[F], cfg: Config): HttpRoutes[F] = {
+  def open[F[_]: Async](backend: BackendApp[F], cfg: Config): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -61,12 +61,12 @@ object IntegrationEndpointRoutes {
     }
   }
 
-  def checkEnabled[F[_]: Effect](
+  def checkEnabled[F[_]: Async](
       cfg: Config.IntegrationEndpoint
   ): EitherT[F, Response[F], Unit] =
     EitherT.cond[F](cfg.enabled, (), Response.notFound[F])
 
-  def authRequest[F[_]: Effect](
+  def authRequest[F[_]: Async](
       req: Request[F],
       cfg: Config.IntegrationEndpoint
   ): EitherT[F, Response[F], Unit] = {
@@ -77,7 +77,7 @@ object IntegrationEndpointRoutes {
     service.run(req).toLeft(())
   }
 
-  def lookupCollective[F[_]: Effect](
+  def lookupCollective[F[_]: Async](
       coll: Ident,
       backend: BackendApp[F]
   ): EitherT[F, Response[F], Unit] =
@@ -86,7 +86,7 @@ object IntegrationEndpointRoutes {
       res <- EitherT.cond[F](opt.exists(_.integrationEnabled), (), Response.notFound[F])
     } yield res
 
-  def uploadFile[F[_]: Effect](
+  def uploadFile[F[_]: Async](
       coll: Ident,
       backend: BackendApp[F],
       cfg: Config,
@@ -111,48 +111,48 @@ object IntegrationEndpointRoutes {
   }
 
   object HeaderAuth {
-    def apply[F[_]: Effect](cfg: Config.IntegrationEndpoint.HttpHeader): HttpRoutes[F] =
+    def apply[F[_]: Async](cfg: Config.IntegrationEndpoint.HttpHeader): HttpRoutes[F] =
       if (cfg.enabled) checkHeader(cfg)
       else HttpRoutes.empty[F]
 
-    def checkHeader[F[_]: Effect](
+    def checkHeader[F[_]: Async](
         cfg: Config.IntegrationEndpoint.HttpHeader
     ): HttpRoutes[F] =
       HttpRoutes { req =>
-        val h = req.headers.find(_.name == CaseInsensitiveString(cfg.headerName))
-        if (h.exists(_.value == cfg.headerValue)) OptionT.none[F, Response[F]]
+        val h = req.headers.get(CIString(cfg.headerName))
+        if (h.exists(_.head.value == cfg.headerValue)) OptionT.none[F, Response[F]]
         else OptionT.pure(Responses.forbidden[F])
       }
   }
 
   object SourceIpAuth {
-    def apply[F[_]: Effect](cfg: Config.IntegrationEndpoint.AllowedIps): HttpRoutes[F] =
+    def apply[F[_]: Async](cfg: Config.IntegrationEndpoint.AllowedIps): HttpRoutes[F] =
       if (cfg.enabled) checkIps(cfg)
       else HttpRoutes.empty[F]
 
-    def checkIps[F[_]: Effect](
+    def checkIps[F[_]: Async](
         cfg: Config.IntegrationEndpoint.AllowedIps
     ): HttpRoutes[F] =
       HttpRoutes { req =>
         //The `req.from' take the X-Forwarded-For header into account,
         //which is not desirable here. The `http-header' auth config
         //can be used to authenticate based on headers.
-        val from = req.remote.flatMap(remote => Option(remote.getAddress))
+        val from = req.remote.map(_.host)
         if (from.exists(cfg.containsAddress)) OptionT.none[F, Response[F]]
         else OptionT.pure(Responses.forbidden[F])
       }
   }
 
   object HttpBasicAuth {
-    def apply[F[_]: Effect](cfg: Config.IntegrationEndpoint.HttpBasic): HttpRoutes[F] =
+    def apply[F[_]: Async](cfg: Config.IntegrationEndpoint.HttpBasic): HttpRoutes[F] =
       if (cfg.enabled) checkHttpBasic(cfg)
       else HttpRoutes.empty[F]
 
-    def checkHttpBasic[F[_]: Effect](
+    def checkHttpBasic[F[_]: Async](
         cfg: Config.IntegrationEndpoint.HttpBasic
     ): HttpRoutes[F] =
       HttpRoutes { req =>
-        req.headers.get(Authorization) match {
+        req.headers.get[Authorization] match {
           case Some(auth) =>
             auth.credentials match {
               case BasicCredentials(user, pass)

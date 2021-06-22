@@ -1,6 +1,6 @@
 package docspell.backend.ops
 
-import cats.effect.{Effect, Resource}
+import cats.effect.{Async, Resource}
 import cats.implicits._
 
 import docspell.common.{AccountId, Ident}
@@ -25,7 +25,7 @@ trait OTag[F[_]] {
 
 object OTag {
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OTag[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, OTag[F]] =
     Resource.pure[F, OTag[F]](new OTag[F] {
       def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[RTag]] =
         store.transact(RTag.findAll(account.collective, nameQuery, _.name))

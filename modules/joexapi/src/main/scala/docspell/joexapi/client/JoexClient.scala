@@ -9,9 +9,9 @@ import docspell.common.syntax.all._
 import docspell.common.{Ident, LenientUri}
 import docspell.joexapi.model.BasicResult
 
-import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.blaze.client.BlazeClientBuilder
+import org.http4s.circe.CirceEntityDecoder
 import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.{Method, Request, Uri}
 import org.log4s.getLogger
 
@@ -29,8 +29,9 @@ object JoexClient {
 
   private[this] val logger = getLogger
 
-  def apply[F[_]: Sync](client: Client[F]): JoexClient[F] =
-    new JoexClient[F] {
+  def apply[F[_]: Async](client: Client[F]): JoexClient[F] =
+    new JoexClient[F] with CirceEntityDecoder {
+
       def notifyJoex(base: LenientUri): F[BasicResult] = {
         val notifyUrl = base / "api" / "v1" / "notify"
         val req       = Request[F](Method.POST, uri(notifyUrl))
@@ -62,6 +63,6 @@ object JoexClient {
         Uri.unsafeFromString(u.asString)
     }
 
-  def resource[F[_]: ConcurrentEffect](ec: ExecutionContext): Resource[F, JoexClient[F]] =
+  def resource[F[_]: Async](ec: ExecutionContext): Resource[F, JoexClient[F]] =
     BlazeClientBuilder[F](ec).resource.map(apply[F])
 }
