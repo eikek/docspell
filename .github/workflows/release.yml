@@ -21,6 +21,8 @@ jobs:
         with:
           elm-version: 0.19.1
       - uses: bahmutov/npm-install@v1
+        with:
+          working-directory: modules/webapp
       - name: Coursier cache
         uses: coursier/cache-action@v6
       - name: Set current version
