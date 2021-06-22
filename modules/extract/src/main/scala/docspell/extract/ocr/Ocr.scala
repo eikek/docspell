@@ -80,8 +80,7 @@ object Ocr {
       )
     SystemCommand
       .execSuccess(cmd, logger, wd = Some(wd), stdin = pdf)
-      .evalMap(_ => File.listJFiles(pathEndsWith(".tif"), wd))
-      .flatMap(fs => Stream.emits(fs))
+      .flatMap(_ => File.listFiles(pathEndsWith(".tif"), wd))
   }
 
   /** Run ghostscript to extract all pdf pages into tiff files. The
@@ -101,8 +100,7 @@ object Ocr {
     )
     SystemCommand
       .execSuccess[F](cmd, logger, wd = Some(wd))
-      .evalMap(_ => File.listJFiles(pathEndsWith(".tif"), wd))
-      .flatMap(fs => Stream.emits(fs))
+      .flatMap(_ => File.listFiles(pathEndsWith(".tif"), wd))
   }
 
   private def pathEndsWith(ext: String): Path => Boolean =
