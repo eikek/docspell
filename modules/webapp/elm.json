@@ -1,8 +1,8 @@
 {
     "type": "application",
     "source-directories": [
-        "modules/webapp/src/main/elm",
-        "modules/webapp/target/elm-src"
+        "src/main/elm",
+        "target/elm-src"
     ],
     "elm-version": "0.19.1",
     "dependencies": {

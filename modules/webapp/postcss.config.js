@@ -15,9 +15,9 @@ const prodPlugins =
           require("autoprefixer"),
           require("@fullhuman/postcss-purgecss")({
               content: [
-                  "./modules/webapp/src/main/elm/**/*.elm",
-                  "./modules/webapp/src/main/styles/keep.txt",
-                  "./modules/restserver/src/main/templates/*.html"
+                  "./src/main/elm/**/*.elm",
+                  "./src/main/styles/keep.txt",
+                  "../restserver/src/main/templates/*.html"
               ],
               defaultExtractor: content => content.match(/[A-Za-z0-9-_:/\.]+/g) || []
           }),

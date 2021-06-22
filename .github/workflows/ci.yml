@@ -16,6 +16,8 @@ jobs:
         with:
           elm-version: 0.19.1
       - uses: bahmutov/npm-install@v1
+        with:
+          working-directory: modules/webapp
       - name: Fetch tags
         run: git fetch --depth=100 origin +refs/tags/*:refs/tags/*
       - uses: olafurpg/setup-scala@v12

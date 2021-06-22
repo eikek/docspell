@@ -50,7 +50,7 @@ object StylesPlugin extends AutoPlugin {
         val npm    = stylesNpmCommand.value
         val inDir  = stylesDirectory.value
         val outDir = stylesOutputDir.value
-        val wd     = (LocalRootProject / baseDirectory).value
+        val wd     = (Compile / baseDirectory).value
         val mode   = stylesMode.value
         npmInstall(npm, wd, logger)
         val files = postCss(npx, inDir, outDir, wd, mode, logger) ++
