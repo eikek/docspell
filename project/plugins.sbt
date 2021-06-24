@@ -1,7 +1,7 @@
 addSbtPlugin("ch.epfl.scala"      % "sbt-scalafix"             % "0.9.29")
 addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"            % "0.10.0")
 addSbtPlugin("com.github.eikek"   % "sbt-openapi-schema"       % "0.8.1")
-addSbtPlugin("com.github.sbt"     % "sbt-release"              % "1.0.15")
+addSbtPlugin("com.github.sbt"     % "sbt-release"              % "1.1.0")
 addSbtPlugin("com.github.sbt"     % "sbt-pgp"                  % "2.1.2")
 addSbtPlugin("io.kevinlee"        % "sbt-github-pages"         % "0.5.0")
 addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                  % "1.0.1")
