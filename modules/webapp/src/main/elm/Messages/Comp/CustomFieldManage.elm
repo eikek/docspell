@@ -33,6 +33,6 @@ de =
     { basics = Messages.Basics.de
     , fieldForm = Messages.Comp.CustomFieldForm.de
     , fieldTable = Messages.Comp.CustomFieldTable.de
-    , addCustomField = "Ein neues Benutzer-Feld anlegen"
-    , newCustomField = "Neues Benutzer-Feld"
+    , addCustomField = "Ein neues Benutzerfeld anlegen"
+    , newCustomField = "Neues Benutzerfeld"
     }

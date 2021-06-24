@@ -53,7 +53,7 @@ de =
     , autoTaggingText =
         """
 
-Das Auto-Tagging funktioniert über das Lernen aus bereits
+Das automatische Taggen funktioniert über das Lernen aus bereits
 existierenden Dokumenten. Je mehr Dokumente korrekt getagged sind,
 desto besser. Das Lernen passiert regelmäßig nach einem Zeitplan. Hier
 können Tag-Gruppen definiert werden, die entweder nicht gelernt werden

@@ -81,10 +81,10 @@ de =
             "Es wurden "
                 ++ String.fromInt n
                 ++ " Dokumente durch diese Quelle erzeugt."
-    , publicUploadPage = "Öffentliche Upload Webseite"
+    , publicUploadPage = "Öffentliche Upload-Webseite"
     , copyToClipboard = "In die Zwischenablage kopieren"
     , openInNewTab = "Im neuen Tab/Fenster öffnen"
-    , publicUploadUrl = "Öffentliche API Upload URL"
+    , publicUploadUrl = "Öffentliche API-Upload-URL"
     , reallyDeleteSource = "Diese Quelle wirklich entfernen?"
     , createNewSource = "Neue Quelle erstellen"
     , deleteThisSource = "Quelle löschen"

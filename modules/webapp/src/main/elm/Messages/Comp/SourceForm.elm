@@ -63,11 +63,11 @@ de =
     , description = "Beschreibung"
     , enabled = "Aktiviert"
     , priority = "Priorität"
-    , priorityInfo = "Die Priorität, die für die Hintergrund-Jobs zur Verarbeitung der Dokument verwendet wird."
+    , priorityInfo = "Die Priorität, die für die Hintergrundaufgabe zur Verarbeitung der Dokument verwendet wird."
     , metadata = "Metadaten"
     , metadataInfoText =
         "Die hier definierten Metadaten werden automatisch an das Dokument angefügt, welches durch diese "
-            ++ "Quelle hochgeladen wurde. Es kann im Upload-Request direkt nochmals überschrieben "
+            ++ "Quelle hochgeladen wurde. Es kann im Hochladeformular direkt nochmals überschrieben "
             ++ "oder (bei Tags) erweitert werden."
     , folderInfo = "Wähle einen Ordner mit dem die Dokumente automatisch verknüpft werden sollen."
     , tagsInfo = "Wähle Tags, die automatisch angefügt werden sollen."
@@ -76,14 +76,14 @@ de =
 
 Hier kann ein "glob" definiert werden, um nur bestimmte Dateien *aus
 Archiven* (zip oder E-Mail) zu importieren und die anderen zu
-ignorieren. Zum Beispiel: um nur PDF Dateien aus E-Mails zu
+ignorieren. Zum Beispiel: um nur PDF-Dateien aus E-Mails zu
 importieren: `*.pdf`. Globs können auch mittels OR kombiniert werden:
 `*.pdf|mail.html`.
 
 """
     , language = "Sprache"
     , languageInfo =
-        "Wird für Text-Extraktion und -Analyse verwendet. Die Standard-Sprache des Kollektivs "
+        "Wird für Texterkennung und -analyse verwendet. Die Standardsprache des Kollektivs "
             ++ "wird verwendet, falls hier nicht angegeben."
     , languageLabel = Messages.Data.Language.de
     }

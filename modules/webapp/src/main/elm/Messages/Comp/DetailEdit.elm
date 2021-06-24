@@ -66,5 +66,5 @@ de =
     , addPersonHeader = "Person anlegen"
     , addOrgHeader = "Unternehmen anlegen"
     , addEquipmentHeader = "Ausstattung anlegen"
-    , addCustomFieldHeader = "Benutzer-Feld anlegen"
+    , addCustomFieldHeader = "Benutzerfeld anlegen"
     }
