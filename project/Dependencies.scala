@@ -29,6 +29,7 @@ object Dependencies {
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.3"
   val MUnitVersion            = "0.7.26"
+  val MUnitCatsEffectVersion  = "1.0.5"
   val OrganizeImportsVersion  = "0.5.0"
   val PdfboxVersion           = "2.0.24"
   val PoiVersion              = "4.1.2"
@@ -265,8 +266,9 @@ object Dependencies {
   )
 
   val munit = Seq(
-    "org.scalameta" %% "munit"            % MUnitVersion,
-    "org.scalameta" %% "munit-scalacheck" % MUnitVersion
+    "org.scalameta" %% "munit"               % MUnitVersion,
+    "org.scalameta" %% "munit-scalacheck"    % MUnitVersion,
+    "org.typelevel" %% "munit-cats-effect-3" % MUnitCatsEffectVersion
   )
 
   val kindProjectorPlugin = "org.typelevel" %% "kind-projector"     % KindProjectorVersion

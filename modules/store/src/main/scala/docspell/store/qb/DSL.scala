@@ -215,6 +215,19 @@ trait DSL extends DoobieMeta {
     def in(subsel: Select): Condition =
       Condition.InSubSelect(col, subsel)
 
+    def >(subsel: Select): Condition =
+      Condition.CompareSelect(col.s, Operator.Gt, subsel)
+    def <(subsel: Select): Condition =
+      Condition.CompareSelect(col.s, Operator.Lt, subsel)
+    def >=(subsel: Select): Condition =
+      Condition.CompareSelect(col.s, Operator.Gte, subsel)
+    def <=(subsel: Select): Condition =
+      Condition.CompareSelect(col.s, Operator.Lte, subsel)
+    def ===(subsel: Select): Condition =
+      Condition.CompareSelect(col.s, Operator.Eq, subsel)
+    def !==(subsel: Select): Condition =
+      Condition.CompareSelect(col.s, Operator.Neq, subsel)
+
     def notIn(subsel: Select): Condition =
       in(subsel).negate
 

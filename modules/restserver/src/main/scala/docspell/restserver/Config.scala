@@ -42,14 +42,13 @@ object Config {
     case class HttpHeader(enabled: Boolean, headerName: String, headerValue: String)
     case class AllowedIps(enabled: Boolean, ips: Set[String]) {
 
-      def containsAddress(inet: IpAddress): Boolean = {
-        val ip           = inet.fold(_.toUriString, _.toUriString) //.getHostAddress
+      def containsAddress(ipa: IpAddress): Boolean = {
+        val inet         = ipa.toInetAddress
+        val ip           = inet.getHostAddress
         lazy val ipParts = ip.split('.')
 
         def checkSingle(pattern: String): Boolean =
-          pattern == ip || (ip.contains(
-            "localhost"
-          ) && pattern == "127.0.0.1") || (pattern
+          pattern == ip || (inet.isLoopbackAddress && pattern == "127.0.0.1") || (pattern
             .split('.')
             .zip(ipParts)
             .foldLeft(true) { case (r, (a, b)) =>

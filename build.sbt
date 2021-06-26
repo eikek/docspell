@@ -8,6 +8,9 @@ val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 // --- Settings
 
+def inTest(d0: Seq[ModuleID], ds: Seq[ModuleID]*) =
+  ds.fold(d0)(_ ++ _).map(_ % Test)
+
 val scalafixSettings = Seq(
   semanticdbEnabled := true,                        // enable SemanticDB
   semanticdbVersion := scalafixSemanticdb.revision, //"4.4.0"
@@ -45,7 +48,7 @@ val sharedSettings = Seq(
 ) ++ scalafixSettings
 
 val testSettingsMUnit = Seq(
-  libraryDependencies ++= Dependencies.munit.map(_ % Test),
+  libraryDependencies ++= inTest(Dependencies.munit, Dependencies.logging),
   testFrameworks += new TestFramework("munit.Framework")
 )
 

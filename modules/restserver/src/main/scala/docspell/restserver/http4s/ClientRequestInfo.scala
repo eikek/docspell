@@ -41,7 +41,8 @@ object ClientRequestInfo {
     req.headers
       .get[`X-Forwarded-For`]
       .flatMap(_.values.head)
-      .map(ip => ip.fold(_.toUriString, _.toUriString))
+      .map(_.toInetAddress)
+      .flatMap(inet => Option(inet.getHostName).orElse(Option(inet.getHostAddress)))
 
   private def xForwardedHost[F[_]](req: Request[F]): Option[String] =
     req.headers

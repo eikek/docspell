@@ -1,27 +1,33 @@
 package docspell.store
 
 import cats.effect._
-import cats.effect.unsafe.implicits.global
 
 import docspell.common.LenientUri
 import docspell.store.impl.StoreImpl
 
 import doobie._
+import munit._
 import org.h2.jdbcx.JdbcConnectionPool
 
-trait StoreFixture {
-  def withStore(db: String)(code: Store[IO] => IO[Unit]): Unit = {
-    //StoreFixture.store(StoreFixture.memoryDB(db)).use(code).unsafeRunSync()
-    val jdbc  = StoreFixture.memoryDB(db)
-    val xa    = StoreFixture.globalXA(jdbc)
-    val store = new StoreImpl[IO](jdbc, xa)
-    store.migrate.unsafeRunSync()
-    code(store).unsafeRunSync()
+trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
+
+  val xa = ResourceFixture {
+    val cfg = StoreFixture.memoryDB("test")
+    for {
+      xa <- StoreFixture.makeXA(cfg)
+      store = new StoreImpl[IO](cfg, xa)
+      _ <- Resource.eval(store.migrate)
+    } yield xa
   }
 
-  def withXA(db: String)(code: Transactor[IO] => IO[Unit]): Unit =
-    StoreFixture.makeXA(StoreFixture.memoryDB(db)).use(code).unsafeRunSync()
-
+  val store = ResourceFixture {
+    val cfg = StoreFixture.memoryDB("test")
+    for {
+      xa <- StoreFixture.makeXA(cfg)
+      store = new StoreImpl[IO](cfg, xa)
+      _ <- Resource.eval(store.migrate)
+    } yield store
+  }
 }
 
 object StoreFixture {
