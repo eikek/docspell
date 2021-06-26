@@ -36,4 +36,7 @@ object RJobGroupUse {
 
   def findGroup(workerId: Ident): ConnectionIO[Option[Ident]] =
     run(select(T.group), from(T), T.worker === workerId).query[Ident].option
+
+  def deleteAll: ConnectionIO[Int] =
+    DML.delete(T, T.group.isNotNull)
 }
