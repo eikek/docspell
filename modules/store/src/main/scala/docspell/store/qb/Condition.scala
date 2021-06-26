@@ -19,6 +19,9 @@ object Condition {
       val P: Put[A]
   ) extends Condition
 
+  case class CompareSelect(sel: SelectExpr, op: Operator, subSelect: Select)
+      extends Condition
+
   case class CompareCol[A](col1: Column[A], op: Operator, col2: Column[A])
       extends Condition
 

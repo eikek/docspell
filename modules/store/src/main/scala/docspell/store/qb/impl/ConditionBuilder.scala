@@ -100,6 +100,19 @@ object ConditionBuilder {
         }
         c1Frag ++ operator(op) ++ c2Frag
 
+      case Condition.CompareSelect(col, op, subsel) =>
+        val opFrag = operator(op)
+        val colFrag = op match {
+          case Operator.LowerLike =>
+            lower(col)
+          case Operator.LowerEq =>
+            lower(col)
+          case _ =>
+            SelectExprBuilder.build(col)
+        }
+        val sub = SelectBuilder(subsel)
+        colFrag ++ opFrag ++ sql"(" ++ sub ++ sql")"
+
       case Condition.InSubSelect(col, subsel) =>
         val sub = SelectBuilder(subsel)
         SelectExprBuilder.column(col) ++ sql" IN (" ++ sub ++ parenClose
