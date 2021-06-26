@@ -48,6 +48,7 @@ watch_both() {
 
 }
 
+cd "$wdir/modules/webapp"
 case "$1" in
     all)
         compile_js
