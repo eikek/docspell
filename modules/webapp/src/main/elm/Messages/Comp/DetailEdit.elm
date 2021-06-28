@@ -64,7 +64,7 @@ de =
     , missingRequiredFields = "Bitte die erforderlichen Felder ausfüllen."
     , addTagHeader = "Tag anlegen"
     , addPersonHeader = "Person anlegen"
-    , addOrgHeader = "Unternehmen anlegen"
+    , addOrgHeader = "Organisation anlegen"
     , addEquipmentHeader = "Ausstattung anlegen"
     , addCustomFieldHeader = "Benutzerfeld anlegen"
     }

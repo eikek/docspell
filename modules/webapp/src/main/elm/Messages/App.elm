@@ -36,8 +36,8 @@ gb =
 
 de : Texts
 de =
-    { collectiveProfile = "Kollektiv-Profil"
-    , userProfile = "Benutzer-Profil"
+    { collectiveProfile = "Kollektivprofil"
+    , userProfile = "Benutzerprofil"
     , lightDark = "Hell/Dunkel"
     , logout = "Abmelden"
     , items = "Dokumente"

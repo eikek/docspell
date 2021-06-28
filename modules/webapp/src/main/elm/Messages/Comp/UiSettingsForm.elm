@@ -176,9 +176,9 @@ Variablen sind verfügbar:
 - `{{name}}` Der Name
 - `{{source}}` die Quelle durch welche das Dokument entstand
 - `{{folder}}` der Ordner
-- `{{corrOrg}}` das korrespondierende Unternehmen
+- `{{corrOrg}}` die korrespondierende Organisation
 - `{{corrPerson}}` die korrespondierende Person
-- `{{correspondent}}` Unternehmen und Person, getrennt durch ein Komma
+- `{{correspondent}}` Organisation und Person, getrennt durch ein Komma
 - `{{concPerson}}` die betreffende Person
 - `{{concEquip}}` die betreffende Aussstattung
 - `{{concerning}}` Person und Ausstattung, getrennt durch ein Komma
@@ -192,7 +192,7 @@ Variablen sind verfügbar:
 Wenn eine Variable nicht vorhanden ist, wird eine leere Zeichenkette
 geschrieben. Mit einem `|` können mehrere Variablen hintereinander
 verknüpft werden, bis zur ersten die einen Wert enthält. Zum Beispiel:
-`{{corrOrg|corrPerson|-}}` würde entweder das Unternehmen darstellen
+`{{corrOrg|corrPerson|-}}` würde entweder die Organisation darstellen
 oder, wenn diese leer ist, die Person. Sind beide leer wird ein `-`
 dargestellt.
 """

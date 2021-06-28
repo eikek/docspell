@@ -84,25 +84,25 @@ de =
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.de
     , notificationManage = Messages.Comp.NotificationManage.de
     , scanMailboxManage = Messages.Comp.ScanMailboxManage.de
-    , userSettings = "Benutzer Einstellung"
+    , userSettings = "Benutzereinstellung"
     , uiSettings = "Oberfläche"
-    , notifications = "Notifizierungen"
-    , scanMailbox = "E-Mail Import"
-    , emailSettingSmtp = "E-Mail Einstellung (SMTP)"
-    , emailSettingImap = "E-Mail Einstellung (IMAP)"
+    , notifications = "Benachrichtigungen"
+    , scanMailbox = "E-Mail-Import"
+    , emailSettingSmtp = "E-Mail-Einstellung (SMTP)"
+    , emailSettingImap = "E-Mail-Einstellung (IMAP)"
     , changePassword = "Passwort ändern"
     , uiSettingsInfo =
         "Diese Einstellungen sind für die Web-Oberfläche."
     , notificationInfoText =
         """
          Docspell kann eine E-Mail versenden, sobald das
-         Fälligkeits-Datum von Dokumenten näher kommt. Dafür muss eine
-         Email SMTP Verbindung konfiguriert werden.."""
+         Fälligkeitsdatum von Dokumenten näher kommt. Dafür muss eine
+         E-Mail-SMTP-Verbindung konfiguriert werden.."""
     , notificationRemindDaysInfo =
         "Docspell sucht Dokumente die in X Tagen fällig sind und sendet diese Liste als E-Mail."
     , scanMailboxInfo1 =
         """Docspell kann Postfächer durchsuchen und E-Mails importieren. Dafür sind
-Email (IMAP) Einstellungen notwendig."""
+E-Mail-Einstellungen (IMAP) notwendig."""
     , scanMailboxInfo2 =
         """
             Docspell durchsucht alle konfigurierten Ordner in einem
@@ -111,7 +111,7 @@ Email (IMAP) Einstellungen notwendig."""
             schon importiert wurden (und das Dokument noch existiert).
             Nachdem eine E-Mail in Docspell importiert ist, kann sie
             gelöscht, in einen anderen Ordner verschoben werden oder
-            sie kann einfach belassen werden. Für den letzteren Fall
+            sie kann unberührt belassen werden. Für den letzteren Fall
             ist es gut, die Kriterien so zu gestalten, dass die
             gleichen E-Mails möglichst nicht noch einmal eingelesen
             werden."""

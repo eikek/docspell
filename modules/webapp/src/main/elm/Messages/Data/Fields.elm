@@ -56,31 +56,31 @@ de field =
             "Ordner"
 
         CorrOrg ->
-            "Korrespondent Organisation"
+            "Korrespondierende Organisation"
 
         CorrPerson ->
-            "Korrespondent Person"
+            "Korrespondierende Person"
 
         ConcPerson ->
-            "Betreffend Person"
+            "Betreffende Person"
 
         ConcEquip ->
-            "Betreffend Zubehör"
+            "Betreffende Ausstattung"
 
         Date ->
             "Datum"
 
         DueDate ->
-            "Fälligkeits-Datum"
+            "Fälligkeitsdatum"
 
         Direction ->
             "Richtung"
 
         PreviewImage ->
-            "Vorschau Bild"
+            "Vorschaubild"
 
         CustomFields ->
-            "Benutzer Felder"
+            "Benutzerfelder"
 
         SourceName ->
             "Quelle"

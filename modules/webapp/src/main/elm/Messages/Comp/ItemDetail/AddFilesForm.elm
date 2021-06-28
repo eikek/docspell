@@ -35,7 +35,7 @@ de : Texts
 de =
     { dropzone = Messages.Comp.Dropzone.de
     , basics = Messages.Basics.de
-    , addMoreFilesToItem = "Mehr Anhänge hinzufügen"
+    , addMoreFilesToItem = "Weitere Anhänge hinzufügen"
     , reset = "Zurücksetzen"
     , filesSubmittedInfo =
         "Alle Dateien wurden hochgeladen und werden jetzt verarbeitet. Einige Daten "
