@@ -48,5 +48,5 @@ de =
     , addNewSmtpSettings = "Neue SMTP-Einstellungen hinzufügen"
     , reallyDeleteConnection = "Diese Verbindung wirklich löschen?"
     , deleteThisEntry = "Verbindung löschen"
-    , fillRequiredFields = "Bitte erforderliche Felder ausfüllen."
+    , fillRequiredFields = "Bitte die erforderlichen Felder ausfüllen."
     }

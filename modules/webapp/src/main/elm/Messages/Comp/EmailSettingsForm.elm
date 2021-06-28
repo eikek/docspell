@@ -66,9 +66,9 @@ de =
     , smtpPassword = "SMTP-Passwort"
     , smtpPasswordPlaceholder = "Passwort"
     , fromAddress = "Absenderadresse"
-    , fromAddressPlaceholder = "E-Mail-Addresse des Absenders"
+    , fromAddressPlaceholder = "E-Mail-Adresse des Absenders"
     , replyTo = "Antwort an"
-    , replyToPlaceholder = "Optionale Antwortaddresse"
+    , replyToPlaceholder = "Optionale Antwortadresse"
     , ssl = "SSL"
     , ignoreCertCheck = "Zertifikatsprüfung ignorieren"
     }

@@ -48,5 +48,5 @@ de =
     , newSettings = "Neue Verbindung"
     , reallyDeleteSettings = "Diese Verbindung wirklich löschen?"
     , deleteThisEntry = "Lösche diese Verbindung"
-    , fillRequiredFields = "Bitte erforderliche Felder ausfüllen."
+    , fillRequiredFields = "Bitte die erforderlichen Felder ausfüllen."
     }

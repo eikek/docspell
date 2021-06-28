@@ -63,7 +63,7 @@ de =
     , description = "Beschreibung"
     , enabled = "Aktiviert"
     , priority = "Priorität"
-    , priorityInfo = "Die Priorität, die für die Hintergrundaufgabe zur Verarbeitung der Dokument verwendet wird."
+    , priorityInfo = "Die Priorität, die für die Hintergrundaufgabe zur Verarbeitung verwendet wird."
     , metadata = "Metadaten"
     , metadataInfoText =
         "Die hier definierten Metadaten werden automatisch an das Dokument angefügt, welches durch diese "
@@ -83,7 +83,7 @@ importieren: `*.pdf`. Globs können auch mittels OR kombiniert werden:
 """
     , language = "Sprache"
     , languageInfo =
-        "Wird für Texterkennung und -analyse verwendet. Die Standardsprache des Kollektivs "
+        "Wird für die Texterkennung und -analyse verwendet. Die Standardsprache des Kollektivs "
             ++ "wird verwendet, falls hier nicht angegeben."
     , languageLabel = Messages.Data.Language.de
     }

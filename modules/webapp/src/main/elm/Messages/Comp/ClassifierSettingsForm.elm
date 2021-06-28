@@ -55,17 +55,17 @@ de =
 
 Das automatische Taggen funktioniert über das Lernen aus bereits
 existierenden Dokumenten. Je mehr Dokumente korrekt getagged sind,
-desto besser. Das Lernen passiert regelmäßig nach einem Zeitplan. Hier
+desto besser. Das Lernen geschieht regelmäßig nach einem Zeitplan. Hier
 können Tag-Gruppen definiert werden, die entweder nicht gelernt werden
-sollen (blacklist) oder ausschließlich gelernt werden sollen
-(whitelist).
+sollen (Blacklist) oder ausschließlich gelernt werden sollen
+(Whitelist).
 
 Eine leere Whitelist stellt das Auto-Tagging ab.
 """
     , blacklistOrWhitelist = "Ist das folgende eine Blacklist oder eine Whitelist?"
     , whitelistLabel = "EINschließen der Tag-Kategorien"
     , blacklistLabel = "AUSschließen der Tag-Kategorien"
-    , itemCount = "Anzahl Dokumente"
+    , itemCount = "Anzahl"
     , schedule = "Zeitplan"
     , itemCountHelp = "Die maximale Anzahl an Dokumenten, von denen gelernt werden soll (sortiert nach Datum, neueste zuerst). Verwende 0 um alle einzuschließen."
     }
