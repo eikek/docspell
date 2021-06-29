@@ -53,8 +53,8 @@ de =
     , chooseDirection = "Wähle eine Richtung…"
     , confirmUnconfirm = "Bestätige/Widerrufe Metadaten"
     , confirm = "Bestätige"
-    , unconfirm = "Widerufe Betätigung"
-    , changeTagMode = "Wechsel den Änderungs-Modus für Tags"
-    , dueDateTab = "Fälligkeits-Datum"
+    , unconfirm = "Widerrufe Bestätigung"
+    , changeTagMode = "Wechsel den Änderungsmodus für Tags"
+    , dueDateTab = "Fälligkeitsdatum"
     , direction = Messages.Data.Direction.de
     }

@@ -35,9 +35,9 @@ de : Texts
 de =
     { searchMenu = Messages.Comp.SearchMenu.de
     , multiEdit = Messages.Comp.ItemDetail.MultiEditMenu.de
-    , editMode = "Änderungs-Modus"
-    , resetSearchForm = "Such-Formular zurücksetzen"
-    , multiEditHeader = "Mehre Dokumente ändern"
+    , editMode = "Änderungsmodus"
+    , resetSearchForm = "Suchformular zurücksetzen"
+    , multiEditHeader = "Mehrere Dokumente ändern"
     , multiEditInfo = "Beachte, dass eine Änderung hier direkt auf alle gewählten Dokumente angwendet wird!"
     , close = "Schließen"
     }

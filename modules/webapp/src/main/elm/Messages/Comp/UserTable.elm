@@ -40,5 +40,5 @@ de =
     , email = "E-Mail"
     , logins = "Anmeldungen"
     , lastLogin = "Letzte Anmeldung"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
     }

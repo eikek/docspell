@@ -32,7 +32,7 @@ de pu =
             "Betreffend"
 
         Both ->
-            "Beide"
+            "Beides"
 
         Disabled ->
             "Deaktiviert"

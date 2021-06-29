@@ -33,8 +33,8 @@ gb =
 de : Texts
 de =
     { basics = Messages.Basics.de
-    , itemDate = "Dokument Datum"
-    , dueDate = "Fälligkeits-Datum"
+    , itemDate = "Datum"
+    , dueDate = "Fälligkeitsdatum"
     , source = "Quelle"
     , new = "Neu"
     , formatDate = DF.formatDateLong Messages.UiLanguage.German

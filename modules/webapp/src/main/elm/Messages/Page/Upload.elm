@@ -74,7 +74,7 @@ de =
     , skipExistingFiles = "Lasse Dateien aus, die schon in Docspell sind"
     , language = "Sprache"
     , languageInfo =
-        "Wird für Text-Extraktion und -Analyse verwendet. Die Standard-Sprache des Kollektivs "
+        "Wird für Texterkennung und -analyse verwendet. Die Standardsprache des Kollektivs "
             ++ "wird verwendet, falls hier nicht angegeben."
     , uploadErrorMessage = "Es gab Fehler beim Hochladen der Dateien."
     , successBox =
@@ -82,13 +82,13 @@ de =
         , line1 =
             "Deine Dateien wurden erfolgreich hochgeladen und sie werden nun verarbeitet. "
                 ++ "Gehe nachher zur "
-        , itemsPage = "Dokument-Seite"
-        , line2 = " wo die Dateien als Dokumente erscheinen werden. Oder schau zur "
-        , processingPage = "Verarbeitungs-Seite"
-        , line3 = " welche einen Einblick in die Verarbeitung gibt."
+        , itemsPage = "Hauptseite"
+        , line2 = " wo die Dateien als Dokumente erscheinen werden oder gehe zur "
+        , processingPage = "Verarbeitungsseite,"
+        , line3 = " welche einen Einblick in den aktuellen Status gibt."
         , resetLine1 = " Klicke "
         , reset = "Zurücksetzen"
-        , resetLine2 = " um mehr Dateien hochzuladen."
+        , resetLine2 = " um weitere Dateien hochzuladen."
         }
     , selectedFiles = "Ausgewählte Dateien"
     , languageLabel = Messages.Data.Language.de

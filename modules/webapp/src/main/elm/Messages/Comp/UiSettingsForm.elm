@@ -127,9 +127,9 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , general = "Allgemein"
-    , showSideMenuByDefault = "Seitenmenü standardmäßig anzeigen"
+    , showSideMenuByDefault = "Menü an der linken Seite standardmäßig anzeigen"
     , uiLanguage = "Sprache der Oberfläche"
-    , itemSearch = "Dokumentensuche"
+    , itemSearch = "Suchansicht"
     , maxResultsPerPageInfo =
         \max ->
             "Maximale Anzahl von Resultaten in einer Seite. Maximal "
@@ -138,11 +138,11 @@ de =
     , maxResultsPerPage = "Anzahl pro Seite"
     , showBasicSearchStatsByDefault = "Zeige einfache Statistiken zum Suchresultat an"
     , enablePowerSearch = "Die 'Power-Suche' aktivieren"
-    , itemCards = "Dokumentenkachel"
+    , itemCards = "Kachelansicht"
     , maxNoteSize = "Max. Länge der Notizen"
     , maxNoteSizeInfo =
         \max ->
-            "Maximale Länge der Dokumentennotizen, die in der Kachel dargestellt werden. Zwischen 0 - "
+            "Maximale Länge der Notizen, die in der Kachel dargestellt werden. Zwischen 0 - "
                 ++ String.fromInt max
                 ++ "."
     , sizeOfItemPreview = "Größe der Vorschau (kann bei Feldern unten ganz ausgeschaltet werden)"
@@ -156,7 +156,7 @@ de =
     , searchMenuCatCountInfo = "So viele Tag-Kategorien werden gleichzeitig im Suchmenü dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
     , searchMenuFolderCount = "Anzahl von Ordnern"
     , searchMenuFolderCountInfo = "So viele Ordner werden gleichzeitig im Suchmenü dargestellt. Weitere können ausgeklappt werden. Verwende 0, um alle anzuzeigen."
-    , itemDetail = "Dokumentendetail"
+    , itemDetail = "Detailansicht"
     , browserNativePdfView = "Browsereigene PDF-Vorschau"
     , keyboardShortcutLabel = "Aktivere Tastenkürzel zur Navigation und zum Bestätigen der Metadaten"
     , tagCategoryColors = "Tag-Kategoriefarben"
@@ -168,26 +168,26 @@ de =
     , fieldLabel = Messages.Data.Fields.de
     , templateHelpMessage =
         """
-Ein Template erlaubt es, den Titel und Untertitel einer Kachel
-individuel anzupassen. Dabei werden Variablen innerhalb `{{` und `}}`
+Eine Vorlage erlaubt es, den Titel und Untertitel einer Kachel
+individuell anzupassen. Dabei werden Variablen innerhalb `{{` und `}}`
 verwendet. Anderer Text wird wörtlich dargestellt. Die folgenden
 Variablen sind verfügbar:
 
-- `{{name}}` Der Dokumentenname
+- `{{name}}` Der Name
 - `{{source}}` die Quelle durch welche das Dokument entstand
 - `{{folder}}` der Ordner
-- `{{corrOrg}}` die Korrespondent-Organisation
-- `{{corrPerson}}` die Korrespondent-Person
+- `{{corrOrg}}` die korrespondierende Organisation
+- `{{corrPerson}}` die korrespondierende Person
 - `{{correspondent}}` Organisation und Person, getrennt durch ein Komma
 - `{{concPerson}}` die betreffende Person
 - `{{concEquip}}` die betreffende Aussstattung
 - `{{concerning}}` Person und Ausstattung, getrennt durch ein Komma
-- `{{fileCount}}` die Anzahl von Anhängen des Dokumentes
-- `{{dateLong}}` das Dokumentendatum lang formatiert
-- `{{dateShort}}` das Dokumentendatum kurz formatiert (yyyy/mm/dd)
+- `{{fileCount}}` die Anzahl von Anhängen
+- `{{dateLong}}` das Datum lang formatiert
+- `{{dateShort}}` das Datum kurz formatiert (yyyy/mm/dd)
 - `{{dueDateLong}}` das Fälligkeitsdatum lang formatiert
 - `{{dueDateShort}}` das Fälligkeitsdatum kurz formatiert (yyyy/mm/dd)
-- `{{direction}}` die Richtung des Dokuments
+- `{{direction}}` die Richtung
 
 Wenn eine Variable nicht vorhanden ist, wird eine leere Zeichenkette
 geschrieben. Mit einem `|` können mehrere Variablen hintereinander

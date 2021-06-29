@@ -61,10 +61,10 @@ de =
     , customFieldForm = Messages.Comp.CustomFieldForm.de
     , httpError = Messages.Comp.HttpError.de
     , submitSuccessful = "Erfolgreich gespeichert."
-    , missingRequiredFields = "Bitte erforderliche Felder ausfüllen."
+    , missingRequiredFields = "Bitte die erforderlichen Felder ausfüllen."
     , addTagHeader = "Tag anlegen"
     , addPersonHeader = "Person anlegen"
-    , addOrgHeader = "Unternehmen anlegen"
+    , addOrgHeader = "Organisation anlegen"
     , addEquipmentHeader = "Ausstattung anlegen"
     , addCustomFieldHeader = "Benutzerfeld anlegen"
     }
