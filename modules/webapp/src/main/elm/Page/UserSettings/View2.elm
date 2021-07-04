@@ -1,3 +1,9 @@
+{-
+  Copyright 2020 Docspell Contributors
+
+  SPDX-License-Identifier: GPL-3.0-or-later
+-}
+
 module Page.UserSettings.View2 exposing (viewContent, viewSidebar)
 
 import Comp.ChangePasswordForm
