@@ -189,4 +189,19 @@ object AttachmentRoutes {
         } yield resp
     }
   }
+
+  def admin[F[_]: Async](backend: BackendApp[F]): HttpRoutes[F] = {
+    val dsl = Http4sDsl[F]
+    import dsl._
+
+    HttpRoutes.of { case POST -> Root / "generatePreviews" =>
+      for {
+        res <- backend.item.generateAllPreviews(MakePreviewArgs.StoreMode.Replace, true)
+        resp <- Ok(
+          Conversions.basicResult(res, "Generate all previews task submitted.")
+        )
+      } yield resp
+    }
+  }
+
 }
