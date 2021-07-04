@@ -193,6 +193,14 @@ trait OItem[F[_]] {
       account: AccountId,
       notifyJoex: Boolean
   ): F[UpdateResult]
+
+  /** Submits a task that (re)generates the preview images for all
+    * attachments.
+    */
+  def generateAllPreviews(
+      storeMode: MakePreviewArgs.StoreMode,
+      notifyJoex: Boolean
+  ): F[UpdateResult]
 }
 
 object OItem {
@@ -695,6 +703,16 @@ object OItem {
         ): F[UpdateResult] =
           for {
             job <- JobFactory.makePreview[F](args, account.some)
+            _   <- queue.insertIfNew(job)
+            _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+          } yield UpdateResult.success
+
+        def generateAllPreviews(
+            storeMode: MakePreviewArgs.StoreMode,
+            notifyJoex: Boolean
+        ): F[UpdateResult] =
+          for {
+            job <- JobFactory.allPreviews[F](AllPreviewsArgs(None, storeMode), None)
             _   <- queue.insertIfNew(job)
             _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success

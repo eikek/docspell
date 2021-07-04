@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.25.0
+
+*Unreleased*
+
+### Rest API Changes
+
+- Removed `sec/collective/previews` endpoint, in favor for new
+  `admin/attachments/generatePreviews` endpoint which is now an admin
+  task to generate previews for all files. The now removed enpoint did
+  this only for one collective.
+
+
 ## v0.24.0
 
 *Jun 18, 2021*

@@ -1136,30 +1136,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
-  /sec/collective/previews:
-    post:
-      operationId: "sec-collective-previews-start-generate"
-      tags: [ Collective ]
-      summary: Starts the generate previews task
-      description: |
-        Submits a task that re-generates preview images of all
-        attachments of the current collective. Each existing preview
-        image will be replaced.
-
-        This can be used after changing the `preview` settings.
-
-        If only preview images of selected attachments should be
-        regenerated, see the `/sec/attachment/{id}/preview` endpoint.
-      security:
-        - authTokenHeader: []
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BasicResult"
-
   /sec/user:
     get:
       operationId: "sec-user-get-all"
@@ -1347,6 +1323,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResetPasswordResult"
+
+  /admin/attachments/generatePreviews:
+    post:
+      operationId: "admin-attachments-generate-previews"
+      tags: [Attachment, Admin]
+      summary: (Re)generate all preview images
+      description: |
+        Submits a task that re-generates preview images of all
+        attachments. Each existing preview image will be replaced.
+
+        This can be used after changing the `preview` settings.
+
+        If only preview images of selected attachments should be
+        regenerated, see the `/sec/attachment/{id}/preview` endpoint.
+
+        This is an admin route, you need to specify the secret from
+        the config file via a http header `Docspell-Admin-Secret`.
+      security:
+        - adminHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
   /sec/source:
     get:

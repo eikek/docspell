@@ -20,18 +20,18 @@ It is a bash script that additionally needs
 # Usage
 
 ```
-./regenerate-previews.sh [docspell-base-url]
+./regenerate-previews.sh [docspell-base-url] [admin-secret]
 ```
 
 For example, if docspell is at `http://localhost:7880`:
 
 ```
-./convert-all-pdfs.sh http://localhost:7880
+./convert-all-pdfs.sh http://localhost:7880 test123
 ```
 
-The script asks for your account name and password. It then logs in
-and triggers the said endpoint. After this you should see a few tasks
-running.
+The script asks for the admin secret if not given to the command. It
+then logs in and triggers the said endpoint. After this you should see
+a few tasks running.
 
 There will be one task per file to convert. All these tasks are
 submitted with a low priority. So files uploaded through the webapp or

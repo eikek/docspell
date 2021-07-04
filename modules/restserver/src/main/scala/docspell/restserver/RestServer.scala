@@ -108,9 +108,10 @@ object RestServer {
 
   def adminRoutes[F[_]: Async](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
     Router(
-      "fts"  -> FullTextIndexRoutes.admin(cfg, restApp.backend),
-      "user" -> UserRoutes.admin(restApp.backend),
-      "info" -> InfoRoutes.admin(cfg)
+      "fts"         -> FullTextIndexRoutes.admin(cfg, restApp.backend),
+      "user"        -> UserRoutes.admin(restApp.backend),
+      "info"        -> InfoRoutes.admin(cfg),
+      "attachments" -> AttachmentRoutes.admin(restApp.backend)
     )
 
   def redirectTo[F[_]: Async](path: String): HttpRoutes[F] = {
