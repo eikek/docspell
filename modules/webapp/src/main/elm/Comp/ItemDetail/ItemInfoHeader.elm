@@ -1,3 +1,9 @@
+{-
+  Copyright 2020 Docspell Contributors
+
+  SPDX-License-Identifier: GPL-3.0-or-later
+-}
+
 module Comp.ItemDetail.ItemInfoHeader exposing (view)
 
 import Api.Model.IdName exposing (IdName)

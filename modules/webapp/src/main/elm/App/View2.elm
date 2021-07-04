@@ -1,3 +1,9 @@
+{-
+  Copyright 2020 Docspell Contributors
+
+  SPDX-License-Identifier: GPL-3.0-or-later
+-}
+
 module App.View2 exposing (view)
 
 import Api.Model.AuthResult exposing (AuthResult)
