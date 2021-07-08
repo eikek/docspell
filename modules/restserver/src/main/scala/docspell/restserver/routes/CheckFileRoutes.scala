@@ -43,7 +43,7 @@ object CheckFileRoutes {
     HttpRoutes.of { case GET -> Root / Ident(id) / checksum =>
       for {
         items <- backend.itemSearch.findByFileSource(checksum, id)
-        resp  <- Ok(convert(items))
+        resp  <- items.map(convert).map(Ok(_)).getOrElse(NotFound())
       } yield resp
     }
   }
