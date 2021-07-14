@@ -2766,7 +2766,7 @@ paths:
     head:
       operationId: "sec-attach-check-original"
       tags: [ Attachment ]
-      summary: Get an attachment file.
+      summary: Get headers of the original file of an attachment.
       description: |
         Get information about the original binary file of the
         attachment with the given id.
@@ -2797,7 +2797,7 @@ paths:
     get:
       operationId: "sec-attach-get-original"
       tags: [ Attachment ]
-      summary: Get an attachment file.
+      summary: Get the original file of an attachment.
       description: |
         Get the original binary file of the attachment with the given
         id.
@@ -2820,7 +2820,7 @@ paths:
     head:
       operationId: "sec-attach-check-archive"
       tags: [ Attachment ]
-      summary: Get an attachment archive file.
+      summary: Get headers of the archive file to an attachment.
       description: |
         Get information about the archive that contains the attachment
         with the given id.
@@ -2851,7 +2851,7 @@ paths:
     get:
       operationId: "sec-attach-get-archive"
       tags: [ Attachment ]
-      summary: Get an attachment archive file.
+      summary: Get the archive file of an attachment.
       description: |
         Get the archive file that was originally uploaded that
         contains the attachment with the given id.
@@ -2874,7 +2874,7 @@ paths:
     head:
       operationId: "sec-attach-check-preview"
       tags: [ Attachment ]
-      summary: Get a preview image of an attachment file.
+      summary: Get the headers to a preview image of an attachment file.
       description: |
         Checks if an image file showing a preview of the attachment is
         available. If not available, a 404 is returned.
@@ -5486,6 +5486,7 @@ components:
         - date
         - source
         - tags
+        - attachments
       properties:
         id:
           type: string
