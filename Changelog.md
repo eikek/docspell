@@ -917,7 +917,7 @@ improvements for processing files.
   upload the file into memory for nothing if something fails (e.g. the
   source doesn't exist)
 - Re-process files. A
-  [route](https://docspell.org/openapi/docspell-openapi.html#api-Item-secItemItemIdReprocessPost)
+  [route](https://docspell.org/openapi/docspell-openapi.html#operation/sec-item-start-reprocess)
   has been added that submits files for re-processing. It is possible
   to re-process some files of an item or all. There is no UI for this
   for now. You'd need to run `curl` or something manually to trigger
