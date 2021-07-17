@@ -74,6 +74,25 @@ object RFolder {
     sql.query[RFolder].option
   }
 
+  def requireIdByIdOrName(
+      folderId: Ident,
+      name: String,
+      collective: Ident
+  ): ConnectionIO[Ident] = {
+    val sql = run(
+      select(T.id),
+      from(T),
+      T.id === folderId || (T.name === name && T.collective === collective)
+    )
+    sql.query[Ident].option.flatMap {
+      case Some(id) => id.pure[ConnectionIO]
+      case None =>
+        Sync[ConnectionIO].raiseError(
+          new Exception(s"No folder found for: id=${folderId.id} or name=${name}")
+        )
+    }
+  }
+
   def findAll(
       coll: Ident,
       nameQ: Option[String],

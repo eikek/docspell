@@ -5073,7 +5073,8 @@ components:
         A direction can be given, `Incoming` is used if not specified.
 
         A folderId can be given, the item is placed into this folder
-        after creation.
+        after creation. It may be the exact id of the folder or its
+        name.
 
         The `fileFilter` is an optional glob for filtering files to
         import. Only applicable if archive files are uploaded. It
