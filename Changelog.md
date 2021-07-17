@@ -59,6 +59,10 @@ state (the master branch). The `latest` tag points to the latest
 release. Each release is also tagged with its version number, like
 `v0.24.0`.
 
+The images changed slightly in that there is no assumption on where
+the config file is placed. Now you need to pass the docspell config
+file explicitely when using the images.
+
 Multiarch: Images are now build for `amd64`, `arm64` and `armv7`.
 
 The consumedir is being replaced by the more generic `docspell/tools`
@@ -78,7 +82,10 @@ The docker-compose setup is now at `docker/docker-compose`. Please
 look at the new [compose
 file](https://github.com/eikek/docspell/blob/master/docker/docker-compose/docker-compose.yml)
 and do the corresponding changes at yours. Especially the consumedir
-container changed significantly.
+container changed significantly. Then due to the fact that the config
+file must be given explicitely, you need to add this argument to each
+docspell component (restserver and joex) via a `command` section (see
+the compose file referenced above).
 
 The `.envrc` has been cleaned from some settings. Since the config
 files is mounted into the image, you can just edit this file instead.
