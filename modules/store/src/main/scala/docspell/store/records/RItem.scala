@@ -274,10 +274,14 @@ object RItem {
   ): ConnectionIO[Int] =
     for {
       t <- currentTime
+      fid <- folderId match {
+        case Some(f) => RFolder.requireIdByIdOrName(f, f.id, coll).map(_.some)
+        case None    => None.pure[ConnectionIO]
+      }
       n <- DML.update(
         T,
         T.cid === coll && T.id === itemId,
-        DML.set(T.folder.setTo(folderId), T.updated.setTo(t))
+        DML.set(T.folder.setTo(fid), T.updated.setTo(t))
       )
     } yield n
 
