@@ -84,8 +84,8 @@ There are the following modules provided:
 - joex
 - consumedir
 
-The `consumedir` module defines a systemd unit that starts the
-`consumedir.sh` script to watch one or more directories for new files.
+The `consumedir` module defines a systemd unit that starts the `dsc
+watch` command to watch one or more directories for new files.
 
 You need to import the `release.nix` file as described above in your
 `configuration.nix` and then append the docspell module to your list of
@@ -125,7 +125,7 @@ in
   services.docspell-consumedir = {
     enable = true;
     watchDirs = ["/tmp/test"];
-    urls = ["http://localhost:7880/api/v1/open/upload/item/the-source-id"];
+    source-id = "the-source-id";
   };
 
   ...

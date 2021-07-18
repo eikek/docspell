@@ -18,15 +18,16 @@ There are images for all components that are available from the github
 release page. The images contain all the necessary
 [prerequisites](@/docs/install/prereq.md).
 
-- `docspell-restserver` this images contains the http server
-- `docspell-joex` this image contains the job executor and all
+- `docspell/restserver` this images contains the http server
+- `docspell/joex` this image contains the job executor and all
   required software (ocrmypdf, unoconv etc) mentioned in
   [prerequisites](@/docs/install/prereq.md).
-- `docspell-tools` this image simply contains all the scripts from the
-  `tools/` folder. They are installed into a location in `$PATH`. It
-  doesn't specify a `CMD` or `ENTRYPOINT`, so you must choose which
-  script to run. The scripts are all prefixed by `ds-`. So to run the
-  `consumedir.sh` script, execute `ds-consumedir`.
+- `docspell/dsc` this is an image containing a
+  [cli](@/docs/tools/cli.md) for docspell that can be used to watch
+  directories for new files. It doesn't specify a `CMD` or
+  `ENTRYPOINT`, so you must specify the exact command to run. Here, it
+  is used to watch a directory for uploading files. This runs the `dsc
+  watch` command.
 
 ### Examples
 
@@ -90,20 +91,20 @@ After this `docker ps` should show these two containers. Go to
 When signing up, use the same name for collective and user and then
 login with this name.
 
-For the last part, we use the `docspell/tools` image to create another
+For the last part, we use the `docspell/dsc` image to create another
 container that watches a directory and pushes files to docspell.
 
 ``` bash
 $ docker run -d --name ds-consume \
     --network dsnet --ip 10.4.3.4 \
     -v /tmp/inbox:/var/inbox \
-    docspell/tools:latest ds-consumedir -imdv --iheader "Docspell-Integration:test123" \
-      --path /var/inbox "http://10.4.3.3:7880/api/v1/open/integration/item"
+    docspell/dsc:latest dsc -v -d http://10.4.3.3:7880 watch -r --delete -i \
+      --header "Docspell-Integration:test123" /var/inbox
 ```
 
-This starts the [consumedir](@/docs/tools/consumedir.md) script that
-watches a directory and uploads arriving files to docspell server.
-This requires the value from the `integration-endpoint` setting to be
+This starts the [dsc](@/docs/tools/cli.md) tool that watches a
+directory and uploads arriving files to the docspell server. This
+requires the value from the `integration-endpoint` setting to be
 allowed to upload files. It also requires you to explicitely enable
 this: go to *Collective Profile → Settings* and enable the
 *Integration Endpoint*. Then create a subdirectory in `/tmp/inbox`
@@ -111,11 +112,14 @@ with the name of the *collective* that you registered and place a file
 into the `/tmp/inbox/[collective]` directory. The file is pushed to
 docspell and processed shortly after.
 
-To see all available options, run the script with the `--help` option:
+To see all available options, run `dsc` with the `--help` option:
 ``` bash
-$ docker run docspell/tools:latest ds-consumedir --help
+$ docker run docspell/dsc:latest dsc --help
 ```
 
+Or just [download the
+binary](https://github.com/docspell/dsc/releases/latest), no docker
+required.
 
 Note that this is just an example and is only to demonstrate how to
 use the docker images. For instance, this setup does not provide
@@ -127,9 +131,9 @@ below.
 
 There is a [docker-compose](https://docs.docker.com/compose/) setup
 available in the `/docker/docker-compose` folder. This setup is
-similiar to the example above, adding fulltext search and a PostgreSQL
-database by using just one command. It's only a few steps to get
-started.
+similiar to the example above, but adding fulltext search and a
+PostgreSQL database by using just one command. It's only a few steps
+to get started.
 
 ### Start Docspell
 #### 1. Get the docker-compose files
@@ -172,10 +176,12 @@ $ export DOCSPELL_HEADER_VALUE="my-secret-123"
 $ docker-compose up
 ```
 
-The environment variable defines a secret that is shared between some
-containers. You can define whatever you like. Please see the
-[consumedir.sh](@/docs/tools/consumedir.md#docker) docs for additional
-info.
+The environment variable defines a secret that is shared between the
+container watching a directory and the server. It is the header
+defined for the [integration
+endpoint](@/docs/api/upload.md#integration-endpoint) containers. You
+can use whatever you like. Please see the help to the [dsc
+tool](@/docs/tools/cli.md) docs for additional info.
 
 Goto `http://localhost:7880`, signup and login. When signing up, you
 choose the same name for collective and user. Then login with this

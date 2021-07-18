@@ -1,8 +1,15 @@
 +++
-title = "Upload CLI"
+title = "Upload CLI (⊗)"
 description = "A script to quickly upload files from the command line."
-weight = 10
+weight = 100
 +++
+
+
+{% infobubble(mode="info", title="⚠ Please note") %}
+This script is now obsolete, you can use the [**CLI tool**](../cli/) instead.
+
+Use the `upload` command (or the `up` alias), like `dsc up *.pdf`.
+{% end %}
 
 # Introduction
 

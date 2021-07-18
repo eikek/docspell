@@ -87,3 +87,4 @@ considering docspell at the moment.
 
 - Documents cannot be modified.
 - You can remove and add documents but there is no versioning.
+- There are no user/groups nor permission management

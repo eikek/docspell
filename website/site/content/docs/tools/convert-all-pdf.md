@@ -1,8 +1,16 @@
 +++
-title = "Convert All PDFs"
+title = "Convert All PDFs (⊗)"
 description = "Convert all PDF files using OcrMyPdf."
-weight = 60
+weight = 160
 +++
+
+{% infobubble(mode="info", title="⚠ Please note") %}
+This script is now obsolete, you can use the [**CLI tool**](../cli/) instead.
+
+Use the `convert-all-pdfs` admin command, e.g. `dsc admin
+convert-all-pdfs`.
+{% end %}
+
 
 # convert-all-pdf.sh
 

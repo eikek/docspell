@@ -323,8 +323,8 @@ docspell.joex {
 
 When this is changed, you must re-generate all preview images. Check
 the api for this, there is an endpoint to regenerate all preview
-images for a collective. There is also a bash script provided in the
-`tools/` directory that can be used to call this endpoint.
+images for a collective. The [cli tool](../../tools/cli/) can be
+used for this.
 
 {% end %}
 

@@ -7,13 +7,13 @@ import os
 from os.path import expanduser
 import subprocess
 
-# The path to the ds.sh tool.
+# The path to the dsc tool.
 try:
     home = expanduser("~")
-    with open(home + '/.config/docspell/ds.cmd', 'r') as file:
-        DS_SH_CMD = file.read().replace('\n', '')
+    with open(home + '/.config/docspell/dsc.cmd', 'r') as file:
+        DSC_CMD = file.read().replace('\n', '')
 except:
-    DS_SH_CMD="ds.sh"
+    DSC_SH_CMD="dsc"
 
 
 # Read a message from stdin and decode it.
@@ -43,7 +43,7 @@ def send_message(encoded_message):
 while True:
     filename = get_message()
     FNULL = open(os.devnull, 'w')
-    rc = subprocess.call(args=[DS_SH_CMD, filename], stdout=FNULL, stderr=FNULL, close_fds=True)
+    rc = subprocess.call(args=[DSC_CMD, "upload", "--delete", filename], stdout=FNULL, stderr=FNULL, close_fds=True)
     os.remove(filename)
     if rc == 0:
         send_message(encode_message(rc))
