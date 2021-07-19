@@ -16,7 +16,7 @@ import munit._
 class OdfExtractTest extends FunSuite {
 
   val files = List(
-    ExampleFiles.examples_sample_odt -> 6372,
+    ExampleFiles.examples_sample_odt -> 6367,
     ExampleFiles.examples_sample_ods -> 717
   )
 
