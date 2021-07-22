@@ -1,3 +1,9 @@
+/*
+ * Copyright 2020 Docspell Contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package docspell.restserver.routes
 
 import cats.effect._
@@ -6,7 +12,7 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCollective
-import docspell.common.{ListType, MakePreviewArgs}
+import docspell.common.ListType
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s._
@@ -93,18 +99,6 @@ object CollectiveRoutes {
         for {
           _    <- backend.collective.startLearnClassifier(user.account.collective)
           resp <- Ok(BasicResult(true, "Task submitted"))
-        } yield resp
-
-      case POST -> Root / "previews" =>
-        for {
-          res <- backend.collective.generatePreviews(
-            MakePreviewArgs.StoreMode.Replace,
-            user.account,
-            true
-          )
-          resp <- Ok(
-            Conversions.basicResult(res, "Generate all previews task submitted.")
-          )
         } yield resp
 
       case GET -> Root =>

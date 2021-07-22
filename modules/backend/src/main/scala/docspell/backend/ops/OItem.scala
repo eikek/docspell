@@ -1,3 +1,9 @@
+/*
+ * Copyright 2020 Docspell Contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package docspell.backend.ops
 
 import cats.data.{NonEmptyList, OptionT}
@@ -185,6 +191,14 @@ trait OItem[F[_]] {
   def generatePreview(
       args: MakePreviewArgs,
       account: AccountId,
+      notifyJoex: Boolean
+  ): F[UpdateResult]
+
+  /** Submits a task that (re)generates the preview images for all
+    * attachments.
+    */
+  def generateAllPreviews(
+      storeMode: MakePreviewArgs.StoreMode,
       notifyJoex: Boolean
   ): F[UpdateResult]
 }
@@ -689,6 +703,16 @@ object OItem {
         ): F[UpdateResult] =
           for {
             job <- JobFactory.makePreview[F](args, account.some)
+            _   <- queue.insertIfNew(job)
+            _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+          } yield UpdateResult.success
+
+        def generateAllPreviews(
+            storeMode: MakePreviewArgs.StoreMode,
+            notifyJoex: Boolean
+        ): F[UpdateResult] =
+          for {
+            job <- JobFactory.allPreviews[F](AllPreviewsArgs(None, storeMode), None)
             _   <- queue.insertIfNew(job)
             _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success

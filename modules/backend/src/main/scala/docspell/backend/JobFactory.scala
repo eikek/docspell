@@ -1,3 +1,9 @@
+/*
+ * Copyright 2020 Docspell Contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package docspell.backend
 
 import cats.effect._
@@ -139,23 +145,26 @@ object JobFactory {
       prio: Priority,
       tracker: Option[Ident]
   ): F[Vector[RJob]] = {
-    def create(id: Ident, now: Timestamp, arg: ProcessItemArgs): RJob =
-      RJob.newJob(
-        id,
-        ProcessItemArgs.taskName,
-        account.collective,
-        arg,
-        arg.makeSubject,
-        now,
-        account.user,
-        prio,
-        tracker
-      )
+    def create(now: Timestamp, arg: ProcessItemArgs): F[RJob] =
+      Ident
+        .randomId[F]
+        .map(id =>
+          RJob.newJob(
+            id,
+            ProcessItemArgs.taskName,
+            account.collective,
+            arg,
+            arg.makeSubject,
+            now,
+            account.user,
+            prio,
+            tracker
+          )
+        )
 
     for {
-      id  <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      jobs = args.map(a => create(id, now, a))
+      now  <- Timestamp.current[F]
+      jobs <- args.traverse(a => create(now, a))
     } yield jobs
   }
 

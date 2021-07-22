@@ -1,3 +1,9 @@
+/*
+ * Copyright 2020 Docspell Contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package docspell.store.records
 
 import cats.data.NonEmptyList
@@ -66,6 +72,25 @@ object RFolder {
   def findById(folderId: Ident): ConnectionIO[Option[RFolder]] = {
     val sql = run(select(T.all), from(T), T.id === folderId)
     sql.query[RFolder].option
+  }
+
+  def requireIdByIdOrName(
+      folderId: Ident,
+      name: String,
+      collective: Ident
+  ): ConnectionIO[Ident] = {
+    val sql = run(
+      select(T.id),
+      from(T),
+      T.id === folderId || (T.name === name && T.collective === collective)
+    )
+    sql.query[Ident].option.flatMap {
+      case Some(id) => id.pure[ConnectionIO]
+      case None =>
+        Sync[ConnectionIO].raiseError(
+          new Exception(s"No folder found for: id=${folderId.id} or name=${name}")
+        )
+    }
   }
 
   def findAll(

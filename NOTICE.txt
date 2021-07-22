@@ -1,5 +1,5 @@
 Docspell
-Copyright 2019-2021, Eike Kettner
+Copyright 2019-2021, Eike Kettner and Contributors
 Licensed under the GPLv3 or later
 
 This software contains portions of code from tika-parser

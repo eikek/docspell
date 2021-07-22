@@ -1,3 +1,9 @@
+/*
+ * Copyright 2020 Docspell Contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package docspell.backend.ops
 
 import cats.data.OptionT
@@ -49,7 +55,7 @@ trait OItemSearch[F[_]] {
 
   def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]]
 
-  def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]]
+  def findByFileSource(checksum: String, sourceId: Ident): F[Option[Vector[RItem]]]
 
 }
 
@@ -274,11 +280,11 @@ object OItemSearch {
       def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]] =
         store.transact(QItem.findByChecksum(checksum, collective, Set.empty))
 
-      def findByFileSource(checksum: String, sourceId: Ident): F[Vector[RItem]] =
+      def findByFileSource(checksum: String, sourceId: Ident): F[Option[Vector[RItem]]] =
         store.transact((for {
           coll  <- OptionT(RSource.findCollective(sourceId))
           items <- OptionT.liftF(QItem.findByChecksum(checksum, coll, Set.empty))
-        } yield items).getOrElse(Vector.empty))
+        } yield items).value)
 
     })
 }

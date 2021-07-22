@@ -2,6 +2,7 @@ import com.github.eikek.sbt.openapi._
 import scala.sys.process._
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
+import de.heikoseeberger.sbtheader.CommentBlockCreator
 
 val toolsPackage   = taskKey[Seq[File]]("Package the scripts/extension tools")
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
@@ -20,6 +21,13 @@ val scalafixSettings = Seq(
 val sharedSettings = Seq(
   organization := "com.github.eikek",
   scalaVersion := "2.13.6",
+  organizationName := "Docspell Contributors",
+  licenses += ("GPL-3.0-or-later", url(
+    "https://spdx.org/licenses/GPL-3.0-or-later.html"
+  )),
+  startYear := Some(2020),
+  headerLicenseStyle := HeaderLicenseStyle.SpdxSyntax,
+  headerSources / excludeFilter := HiddenFileFilter || "*.java" || "StringUtil.scala",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
@@ -35,6 +43,7 @@ val sharedSettings = Seq(
     "-Wvalue-discard",
     "-Wnumeric-widen"
   ),
+  javacOptions ++= Seq("-target", "1.8", "-source", "1.8"),
   LocalRootProject / toolsPackage := {
     val v      = version.value
     val logger = streams.value.log
@@ -75,7 +84,13 @@ val elmSettings = Seq(
     (Compile / sourceDirectory).value / "elm",
     FileFilter.globFilter("*.elm"),
     HiddenFileFilter
-  )
+  ),
+  Compile / unmanagedSourceDirectories += (Compile / sourceDirectory).value / "elm",
+  headerSources / includeFilter := "*.elm",
+  headerMappings := headerMappings.value + (HeaderFileType("elm") -> HeaderCommentStyle(
+    new CommentBlockCreator("{-", " ", "-}"),
+    HeaderPattern.commentBetween("\\{\\-", " ", "\\-\\}")
+  ))
 )
 val stylesSettings = Seq(
   stylesMode := StylesMode.Dev,
@@ -113,7 +128,7 @@ def webjarSettings(queryJS: Project) = Seq(
 
 def debianSettings(cfgFile: String) =
   Seq(
-    maintainer := "Eike Kettner <eike.kettner@posteo.de>",
+    maintainer := "Eike Kettner <eikek@posteo.de>",
     Universal / mappings += {
       val conf = (Compile / resourceDirectory).value / "reference.conf"
       if (!conf.exists)
@@ -788,8 +803,11 @@ addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb ;make-tools")
 addCommandAlias("ci", "make; lint; test")
 addCommandAlias(
   "lint",
-  "restapi/openapiLint; joexapi/openapiLint; scalafmtSbtCheck; scalafmtCheckAll; Compile/scalafix --check; Test/scalafix --check"
+  "restapi/openapiLint; joexapi/openapiLint; headerCheck; scalafmtSbtCheck; scalafmtCheckAll; Compile/scalafix --check; Test/scalafix --check"
 )
-addCommandAlias("fix", "Compile/scalafix; Test/scalafix; scalafmtSbt; scalafmtAll")
+addCommandAlias(
+  "fix",
+  "headerCreateAll; Compile/scalafix; Test/scalafix; scalafmtSbt; scalafmtAll"
+)
 addCommandAlias("make-website", ";website/clean ;website/zolaBuild ;website/zolaCheck")
 addCommandAlias("publish-website", "website/publishToGitHubPages")

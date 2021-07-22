@@ -11,23 +11,12 @@ JQ_CMD="jq"
 
 
 BASE_URL="${1:-http://localhost:7880}"
-LOGIN_URL="$BASE_URL/api/v1/open/auth/login"
-TRIGGER_URL="$BASE_URL/api/v1/sec/collective/previews"
+TRIGGER_URL="$BASE_URL/api/v1/admin/attachments/generatePreviews"
 
 echo "Login to trigger regenerating preview images."
 echo "Using url: $BASE_URL"
-echo -n "Account: "
-read USER
-echo -n "Password: "
-read -s PASS
+echo -n "Admin Secret: "
+read -s ADMIN_SECRET
 echo
 
-auth=$("$CURL_CMD" --fail -XPOST --silent --data-binary "{\"account\":\"$USER\", \"password\":\"$PASS\"}" "$LOGIN_URL")
-
-if [ "$(echo $auth | $JQ_CMD .success)" == "true" ]; then
-    echo "Login successful"
-    auth_token=$(echo $auth | "$JQ_CMD" -r .token)
-    curl --fail -XPOST -H "X-Docspell-Auth: $auth_token" "$TRIGGER_URL"
-else
-    echo "Login failed."
-fi
+curl --fail -XPOST -H "Docspell-Admin-Secret: $ADMIN_SECRET" "$TRIGGER_URL"

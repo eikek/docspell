@@ -1,3 +1,9 @@
+/*
+ * Copyright 2020 Docspell Contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package docspell.restserver.routes
 
 import cats.effect._
@@ -37,7 +43,7 @@ object CheckFileRoutes {
     HttpRoutes.of { case GET -> Root / Ident(id) / checksum =>
       for {
         items <- backend.itemSearch.findByFileSource(checksum, id)
-        resp  <- Ok(convert(items))
+        resp  <- items.map(convert).map(Ok(_)).getOrElse(NotFound())
       } yield resp
     }
   }

@@ -1,3 +1,9 @@
+/*
+ * Copyright 2020 Docspell Contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package docspell.joex.process
 
 import cats.effect._
@@ -6,6 +12,7 @@ import cats.implicits._
 import docspell.backend.ops.OItem
 import docspell.common._
 import docspell.joex.scheduler.Task
+import docspell.store.UpdateResult
 
 object SetGivenData {
   type Args = ProcessItemArgs
@@ -40,7 +47,12 @@ object SetGivenData {
         e <- ops.setFolder(itemId, folderId, collective).attempt
         _ <- e.fold(
           ex => ctx.logger.warn(s"Error setting folder: ${ex.getMessage}"),
-          _ => ().pure[F]
+          res =>
+            res match {
+              case UpdateResult.Failure(ex) =>
+                ctx.logger.warn(s"Error setting folder: ${ex.getMessage}")
+              case _ => ().pure[F]
+            }
         )
       } yield data
     }

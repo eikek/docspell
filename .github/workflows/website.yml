@@ -23,4 +23,6 @@ jobs:
       - name: Build website (${{ env.DOCSPELL_VERSION }})
         run: nix-shell website/shell.nix --run "sbt make-website"
       - name: Publish website (${{ env.DOCSPELL_VERSION }})
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: sbt publish-website

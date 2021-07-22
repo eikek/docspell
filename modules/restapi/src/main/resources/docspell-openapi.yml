@@ -70,7 +70,7 @@ paths:
     get:
       operationId: "open-checkfile-checksum-by-id"
       tags: [ Upload ]
-      summary: Check if a file is in docspell.
+      summary: Check if a file is in docspell (via source).
       description: |
         Checks if a file with the given SHA-256 checksum is in
         docspell. The id is a *source id* configured by a collective.
@@ -91,7 +91,7 @@ paths:
     post:
       operationId: "open-upload-new-item-by-source"
       tags: [ Upload ]
-      summary: Upload files to docspell.
+      summary: Upload files to docspell (via source).
       description: |
         Upload a file to docspell for processing. The id is a *source
         id* configured by a collective. Files are submitted for
@@ -134,7 +134,7 @@ paths:
     post:
       operationId: "open-upload-to-item-by-source"
       tags: [ Upload ]
-      summary: Upload files to docspell.
+      summary: Upload files to an existing item (via source).
       description: |
         Upload a file to docspell for processing. The id is a *source
         id* configured by a collective. Files are submitted for
@@ -219,7 +219,7 @@ paths:
     get:
       operationId: "sec-checkfile-by-checksum"
       tags: [ Upload ]
-      summary: Check if a file is in docspell.
+      summary: Check if a file is in docspell (authenticated).
       description: |
         Checks if a file with the given SHA-256 checksum is in
         docspell.
@@ -241,7 +241,7 @@ paths:
     post:
       operationId: "sec-upload-new-item"
       tags: [ Upload ]
-      summary: Upload files to docspell.
+      summary: Upload files to docspell (authenticated).
       description: |
         Upload files to docspell for processing. This route is meant
         for authenticated users that upload files to their account.
@@ -283,7 +283,7 @@ paths:
     post:
       operationId: "sec-upload-to-item"
       tags: [ Upload ]
-      summary: Upload files to docspell.
+      summary: Upload files to an existing item (authenticated).
       description: |
         Upload files to docspell for processing. This route is meant
         for authenticated users that upload files to their account.
@@ -354,8 +354,8 @@ paths:
           description: Unauthorized
     post:
       operationId: "open-integration-item-upload"
-      tags: [ Integration Endpoint ]
-      summary: Upload files to docspell.
+      tags: [ Integration Endpoint, Upload ]
+      summary: Upload files to docspell (Integration Endpoint).
       description: |
         Upload a file to docspell for processing. The id is a
         *collective name*. This route only exists, if enabled by an
@@ -400,8 +400,8 @@ paths:
   /open/integration/checkfile/{id}/{checksum}:
     get:
       operationId: "open-integration-checkfile-by-checksum"
-      tags: [ Integration Endpoint ]
-      summary: Check if a file is in docspell.
+      tags: [ Integration Endpoint, Upload ]
+      summary: Check if a file is in docspell (Integration Endpoint).
       description: |
         Checks if a file with the given SHA-256 checksum is in
         docspell. The `id` is the *collective name*. This route only
@@ -1136,30 +1136,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
-  /sec/collective/previews:
-    post:
-      operationId: "sec-collective-previews-start-generate"
-      tags: [ Collective ]
-      summary: Starts the generate previews task
-      description: |
-        Submits a task that re-generates preview images of all
-        attachments of the current collective. Each existing preview
-        image will be replaced.
-
-        This can be used after changing the `preview` settings.
-
-        If only preview images of selected attachments should be
-        regenerated, see the `/sec/attachment/{id}/preview` endpoint.
-      security:
-        - authTokenHeader: []
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BasicResult"
-
   /sec/user:
     get:
       operationId: "sec-user-get-all"
@@ -1347,6 +1323,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResetPasswordResult"
+
+  /admin/attachments/generatePreviews:
+    post:
+      operationId: "admin-attachments-generate-previews"
+      tags: [Attachment, Admin]
+      summary: (Re)generate all preview images
+      description: |
+        Submits a task that re-generates preview images of all
+        attachments. Each existing preview image will be replaced.
+
+        This can be used after changing the `preview` settings.
+
+        If only preview images of selected attachments should be
+        regenerated, see the `/sec/attachment/{id}/preview` endpoint.
+
+        This is an admin route, you need to specify the secret from
+        the config file via a http header `Docspell-Admin-Secret`.
+      security:
+        - adminHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
   /sec/source:
     get:
@@ -2716,7 +2718,7 @@ paths:
     head:
       operationId: "sec-attach-check"
       tags: [ Attachment ]
-      summary: Get an attachment file.
+      summary: Get headers to an attachment file.
       description: |
         Get information about the binary file belonging to the
         attachment with the given id.
@@ -2747,7 +2749,8 @@ paths:
       summary: Get an attachment file.
       description: |
         Get the binary file belonging to the attachment with the given
-        id.
+        id. The binary is a pdf file. If conversion failed, then the
+        original file is returned.
       security:
         - authTokenHeader: []
       parameters:
@@ -2764,7 +2767,7 @@ paths:
     head:
       operationId: "sec-attach-check-original"
       tags: [ Attachment ]
-      summary: Get an attachment file.
+      summary: Get headers of the original file of an attachment.
       description: |
         Get information about the original binary file of the
         attachment with the given id.
@@ -2795,7 +2798,7 @@ paths:
     get:
       operationId: "sec-attach-get-original"
       tags: [ Attachment ]
-      summary: Get an attachment file.
+      summary: Get the original file of an attachment.
       description: |
         Get the original binary file of the attachment with the given
         id.
@@ -2818,7 +2821,7 @@ paths:
     head:
       operationId: "sec-attach-check-archive"
       tags: [ Attachment ]
-      summary: Get an attachment archive file.
+      summary: Get headers of the archive file to an attachment.
       description: |
         Get information about the archive that contains the attachment
         with the given id.
@@ -2849,7 +2852,7 @@ paths:
     get:
       operationId: "sec-attach-get-archive"
       tags: [ Attachment ]
-      summary: Get an attachment archive file.
+      summary: Get the archive file of an attachment.
       description: |
         Get the archive file that was originally uploaded that
         contains the attachment with the given id.
@@ -2872,7 +2875,7 @@ paths:
     head:
       operationId: "sec-attach-check-preview"
       tags: [ Attachment ]
-      summary: Get a preview image of an attachment file.
+      summary: Get the headers to a preview image of an attachment file.
       description: |
         Checks if an image file showing a preview of the attachment is
         available. If not available, a 404 is returned.
@@ -2951,15 +2954,17 @@ paths:
     get:
       operationId: "sec-attach-show-viewerjs"
       tags: [ Attachment ]
-      summary: A preview of the attachment
+      summary: A javascript rendered view of the pdf attachment
       description: |
-        This provides a preview of the attachment. It currently uses a
-        third-party javascript library (viewerjs) to display the
-        preview. This works by redirecting to the viewerjs url with
-        the attachment url as parameter. Note that the resulting url
-        that is redirected to is not stable. It may change from
-        version to version. This route, however, is meant to provide a
-        stable url for the preview.
+        This provides a preview of the attachment rendered in a
+        browser.
+
+        It currently uses a third-party javascript library (viewerjs)
+        to display the preview. This works by redirecting to the
+        viewerjs url with the attachment url as parameter. Note that
+        the resulting url that is redirected to is not stable. It may
+        change from version to version. This route, however, is meant
+        to provide a stable url for the preview.
       security:
         - authTokenHeader: []
       parameters:
@@ -5067,50 +5072,61 @@ components:
         specified, you have to specifiy whether the corresponding
         files should become one single item or if an item is created
         for each file.
-
-        A direction can be given, `Incoming` is used if not specified.
-
-        A folderId can be given, the item is placed into this folder
-        after creation.
-
-        The `fileFilter` is an optional glob for filtering files to
-        import. Only applicable if archive files are uploaded. It
-        applies to all of them. For example, to only import pdf files
-        when uploading e-mails, use `*.pdf`. If the pattern doesn't
-        contain a slash `/`, then it is applied to all file names.
-        Otherwise it is applied to the complete path in the archive
-        (useful for zip files). Note that the archive file itself is
-        always saved completely, too.
-
-        The `tags` input allows to provide tags that should be applied
-        to the item being created. This only works if the tags already
-        exist. It is possible to specify their ids or names.
-
-        The `language` of the document may be specified, otherwise the
-        one from settings is used.
       required:
         - multiple
       properties:
         multiple:
           type: boolean
           default: true
+          description: |
+            If `true` (the default) each file in the upload request
+            results in a separate item. If it is set to `false`, then
+            all files in the request are put into a single item.
         direction:
           type: string
           format: direction
+          default: "incoming"
+          description: |
+            The direction of the item, can be `Incoming` or `Outgoing`.
         folder:
           type: string
           format: ident
+          description: |
+            A folder can be specified that is attached to the new
+            item. The folder must exist and can be specified by id or
+            name.
         skipDuplicates:
           type: boolean
           default: false
+          description: |
+            If set to `true` the processing will look for the same
+            file in Docspell and will skip processing this one if one
+            is found. The check is done via the file's checksum.
         tags:
           $ref: "#/components/schemas/StringList"
+          description: |
+            The `tags` input allows to provide tags that should be
+            applied to the item being created. This only works if the
+            tags already exist. It is possible to specify their ids or
+            names.
         fileFilter:
           type: string
           format: glob
+          description: |
+            The `fileFilter` is an optional glob for filtering files
+            to import. Only applicable if archive files are uploaded.
+            It applies to all of them. For example, to only import pdf
+            files when uploading e-mails, use `*.pdf`. If the pattern
+            doesn't contain a slash `/`, then it is applied to all
+            file names. Otherwise it is applied to the complete path
+            in the archive (useful for zip files). Note that the
+            archive file itself is always saved completely, too.
         language:
           type: string
           format: language
+          description: |
+            The `language` of the document may be specified, otherwise
+            the one from settings is used.
 
     Collective:
       description: |
@@ -5484,6 +5500,7 @@ components:
         - date
         - source
         - tags
+        - attachments
       properties:
         id:
           type: string
