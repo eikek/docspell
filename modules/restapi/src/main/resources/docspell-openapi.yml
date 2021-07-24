@@ -1350,6 +1350,37 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /admin/attachments/convertallpdfs:
+    post:
+      operationId: "admin-attachments-convertallpdf"
+      tags: [Attachment, Admin]
+      summary: Convert all PDF files not yet converted
+      description: |
+        Docspell converts PDF files into PDF/A files by default, if
+        the OcrMyPDF tool is configured.
+
+        This endpoint can be used to submit a task that runs this on
+        all files that have not been converted yet in this way.
+
+        This conversion tool has been added in version 0.9.0 and so
+        older files can be "migrated" this way, or maybe after
+        enabling the tool (it is optional).
+
+        The task finds all files collective and submits a task for
+        each file to convert. These tasks are submitted with a low
+        priority so that normal processing can still proceed.
+
+        The body of the request should be empty.
+      security:
+        - adminHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/source:
     get:
       operationId: "sec-source-get-all"
@@ -1420,33 +1451,6 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/id"
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BasicResult"
-
-  /sec/item/convertallpdfs:
-    post:
-      operationId: "sec-item-convert-all-pdfs"
-      tags: [ Item ]
-      summary: Convert all non-converted pdfs.
-      description: |
-        Submits a job that will find all pdf files that have not been
-        converted and converts them using the ocrmypdf tool (if
-        enabled). This tool has been added in version 0.9.0 and so
-        older files can be "migrated" this way, or maybe after
-        enabling the tool.
-
-        The task finds all files of the current collective and submits
-        task for each file to convert. These tasks are submitted with
-        a low priority so that normal processing can still proceed.
-
-        The body of the request should be empty.
-      security:
-        - authTokenHeader: []
       responses:
         200:
           description: Ok

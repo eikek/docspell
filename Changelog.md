@@ -6,6 +6,9 @@
 
 ### Rest API Changes
 
+- Removed `sec/item/convertallpdfs` endpoint in favor for new
+  `admin/attachments/convertallpdfs` endpoint which is now an admin
+  task
 - Removed `sec/collective/previews` endpoint, in favor for new
   `admin/attachments/generatePreviews` endpoint which is now an admin
   task to generate previews for all files. The now removed enpoint did

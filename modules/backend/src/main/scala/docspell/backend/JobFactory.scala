@@ -68,14 +68,14 @@ object JobFactory {
       args,
       "Create preview images",
       now,
-      submitter.getOrElse(DocspellSystem.taskGroup),
+      submitter.getOrElse(DocspellSystem.user),
       Priority.Low,
       Some(DocspellSystem.allPreviewTaskTracker)
     )
 
   def convertAllPdfs[F[_]: Sync](
       collective: Option[Ident],
-      account: AccountId,
+      submitter: Option[Ident],
       prio: Priority
   ): F[RJob] =
     for {
@@ -84,11 +84,11 @@ object JobFactory {
       job = RJob.newJob(
         id,
         ConvertAllPdfArgs.taskName,
-        account.collective,
+        collective.getOrElse(DocspellSystem.taskGroup),
         ConvertAllPdfArgs(collective),
         s"Convert all pdfs not yet converted",
         now,
-        account.user,
+        submitter.getOrElse(DocspellSystem.user),
         prio,
         collective
           .map(c => c / ConvertAllPdfArgs.taskName)
