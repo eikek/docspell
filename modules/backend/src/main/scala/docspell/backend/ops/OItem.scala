@@ -181,7 +181,7 @@ trait OItem[F[_]] {
     */
   def convertAllPdf(
       collective: Option[Ident],
-      account: AccountId,
+      submitter: Option[Ident],
       notifyJoex: Boolean
   ): F[UpdateResult]
 
@@ -687,11 +687,11 @@ object OItem {
 
         def convertAllPdf(
             collective: Option[Ident],
-            account: AccountId,
+            submitter: Option[Ident],
             notifyJoex: Boolean
         ): F[UpdateResult] =
           for {
-            job <- JobFactory.convertAllPdfs[F](collective, account, Priority.Low)
+            job <- JobFactory.convertAllPdfs[F](collective, submitter, Priority.Low)
             _   <- queue.insertIfNew(job)
             _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success

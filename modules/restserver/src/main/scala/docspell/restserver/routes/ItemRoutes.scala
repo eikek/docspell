@@ -47,13 +47,6 @@ object ItemRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case POST -> Root / "convertallpdfs" =>
-        for {
-          res <-
-            backend.item.convertAllPdf(user.account.collective.some, user.account, true)
-          resp <- Ok(Conversions.basicResult(res, "Task submitted"))
-        } yield resp
-
       case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
             offset
           ) :? QP.WithDetails(detailFlag) =>
