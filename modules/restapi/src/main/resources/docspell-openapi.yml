@@ -1727,6 +1727,31 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/item/{id}/tagsremove:
+    post:
+      operationId: "sec-item-remove-tags"
+      tags: [ Item ]
+      summary: Remove tags from an item
+      description: |
+        Remove the given tags from the item. The tags can be specified
+        via ids or names.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StringList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/item/{id}/direction:
     put:
       operationId: "sec-item-set-direction"

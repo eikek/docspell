@@ -173,6 +173,17 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Tags linked"))
         } yield resp
 
+      case req @ POST -> Root / Ident(id) / "tagsremove" =>
+        for {
+          json <- req.as[StringList]
+          res <- backend.item.removeTagsMultipleItems(
+            NonEmptyList.of(id),
+            json.items,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Tags removed"))
+        } yield resp
+
       case req @ PUT -> Root / Ident(id) / "direction" =>
         for {
           dir <- req.as[DirectionValue]
