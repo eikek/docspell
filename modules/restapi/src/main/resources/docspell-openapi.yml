@@ -1674,7 +1674,7 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
   /sec/item/{id}/taglink:
-    post:
+    put:
       operationId: "sec-item-link-tags"
       tags: [Item]
       summary: Link existing tags to an item.
