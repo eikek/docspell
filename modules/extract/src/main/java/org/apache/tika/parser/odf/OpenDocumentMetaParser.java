@@ -16,12 +16,21 @@
  */
 package org.apache.tika.parser.odf;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.DublinCore;
-import org.apache.tika.metadata.MSOffice;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.Office;
 import org.apache.tika.metadata.OfficeOpenXMLCore;
+import org.apache.tika.metadata.OfficeOpenXMLExtended;
 import org.apache.tika.metadata.PagedText;
 import org.apache.tika.metadata.Property;
 import org.apache.tika.metadata.TikaCoreProperties;
@@ -36,11 +45,6 @@ import org.apache.tika.sax.xpath.CompositeMatcher;
 import org.apache.tika.sax.xpath.Matcher;
 import org.apache.tika.sax.xpath.MatchingContentHandler;
 import org.apache.tika.sax.xpath.XPathParser;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Parser for OpenDocument <code>meta.xml</code> files.
@@ -54,68 +58,54 @@ public class OpenDocumentMetaParser extends XMLParser {
     private static final String META_NS = "urn:oasis:names:tc:opendocument:xmlns:meta:1.0";
     private static final XPathParser META_XPATH = new XPathParser("meta", META_NS);
 
-    /**
-     * @see OfficeOpenXMLCore#SUBJECT
-     * @deprecated use OfficeOpenXMLCore#SUBJECT
-     */
-    @Deprecated
-    private static final Property TRANSITION_INITIAL_CREATOR_TO_INITIAL_AUTHOR =
-            Property.composite(Office.INITIAL_AUTHOR,
-                    new Property[]{Property.externalText("initial-creator")});
-
-    private static ContentHandler getDublinCoreHandler(
-            Metadata metadata, Property property, String element) {
-        return new ElementMetadataHandler(
-                DublinCore.NAMESPACE_URI_DC, element,
-                metadata, property);
+    private static ContentHandler getDublinCoreHandler(Metadata metadata, Property property,
+                                                       String element) {
+        return new ElementMetadataHandler(DublinCore.NAMESPACE_URI_DC, element, metadata, property);
     }
 
-    private static ContentHandler getMeta(
-            ContentHandler ch, Metadata md, Property property, String element) {
-        Matcher matcher = new CompositeMatcher(
-                META_XPATH.parse("//meta:" + element),
-                META_XPATH.parse("//meta:" + element + "//text()"));
+    private static ContentHandler getMeta(ContentHandler ch, Metadata md, Property property,
+                                          String element) {
+        Matcher matcher = new CompositeMatcher(META_XPATH.parse("//meta:" + element),
+            META_XPATH.parse("//meta:" + element + "//text()"));
         ContentHandler branch =
-                new MatchingContentHandler(new MetadataHandler(md, property), matcher);
+            new MatchingContentHandler(new MetadataHandler(md, property), matcher);
         return new TeeContentHandler(ch, branch);
     }
 
-    private static ContentHandler getUserDefined(
-            ContentHandler ch, Metadata md) {
-        Matcher matcher = new CompositeMatcher(
-                META_XPATH.parse("//meta:user-defined/@meta:name"),
-                META_XPATH.parse("//meta:user-defined//text()"));
-        // eg <meta:user-defined meta:name="Info1">Text1</meta:user-defined> becomes custom:Info1=Text1
+    private static ContentHandler getUserDefined(ContentHandler ch, Metadata md) {
+        Matcher matcher = new CompositeMatcher(META_XPATH.parse("//meta:user-defined/@meta:name"),
+            META_XPATH.parse("//meta:user-defined//text()"));
+        // eg <meta:user-defined meta:name="Info1">Text1</meta:user-defined> becomes
+        // custom:Info1=Text1
         ContentHandler branch = new MatchingContentHandler(
-                new AttributeDependantMetadataHandler(md, "meta:name", Metadata.USER_DEFINED_METADATA_NAME_PREFIX),
-                matcher);
+            new AttributeDependantMetadataHandler(md, "meta:name",
+                Office.USER_DEFINED_METADATA_NAME_PREFIX), matcher);
         return new TeeContentHandler(ch, branch);
     }
 
     @Deprecated
-    private static ContentHandler getStatistic(
-            ContentHandler ch, Metadata md, String name, String attribute) {
-        Matcher matcher =
-                META_XPATH.parse("//meta:document-statistic/@meta:" + attribute);
+    private static ContentHandler getStatistic(ContentHandler ch, Metadata md, String name,
+                                               String attribute) {
+        Matcher matcher = META_XPATH.parse("//meta:document-statistic/@meta:" + attribute);
         ContentHandler branch = new MatchingContentHandler(
-                new AttributeMetadataHandler(META_NS, attribute, md, name), matcher);
+            new AttributeMetadataHandler(META_NS, attribute, md, name), matcher);
         return new TeeContentHandler(ch, branch);
     }
 
-    private static ContentHandler getStatistic(
-            ContentHandler ch, Metadata md, Property property, String attribute) {
-        Matcher matcher =
-                META_XPATH.parse("//meta:document-statistic/@meta:" + attribute);
+    private static ContentHandler getStatistic(ContentHandler ch, Metadata md, Property property,
+                                               String attribute) {
+        Matcher matcher = META_XPATH.parse("//meta:document-statistic/@meta:" + attribute);
         ContentHandler branch = new MatchingContentHandler(
-                new AttributeMetadataHandler(META_NS, attribute, md, property), matcher);
+            new AttributeMetadataHandler(META_NS, attribute, md, property), matcher);
         return new TeeContentHandler(ch, branch);
     }
 
-    protected ContentHandler getContentHandler(ContentHandler ch, Metadata md, ParseContext context) {
+    static ContentHandler getContentHandler(Metadata md, ParseContext context,
+                                            ContentHandler... handlers) {
         // We can no longer extend DcXMLParser due to the handling of dc:subject and dc:date
-        // Process the Dublin Core Attributes 
-        ch = new TeeContentHandler(super.getContentHandler(ch, md, context),
-                getDublinCoreHandler(md, TikaCoreProperties.TITLE, "title"),
+        // Process the Dublin Core Attributes
+        ContentHandler ch =
+            new TeeContentHandler(getDublinCoreHandler(md, TikaCoreProperties.TITLE, "title"),
                 getDublinCoreHandler(md, TikaCoreProperties.CREATOR, "creator"),
                 getDublinCoreHandler(md, TikaCoreProperties.DESCRIPTION, "description"),
                 getDublinCoreHandler(md, TikaCoreProperties.PUBLISHER, "publisher"),
@@ -129,19 +119,20 @@ public class OpenDocumentMetaParser extends XMLParser {
         // Process the OO Meta Attributes
         ch = getMeta(ch, md, TikaCoreProperties.CREATED, "creation-date");
         // ODF uses dc:date for modified
-        ch = new TeeContentHandler(ch, new ElementMetadataHandler(
-                DublinCore.NAMESPACE_URI_DC, "date",
-                md, TikaCoreProperties.MODIFIED));
+        ch = new TeeContentHandler(ch,
+            new ElementMetadataHandler(DublinCore.NAMESPACE_URI_DC, "date", md,
+                TikaCoreProperties.MODIFIED));
 
         // ODF uses dc:subject for description
-        ch = new TeeContentHandler(ch, new ElementMetadataHandler(
-                DublinCore.NAMESPACE_URI_DC, "subject",
-                md, TikaCoreProperties.TRANSITION_SUBJECT_TO_OO_SUBJECT));
-        ch = getMeta(ch, md, TikaCoreProperties.TRANSITION_KEYWORDS_TO_DC_SUBJECT, "keyword");
+        ch = new TeeContentHandler(ch,
+            new ElementMetadataHandler(DublinCore.NAMESPACE_URI_DC, "subject", md,
+                OfficeOpenXMLCore.SUBJECT));
 
-        ch = getMeta(ch, md, Property.externalText(MSOffice.EDIT_TIME), "editing-duration");
+        ch = getMeta(ch, md, Office.KEYWORDS, "keyword");
+
+        ch = getMeta(ch, md, OfficeOpenXMLExtended.TOTAL_TIME, "editing-duration");
         ch = getMeta(ch, md, Property.externalText("editing-cycles"), "editing-cycles");
-        ch = getMeta(ch, md, TRANSITION_INITIAL_CREATOR_TO_INITIAL_AUTHOR, "initial-creator");
+        ch = getMeta(ch, md, TikaCoreProperties.CREATOR, "initial-creator");
         ch = getMeta(ch, md, Property.externalText("generator"), "generator");
 
         // Process the user defined Meta Attributes
@@ -157,42 +148,47 @@ public class OpenDocumentMetaParser extends XMLParser {
         ch = getStatistic(ch, md, Office.WORD_COUNT, "word-count");
         ch = getStatistic(ch, md, Office.CHARACTER_COUNT, "character-count");
 
-        // Legacy, Tika-1.0 style attributes
-        // TODO Remove these in Tika 2.0
-        ch = getStatistic(ch, md, MSOffice.OBJECT_COUNT, "object-count");
-        ch = getStatistic(ch, md, MSOffice.IMAGE_COUNT, "image-count");
-        ch = getStatistic(ch, md, MSOffice.PAGE_COUNT, "page-count");
-        ch = getStatistic(ch, md, MSOffice.TABLE_COUNT, "table-count");
-        ch = getStatistic(ch, md, MSOffice.PARAGRAPH_COUNT, "paragraph-count");
-        ch = getStatistic(ch, md, MSOffice.WORD_COUNT, "word-count");
-        ch = getStatistic(ch, md, MSOffice.CHARACTER_COUNT, "character-count");
-
-        // Legacy Statistics Attributes, replaced with real keys above
-        // TODO Remove these shortly, eg after Tika 1.1 (TIKA-770)
-        ch = getStatistic(ch, md, "nbPage", "page-count");
-        ch = getStatistic(ch, md, "nbPara", "paragraph-count");
-        ch = getStatistic(ch, md, "nbWord", "word-count");
-        ch = getStatistic(ch, md, "nbCharacter", "character-count");
-        ch = getStatistic(ch, md, "nbTab", "table-count");
-        ch = getStatistic(ch, md, "nbObject", "object-count");
-        ch = getStatistic(ch, md, "nbImg", "image-count");
-
+        if (handlers != null && handlers.length > 0) {
+            ContentHandler[] newHandlers = new ContentHandler[handlers.length + 1];
+            newHandlers[0] = ch;
+            System.arraycopy(handlers, 0, newHandlers, 1, handlers.length);
+            ch = new TeeContentHandler(newHandlers);
+        }
         // Normalise the rest
         ch = new NSNormalizerContentHandler(ch);
         return ch;
     }
 
+    protected ContentHandler getContentHandler(ContentHandler ch, Metadata md,
+                                               ParseContext context) {
+        return getContentHandler(md, context, super.getContentHandler(ch, md, context));
+    }
+
     @Override
-    public void parse(
-            InputStream stream, ContentHandler handler,
-            Metadata metadata, ParseContext context)
-            throws IOException, SAXException, TikaException {
+    public void parse(InputStream stream, ContentHandler handler, Metadata metadata,
+                      ParseContext context) throws IOException, SAXException, TikaException {
         super.parse(stream, handler, metadata, context);
         // Copy subject to description for OO2
         String odfSubject = metadata.get(OfficeOpenXMLCore.SUBJECT);
         if (odfSubject != null && !odfSubject.equals("") &&
-                (metadata.get(TikaCoreProperties.DESCRIPTION) == null || metadata.get(TikaCoreProperties.DESCRIPTION).equals(""))) {
+            (metadata.get(TikaCoreProperties.DESCRIPTION) == null ||
+                metadata.get(TikaCoreProperties.DESCRIPTION).equals(""))) {
             metadata.set(TikaCoreProperties.DESCRIPTION, odfSubject);
+        }
+        //reset the dc:subject to include both keywords and subject
+        //We can't relying on composite keys in the MatchingContentHandlers
+        //because those are "setting" not "adding" to the Metadata object
+        List<String> subjects = new ArrayList<>();
+        if (metadata.getValues(Office.KEYWORDS) != null) {
+            subjects.addAll(Arrays.asList(metadata.getValues(Office.KEYWORDS)));
+        }
+
+        if (metadata.getValues(OfficeOpenXMLCore.SUBJECT) != null) {
+            subjects.addAll(Arrays.asList(metadata.getValues(OfficeOpenXMLCore.SUBJECT)));
+        }
+
+        if (subjects.size() > 0) {
+            metadata.set(TikaCoreProperties.SUBJECT, subjects.toArray(new String[0]));
         }
     }
 
