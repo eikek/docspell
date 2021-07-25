@@ -88,8 +88,8 @@ val elmSettings = Seq(
   Compile / unmanagedSourceDirectories += (Compile / sourceDirectory).value / "elm",
   headerSources / includeFilter := "*.elm",
   headerMappings := headerMappings.value + (HeaderFileType("elm") -> HeaderCommentStyle(
-    new CommentBlockCreator("{-", " ", "-}"),
-    HeaderPattern.commentBetween("\\{\\-", " ", "\\-\\}")
+    new CommentBlockCreator("{-", "  ", "-}\n"),
+    HeaderPattern.commentBetween("\\{\\-", "  ", "\\-\\}")
   ))
 )
 val stylesSettings = Seq(
