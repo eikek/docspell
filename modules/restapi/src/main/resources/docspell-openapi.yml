@@ -1628,6 +1628,8 @@ paths:
         Update the tags associated to an item. This will remove all
         existing ones and sets the given tags, such that after this
         returns, the item has exactly the tags as given.
+
+        Tags may be specified as names or ids.
       security:
         - authTokenHeader: []
       parameters:
@@ -1636,7 +1638,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ReferenceList"
+              $ref: "#/components/schemas/StringList"
       responses:
         200:
           description: Ok

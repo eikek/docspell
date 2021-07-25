@@ -59,9 +59,12 @@ object ItemMultiRoutes extends MultiIdSupport {
         for {
           json  <- req.as[ItemsAndRefs]
           items <- readIds[F](json.items)
-          tags  <- json.refs.traverse(readId[F])
-          res   <- backend.item.setTagsMultipleItems(items, tags, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Tags updated"))
+          res <- backend.item.setTagsMultipleItems(
+            items,
+            json.refs,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Tags updated"))
         } yield resp
 
       case req @ POST -> Root / "tags" =>

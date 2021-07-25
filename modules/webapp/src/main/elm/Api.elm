@@ -1783,12 +1783,12 @@ itemDetail flags id receive =
         }
 
 
-setTags : Flags -> String -> ReferenceList -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+setTags : Flags -> String -> StringList -> (Result Http.Error BasicResult -> msg) -> Cmd msg
 setTags flags item tags receive =
     Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/tags"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.ReferenceList.encode tags)
+        , body = Http.jsonBody (Api.Model.StringList.encode tags)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

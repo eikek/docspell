@@ -19,11 +19,9 @@ import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
 import Api.Model.OptionalText exposing (OptionalText)
-import Api.Model.ReferenceList exposing (ReferenceList)
-import Api.Model.Tag exposing (Tag)
+import Api.Model.StringList exposing (StringList)
 import Browser.Navigation as Nav
 import Comp.AttachmentMeta
-import Comp.ConfirmModal
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
@@ -1628,8 +1626,8 @@ saveTags flags model =
         tags =
             Comp.Dropdown.getSelected model.tagModel
                 |> Util.List.distinct
-                |> List.map (\t -> IdName t.id t.name)
-                |> ReferenceList
+                |> List.map (\t -> t.id)
+                |> StringList
     in
     Api.setTags flags model.item.id tags SaveResp
 
@@ -1762,7 +1760,7 @@ resetField : Flags -> String -> (Field -> Result Http.Error BasicResult -> msg) 
 resetField flags item tagger field =
     case field of
         Data.Fields.Tag ->
-            Api.setTags flags item Api.Model.ReferenceList.empty (tagger Data.Fields.Tag)
+            Api.setTags flags item Api.Model.StringList.empty (tagger Data.Fields.Tag)
 
         Data.Fields.Folder ->
             Api.setFolder flags item Api.Model.OptionalId.empty (tagger Data.Fields.Folder)
