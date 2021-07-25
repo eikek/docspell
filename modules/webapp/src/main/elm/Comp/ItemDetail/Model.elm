@@ -276,7 +276,7 @@ type Msg
     | ItemModalCancelled
     | RequestDelete
     | SaveResp (Result Http.Error BasicResult)
-    | DeleteResp (Result Http.Error BasicResult)
+    | DeleteResp String (Result Http.Error BasicResult)
     | GetItemResp (Result Http.Error ItemDetail)
     | GetProposalResp (Result Http.Error ItemProposals)
     | RemoveDueDate
@@ -352,22 +352,23 @@ type alias UpdateResult =
     , cmd : Cmd Msg
     , sub : Sub Msg
     , linkTarget : LinkTarget
+    , removedItem : Maybe String
     }
 
 
 resultModel : Model -> UpdateResult
 resultModel model =
-    UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone
+    UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone Nothing
 
 
 resultModelCmd : ( Model, Cmd Msg ) -> UpdateResult
 resultModelCmd ( model, cmd ) =
-    UpdateResult model cmd Sub.none Comp.LinkTarget.LinkNone
+    UpdateResult model cmd Sub.none Comp.LinkTarget.LinkNone Nothing
 
 
 resultModelCmdSub : ( Model, Cmd Msg, Sub Msg ) -> UpdateResult
 resultModelCmdSub ( model, cmd, sub ) =
-    UpdateResult model cmd sub Comp.LinkTarget.LinkNone
+    UpdateResult model cmd sub Comp.LinkTarget.LinkNone Nothing
 
 
 personMatchesOrg : Model -> Bool

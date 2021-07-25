@@ -46,6 +46,7 @@ update key flags inav settings msg model =
                     ]
             , sub = Sub.map ItemDetailMsg result.sub
             , linkTarget = result.linkTarget
+            , removedItem = result.removedItem
             }
 
         ItemDetailMsg lmsg ->
@@ -65,6 +66,7 @@ update key flags inav settings msg model =
             , cmd = Cmd.batch [ pageSwitch, Cmd.map ItemDetailMsg result.cmd ]
             , sub = Sub.map ItemDetailMsg result.sub
             , linkTarget = result.linkTarget
+            , removedItem = result.removedItem
             }
 
         ItemResp (Ok item) ->
@@ -75,10 +77,10 @@ update key flags inav settings msg model =
             update key flags inav settings (ItemDetailMsg lmsg) model
 
         ItemResp (Err _) ->
-            UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone
+            UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone Nothing
 
         ScrollResult _ ->
-            UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone
+            UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone Nothing
 
         UiSettingsUpdated ->
             let

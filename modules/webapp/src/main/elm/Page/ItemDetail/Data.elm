@@ -44,4 +44,5 @@ type alias UpdateResult =
     , cmd : Cmd Msg
     , sub : Sub Msg
     , linkTarget : LinkTarget
+    , removedItem : Maybe String
     }
