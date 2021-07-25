@@ -279,6 +279,7 @@ update key flags inav settings msg model =
                     , res9.sub
                     ]
             , linkTarget = Comp.LinkTarget.LinkNone
+            , removedItem = Nothing
             }
 
         SetActiveAttachment pos ->
@@ -560,7 +561,7 @@ update key flags inav settings msg model =
         DeleteItemConfirmed ->
             let
                 cmd =
-                    Api.deleteItem flags model.item.id DeleteResp
+                    Api.deleteItem flags model.item.id (DeleteResp model.item.id)
             in
             resultModelCmd ( { model | itemModal = Nothing }, cmd )
 
@@ -677,6 +678,7 @@ update key flags inav settings msg model =
             , cmd = Cmd.batch [ res1.cmd, res2.cmd ]
             , sub = Sub.batch [ res1.sub, res2.sub ]
             , linkTarget = Comp.LinkTarget.LinkNone
+            , removedItem = Nothing
             }
 
         GetPersonResp (Err _) ->
@@ -720,19 +722,23 @@ update key flags inav settings msg model =
         SaveNameResp (Err _) ->
             resultModel { model | nameState = SaveFailed }
 
-        DeleteResp (Ok res) ->
+        DeleteResp removedId (Ok res) ->
             if res.success then
-                case inav.next of
-                    Just id ->
-                        resultModelCmd ( model, Page.set key (ItemDetailPage id) )
+                let
+                    result_ =
+                        case inav.next of
+                            Just id ->
+                                resultModelCmd ( model, Page.set key (ItemDetailPage id) )
 
-                    Nothing ->
-                        resultModelCmd ( model, Page.set key HomePage )
+                            Nothing ->
+                                resultModelCmd ( model, Page.set key HomePage )
+                in
+                { result_ | removedItem = Just removedId }
 
             else
                 resultModel model
 
-        DeleteResp (Err _) ->
+        DeleteResp _ (Err _) ->
             resultModel model
 
         GetItemResp (Ok item) ->
@@ -1421,6 +1427,7 @@ update key flags inav settings msg model =
             , cmd = Cmd.none
             , sub = Sub.none
             , linkTarget = lt
+            , removedItem = Nothing
             }
 
         CustomFieldMsg lm ->
@@ -1747,6 +1754,7 @@ withSub ( m, c ) =
                 m.customFieldThrottle
             ]
     , linkTarget = Comp.LinkTarget.LinkNone
+    , removedItem = Nothing
     }
 
 

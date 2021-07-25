@@ -652,6 +652,9 @@ update mId key flags settings msg model =
         KeyUpPowerSearchbarMsg _ ->
             withSub ( model, Cmd.none )
 
+        RemoveItem id ->
+            update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
+
 
 
 --- Helpers

@@ -46,6 +46,7 @@ type Msg
     = SetResults ItemLightList
     | AddResults ItemLightList
     | ItemCardMsg ItemLight Comp.ItemCard.Msg
+    | RemoveItem String
 
 
 init : Model
@@ -145,6 +146,13 @@ updateDrag dm _ msg model =
                 result.selection
                 result.linkTarget
 
+        RemoveItem id ->
+            UpdateResult { model | results = removeItemById id model.results }
+                Cmd.none
+                dm
+                Data.ItemSelection.Inactive
+                Comp.LinkTarget.LinkNone
+
 
 
 --- View2
@@ -232,3 +240,15 @@ isMultiSelectMode cfg =
 
         Data.ItemSelection.Inactive ->
             False
+
+
+removeItemById : String -> ItemLightList -> ItemLightList
+removeItemById id list =
+    let
+        filterItem item =
+            item.id /= id
+
+        filterGroup group =
+            { group | items = List.filter filterItem group.items }
+    in
+    { list | groups = List.map filterGroup list.groups }

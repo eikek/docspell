@@ -201,6 +201,7 @@ type Msg
     | RequestReprocessSelected
     | ReprocessSelectedConfirmed
     | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
+    | RemoveItem String
 
 
 type SearchType
