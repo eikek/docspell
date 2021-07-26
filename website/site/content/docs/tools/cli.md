@@ -86,10 +86,13 @@ you need to `login` again.
 
 # Use Cases / Examples
 
+These are some examples. Each command has a good help explaining all
+the options. Run `dsc [subcommand] --help` to see it.
+
 
 ## Uploads files
 
-The `upload` subcommand can uploads files to docspell. This is the
+The `upload` subcommand can upload files to docspell. This is the
 replacement for the `ds.sh` shell script.
 
 You can specify a list of files that are all being uploaded. This
@@ -147,6 +150,9 @@ File already in Docspell: test-ocr.pdf
 └─────────┴────────────┘
 ```
 
+The `--poll` option allows to periodically traverse and upload
+directories.
+
 
 ## Watch a directory
 
@@ -175,6 +181,110 @@ If watching a directory is not possible due to system constraints
 (e.g. when using NFS or SAMBA shares), a less efficient option is to
 use the `upload` subcommand with `--poll` option which periodically
 traverses a directory.
+
+## Download files
+
+The `download` command allows to download files that match a given
+query. It is possible to download them all flat into some directory or
+directly into a zip file. For example, download all files that are
+tagged with `todo` into a zip file:
+
+``` shell
+❯ dsc download --zip 'tag:todo'
+Zipping 2 attachments into docspell-files.zip
+Downloading DOC-20191223-155707.jpg.pdf …
+Downloading DOC-20200803-174448.jpg.pdf …
+```
+
+It downloads the converted PDF files by default, which can be changed
+via some options.
+
+``` shell
+❯ dsc download --zip --original 'tag:todo'
+Zipping original files of 2 attachments into docspell-files.zip
+Downloading DOC-20191223-155707.jpg …
+Downloading DOC-20200803-174448.jpg …
+```
+
+
+## Export data
+
+The `export` command allows to download all items with metadata and
+their files. It downloads all items by default, but a query is also
+supported.
+
+In contrast to the `download` command, this is intended for getting
+everything out of docspell in some independent format. Files are
+downloaded (only original files) and the items metadata is also
+stored. So you don't loose the tags and correspondents that are
+carefully maintained with each item.
+
+It expects one directory where it will create a specfific directory
+structure as follows:
+
+```
+exports/
+├── by_date
+│   ├── 2019-07
+│   ├── 2020-08
+|       ├── BV2po65mAFU-…-bqUiwjz8f2W -> ../../items/BV/BV2po65mAFU-…-bqUiwjz8f2W
+|       └── FTUnhZ3AE1H-…-RQ9KhtRi486 -> ../../items/FT/FTUnhZ3AE1H-…-RQ9KhtRi486
+│   ├── …
+│   └── 2021-07
+├── by_tag
+│   ├── Contract
+│   ├── Important
+│   ├── Invoice
+|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -> ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
+|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -> ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
+|   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -> ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
+|   │   └── 93npVoA73Cx-…-BnxYNsf4Qvi -> ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
+│   ├── …
+│   └── Todo
+└── items
+    ├── 45
+    |   └── 455h3cQNdna-w8oTEw9wtpE-G7bCJbVpZPw-t6dF7NjAuDm
+    |       ├── files
+    |       │   └── DOC-20200803-174448.jpg
+    |       └── metadata.json
+    ├── …
+    └── Hb
+```
+
+All your items are stored below the `items` directory. It contains
+subdirectories that are created from the first two characters of the
+item id. Inside this folder, a folder with the complete item id is
+created and there all the data to the item is stored: the metadata in
+`metadata.json` and all files below `files/`.
+
+The options `--date-links` and `--tag-links` create the other two
+folders: `by_tag` and `by_date`. In there you'll find symlinks into
+the `items` folder that are organized by some metadata, namely tag and
+the item date.
+
+Example run:
+``` shell
+❯ dsc export --all --date-links --tag-links --target exports
+Exported item: test3.zip
+Exported item: README.md
+Exported item: LICENSE.txt
+Exported item: TestRMarkdown.pdf
+Exported item: DOC-20191223-155729.jpg
+Exported item: DOC-20191223-155707.jpg
+Exported item: DOC-20200808-154204.jpg
+Exported item: DOC-20200807-115654.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200804-132305.jpg
+Exported item: DOC-20191223-155707.jpg
+Exported item: keyweb.eml
+Exported 15 items.
+```
+
+With output format `json` or `lisp` each item is printed instead in
+full detail.
 
 ## Admin commands
 
