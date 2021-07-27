@@ -179,13 +179,13 @@ viewGroup2 : Texts -> Model -> ViewConfig -> UiSettings -> ItemLightGroup -> Htm
 viewGroup2 texts model cfg settings group =
     div [ class "ds-item-group" ]
         [ div
-            [ class "flex py-0 mt-2 flex flex-row items-center"
-            , class "bg-white dark:bg-bluegray-800 text-lg z-35"
+            [ class "flex py-1 mt-2 mb-2 flex flex-row items-center"
+            , class "bg-white dark:bg-bluegray-800 text-xl font-bold z-35"
             , class "relative sticky top-10"
             ]
             [ hr
-                [ class S.border
-                , class "flex-grow"
+                [ class S.border2
+                , class "w-16"
                 ]
                 []
             , div [ class "px-6" ]
@@ -195,7 +195,7 @@ viewGroup2 texts model cfg settings group =
                     ]
                 ]
             , hr
-                [ class S.border
+                [ class S.border2
                 , class "flex-grow"
                 ]
                 []
