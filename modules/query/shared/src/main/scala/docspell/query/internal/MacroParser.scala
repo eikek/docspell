@@ -35,6 +35,9 @@ object MacroParser {
   val dueDateRangeMacro: P[Expr.DateRangeMacro] =
     dateRangeMacroImpl(C.dueIn, Attr.DueDate)
 
+  val createdDateRangeMacro: P[Expr.DateRangeMacro] =
+    dateRangeMacroImpl(C.createdIn, Attr.CreatedDate)
+
   val yearDateMacro: P[Expr.YearMacro] =
     yearMacroImpl(C.year, Attr.Date)
 
@@ -52,6 +55,7 @@ object MacroParser {
         namesMacro,
         dateRangeMacro,
         dueDateRangeMacro,
+        createdDateRangeMacro,
         yearDateMacro,
         corrMacro,
         concMacro
