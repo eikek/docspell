@@ -298,6 +298,11 @@ border =
     " border dark:border-bluegray-600 "
 
 
+border2 : String
+border2 =
+    " border-2 dark:border-bluegray-600 "
+
+
 header1 : String
 header1 =
     " text-3xl mt-3 mb-5 font-semibold tracking-wide break-all"
