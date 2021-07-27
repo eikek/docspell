@@ -53,6 +53,7 @@ object ItemQuery {
     case object ItemId      extends StringAttr
     case object Date        extends DateAttr
     case object DueDate     extends DateAttr
+    case object CreatedDate extends DateAttr
     case object AttachCount extends IntAttr
 
     object Correspondent {

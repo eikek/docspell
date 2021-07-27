@@ -57,6 +57,14 @@ class SimpleExprParserTest extends FunSuite with ValueHelper {
       Right(dateExpr(Operator.Lt, Attr.DueDate, ld(2021, 3, 14)))
     )
     assertEquals(
+      p.parseAll("created:2021-03-14"),
+      Right(dateExpr(Operator.Like, Attr.CreatedDate, ld(2021, 3, 14)))
+    )
+    assertEquals(
+      p.parseAll("created<2021-03-14"),
+      Right(dateExpr(Operator.Lt, Attr.CreatedDate, ld(2021, 3, 14)))
+    )
+    assertEquals(
       p.parseAll("due~=2021-03-14,2021-03-13"),
       Right(Expr.InDateExpr(Attr.DueDate, Nel.of(ld(2021, 3, 14), ld(2021, 3, 13))))
     )

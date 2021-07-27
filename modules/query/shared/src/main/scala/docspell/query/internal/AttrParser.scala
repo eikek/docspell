@@ -31,6 +31,9 @@ object AttrParser {
   val dueDate: P[Attr.DateAttr] =
     P.ignoreCase(C.due).as(Attr.DueDate)
 
+  val created: P[Attr.DateAttr] =
+    P.ignoreCase(C.created).as(Attr.CreatedDate)
+
   val corrOrgId: P[Attr.StringAttr] =
     P.ignoreCase(C.corrOrgId)
       .as(Attr.Correspondent.OrgId)
@@ -78,7 +81,7 @@ object AttrParser {
     attachCountAttr
 
   val dateAttr: P[Attr.DateAttr] =
-    P.oneOf(List(date, dueDate))
+    P.oneOf(List(date, dueDate, created))
 
   val stringAttr: P[Attr.StringAttr] =
     P.oneOf(

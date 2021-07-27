@@ -23,6 +23,8 @@ object Constants {
   val corrOrgName   = "corr.org.name"
   val corrPersId    = "corr.pers.id"
   val corrPersName  = "corr.pers.name"
+  val created       = "created"
+  val createdIn     = "createdIn"
   val customField   = "f"
   val customFieldId = "f.id"
   val date          = "date"

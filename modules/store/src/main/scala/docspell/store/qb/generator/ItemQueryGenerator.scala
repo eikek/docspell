@@ -228,6 +228,8 @@ object ItemQueryGenerator {
         coalesce(tables.item.itemDate.s, tables.item.created.s).s
       case Attr.DueDate =>
         tables.item.dueDate.s
+      case Attr.CreatedDate =>
+        tables.item.created.s
     }
 
   private def stringColumn(tables: Tables)(attr: Attr.StringAttr): Column[String] =
