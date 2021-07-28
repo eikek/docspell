@@ -1,7 +1,7 @@
 +++
 title = "Paperless Import"
 description = "Import your data from paperless."
-weight = 35
+weight = 60
 +++
 
 # Introduction

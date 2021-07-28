@@ -78,8 +78,8 @@ $ curl -XPOST -F file=@test.pdf http://192.168.1.95:7880/api/v1/open/upload/item
 {"success":true,"message":"Files submitted."}
 ```
 
-There is a [script provided](@/docs/tools/ds.md) that uses curl to
-upload files from the command line more conveniently.
+There is a [cli](@/docs/tools/cli.md) to upload files from the command
+line more conveniently.
 
 When files are uploaded to an source endpoint, the items resulting
 from this uploads are marked with the name of the source. So you know

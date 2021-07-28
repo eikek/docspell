@@ -1,8 +1,15 @@
 +++
-title = "Export Files"
+title = "Export Files (⊗)"
 description = "Downloads all files from docspell."
-weight = 65
+weight = 165
 +++
+
+{% infobubble(mode="info", title="⚠ Please note") %}
+This script is now obsolete, you can use the [**CLI tool**](../cli/) instead.
+
+Use the `export`  command, e.g. `dsc export --all --target .`.
+{% end %}
+
 
 # export-files.sh
 

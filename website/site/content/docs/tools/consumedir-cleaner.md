@@ -1,8 +1,14 @@
 +++
-title = "Directory Cleaner"
+title = "Directory Cleaner (⊗)"
 description = "Clean directories from files in docspell"
-weight = 32
+weight = 150
 +++
+
+{% infobubble(mode="info", title="⚠ Please note") %}
+This script is now obsolete, you can use the [**CLI tool**](../cli/) instead.
+
+Use the `cleanup` or the `upload` command.
+{% end %}
 
 # Introduction
 

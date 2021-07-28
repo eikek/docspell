@@ -124,21 +124,18 @@ read more.
 
 # Command-Line
 
-I like to use the command line, so there is a small script that
-accepts one or more files and uploads them to a configured Docspell
-url. It is possible to let the script delete all successfully uploaded
-files.
+I like to use the command line, and so there is a cli that can be used
+for some tasks, for example uploading files. Below is a quick demo, it
+supports many more options, see the link below for details.
 
-<div class="columns is-centered">
-  <div class="column is-four-fifths">
-    <script id="asciicast-1GbSkyIq03hyzfGfvbcJRtSn8" src="https://asciinema.org/a/1GbSkyIq03hyzfGfvbcJRtSn8.js" async></script>
+<div class="columns is-centered is-full-width">
+  <div class="column">
+    <script id="asciicast-427679" src="https://asciinema.org/a/427679.js" async></script>
   </div>
 </div>
 
-The script can also be used to only check if a file already exists in
-your account.
 
-{{ buttonright(classes="is-primary ", href="/docs/tools/ds", text="More") }}
+{{ buttonright(classes="is-primary ", href="/docs/tools/cli", text="More") }}
 
 
 # Browser Extension

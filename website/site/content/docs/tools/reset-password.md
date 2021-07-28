@@ -1,8 +1,16 @@
 +++
-title = "Reset Password"
+title = "Reset Password (⊗)"
 description = "Resets a user password."
-weight = 70
+weight = 120
 +++
+
+{% infobubble(mode="info", title="⚠ Please note") %}
+This script is now obsolete, you can use the [**CLI tool**](../cli/) instead.
+
+Use the `reset-password` admin command, e.g. `dsc admin reset-password
+--account "smith/john"`, where `smith` is the collective id and `john`
+the username.
+{% end %}
 
 
 This script can be used to reset a user password. This can be done by
