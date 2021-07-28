@@ -146,7 +146,7 @@ class DateFindSpec extends FunSuite {
   test("find japanese dates") {
     assertEquals(
       DateFind
-        .findDates("some text in japanese 2021.7.21 and more", Language.Japanese)
+        .findDates("今日の日付は2021.7.21です。", Language.Japanese)
         .toVector,
       Vector(
         NerDateLabel(
@@ -157,7 +157,7 @@ class DateFindSpec extends FunSuite {
     )
     assertEquals(
       DateFind
-        .findDates("some text in japanese 2021年7月21日 and more", Language.Japanese)
+        .findDates("今日の日付は2021年7月21日です。", Language.Japanese)
         .toVector,
       Vector(
         NerDateLabel(
