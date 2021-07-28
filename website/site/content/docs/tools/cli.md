@@ -84,6 +84,15 @@ Once logged in, the session token will be saved to the filesystem
 renewed if expiry is near. If you don't issue any commands for a while
 you need to `login` again.
 
+## Demo
+
+<div class="columns is-centered is-full-width">
+  <div class="column">
+    <script id="asciicast-427679" src="https://asciinema.org/a/427679.js" async></script>
+  </div>
+</div>
+
+
 # Use Cases / Examples
 
 These are some examples. Each command has a good help explaining all
