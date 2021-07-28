@@ -176,7 +176,7 @@ class DateFindSpec extends FunSuite {
           NerLabel("2021年7月21", NerTag.Date, 22, 31)
         )
       )
-    )    
+    )
   }
 
 }
