@@ -22,7 +22,7 @@ object DateFind {
 
   def findDates(text: String, lang: Language): Stream[Pure, NerDateLabel] =
     TextSplitter
-      .splitToken(text, " \t.,\n\r/".toSet)
+      .splitToken(text, " \t.,\n\r/年月日".toSet)
       .filter(w => lang != Language.Latvian || w.value != "gada")
       .sliding(3)
       .filter(_.size == 3)
@@ -89,6 +89,7 @@ object DateFind {
         case Language.Swedish    => ymd.or(dmy).or(mdy)
         case Language.Dutch      => dmy.or(ymd).or(mdy)
         case Language.Latvian    => dmy.or(lavLong).or(ymd)
+        case Language.Japanese   => ymd
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>

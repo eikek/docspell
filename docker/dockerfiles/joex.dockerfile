@@ -29,6 +29,7 @@ RUN JDKPKG="openjdk11"; \
     tesseract-ocr-data-rus \
     tesseract-ocr-data-ron \
     tesseract-ocr-data-lav \
+    tesseract-ocr-data-jpn \
     unpaper \
     wkhtmltopdf \
     libreoffice \
