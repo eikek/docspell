@@ -4,6 +4,28 @@
 
 *Unreleased*
 
+- Introducing a new CLI tool (#345) that replaces all the shell
+  scripts from the `tools/` directory! https://github.com/docspell/dsc
+- UI changes:
+  - year separators are now more prominent (#950)
+  - fixes a bug in the item counter in detail view when an item is
+    deleted (#920)
+  - German translation improvements (#901)
+  - The number of selected files is shown in upload page (#896)
+- The created date of an item can now be used in queries (#925, #958)
+- Setting tags api has been improved (#955)
+- Task for converting pdfs is now behind the admin secret (#949)
+- Task for generating preview images is now behind the admin secret (#915)
+- respond with 404 when the source-id is not correct (#931)
+- Update of core libraries (#890)
+- Add Japanese to the list of document languages (#948)
+- Fix setting the folder from metadata when processing a file and
+  allow to specifiy it by name or id (#940)
+- Fixes docspell config file in docker-compose setup (#909)
+- Fixes selecting the next job in the job executor (#898)
+- Fixes a bug that prevents uploading more than one file at once
+  (#938)
+
 ### Rest API Changes
 
 - Removed `sec/item/convertallpdfs` endpoint in favor for new
@@ -13,6 +35,14 @@
   `admin/attachments/generatePreviews` endpoint which is now an admin
   task to generate previews for all files. The now removed enpoint did
   this only for one collective.
+- `/sec/item/{id}/tags`: Setting tags to an item (replacing existing
+  tags) has been changed to allow tags to be specified as names or ids
+- `/sec/item/{id}/tagsremove`: Added a route to remove tags for a
+  single item
+  
+### Configuration Changes
+
+None.
 
 
 ## v0.24.0
