@@ -151,7 +151,7 @@ class DateFindSpec extends FunSuite {
       Vector(
         NerDateLabel(
           LocalDate.of(2021, 7, 21),
-          NerLabel("2021.7.21", NerTag.Date, 22, 31)
+          NerLabel("2021.7.21", NerTag.Date, 6, 15)
         )
       )
     )
@@ -162,7 +162,7 @@ class DateFindSpec extends FunSuite {
       Vector(
         NerDateLabel(
           LocalDate.of(2021, 7, 21),
-          NerLabel("2021年7月21", NerTag.Date, 22, 31)
+          NerLabel("2021年7月21", NerTag.Date, 6, 15)
         )
       )
     )
@@ -173,7 +173,7 @@ class DateFindSpec extends FunSuite {
       Vector(
         NerDateLabel(
           LocalDate.of(2021, 7, 21),
-          NerLabel("2021年7月21", NerTag.Date, 22, 31)
+          NerLabel("2021年7月21", NerTag.Date, 3, 12)
         )
       )
     )
