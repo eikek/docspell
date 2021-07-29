@@ -43,7 +43,7 @@ object Dependencies {
   val SwaggerUIVersion        = "3.51.1"
   val TwelveMonkeysVersion    = "3.7.0"
   val JQueryVersion           = "3.5.1"
-  val ViewerJSVersion         = "0.5.8"
+  val ViewerJSVersion         = "0.5.9"
 
   val catsParse = Seq(
     "org.typelevel" %% "cats-parse" % CatsParseVersion
