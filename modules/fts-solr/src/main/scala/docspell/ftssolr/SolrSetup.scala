@@ -108,7 +108,13 @@ object SolrSetup {
             "Add latvian content field",
             addContentField(Language.Latvian)
           ),
-          SolrMigration.reIndexAll(13, "Re-Index after adding latvian content field")
+          SolrMigration.reIndexAll(13, "Re-Index after adding latvian content field"),
+          SolrMigration[F](
+            14,
+            "Add japanese content field",
+            addContentField(Language.Japanese)
+          ),
+          SolrMigration.reIndexAll(15, "Re-Index after adding japanese content field")
         )
 
       def addFolderField: F[Unit] =
