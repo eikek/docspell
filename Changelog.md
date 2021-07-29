@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.25.1
+
+*Jul 29, 2021*
+
+- Fix solr fulltext search by adding the new japanese content field
+
+The SOLR fulltext search is broken in 0.25.0, so this is a fixup
+release.
+
 ## v0.25.0
 
 *Jul 29, 2021*
