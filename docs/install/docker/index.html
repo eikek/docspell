@@ -254,15 +254,15 @@ something.</p>
 release page. The images contain all the necessary
 <a href="https://docspell.org/docs/install/prereq/">prerequisites</a>.</p>
 <ul>
-<li><code>docspell-restserver</code> this images contains the http server</li>
-<li><code>docspell-joex</code> this image contains the job executor and all
+<li><code>docspell/restserver</code> this images contains the http server</li>
+<li><code>docspell/joex</code> this image contains the job executor and all
 required software (ocrmypdf, unoconv etc) mentioned in
 <a href="https://docspell.org/docs/install/prereq/">prerequisites</a>.</li>
-<li><code>docspell-tools</code> this image simply contains all the scripts from the
-<code>tools/</code> folder. They are installed into a location in <code>$PATH</code>. It
-doesn't specify a <code>CMD</code> or <code>ENTRYPOINT</code>, so you must choose which
-script to run. The scripts are all prefixed by <code>ds-</code>. So to run the
-<code>consumedir.sh</code> script, execute <code>ds-consumedir</code>.</li>
+<li><code>docspell/dsc</code> this is an image containing a
+<a href="https://docspell.org/docs/tools/cli/">cli</a> for docspell that can be used to watch
+directories for new files. It doesn't specify a <code>CMD</code> or
+<code>ENTRYPOINT</code>, so you must specify the exact command to run. Here, it
+is used to watch a directory for uploading files. This runs the <code>dsc watch</code> command.</li>
 </ul>
 <h3 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h3>
 <p>These examples use <code>docker run</code> to start the restserver and
@@ -319,28 +319,31 @@ $ docker run -d --name ds-joex \
 <code>http://localhost:7880</code> and sign up/login and start playing around.
 When signing up, use the same name for collective and user and then
 login with this name.</p>
-<p>For the last part, we use the <code>docspell/tools</code> image to create another
+<p>For the last part, we use the <code>docspell/dsc</code> image to create another
 container that watches a directory and pushes files to docspell.</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1;">$ docker run -d --name ds-consume \
     --network dsnet --ip 10.4.3.4 \
     -v /tmp/inbox:/var/inbox \
-    docspell/tools:latest ds-consumedir -imdv --iheader </span><span style="color:#b8bb26;">&quot;Docspell-Integration:test123&quot; </span><span style="color:#fdf4c1;">\
-      --path /var/inbox </span><span style="color:#b8bb26;">&quot;http://10.4.3.3:7880/api/v1/open/integration/item&quot;
+    docspell/dsc:latest dsc -v -d http://10.4.3.3:7880 watch -r --delete -i \
+      --header </span><span style="color:#b8bb26;">&quot;Docspell-Integration:test123&quot;</span><span style="color:#fdf4c1;"> /var/inbox
 </span></code></pre>
-<p>This starts the <a href="https://docspell.org/docs/tools/consumedir/">consumedir</a> script that
-watches a directory and uploads arriving files to docspell server.
-This requires the value from the <code>integration-endpoint</code> setting to be
+<p>This starts the <a href="https://docspell.org/docs/tools/cli/">dsc</a> tool that watches a
+directory and uploads arriving files to the docspell server. This
+requires the value from the <code>integration-endpoint</code> setting to be
 allowed to upload files. It also requires you to explicitely enable
 this: go to <em>Collective Profile → Settings</em> and enable the
 <em>Integration Endpoint</em>. Then create a subdirectory in <code>/tmp/inbox</code>
 with the name of the <em>collective</em> that you registered and place a file
 into the <code>/tmp/inbox/[collective]</code> directory. The file is pushed to
 docspell and processed shortly after.</p>
-<p>To see all available options, run the script with the <code>--help</code> option:</p>
+<p>To see all available options, run <code>dsc</code> with the <code>--help</code> option:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ docker run docspell/tools:latest ds-consumedir --help
+<code><span style="color:#fdf4c1;">$ docker run docspell/dsc:latest dsc --help
 </span></code></pre>
+<p>Or just <a href="https://github.com/docspell/dsc/releases/latest">download the
+binary</a>, no docker
+required.</p>
 <p>Note that this is just an example and is only to demonstrate how to
 use the docker images. For instance, this setup does not provide
 fulltext search. For a more sophisticated docker setup, use
@@ -349,9 +352,9 @@ below.</p>
 <h2 id="docker-compose">Docker Compose<a class="zola-anchor" href="#docker-compose" aria-label="Anchor link for: docker-compose">🔗</a></h2>
 <p>There is a <a href="https://docs.docker.com/compose/">docker-compose</a> setup
 available in the <code>/docker/docker-compose</code> folder. This setup is
-similiar to the example above, adding fulltext search and a PostgreSQL
-database by using just one command. It's only a few steps to get
-started.</p>
+similiar to the example above, but adding fulltext search and a
+PostgreSQL database by using just one command. It's only a few steps
+to get started.</p>
 <h3 id="start-docspell">Start Docspell<a class="zola-anchor" href="#start-docspell" aria-label="Anchor link for: start-docspell">🔗</a></h3>
 <h4 id="1-get-the-docker-compose-files">1. Get the docker-compose files<a class="zola-anchor" href="#1-get-the-docker-compose-files" aria-label="Anchor link for: 1-get-the-docker-compose-files">🔗</a></h4>
 <p>There are two options. You can clone the whole repository:</p>
@@ -382,10 +385,12 @@ docker-compose file.</p>
 <code><span style="color:#fdf4c1;">$ export DOCSPELL_HEADER_VALUE=</span><span style="color:#b8bb26;">&quot;my-secret-123&quot;
 </span><span style="color:#fdf4c1;">$ docker-compose up
 </span></code></pre>
-<p>The environment variable defines a secret that is shared between some
-containers. You can define whatever you like. Please see the
-<a href="https://docspell.org/docs/tools/consumedir/#docker">consumedir.sh</a> docs for additional
-info.</p>
+<p>The environment variable defines a secret that is shared between the
+container watching a directory and the server. It is the header
+defined for the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
+endpoint</a> containers. You
+can use whatever you like. Please see the help to the <a href="https://docspell.org/docs/tools/cli/">dsc
+tool</a> docs for additional info.</p>
 <p>Goto <code>http://localhost:7880</code>, signup and login. When signing up, you
 choose the same name for collective and user. Then login with this
 name and the password.</p>
@@ -451,7 +456,7 @@ $ docker-compose up --force-recreate --build -d
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.24.0
+                Docspell 0.25.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

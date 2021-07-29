@@ -118,9 +118,9 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/tools/ds/"
+                                <a href="https://docspell.org/docs/tools/cli/"
                                    >
-                                    Upload Cli
+                                    Cli
                                 </a>
                                 
                             </li>
@@ -136,33 +136,6 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/tools/consumedir/"
-                                   >
-                                    Consume Directory
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/consumedir-cleaner/"
-                                   >
-                                    Directory Cleaner
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/paperless-import/"
-                                   >
-                                    Paperless Import
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
                                 <a href="https://docspell.org/docs/tools/browserext/"
                                    class="is-active">
                                     Browser Extension (Firefox)
@@ -171,8 +144,8 @@
                                 <ul class="menu-list">
                                     
                                     <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;#install-ds-sh">
-                                            Install ds.sh
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;browserext&#x2F;#install-dsc">
+                                            Install dsc
                                         </a>
                                         <ul>
                                             
@@ -212,18 +185,27 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/tools/convert-all-pdf/"
+                                <a href="https://docspell.org/docs/tools/paperless-import/"
                                    >
-                                    Convert All Pdfs
+                                    Paperless Import
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/tools/export-files/"
+                                <a href="https://docspell.org/docs/tools/ds/"
                                    >
-                                    Export Files
+                                    Upload Cli (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/consumedir/"
+                                   >
+                                    Consume Directory (⊗)
                                 </a>
                                 
                             </li>
@@ -232,7 +214,7 @@
                             <li>
                                 <a href="https://docspell.org/docs/tools/reset-password/"
                                    >
-                                    Reset Password
+                                    Reset Password (⊗)
                                 </a>
                                 
                             </li>
@@ -241,7 +223,34 @@
                             <li>
                                 <a href="https://docspell.org/docs/tools/regenerate-previews/"
                                    >
-                                    Regenerate Preview Images
+                                    Regenerate Preview Images (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/consumedir-cleaner/"
+                                   >
+                                    Directory Cleaner (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/convert-all-pdf/"
+                                   >
+                                    Convert All Pdfs (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/export-files/"
+                                   >
+                                    Export Files (⊗)
                                 </a>
                                 
                             </li>
@@ -260,9 +269,9 @@ implementing this in <code>tools/webextension</code>. This add-on only works wit
 firefox.</p>
 <p>Installation is a bit complicated, since you need to install external
 tools and the web extension. Both work together.</p>
-<h1 id="install-ds-sh">Install <code>ds.sh</code><a class="zola-anchor" href="#install-ds-sh" aria-label="Anchor link for: install-ds-sh">🔗</a></h1>
-<p>First copy the <code>ds.sh</code> tool somewhere in your <code>PATH</code>, maybe
-<code>/usr/local/bin</code> as described above.</p>
+<h1 id="install-dsc">Install <code>dsc</code><a class="zola-anchor" href="#install-dsc" aria-label="Anchor link for: install-dsc">🔗</a></h1>
+<p>First copy the <a href="https://docspell.org/docs/tools/cli/">dsc</a> tool somewhere in your
+<code>PATH</code>, maybe <code>/usr/local/bin</code>.</p>
 <h1 id="install-the-native-part">Install the native part<a class="zola-anchor" href="#install-the-native-part" aria-label="Anchor link for: install-the-native-part">🔗</a></h1>
 <p>Then install the &quot;native&quot; part of the web extension:</p>
 <p>Copy or symlink the <code>native.py</code> script into some known location. For
@@ -280,10 +289,13 @@ example:</p>
 for details.</p>
 <p>And you might want to modify this json file, so the path to the
 <code>native.py</code> script is correct (it must be absolute).</p>
-<p>If the <code>ds.sh</code> script is in your <code>$PATH</code>, then this should
-work. Otherwise, edit the <code>native.py</code> script and change the path to
-the tool. Or create a file <code>$HOME/.config/docspell/ds.cmd</code> whose
-content is the path to the <code>ds.sh</code> script.</p>
+<p>If the <code>dsc</code> tool is in your <code>$PATH</code>, then this should work. You need
+to provide a default source id in your <code>~/.config/dsc/config.toml</code> so
+that the upload command can be used without further arguments.</p>
+<p>Otherwise, edit the <code>native.py</code> script and change the path to the tool
+and/or the arguments. Or create a file
+<code>$HOME/.config/docspell/dsc.cmd</code> whose content is the path to the
+<code>dsc</code> tool.</p>
 <h1 id="install-the-extension">Install the extension<a class="zola-anchor" href="#install-the-extension" aria-label="Anchor link for: install-the-extension">🔗</a></h1>
 <p>An extension file can be build using the <code>make-xpi.sh</code> script. But
 installing it in &quot;standard&quot; firefox won't work, because <a href="https://wiki.mozilla.org/Add-ons/Extension_Signing">Mozilla
@@ -306,7 +318,7 @@ page</a>.</li>
 <p>When you right click on a file link, there should be a context menu
 entry <em>'Docspell Upload Helper'</em>. The add-on will download this file
 using the browser and then send the file path to the <code>native.py</code>
-script. This script will in turn call <code>ds.sh</code> which finally uploads it
+script. This script will in turn call <code>dsc</code> which finally uploads it
 to your configured URLs.</p>
 <p>Open the Add-ons page (<code>Ctrl</code>+<code>Shift</code>+<code>A</code>), the new add-on should be
 there.</p>
@@ -321,7 +333,7 @@ there.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.24.0
+                Docspell 0.25.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

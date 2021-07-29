@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.24.0
+  version: 0.25.0
   description: |
     This is the remote API to Docspell. Docspell is a free document
     management system focused on small groups or families.
@@ -1136,30 +1136,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
-  /sec/collective/previews:
-    post:
-      operationId: "sec-collective-previews-start-generate"
-      tags: [ Collective ]
-      summary: Starts the generate previews task
-      description: |
-        Submits a task that re-generates preview images of all
-        attachments of the current collective. Each existing preview
-        image will be replaced.
-
-        This can be used after changing the `preview` settings.
-
-        If only preview images of selected attachments should be
-        regenerated, see the `/sec/attachment/{id}/preview` endpoint.
-      security:
-        - authTokenHeader: []
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BasicResult"
-
   /sec/user:
     get:
       operationId: "sec-user-get-all"
@@ -1348,6 +1324,63 @@ paths:
               schema:
                 $ref: "#/components/schemas/ResetPasswordResult"
 
+  /admin/attachments/generatePreviews:
+    post:
+      operationId: "admin-attachments-generate-previews"
+      tags: [Attachment, Admin]
+      summary: (Re)generate all preview images
+      description: |
+        Submits a task that re-generates preview images of all
+        attachments. Each existing preview image will be replaced.
+
+        This can be used after changing the `preview` settings.
+
+        If only preview images of selected attachments should be
+        regenerated, see the `/sec/attachment/{id}/preview` endpoint.
+
+        This is an admin route, you need to specify the secret from
+        the config file via a http header `Docspell-Admin-Secret`.
+      security:
+        - adminHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /admin/attachments/convertallpdfs:
+    post:
+      operationId: "admin-attachments-convertallpdf"
+      tags: [Attachment, Admin]
+      summary: Convert all PDF files not yet converted
+      description: |
+        Docspell converts PDF files into PDF/A files by default, if
+        the OcrMyPDF tool is configured.
+
+        This endpoint can be used to submit a task that runs this on
+        all files that have not been converted yet in this way.
+
+        This conversion tool has been added in version 0.9.0 and so
+        older files can be "migrated" this way, or maybe after
+        enabling the tool (it is optional).
+
+        The task finds all files collective and submits a task for
+        each file to convert. These tasks are submitted with a low
+        priority so that normal processing can still proceed.
+
+        The body of the request should be empty.
+      security:
+        - adminHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/source:
     get:
       operationId: "sec-source-get-all"
@@ -1418,33 +1451,6 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/id"
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BasicResult"
-
-  /sec/item/convertallpdfs:
-    post:
-      operationId: "sec-item-convert-all-pdfs"
-      tags: [ Item ]
-      summary: Convert all non-converted pdfs.
-      description: |
-        Submits a job that will find all pdf files that have not been
-        converted and converts them using the ocrmypdf tool (if
-        enabled). This tool has been added in version 0.9.0 and so
-        older files can be "migrated" this way, or maybe after
-        enabling the tool.
-
-        The task finds all files of the current collective and submits
-        task for each file to convert. These tasks are submitted with
-        a low priority so that normal processing can still proceed.
-
-        The body of the request should be empty.
-      security:
-        - authTokenHeader: []
       responses:
         200:
           description: Ok
@@ -1622,6 +1628,8 @@ paths:
         Update the tags associated to an item. This will remove all
         existing ones and sets the given tags, such that after this
         returns, the item has exactly the tags as given.
+
+        Tags may be specified as names or ids.
       security:
         - authTokenHeader: []
       parameters:
@@ -1630,7 +1638,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ReferenceList"
+              $ref: "#/components/schemas/StringList"
       responses:
         200:
           description: Ok
@@ -1666,7 +1674,7 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
   /sec/item/{id}/taglink:
-    post:
+    put:
       operationId: "sec-item-link-tags"
       tags: [Item]
       summary: Link existing tags to an item.
@@ -1702,6 +1710,31 @@ paths:
         or ids. Tags are either removed or linked from/to the item,
         depending on whether the item currently is tagged with the
         corresponding tag.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StringList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/item/{id}/tagsremove:
+    post:
+      operationId: "sec-item-remove-tags"
+      tags: [ Item ]
+      summary: Remove tags from an item
+      description: |
+        Remove the given tags from the item. The tags can be specified
+        via ids or names.
       security:
         - authTokenHeader: []
       parameters:
@@ -5091,7 +5124,8 @@ components:
           format: ident
           description: |
             A folder can be specified that is attached to the new
-            item. The folder must exist.
+            item. The folder must exist and can be specified by id or
+            name.
         skipDuplicates:
           type: boolean
           default: false

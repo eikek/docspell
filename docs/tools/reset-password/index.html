@@ -13,7 +13,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Reset Password - Docspell">
+<meta name="og:site_name" content="Reset Password (⊗) - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -25,7 +25,7 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Reset Password – Docspell Documentation</title>
+        <title>Reset Password (⊗) – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
         <script type="application/javascript" src="/search_index.en.js"></script>
 <script type="application/javascript" src="/elasticlunr.min.js"></script>
@@ -66,7 +66,7 @@
                 <div class="columns is-vcentered">
                     <div class="column is-8">
                         <h1 class="title">
-                            Reset Password
+                            Reset Password (⊗)
                         </h1>
                         <h2 class="subtitle">
                             Docspell Documentation
@@ -98,7 +98,7 @@
                 </li>
                 
                 <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;reset-password&#x2F;">Reset Password</a>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;reset-password&#x2F;">Reset Password (⊗)</a>
                 </li>
             </ul>
         </nav>
@@ -118,9 +118,9 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/tools/ds/"
+                                <a href="https://docspell.org/docs/tools/cli/"
                                    >
-                                    Upload Cli
+                                    Cli
                                 </a>
                                 
                             </li>
@@ -130,33 +130,6 @@
                                 <a href="https://docspell.org/docs/tools/android/"
                                    >
                                     Android Client
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/consumedir/"
-                                   >
-                                    Consume Directory
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/consumedir-cleaner/"
-                                   >
-                                    Directory Cleaner
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/paperless-import/"
-                                   >
-                                    Paperless Import
                                 </a>
                                 
                             </li>
@@ -181,18 +154,27 @@
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/tools/convert-all-pdf/"
+                                <a href="https://docspell.org/docs/tools/paperless-import/"
                                    >
-                                    Convert All Pdfs
+                                    Paperless Import
                                 </a>
                                 
                             </li>
                             
                             
                             <li>
-                                <a href="https://docspell.org/docs/tools/export-files/"
+                                <a href="https://docspell.org/docs/tools/ds/"
                                    >
-                                    Export Files
+                                    Upload Cli (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/consumedir/"
+                                   >
+                                    Consume Directory (⊗)
                                 </a>
                                 
                             </li>
@@ -201,7 +183,7 @@
                             <li>
                                 <a href="https://docspell.org/docs/tools/reset-password/"
                                    class="is-active">
-                                    Reset Password
+                                    Reset Password (⊗)
                                 </a>
                                 
                                 <ul class="menu-list">
@@ -232,7 +214,34 @@
                             <li>
                                 <a href="https://docspell.org/docs/tools/regenerate-previews/"
                                    >
-                                    Regenerate Preview Images
+                                    Regenerate Preview Images (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/consumedir-cleaner/"
+                                   >
+                                    Directory Cleaner (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/convert-all-pdf/"
+                                   >
+                                    Convert All Pdfs (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/export-files/"
+                                   >
+                                    Export Files (⊗)
                                 </a>
                                 
                             </li>
@@ -244,7 +253,19 @@
                 <div class="column is-9">
                     <div class="container">
                         <div class="content doc">
-                            <p>This script can be used to reset a user password. This can be done by
+                            <div class="notification is-info is-light" style="z-index: 0">
+    <div class="content ">
+        <p class="title is-5">
+            ⚠ Please note
+        </p>
+        <div>
+            <p>This script is now obsolete, you can use the <a href="../cli/"><strong>CLI tool</strong></a> instead.</p>
+<p>Use the <code>reset-password</code> admin command, e.g. <code>dsc admin reset-password --account &quot;smith/john&quot;</code>, where <code>smith</code> is the collective id and <code>john</code>
+the username.</p>
+        </div>
+    </div>
+</div>
+<p>This script can be used to reset a user password. This can be done by
 admins, who know the <code>admin-endpoint.secret</code> value in the
 <a href="https://docspell.org/docs/configure/#admin-endpoint">configuration</a> file.</p>
 <p>The script is in <code>/tools/reset-password/reset-password.sh</code> and it is
@@ -277,7 +298,7 @@ change it again in the webapp.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.24.0
+                Docspell 0.25.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

@@ -277,8 +277,8 @@ release of Docspell. So even if you use the tarball of the current
 master branch, the <code>release.nix</code> file only contains derivations for
 releases. The expression <code>docspell.currentPkg</code> is a shortcut for
 selecting the most current release. For example it translates to
-<code>docspell.pkg docspell.cfg.v0_24_0</code> – if the current version
-is <code>0.24.0</code>.</p>
+<code>docspell.pkg docspell.cfg.v0_25_0</code> – if the current version
+is <code>0.25.0</code>.</p>
 <h2 id="upgrading">Upgrading<a class="zola-anchor" href="#upgrading" aria-label="Anchor link for: upgrading">🔗</a></h2>
 <p>Since <a href="https://docspell.org/docs/install/downgrading/">downgrading</a> is not supported,
 it is recommended to backup your database before upgrading. Should
@@ -295,8 +295,7 @@ definition for installing Docspell as a service using systemd.</p>
 <li>joex</li>
 <li>consumedir</li>
 </ul>
-<p>The <code>consumedir</code> module defines a systemd unit that starts the
-<code>consumedir.sh</code> script to watch one or more directories for new files.</p>
+<p>The <code>consumedir</code> module defines a systemd unit that starts the <code>dsc watch</code> command to watch one or more directories for new files.</p>
 <p>You need to import the <code>release.nix</code> file as described above in your
 <code>configuration.nix</code> and then append the docspell module to your list of
 modules. Here is an example:</p>
@@ -334,7 +333,7 @@ modules. Here is an example:</p>
   </span><span style="color:#8ec07c;">services</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">docspell-consumedir </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
     </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">;
     </span><span style="color:#8ec07c;">watchDirs </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[</span><span style="color:#b8bb26;">&quot;/tmp/test&quot;</span><span style="color:#fdf4c1aa;">];
-    </span><span style="color:#8ec07c;">urls </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[</span><span style="color:#b8bb26;">&quot;http://localhost:7880/api/v1/open/upload/item/the-source-id&quot;</span><span style="color:#fdf4c1aa;">];
+    </span><span style="color:#8ec07c;">source-id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;the-source-id&quot;</span><span style="color:#fdf4c1aa;">;
   };
 
   ...
@@ -458,7 +457,7 @@ postgres database. This snippet can be used to create a vm (using
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.24.0
+                Docspell 0.25.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

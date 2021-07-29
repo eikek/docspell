@@ -306,6 +306,7 @@ are only shortcuts to a longer form.</p>
 <li><code>id</code> the item id</li>
 <li><code>date</code> the item date</li>
 <li><code>due</code> the due date of the item</li>
+<li><code>created</code> the date when the item was created</li>
 <li><code>attach.count</code> the number of attachments of the item</li>
 <li><code>corr.org.id</code> the id of the correspondent organization</li>
 <li><code>corr.org.name</code> the name of the correspondent organization</li>
@@ -340,6 +341,7 @@ sense.</p>
 <li><code>f.id</code> for referencing custom fields by their id</li>
 <li><code>dateIn</code> a shortcut for a range search</li>
 <li><code>dueIn</code> a shortcut for a range search</li>
+<li><code>createdIn</code> a shortcut for a range search</li>
 <li><code>exist</code> check if some porperty exists</li>
 <li><code>names</code> a shortcut to search in several names via <code>:</code></li>
 <li><code>year</code> a shortcut for a year range</li>
@@ -577,7 +579,7 @@ so all other operators are not supported.</p>
 <p>Shortcuts are only a short form of a longer query and are provided for
 convenience. The following exist:</p>
 <ul>
-<li><code>dateIn</code> and <code>dueIn</code></li>
+<li><code>dateIn</code>, <code>dueIn</code> and <code>createdIn</code></li>
 <li><code>year</code></li>
 <li><code>names</code></li>
 <li><code>conc</code></li>
@@ -661,7 +663,7 @@ fields <code>paid</code> as a date and <code>usd</code> as money):</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.24.0
+                Docspell 0.25.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

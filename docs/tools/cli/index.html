@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Docspell is a Document Management System (DMS), a system that asists in organizing your piles of documents, resulting from scanners, e-mails and other sources with miminal effort.">
+<meta name="keywords" content="document management system dms organizer ocr open source free scan pdf word doc archive gpl machine learning nlp auto tagging"/>
+<meta name="robots" content="index,follow"/>
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="CLI - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>CLI – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+        <script type="application/javascript" src="/search_index.en.js"></script>
+<script type="application/javascript" src="/elasticlunr.min.js"></script>
+<script type="application/javascript" src="/js/bundle.js"></script>
+<script type="application/javascript" src="/js/searchhelper.js"></script>
+
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h1 class="title">
+                            CLI
+                        </h1>
+                        <h2 class="subtitle">
+                            Docspell Documentation
+                        </h2>
+                    </div>
+                    <div class="column">
+                        <id id="search"></id>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
+             style="position:sticky; top: 0; z-index:10;">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;">Tools</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;">CLI</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu"
+                         style="position:sticky; top:2rem; z-index:10;">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Tools
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/cli/"
+                                   class="is-active">
+                                    Cli
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#introduction">
+                                            Introduction
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#usage">
+                                            Usage
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#configuration">
+                                                    Configuration
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#output-format">
+                                                    Output format
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#login">
+                                                    Login
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#demo">
+                                                    Demo
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#use-cases-examples">
+                                            Use Cases &#x2F; Examples
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#uploads-files">
+                                                    Uploads files
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#upload-by-traversing-a-directory">
+                                                    Upload by traversing a directory
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#watch-a-directory">
+                                                    Watch a directory
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#download-files">
+                                                    Download files
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#export-data">
+                                                    Export data
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#admin-commands">
+                                                    Admin commands
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#search-for-items">
+                                                    Search for items
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#docker">
+                                            Docker
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/android/"
+                                   >
+                                    Android Client
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/browserext/"
+                                   >
+                                    Browser Extension (Firefox)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/smtpgateway/"
+                                   >
+                                    Smtp Gateway With Exim
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/paperless-import/"
+                                   >
+                                    Paperless Import
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/ds/"
+                                   >
+                                    Upload Cli (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/consumedir/"
+                                   >
+                                    Consume Directory (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/reset-password/"
+                                   >
+                                    Reset Password (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/regenerate-previews/"
+                                   >
+                                    Regenerate Preview Images (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/consumedir-cleaner/"
+                                   >
+                                    Directory Cleaner (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/convert-all-pdf/"
+                                   >
+                                    Convert All Pdfs (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/tools/export-files/"
+                                   >
+                                    Export Files (⊗)
+                                </a>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <h1 id="introduction">Introduction<a class="zola-anchor" href="#introduction" aria-label="Anchor link for: introduction">🔗</a></h1>
+<p>The <strong>d</strong>oc<strong>s</strong>pell <strong>c</strong>lient, short
+<a href="https://github.com/docspell/dsc">dsc</a>, is a tool to use
+docspell through the command line. It is also aims to be useful for
+your own scripts and programs.</p>
+<p>It is supposed to replace most of the shell scripts from the <code>tools/</code>
+directory.</p>
+<p>It is a work in progress; eventually most of the
+<a href="https://docspell.org/docs/api/">api</a> will be covered.</p>
+<h1 id="usage">Usage<a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">🔗</a></h1>
+<p>Download the binary for your architecture from the <a href="https://github.com/docspell/dsc/releases/latest">release
+page</a> and rename it
+to <code>dsc</code>. Then run <code>dsc help</code> to see an overview of all commands. The
+help of each command is available via <code>dsc help [command]</code> or <code>dsc [command] --help</code>.</p>
+<p>There are docker images at
+<a href="https://hub.docker.com/repository/docker/docspell/dsc">dockerhub</a>,
+but it's usually easier to just download the binary. They should work
+on most systems without additional setups.</p>
+<p>Below are some quick infos to get started, please see <a href="https://github.com/docspell/dsc">the project
+page</a> for more info.</p>
+<h2 id="configuration">Configuration<a class="zola-anchor" href="#configuration" aria-label="Anchor link for: configuration">🔗</a></h2>
+<p>A configuration file can be used to have some predefined settings, for
+example the docspell url, the admin secret etc. They can be overriden
+by specifying them as options.</p>
+<p>The config looks like this:</p>
+<pre style="background-color:#282828;">
+<code><span style="font-weight:bold;color:#8ec07c;">docspell_url </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">default_format </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;Tabular&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">admin_secret </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;admin123&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">default_account </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;demo&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">pdf_viewer </span><span style="color:#fdf4c1aa;">= [</span><span style="color:#b8bb26;">&quot;zathura&quot;</span><span style="color:#fdf4c1aa;">, </span><span style="color:#b8bb26;">&quot;{}&quot;</span><span style="color:#fdf4c1aa;">]
+</span><span style="font-style:italic;color:#928374;">#pass_entry = &quot;my/entry&quot;
+</span></code></pre>
+<p>For linuxes, the default location is <code>~/.config/dsc/config.toml</code>. You
+can give a config file explicitly via an option or the environment
+variable <code>DSC_CONFIG</code>.</p>
+<p>If you use the <a href="https://passwordstore.org">pass</a> password manager, you
+can add your password entry to the config file as well.</p>
+<h2 id="output-format">Output format<a class="zola-anchor" href="#output-format" aria-label="Anchor link for: output-format">🔗</a></h2>
+<p>The &quot;output format&quot; defines how the information is printed on screen.
+The default output format is <code>Tabular</code> which prints a simple table.
+This table can also be formatted as CSV using <code>csv</code> as output format.
+These two modes are intended for humans and they may not present all
+information available.</p>
+<p>Alternatively, there is <code>json</code> and <code>lisp</code> as output format. These are
+intended for machine consumption. They always contain all information.
+If you look for some detail, use for example <code>json</code> to get all data in
+a structured form. On the shell you can use the awesome tool
+<a href="https://stedolan.github.io/jq/">jq</a> to get exactly what you want.</p>
+<h2 id="login">Login<a class="zola-anchor" href="#login" aria-label="Anchor link for: login">🔗</a></h2>
+<p>Many tasks require to be logged in. This can be done via the <code>login</code>
+subcommand. You can specify account and password or fallback to the
+values in the config file.</p>
+<p>Once logged in, the session token will be saved to the filesystem
+(next to the config file) and is used for subsequent commands. It is
+renewed if expiry is near. If you don't issue any commands for a while
+you need to <code>login</code> again.</p>
+<h2 id="demo">Demo<a class="zola-anchor" href="#demo" aria-label="Anchor link for: demo">🔗</a></h2>
+<div class="columns is-centered is-full-width">
+  <div class="column">
+    <script id="asciicast-427679" src="https://asciinema.org/a/427679.js" async></script>
+  </div>
+</div>
+<h1 id="use-cases-examples">Use Cases / Examples<a class="zola-anchor" href="#use-cases-examples" aria-label="Anchor link for: use-cases-examples">🔗</a></h1>
+<p>These are some examples. Each command has a good help explaining all
+the options. Run <code>dsc [subcommand] --help</code> to see it.</p>
+<h2 id="uploads-files">Uploads files<a class="zola-anchor" href="#uploads-files" aria-label="Anchor link for: uploads-files">🔗</a></h2>
+<p>The <code>upload</code> subcommand can upload files to docspell. This is the
+replacement for the <code>ds.sh</code> shell script.</p>
+<p>You can specify a list of files that are all being uploaded. This
+command doesn't require to be logged in, it can also upload via a
+<a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">source id</a> or via the
+<a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration endpoint</a>.</p>
+<p>A source id can be given in the config file, then there are no
+additional options required. The simplest form is this:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc upload *.pdf
+File already in Docspell: article-velo.pdf
+Adding to request: test-ocr.pdf
+Sending request …
+┌─────────┬──────────────────┐
+│ success │ message          │
+├─────────┼──────────────────┤
+│ true    │ Files submitted. │
+└─────────┴──────────────────┘
+</span></code></pre>
+<p>By default, duplicate files are detected and not uploaded. This
+uploads all files in one single request. By default, each file results
+in one item. Using <code>--single-item</code> all files can be put into one item.</p>
+<p>It is possible to specify certain metadata, like tags or a folder,
+that is then attached to the resulting item.</p>
+<h2 id="upload-by-traversing-a-directory">Upload by traversing a directory<a class="zola-anchor" href="#upload-by-traversing-a-directory" aria-label="Anchor link for: upload-by-traversing-a-directory">🔗</a></h2>
+<p>The above use case was about uploading files. Using the <code>upload</code>
+subcommand with the <code>--traverse</code> option, you can traverse directories
+and upload all files in them. In this mode, each file will be uploaded
+in a separate request, so the <code>--single-item</code> option cannot be used.</p>
+<p>There are options to exclude/include files based on a <a href="https://docs.rs/glob/0.3.0/glob/struct.Pattern.html">glob
+pattern</a>.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc upload --traverse .
+File already in Docspell: article-velo.pdf
+File already in Docspell: demo/dirc/scan.21-03-12.15-50-54.pdf
+File already in Docspell: demo/dirc/test-stamp.pdf
+File already in Docspell: demo/letter-de.pdf
+Uploading eike/keywords.pdf
+File already in Docspell: eike/large-file.pdf
+Uploading eike/letter-en.pdf
+File already in Docspell: test-ocr.pdf
+┌─────────┬────────────┐
+│ success │ message    │
+├─────────┼────────────┤
+│ true    │ Uploaded 2 │
+└─────────┴────────────┘
+</span></code></pre>
+<p>The <code>--poll</code> option allows to periodically traverse and upload
+directories.</p>
+<h2 id="watch-a-directory">Watch a directory<a class="zola-anchor" href="#watch-a-directory" aria-label="Anchor link for: watch-a-directory">🔗</a></h2>
+<p>The <code>watch</code> subcommand can be used to watch one or more directories
+and upload files when they arrive. It uses the <code>upload</code> command under
+the hood and therefore most options are also available here.</p>
+<p>It detects file creations and skips a rename within a watched folder.
+The flag <code>-r</code> or <code>--recursive</code> is required to recursively watch a
+directory.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc watch -r .
+Watching directory (Recursive): .
+Press Ctrl-C to quit.
+------------------------------------------------------------------------------
+Got: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
+Adding to request: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
+Sending request …
+Server: Files submitted.
+</span></code></pre>
+<p>The <code>--matches</code> option allows to define a pattern for files to include.</p>
+<p>If watching a directory is not possible due to system constraints
+(e.g. when using NFS or SAMBA shares), a less efficient option is to
+use the <code>upload</code> subcommand with <code>--poll</code> option which periodically
+traverses a directory.</p>
+<h2 id="download-files">Download files<a class="zola-anchor" href="#download-files" aria-label="Anchor link for: download-files">🔗</a></h2>
+<p>The <code>download</code> command allows to download files that match a given
+query. It is possible to download them all flat into some directory or
+directly into a zip file. For example, download all files that are
+tagged with <code>todo</code> into a zip file:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc download --zip &#39;tag:todo&#39;
+Zipping 2 attachments into docspell-files.zip
+Downloading DOC-20191223-155707.jpg.pdf …
+Downloading DOC-20200803-174448.jpg.pdf …
+</span></code></pre>
+<p>It downloads the converted PDF files by default, which can be changed
+via some options.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc download --zip --original &#39;tag:todo&#39;
+Zipping original files of 2 attachments into docspell-files.zip
+Downloading DOC-20191223-155707.jpg …
+Downloading DOC-20200803-174448.jpg …
+</span></code></pre><h2 id="export-data">Export data<a class="zola-anchor" href="#export-data" aria-label="Anchor link for: export-data">🔗</a></h2>
+<p>The <code>export</code> command allows to download all items with metadata and
+their files. It downloads all items by default, but a query is also
+supported.</p>
+<p>In contrast to the <code>download</code> command, this is intended for getting
+everything out of docspell in some independent format. Files are
+downloaded (only original files) and the items metadata is also
+stored. So you don't loose the tags and correspondents that are
+carefully maintained with each item.</p>
+<p>It expects one directory where it will create a specfific directory
+structure as follows:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">exports/
+├── by_date
+│   ├── 2019-07
+│   ├── 2020-08
+|       ├── BV2po65mAFU-…-bqUiwjz8f2W -&gt; ../../items/BV/BV2po65mAFU-…-bqUiwjz8f2W
+|       └── FTUnhZ3AE1H-…-RQ9KhtRi486 -&gt; ../../items/FT/FTUnhZ3AE1H-…-RQ9KhtRi486
+│   ├── …
+│   └── 2021-07
+├── by_tag
+│   ├── Contract
+│   ├── Important
+│   ├── Invoice
+|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
+|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
+|   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
+|   │   └── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
+│   ├── …
+│   └── Todo
+└── items
+    ├── 45
+    |   └── 455h3cQNdna-w8oTEw9wtpE-G7bCJbVpZPw-t6dF7NjAuDm
+    |       ├── files
+    |       │   └── DOC-20200803-174448.jpg
+    |       └── metadata.json
+    ├── …
+    └── Hb
+</span></code></pre>
+<p>All your items are stored below the <code>items</code> directory. It contains
+subdirectories that are created from the first two characters of the
+item id. Inside this folder, a folder with the complete item id is
+created and there all the data to the item is stored: the metadata in
+<code>metadata.json</code> and all files below <code>files/</code>.</p>
+<p>The options <code>--date-links</code> and <code>--tag-links</code> create the other two
+folders: <code>by_tag</code> and <code>by_date</code>. In there you'll find symlinks into
+the <code>items</code> folder that are organized by some metadata, namely tag and
+the item date.</p>
+<p>Example run:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc export --all --date-links --tag-links --target exports
+Exported item: test3.zip
+Exported item: README.md
+Exported item: LICENSE.txt
+Exported item: TestRMarkdown.pdf
+Exported item: DOC-20191223-155729.jpg
+Exported item: DOC-20191223-155707.jpg
+Exported item: DOC-20200808-154204.jpg
+Exported item: DOC-20200807-115654.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200804-132305.jpg
+Exported item: DOC-20191223-155707.jpg
+Exported item: keyweb.eml
+Exported 15 items.
+</span></code></pre>
+<p>With output format <code>json</code> or <code>lisp</code> each item is printed instead in
+full detail.</p>
+<h2 id="admin-commands">Admin commands<a class="zola-anchor" href="#admin-commands" aria-label="Anchor link for: admin-commands">🔗</a></h2>
+<p>These are a set of commands that simply call a route at the server to
+submit a maintenance task or to reset the password of some user. These
+commands require the <a href="https://docspell.org/docs/configure/#admin-endpoint">admin
+secret</a> either in the
+config file or as an argument.</p>
+<p>Reset user password:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc admin reset-password --account demo
+┌─────────┬──────────────┬──────────────────┐
+│ success │ new password │ message          │
+├─────────┼──────────────┼──────────────────┤
+│ true    │ 2q2UeCVvMYg  │ Password updated │
+└─────────┴──────────────┴──────────────────┘
+</span></code></pre>
+<p>Recreate fulltext index:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc admin --admin-secret admin123 recreate-index
+┌─────────┬─────────────────────────────────────┐
+│ success │ message                             │
+├─────────┼─────────────────────────────────────┤
+│ true    │ Full-text index will be re-created. │
+└─────────┴─────────────────────────────────────┘
+</span></code></pre><h2 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h2>
+<p>The <code>search</code> command takes a <a href="https://docspell.org/docs/query/">query</a> and
+prints the results.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc search &#39;corr:*&#39;
+┌──────────┬────────────────────────────┬───────────┬────────────┬─────┬───────────────────────────┬───────────────┬────────┬─────────────┬────────────┬───────┐
+│ id       │ name                       │ state     │ date       │ due │ correspondent             │ concerning    │ folder │ tags        │ fields     │ files │
+├──────────┼────────────────────────────┼───────────┼────────────┼─────┼───────────────────────────┼───────────────┼────────┼─────────────┼────────────┼───────┤
+│ HVK7JuCF │ test-ocr.pdf               │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Certificate │            │ 1     │
+│ 3odNawKE │ letter-en.pdf              │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
+│ 3MA5NdhS │ large-file.pdf             │ confirmed │ 2021-07-18 │     │ Axa                       │               │        │ Certificate │            │ 1     │
+│ HDumXkRm │ keywords.pdf               │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
+│ 733gM656 │ test-stamp.pdf             │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Contract    │            │ 1     │
+│ 8LiciitB │ scan.21-03-12.15-50-54.pdf │ confirmed │ 2021-07-18 │     │ Supermarket               │               │        │ Receipt     │ CHF 89.44  │ 1     │
+│ 8nFt2z7T │ article-velo.pdf           │ confirmed │ 2021-07-18 │     │ Supermarket/Rudolf Müller │ Rudolf Müller │        │ invoice     │ CHF 123.11 │ 1     │
+│ kfugGdXU │ letter-de.pdf              │ created   │ 2021-07-18 │     │ Axa                       │ Rudolf Müller │        │ invoice     │            │ 1     │
+└──────────┴────────────────────────────┴───────────┴────────────┴─────┴───────────────────────────┴───────────────┴────────┴─────────────┴────────────┴───────┘
+</span></code></pre>
+<p>The same can be formatted as json and, for example, only print the ids:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1aa;">❯ dsc -f json search &#39;corr:*&#39; | jq &#39;.groups[].items[].id&#39;
+&quot;HVK7JuCFt4W-qxkcwq1cWCV-dvpGo4DpZzU-Q16Xoujojas&quot;
+&quot;3odNawKE1Ek-YJrWfPzekAq-47cjt14sexd-GK35JAEAanx&quot;
+&quot;3MA5NdhSrbx-3JkjEpqHiyU-XyVNb15tioh-SUVjMLi1aoV&quot;
+&quot;HDumXkRmDea-dNryjtRjk3V-ysdJmJNQGQS-UFb4DWNZJ3F&quot;
+&quot;733gM656S4T-d4HmEgdAV6Z-9zuHAd3biKM-mBwNriZpqMB&quot;
+&quot;8LiciitBVTi-DTmgiEUdqAJ-xXPckMvFHMc-JSiJMYvLaWh&quot;
+&quot;8nFt2z7T9go-1qaCTTgodub-592n6gpmdNR-VRcyYAyT7qj&quot;
+&quot;kfugGdXUGUc-mReaUnJxyUL-R44Lf7yH6RK-2JbZ1bv7dw&quot;
+</span></code></pre><h1 id="docker">Docker<a class="zola-anchor" href="#docker" aria-label="Anchor link for: docker">🔗</a></h1>
+<p>The provided docker-compose setup runs this script to watch a single
+directory, <code>./docs</code> in current directory, for new files. If a new file
+is detected, it is pushed to docspell.</p>
+<p>This utilizes the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
+endpoint</a>, which is enabled
+in the config file, to allow uploading documents for all collectives.
+A subfolder must be created for each registered collective. The docker
+containers are configured to use http-header protection for the
+integration endpoint. This requires you to provide a secret, that is
+shared between the rest-server and the <code>dsc</code> tool. This can be done by
+defining an environment variable which gets picked up by the
+containers defined in <code>docker-compose.yml</code>:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">DOCSPELL_HEADER_VALUE</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;my-secret&quot;
+</span><span style="color:#fdf4c1;">docker-compose up
+</span></code></pre>
+<p>Now you can create a folder <code>./docs/&lt;collective-name&gt;</code> and place all
+files in there that you want to import. Once dropped in this folder
+the <code>consumedir</code> container will push it to docspell.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell 0.25.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+    </body>
+</html>
