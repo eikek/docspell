@@ -2,7 +2,7 @@
 
 ## v0.25.0
 
-*Unreleased*
+*Jul 29, 2021*
 
 - Introducing a new CLI tool (#345) that replaces all the shell
   scripts from the `tools/` directory! https://github.com/docspell/dsc
@@ -18,7 +18,8 @@
 - Task for generating preview images is now behind the admin secret (#915)
 - respond with 404 when the source-id is not correct (#931)
 - Update of core libraries (#890)
-- Add Japanese to the list of document languages (#948)
+- Add Japanese to the list of document languages. Thanks @wallace11
+  for helping out (#948, #962)
 - Fix setting the folder from metadata when processing a file and
   allow to specifiy it by name or id (#940)
 - Fixes docspell config file in docker-compose setup (#909)
