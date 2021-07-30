@@ -459,12 +459,15 @@ When negating, it finds all items that are not in a folder:
 
 The `attach.id` field is a special field to find items by providing
 the id of an attachment. This can be helpful in certain situations
-when you only have the id of an attachment. It always uses equality,
-so all other operators are not supported.
+when you only have the id or part of that of an attachment. It uses
+equality if no wildcard is present. A wildcard `*` can be used at
+beginning or end if only a part of the id is known.
 
 ```
 attach.id=5YjdnuTAdKJ-V6ofWTYsqKV-mAwB5aXTNWE-FAbeRU58qLb
+attach.id=5YjdnuTAdKJ*
 ```
+
 
 # Shortcuts
 
