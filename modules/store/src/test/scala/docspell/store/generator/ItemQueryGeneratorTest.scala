@@ -11,6 +11,7 @@ import java.time.LocalDate
 import docspell.common._
 import docspell.query.ItemQueryParser
 import docspell.store.qb.DSL._
+import docspell.store.qb.Select
 import docspell.store.qb.generator.{ItemQueryGenerator, Tables}
 import docspell.store.queries.AttachCountTable
 import docspell.store.records._
@@ -56,4 +57,31 @@ class ItemQueryGeneratorTest extends FunSuite {
     assertEquals(cond, expect)
   }
 
+  test("attach.id with wildcard") {
+    val q    = ItemQueryParser.parseUnsafe("attach.id=abcde*")
+    val cond = ItemQueryGenerator(now, tables, Ident.unsafe("coll"))(q)
+    val expect = tables.item.id.in(
+      Select(
+        select(RAttachment.T.itemId),
+        from(RAttachment.T),
+        RAttachment.T.id.cast[String].like("abcde%")
+      ).distinct
+    )
+
+    assertEquals(cond, expect)
+  }
+
+  test("attach.id with equals") {
+    val q    = ItemQueryParser.parseUnsafe("attach.id=abcde")
+    val cond = ItemQueryGenerator(now, tables, Ident.unsafe("coll"))(q)
+    val expect = tables.item.id.in(
+      Select(
+        select(RAttachment.T.itemId),
+        from(RAttachment.T),
+        RAttachment.T.id.cast[String] === "abcde"
+      ).distinct
+    )
+
+    assertEquals(cond, expect)
+  }
 }
