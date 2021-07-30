@@ -30,7 +30,8 @@ fulltext search and has great e-mail integration. Everything is
 accessible via a REST/HTTP api. A mobile friendly SPA web application
 is the default user interface. An [Android
 app](https://github.com/docspell/android-client) exists for
-conveniently uploading files from your phone/tablet. The [feature
+conveniently uploading files from your phone/tablet and a
+[cli](https://github.com/docspell/dsc). The [feature
 overview](https://docspell.org/#feature-selection) lists some more
 points.
 

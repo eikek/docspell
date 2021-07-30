@@ -30,11 +30,10 @@ services:
       - solr
 
   consumedir:
-    image: docspell/dsc:nightly
+    image: docspell/dsc:latest
     container_name: docspell-consumedir
     command:
       - dsc
-      - "-vv"
       - "-d"
       - "http://docspell-restserver:7880"
       - "watch"
