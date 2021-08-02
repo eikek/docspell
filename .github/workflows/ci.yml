@@ -20,7 +20,7 @@ jobs:
           working-directory: modules/webapp
       - name: Fetch tags
         run: git fetch --depth=100 origin +refs/tags/*:refs/tags/*
-      - uses: olafurpg/setup-scala@v12
+      - uses: olafurpg/setup-scala@v13
         with:
           java-version: ${{ matrix.java }}
       - name: Coursier cache
