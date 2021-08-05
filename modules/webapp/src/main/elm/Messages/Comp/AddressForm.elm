@@ -36,6 +36,6 @@ de =
     { selectCountry = "Land auswählen"
     , street = "Straße"
     , zipCode = "Postleitzahl"
-    , city = "Stadt"
+    , city = "Ort"
     , country = "Land"
     }
