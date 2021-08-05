@@ -94,8 +94,8 @@ specified via a JSON structure in a part with name `meta`:
 
 # Endpoints
 
-Docspell needs to the collective that owns the files. There are the
-following ways for this.
+Docspell needs to know the collective that owns the files. There are
+the following ways for this.
 
 
 ## Authenticated User
@@ -160,5 +160,6 @@ checksum with:
 /api/v1/open/integration/checkfile/[collective-name]/[sha256-checksum]
 ```
 
-See the [SMTP gateway](@/docs/tools/smtpgateway.md) or the [consumedir
-script](@/docs/tools/consumedir.md) for examples to use this endpoint.
+See the [SMTP gateway](@/docs/tools/smtpgateway.md) or the [dsc
+watch/upload](@/docs/tools/cli.md#docker) command for example can use
+this endpoint.

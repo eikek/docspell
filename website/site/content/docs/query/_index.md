@@ -88,6 +88,7 @@ These fields map to at most one value:
 - `id` the item id
 - `date` the item date
 - `due` the due date of the item
+- `created` the date when the item was created
 - `attach.count` the number of attachments of the item
 - `corr.org.id` the id of the correspondent organization
 - `corr.org.name` the name of the correspondent organization
@@ -124,6 +125,7 @@ Other special fields:
 - `f.id` for referencing custom fields by their id
 - `dateIn` a shortcut for a range search
 - `dueIn` a shortcut for a range search
+- `createdIn` a shortcut for a range search
 - `exist` check if some porperty exists
 - `names` a shortcut to search in several names via `:`
 - `year` a shortcut for a year range
@@ -457,19 +459,22 @@ When negating, it finds all items that are not in a folder:
 
 The `attach.id` field is a special field to find items by providing
 the id of an attachment. This can be helpful in certain situations
-when you only have the id of an attachment. It always uses equality,
-so all other operators are not supported.
+when you only have the id or part of that of an attachment. It uses
+equality if no wildcard is present. A wildcard `*` can be used at
+beginning or end if only a part of the id is known.
 
 ```
 attach.id=5YjdnuTAdKJ-V6ofWTYsqKV-mAwB5aXTNWE-FAbeRU58qLb
+attach.id=5YjdnuTAdKJ*
 ```
+
 
 # Shortcuts
 
 Shortcuts are only a short form of a longer query and are provided for
 convenience. The following exist:
 
-- `dateIn` and `dueIn`
+- `dateIn`, `dueIn` and `createdIn`
 - `year`
 - `names`
 - `conc`

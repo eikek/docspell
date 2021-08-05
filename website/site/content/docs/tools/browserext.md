@@ -13,10 +13,10 @@ firefox.
 Installation is a bit complicated, since you need to install external
 tools and the web extension. Both work together.
 
-# Install `ds.sh`
+# Install `dsc`
 
-First copy the `ds.sh` tool somewhere in your `PATH`, maybe
-`/usr/local/bin` as described above.
+First copy the [dsc](@/docs/tools/cli.md) tool somewhere in your
+`PATH`, maybe `/usr/local/bin`.
 
 
 # Install the native part
@@ -44,10 +44,14 @@ for details.
 And you might want to modify this json file, so the path to the
 `native.py` script is correct (it must be absolute).
 
-If the `ds.sh` script is in your `$PATH`, then this should
-work. Otherwise, edit the `native.py` script and change the path to
-the tool. Or create a file `$HOME/.config/docspell/ds.cmd` whose
-content is the path to the `ds.sh` script.
+If the `dsc` tool is in your `$PATH`, then this should work. You need
+to provide a default source id in your `~/.config/dsc/config.toml` so
+that the upload command can be used without further arguments.
+
+Otherwise, edit the `native.py` script and change the path to the tool
+and/or the arguments. Or create a file
+`$HOME/.config/docspell/dsc.cmd` whose content is the path to the
+`dsc` tool.
 
 
 # Install the extension
@@ -73,7 +77,7 @@ alternatives:
 When you right click on a file link, there should be a context menu
 entry *'Docspell Upload Helper'*. The add-on will download this file
 using the browser and then send the file path to the `native.py`
-script. This script will in turn call `ds.sh` which finally uploads it
+script. This script will in turn call `dsc` which finally uploads it
 to your configured URLs.
 
 Open the Add-ons page (`Ctrl`+`Shift`+`A`), the new add-on should be

@@ -1,8 +1,9 @@
 {-
-  Copyright 2020 Docspell Contributors
+   Copyright 2020 Docspell Contributors
 
-  SPDX-License-Identifier: GPL-3.0-or-later
+   SPDX-License-Identifier: GPL-3.0-or-later
 -}
+
 
 module Comp.ItemCardList exposing
     ( Model
@@ -45,6 +46,7 @@ type Msg
     = SetResults ItemLightList
     | AddResults ItemLightList
     | ItemCardMsg ItemLight Comp.ItemCard.Msg
+    | RemoveItem String
 
 
 init : Model
@@ -144,6 +146,13 @@ updateDrag dm _ msg model =
                 result.selection
                 result.linkTarget
 
+        RemoveItem id ->
+            UpdateResult { model | results = removeItemById id model.results }
+                Cmd.none
+                dm
+                Data.ItemSelection.Inactive
+                Comp.LinkTarget.LinkNone
+
 
 
 --- View2
@@ -170,13 +179,13 @@ viewGroup2 : Texts -> Model -> ViewConfig -> UiSettings -> ItemLightGroup -> Htm
 viewGroup2 texts model cfg settings group =
     div [ class "ds-item-group" ]
         [ div
-            [ class "flex py-0 mt-2 flex flex-row items-center"
-            , class "bg-white dark:bg-bluegray-800 text-lg z-35"
+            [ class "flex py-1 mt-2 mb-2 flex flex-row items-center"
+            , class "bg-white dark:bg-bluegray-800 text-xl font-bold z-35"
             , class "relative sticky top-10"
             ]
             [ hr
-                [ class S.border
-                , class "flex-grow"
+                [ class S.border2
+                , class "w-16"
                 ]
                 []
             , div [ class "px-6" ]
@@ -186,7 +195,7 @@ viewGroup2 texts model cfg settings group =
                     ]
                 ]
             , hr
-                [ class S.border
+                [ class S.border2
                 , class "flex-grow"
                 ]
                 []
@@ -231,3 +240,15 @@ isMultiSelectMode cfg =
 
         Data.ItemSelection.Inactive ->
             False
+
+
+removeItemById : String -> ItemLightList -> ItemLightList
+removeItemById id list =
+    let
+        filterItem item =
+            item.id /= id
+
+        filterGroup group =
+            { group | items = List.filter filterItem group.items }
+    in
+    { list | groups = List.map filterGroup list.groups }

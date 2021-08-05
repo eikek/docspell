@@ -24,7 +24,7 @@ import org.log4s.getLogger
 trait OItem[F[_]] {
 
   /** Sets the given tags (removing all existing ones). */
-  def setTags(item: Ident, tagIds: List[Ident], collective: Ident): F[UpdateResult]
+  def setTags(item: Ident, tagIds: List[String], collective: Ident): F[UpdateResult]
 
   /** Sets tags for multiple items. The tags of the items will be
     * replaced with the given ones. Same as `setTags` but for multiple
@@ -32,7 +32,7 @@ trait OItem[F[_]] {
     */
   def setTagsMultipleItems(
       items: NonEmptyList[Ident],
-      tags: List[Ident],
+      tags: List[String],
       collective: Ident
   ): F[UpdateResult]
 
@@ -181,7 +181,7 @@ trait OItem[F[_]] {
     */
   def convertAllPdf(
       collective: Option[Ident],
-      account: AccountId,
+      submitter: Option[Ident],
       notifyJoex: Boolean
   ): F[UpdateResult]
 
@@ -304,19 +304,20 @@ object OItem {
 
         def setTags(
             item: Ident,
-            tagIds: List[Ident],
+            tagIds: List[String],
             collective: Ident
         ): F[UpdateResult] =
           setTagsMultipleItems(NonEmptyList.of(item), tagIds, collective)
 
         def setTagsMultipleItems(
             items: NonEmptyList[Ident],
-            tags: List[Ident],
+            tags: List[String],
             collective: Ident
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(store.transact(for {
-            k   <- RTagItem.deleteItemTags(items, collective)
-            res <- items.traverse(i => RTagItem.setAllTags(i, tags))
+            k     <- RTagItem.deleteItemTags(items, collective)
+            rtags <- RTag.findAllByNameOrId(tags, collective)
+            res   <- items.traverse(i => RTagItem.setAllTags(i, rtags.map(_.tagId)))
             n = res.fold
           } yield k + n))
 
@@ -687,11 +688,11 @@ object OItem {
 
         def convertAllPdf(
             collective: Option[Ident],
-            account: AccountId,
+            submitter: Option[Ident],
             notifyJoex: Boolean
         ): F[UpdateResult] =
           for {
-            job <- JobFactory.convertAllPdfs[F](collective, account, Priority.Low)
+            job <- JobFactory.convertAllPdfs[F](collective, submitter, Priority.Low)
             _   <- queue.insertIfNew(job)
             _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success

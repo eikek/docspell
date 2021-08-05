@@ -1,8 +1,9 @@
 {-
-  Copyright 2020 Docspell Contributors
+   Copyright 2020 Docspell Contributors
 
-  SPDX-License-Identifier: GPL-3.0-or-later
+   SPDX-License-Identifier: GPL-3.0-or-later
 -}
+
 
 module Page.Home.Update exposing
     ( UpdateResult
@@ -650,6 +651,9 @@ update mId key flags settings msg model =
 
         KeyUpPowerSearchbarMsg _ ->
             withSub ( model, Cmd.none )
+
+        RemoveItem id ->
+            update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
 
 
 

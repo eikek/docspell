@@ -1,8 +1,9 @@
 {-
-  Copyright 2020 Docspell Contributors
+   Copyright 2020 Docspell Contributors
 
-  SPDX-License-Identifier: GPL-3.0-or-later
+   SPDX-License-Identifier: GPL-3.0-or-later
 -}
+
 
 module Messages.Page.UserSettings exposing
     ( Texts
@@ -94,8 +95,8 @@ de =
     , uiSettings = "Oberfläche"
     , notifications = "Benachrichtigungen"
     , scanMailbox = "E-Mail-Import"
-    , emailSettingSmtp = "E-Mail-Einstellung (SMTP)"
-    , emailSettingImap = "E-Mail-Einstellung (IMAP)"
+    , emailSettingSmtp = "E-Mail-Einstellungen (SMTP)"
+    , emailSettingImap = "E-Mail-Einstellungen (IMAP)"
     , changePassword = "Passwort ändern"
     , uiSettingsInfo =
         "Diese Einstellungen sind für die Web-Oberfläche."

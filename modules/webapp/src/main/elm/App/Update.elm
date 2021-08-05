@@ -1,8 +1,9 @@
 {-
-  Copyright 2020 Docspell Contributors
+   Copyright 2020 Docspell Contributors
 
-  SPDX-License-Identifier: GPL-3.0-or-later
+   SPDX-License-Identifier: GPL-3.0-or-later
 -}
+
 
 module App.Update exposing
     ( initPage
@@ -330,10 +331,18 @@ updateItemDetail lmsg model =
 
         ( hm, hc, hs ) =
             updateHome (Page.Home.Data.SetLinkTarget result.linkTarget) model_
+
+        ( hm1, hc1, hs1 ) =
+            case result.removedItem of
+                Just removedId ->
+                    updateHome (Page.Home.Data.RemoveItem removedId) hm
+
+                Nothing ->
+                    ( hm, hc, hs )
     in
-    ( hm
-    , Cmd.batch [ Cmd.map ItemDetailMsg result.cmd, hc ]
-    , Sub.batch [ Sub.map ItemDetailMsg result.sub, hs ]
+    ( hm1
+    , Cmd.batch [ Cmd.map ItemDetailMsg result.cmd, hc, hc1 ]
+    , Sub.batch [ Sub.map ItemDetailMsg result.sub, hs, hs1 ]
     )
 
 

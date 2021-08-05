@@ -64,19 +64,16 @@ description = "A list of features and limitations."
     - [eml](https://en.wikipedia.org/wiki/Email#Filename_extensions)
       (e-mail files in plain text MIME)
 - Tooling:
+  - [Command Line Interface](@/docs/tools/cli.md) allowing to upload
+    files, watch folders and many more!
   - [Android App](@/docs/tools/android.md) to quickly upload files
     from your android devices
-  - [Watch a folder](@/docs/tools/consumedir.md): watch folders for
-    changes and send files to docspell
-  - [Simple CLI for uploading files](@/docs/tools/ds.md)
   - [Firefox plugin](@/docs/tools/browserext.md): right click on a
     link and send the file to docspell
   - [SMTP Gateway](@/docs/tools/smtpgateway.md): Setup a SMTP server
     that delivers mails directly to docspell.
   - [Paperless Import](@/docs/tools/paperless-import.md) for importing
     your data from paperless
-  - [Directory Cleaner](@/docs/tools/consumedir-cleaner.md) clean
-    directories with files that have been uploaded to docspell
 - License: GPLv3
 
 
@@ -87,3 +84,4 @@ considering docspell at the moment.
 
 - Documents cannot be modified.
 - You can remove and add documents but there is no versioning.
+- There are no user/groups nor permission management

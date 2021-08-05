@@ -23,7 +23,7 @@ compile_css() {
     echo "Building css …"
     local srcs="$wdir/modules/webapp/src/main/styles/index.css"
     local target="$targetbase/css/styles.css"
-    cd $wdir && npx postcss "$srcs" -o "$target" --env development && cd -
+    cd $wdir/modules/webapp && npx postcss "$srcs" -o "$target" --env development && cd -
     cat "$target" | gzip > "$targetbase/css/styles.css.gz"
     cp "$targetbase/css/styles.css" "$resourcebase/css/"
     cp "$targetbase/css/styles.css.gz" "$resourcebase/css/"

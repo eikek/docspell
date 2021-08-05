@@ -1,8 +1,9 @@
 {-
-  Copyright 2020 Docspell Contributors
+   Copyright 2020 Docspell Contributors
 
-  SPDX-License-Identifier: GPL-3.0-or-later
+   SPDX-License-Identifier: GPL-3.0-or-later
 -}
+
 
 module Messages.Data.Language exposing
     ( de
@@ -60,6 +61,9 @@ gb lang =
         Latvian ->
             "Latvian"
 
+        Japanese ->
+            "Japanese"
+
 
 de : Language -> String
 de lang =
@@ -108,3 +112,6 @@ de lang =
 
         Latvian ->
             "Lettisch"
+
+        Japanese ->
+            "Japanisch"

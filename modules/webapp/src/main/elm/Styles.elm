@@ -1,15 +1,16 @@
 {-
-  Copyright 2020 Docspell Contributors
+   Copyright 2020 Docspell Contributors
 
-  SPDX-License-Identifier: GPL-3.0-or-later
+   SPDX-License-Identifier: GPL-3.0-or-later
 -}
+
 
 module Styles exposing (..)
 
 
 sidebar : String
 sidebar =
-    " flex flex-col flex-none md:w-80 w-full min-h-max px-4 dark:text-gray-200 shadow overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
+    " flex flex-col flex-none md:w-80 w-full min-h-max px-2 dark:text-gray-200 shadow overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
 
 
 sidebarBg : String
@@ -297,9 +298,14 @@ border =
     " border dark:border-bluegray-600 "
 
 
+border2 : String
+border2 =
+    " border-2 dark:border-bluegray-600 "
+
+
 header1 : String
 header1 =
-    " text-3xl mt-3 mb-5 font-semibold tracking-wide "
+    " text-3xl mt-3 mb-5 font-semibold tracking-wide break-all"
 
 
 header2 : String

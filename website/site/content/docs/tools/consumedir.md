@@ -1,8 +1,15 @@
 +++
-title = "Consume Directory"
+title = "Consume Directory (⊗)"
 description = "A script to watch a directory for new files and upload them to docspell."
-weight = 30
+weight = 110
 +++
+
+
+{% infobubble(mode="info", title="⚠ Please note") %}
+This script is now obsolete, you can use the [**CLI tool**](../cli/) instead.
+
+You can use the `watch` command, or the `upload` command with `--poll`.
+{% end %}
 
 # Introduction
 

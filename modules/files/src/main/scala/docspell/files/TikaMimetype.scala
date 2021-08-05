@@ -20,7 +20,7 @@ import fs2.Stream
 import docspell.common._
 
 import org.apache.tika.config.TikaConfig
-import org.apache.tika.metadata.{HttpHeaders, Metadata, TikaMetadataKeys}
+import org.apache.tika.metadata.{HttpHeaders, Metadata, TikaCoreProperties}
 import org.apache.tika.mime.MediaType
 import org.apache.tika.parser.txt.Icu4jEncodingDetector
 
@@ -40,7 +40,7 @@ object TikaMimetype {
 
   private def makeMetadata(hint: MimeTypeHint): Metadata = {
     val md = new Metadata
-    hint.filename.foreach(md.set(TikaMetadataKeys.RESOURCE_NAME_KEY, _))
+    hint.filename.foreach(md.set(TikaCoreProperties.RESOURCE_NAME_KEY, _))
     hint.advertised.foreach(md.set(HttpHeaders.CONTENT_TYPE, _))
     md
   }

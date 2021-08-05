@@ -30,16 +30,18 @@ services:
       - solr
 
   consumedir:
-    image: docspell/tools:latest
+    image: docspell/dsc:latest
     container_name: docspell-consumedir
     command:
-      - ds-consumedir
-      - "-vmdi"
-      - "--path"
-      - "/opt/docs"
-      - "--iheader"
+      - dsc
+      - "-d"
+      - "http://docspell-restserver:7880"
+      - "watch"
+      - "--delete"
+      - "-ir"
+      - "--header"
       - "Docspell-Integration:$DOCSPELL_HEADER_VALUE"
-      - "http://docspell-restserver:7880/api/v1/open/integration/item"
+      - "/opt/docs"
     restart: unless-stopped
     env_file: ./.env
     volumes:

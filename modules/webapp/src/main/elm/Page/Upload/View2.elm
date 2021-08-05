@@ -1,8 +1,9 @@
 {-
-  Copyright 2020 Docspell Contributors
+   Copyright 2020 Docspell Contributors
 
-  SPDX-License-Identifier: GPL-3.0-or-later
+   SPDX-License-Identifier: GPL-3.0-or-later
 -}
+
 
 module Page.Upload.View2 exposing (viewContent, viewSidebar)
 
@@ -229,19 +230,16 @@ renderUploads texts model =
         [ class "mt-4"
         , classList [ ( "hidden", List.isEmpty model.files || isSuccessAll model ) ]
         ]
-        [ div [ class "sixteen wide column" ]
-            [ div [ class "ui basic segment" ]
-                [ h2 [ class S.header2 ]
-                    [ text texts.selectedFiles
-                    ]
-                , div [ class "ui items" ] <|
-                    if model.singleItem then
-                        List.map (renderFileItem model (Just uploadAllTracker)) model.files
-
-                    else
-                        List.map (renderFileItem model Nothing) model.files
-                ]
+        [ h2 [ class S.header2 ]
+            [ text texts.selectedFiles
+            , text (" (" ++ (List.length model.files |> String.fromInt) ++ ")")
             ]
+        , div [] <|
+            if model.singleItem then
+                List.map (renderFileItem model (Just uploadAllTracker)) model.files
+
+            else
+                List.map (renderFileItem model Nothing) model.files
         ]
 
 

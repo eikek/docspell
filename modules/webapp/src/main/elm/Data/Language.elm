@@ -1,8 +1,9 @@
 {-
-  Copyright 2020 Docspell Contributors
+   Copyright 2020 Docspell Contributors
 
-  SPDX-License-Identifier: GPL-3.0-or-later
+   SPDX-License-Identifier: GPL-3.0-or-later
 -}
+
 
 module Data.Language exposing
     ( Language(..)
@@ -28,6 +29,7 @@ type Language
     | Romanian
     | Dutch
     | Latvian
+    | Japanese
 
 
 fromString : String -> Maybe Language
@@ -76,6 +78,9 @@ fromString str =
 
     else if str == "lav" || str == "lv" || str == "latvian" then
         Just Latvian
+
+    else if str == "jpn" || str == "ja" || str == "japanese" then
+        Just Japanese
 
     else
         Nothing
@@ -129,6 +134,9 @@ toIso3 lang =
         Latvian ->
             "lav"
 
+        Japanese ->
+            "jpn"
+
 
 all : List Language
 all =
@@ -147,4 +155,5 @@ all =
     , Russian
     , Romanian
     , Latvian
+    , Japanese
     ]

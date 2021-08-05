@@ -21,9 +21,7 @@ import docspell.common._
 object DateFind {
 
   def findDates(text: String, lang: Language): Stream[Pure, NerDateLabel] =
-    TextSplitter
-      .splitToken(text, " \t.,\n\r/".toSet)
-      .filter(w => lang != Language.Latvian || w.value != "gada")
+    splitWords(text, lang)
       .sliding(3)
       .filter(_.size == 3)
       .flatMap(q =>
@@ -43,6 +41,20 @@ object DateFind {
             )
         )
       )
+
+  private[this] val jpnChars =
+    ("年月日" + MonthName.getAll(Language.Japanese).map(_.mkString).mkString).toSet
+
+  private def splitWords(text: String, lang: Language): Stream[Pure, Word] = {
+    val stext =
+      if (lang == Language.Japanese) {
+        text.map(c => if (jpnChars.contains(c)) c else ' ')
+      } else text
+
+    TextSplitter
+      .splitToken(stext, " \t.,\n\r/年月日".toSet)
+      .filter(w => lang != Language.Latvian || w.value != "gada")
+  }
 
   case class SimpleDate(year: Int, month: Int, day: Int) {
     def toLocalDate: LocalDate =
@@ -89,6 +101,7 @@ object DateFind {
         case Language.Swedish    => ymd.or(dmy).or(mdy)
         case Language.Dutch      => dmy.or(ymd).or(mdy)
         case Language.Latvian    => dmy.or(lavLong).or(ymd)
+        case Language.Japanese   => ymd
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>

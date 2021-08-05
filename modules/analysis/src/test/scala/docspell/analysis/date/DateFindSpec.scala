@@ -143,4 +143,40 @@ class DateFindSpec extends FunSuite {
     )
   }
 
+  test("find japanese dates") {
+    assertEquals(
+      DateFind
+        .findDates("今日の日付は2021.7.21です。", Language.Japanese)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2021, 7, 21),
+          NerLabel("2021.7.21", NerTag.Date, 6, 15)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("今日の日付は2021年7月21日です。", Language.Japanese)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2021, 7, 21),
+          NerLabel("2021年7月21", NerTag.Date, 6, 15)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("年月日2021年7月21日（日）", Language.Japanese)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2021, 7, 21),
+          NerLabel("2021年7月21", NerTag.Date, 3, 12)
+        )
+      )
+    )
+  }
+
 }

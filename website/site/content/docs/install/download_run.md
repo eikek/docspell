@@ -116,6 +116,6 @@ page](@/docs/configure/_index.md#full-text-search-solr).
 
 ### Watching a directory
 
-The [consumedir](@/docs/tools/consumedir.md) script can be used for
-this. Using systemd or something similar, it is possible to create a
-system service that runs the script in "watch mode".
+The [dsc](@/docs/tools/cli.md) tool with the `watch` subcommand can be
+used for this. Using systemd or something similar, it is possible to
+create a system service that runs the script in "watch mode".

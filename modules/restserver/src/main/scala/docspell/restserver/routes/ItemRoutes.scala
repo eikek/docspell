@@ -47,13 +47,6 @@ object ItemRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case POST -> Root / "convertallpdfs" =>
-        for {
-          res <-
-            backend.item.convertAllPdf(user.account.collective.some, user.account, true)
-          resp <- Ok(Conversions.basicResult(res, "Task submitted"))
-        } yield resp
-
       case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
             offset
           ) :? QP.WithDetails(detailFlag) =>
@@ -153,8 +146,8 @@ object ItemRoutes {
 
       case req @ PUT -> Root / Ident(id) / "tags" =>
         for {
-          tags <- req.as[ReferenceList].map(_.items)
-          res  <- backend.item.setTags(id, tags.map(_.id), user.account.collective)
+          tags <- req.as[StringList].map(_.items)
+          res  <- backend.item.setTags(id, tags, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Tags updated"))
         } yield resp
 
@@ -178,6 +171,17 @@ object ItemRoutes {
           tags <- req.as[StringList]
           res  <- backend.item.toggleTags(id, tags.items, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Tags linked"))
+        } yield resp
+
+      case req @ POST -> Root / Ident(id) / "tagsremove" =>
+        for {
+          json <- req.as[StringList]
+          res <- backend.item.removeTagsMultipleItems(
+            NonEmptyList.of(id),
+            json.items,
+            user.account.collective
+          )
+          resp <- Ok(Conversions.basicResult(res, "Tags removed"))
         } yield resp
 
       case req @ PUT -> Root / Ident(id) / "direction" =>

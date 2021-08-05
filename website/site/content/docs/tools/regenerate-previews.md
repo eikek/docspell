@@ -1,8 +1,14 @@
 +++
-title = "Regenerate Preview Images"
+title = "Regenerate Preview Images (⊗)"
 description = "Re-generates all preview images."
-weight = 80
+weight = 130
 +++
+
+{% infobubble(mode="info", title="⚠ Please note") %}
+This script is now obsolete, you can use the [**CLI tool**](../cli/) instead.
+
+Use the `generate-previews` admin command, e.g. `dsc admin generate-previews`.
+{% end %}
 
 # regenerate-previews.sh
 

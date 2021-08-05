@@ -171,12 +171,16 @@ object ItemQueryGenerator {
         tables.item.id.in(select.withSelect(Nel.of(RItem.as("i").id.s)))
 
       case Expr.AttachId(id) =>
-        tables.item.id.in(
-          Select(
-            select(RAttachment.T.itemId),
-            from(RAttachment.T),
+        val idWildcard = QueryWildcard(id)
+        val query =
+          if (id == idWildcard) {
             RAttachment.T.id.cast[String] === id
-          ).distinct
+          } else {
+            RAttachment.T.id.cast[String].like(idWildcard)
+          }
+
+        tables.item.id.in(
+          Select(select(RAttachment.T.itemId), from(RAttachment.T), query).distinct
         )
 
       case Expr.Fulltext(_) =>
@@ -228,6 +232,8 @@ object ItemQueryGenerator {
         coalesce(tables.item.itemDate.s, tables.item.created.s).s
       case Attr.DueDate =>
         tables.item.dueDate.s
+      case Attr.CreatedDate =>
+        tables.item.created.s
     }
 
   private def stringColumn(tables: Tables)(attr: Attr.StringAttr): Column[String] =
