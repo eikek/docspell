@@ -69,7 +69,7 @@ de color =
             "Gelb"
 
         Olive ->
-            "Olive-Grün"
+            "Olivgrün"
 
         Green ->
             "Grün"
