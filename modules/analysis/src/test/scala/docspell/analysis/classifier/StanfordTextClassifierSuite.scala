@@ -24,7 +24,7 @@ class StanfordTextClassifierSuite extends FunSuite {
   val logger = Logger.log4s[IO](org.log4s.getLogger)
 
   test("learn from data") {
-    val cfg = TextClassifierConfig(Paths.get("target"), NonEmptyList.of(Map()))
+    val cfg = TextClassifierConfig(File.path(Paths.get("target")), NonEmptyList.of(Map()))
 
     val data =
       Stream
@@ -52,8 +52,8 @@ class StanfordTextClassifierSuite extends FunSuite {
   }
 
   test("run classifier") {
-    val cfg    = TextClassifierConfig(Paths.get("target"), NonEmptyList.of(Map()))
-    val things = File.withTempDir[IO](Paths.get("target"), "testcls")
+    val cfg    = TextClassifierConfig(File.path(Paths.get("target")), NonEmptyList.of(Map()))
+    val things = File.withTempDir[IO](File.path(Paths.get("target")), "testcls")
 
     things
       .use { dir =>

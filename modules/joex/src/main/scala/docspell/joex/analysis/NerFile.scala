@@ -6,10 +6,9 @@
 
 package docspell.joex.analysis
 
-import java.nio.file.Path
-
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Path
 
 import docspell.analysis.split.TextSplitter
 import docspell.common._

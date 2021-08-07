@@ -82,7 +82,7 @@ case class LenientUri(
       )
 
   def readText[F[_]: Sync](chunkSize: Int): F[String] =
-    readURL[F](chunkSize).through(fs2.text.utf8Decode).compile.foldMonoid
+    readURL[F](chunkSize).through(fs2.text.utf8.decode).compile.foldMonoid
 
   def host: Option[String] =
     authority.map(a =>

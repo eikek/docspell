@@ -6,9 +6,8 @@
 
 package docspell.analysis.classifier
 
-import java.nio.file.Path
-
 import cats.data.NonEmptyList
+import fs2.io.file.Path
 
 case class TextClassifierConfig(
     workingDir: Path,

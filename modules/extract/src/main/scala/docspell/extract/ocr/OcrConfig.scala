@@ -6,7 +6,9 @@
 
 package docspell.extract.ocr
 
-import java.nio.file.{Path, Paths}
+import java.nio.file.Paths
+
+import fs2.io.file.Path
 
 import docspell.common._
 
@@ -44,7 +46,9 @@ object OcrConfig {
         ),
         Duration.seconds(30)
       ),
-      Paths.get(System.getProperty("java.io.tmpdir")).resolve("docspell-extraction")
+      File.path(
+        Paths.get(System.getProperty("java.io.tmpdir")).resolve("docspell-extraction")
+      )
     ),
     unpaper = Unpaper(
       SystemCommand

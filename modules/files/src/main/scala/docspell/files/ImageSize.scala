@@ -7,7 +7,6 @@
 package docspell.files
 
 import java.io.{ByteArrayInputStream, InputStream}
-import java.nio.file.Path
 import javax.imageio.stream.{FileImageInputStream, ImageInputStream}
 import javax.imageio.{ImageIO, ImageReader}
 
@@ -17,6 +16,7 @@ import scala.util.{Try, Using}
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Path
 
 object ImageSize {
 
@@ -24,7 +24,7 @@ object ImageSize {
     * the whole image into memory.
     */
   def get(file: Path): Option[Dimension] =
-    Using(new FileImageInputStream(file.toFile))(getDimension).toOption.flatten
+    Using(new FileImageInputStream(file.toNioPath.toFile))(getDimension).toOption.flatten
 
   /** Return the image size from its header without reading
     * the whole image into memory.

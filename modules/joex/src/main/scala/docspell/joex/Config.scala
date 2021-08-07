@@ -6,9 +6,8 @@
 
 package docspell.joex
 
-import java.nio.file.Path
-
 import cats.data.NonEmptyList
+import fs2.io.file.Path
 
 import docspell.analysis.TextAnalysisConfig
 import docspell.analysis.classifier.TextClassifierConfig

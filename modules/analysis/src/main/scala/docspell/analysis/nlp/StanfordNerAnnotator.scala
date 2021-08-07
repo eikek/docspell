@@ -6,11 +6,10 @@
 
 package docspell.analysis.nlp
 
-import java.nio.file.Path
-
 import scala.jdk.CollectionConverters._
 
 import cats.effect._
+import fs2.io.file.Path
 
 import docspell.common._
 

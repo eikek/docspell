@@ -7,10 +7,10 @@
 package docspell.convert.extern
 
 import java.nio.charset.Charset
-import java.nio.file.Path
 
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Path
 import fs2.{Chunk, Stream}
 
 import docspell.common._

@@ -8,7 +8,7 @@ package docspell.files
 
 import java.io.BufferedInputStream
 import java.nio.charset.Charset
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
 
 import scala.jdk.CollectionConverters._
 import scala.util.Using
@@ -16,6 +16,7 @@ import scala.util.Using
 import cats.effect.Sync
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Path
 
 import docspell.common._
 
@@ -100,8 +101,8 @@ object TikaMimetype {
 
   def detect[F[_]: Sync](file: Path): F[MimeType] =
     Sync[F].delay {
-      val hint = MimeTypeHint.filename(file.getFileName.toString)
-      Using(new BufferedInputStream(Files.newInputStream(file), 64)) { in =>
+      val hint = MimeTypeHint.filename(file.fileName.toString)
+      Using(new BufferedInputStream(Files.newInputStream(file.toNioPath), 64)) { in =>
         convert(tika.detect(in, makeMetadata(hint)))
       }.toEither
     }.rethrow

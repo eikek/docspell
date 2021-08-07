@@ -6,10 +6,9 @@
 
 package docspell.extract.ocr
 
-import java.nio.file.Path
-
 import cats.effect._
 import fs2.Stream
+import fs2.io.file.Path
 
 import docspell.common._
 
@@ -100,7 +99,7 @@ object Ocr {
   ): Stream[F, Path] = {
     val cmd = ghostscript.replace(
       Map(
-        "{{infile}}"  -> pdf.toAbsolutePath.toString,
+        "{{infile}}"  -> pdf.absolute.toString,
         "{{outfile}}" -> "%d.tif"
       )
     )
@@ -110,7 +109,7 @@ object Ocr {
   }
 
   private def pathEndsWith(ext: String): Path => Boolean =
-    p => p.getFileName.toString.endsWith(ext)
+    p => p.fileName.toString.endsWith(ext)
 
   /** Run unpaper to optimize the image for ocr. The
     * files are stored to a temporary location on disk and returned.
@@ -118,18 +117,18 @@ object Ocr {
   private[extract] def runUnpaperFile[F[_]: Async](
       img: Path,
       unpaper: SystemCommand.Config,
-      wd: Path,
+      wd: Option[Path],
       logger: Logger[F]
   ): Stream[F, Path] = {
-    val targetFile = img.resolveSibling("u-" + img.getFileName.toString).toAbsolutePath
+    val targetFile = img.resolveSibling("u-" + img.fileName.toString).absolute
     val cmd = unpaper.replace(
       Map(
-        "{{infile}}"  -> img.toAbsolutePath.toString,
+        "{{infile}}"  -> img.absolute.toString,
         "{{outfile}}" -> targetFile.toString
       )
     )
     SystemCommand
-      .execSuccess[F](cmd, logger, wd = Some(wd))
+      .execSuccess[F](cmd, logger, wd = wd)
       .map(_ => targetFile)
       .handleErrorWith { th =>
         logger
@@ -151,13 +150,13 @@ object Ocr {
   ): Stream[F, String] =
     // tesseract cannot cope with absolute filenames
     // so use the parent as working dir
-    runUnpaperFile(img, config.unpaper.command, img.getParent, logger).flatMap { uimg =>
+    runUnpaperFile(img, config.unpaper.command, img.parent, logger).flatMap { uimg =>
       val cmd = config.tesseract.command
         .replace(
-          Map("{{file}}" -> uimg.getFileName.toString, "{{lang}}" -> fixLanguage(lang))
+          Map("{{file}}" -> uimg.fileName.toString, "{{lang}}" -> fixLanguage(lang))
         )
       SystemCommand
-        .execSuccess[F](cmd, logger, wd = Some(uimg.getParent))
+        .execSuccess[F](cmd, logger, wd = uimg.parent)
         .map(_.stdout)
     }
 

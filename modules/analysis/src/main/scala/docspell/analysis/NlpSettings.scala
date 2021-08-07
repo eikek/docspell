@@ -6,7 +6,7 @@
 
 package docspell.analysis
 
-import java.nio.file.Path
+import fs2.io.file.Path
 
 import docspell.common._
 

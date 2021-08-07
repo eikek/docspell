@@ -6,7 +6,11 @@
 
 package docspell.common.config
 
+import java.nio.file.{Path => JPath}
+
 import scala.reflect.ClassTag
+
+import fs2.io.file.Path
 
 import docspell.common._
 
@@ -16,6 +20,10 @@ import pureconfig.error.{CannotConvert, FailureReason}
 import scodec.bits.ByteVector
 
 object Implicits {
+
+  implicit val pathReader: ConfigReader[Path] =
+    ConfigReader[JPath].map(Path.fromNioPath)
+
   implicit val lenientUriReader: ConfigReader[LenientUri] =
     ConfigReader[String].emap(reason(LenientUri.parse))
 

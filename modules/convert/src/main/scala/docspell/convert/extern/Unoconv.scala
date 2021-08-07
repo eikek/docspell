@@ -6,10 +6,9 @@
 
 package docspell.convert.extern
 
-import java.nio.file.Path
-
 import cats.effect._
 import fs2.Stream
+import fs2.io.file.Path
 
 import docspell.common._
 import docspell.convert.ConversionResult

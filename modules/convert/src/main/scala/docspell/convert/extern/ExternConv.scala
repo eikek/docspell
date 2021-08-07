@@ -6,11 +6,9 @@
 
 package docspell.convert.extern
 
-import java.nio.file.Path
-
 import cats.effect._
 import cats.implicits._
-import fs2.io.file.Files
+import fs2.io.file.{Files, Path}
 import fs2.{Pipe, Stream}
 
 import docspell.common._
@@ -30,8 +28,8 @@ private[extern] object ExternConv {
     Stream
       .resource(File.withTempDir[F](wd, s"docspell-$name"))
       .flatMap { dir =>
-        val inFile = dir.resolve("infile").toAbsolutePath.normalize
-        val out    = dir.resolve("out.pdf").toAbsolutePath.normalize
+        val inFile = dir.resolve("infile").absolute.normalize
+        val out    = dir.resolve("out.pdf").absolute.normalize
         val sysCfg =
           cmdCfg.replace(
             Map(
@@ -77,7 +75,7 @@ private[extern] object ExternConv {
   )(out: Path, result: SystemCommand.Result): F[ConversionResult[F]] =
     File.existsNonEmpty[F](out).flatMap {
       case true if result.rc == 0 =>
-        val outTxt = out.resolveSibling(out.getFileName.toString + ".txt")
+        val outTxt = out.resolveSibling(out.fileName.toString + ".txt")
         File.existsNonEmpty[F](outTxt).flatMap {
           case true =>
             successPdfTxt(

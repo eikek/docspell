@@ -26,7 +26,7 @@ import munit._
 class ConversionTest extends FunSuite with FileChecks {
 
   val logger = Logger.log4s[IO](org.log4s.getLogger)
-  val target = Paths.get("target")
+  val target = File.path(Paths.get("target"))
 
   val convertConfig = ConvertConfig(
     8192,

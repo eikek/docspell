@@ -6,12 +6,11 @@
 
 package docspell.joex.learn
 
-import java.nio.file.Path
-
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.io.file.Files
+import fs2.io.file.Path
 
 import docspell.analysis.classifier.{ClassifierModel, TextClassifier}
 import docspell.common._
