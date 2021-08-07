@@ -29,7 +29,7 @@ object Binary {
     Binary[F](
       name,
       MimeType.octetStream,
-      Stream.emit(content).through(fs2.text.utf8Encode)
+      Stream.emit(content).through(fs2.text.utf8.encode)
     )
 
   def text[F[_]](name: String, content: String): Binary[F] =
@@ -46,7 +46,7 @@ object Binary {
 
   def decode[F[_]](cs: Charset): Pipe[F, Byte, String] =
     if (cs == StandardCharsets.UTF_8)
-      fs2.text.utf8Decode
+      fs2.text.utf8.decode
     else
       util.decode[F](cs)
 

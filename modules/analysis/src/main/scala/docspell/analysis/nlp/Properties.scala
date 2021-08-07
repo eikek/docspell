@@ -6,8 +6,9 @@
 
 package docspell.analysis.nlp
 
-import java.nio.file.Path
 import java.util.{Properties => JProps}
+
+import fs2.io.file.Path
 
 import docspell.analysis.nlp.Properties.Implicits._
 import docspell.common._

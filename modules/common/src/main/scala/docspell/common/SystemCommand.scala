@@ -8,13 +8,13 @@ package docspell.common
 
 import java.io.InputStream
 import java.lang.ProcessBuilder.Redirect
-import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 
 import scala.jdk.CollectionConverters._
 
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Path
 import fs2.{Stream, io, text}
 
 object SystemCommand {
@@ -102,7 +102,7 @@ object SystemCommand {
           .redirectError(Redirect.PIPE)
           .redirectOutput(Redirect.PIPE)
 
-        wd.map(_.toFile).foreach(pb.directory)
+        wd.map(_.toNioPath.toFile).foreach(pb.directory)
         pb.start()
       }
     )
@@ -115,7 +115,7 @@ object SystemCommand {
 
   private def inputStreamToString[F[_]: Sync](in: InputStream): F[String] =
     io.readInputStream(Sync[F].pure(in), 16 * 1024, closeAfterUse = false)
-      .through(text.utf8Decode)
+      .through(text.utf8.decode)
       .chunks
       .map(_.toVector.mkString)
       .fold1(_ + _)

@@ -6,20 +6,17 @@
 
 package docspell.common.syntax
 
-import java.nio.file.Path
+import fs2.io.file.Path
 
 trait FileSyntax {
 
   implicit final class PathOps(p: Path) {
 
     def absolutePath: Path =
-      p.normalize().toAbsolutePath
+      p.absolute
 
     def absolutePathAsString: String =
       absolutePath.toString
-
-    def /(next: String): Path =
-      p.resolve(next)
   }
 }
 

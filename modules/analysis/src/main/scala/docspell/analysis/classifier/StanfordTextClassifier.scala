@@ -6,13 +6,11 @@
 
 package docspell.analysis.classifier
 
-import java.nio.file.Path
-
 import cats.effect.Ref
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-import fs2.io.file.Files
+import fs2.io.file.{Files, Path}
 
 import docspell.analysis.classifier
 import docspell.analysis.classifier.TextClassifier._
@@ -51,7 +49,7 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
       case Some(text) =>
         Sync[F].delay {
           val cls = ColumnDataClassifier.getClassifier(
-            model.model.normalize().toAbsolutePath.toString
+            model.model.normalize.absolute.toString
           )
           val cat = cls.classOf(cls.makeDatumFromLine("\t\t" + normalisedText(text)))
           Option(cat)
@@ -71,8 +69,8 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
       _ <- logger.debug(s"Training classifier from $props")
       res <- Sync[F].delay {
         val cdc = new ColumnDataClassifier(Properties.fromMap(amendProps(in, props)))
-        cdc.trainClassifier(in.train.toString())
-        val score = cdc.testClassifier(in.test.toString())
+        cdc.trainClassifier(in.train.toString)
+        val score = cdc.testClassifier(in.test.toString)
         TrainResult(score.first(), classifier.ClassifierModel(in.modelFile))
       }
       _ <- logger.debug(s"Trained with result $res")
@@ -88,7 +86,7 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
     val fileLines =
       File
         .readAll[F](in.file, 4096)
-        .through(fs2.text.utf8Decode)
+        .through(fs2.text.utf8.decode)
         .through(fs2.text.lines)
 
     for {
@@ -99,7 +97,7 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
         fileLines
           .take(nTest)
           .intersperse("\n")
-          .through(fs2.text.utf8Encode)
+          .through(fs2.text.utf8.encode)
           .through(Files[F].writeAll(td.test))
           .compile
           .drain
@@ -107,7 +105,7 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
         fileLines
           .drop(nTest)
           .intersperse("\n")
-          .through(fs2.text.utf8Encode)
+          .through(fs2.text.utf8.encode)
           .through(Files[F].writeAll(td.train))
           .compile
           .drain
@@ -124,7 +122,7 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
           .map(d => s"${d.cls}\t${fixRef(d.ref)}\t${normalisedText(d.text)}")
           .evalTap(_ => counter.update(_ + 1))
           .intersperse("\r\n")
-          .through(fs2.text.utf8Encode)
+          .through(fs2.text.utf8.encode)
           .through(Files[F].writeAll(target))
           .compile
           .drain

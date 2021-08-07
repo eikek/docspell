@@ -7,14 +7,15 @@
 package docspell.convert
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
 
 import cats.data.Kleisli
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
+import fs2.io.file.Path
 import fs2.{Pipe, Stream}
 
-import docspell.common.MimeType
+import docspell.common._
 import docspell.convert.ConversionResult.Handler
 import docspell.files.TikaMimetype
 
@@ -23,7 +24,7 @@ trait FileChecks {
   implicit class FileCheckOps(p: Path) {
 
     def isNonEmpty: Boolean =
-      Files.exists(p) && Files.size(p) > 0
+      Files.exists(p.toNioPath) && Files.size(p.toNioPath) > 0
 
     def isType(mime: MimeType): Boolean =
       TikaMimetype.detect[IO](p).map(_ == mime).unsafeRunSync()
@@ -36,7 +37,12 @@ trait FileChecks {
   }
 
   def storeFile(file: Path): Pipe[IO, Byte, Path] =
-    in => Stream.eval(in.compile.to(Array).flatMap(bytes => IO(Files.write(file, bytes))))
+    in =>
+      Stream
+        .eval(
+          in.compile.to(Array).flatMap(bytes => IO(Files.write(file.toNioPath, bytes)))
+        )
+        .map(p => File.path(p))
 
   def storePdfHandler(file: Path): Handler[IO, Path] =
     storePdfTxtHandler(file, file.resolveSibling("unexpected.txt")).map(_._1)
@@ -47,8 +53,8 @@ trait FileChecks {
         for {
           pout <- pdf.through(storeFile(filePdf)).compile.lastOrError
           str  <- txt
-          tout <- IO(Files.write(fileTxt, str.getBytes(StandardCharsets.UTF_8)))
-        } yield (pout, tout)
+          tout <- IO(Files.write(fileTxt.toNioPath, str.getBytes(StandardCharsets.UTF_8)))
+        } yield (pout, File.path(tout))
 
       case ConversionResult.SuccessPdf(pdf) =>
         pdf.through(storeFile(filePdf)).compile.lastOrError.map(p => (p, fileTxt))

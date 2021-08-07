@@ -7,13 +7,13 @@
 package docspell.extract.pdfbox
 
 import java.io.InputStream
-import java.nio.file.Path
 
 import scala.util.{Try, Using}
 
 import cats.effect.Sync
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Path
 
 import docspell.common.Timestamp
 import docspell.extract.internal.Text
@@ -48,7 +48,7 @@ object PdfboxExtract {
     Using(PDDocument.load(is))(readText).toEither.flatten
 
   def getText(inFile: Path): Either[Throwable, Text] =
-    Using(PDDocument.load(inFile.toFile))(readText).toEither.flatten
+    Using(PDDocument.load(inFile.toNioPath.toFile))(readText).toEither.flatten
 
   private def readText(doc: PDDocument): Either[Throwable, Text] =
     Try {
@@ -68,7 +68,7 @@ object PdfboxExtract {
     Using(PDDocument.load(is))(readMetaData).toEither.flatten
 
   def getMetaData(inFile: Path): Either[Throwable, PdfMetaData] =
-    Using(PDDocument.load(inFile.toFile))(readMetaData).toEither.flatten
+    Using(PDDocument.load(inFile.toNioPath.toFile))(readMetaData).toEither.flatten
 
   private def readMetaData(doc: PDDocument): Either[Throwable, PdfMetaData] =
     Try {

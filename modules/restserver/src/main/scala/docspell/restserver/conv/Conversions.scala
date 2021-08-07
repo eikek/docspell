@@ -309,7 +309,7 @@ trait Conversions {
   ): F[UploadData[F]] = {
     def parseMeta(body: Stream[F, Byte]): F[ItemUploadMeta] =
       body
-        .through(fs2.text.utf8Decode)
+        .through(fs2.text.utf8.decode)
         .parseJsonAs[ItemUploadMeta]
         .map(
           _.fold(

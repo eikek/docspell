@@ -6,6 +6,6 @@
 
 package docspell.analysis.classifier
 
-import java.nio.file.Path
+import fs2.io.file.Path
 
 case class ClassifierModel(model: Path)

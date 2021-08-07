@@ -9,7 +9,7 @@ package docspell.restserver.http4s
 import cats.data.NonEmptyList
 import cats.data.OptionT
 import cats.effect.Sync
-import fs2.text.utf8Encode
+import fs2.text.utf8
 import fs2.{Pure, Stream}
 
 import org.http4s._
@@ -20,14 +20,14 @@ object Responses {
   private[this] val pureForbidden: Response[Pure] =
     Response(
       Status.Forbidden,
-      body = Stream("Forbidden").through(utf8Encode),
+      body = Stream("Forbidden").through(utf8.encode),
       headers = Headers(`Content-Type`(MediaType.text.plain, Charset.`UTF-8`) :: Nil)
     )
 
   private[this] val pureUnauthorized: Response[Pure] =
     Response(
       Status.Unauthorized,
-      body = Stream("Unauthorized").through(utf8Encode),
+      body = Stream("Unauthorized").through(utf8.encode),
       headers = Headers(`Content-Type`(MediaType.text.plain, Charset.`UTF-8`) :: Nil)
     )
 

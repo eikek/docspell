@@ -42,7 +42,7 @@ object StoreClassifierModel {
         RClassifierModel.findByName(collective, modelName.name).map(_.map(_.fileId))
       )
       _ <- logger.debug(s"Storing new trained model for: ${modelName.name}")
-      fileData = Files[F].readAll(trainedModel.model, 4096)
+      fileData = Files[F].readAll(trainedModel.model)
       newFile <-
         store.bitpeace.saveNew(fileData, 4096, MimetypeHint.none).compile.lastOrError
       _ <- store.transact(

@@ -6,11 +6,10 @@
 
 package docspell.joex.analysis
 
-import java.nio.file.Path
-
 import cats.effect._
 import cats.effect.std.Semaphore
 import cats.implicits._
+import fs2.io.file.Path
 
 import docspell.common._
 import docspell.common.syntax.all._
@@ -112,8 +111,11 @@ object RegexNerFile {
       writer.permit.use(_ =>
         for {
           file <- Sync[F].pure(nf.jsonFilePath(cfg.directory))
-          _    <- File.mkDir(file.getParent)
-          _    <- File.writeString(file, nf.copy(creation = now).asJson.spaces2)
+          _ <- file.parent match {
+            case Some(p) => File.mkDir(p)
+            case None    => ().pure[F]
+          }
+          _ <- File.writeString(file, nf.copy(creation = now).asJson.spaces2)
         } yield ()
       )
 
@@ -129,7 +131,10 @@ object RegexNerFile {
             _ <- logger.fdebug(
               s"Writing custom NER file for collective '${collective.id}'"
             )
-            _ <- File.mkDir(jsonFile.getParent)
+            _ <- jsonFile.parent match {
+              case Some(p) => File.mkDir(p)
+              case None    => ().pure[F]
+            }
             _ <- File.writeString(nf.nerFilePath(cfg.directory), text)
             _ <- File.writeString(jsonFile, nf.asJson.spaces2)
           } yield ()

@@ -6,7 +6,7 @@
 
 package docspell.analysis.nlp
 
-import java.nio.file.Path
+import fs2.io.file.Path
 
 import docspell.analysis.NlpSettings
 import docspell.common.Language.NLPLanguage

@@ -7,10 +7,11 @@
 package docspell.convert.extern
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Path, Paths}
+import java.nio.file.Paths
 
 import cats.effect._
 import cats.effect.unsafe.implicits.global
+import fs2.io.file.Path
 
 import docspell.common._
 import docspell.convert._
@@ -21,7 +22,7 @@ import munit._
 class ExternConvTest extends FunSuite with FileChecks {
   val utf8   = StandardCharsets.UTF_8
   val logger = Logger.log4s[IO](org.log4s.getLogger)
-  val target = Paths.get("target")
+  val target = File.path(Paths.get("target"))
 
   test("convert html to pdf") {
     val cfg = SystemCommand.Config(

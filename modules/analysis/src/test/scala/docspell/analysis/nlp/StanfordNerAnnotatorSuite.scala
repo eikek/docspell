@@ -13,7 +13,6 @@ import cats.effect.unsafe.implicits.global
 
 import docspell.analysis.Env
 import docspell.common._
-import docspell.common.syntax.FileSyntax._
 import docspell.files.TestFiles
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
@@ -100,7 +99,7 @@ class StanfordNerAnnotatorSuite extends FunSuite {
       |""".stripMargin
 
     File
-      .withTempDir[IO](Paths.get("target"), "test-regex-ner")
+      .withTempDir[IO](File.path(Paths.get("target")), "test-regex-ner")
       .use { dir =>
         for {
           out <- File.writeString[IO](dir / "regex.txt", regexNerContent)

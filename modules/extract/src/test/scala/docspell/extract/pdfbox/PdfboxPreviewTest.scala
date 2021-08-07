@@ -6,12 +6,11 @@
 
 package docspell.extract.pdfbox
 
-import java.nio.file.Path
-
 import cats.effect._
 import cats.effect.unsafe.implicits.global
 import fs2.Stream
 import fs2.io.file.Files
+import fs2.io.file.Path
 
 import docspell.files.ExampleFiles
 

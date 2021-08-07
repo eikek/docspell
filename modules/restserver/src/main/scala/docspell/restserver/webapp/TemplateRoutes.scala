@@ -92,7 +92,7 @@ object TemplateRoutes {
     Stream
       .bracket(Sync[F].delay(url.openStream))(in => Sync[F].delay(in.close()))
       .flatMap(in => fs2.io.readInputStream(in.pure[F], 64 * 1024, false))
-      .through(text.utf8Decode)
+      .through(text.utf8.decode)
       .compile
       .fold("")(_ + _)
 
