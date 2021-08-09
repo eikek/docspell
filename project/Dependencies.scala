@@ -52,7 +52,7 @@ object Dependencies {
     Def.setting("org.typelevel" %%% "cats-parse" % CatsParseVersion)
 
   val scalaJsStubs =
-    "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
+    "org.scala-js" %% "scalajs-stubs" % "1.1.0" % "provided"
 
   val catsJS = Def.setting("org.typelevel" %%% "cats-core" % "2.4.2")
 
