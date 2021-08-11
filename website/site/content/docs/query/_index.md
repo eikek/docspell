@@ -13,7 +13,9 @@ your documents. It is targeted at "power users" and it needs to be
 enabled explicitely in your user settings.
 
 <div class="colums">
+
 {{ figure(file="enable-powersearch.png") }}
+
 </div>
 
 This changes the search bar on the items list page to expect a query

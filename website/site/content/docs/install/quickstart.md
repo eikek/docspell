@@ -40,10 +40,10 @@ likely you want to change these to match your use-case/setup.
 
 {% infobubble(mode="info", title="⚠ Please note") %}
 
-Please have a look at the [configuration
-page](@/docs/configure/_index.md) page, before making docspell
-publicly available. By default, everyone can create an account. This
-is great for trying out and using it in an internal network. But when
-opened up to the outside, it is recommended to lock this down.
+Please have a look at the [configuration page](/docs/configure/) page,
+before making docspell publicly available. By default, everyone can
+create an account. This is great for trying out and using it in an
+internal network. But when opened up to the outside, it is recommended
+to lock this down.
 
 {% end %}

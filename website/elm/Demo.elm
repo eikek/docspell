@@ -26,7 +26,7 @@ demo data =
                 p []
                     [ Markdown.toHtml [] data.info
                     ]
-            , div [ class "mt-5" ]
+            , div [ class "mt-5 columns is-centered" ]
                 [ video
                     [ src data.url
                     , controls True
