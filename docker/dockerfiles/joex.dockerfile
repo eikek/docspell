@@ -68,5 +68,5 @@ COPY joex-entrypoint.sh /opt/joex-entrypoint.sh
 ENTRYPOINT ["/opt/joex-entrypoint.sh", "-J-XX:+UseG1GC"]
 EXPOSE 7878
 
-HEALTHCHECK --interval=1m --timeout=10s --retries=2 --start-period=10s \
-  CMD pgrep -f joex/lib
+HEALTHCHECK --interval=1m --timeout=10s --retries=2 --start-period=30s \
+  CMD wget --spider http://localhost:7878/api/info/version
