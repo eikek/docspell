@@ -162,7 +162,7 @@ object AttachmentRoutes {
         // this route exists to provide a stable url
         // it redirects currently to viewerjs
         val attachUrl = s"/api/v1/sec/attachment/${id.id}"
-        val path      = s"/app/assets${Webjars.viewerjs}/ViewerJS/index.html#$attachUrl"
+        val path      = s"/app/assets${Webjars.viewerjs}/index.html#$attachUrl"
         SeeOther(Location(Uri(path = Uri.Path.unsafeFromString(path))))
 
       case GET -> Root / Ident(id) / "meta" =>
