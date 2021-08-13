@@ -63,6 +63,12 @@ RUN wget ${joex_url:-https://github.com/eikek/docspell/releases/download/v$versi
   rm docspell-joex-*.zip && \
   ln -snf docspell-joex-* docspell-joex
 
+# Using these data files for japanese, because they work better. See #973
+RUN \
+  wget https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/master/jpn_vert.traineddata && \
+  wget https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/master/jpn.traineddata && \
+  mv jpn*.traineddata /usr/share/tessdata
+
 COPY joex-entrypoint.sh /opt/joex-entrypoint.sh
 
 ENTRYPOINT ["/opt/joex-entrypoint.sh", "-J-XX:+UseG1GC"]
