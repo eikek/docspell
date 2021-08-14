@@ -18,6 +18,7 @@ import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
+import docspell.joex.emptytrash._
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
 import docspell.joex.learn.LearnClassifierTask
@@ -94,16 +95,17 @@ object JoexAppImpl {
     for {
       httpClient <- BlazeClientBuilder[F](clientEC).resource
       client = JoexClient(httpClient)
-      store    <- Store.create(cfg.jdbc, connectEC)
-      queue    <- JobQueue(store)
-      pstore   <- PeriodicTaskStore.create(store)
-      nodeOps  <- ONode(store)
-      joex     <- OJoex(client, store)
-      upload   <- OUpload(store, queue, cfg.files, joex)
-      fts      <- createFtsClient(cfg)(httpClient)
-      itemOps  <- OItem(store, fts, queue, joex)
-      analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
-      regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
+      store         <- Store.create(cfg.jdbc, connectEC)
+      queue         <- JobQueue(store)
+      pstore        <- PeriodicTaskStore.create(store)
+      nodeOps       <- ONode(store)
+      joex          <- OJoex(client, store)
+      upload        <- OUpload(store, queue, cfg.files, joex)
+      fts           <- createFtsClient(cfg)(httpClient)
+      itemOps       <- OItem(store, fts, queue, joex)
+      itemSearchOps <- OItemSearch(store)
+      analyser      <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
+      regexNer      <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
       javaEmil =
         JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, store)
@@ -204,6 +206,13 @@ object JoexAppImpl {
             AllPageCountTask.taskName,
             AllPageCountTask[F](queue, joex),
             AllPageCountTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            EmptyTrashArgs.taskName,
+            EmptyTrashTask[F](itemOps, itemSearchOps),
+            EmptyTrashTask.onCancel[F]
           )
         )
         .resource

@@ -9,6 +9,7 @@ package docspell.store.records
 import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
+import fs2.Stream
 
 import docspell.common._
 import docspell.store.qb.DSL._
@@ -387,6 +388,11 @@ object RItem {
 
   def findById(itemId: Ident): ConnectionIO[Option[RItem]] =
     run(select(T.all), from(T), T.id === itemId).query[RItem].option
+
+  def findDeleted(collective: Ident, chunkSize: Int): Stream[ConnectionIO, RItem] =
+    run(select(T.all), from(T), T.cid === collective && T.state === ItemState.deleted)
+      .query[RItem]
+      .streamWithChunkSize(chunkSize)
 
   def checkByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[Ident]] =
     Select(T.id.s, from(T), T.id === itemId && T.cid === coll).build.query[Ident].option

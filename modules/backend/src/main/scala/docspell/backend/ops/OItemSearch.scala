@@ -23,6 +23,8 @@ import doobie.implicits._
 trait OItemSearch[F[_]] {
   def findItem(id: Ident, collective: Ident): F[Option[ItemData]]
 
+  def findDeleted(collective: Ident, limit: Int): F[Vector[RItem]]
+
   def findItems(maxNoteLen: Int)(q: Query, batch: Batch): F[Vector[ListItem]]
 
   /** Same as `findItems` but does more queries per item to find all tags. */
@@ -144,6 +146,13 @@ object OItemSearch {
               .compile
               .toVector
           }
+
+      def findDeleted(collective: Ident, limit: Int): F[Vector[RItem]] =
+        store
+          .transact(RItem.findDeleted(collective, limit))
+          .take(limit.toLong)
+          .compile
+          .toVector
 
       def findItemsWithTags(
           maxNoteLen: Int
