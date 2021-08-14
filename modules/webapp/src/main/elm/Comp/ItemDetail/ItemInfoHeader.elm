@@ -118,28 +118,55 @@ view texts settings model =
                 ]
             , True
             )
+
+        isDeleted =
+            model.item.state == "deleted"
+
+        isCreated =
+            model.item.state == "created"
     in
     div [ class "flex flex-col pb-2" ]
         [ div [ class "flex flex-row items-center text-2xl" ]
-            [ i
-                [ classList
-                    [ ( "hidden", Data.UiSettings.fieldHidden settings Data.Fields.Direction )
+            [ if isDeleted then
+                div
+                    [ classList
+                        [ ( "text-red-500 dark:text-orange-600 text-4xl", True )
+                        , ( "hidden", not isDeleted )
+                        ]
+                    , title texts.basics.deleted
                     ]
-                , class (Data.Direction.iconFromString2 model.item.direction)
-                , class "mr-2"
-                , title model.item.direction
-                ]
-                []
+                    [ i [ class "mr-2 fa fa-trash-alt" ] []
+                    ]
+
+              else
+                i
+                    [ classList
+                        [ ( "hidden", Data.UiSettings.fieldHidden settings Data.Fields.Direction )
+                        ]
+                    , class (Data.Direction.iconFromString2 model.item.direction)
+                    , class "mr-2"
+                    , title model.item.direction
+                    ]
+                    []
             , div [ class "flex-grow ml-1 flex flex-col" ]
                 [ div [ class "flex flex-row items-center font-semibold" ]
                     [ text model.item.name
                     , div
                         [ classList
-                            [ ( "hidden", model.item.state /= "created" )
+                            [ ( "hidden", not isCreated )
                             ]
                         , class "ml-3 text-base label bg-blue-500 dark:bg-lightblue-500 text-white rounded-lg"
                         ]
                         [ text texts.new
+                        , i [ class "fa fa-exclamation ml-2" ] []
+                        ]
+                    , div
+                        [ classList
+                            [ ( "hidden", not isDeleted )
+                            ]
+                        , class "ml-3 text-base label bg-red-500 dark:bg-orange-500 text-white rounded-lg"
+                        ]
+                        [ text texts.basics.deleted
                         , i [ class "fa fa-exclamation ml-2" ] []
                         ]
                     ]

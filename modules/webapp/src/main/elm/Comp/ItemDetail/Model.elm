@@ -339,6 +339,7 @@ type Msg
     | RequestReprocessItem
     | ReprocessItemConfirmed
     | ToggleSelectView
+    | RestoreItem
 
 
 type SaveNameState

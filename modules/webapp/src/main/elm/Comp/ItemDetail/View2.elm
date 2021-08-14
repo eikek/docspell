@@ -188,15 +188,27 @@ menuBar texts inav settings model =
                     ]
                     [ i [ class "fa fa-redo" ] []
                     ]
-            , MB.CustomElement <|
-                a
-                    [ class S.deleteButton
-                    , href "#"
-                    , onClick RequestDelete
-                    , title texts.deleteThisItem
-                    ]
-                    [ i [ class "fa fa-trash" ] []
-                    ]
+            , if model.item.state == "deleted" then
+                MB.CustomElement <|
+                    a
+                        [ class S.undeleteButton
+                        , href "#"
+                        , onClick RestoreItem
+                        , title texts.undeleteThisItem
+                        ]
+                        [ i [ class "fa fa-trash-restore" ] []
+                        ]
+
+              else
+                MB.CustomElement <|
+                    a
+                        [ class S.deleteButton
+                        , href "#"
+                        , onClick RequestDelete
+                        , title texts.deleteThisItem
+                        ]
+                        [ i [ class "fa fa-trash" ] []
+                        ]
             ]
         , rootClasses = "mb-2"
         }

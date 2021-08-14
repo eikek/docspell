@@ -1604,6 +1604,13 @@ update key flags inav settings msg model =
                 , cmd
                 )
 
+        RestoreItem ->
+            let
+                _ =
+                    Debug.todo "implement"
+            in
+            resultModelCmd ( model, Cmd.none )
+
 
 
 --- Helper
