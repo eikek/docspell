@@ -78,6 +78,14 @@ confirmModal texts model =
                         texts.basics.yes
                         texts.basics.no
                         texts.reallyDeleteQuestion
+                ConfirmRestore ->
+                    Comp.ConfirmModal.defaultSettings
+                        RestoreSelectedConfirmed
+                        CloseConfirmModal
+                        texts.basics.yes
+                        texts.basics.no
+                        texts.reallyRestoreQuestion
+
     in
     case model.viewMode of
         SelectView svm ->
@@ -262,6 +270,16 @@ editMenuBar texts model svm =
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == DeleteSelected )
+                    ]
+                }
+            , MB.CustomButton
+                { tagger = RequestRestoreSelected
+                , label = ""
+                , icon = Just "fa fa-trash-restore"
+                , title = texts.undeleteSelectedItems selectCount
+                , inputClass =
+                    [ ( btnStyle, True )
+                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == RestoreSelected )
                     ]
                 }
             ]

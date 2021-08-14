@@ -21,6 +21,7 @@ module Data.ItemQuery exposing
 import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.ItemQuery as RQ
 import Data.Direction exposing (Direction)
+import Data.SearchMode exposing (SearchMode)
 
 
 type TagMatch
@@ -73,12 +74,13 @@ and list =
             Just (And es)
 
 
-request : Maybe ItemQuery -> RQ.ItemQuery
-request mq =
+request : SearchMode -> Maybe ItemQuery -> RQ.ItemQuery
+request smode mq =
     { offset = Nothing
     , limit = Nothing
     , withDetails = Just True
     , query = renderMaybe mq
+    , searchMode = Data.SearchMode.asString smode |> Just
     }
 
 

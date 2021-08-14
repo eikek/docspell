@@ -7,6 +7,7 @@
 package docspell.restserver.http4s
 
 import docspell.common.ContactKind
+import docspell.common.SearchMode
 
 import org.http4s.ParseFailure
 import org.http4s.QueryParamDecoder
@@ -23,6 +24,11 @@ object QueryParam {
   implicit val queryStringDecoder: QueryParamDecoder[QueryString] =
     QueryParamDecoder[String].map(s => QueryString(s.trim.toLowerCase))
 
+  implicit val searchModeDecoder: QueryParamDecoder[SearchMode] =
+    QueryParamDecoder[String].emap(str =>
+      SearchMode.fromString(str).left.map(s => ParseFailure(str, s))
+    )
+
   object FullOpt extends OptionalQueryParamDecoderMatcher[Boolean]("full")
 
   object OwningOpt extends OptionalQueryParamDecoderMatcher[Boolean]("owning")
@@ -35,6 +41,7 @@ object QueryParam {
   object Limit       extends OptionalQueryParamDecoderMatcher[Int]("limit")
   object Offset      extends OptionalQueryParamDecoderMatcher[Int]("offset")
   object WithDetails extends OptionalQueryParamDecoderMatcher[Boolean]("withDetails")
+  object SearchKind  extends OptionalQueryParamDecoderMatcher[SearchMode]("searchMode")
 
   object WithFallback extends OptionalQueryParamDecoderMatcher[Boolean]("withFallback")
 }

@@ -63,6 +63,7 @@ trait Conversions {
     ItemInsights(
       d.incoming,
       d.outgoing,
+      d.deleted,
       d.bytes,
       mkTagCloud(d.tags)
     )

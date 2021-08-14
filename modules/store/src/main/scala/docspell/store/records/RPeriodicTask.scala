@@ -13,6 +13,7 @@ import cats.implicits._
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
+import docspell.store.usertask.UserTaskScope
 
 import com.github.eikek.calev.CalEvent
 import doobie._
@@ -67,11 +68,10 @@ object RPeriodicTask {
 
   def create[F[_]: Sync](
       enabled: Boolean,
+      scope: UserTaskScope,
       task: Ident,
-      group: Ident,
       args: String,
       subject: String,
-      submitter: Ident,
       priority: Priority,
       timer: CalEvent,
       summary: Option[String]
@@ -86,10 +86,10 @@ object RPeriodicTask {
               id,
               enabled,
               task,
-              group,
+              scope.collective,
               args,
               subject,
-              submitter,
+              scope.fold(_.user, identity),
               priority,
               None,
               None,
@@ -107,22 +107,20 @@ object RPeriodicTask {
 
   def createJson[F[_]: Sync, A](
       enabled: Boolean,
+      scope: UserTaskScope,
       task: Ident,
-      group: Ident,
       args: A,
       subject: String,
-      submitter: Ident,
       priority: Priority,
       timer: CalEvent,
       summary: Option[String]
   )(implicit E: Encoder[A]): F[RPeriodicTask] =
     create[F](
       enabled,
+      scope,
       task,
-      group,
       E(args).noSpaces,
       subject,
-      submitter,
       priority,
       timer,
       summary

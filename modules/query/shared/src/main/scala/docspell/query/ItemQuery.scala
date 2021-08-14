@@ -125,7 +125,8 @@ object ItemQuery {
     final case class ChecksumMatch(checksum: String) extends Expr
     final case class AttachId(id: String)            extends Expr
 
-    case object ValidItemStates extends Expr
+    final case object ValidItemStates extends Expr
+    final case object Trashed         extends Expr
 
     // things that can be expressed with terms above
     sealed trait MacroExpr extends Expr {

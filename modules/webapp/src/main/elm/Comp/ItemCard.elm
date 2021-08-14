@@ -149,12 +149,18 @@ update ddm msg model =
 view2 : Texts -> ViewConfig -> UiSettings -> Model -> ItemLight -> Html Msg
 view2 texts cfg settings model item =
     let
-        isConfirmed =
-            item.state /= "created"
+        isCreated =
+            item.state == "created"
+
+        isDeleted =
+            item.state == "deleted"
 
         cardColor =
-            if not isConfirmed then
+            if isCreated then
                 "text-blue-500 dark:text-lightblue-500"
+
+            else if isDeleted then
+                 "text-red-600 dark:text-orange-600"
 
             else
                 ""
@@ -207,7 +213,7 @@ view2 texts cfg settings model item =
             [ previewImage2 settings cardAction model item
             ]
          )
-            ++ [ mainContent2 texts cardAction cardColor isConfirmed settings cfg item
+            ++ [ mainContent2 texts cardAction cardColor isCreated isDeleted settings cfg item
                , metaDataContent2 texts settings item
                , notesContent2 settings item
                , fulltextResultsContent2 item
@@ -293,11 +299,12 @@ mainContent2 :
     -> List (Attribute Msg)
     -> String
     -> Bool
+    -> Bool
     -> UiSettings
     -> ViewConfig
     -> ItemLight
     -> Html Msg
-mainContent2 texts cardAction cardColor isConfirmed settings _ item =
+mainContent2 texts _ cardColor isCreated isDeleted settings _ item =
     let
         dirIcon =
             i
@@ -353,11 +360,21 @@ mainContent2 texts cardAction cardColor isConfirmed settings _ item =
             [ classList
                 [ ( "absolute right-1 top-1 text-4xl", True )
                 , ( cardColor, True )
-                , ( "hidden", isConfirmed )
+                , ( "hidden", not isCreated )
                 ]
             , title texts.new
             ]
             [ i [ class "ml-2 fa fa-exclamation-circle" ] []
+            ]
+        , div
+            [ classList
+                [ ( "absolute right-1 top-1 text-4xl", True )
+                , ( cardColor, True )
+                , ( "hidden", not isDeleted )
+                ]
+            , title texts.basics.deleted
+            ]
+            [ i [ class "ml-2 fa fa-trash-alt" ] []
             ]
         , div
             [ classList

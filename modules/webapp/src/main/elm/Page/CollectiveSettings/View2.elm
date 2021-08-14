@@ -171,6 +171,7 @@ viewInsights texts flags model =
             [ stats (String.fromInt (model.insights.incomingCount + model.insights.outgoingCount)) texts.basics.items
             , stats (String.fromInt model.insights.incomingCount) texts.basics.incoming
             , stats (String.fromInt model.insights.outgoingCount) texts.basics.outgoing
+            , stats (String.fromInt model.insights.deletedCount) texts.basics.deleted
             ]
         ]
     , div

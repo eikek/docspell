@@ -13,6 +13,7 @@ import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
+import com.github.eikek.calev._
 import doobie._
 import doobie.implicits._
 
@@ -73,17 +74,21 @@ object RCollective {
           T.integration.setTo(settings.integrationEnabled)
         )
       )
-      cls <-
-        Timestamp
-          .current[ConnectionIO]
-          .map(now => settings.classifier.map(_.toRecord(cid, now)))
+      now <- Timestamp.current[ConnectionIO]
+      cls = settings.classifier.map(_.toRecord(cid, now))
       n2 <- cls match {
         case Some(cr) =>
           RClassifierSetting.update(cr)
         case None =>
           RClassifierSetting.delete(cid)
       }
-    } yield n1 + n2
+      n3 <- settings.emptyTrash match {
+        case Some(trashSchedule) =>
+          REmptyTrashSetting.update(REmptyTrashSetting(cid, trashSchedule, now))
+        case None =>
+          REmptyTrashSetting.delete(cid)
+      }
+    } yield n1 + n2 + n3
 
   // this hides categories that have been deleted in the meantime
   // they are finally removed from the json array once the learn classifier task is run
@@ -99,6 +104,7 @@ object RCollective {
     import RClassifierSetting.stringListMeta
     val c  = RCollective.as("c")
     val cs = RClassifierSetting.as("cs")
+    val es = REmptyTrashSetting.as("es")
 
     Select(
       select(
@@ -107,9 +113,10 @@ object RCollective {
         cs.schedule.s,
         cs.itemCount.s,
         cs.categories.s,
-        cs.listType.s
+        cs.listType.s,
+        es.schedule.s
       ),
-      from(c).leftJoin(cs, cs.cid === c.id),
+      from(c).leftJoin(cs, cs.cid === c.id).leftJoin(es, es.cid === c.id),
       c.id === coll
     ).build.query[Settings].option
   }
@@ -160,7 +167,8 @@ object RCollective {
   case class Settings(
       language: Language,
       integrationEnabled: Boolean,
-      classifier: Option[RClassifierSetting.Classifier]
+      classifier: Option[RClassifierSetting.Classifier],
+      emptyTrash: Option[CalEvent]
   )
 
 }

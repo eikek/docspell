@@ -30,9 +30,11 @@ type alias Texts =
     , powerSearchPlaceholder : String
     , reallyReprocessQuestion : String
     , reallyDeleteQuestion : String
+    , reallyRestoreQuestion : String
     , editSelectedItems : Int -> String
     , reprocessSelectedItems : Int -> String
     , deleteSelectedItems : Int -> String
+    , undeleteSelectedItems : Int -> String
     , selectAllVisible : String
     , selectNone : String
     , resetSearchForm : String
@@ -54,9 +56,11 @@ gb =
     , powerSearchPlaceholder = "Search query …"
     , reallyReprocessQuestion = "Really reprocess all selected items? Metadata of unconfirmed items may change."
     , reallyDeleteQuestion = "Really delete all selected items?"
+    , reallyRestoreQuestion = "Really restore all selected items?"
     , editSelectedItems = \n -> "Edit " ++ String.fromInt n ++ " selected items"
     , reprocessSelectedItems = \n -> "Reprocess " ++ String.fromInt n ++ " selected items"
     , deleteSelectedItems = \n -> "Delete " ++ String.fromInt n ++ " selected items"
+    , undeleteSelectedItems = \n -> "Restore " ++ String.fromInt n ++ " selected items"
     , selectAllVisible = "Select all visible"
     , selectNone = "Select none"
     , resetSearchForm = "Reset search form"
@@ -78,9 +82,11 @@ de =
     , powerSearchPlaceholder = "Suchanfrage…"
     , reallyReprocessQuestion = "Wirklich die gewählten Dokumente neu verarbeiten? Die Metadaten von nicht bestätigten Dokumenten können sich dabei ändern."
     , reallyDeleteQuestion = "Wirklich alle gewählten Dokumente löschen?"
+    , reallyRestoreQuestion = "Wirklich alle gewählten Dokumente wiederherstellen?"
     , editSelectedItems = \n -> "Ändere " ++ String.fromInt n ++ " gewählte Dokumente"
     , reprocessSelectedItems = \n -> "Erneute Verarbeitung von " ++ String.fromInt n ++ " gewählten Dokumenten"
     , deleteSelectedItems = \n -> "Lösche " ++ String.fromInt n ++ " gewählte Dokumente"
+    , undeleteSelectedItems = \n -> "Stelle " ++ String.fromInt n ++ " gewählte Dokumente wieder her"
     , selectAllVisible = "Wähle alle Dokumente in der Liste"
     , selectNone = "Wähle alle Dokumente ab"
     , resetSearchForm = "Suchformular zurücksetzen"

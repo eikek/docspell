@@ -46,6 +46,7 @@ type alias Texts =
     , unconfirmItemMetadata : String
     , reprocessItem : String
     , deleteThisItem : String
+    , undeleteThisItem : String
     , sentEmails : String
     , sendThisItemViaEmail : String
     , itemId : String
@@ -79,6 +80,7 @@ gb =
     , unconfirmItemMetadata = "Un-confirm item metadata"
     , reprocessItem = "Reprocess this item"
     , deleteThisItem = "Delete this item"
+    , undeleteThisItem = "Restore this item"
     , sentEmails = "Sent E-Mails"
     , sendThisItemViaEmail = "Send this item via E-Mail"
     , itemId = "Item ID"
@@ -112,6 +114,7 @@ de =
     , unconfirmItemMetadata = "Widerrufe Bestätigung"
     , reprocessItem = "Das Dokument erneut verarbeiten"
     , deleteThisItem = "Das Dokument löschen"
+    , undeleteThisItem = "Das Dokument wiederherstellen"
     , sentEmails = "Versendete E-Mails"
     , sendThisItemViaEmail = "Sende dieses Dokument via E-Mail"
     , itemId = "Dokument-ID"

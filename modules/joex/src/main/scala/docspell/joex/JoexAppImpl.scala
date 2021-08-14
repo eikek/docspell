@@ -18,6 +18,7 @@ import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
+import docspell.joex.emptytrash._
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
 import docspell.joex.learn.LearnClassifierTask
@@ -33,7 +34,7 @@ import docspell.joex.scheduler._
 import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
-import docspell.store.records.RJobLog
+import docspell.store.records.{REmptyTrashSetting, RJobLog}
 
 import emil.javamail._
 import org.http4s.blaze.client.BlazeClientBuilder
@@ -76,11 +77,23 @@ final class JoexAppImpl[F[_]: Async](
     HouseKeepingTask
       .periodicTask[F](cfg.houseKeeping.schedule)
       .flatMap(pstore.insert) *>
+      scheduleEmptyTrashTasks *>
       MigrationTask.job.flatMap(queue.insertIfNew) *>
       AllPreviewsTask
         .job(MakePreviewArgs.StoreMode.WhenMissing, None)
         .flatMap(queue.insertIfNew) *>
       AllPageCountTask.job.flatMap(queue.insertIfNew)
+
+  private def scheduleEmptyTrashTasks: F[Unit] =
+    store
+      .transact(
+        REmptyTrashSetting.findForAllCollectives(EmptyTrashArgs.defaultSchedule, 50)
+      )
+      .evalMap(es => EmptyTrashTask.periodicTask(es.cid, es.schedule))
+      .evalMap(pstore.insert)
+      .compile
+      .drain
+
 }
 
 object JoexAppImpl {
@@ -94,16 +107,17 @@ object JoexAppImpl {
     for {
       httpClient <- BlazeClientBuilder[F](clientEC).resource
       client = JoexClient(httpClient)
-      store    <- Store.create(cfg.jdbc, connectEC)
-      queue    <- JobQueue(store)
-      pstore   <- PeriodicTaskStore.create(store)
-      nodeOps  <- ONode(store)
-      joex     <- OJoex(client, store)
-      upload   <- OUpload(store, queue, cfg.files, joex)
-      fts      <- createFtsClient(cfg)(httpClient)
-      itemOps  <- OItem(store, fts, queue, joex)
-      analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
-      regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
+      store         <- Store.create(cfg.jdbc, connectEC)
+      queue         <- JobQueue(store)
+      pstore        <- PeriodicTaskStore.create(store)
+      nodeOps       <- ONode(store)
+      joex          <- OJoex(client, store)
+      upload        <- OUpload(store, queue, cfg.files, joex)
+      fts           <- createFtsClient(cfg)(httpClient)
+      itemOps       <- OItem(store, fts, queue, joex)
+      itemSearchOps <- OItemSearch(store)
+      analyser      <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
+      regexNer      <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
       javaEmil =
         JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, store)
@@ -204,6 +218,13 @@ object JoexAppImpl {
             AllPageCountTask.taskName,
             AllPageCountTask[F](queue, joex),
             AllPageCountTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            EmptyTrashArgs.taskName,
+            EmptyTrashTask[F](itemOps, itemSearchOps),
+            EmptyTrashTask.onCancel[F]
           )
         )
         .resource

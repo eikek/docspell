@@ -1604,6 +1604,9 @@ update key flags inav settings msg model =
                 , cmd
                 )
 
+        RestoreItem ->
+            resultModelCmd ( model, Api.restoreItem flags model.item.id SaveResp )
+
 
 
 --- Helper

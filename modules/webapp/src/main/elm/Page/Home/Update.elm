@@ -23,6 +23,7 @@ import Data.Flags exposing (Flags)
 import Data.ItemQuery as Q
 import Data.ItemSelection
 import Data.Items
+import Data.SearchMode exposing (SearchMode)
 import Data.UiSettings exposing (UiSettings)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
@@ -360,6 +361,28 @@ update mId key flags settings msg model =
 
                 _ ->
                     noSub ( model, Cmd.none )
+        RestoreSelectedConfirmed ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        cmd =
+                            Api.restoreAllItems flags svm.ids DeleteAllResp
+                    in
+                    noSub
+                        ( { model
+                            | viewMode =
+                                SelectView
+                                    { svm
+                                        | confirmModal = Nothing
+                                        , action = RestoreSelected
+                                    }
+                          }
+                        , cmd
+                        )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
 
         DeleteAllResp (Ok res) ->
             if res.success then
@@ -468,6 +491,29 @@ update mId key flags settings msg model =
                 _ ->
                     noSub ( model, Cmd.none )
 
+        RequestRestoreSelected ->
+            case model.viewMode of
+                SelectView svm ->
+                    if svm.ids == Set.empty then
+                        noSub ( model, Cmd.none )
+
+                    else
+                        let
+                            model_ =
+                                { model
+                                    | viewMode =
+                                        SelectView
+                                            { svm
+                                                | action = RestoreSelected
+                                                , confirmModal = Just ConfirmRestore
+                                            }
+                                }
+                        in
+                        noSub ( model_, Cmd.none )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
         EditSelectedItems ->
             case model.viewMode of
                 SelectView svm ->
@@ -548,7 +594,7 @@ update mId key flags settings msg model =
                 case model.viewMode of
                     SelectView svm ->
                         -- replace changed items in the view
-                        noSub ( nm, loadChangedItems flags svm.ids )
+                        noSub ( nm, loadChangedItems flags model.searchMenuModel.searchMode svm.ids )
 
                     _ ->
                         noSub ( nm, Cmd.none )
@@ -717,8 +763,8 @@ replaceItems model newItems =
     { model | itemListModel = newList }
 
 
-loadChangedItems : Flags -> Set String -> Cmd Msg
-loadChangedItems flags ids =
+loadChangedItems : Flags -> SearchMode -> Set String -> Cmd Msg
+loadChangedItems flags smode ids =
     if Set.isEmpty ids then
         Cmd.none
 
@@ -728,7 +774,7 @@ loadChangedItems flags ids =
                 Set.toList ids
 
             searchInit =
-                Q.request (Just <| Q.ItemIdIn idList)
+                Q.request smode (Just <| Q.ItemIdIn idList)
 
             search =
                 { searchInit

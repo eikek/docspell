@@ -35,7 +35,7 @@ object ScanMailboxRoutes {
     HttpRoutes.of {
       case GET -> Root / Ident(id) =>
         (for {
-          task <- ut.findScanMailbox(id, user.account)
+          task <- ut.findScanMailbox(id, UserTaskScope(user.account))
           res  <- OptionT.liftF(taskToSettings(user.account, backend, task))
           resp <- OptionT.liftF(Ok(res))
         } yield resp).getOrElseF(NotFound())
@@ -46,7 +46,7 @@ object ScanMailboxRoutes {
           newId <- Ident.randomId[F]
           task  <- makeTask(newId, user.account, data)
           res <-
-            ut.executeNow(user.account, task)
+            ut.executeNow(UserTaskScope(user.account), task)
               .attempt
               .map(Conversions.basicResult(_, "Submitted successfully."))
           resp <- Ok(res)
@@ -55,7 +55,7 @@ object ScanMailboxRoutes {
       case DELETE -> Root / Ident(id) =>
         for {
           res <-
-            ut.deleteTask(user.account, id)
+            ut.deleteTask(UserTaskScope(user.account), id)
               .attempt
               .map(Conversions.basicResult(_, "Deleted successfully."))
           resp <- Ok(res)
@@ -66,7 +66,7 @@ object ScanMailboxRoutes {
           for {
             task <- makeTask(data.id, user.account, data)
             res <-
-              ut.submitScanMailbox(user.account, task)
+              ut.submitScanMailbox(UserTaskScope(user.account), task)
                 .attempt
                 .map(Conversions.basicResult(_, "Saved successfully."))
             resp <- Ok(res)
@@ -84,14 +84,14 @@ object ScanMailboxRoutes {
           newId <- Ident.randomId[F]
           task  <- makeTask(newId, user.account, data)
           res <-
-            ut.submitScanMailbox(user.account, task)
+            ut.submitScanMailbox(UserTaskScope(user.account), task)
               .attempt
               .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)
         } yield resp
 
       case GET -> Root =>
-        ut.getScanMailbox(user.account)
+        ut.getScanMailbox(UserTaskScope(user.account))
           .evalMap(task => taskToSettings(user.account, backend, task))
           .compile
           .toVector

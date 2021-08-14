@@ -20,7 +20,9 @@ import Api.Model.CollectiveSettings exposing (CollectiveSettings)
 import Comp.Basic as B
 import Comp.ClassifierSettingsForm
 import Comp.Dropdown
+import Comp.EmptyTrashForm
 import Comp.MenuBar as MB
+import Data.CalEvent
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
@@ -41,6 +43,8 @@ type alias Model =
     , fullTextReIndexResult : FulltextReindexResult
     , classifierModel : Comp.ClassifierSettingsForm.Model
     , startClassifierResult : ClassifierResult
+    , emptyTrashModel : Comp.EmptyTrashForm.Model
+    , startEmptyTrashResult : EmptyTrashResult
     }
 
 
@@ -50,6 +54,11 @@ type ClassifierResult
     | ClassifierResultSubmitError String
     | ClassifierResultOk
 
+type EmptyTrashResult
+    = EmptyTrashResultInitial
+    | EmptyTrashResultHttpError Http.Error
+    | EmptyTrashResultSubmitError String
+    | EmptyTrashResultOk
 
 type FulltextReindexResult
     = FulltextReindexInitial
@@ -68,6 +77,9 @@ init flags settings =
 
         ( cm, cc ) =
             Comp.ClassifierSettingsForm.init flags settings.classifier
+
+        ( em, ec ) =
+            Comp.EmptyTrashForm.init flags settings.emptyTrashSchedule
     in
     ( { langModel =
             Comp.Dropdown.makeSingleList
@@ -80,8 +92,10 @@ init flags settings =
       , fullTextReIndexResult = FulltextReindexInitial
       , classifierModel = cm
       , startClassifierResult = ClassifierResultInitial
+      , emptyTrashModel = em
+      , startEmptyTrashResult = EmptyTrashResultInitial
       }
-    , Cmd.map ClassifierSettingMsg cc
+    , Cmd.batch [ Cmd.map ClassifierSettingMsg cc, Cmd.map EmptyTrashMsg ec ]
     )
 
 
@@ -96,6 +110,10 @@ getSettings model =
                     |> Maybe.withDefault model.initSettings.language
             , integrationEnabled = model.intEnabled
             , classifier = cls
+            , emptyTrashSchedule =
+                Comp.EmptyTrashForm.getSettings model.emptyTrashModel
+                    |> Maybe.withDefault Data.CalEvent.everyMonth
+                    |> Data.CalEvent.makeEvent
             }
         )
         (Comp.ClassifierSettingsForm.getSettings
@@ -110,9 +128,12 @@ type Msg
     | TriggerReIndex
     | TriggerReIndexResult (Result Http.Error BasicResult)
     | ClassifierSettingMsg Comp.ClassifierSettingsForm.Msg
+    | EmptyTrashMsg Comp.EmptyTrashForm.Msg
     | SaveSettings
     | StartClassifierTask
+    | StartEmptyTrashTask
     | StartClassifierResp (Result Http.Error BasicResult)
+    | StartEmptyTrashResp (Result Http.Error BasicResult)
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe CollectiveSettings )
@@ -188,6 +209,18 @@ update flags msg model =
             , Nothing
             )
 
+        EmptyTrashMsg lmsg ->
+            let
+                ( cm, cc ) =
+                    Comp.EmptyTrashForm.update flags lmsg model.emptyTrashModel
+            in
+            ( { model
+                | emptyTrashModel = cm
+              }
+            , Cmd.map EmptyTrashMsg cc
+            , Nothing
+            )
+
         SaveSettings ->
             case getSettings model of
                 Just s ->
@@ -198,6 +231,10 @@ update flags msg model =
 
         StartClassifierTask ->
             ( model, Api.startClassifier flags StartClassifierResp, Nothing )
+
+        StartEmptyTrashTask ->
+            ( model, Api.startEmptyTrash flags StartEmptyTrashResp, Nothing )
+
 
         StartClassifierResp (Ok br) ->
             ( { model
@@ -218,6 +255,24 @@ update flags msg model =
             , Nothing
             )
 
+        StartEmptyTrashResp (Ok br) ->
+            ( { model
+                | startEmptyTrashResult =
+                    if br.success then
+                        EmptyTrashResultOk
+
+                    else
+                        EmptyTrashResultSubmitError br.message
+              }
+            , Cmd.none
+            , Nothing
+            )
+
+        StartEmptyTrashResp (Err err) ->
+            ( { model | startEmptyTrashResult = EmptyTrashResultHttpError err }
+            , Cmd.none
+            , Nothing
+            )
 
 
 --- View2
@@ -257,7 +312,7 @@ view2 flags texts settings model =
             , end = []
             , rootClasses = "mb-4"
             }
-        , h3 [ class S.header3 ]
+        , h2 [ class S.header2 ]
             [ text texts.documentLanguage
             ]
         , div [ class "mb-4" ]
@@ -279,8 +334,8 @@ view2 flags texts settings model =
                 [ ( "hidden", not flags.config.integrationEnabled )
                 ]
             ]
-            [ h3
-                [ class S.header3
+            [ h2
+                [ class S.header2
                 ]
                 [ text texts.integrationEndpoint
                 ]
@@ -311,8 +366,8 @@ view2 flags texts settings model =
                 [ ( "hidden", not flags.config.fullTextSearchEnabled )
                 ]
             ]
-            [ h3
-                [ class S.header3 ]
+            [ h2
+                [ class S.header2 ]
                 [ text texts.fulltextSearch ]
             , div
                 [ class "mb-4" ]
@@ -348,8 +403,8 @@ view2 flags texts settings model =
                 [ ( " hidden", not flags.config.showClassificationSettings )
                 ]
             ]
-            [ h3
-                [ class S.header3 ]
+            [ h2
+                [ class S.header2 ]
                 [ text texts.autoTagging
                 ]
             , div
@@ -368,6 +423,28 @@ view2 flags texts settings model =
                         , attrs = [ href "#" ]
                         }
                     , renderClassifierResultMessage texts model.startClassifierResult
+                    ]
+                ]
+            ]
+        , div []
+            [ h2 [ class S.header2 ]
+                [ text texts.emptyTrash
+                ]
+            , div [ class "mb-4" ]
+                [ Html.map EmptyTrashMsg
+                    (Comp.EmptyTrashForm.view texts.emptyTrashForm
+                        settings
+                        model.emptyTrashModel
+                    )
+                , div [ class "flex flex-row justify-end" ]
+                    [ B.secondaryBasicButton
+                        { handler = onClick StartEmptyTrashTask
+                        , icon = "fa fa-play"
+                        , label = texts.startNow
+                        , disabled = model.emptyTrashModel.schedule == Nothing
+                        , attrs = [ href "#" ]
+                        }
+                    , renderEmptyTrashResultMessage texts model.startEmptyTrashResult
                     ]
                 ]
             ]
@@ -427,3 +504,38 @@ renderFulltextReindexResultMessage texts result =
 
         FulltextReindexSubmitError m ->
             text m
+
+renderEmptyTrashResultMessage : Texts -> EmptyTrashResult -> Html msg
+renderEmptyTrashResultMessage texts result =
+    let
+        isSuccess =
+            case result of
+                EmptyTrashResultOk ->
+                    True
+
+                _ ->
+                    False
+
+        isError =
+            not isSuccess
+    in
+    div
+        [ classList
+            [ ( S.errorMessage, isError )
+            , ( S.successMessage, isSuccess )
+            , ( "hidden", result == EmptyTrashResultInitial )
+            ]
+        ]
+        [ case result of
+            EmptyTrashResultInitial ->
+                text ""
+
+            EmptyTrashResultOk ->
+                text texts.emptyTrashTaskStarted
+
+            EmptyTrashResultHttpError err ->
+                text (texts.httpError err)
+
+            EmptyTrashResultSubmitError m ->
+                text m
+        ]

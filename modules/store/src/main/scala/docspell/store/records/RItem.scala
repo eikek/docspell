@@ -9,6 +9,7 @@ package docspell.store.records
 import cats.data.NonEmptyList
 import cats.effect.Sync
 import cats.implicits._
+import fs2.Stream
 
 import docspell.common._
 import docspell.store.qb.DSL._
@@ -152,7 +153,21 @@ object RItem {
       t <- currentTime
       n <- DML.update(
         T,
-        T.id.in(itemIds) && T.cid === coll,
+        T.id.in(itemIds) && T.cid === coll && T.state.in(ItemState.validStates),
+        DML.set(T.state.setTo(itemState), T.updated.setTo(t))
+      )
+    } yield n
+
+  def restoreStateForCollective(
+      itemIds: NonEmptyList[Ident],
+      itemState: ItemState,
+      coll: Ident
+  ): ConnectionIO[Int] =
+    for {
+      t <- currentTime
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll && T.state === ItemState.deleted,
         DML.set(T.state.setTo(itemState), T.updated.setTo(t))
       )
     } yield n
@@ -336,6 +351,20 @@ object RItem {
   def deleteByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Int] =
     DML.delete(T, T.id === itemId && T.cid === coll)
 
+  def setState(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident,
+      state: ItemState
+  ): ConnectionIO[Int] =
+    for {
+      t <- currentTime
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.state.setTo(state), T.updated.setTo(t))
+      )
+    } yield n
+
   def existsById(itemId: Ident): ConnectionIO[Boolean] =
     Select(count(T.id).s, from(T), T.id === itemId).build.query[Int].unique.map(_ > 0)
 
@@ -359,6 +388,11 @@ object RItem {
 
   def findById(itemId: Ident): ConnectionIO[Option[RItem]] =
     run(select(T.all), from(T), T.id === itemId).query[RItem].option
+
+  def findDeleted(collective: Ident, chunkSize: Int): Stream[ConnectionIO, RItem] =
+    run(select(T.all), from(T), T.cid === collective && T.state === ItemState.deleted)
+      .query[RItem]
+      .streamWithChunkSize(chunkSize)
 
   def checkByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[Ident]] =
     Select(T.id.s, from(T), T.id === itemId && T.cid === coll).build.query[Ident].option

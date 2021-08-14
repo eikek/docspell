@@ -19,7 +19,10 @@ import docspell.store.queries.SearchSummary
 
 import org.log4s.getLogger
 
-/** A "porcelain" api on top of OFulltext and OItemSearch. */
+/** A "porcelain" api on top of OFulltext and OItemSearch. This takes
+  * care of restricting the items to a subset, e.g. only items that
+  * have a "valid" state.
+  */
 trait OSimpleSearch[F[_]] {
 
   /** Search for items using the given query and optional fulltext
@@ -36,7 +39,7 @@ trait OSimpleSearch[F[_]] {
     * and not the results.
     */
   def searchSummary(
-      useFTS: Boolean
+      settings: StatsSettings
   )(q: Query, fulltextQuery: Option[String]): F[SearchSummary]
 
   /** Calls `search` by parsing the given query string into a query that
@@ -53,12 +56,12 @@ trait OSimpleSearch[F[_]] {
     * results.
     */
   final def searchSummaryByString(
-      useFTS: Boolean
+      settings: StatsSettings
   )(fix: Query.Fix, q: ItemQueryString)(implicit
       F: Applicative[F]
   ): F[StringSearchResult[SearchSummary]] =
     OSimpleSearch.applySearch[F, SearchSummary](fix, q)((iq, fts) =>
-      searchSummary(useFTS)(iq, fts)
+      searchSummary(settings)(iq, fts)
     )
 }
 
@@ -83,7 +86,12 @@ object OSimpleSearch {
       batch: Batch,
       useFTS: Boolean,
       resolveDetails: Boolean,
-      maxNoteLen: Int
+      maxNoteLen: Int,
+      searchMode: SearchMode
+  )
+  final case class StatsSettings(
+      useFTS: Boolean,
+      searchMode: SearchMode
   )
 
   sealed trait Items {
@@ -214,7 +222,11 @@ object OSimpleSearch {
       // 1. fulltext only   if fulltextQuery.isDefined && q.isEmpty && useFTS
       // 2. sql+fulltext    if fulltextQuery.isDefined && q.nonEmpty && useFTS
       // 3. sql-only        else (if fulltextQuery.isEmpty || !useFTS)
-      val validItemQuery = q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+      val validItemQuery =
+        settings.searchMode match {
+          case SearchMode.Trashed => q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
+          case SearchMode.Normal  => q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+        }
       fulltextQuery match {
         case Some(ftq) if settings.useFTS =>
           if (q.isEmpty) {
@@ -267,18 +279,24 @@ object OSimpleSearch {
     }
 
     def searchSummary(
-        useFTS: Boolean
-    )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] =
+        settings: StatsSettings
+    )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] = {
+      val validItemQuery =
+        settings.searchMode match {
+          case SearchMode.Trashed => q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
+          case SearchMode.Normal  => q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+        }
       fulltextQuery match {
-        case Some(ftq) if useFTS =>
+        case Some(ftq) if settings.useFTS =>
           if (q.isEmpty)
             fts.findIndexOnlySummary(q.fix.account, OFulltext.FtsInput(ftq))
           else
             fts
-              .findItemsSummary(q, OFulltext.FtsInput(ftq))
+              .findItemsSummary(validItemQuery, OFulltext.FtsInput(ftq))
 
         case _ =>
-          is.findItemsSummary(q)
+          is.findItemsSummary(validItemQuery)
       }
+    }
   }
 }

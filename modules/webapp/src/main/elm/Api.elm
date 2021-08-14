@@ -99,6 +99,8 @@ module Api exposing
     , removeTagsMultiple
     , reprocessItem
     , reprocessMultiple
+    , restoreAllItems
+    , restoreItem
     , saveClientSettings
     , sendMail
     , setAttachmentName
@@ -128,6 +130,7 @@ module Api exposing
     , setTagsMultiple
     , setUnconfirmed
     , startClassifier
+    , startEmptyTrash
     , startOnceNotifyDueItems
     , startOnceScanMailbox
     , startReIndex
@@ -994,6 +997,19 @@ startClassifier flags receive =
         }
 
 
+startEmptyTrash :
+    Flags
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+startEmptyTrash flags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/emptytrash/startonce"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
 getTagCloud : Flags -> (Result Http.Error TagCloud -> msg) -> Cmd msg
 getTagCloud flags receive =
     Http2.authGet
@@ -1676,6 +1692,20 @@ deleteAllItems flags ids receive =
         }
 
 
+restoreAllItems :
+    Flags
+    -> Set String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+restoreAllItems flags ids receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/restoreAll"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
 
 --- Item
 
@@ -1967,6 +1997,16 @@ setUnconfirmed : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cm
 setUnconfirmed flags item receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/unconfirm"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+restoreItem : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+restoreItem flags item receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/restore"
         , account = getAccount flags
         , body = Http.emptyBody
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder

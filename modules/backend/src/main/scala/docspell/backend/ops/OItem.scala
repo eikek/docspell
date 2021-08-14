@@ -124,6 +124,8 @@ trait OItem[F[_]] {
       collective: Ident
   ): F[AddResult]
 
+  def restore(items: NonEmptyList[Ident], collective: Ident): F[UpdateResult]
+
   def setItemDate(
       item: NonEmptyList[Ident],
       date: Option[Timestamp],
@@ -143,6 +145,8 @@ trait OItem[F[_]] {
   def deleteItemMultiple(items: NonEmptyList[Ident], collective: Ident): F[Int]
 
   def deleteAttachment(id: Ident, collective: Ident): F[Int]
+
+  def setDeletedState(items: NonEmptyList[Ident], collective: Ident): F[Int]
 
   def deleteAttachmentMultiple(
       attachments: NonEmptyList[Ident],
@@ -580,6 +584,17 @@ object OItem {
             .attempt
             .map(AddResult.fromUpdate)
 
+        def restore(
+            items: NonEmptyList[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(
+                RItem.restoreStateForCollective(items, ItemState.Created, collective)
+              )
+          )
+
         def setItemDate(
             items: NonEmptyList[Ident],
             date: Option[Timestamp],
@@ -611,6 +626,9 @@ object OItem {
             results <- itemIds.traverse(item => deleteItem(item, collective))
             n = results.sum
           } yield n
+
+        def setDeletedState(items: NonEmptyList[Ident], collective: Ident): F[Int] =
+          store.transact(RItem.setState(items, collective, ItemState.Deleted))
 
         def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =
           store.transact(QAttachment.getMetaProposals(item, collective))

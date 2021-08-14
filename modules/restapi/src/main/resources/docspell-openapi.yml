@@ -1136,6 +1136,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/collective/emptytrash/startonce:
+    post:
+      operationId: "sec-collective-emptytrash-start-now"
+      tags: [ Collective ]
+      summary: Starts the empty trash task
+      description: |
+        Submits a task to remove all items from the database that have
+        been "soft-deleted". This task is also run periodically and
+        can be triggered here to be immediatly submitted.
+
+        The request is empty, settings are used from the collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/user:
     get:
       operationId: "sec-user-get-all"
@@ -1478,6 +1499,7 @@ paths:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
         - $ref: "#/components/parameters/withDetails"
+        - $ref: "#/components/parameters/searchMode"
       responses:
         200:
           description: Ok
@@ -1576,6 +1598,7 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/searchMode"
       responses:
         200:
           description: Ok
@@ -1607,7 +1630,9 @@ paths:
       tags: [ Item ]
       summary: Delete an item.
       description: |
-        Delete an item and all its data permanently.
+        Delete an item and all its data. This is a "soft delete", the
+        item is still in the database and can be undeleted. A periodic
+        job will eventually remove this item from the database.
       security:
         - authTokenHeader: []
       parameters:
@@ -1619,6 +1644,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/restore:
+    post:
+      operationId: "sec-item-restore-by-id"
+      tags: [ Item ]
+      summary: Restore a deleted item.
+      description: |
+        A deleted item can be restored as long it is still in the
+        database. This action sets the item state to `created`.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/item/{id}/tags:
     put:
       operationId: "sec-item-get-tags"
@@ -2290,6 +2335,29 @@ paths:
       summary: Delete multiple items.
       description: |
         Given a list of item ids, deletes all of them.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/restoreAll:
+    post:
+      operationId: "sec-items-restore-all"
+      tags:
+        - Item (Multi Edit)
+      summary: Restore multiple items.
+      description: |
+        Given a list of item ids, restores all of them.
       security:
         - authTokenHeader: []
       requestBody:
@@ -4112,6 +4180,16 @@ components:
         withDetails:
           type: boolean
           default: false
+        searchMode:
+          type: string
+          format: searchmode
+          enum:
+            - normal
+            - trashed
+          default: normal
+          description: |
+            Specify whether the search query should apply to
+            soft-deleted items or not.
         query:
           type: string
           description: |
@@ -4569,6 +4647,7 @@ components:
       required:
         - incomingCount
         - outgoingCount
+        - deletedCount
         - itemSize
         - tagCloud
       properties:
@@ -4576,6 +4655,9 @@ components:
           type: integer
           format: int32
         outgoingCount:
+          type: integer
+          format: int32
+        deletedCount:
           type: integer
           format: int32
         itemSize:
@@ -5185,6 +5267,7 @@ components:
         - language
         - integrationEnabled
         - classifier
+        - emptyTrashSchedule
       properties:
         language:
           type: string
@@ -5194,6 +5277,9 @@ components:
           description: |
             Whether the collective has the integration endpoint
             enabled.
+        emptyTrashSchedule:
+          type: string
+          format: calevent
         classifier:
           $ref: "#/components/schemas/ClassifierSetting"
 
@@ -5834,6 +5920,13 @@ components:
       description: Whether to return details to each item.
       schema:
         type: boolean
+    searchMode:
+      name: searchMode
+      in: query
+      description: Whether to search in soft-deleted items only.
+      schema:
+        type: string
+        format: searchmode
     name:
       name: name
       in: path
