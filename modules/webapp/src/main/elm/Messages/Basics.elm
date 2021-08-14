@@ -15,6 +15,7 @@ module Messages.Basics exposing
 type alias Texts =
     { incoming : String
     , outgoing : String
+    , deleted : String
     , tags : String
     , items : String
     , submit : String
@@ -51,6 +52,7 @@ gb : Texts
 gb =
     { incoming = "Incoming"
     , outgoing = "Outgoing"
+    , deleted = "Deleted"
     , tags = "Tags"
     , items = "Items"
     , submit = "Submit"
@@ -92,6 +94,7 @@ de : Texts
 de =
     { incoming = "Eingehend"
     , outgoing = "Ausgehend"
+    , deleted = "Gelöscht"
     , tags = "Tags"
     , items = "Dokumente"
     , submit = "Speichern"

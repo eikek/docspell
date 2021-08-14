@@ -336,6 +336,20 @@ object RItem {
   def deleteByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Int] =
     DML.delete(T, T.id === itemId && T.cid === coll)
 
+  def setState(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident,
+      state: ItemState
+  ): ConnectionIO[Int] =
+    for {
+      t <- currentTime
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll,
+        DML.set(T.state.setTo(state), T.updated.setTo(t))
+      )
+    } yield n
+
   def existsById(itemId: Ident): ConnectionIO[Boolean] =
     Select(count(T.id).s, from(T), T.id === itemId).build.query[Int].unique.map(_ > 0)
 

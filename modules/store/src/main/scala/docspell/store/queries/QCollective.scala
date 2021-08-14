@@ -65,6 +65,7 @@ object QCollective {
   case class InsightData(
       incoming: Int,
       outgoing: Int,
+      deleted: Int,
       bytes: Long,
       tags: List[TagCount]
   )
@@ -83,6 +84,11 @@ object QCollective {
       i.cid === coll && i.incoming === Direction.outgoing && i.state.in(
         ItemState.validStates
       )
+    ).build.query[Int].unique
+    val q2 = Select(
+      count(i.id).s,
+      from(i),
+      i.cid === coll && i.state === ItemState.Deleted
     ).build.query[Int].unique
 
     val fileSize = sql"""
@@ -106,11 +112,12 @@ object QCollective {
       ) as t""".query[Option[Long]].unique
 
     for {
-      n0 <- q0
-      n1 <- q1
-      n2 <- fileSize
-      n3 <- tagCloud(coll)
-    } yield InsightData(n0, n1, n2.getOrElse(0L), n3)
+      incoming <- q0
+      outgoing <- q1
+      size     <- fileSize
+      tags     <- tagCloud(coll)
+      deleted  <- q2
+    } yield InsightData(incoming, outgoing, deleted, size.getOrElse(0L), tags)
   }
 
   def tagCloud(coll: Ident): ConnectionIO[List[TagCount]] = {

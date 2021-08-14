@@ -393,7 +393,7 @@ object ItemRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          n <- backend.item.deleteItem(id, user.account.collective)
+          n <- backend.item.setDeletedState(NonEmptyList.of(id), user.account.collective)
           res = BasicResult(n > 0, if (n > 0) "Item deleted" else "Item deletion failed.")
           resp <- Ok(res)
         } yield resp
@@ -440,7 +440,7 @@ object ItemRoutes {
       }
   }
 
-  def searchItemStats[F[_]: Sync](
+  private def searchItemStats[F[_]: Sync](
       backend: BackendApp[F],
       dsl: Http4sDsl[F]
   )(ftsEnabled: Boolean, fixQuery: Query.Fix, itemQuery: ItemQueryString) = {

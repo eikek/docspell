@@ -4569,6 +4569,7 @@ components:
       required:
         - incomingCount
         - outgoingCount
+        - deletedCount
         - itemSize
         - tagCloud
       properties:
@@ -4576,6 +4577,9 @@ components:
           type: integer
           format: int32
         outgoingCount:
+          type: integer
+          format: int32
+        deletedCount:
           type: integer
           format: int32
         itemSize:

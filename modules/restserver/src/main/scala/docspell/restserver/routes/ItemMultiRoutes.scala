@@ -179,7 +179,7 @@ object ItemMultiRoutes extends MultiIdSupport {
         for {
           json  <- req.as[IdList]
           items <- readIds[F](json.ids)
-          n     <- backend.item.deleteItemMultiple(items, user.account.collective)
+          n     <- backend.item.setDeletedState(items, user.account.collective)
           res = BasicResult(
             n > 0,
             if (n > 0) "Item(s) deleted" else "Item deletion failed."
