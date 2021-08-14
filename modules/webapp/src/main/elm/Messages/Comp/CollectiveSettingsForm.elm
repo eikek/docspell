@@ -15,6 +15,7 @@ import Data.Language exposing (Language)
 import Http
 import Messages.Basics
 import Messages.Comp.ClassifierSettingsForm
+import Messages.Comp.EmptyTrashForm
 import Messages.Comp.HttpError
 import Messages.Data.Language
 
@@ -22,6 +23,7 @@ import Messages.Data.Language
 type alias Texts =
     { basics : Messages.Basics.Texts
     , classifierSettingsForm : Messages.Comp.ClassifierSettingsForm.Texts
+    , emptyTrashForm : Messages.Comp.EmptyTrashForm.Texts
     , httpError : Http.Error -> String
     , save : String
     , saveSettings : String
@@ -37,8 +39,10 @@ type alias Texts =
     , startNow : String
     , languageLabel : Language -> String
     , classifierTaskStarted : String
+    , emptyTrashTaskStarted : String
     , fulltextReindexSubmitted : String
     , fulltextReindexOkMissing : String
+    , emptyTrash : String
     }
 
 
@@ -46,6 +50,7 @@ gb : Texts
 gb =
     { basics = Messages.Basics.gb
     , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.gb
+    , emptyTrashForm = Messages.Comp.EmptyTrashForm.gb
     , httpError = Messages.Comp.HttpError.gb
     , save = "Save"
     , saveSettings = "Save Settings"
@@ -65,9 +70,11 @@ gb =
     , startNow = "Start now"
     , languageLabel = Messages.Data.Language.gb
     , classifierTaskStarted = "Classifier task started."
+    , emptyTrashTaskStarted = "Empty trash task started."
     , fulltextReindexSubmitted = "Fulltext Re-Index started."
     , fulltextReindexOkMissing =
         "Please type OK in the field if you really want to start re-indexing your data."
+    , emptyTrash = "Empty Trash"
     }
 
 
@@ -75,6 +82,7 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.de
+    , emptyTrashForm = Messages.Comp.EmptyTrashForm.de
     , httpError = Messages.Comp.HttpError.de
     , save = "Speichern"
     , saveSettings = "Einstellungen speichern"
@@ -94,7 +102,9 @@ de =
     , startNow = "Jetzt starten"
     , languageLabel = Messages.Data.Language.de
     , classifierTaskStarted = "Kategorisierung gestartet."
+    , emptyTrashTaskStarted = "Papierkorb löschen gestartet."
     , fulltextReindexSubmitted = "Volltext Neu-Indexierung gestartet."
     , fulltextReindexOkMissing =
         "Bitte tippe OK in das Feld ein, wenn Du wirklich den Index neu erzeugen möchtest."
+    , emptyTrash = "Papierkorb löschen"
     }

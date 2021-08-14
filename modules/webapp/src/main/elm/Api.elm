@@ -130,6 +130,7 @@ module Api exposing
     , setTagsMultiple
     , setUnconfirmed
     , startClassifier
+    , startEmptyTrash
     , startOnceNotifyDueItems
     , startOnceScanMailbox
     , startReIndex
@@ -990,6 +991,19 @@ startClassifier :
 startClassifier flags receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/collective/classifier/startonce"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+startEmptyTrash :
+    Flags
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+startEmptyTrash flags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/collective/emptytrash/startonce"
         , account = getAccount flags
         , body = Http.emptyBody
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder

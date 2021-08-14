@@ -55,7 +55,8 @@ object CollectiveRoutes {
                 settings.classifier.categoryList,
                 settings.classifier.listType
               )
-            )
+            ),
+            Some(settings.emptyTrashSchedule)
           )
           res <-
             backend.collective
@@ -70,6 +71,7 @@ object CollectiveRoutes {
             CollectiveSettings(
               c.language,
               c.integrationEnabled,
+              c.emptyTrash.getOrElse(CalEvent.unsafe("*-*-1/7 03:00:00")),
               ClassifierSetting(
                 c.classifier.map(_.itemCount).getOrElse(0),
                 c.classifier
@@ -98,6 +100,12 @@ object CollectiveRoutes {
       case POST -> Root / "classifier" / "startonce" =>
         for {
           _    <- backend.collective.startLearnClassifier(user.account.collective)
+          resp <- Ok(BasicResult(true, "Task submitted"))
+        } yield resp
+
+      case POST -> Root / "emptytrash" / "startonce" =>
+        for {
+          _    <- backend.collective.startEmptyTrash(user.account.collective)
           resp <- Ok(BasicResult(true, "Task submitted"))
         } yield resp
 

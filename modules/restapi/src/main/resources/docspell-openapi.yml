@@ -1136,6 +1136,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/collective/emptytrash/startonce:
+    post:
+      operationId: "sec-collective-emptytrash-start-now"
+      tags: [ Collective ]
+      summary: Starts the empty trash task
+      description: |
+        Submits a task to remove all items from the database that have
+        been "soft-deleted". This task is also run periodically and
+        can be triggered here to be immediatly submitted.
+
+        The request is empty, settings are used from the collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/user:
     get:
       operationId: "sec-user-get-all"
@@ -5246,6 +5267,7 @@ components:
         - language
         - integrationEnabled
         - classifier
+        - emptyTrashSchedule
       properties:
         language:
           type: string
@@ -5255,6 +5277,9 @@ components:
           description: |
             Whether the collective has the integration endpoint
             enabled.
+        emptyTrashSchedule:
+          type: string
+          format: calevent
         classifier:
           $ref: "#/components/schemas/ClassifierSetting"
 

@@ -62,6 +62,8 @@ trait OCollective[F[_]] {
 
   def startLearnClassifier(collective: Ident): F[Unit]
 
+  def startEmptyTrash(collective: Ident): F[Unit]
+
   /** Submits a task that (re)generates the preview images for all
     * attachments of the given collective.
     */
@@ -147,9 +149,14 @@ object OCollective {
           .transact(RCollective.updateSettings(collective, sett))
           .attempt
           .map(AddResult.fromUpdate)
-          .flatMap(res => updateLearnClassifierTask(collective, sett) *> res.pure[F])
+          .flatMap(res =>
+            updateLearnClassifierTask(collective, sett) *> updateEmptyTrashTask(
+              collective,
+              sett
+            ) *> res.pure[F]
+          )
 
-      def updateLearnClassifierTask(coll: Ident, sett: Settings) =
+      private def updateLearnClassifierTask(coll: Ident, sett: Settings): F[Unit] =
         for {
           id <- Ident.randomId[F]
           on    = sett.classifier.map(_.enabled).getOrElse(false)
@@ -166,6 +173,22 @@ object OCollective {
           _ <- joex.notifyAllNodes
         } yield ()
 
+      private def updateEmptyTrashTask(coll: Ident, sett: Settings): F[Unit] =
+        for {
+          id <- Ident.randomId[F]
+          timer = sett.emptyTrash.getOrElse(CalEvent.unsafe(""))
+          ut = UserTask(
+            id,
+            EmptyTrashArgs.taskName,
+            true,
+            timer,
+            None,
+            EmptyTrashArgs(coll)
+          )
+          _ <- uts.updateOneTask(AccountId(coll, EmptyTrashArgs.taskName), ut)
+          _ <- joex.notifyAllNodes
+        } yield ()
+
       def startLearnClassifier(collective: Ident): F[Unit] =
         for {
           id <- Ident.randomId[F]
@@ -177,6 +200,22 @@ object OCollective {
             None,
             LearnClassifierArgs(collective)
           ).encode.toPeriodicTask(AccountId(collective, LearnClassifierArgs.taskName))
+          job <- ut.toJob
+          _   <- queue.insert(job)
+          _   <- joex.notifyAllNodes
+        } yield ()
+
+      def startEmptyTrash(collective: Ident): F[Unit] =
+        for {
+          id <- Ident.randomId[F]
+          ut <- UserTask(
+            id,
+            EmptyTrashArgs.taskName,
+            true,
+            CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
+            None,
+            EmptyTrashArgs(collective)
+          ).encode.toPeriodicTask(AccountId(collective, EmptyTrashArgs.taskName))
           job <- ut.toJob
           _   <- queue.insert(job)
           _   <- joex.notifyAllNodes
