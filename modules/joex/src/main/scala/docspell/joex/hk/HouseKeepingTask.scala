@@ -13,6 +13,7 @@ import docspell.common._
 import docspell.joex.Config
 import docspell.joex.scheduler.Task
 import docspell.store.records._
+import docspell.store.usertask.UserTaskScope
 
 import com.github.eikek.calev._
 
@@ -36,11 +37,10 @@ object HouseKeepingTask {
     RPeriodicTask
       .createJson(
         true,
+        UserTaskScope(DocspellSystem.taskGroup),
         taskName,
-        DocspellSystem.taskGroup,
         (),
         "Docspell house-keeping",
-        DocspellSystem.taskGroup,
         Priority.Low,
         ce,
         None

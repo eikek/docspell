@@ -18,8 +18,7 @@ import docspell.store.UpdateResult
 import docspell.store.queries.QCollective
 import docspell.store.queue.JobQueue
 import docspell.store.records._
-import docspell.store.usertask.UserTask
-import docspell.store.usertask.UserTaskStore
+import docspell.store.usertask.{UserTask, UserTaskScope, UserTaskStore}
 import docspell.store.{AddResult, Store}
 
 import com.github.eikek.calev._
@@ -169,7 +168,7 @@ object OCollective {
             None,
             LearnClassifierArgs(coll)
           )
-          _ <- uts.updateOneTask(AccountId(coll, LearnClassifierArgs.taskName), ut)
+          _ <- uts.updateOneTask(UserTaskScope(coll), ut)
           _ <- joex.notifyAllNodes
         } yield ()
 
@@ -185,7 +184,7 @@ object OCollective {
             None,
             EmptyTrashArgs(coll)
           )
-          _ <- uts.updateOneTask(AccountId(coll, coll), ut)
+          _ <- uts.updateOneTask(UserTaskScope(coll), ut)
           _ <- joex.notifyAllNodes
         } yield ()
 
@@ -199,7 +198,7 @@ object OCollective {
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
             None,
             LearnClassifierArgs(collective)
-          ).encode.toPeriodicTask(AccountId(collective, LearnClassifierArgs.taskName))
+          ).encode.toPeriodicTask(UserTaskScope(collective))
           job <- ut.toJob
           _   <- queue.insert(job)
           _   <- joex.notifyAllNodes
@@ -215,7 +214,7 @@ object OCollective {
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
             None,
             EmptyTrashArgs(collective)
-          ).encode.toPeriodicTask(AccountId(collective, collective))
+          ).encode.toPeriodicTask(UserTaskScope(collective))
           job <- ut.toJob
           _   <- queue.insert(job)
           _   <- joex.notifyAllNodes

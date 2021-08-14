@@ -8,13 +8,15 @@ package docspell.joex.emptytrash
 
 import cats.effect._
 import cats.implicits._
-import com.github.eikek.calev.CalEvent
 import fs2.Stream
+
 import docspell.backend.ops.{OItem, OItemSearch}
 import docspell.common._
 import docspell.joex.scheduler._
 import docspell.store.records.{RItem, RPeriodicTask}
-import docspell.store.usertask.UserTask
+import docspell.store.usertask.{UserTask, UserTaskScope}
+
+import com.github.eikek.calev.CalEvent
 
 object EmptyTrashTask {
   type Args = EmptyTrashArgs
@@ -24,18 +26,19 @@ object EmptyTrashTask {
 
   private val pageSize = 20
 
-  def periodicTask[F[_]: Sync](collective: Ident, ce: CalEvent): F[RPeriodicTask] = {
-    Ident.randomId[F].flatMap( id =>
-    UserTask(
-      id,
-      EmptyTrashArgs.taskName,
-      true,
-      ce,
-      None,
-      EmptyTrashArgs(collective)
-    ).encode.toPeriodicTask(AccountId(collective, collective)))
-  }
-
+  def periodicTask[F[_]: Sync](collective: Ident, ce: CalEvent): F[RPeriodicTask] =
+    Ident
+      .randomId[F]
+      .flatMap(id =>
+        UserTask(
+          id,
+          EmptyTrashArgs.taskName,
+          true,
+          ce,
+          None,
+          EmptyTrashArgs(collective)
+        ).encode.toPeriodicTask(UserTaskScope(collective))
+      )
 
   def apply[F[_]: Async](
       itemOps: OItem[F],

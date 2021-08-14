@@ -7,9 +7,11 @@
 package docspell.joex
 
 import scala.concurrent.ExecutionContext
+
 import cats.effect._
 import cats.implicits._
 import fs2.concurrent.SignallingRef
+
 import docspell.analysis.TextAnalyser
 import docspell.backend.ops._
 import docspell.common._
@@ -33,6 +35,7 @@ import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
 import docspell.store.records.{REmptyTrashSetting, RJobLog}
+
 import emil.javamail._
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client

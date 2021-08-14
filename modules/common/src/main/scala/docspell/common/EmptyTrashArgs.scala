@@ -6,8 +6,9 @@
 
 package docspell.common
 
-import com.github.eikek.calev.CalEvent
 import docspell.common.syntax.all._
+
+import com.github.eikek.calev.CalEvent
 import io.circe._
 import io.circe.generic.semiauto._
 

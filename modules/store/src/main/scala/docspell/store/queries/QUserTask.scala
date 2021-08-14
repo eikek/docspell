@@ -12,7 +12,7 @@ import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.records._
-import docspell.store.usertask.UserTask
+import docspell.store.usertask.{UserTask, UserTaskScope}
 
 import doobie._
 
@@ -54,15 +54,15 @@ object QUserTask {
       )
     ).query[RPeriodicTask].option.map(_.map(makeUserTask))
 
-  def insert(account: AccountId, task: UserTask[String]): ConnectionIO[Int] =
+  def insert(scope: UserTaskScope, task: UserTask[String]): ConnectionIO[Int] =
     for {
-      r <- task.toPeriodicTask[ConnectionIO](account)
+      r <- task.toPeriodicTask[ConnectionIO](scope)
       n <- RPeriodicTask.insert(r)
     } yield n
 
-  def update(account: AccountId, task: UserTask[String]): ConnectionIO[Int] =
+  def update(scope: UserTaskScope, task: UserTask[String]): ConnectionIO[Int] =
     for {
-      r <- task.toPeriodicTask[ConnectionIO](account)
+      r <- task.toPeriodicTask[ConnectionIO](scope)
       n <- RPeriodicTask.update(r)
     } yield n
 

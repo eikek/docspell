@@ -8,6 +8,7 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCollective
@@ -15,6 +16,7 @@ import docspell.common.{EmptyTrashArgs, ListType}
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s._
+
 import com.github.eikek.calev.CalEvent
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._

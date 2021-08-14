@@ -38,7 +38,7 @@ object NotifyDueItemsRoutes {
     HttpRoutes.of {
       case GET -> Root / Ident(id) =>
         (for {
-          task <- ut.findNotifyDueItems(id, user.account)
+          task <- ut.findNotifyDueItems(id, UserTaskScope(user.account))
           res  <- OptionT.liftF(taskToSettings(user.account, backend, task))
           resp <- OptionT.liftF(Ok(res))
         } yield resp).getOrElseF(NotFound())
@@ -49,7 +49,7 @@ object NotifyDueItemsRoutes {
           newId <- Ident.randomId[F]
           task  <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
           res <-
-            ut.executeNow(user.account, task)
+            ut.executeNow(UserTaskScope(user.account), task)
               .attempt
               .map(Conversions.basicResult(_, "Submitted successfully."))
           resp <- Ok(res)
@@ -58,7 +58,7 @@ object NotifyDueItemsRoutes {
       case DELETE -> Root / Ident(id) =>
         for {
           res <-
-            ut.deleteTask(user.account, id)
+            ut.deleteTask(UserTaskScope(user.account), id)
               .attempt
               .map(Conversions.basicResult(_, "Deleted successfully"))
           resp <- Ok(res)
@@ -69,7 +69,7 @@ object NotifyDueItemsRoutes {
           for {
             task <- makeTask(data.id, getBaseUrl(cfg, req), user.account, data)
             res <-
-              ut.submitNotifyDueItems(user.account, task)
+              ut.submitNotifyDueItems(UserTaskScope(user.account), task)
                 .attempt
                 .map(Conversions.basicResult(_, "Saved successfully"))
             resp <- Ok(res)
@@ -87,14 +87,14 @@ object NotifyDueItemsRoutes {
           newId <- Ident.randomId[F]
           task  <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
           res <-
-            ut.submitNotifyDueItems(user.account, task)
+            ut.submitNotifyDueItems(UserTaskScope(user.account), task)
               .attempt
               .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)
         } yield resp
 
       case GET -> Root =>
-        ut.getNotifyDueItems(user.account)
+        ut.getNotifyDueItems(UserTaskScope(user.account))
           .evalMap(task => taskToSettings(user.account, backend, task))
           .compile
           .toVector
