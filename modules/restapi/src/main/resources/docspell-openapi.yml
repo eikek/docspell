@@ -1598,7 +1598,7 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/deleted"
+        - $ref: "#/components/parameters/searchMode"
       responses:
         200:
           description: Ok
