@@ -73,12 +73,16 @@ object QCollective {
     val q0 = Select(
       count(i.id).s,
       from(i),
-      i.cid === coll && i.incoming === Direction.incoming
+      i.cid === coll && i.incoming === Direction.incoming && i.state.in(
+        ItemState.validStates
+      )
     ).build.query[Int].unique
     val q1 = Select(
       count(i.id).s,
       from(i),
-      i.cid === coll && i.incoming === Direction.outgoing
+      i.cid === coll && i.incoming === Direction.outgoing && i.state.in(
+        ItemState.validStates
+      )
     ).build.query[Int].unique
 
     val fileSize = sql"""
@@ -113,8 +117,8 @@ object QCollective {
     val sql =
       Select(
         select(t.all).append(count(ti.itemId).s),
-        from(ti).innerJoin(t, ti.tagId === t.tid),
-        t.cid === coll
+        from(ti).innerJoin(t, ti.tagId === t.tid).innerJoin(i, i.id === ti.itemId),
+        t.cid === coll && i.state.in(ItemState.validStates)
       ).groupBy(t.name, t.tid, t.category)
 
     sql.build.query[TagCount].to[List]

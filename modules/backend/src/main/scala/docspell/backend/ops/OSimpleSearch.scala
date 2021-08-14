@@ -19,7 +19,10 @@ import docspell.store.queries.SearchSummary
 
 import org.log4s.getLogger
 
-/** A "porcelain" api on top of OFulltext and OItemSearch. */
+/** A "porcelain" api on top of OFulltext and OItemSearch. This takes
+  * care of restricting the items to a subset, e.g. only items that
+  * have a "valid" state.
+  */
 trait OSimpleSearch[F[_]] {
 
   /** Search for items using the given query and optional fulltext
@@ -268,17 +271,19 @@ object OSimpleSearch {
 
     def searchSummary(
         useFTS: Boolean
-    )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] =
+    )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] = {
+      val validItemQuery = q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
       fulltextQuery match {
         case Some(ftq) if useFTS =>
           if (q.isEmpty)
             fts.findIndexOnlySummary(q.fix.account, OFulltext.FtsInput(ftq))
           else
             fts
-              .findItemsSummary(q, OFulltext.FtsInput(ftq))
+              .findItemsSummary(validItemQuery, OFulltext.FtsInput(ftq))
 
         case _ =>
-          is.findItemsSummary(q)
+          is.findItemsSummary(validItemQuery)
       }
+    }
   }
 }
