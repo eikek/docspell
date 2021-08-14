@@ -1478,7 +1478,7 @@ paths:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
         - $ref: "#/components/parameters/withDetails"
-        - $ref: "#/components/parameters/deleted"
+        - $ref: "#/components/parameters/searchMode"
       responses:
         200:
           description: Ok
@@ -4114,12 +4114,16 @@ components:
         withDetails:
           type: boolean
           default: false
-        deleted:
-          type: boolean
-          default: false
+        searchMode:
+          type: string
+          format: searchmode
+          enum:
+            - normal
+            - trashed
+          default: normal
           description: |
-            If this is true, the search performed only for
-            soft-deleted items.
+            Specify whether the search query should apply to
+            soft-deleted items or not.
         query:
           type: string
           description: |
@@ -5846,12 +5850,13 @@ components:
       description: Whether to return details to each item.
       schema:
         type: boolean
-    deleted:
-      name: deleted
+    searchMode:
+      name: searchMode
       in: query
       description: Whether to search in soft-deleted items only.
       schema:
-        type: boolean
+        type: string
+        format: searchmode
     name:
       name: name
       in: path

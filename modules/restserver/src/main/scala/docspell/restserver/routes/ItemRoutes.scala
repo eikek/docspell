@@ -49,7 +49,7 @@ object ItemRoutes {
     HttpRoutes.of {
       case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
             offset
-          ) :? QP.WithDetails(detailFlag) :? QP.Deleted(deletedFlag) =>
+          ) :? QP.WithDetails(detailFlag) :? QP.SearchKind(searchMode) =>
         val batch = Batch(offset.getOrElse(0), limit.getOrElse(cfg.maxItemPageSize))
           .restrictLimitTo(cfg.maxItemPageSize)
         val itemQuery = ItemQueryString(q)
@@ -58,17 +58,17 @@ object ItemRoutes {
           cfg.fullTextSearch.enabled,
           detailFlag.getOrElse(false),
           cfg.maxNoteLength,
-          deletedFlag.getOrElse(false)
+          searchMode.getOrElse(SearchMode.Normal)
         )
         val fixQuery = Query.Fix(user.account, None, None)
         searchItems(backend, dsl)(settings, fixQuery, itemQuery)
 
-      case GET -> Root / "searchStats" :? QP.Query(q) :? QP.Deleted(deletedFlag) =>
+      case GET -> Root / "searchStats" :? QP.Query(q) :? QP.SearchKind(searchMode) =>
         val itemQuery = ItemQueryString(q)
         val fixQuery  = Query.Fix(user.account, None, None)
         val settings = OSimpleSearch.StatsSettings(
           useFTS = cfg.fullTextSearch.enabled,
-          deleted = deletedFlag.getOrElse(false)
+          searchMode = searchMode.getOrElse(SearchMode.Normal)
         )
         searchItemStats(backend, dsl)(settings, fixQuery, itemQuery)
 
@@ -87,7 +87,7 @@ object ItemRoutes {
             cfg.fullTextSearch.enabled,
             userQuery.withDetails.getOrElse(false),
             cfg.maxNoteLength,
-            deleted = userQuery.deleted.getOrElse(false)
+            searchMode = userQuery.searchMode.getOrElse(SearchMode.Normal)
           )
           fixQuery = Query.Fix(user.account, None, None)
           resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery)
@@ -100,7 +100,7 @@ object ItemRoutes {
           fixQuery  = Query.Fix(user.account, None, None)
           settings = OSimpleSearch.StatsSettings(
             useFTS = cfg.fullTextSearch.enabled,
-            deleted = userQuery.deleted.getOrElse(false)
+            searchMode = userQuery.searchMode.getOrElse(SearchMode.Normal)
           )
           resp <- searchItemStats(backend, dsl)(settings, fixQuery, itemQuery)
         } yield resp

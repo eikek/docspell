@@ -87,11 +87,11 @@ object OSimpleSearch {
       useFTS: Boolean,
       resolveDetails: Boolean,
       maxNoteLen: Int,
-      deleted: Boolean
+      searchMode: SearchMode
   )
   final case class StatsSettings(
       useFTS: Boolean,
-      deleted: Boolean
+      searchMode: SearchMode
   )
 
   sealed trait Items {
@@ -223,8 +223,10 @@ object OSimpleSearch {
       // 2. sql+fulltext    if fulltextQuery.isDefined && q.nonEmpty && useFTS
       // 3. sql-only        else (if fulltextQuery.isEmpty || !useFTS)
       val validItemQuery =
-        if (settings.deleted) q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
-        else q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+        settings.searchMode match {
+          case SearchMode.Trashed => q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
+          case SearchMode.Normal  => q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+        }
       fulltextQuery match {
         case Some(ftq) if settings.useFTS =>
           if (q.isEmpty) {
@@ -280,8 +282,10 @@ object OSimpleSearch {
         settings: StatsSettings
     )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] = {
       val validItemQuery =
-        if (settings.deleted) q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
-        else q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+        settings.searchMode match {
+          case SearchMode.Trashed => q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
+          case SearchMode.Normal  => q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+        }
       fulltextQuery match {
         case Some(ftq) if settings.useFTS =>
           if (q.isEmpty)
