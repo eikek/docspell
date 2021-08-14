@@ -1482,7 +1482,7 @@ searchTabs texts ddd flags settings model =
             ]
       }
     , { name = tabName TabTrashed
-      , title = texts.basics.deleted
+      , title = texts.trashcan
       , titleRight = []
       , info = Nothing
       , body =
@@ -1490,7 +1490,7 @@ searchTabs texts ddd flags settings model =
                 MB.Checkbox
                     { id = "trashed"
                     , value = model.searchMode == Data.SearchMode.Trashed
-                    , label = texts.basics.deleted
+                    , label = texts.trashcan
                     , tagger = \_ -> ToggleSearchMode
                     }
             ]

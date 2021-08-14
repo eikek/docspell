@@ -68,6 +68,7 @@ type alias Model =
 type ConfirmModalValue
     = ConfirmReprocessItems
     | ConfirmDelete
+    | ConfirmRestore
 
 
 type alias SelectViewModel =
@@ -185,7 +186,9 @@ type Msg
     | SelectAllItems
     | SelectNoItems
     | RequestDeleteSelected
+    | RequestRestoreSelected
     | DeleteSelectedConfirmed
+    | RestoreSelectedConfirmed
     | CloseConfirmModal
     | EditSelectedItems
     | EditMenuMsg Comp.ItemDetail.MultiEditMenu.Msg
@@ -214,6 +217,7 @@ type SelectActionMode
     | DeleteSelected
     | EditSelected
     | ReprocessSelected
+    | RestoreSelected
 
 
 type alias SearchParam =

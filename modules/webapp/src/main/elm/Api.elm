@@ -99,6 +99,8 @@ module Api exposing
     , removeTagsMultiple
     , reprocessItem
     , reprocessMultiple
+    , restoreAllItems
+    , restoreItem
     , saveClientSettings
     , sendMail
     , setAttachmentName
@@ -1676,6 +1678,20 @@ deleteAllItems flags ids receive =
         }
 
 
+restoreAllItems :
+    Flags
+    -> Set String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+restoreAllItems flags ids receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/restoreAll"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
 
 --- Item
 
@@ -1967,6 +1983,16 @@ setUnconfirmed : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cm
 setUnconfirmed flags item receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/unconfirm"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+restoreItem : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+restoreItem flags item receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/" ++ item ++ "/restore"
         , account = getAccount flags
         , body = Http.emptyBody
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder

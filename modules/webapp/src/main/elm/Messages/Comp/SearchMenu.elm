@@ -46,6 +46,7 @@ type alias Texts =
     , sourceTab : String
     , searchInItemSource : String
     , direction : Direction -> String
+    , trashcan : String
     }
 
 
@@ -77,6 +78,7 @@ gb =
     , sourceTab = "Source"
     , searchInItemSource = "Search in item source…"
     , direction = Messages.Data.Direction.gb
+    , trashcan = "Trash"
     }
 
 
@@ -108,4 +110,5 @@ de =
     , sourceTab = "Quelle"
     , searchInItemSource = "Suche in Dokumentquelle…"
     , direction = Messages.Data.Direction.de
+    , trashcan = "Papierkorb"
     }

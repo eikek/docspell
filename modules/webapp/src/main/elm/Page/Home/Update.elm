@@ -361,6 +361,28 @@ update mId key flags settings msg model =
 
                 _ ->
                     noSub ( model, Cmd.none )
+        RestoreSelectedConfirmed ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        cmd =
+                            Api.restoreAllItems flags svm.ids DeleteAllResp
+                    in
+                    noSub
+                        ( { model
+                            | viewMode =
+                                SelectView
+                                    { svm
+                                        | confirmModal = Nothing
+                                        , action = RestoreSelected
+                                    }
+                          }
+                        , cmd
+                        )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
 
         DeleteAllResp (Ok res) ->
             if res.success then
@@ -461,6 +483,29 @@ update mId key flags settings msg model =
                                             { svm
                                                 | action = DeleteSelected
                                                 , confirmModal = Just ConfirmDelete
+                                            }
+                                }
+                        in
+                        noSub ( model_, Cmd.none )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        RequestRestoreSelected ->
+            case model.viewMode of
+                SelectView svm ->
+                    if svm.ids == Set.empty then
+                        noSub ( model, Cmd.none )
+
+                    else
+                        let
+                            model_ =
+                                { model
+                                    | viewMode =
+                                        SelectView
+                                            { svm
+                                                | action = RestoreSelected
+                                                , confirmModal = Just ConfirmRestore
                                             }
                                 }
                         in

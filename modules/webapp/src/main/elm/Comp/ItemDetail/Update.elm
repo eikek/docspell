@@ -1605,11 +1605,7 @@ update key flags inav settings msg model =
                 )
 
         RestoreItem ->
-            let
-                _ =
-                    Debug.todo "implement"
-            in
-            resultModelCmd ( model, Cmd.none )
+            resultModelCmd ( model, Api.restoreItem flags model.item.id SaveResp )
 
 
 
