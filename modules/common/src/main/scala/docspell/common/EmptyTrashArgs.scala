@@ -6,8 +6,8 @@
 
 package docspell.common
 
+import com.github.eikek.calev.CalEvent
 import docspell.common.syntax.all._
-
 import io.circe._
 import io.circe.generic.semiauto._
 
@@ -21,13 +21,15 @@ case class EmptyTrashArgs(
 ) {
 
   def makeSubject: String =
-    "Empty trash "
+    "Empty trash"
 
 }
 
 object EmptyTrashArgs {
 
   val taskName = Ident.unsafe("empty-trash")
+
+  val defaultSchedule = CalEvent.unsafe("*-*-1/7 03:00:00")
 
   implicit val jsonEncoder: Encoder[EmptyTrashArgs] =
     deriveEncoder[EmptyTrashArgs]

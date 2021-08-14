@@ -8,6 +8,7 @@ package docspell.store.records
 
 import cats.data.NonEmptyList
 import cats.implicits._
+import fs2.Stream
 
 import docspell.common._
 import docspell.store.qb.DSL._
@@ -60,6 +61,23 @@ object REmptyTrashSetting {
   def findById(id: Ident): ConnectionIO[Option[REmptyTrashSetting]] = {
     val sql = run(select(T.all), from(T), T.cid === id)
     sql.query[REmptyTrashSetting].option
+  }
+
+  def findForAllCollectives(
+      default: CalEvent,
+      chunkSize: Int
+  ): Stream[ConnectionIO, REmptyTrashSetting] = {
+    val c = RCollective.as("c")
+    val e = REmptyTrashSetting.as("e")
+    val sql = run(
+      select(
+        c.id.s,
+        coalesce(e.schedule.s, const(default)).s,
+        coalesce(e.created.s, c.created.s).s
+      ),
+      from(c).leftJoin(e, e.cid === c.id)
+    )
+    sql.query[REmptyTrashSetting].streamWithChunkSize(chunkSize)
   }
 
   def delete(coll: Ident): ConnectionIO[Int] =

@@ -185,7 +185,7 @@ object OCollective {
             None,
             EmptyTrashArgs(coll)
           )
-          _ <- uts.updateOneTask(AccountId(coll, EmptyTrashArgs.taskName), ut)
+          _ <- uts.updateOneTask(AccountId(coll, coll), ut)
           _ <- joex.notifyAllNodes
         } yield ()
 
@@ -215,7 +215,7 @@ object OCollective {
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
             None,
             EmptyTrashArgs(collective)
-          ).encode.toPeriodicTask(AccountId(collective, EmptyTrashArgs.taskName))
+          ).encode.toPeriodicTask(AccountId(collective, collective))
           job <- ut.toJob
           _   <- queue.insert(job)
           _   <- joex.notifyAllNodes

@@ -7,11 +7,9 @@
 package docspell.joex
 
 import scala.concurrent.ExecutionContext
-
 import cats.effect._
 import cats.implicits._
 import fs2.concurrent.SignallingRef
-
 import docspell.analysis.TextAnalyser
 import docspell.backend.ops._
 import docspell.common._
@@ -34,8 +32,7 @@ import docspell.joex.scheduler._
 import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
-import docspell.store.records.RJobLog
-
+import docspell.store.records.{REmptyTrashSetting, RJobLog}
 import emil.javamail._
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
@@ -77,11 +74,23 @@ final class JoexAppImpl[F[_]: Async](
     HouseKeepingTask
       .periodicTask[F](cfg.houseKeeping.schedule)
       .flatMap(pstore.insert) *>
+      scheduleEmptyTrashTasks *>
       MigrationTask.job.flatMap(queue.insertIfNew) *>
       AllPreviewsTask
         .job(MakePreviewArgs.StoreMode.WhenMissing, None)
         .flatMap(queue.insertIfNew) *>
       AllPageCountTask.job.flatMap(queue.insertIfNew)
+
+  private def scheduleEmptyTrashTasks: F[Unit] =
+    store
+      .transact(
+        REmptyTrashSetting.findForAllCollectives(EmptyTrashArgs.defaultSchedule, 50)
+      )
+      .evalMap(es => EmptyTrashTask.periodicTask(es.cid, es.schedule))
+      .evalMap(pstore.insert)
+      .compile
+      .drain
+
 }
 
 object JoexAppImpl {
