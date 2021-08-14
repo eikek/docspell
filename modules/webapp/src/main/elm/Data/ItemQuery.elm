@@ -79,6 +79,7 @@ request mq =
     , limit = Nothing
     , withDetails = Just True
     , query = renderMaybe mq
+    , deleted = Just False
     }
 
 

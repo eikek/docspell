@@ -75,8 +75,9 @@ object ExprUtil {
         expr
       case AttachId(_) =>
         expr
-
       case ValidItemStates =>
+        expr
+      case Trashed =>
         expr
     }
 

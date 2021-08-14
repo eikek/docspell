@@ -1478,6 +1478,7 @@ paths:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
         - $ref: "#/components/parameters/withDetails"
+        - $ref: "#/components/parameters/deleted"
       responses:
         200:
           description: Ok
@@ -1576,6 +1577,7 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/deleted"
       responses:
         200:
           description: Ok
@@ -4112,6 +4114,12 @@ components:
         withDetails:
           type: boolean
           default: false
+        deleted:
+          type: boolean
+          default: false
+          description: |
+            If this is true, the search performed only for
+            soft-deleted items.
         query:
           type: string
           description: |
@@ -5836,6 +5844,12 @@ components:
       name: withDetails
       in: query
       description: Whether to return details to each item.
+      schema:
+        type: boolean
+    deleted:
+      name: deleted
+      in: query
+      description: Whether to search in soft-deleted items only.
       schema:
         type: boolean
     name:

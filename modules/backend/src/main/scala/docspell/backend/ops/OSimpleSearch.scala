@@ -39,7 +39,7 @@ trait OSimpleSearch[F[_]] {
     * and not the results.
     */
   def searchSummary(
-      useFTS: Boolean
+      settings: StatsSettings
   )(q: Query, fulltextQuery: Option[String]): F[SearchSummary]
 
   /** Calls `search` by parsing the given query string into a query that
@@ -56,12 +56,12 @@ trait OSimpleSearch[F[_]] {
     * results.
     */
   final def searchSummaryByString(
-      useFTS: Boolean
+      settings: StatsSettings
   )(fix: Query.Fix, q: ItemQueryString)(implicit
       F: Applicative[F]
   ): F[StringSearchResult[SearchSummary]] =
     OSimpleSearch.applySearch[F, SearchSummary](fix, q)((iq, fts) =>
-      searchSummary(useFTS)(iq, fts)
+      searchSummary(settings)(iq, fts)
     )
 }
 
@@ -86,7 +86,12 @@ object OSimpleSearch {
       batch: Batch,
       useFTS: Boolean,
       resolveDetails: Boolean,
-      maxNoteLen: Int
+      maxNoteLen: Int,
+      deleted: Boolean
+  )
+  final case class StatsSettings(
+      useFTS: Boolean,
+      deleted: Boolean
   )
 
   sealed trait Items {
@@ -217,7 +222,9 @@ object OSimpleSearch {
       // 1. fulltext only   if fulltextQuery.isDefined && q.isEmpty && useFTS
       // 2. sql+fulltext    if fulltextQuery.isDefined && q.nonEmpty && useFTS
       // 3. sql-only        else (if fulltextQuery.isEmpty || !useFTS)
-      val validItemQuery = q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+      val validItemQuery =
+        if (settings.deleted) q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
+        else q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
       fulltextQuery match {
         case Some(ftq) if settings.useFTS =>
           if (q.isEmpty) {
@@ -270,11 +277,13 @@ object OSimpleSearch {
     }
 
     def searchSummary(
-        useFTS: Boolean
+        settings: StatsSettings
     )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] = {
-      val validItemQuery = q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+      val validItemQuery =
+        if (settings.deleted) q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
+        else q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
       fulltextQuery match {
-        case Some(ftq) if useFTS =>
+        case Some(ftq) if settings.useFTS =>
           if (q.isEmpty)
             fts.findIndexOnlySummary(q.fix.account, OFulltext.FtsInput(ftq))
           else

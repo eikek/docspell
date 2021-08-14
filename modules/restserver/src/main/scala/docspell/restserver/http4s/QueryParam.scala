@@ -35,6 +35,7 @@ object QueryParam {
   object Limit       extends OptionalQueryParamDecoderMatcher[Int]("limit")
   object Offset      extends OptionalQueryParamDecoderMatcher[Int]("offset")
   object WithDetails extends OptionalQueryParamDecoderMatcher[Boolean]("withDetails")
+  object Deleted     extends OptionalQueryParamDecoderMatcher[Boolean]("deleted")
 
   object WithFallback extends OptionalQueryParamDecoderMatcher[Boolean]("withFallback")
 }

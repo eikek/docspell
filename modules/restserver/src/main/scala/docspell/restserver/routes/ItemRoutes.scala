@@ -49,7 +49,7 @@ object ItemRoutes {
     HttpRoutes.of {
       case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
             offset
-          ) :? QP.WithDetails(detailFlag) =>
+          ) :? QP.WithDetails(detailFlag) :? QP.Deleted(deletedFlag) =>
         val batch = Batch(offset.getOrElse(0), limit.getOrElse(cfg.maxItemPageSize))
           .restrictLimitTo(cfg.maxItemPageSize)
         val itemQuery = ItemQueryString(q)
@@ -57,15 +57,20 @@ object ItemRoutes {
           batch,
           cfg.fullTextSearch.enabled,
           detailFlag.getOrElse(false),
-          cfg.maxNoteLength
+          cfg.maxNoteLength,
+          deletedFlag.getOrElse(false)
         )
         val fixQuery = Query.Fix(user.account, None, None)
         searchItems(backend, dsl)(settings, fixQuery, itemQuery)
 
-      case GET -> Root / "searchStats" :? QP.Query(q) =>
+      case GET -> Root / "searchStats" :? QP.Query(q) :? QP.Deleted(deletedFlag) =>
         val itemQuery = ItemQueryString(q)
         val fixQuery  = Query.Fix(user.account, None, None)
-        searchItemStats(backend, dsl)(cfg.fullTextSearch.enabled, fixQuery, itemQuery)
+        val settings = OSimpleSearch.StatsSettings(
+          useFTS = cfg.fullTextSearch.enabled,
+          deleted = deletedFlag.getOrElse(false)
+        )
+        searchItemStats(backend, dsl)(settings, fixQuery, itemQuery)
 
       case req @ POST -> Root / "search" =>
         for {
@@ -81,7 +86,8 @@ object ItemRoutes {
             batch,
             cfg.fullTextSearch.enabled,
             userQuery.withDetails.getOrElse(false),
-            cfg.maxNoteLength
+            cfg.maxNoteLength,
+            deleted = userQuery.deleted.getOrElse(false)
           )
           fixQuery = Query.Fix(user.account, None, None)
           resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery)
@@ -92,11 +98,11 @@ object ItemRoutes {
           userQuery <- req.as[ItemQuery]
           itemQuery = ItemQueryString(userQuery.query)
           fixQuery  = Query.Fix(user.account, None, None)
-          resp <- searchItemStats(backend, dsl)(
-            cfg.fullTextSearch.enabled,
-            fixQuery,
-            itemQuery
+          settings = OSimpleSearch.StatsSettings(
+            useFTS = cfg.fullTextSearch.enabled,
+            deleted = userQuery.deleted.getOrElse(false)
           )
+          resp <- searchItemStats(backend, dsl)(settings, fixQuery, itemQuery)
         } yield resp
 
       case req @ POST -> Root / "searchIndex" =>
@@ -443,10 +449,15 @@ object ItemRoutes {
   private def searchItemStats[F[_]: Sync](
       backend: BackendApp[F],
       dsl: Http4sDsl[F]
-  )(ftsEnabled: Boolean, fixQuery: Query.Fix, itemQuery: ItemQueryString) = {
+  )(
+      settings: OSimpleSearch.StatsSettings,
+      fixQuery: Query.Fix,
+      itemQuery: ItemQueryString
+  ) = {
     import dsl._
+
     backend.simpleSearch
-      .searchSummaryByString(ftsEnabled)(fixQuery, itemQuery)
+      .searchSummaryByString(settings)(fixQuery, itemQuery)
       .flatMap {
         case StringSearchResult.Success(summary) =>
           Ok(Conversions.mkSearchStats(summary))
