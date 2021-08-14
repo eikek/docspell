@@ -187,6 +187,14 @@ object ItemMultiRoutes extends MultiIdSupport {
           resp <- Ok(res)
         } yield resp
 
+      case req @ POST -> Root / "restoreAll" =>
+        for {
+          json  <- req.as[IdList]
+          items <- readIds[F](json.ids)
+          res   <- backend.item.restore(items, user.account.collective)
+          resp  <- Ok(Conversions.basicResult(res, "Item(s) deleted"))
+        } yield resp
+
       case req @ PUT -> Root / "customfield" =>
         for {
           json  <- req.as[ItemsAndFieldValue]

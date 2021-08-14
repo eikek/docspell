@@ -1609,7 +1609,9 @@ paths:
       tags: [ Item ]
       summary: Delete an item.
       description: |
-        Delete an item and all its data permanently.
+        Delete an item and all its data. This is a "soft delete", the
+        item is still in the database and can be undeleted. A periodic
+        job will eventually remove this item from the database.
       security:
         - authTokenHeader: []
       parameters:
@@ -1621,6 +1623,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/restore:
+    post:
+      operationId: "sec-item-restore-by-id"
+      tags: [ Item ]
+      summary: Restore a deleted item.
+      description: |
+        A deleted item can be restored as long it is still in the
+        database. This action sets the item state to `created`.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/item/{id}/tags:
     put:
       operationId: "sec-item-get-tags"
@@ -2292,6 +2314,29 @@ paths:
       summary: Delete multiple items.
       description: |
         Given a list of item ids, deletes all of them.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/restoreAll:
+    post:
+      operationId: "sec-items-restore-all"
+      tags:
+        - Item (Multi Edit)
+      summary: Restore multiple items.
+      description: |
+        Given a list of item ids, restores all of them.
       security:
         - authTokenHeader: []
       requestBody:

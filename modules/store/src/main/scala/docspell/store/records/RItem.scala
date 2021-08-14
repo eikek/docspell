@@ -152,7 +152,21 @@ object RItem {
       t <- currentTime
       n <- DML.update(
         T,
-        T.id.in(itemIds) && T.cid === coll,
+        T.id.in(itemIds) && T.cid === coll && T.state.in(ItemState.validStates),
+        DML.set(T.state.setTo(itemState), T.updated.setTo(t))
+      )
+    } yield n
+
+  def restoreStateForCollective(
+      itemIds: NonEmptyList[Ident],
+      itemState: ItemState,
+      coll: Ident
+  ): ConnectionIO[Int] =
+    for {
+      t <- currentTime
+      n <- DML.update(
+        T,
+        T.id.in(itemIds) && T.cid === coll && T.state === ItemState.deleted,
         DML.set(T.state.setTo(itemState), T.updated.setTo(t))
       )
     } yield n

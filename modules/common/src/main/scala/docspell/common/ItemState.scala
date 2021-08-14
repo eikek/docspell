@@ -34,6 +34,7 @@ object ItemState {
   def processing: ItemState = Processing
   def created: ItemState    = Created
   def confirmed: ItemState  = Confirmed
+  def deleted: ItemState    = Deleted
 
   def fromString(str: String): Either[String, ItemState] =
     str.toLowerCase match {

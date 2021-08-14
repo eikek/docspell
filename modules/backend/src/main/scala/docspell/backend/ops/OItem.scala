@@ -124,6 +124,8 @@ trait OItem[F[_]] {
       collective: Ident
   ): F[AddResult]
 
+  def restore(items: NonEmptyList[Ident], collective: Ident): F[UpdateResult]
+
   def setItemDate(
       item: NonEmptyList[Ident],
       date: Option[Timestamp],
@@ -581,6 +583,17 @@ object OItem {
             .transact(RItem.updateStateForCollective(items, state, collective))
             .attempt
             .map(AddResult.fromUpdate)
+
+        def restore(
+            items: NonEmptyList[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          UpdateResult.fromUpdate(
+            store
+              .transact(
+                RItem.restoreStateForCollective(items, ItemState.Created, collective)
+              )
+          )
 
         def setItemDate(
             items: NonEmptyList[Ident],

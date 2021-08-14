@@ -150,6 +150,12 @@ object ItemRoutes {
           resp <- Ok(Conversions.basicResult(res, "Item back to created."))
         } yield resp
 
+      case POST -> Root / Ident(id) / "restore" =>
+        for {
+          res  <- backend.item.restore(NonEmptyList.of(id), user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Item restored."))
+        } yield resp
+
       case req @ PUT -> Root / Ident(id) / "tags" =>
         for {
           tags <- req.as[StringList].map(_.items)
