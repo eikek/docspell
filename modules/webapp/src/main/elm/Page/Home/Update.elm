@@ -23,6 +23,7 @@ import Data.Flags exposing (Flags)
 import Data.ItemQuery as Q
 import Data.ItemSelection
 import Data.Items
+import Data.SearchMode exposing (SearchMode)
 import Data.UiSettings exposing (UiSettings)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
@@ -548,7 +549,7 @@ update mId key flags settings msg model =
                 case model.viewMode of
                     SelectView svm ->
                         -- replace changed items in the view
-                        noSub ( nm, loadChangedItems flags svm.ids )
+                        noSub ( nm, loadChangedItems flags model.searchMenuModel.searchMode svm.ids )
 
                     _ ->
                         noSub ( nm, Cmd.none )
@@ -717,8 +718,8 @@ replaceItems model newItems =
     { model | itemListModel = newList }
 
 
-loadChangedItems : Flags -> Set String -> Cmd Msg
-loadChangedItems flags ids =
+loadChangedItems : Flags -> SearchMode -> Set String -> Cmd Msg
+loadChangedItems flags smode ids =
     if Set.isEmpty ids then
         Cmd.none
 
@@ -728,7 +729,7 @@ loadChangedItems flags ids =
                 Set.toList ids
 
             searchInit =
-                Q.request (Just <| Q.ItemIdIn idList)
+                Q.request smode (Just <| Q.ItemIdIn idList)
 
             search =
                 { searchInit

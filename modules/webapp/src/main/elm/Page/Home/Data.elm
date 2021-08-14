@@ -239,7 +239,7 @@ doSearchDefaultCmd : SearchParam -> Model -> Cmd Msg
 doSearchDefaultCmd param model =
     let
         smask =
-            Q.request <|
+            Q.request model.searchMenuModel.searchMode <|
                 Q.and
                     [ Comp.SearchMenu.getItemQuery model.searchMenuModel
                     , Maybe.map Q.Fragment model.powerSearchInput.input

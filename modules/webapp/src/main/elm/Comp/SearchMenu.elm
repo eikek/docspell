@@ -45,6 +45,7 @@ import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.ItemQuery as Q exposing (ItemQuery)
 import Data.PersonUse
+import Data.SearchMode exposing (SearchMode)
 import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
@@ -89,6 +90,7 @@ type alias Model =
     , customValues : CustomFieldValueCollect
     , sourceModel : Maybe String
     , openTabs : Set String
+    , searchMode : SearchMode
     }
 
 
@@ -133,6 +135,7 @@ init flags =
     , customValues = Data.CustomFieldChange.emptyCollect
     , sourceModel = Nothing
     , openTabs = Set.fromList [ "Tags", "Inbox" ]
+    , searchMode = Data.SearchMode.Normal
     }
 
 
@@ -323,6 +326,7 @@ resetModel model =
                 model.customFieldModel
         , customValues = Data.CustomFieldChange.emptyCollect
         , sourceModel = Nothing
+        , searchMode = Data.SearchMode.Normal
     }
 
 
@@ -343,6 +347,7 @@ type Msg
     | FromDueDateMsg Comp.DatePicker.Msg
     | UntilDueDateMsg Comp.DatePicker.Msg
     | ToggleInbox
+    | ToggleSearchMode
     | GetOrgResp (Result Http.Error ReferenceList)
     | GetEquipResp (Result Http.Error EquipmentList)
     | GetPersonResp (Result Http.Error PersonList)
@@ -683,6 +688,24 @@ updateDrop ddm flags settings msg model =
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
+        ToggleSearchMode ->
+            let
+                current =
+                    model.searchMode
+
+                next =
+                    if current == Data.SearchMode.Normal then
+                        Data.SearchMode.Trashed
+
+                    else
+                        Data.SearchMode.Normal
+            in
+            { model = { model | searchMode = next }
+            , cmd = Cmd.none
+            , stateChange = True
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
         FromDateMsg m ->
             let
                 ( dp, event ) =
@@ -962,6 +985,7 @@ type SearchTab
     | TabDueDate
     | TabSource
     | TabDirection
+    | TabTrashed
 
 
 allTabs : List SearchTab
@@ -977,6 +1001,7 @@ allTabs =
     , TabDueDate
     , TabSource
     , TabDirection
+    , TabTrashed
     ]
 
 
@@ -1016,6 +1041,9 @@ tabName tab =
         TabDirection ->
             "direction"
 
+        TabTrashed ->
+            "trashed"
+
 
 findTab : Comp.Tabs.Tab msg -> Maybe SearchTab
 findTab tab =
@@ -1052,6 +1080,9 @@ findTab tab =
 
         "direction" ->
             Just TabDirection
+
+        "trashed" ->
+            Just TabTrashed
 
         _ ->
             Nothing
@@ -1097,6 +1128,9 @@ searchTabState settings model tab =
                     isHidden Data.Fields.Direction
 
                 Just TabInbox ->
+                    False
+
+                Just TabTrashed ->
                     False
 
                 Nothing ->
@@ -1445,6 +1479,20 @@ searchTabs texts ddd flags settings model =
                     settings
                     model.directionModel
                 )
+            ]
+      }
+    , { name = tabName TabTrashed
+      , title = texts.basics.deleted
+      , titleRight = []
+      , info = Nothing
+      , body =
+            [ MB.viewItem <|
+                MB.Checkbox
+                    { id = "trashed"
+                    , value = model.searchMode == Data.SearchMode.Trashed
+                    , label = texts.basics.deleted
+                    , tagger = \_ -> ToggleSearchMode
+                    }
             ]
       }
     ]
