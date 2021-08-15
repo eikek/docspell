@@ -10,11 +10,11 @@ import cats._
 import cats.data.{Kleisli, NonEmptyList}
 import cats.implicits._
 
+import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
 import docspell.joex.scheduler.Context
-import docspell.store.queries.{QAttachment, QItem}
 
 object FtsWork {
   import syntax._
@@ -88,36 +88,8 @@ object FtsWork {
     log[F](_.info("Inserting all data to index")) ++ FtsWork
       .all(
         FtsWork(ctx =>
-          ctx.fts.indexData(
-            ctx.logger,
-            ctx.store
-              .transact(
-                QAttachment
-                  .allAttachmentMetaAndName(coll, ctx.cfg.migration.indexAllChunk)
-              )
-              .map(caa =>
-                TextData
-                  .attachment(
-                    caa.item,
-                    caa.id,
-                    caa.collective,
-                    caa.folder,
-                    caa.lang,
-                    caa.name,
-                    caa.content
-                  )
-              )
-          )
-        ),
-        FtsWork(ctx =>
-          ctx.fts.indexData(
-            ctx.logger,
-            ctx.store
-              .transact(QItem.allNameAndNotes(coll, ctx.cfg.migration.indexAllChunk * 5))
-              .map(nn =>
-                TextData.item(nn.id, nn.collective, nn.folder, Option(nn.name), nn.notes)
-              )
-          )
+          ctx.fulltext
+            .reIndexData(ctx.logger, coll, None, ctx.cfg.migration.indexAllChunk)
         )
       )
 
@@ -133,9 +105,10 @@ object FtsWork {
 
       def forContext(
           cfg: Config.FullTextSearch,
-          fts: FtsClient[F]
+          fts: FtsClient[F],
+          fulltext: CreateIndex[F]
       ): Kleisli[F, Context[F, _], Unit] =
-        mt.local(ctx => FtsContext(cfg, fts, ctx))
+        mt.local(ctx => FtsContext(cfg, fts, fulltext, ctx))
     }
   }
 }

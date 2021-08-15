@@ -11,6 +11,7 @@ import scala.concurrent.ExecutionContext
 import cats.effect._
 
 import docspell.backend.auth.Login
+import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
 import docspell.ftsclient.FtsClient
@@ -69,7 +70,8 @@ object BackendApp {
       uploadImpl     <- OUpload(store, queue, cfg.files, joexImpl)
       nodeImpl       <- ONode(store)
       jobImpl        <- OJob(store, joexImpl)
-      itemImpl       <- OItem(store, ftsClient, queue, joexImpl)
+      createIndex    <- CreateIndex.resource(ftsClient, store)
+      itemImpl       <- OItem(store, ftsClient, createIndex, queue, joexImpl)
       itemSearchImpl <- OItemSearch(store)
       fulltextImpl   <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
       javaEmil =

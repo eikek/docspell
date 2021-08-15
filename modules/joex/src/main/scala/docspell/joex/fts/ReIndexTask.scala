@@ -8,6 +8,7 @@ package docspell.joex.fts
 
 import cats.effect._
 
+import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
@@ -22,12 +23,15 @@ object ReIndexTask {
 
   def apply[F[_]: Async](
       cfg: Config.FullTextSearch,
-      fts: FtsClient[F]
+      fts: FtsClient[F],
+      fulltext: CreateIndex[F]
   ): Task[F, Args, Unit] =
     Task
       .log[F, Args](_.info(s"Running full-text re-index now"))
       .flatMap(_ =>
-        Task(ctx => clearData[F](ctx.args.collective).forContext(cfg, fts).run(ctx))
+        Task(ctx =>
+          clearData[F](ctx.args.collective).forContext(cfg, fts, fulltext).run(ctx)
+        )
       )
 
   def onCancel[F[_]]: Task[F, Args, Unit] =

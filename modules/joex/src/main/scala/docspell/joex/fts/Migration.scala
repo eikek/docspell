@@ -11,6 +11,7 @@ import cats.effect._
 import cats.implicits._
 import cats.{Applicative, FlatMap, Traverse}
 
+import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
@@ -38,9 +39,10 @@ object Migration {
       cfg: Config.FullTextSearch,
       fts: FtsClient[F],
       store: Store[F],
+      createIndex: CreateIndex[F],
       logger: Logger[F]
   ): Kleisli[F, List[Migration[F]], Unit] = {
-    val ctx = FtsContext(cfg, store, fts, logger)
+    val ctx = FtsContext(cfg, store, createIndex, fts, logger)
     Kleisli { migs =>
       if (migs.isEmpty) logger.info("No fulltext search migrations to run.")
       else Traverse[List].sequence(migs.map(applySingle[F](ctx))).map(_ => ())

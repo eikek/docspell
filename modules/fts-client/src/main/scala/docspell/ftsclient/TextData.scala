@@ -72,4 +72,5 @@ object TextData {
       notes: Option[String]
   ): TextData =
     Item(item, collective, folder, name, notes)
+
 }

@@ -9,6 +9,7 @@ package docspell.joex.fts
 import cats.effect._
 import cats.implicits._
 
+import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
@@ -20,7 +21,8 @@ object MigrationTask {
 
   def apply[F[_]: Async](
       cfg: Config.FullTextSearch,
-      fts: FtsClient[F]
+      fts: FtsClient[F],
+      createIndex: CreateIndex[F]
   ): Task[F, Unit, Unit] =
     Task
       .log[F, Unit](_.info(s"Running full-text-index migrations now"))
@@ -28,7 +30,7 @@ object MigrationTask {
         Task(ctx =>
           for {
             migs <- migrationTasks[F](fts)
-            res  <- Migration[F](cfg, fts, ctx.store, ctx.logger).run(migs)
+            res  <- Migration[F](cfg, fts, ctx.store, createIndex, ctx.logger).run(migs)
           } yield res
         )
       )

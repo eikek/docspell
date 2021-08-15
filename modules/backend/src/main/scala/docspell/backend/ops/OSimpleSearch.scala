@@ -231,13 +231,16 @@ object OSimpleSearch {
         case Some(ftq) if settings.useFTS =>
           if (q.isEmpty) {
             logger.debug(s"Using index only search: $fulltextQuery")
-            fts
-              .findIndexOnly(settings.maxNoteLen)(
-                OFulltext.FtsInput(ftq),
-                q.fix.account,
-                settings.batch
-              )
-              .map(Items.ftsItemsFull(true))
+            if (settings.searchMode == SearchMode.Trashed)
+              Items.ftsItemsFull(true)(Vector.empty).pure[F]
+            else
+              fts
+                .findIndexOnly(settings.maxNoteLen)(
+                  OFulltext.FtsInput(ftq),
+                  q.fix.account,
+                  settings.batch
+                )
+                .map(Items.ftsItemsFull(true))
           } else if (settings.resolveDetails) {
             logger.debug(
               s"Using index+sql search with tags: $validItemQuery / $fulltextQuery"
