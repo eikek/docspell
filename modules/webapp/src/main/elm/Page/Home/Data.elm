@@ -26,12 +26,14 @@ module Page.Home.Data exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Browser.Dom as Dom
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange)
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
+import Comp.ItemMerge
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
 import Comp.SearchMenu
@@ -76,6 +78,7 @@ type alias SelectViewModel =
     , action : SelectActionMode
     , confirmModal : Maybe ConfirmModalValue
     , editModel : Comp.ItemDetail.MultiEditMenu.Model
+    , mergeModel : Comp.ItemMerge.Model
     , saveNameState : SaveNameState
     , saveCustomFieldState : Set String
     }
@@ -87,6 +90,7 @@ initSelectViewModel =
     , action = NoneAction
     , confirmModal = Nothing
     , editModel = Comp.ItemDetail.MultiEditMenu.init
+    , mergeModel = Comp.ItemMerge.init []
     , saveNameState = SaveSuccess
     , saveCustomFieldState = Set.empty
     }
@@ -205,6 +209,8 @@ type Msg
     | ReprocessSelectedConfirmed
     | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
     | RemoveItem String
+    | MergeSelectedItems
+    | MergeItemsMsg Comp.ItemMerge.Msg
 
 
 type SearchType
@@ -218,6 +224,7 @@ type SelectActionMode
     | EditSelected
     | ReprocessSelected
     | RestoreSelected
+    | MergeSelected
 
 
 type alias SearchParam =

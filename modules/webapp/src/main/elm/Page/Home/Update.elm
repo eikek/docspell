@@ -16,6 +16,7 @@ import Browser.Navigation as Nav
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
+import Comp.ItemMerge
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
 import Comp.SearchMenu
@@ -361,6 +362,7 @@ update mId key flags settings msg model =
 
                 _ ->
                     noSub ( model, Cmd.none )
+
         RestoreSelectedConfirmed ->
             case model.viewMode of
                 SelectView svm ->
@@ -382,7 +384,6 @@ update mId key flags settings msg model =
 
                 _ ->
                     noSub ( model, Cmd.none )
-
 
         DeleteAllResp (Ok res) ->
             if res.success then
@@ -531,6 +532,70 @@ update mId key flags settings msg model =
                             ( { model | viewMode = SelectView { svm | action = EditSelected } }
                             , Cmd.none
                             )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        MergeSelectedItems ->
+            case model.viewMode of
+                SelectView svm ->
+                    if svm.action == MergeSelected then
+                        noSub
+                            ( { model
+                                | viewMode =
+                                    SelectView
+                                        { svm
+                                            | action = NoneAction
+                                            , mergeModel = Comp.ItemMerge.init []
+                                        }
+                              }
+                            , Cmd.none
+                            )
+
+                    else if svm.ids == Set.empty then
+                        noSub ( model, Cmd.none )
+
+                    else
+                        let
+                            ( mm, mc ) =
+                                Comp.ItemMerge.initQuery
+                                    flags
+                                    model.searchMenuModel.searchMode
+                                    (Q.ItemIdIn (Set.toList svm.ids))
+                        in
+                        noSub
+                            ( { model
+                                | viewMode =
+                                    SelectView
+                                        { svm
+                                            | action = MergeSelected
+                                            , mergeModel = mm
+                                        }
+                              }
+                            , Cmd.map MergeItemsMsg mc
+                            )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        MergeItemsMsg lmsg ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        result =
+                            Comp.ItemMerge.update lmsg svm.mergeModel
+
+                        nextView =
+                            if result.done then
+                                SelectView { svm | action = NoneAction }
+
+                            else
+                                SelectView { svm | mergeModel = result.model }
+                    in
+                    noSub
+                        ( { model | viewMode = nextView }
+                        , Cmd.map MergeItemsMsg result.cmd
+                        )
 
                 _ ->
                     noSub ( model, Cmd.none )

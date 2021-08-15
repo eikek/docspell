@@ -13,6 +13,7 @@ module Messages.Page.Home exposing
 
 import Messages.Basics
 import Messages.Comp.ItemCardList
+import Messages.Comp.ItemMerge
 import Messages.Comp.SearchStatsView
 import Messages.Page.HomeSideMenu
 
@@ -22,6 +23,7 @@ type alias Texts =
     , itemCardList : Messages.Comp.ItemCardList.Texts
     , searchStatsView : Messages.Comp.SearchStatsView.Texts
     , sideMenu : Messages.Page.HomeSideMenu.Texts
+    , itemMerge : Messages.Comp.ItemMerge.Texts
     , contentSearch : String
     , searchInNames : String
     , selectModeTitle : String
@@ -39,6 +41,7 @@ type alias Texts =
     , selectNone : String
     , resetSearchForm : String
     , exitSelectMode : String
+    , mergeItemsTitle : Int -> String
     }
 
 
@@ -48,6 +51,7 @@ gb =
     , itemCardList = Messages.Comp.ItemCardList.gb
     , searchStatsView = Messages.Comp.SearchStatsView.gb
     , sideMenu = Messages.Page.HomeSideMenu.gb
+    , itemMerge = Messages.Comp.ItemMerge.gb
     , contentSearch = "Content search…"
     , searchInNames = "Search in names…"
     , selectModeTitle = "Select Mode"
@@ -65,6 +69,7 @@ gb =
     , selectNone = "Select none"
     , resetSearchForm = "Reset search form"
     , exitSelectMode = "Exit Select Mode"
+    , mergeItemsTitle = \n -> "Merge " ++ String.fromInt n ++ " selected items"
     }
 
 
@@ -74,6 +79,7 @@ de =
     , itemCardList = Messages.Comp.ItemCardList.de
     , searchStatsView = Messages.Comp.SearchStatsView.de
     , sideMenu = Messages.Page.HomeSideMenu.de
+    , itemMerge = Messages.Comp.ItemMerge.de
     , contentSearch = "Volltextsuche…"
     , searchInNames = "Suche in Namen…"
     , selectModeTitle = "Auswahlmodus"
@@ -91,4 +97,5 @@ de =
     , selectNone = "Wähle alle Dokumente ab"
     , resetSearchForm = "Suchformular zurücksetzen"
     , exitSelectMode = "Auswahlmodus verlassen"
+    , mergeItemsTitle = \n -> String.fromInt n ++ " gewählte Dokumente zusammenführen"
     }

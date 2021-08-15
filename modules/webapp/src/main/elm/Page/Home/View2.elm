@@ -10,6 +10,7 @@ module Page.Home.View2 exposing (viewContent, viewSidebar)
 import Comp.Basic as B
 import Comp.ConfirmModal
 import Comp.ItemCardList
+import Comp.ItemMerge
 import Comp.MenuBar as MB
 import Comp.PowerSearchInput
 import Comp.SearchMenu
@@ -50,13 +51,38 @@ viewContent texts flags settings model =
         ]
         (searchStats texts flags settings model
             ++ itemsBar texts flags settings model
-            ++ itemCardList texts flags settings model
+            ++ [ div [ class "relative" ]
+                    (itemMergeView texts settings model
+                        ++ itemCardList texts flags settings model
+                    )
+               ]
             ++ confirmModal texts model
         )
 
 
 
 --- Helpers
+
+
+itemMergeView : Texts -> UiSettings -> Model -> List (Html Msg)
+itemMergeView texts settings model =
+    case model.viewMode of
+        SelectView svm ->
+            case svm.action of
+                MergeSelected ->
+                    [ div
+                        [ class S.dimmerMerge
+                        ]
+                        [ Html.map MergeItemsMsg
+                            (Comp.ItemMerge.view texts.itemMerge settings svm.mergeModel)
+                        ]
+                    ]
+
+                _ ->
+                    []
+
+        _ ->
+            []
 
 
 confirmModal : Texts -> Model -> List (Html Msg)
@@ -251,6 +277,7 @@ editMenuBar texts model svm =
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == EditSelected )
+                    , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
             , MB.CustomButton
@@ -261,6 +288,7 @@ editMenuBar texts model svm =
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == ReprocessSelected )
+                    , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
             , MB.CustomButton
@@ -283,6 +311,17 @@ editMenuBar texts model svm =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == RestoreSelected )
                     , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Normal )
+                    ]
+                }
+            , MB.CustomButton
+                { tagger = MergeSelectedItems
+                , label = ""
+                , icon = Just "fa fa-less-than"
+                , title = texts.mergeItemsTitle selectCount
+                , inputClass =
+                    [ ( btnStyle, True )
+                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == MergeSelected )
+                    , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
             ]
