@@ -13,6 +13,7 @@ import cats.implicits._
 import fs2.concurrent.SignallingRef
 
 import docspell.analysis.TextAnalyser
+import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
 import docspell.common._
 import docspell.ftsclient.FtsClient
@@ -116,7 +117,8 @@ object JoexAppImpl {
       joex          <- OJoex(client, store)
       upload        <- OUpload(store, queue, cfg.files, joex)
       fts           <- createFtsClient(cfg)(httpClient)
-      itemOps       <- OItem(store, fts, queue, joex)
+      createIndex   <- CreateIndex.resource(fts, store)
+      itemOps       <- OItem(store, fts, createIndex, queue, joex)
       itemSearchOps <- OItemSearch(store)
       analyser      <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
       regexNer      <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
@@ -155,14 +157,14 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             MigrationTask.taskName,
-            MigrationTask[F](cfg.fullTextSearch, fts),
+            MigrationTask[F](cfg.fullTextSearch, fts, createIndex),
             MigrationTask.onCancel[F]
           )
         )
         .withTask(
           JobTask.json(
             ReIndexTask.taskName,
-            ReIndexTask[F](cfg.fullTextSearch, fts),
+            ReIndexTask[F](cfg.fullTextSearch, fts, createIndex),
             ReIndexTask.onCancel[F]
           )
         )

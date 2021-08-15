@@ -7,6 +7,7 @@
 package docspell.store.queries
 
 import cats.data.OptionT
+import cats.data.{NonEmptyList => Nel}
 import cats.effect.Sync
 import cats.implicits._
 import fs2.Stream
@@ -174,6 +175,7 @@ object QAttachment {
   )
   def allAttachmentMetaAndName(
       coll: Option[Ident],
+      itemIds: Option[Nel[Ident]],
       chunkSize: Int
   ): Stream[ConnectionIO, ContentAndName] =
     Select(
@@ -190,8 +192,11 @@ object QAttachment {
         .innerJoin(am, am.id === a.id)
         .innerJoin(item, item.id === a.itemId)
         .innerJoin(c, c.id === item.cid)
-    ).where(coll.map(cid => item.cid === cid))
-      .build
+    ).where(
+      item.state.in(ItemState.validStates) &&?
+        itemIds.map(ids => item.id.in(ids)) &&?
+        coll.map(cid => item.cid === cid)
+    ).build
       .query[ContentAndName]
       .streamWithChunkSize(chunkSize)
 

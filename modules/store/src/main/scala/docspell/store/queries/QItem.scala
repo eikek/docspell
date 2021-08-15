@@ -502,6 +502,7 @@ object QItem {
         .leftJoin(m3, m3.id === r.fileId),
       where(
         i.cid === collective &&
+          i.state.in(ItemState.validStates) &&
           Condition.Or(fms.map(m => m.checksum === checksum)) &&?
           Nel
             .fromList(excludeFileMeta.toList)
@@ -519,6 +520,7 @@ object QItem {
   )
   def allNameAndNotes(
       coll: Option[Ident],
+      itemIds: Option[Nel[Ident]],
       chunkSize: Int
   ): Stream[ConnectionIO, NameAndNotes] = {
     val i = RItem.as("i")
@@ -526,8 +528,11 @@ object QItem {
     Select(
       select(i.id, i.cid, i.folder, i.name, i.notes),
       from(i)
-    ).where(coll.map(cid => i.cid === cid))
-      .build
+    ).where(
+      i.state.in(ItemState.validStates) &&?
+        itemIds.map(ids => i.id.in(ids)) &&?
+        coll.map(cid => i.cid === cid)
+    ).build
       .query[NameAndNotes]
       .streamWithChunkSize(chunkSize)
   }

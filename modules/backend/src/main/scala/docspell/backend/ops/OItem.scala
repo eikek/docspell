@@ -11,6 +11,7 @@ import cats.effect.{Async, Resource}
 import cats.implicits._
 
 import docspell.backend.JobFactory
+import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.store.queries.{QAttachment, QItem, QMoveAttachment}
@@ -212,6 +213,7 @@ object OItem {
   def apply[F[_]: Async](
       store: Store[F],
       fts: FtsClient[F],
+      createIndex: CreateIndex[F],
       queue: JobQueue[F],
       joex: OJoex[F]
   ): Resource[F, OItem[F]] =
@@ -588,12 +590,13 @@ object OItem {
             items: NonEmptyList[Ident],
             collective: Ident
         ): F[UpdateResult] =
-          UpdateResult.fromUpdate(
-            store
+          UpdateResult.fromUpdate(for {
+            n <- store
               .transact(
                 RItem.restoreStateForCollective(items, ItemState.Created, collective)
               )
-          )
+            _ <- createIndex.reIndexData(logger, collective.some, items.some, 10)
+          } yield n)
 
         def setItemDate(
             items: NonEmptyList[Ident],
@@ -628,7 +631,10 @@ object OItem {
           } yield n
 
         def setDeletedState(items: NonEmptyList[Ident], collective: Ident): F[Int] =
-          store.transact(RItem.setState(items, collective, ItemState.Deleted))
+          for {
+            n <- store.transact(RItem.setState(items, collective, ItemState.Deleted))
+            _ <- items.traverse(id => fts.removeItem(logger, id))
+          } yield n
 
         def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =
           store.transact(QAttachment.getMetaProposals(item, collective))
