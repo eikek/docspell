@@ -1149,6 +1149,11 @@ paths:
         The request is empty, settings are used from the collective.
       security:
         - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmptyTrashSetting"
       responses:
         200:
           description: Ok
@@ -5267,7 +5272,7 @@ components:
         - language
         - integrationEnabled
         - classifier
-        - emptyTrashSchedule
+        - emptyTrash
       properties:
         language:
           type: string
@@ -5277,11 +5282,24 @@ components:
           description: |
             Whether the collective has the integration endpoint
             enabled.
-        emptyTrashSchedule:
-          type: string
-          format: calevent
         classifier:
           $ref: "#/components/schemas/ClassifierSetting"
+        emptyTrash:
+          $ref: "#/components/schemas/EmptyTrashSetting"
+
+    EmptyTrashSetting:
+      description: |
+        Settings for clearing the trash of items.
+      required:
+        - schedule
+        - minAge
+      properties:
+        schedule:
+          type: string
+          format: calevent
+        minAge:
+          type: integer
+          format: duration
 
     ClassifierSetting:
       description: |

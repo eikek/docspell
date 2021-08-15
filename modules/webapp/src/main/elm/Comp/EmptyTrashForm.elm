@@ -14,40 +14,36 @@ module Comp.EmptyTrashForm exposing
     , view
     )
 
-import Api
+import Api.Model.EmptyTrashSetting exposing (EmptyTrashSetting)
 import Comp.CalEventInput
-import Comp.Dropdown
-import Comp.FixedDropdown
 import Comp.IntField
 import Data.CalEvent exposing (CalEvent)
-import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
-import Data.ListType exposing (ListType)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Http
-import Markdown
 import Messages.Comp.EmptyTrashForm exposing (Texts)
 import Styles as S
-import Util.Tag
 
 
 type alias Model =
     { scheduleModel : Comp.CalEventInput.Model
     , schedule : Maybe CalEvent
+    , minAgeModel : Comp.IntField.Model
+    , minAgeDays : Maybe Int
     }
 
 
 type Msg
     = ScheduleMsg Comp.CalEventInput.Msg
+    | MinAgeMsg Comp.IntField.Msg
 
 
-init : Flags -> String -> ( Model, Cmd Msg )
-init flags schedule =
+init : Flags -> EmptyTrashSetting -> ( Model, Cmd Msg )
+init flags settings =
     let
         newSchedule =
-            Data.CalEvent.fromEvent schedule
+            Data.CalEvent.fromEvent settings.schedule
                 |> Maybe.withDefault Data.CalEvent.everyMonth
 
         ( cem, cec ) =
@@ -55,14 +51,34 @@ init flags schedule =
     in
     ( { scheduleModel = cem
       , schedule = Just newSchedule
+      , minAgeModel = Comp.IntField.init (Just 0) Nothing False
+      , minAgeDays = Just <| millisToDays settings.minAge
       }
     , Cmd.map ScheduleMsg cec
     )
 
 
-getSettings : Model -> Maybe CalEvent
+millisToDays : Int -> Int
+millisToDays millis =
+    round <| toFloat millis / 1000 / 60 / 60 / 24
+
+
+daysToMillis : Int -> Int
+daysToMillis days =
+    days * 24 * 60 * 60 * 1000
+
+
+getSettings : Model -> Maybe EmptyTrashSetting
 getSettings model =
-    model.schedule
+    Maybe.map2
+        (\sch ->
+            \age ->
+                { schedule = Data.CalEvent.makeEvent sch
+                , minAge = daysToMillis age
+                }
+        )
+        model.schedule
+        model.minAgeDays
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -84,6 +100,18 @@ update flags msg model =
             , Cmd.map ScheduleMsg cc
             )
 
+        MinAgeMsg lmsg ->
+            let
+                ( mm, newAge ) =
+                    Comp.IntField.update lmsg model.minAgeModel
+            in
+            ( { model
+                | minAgeModel = mm
+                , minAgeDays = newAge
+              }
+            , Cmd.none
+            )
+
 
 
 --- View2
@@ -102,5 +130,17 @@ view texts _ model =
                     model.schedule
                     model.scheduleModel
                 )
+            ]
+        , div [ class "mb-4" ]
+            [ let
+                settings : Comp.IntField.ViewSettings
+                settings =
+                    { number = model.minAgeDays
+                    , label = texts.minAge
+                    , classes = ""
+                    , info = texts.minAgeInfo
+                    }
+              in
+              Html.map MinAgeMsg (Comp.IntField.view settings model.minAgeModel)
             ]
         ]

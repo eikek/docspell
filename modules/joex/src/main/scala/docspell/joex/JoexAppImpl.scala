@@ -87,9 +87,11 @@ final class JoexAppImpl[F[_]: Async](
   private def scheduleEmptyTrashTasks: F[Unit] =
     store
       .transact(
-        REmptyTrashSetting.findForAllCollectives(EmptyTrashArgs.defaultSchedule, 50)
+        REmptyTrashSetting.findForAllCollectives(OCollective.EmptyTrash.default, 50)
       )
-      .evalMap(es => EmptyTrashTask.periodicTask(es.cid, es.schedule))
+      .evalMap(es =>
+        EmptyTrashTask.periodicTask(EmptyTrashArgs(es.cid, es.minAge), es.schedule)
+      )
       .evalMap(pstore.insert)
       .compile
       .drain

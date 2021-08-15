@@ -54,15 +54,23 @@ object QUserTask {
       )
     ).query[RPeriodicTask].option.map(_.map(makeUserTask))
 
-  def insert(scope: UserTaskScope, task: UserTask[String]): ConnectionIO[Int] =
+  def insert(
+      scope: UserTaskScope,
+      subject: Option[String],
+      task: UserTask[String]
+  ): ConnectionIO[Int] =
     for {
-      r <- task.toPeriodicTask[ConnectionIO](scope)
+      r <- task.toPeriodicTask[ConnectionIO](scope, subject)
       n <- RPeriodicTask.insert(r)
     } yield n
 
-  def update(scope: UserTaskScope, task: UserTask[String]): ConnectionIO[Int] =
+  def update(
+      scope: UserTaskScope,
+      subject: Option[String],
+      task: UserTask[String]
+  ): ConnectionIO[Int] =
     for {
-      r <- task.toPeriodicTask[ConnectionIO](scope)
+      r <- task.toPeriodicTask[ConnectionIO](scope, subject)
       n <- RPeriodicTask.update(r)
     } yield n
 

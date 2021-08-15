@@ -43,7 +43,8 @@ object UserTask {
         .map(a => ut.copy(args = a))
 
     def toPeriodicTask[F[_]: Sync](
-        scope: UserTaskScope
+        scope: UserTaskScope,
+        subject: Option[String]
     ): F[RPeriodicTask] =
       RPeriodicTask
         .create[F](
@@ -51,7 +52,7 @@ object UserTask {
           scope,
           ut.name,
           ut.args,
-          s"${scope.fold(_.user.id, _.id)}: ${ut.name.id}",
+          subject.getOrElse(s"${scope.fold(_.user.id, _.id)}: ${ut.name.id}"),
           Priority.Low,
           ut.timer,
           ut.summary

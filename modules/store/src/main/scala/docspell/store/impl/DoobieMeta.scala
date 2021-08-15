@@ -34,6 +34,9 @@ trait DoobieMeta extends EmilDoobieMeta {
       e.apply(a).noSpaces
     )
 
+  implicit val metaDuration: Meta[Duration] =
+    Meta[Long].imap(Duration.millis)(_.millis)
+
   implicit val metaCollectiveState: Meta[CollectiveState] =
     Meta[String].imap(CollectiveState.unsafe)(CollectiveState.asString)
 

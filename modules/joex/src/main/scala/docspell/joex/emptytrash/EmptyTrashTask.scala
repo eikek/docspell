@@ -26,7 +26,7 @@ object EmptyTrashTask {
 
   private val pageSize = 20
 
-  def periodicTask[F[_]: Sync](collective: Ident, ce: CalEvent): F[RPeriodicTask] =
+  def periodicTask[F[_]: Sync](args: EmptyTrashArgs, ce: CalEvent): F[RPeriodicTask] =
     Ident
       .randomId[F]
       .flatMap(id =>
@@ -36,8 +36,8 @@ object EmptyTrashTask {
           true,
           ce,
           None,
-          EmptyTrashArgs(collective)
-        ).encode.toPeriodicTask(UserTaskScope(collective))
+          args
+        ).encode.toPeriodicTask(UserTaskScope(args.collective), args.makeSubject.some)
       )
 
   def apply[F[_]: Async](
@@ -45,23 +45,27 @@ object EmptyTrashTask {
       itemSearchOps: OItemSearch[F]
   ): Task[F, Args, Unit] =
     Task { ctx =>
-      val collId = ctx.args.collective
       for {
-        _        <- ctx.logger.info(s"Starting removing all soft-deleted items")
-        nDeleted <- deleteAll(collId, itemOps, itemSearchOps, ctx)
+        now <- Timestamp.current[F]
+        maxDate = now.minus(ctx.args.minAge)
+        _ <- ctx.logger.info(
+          s"Starting removing all soft-deleted items older than ${maxDate.asString}"
+        )
+        nDeleted <- deleteAll(ctx.args, maxDate, itemOps, itemSearchOps, ctx)
         _        <- ctx.logger.info(s"Finished deleting ${nDeleted} items")
       } yield ()
     }
 
   private def deleteAll[F[_]: Async](
-      collective: Ident,
+      args: Args,
+      maxUpdate: Timestamp,
       itemOps: OItem[F],
       itemSearchOps: OItemSearch[F],
       ctx: Context[F, _]
   ): F[Int] =
     Stream
-      .eval(itemSearchOps.findDeleted(collective, pageSize))
-      .evalMap(deleteChunk(collective, itemOps, ctx))
+      .eval(itemSearchOps.findDeleted(args.collective, maxUpdate, pageSize))
+      .evalMap(deleteChunk(args.collective, itemOps, ctx))
       .repeat
       .takeWhile(_ > 0)
       .compile

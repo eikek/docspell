@@ -49,7 +49,7 @@ object NotifyDueItemsRoutes {
           newId <- Ident.randomId[F]
           task  <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
           res <-
-            ut.executeNow(UserTaskScope(user.account), task)
+            ut.executeNow(UserTaskScope(user.account), None, task)
               .attempt
               .map(Conversions.basicResult(_, "Submitted successfully."))
           resp <- Ok(res)
@@ -69,7 +69,7 @@ object NotifyDueItemsRoutes {
           for {
             task <- makeTask(data.id, getBaseUrl(cfg, req), user.account, data)
             res <-
-              ut.submitNotifyDueItems(UserTaskScope(user.account), task)
+              ut.submitNotifyDueItems(UserTaskScope(user.account), None, task)
                 .attempt
                 .map(Conversions.basicResult(_, "Saved successfully"))
             resp <- Ok(res)
@@ -87,7 +87,7 @@ object NotifyDueItemsRoutes {
           newId <- Ident.randomId[F]
           task  <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
           res <-
-            ut.submitNotifyDueItems(UserTaskScope(user.account), task)
+            ut.submitNotifyDueItems(UserTaskScope(user.account), None, task)
               .attempt
               .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)

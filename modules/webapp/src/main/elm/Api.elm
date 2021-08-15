@@ -158,6 +158,7 @@ import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.EmailSettings exposing (EmailSettings)
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
+import Api.Model.EmptyTrashSetting exposing (EmptyTrashSetting)
 import Api.Model.Equipment exposing (Equipment)
 import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderDetail exposing (FolderDetail)
@@ -999,13 +1000,14 @@ startClassifier flags receive =
 
 startEmptyTrash :
     Flags
+    -> EmptyTrashSetting
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
-startEmptyTrash flags receive =
+startEmptyTrash flags setting receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/collective/emptytrash/startonce"
         , account = getAccount flags
-        , body = Http.emptyBody
+        , body = Http.jsonBody (Api.Model.EmptyTrashSetting.encode setting)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

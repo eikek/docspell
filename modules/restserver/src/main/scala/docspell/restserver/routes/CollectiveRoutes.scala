@@ -12,7 +12,8 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCollective
-import docspell.common.{EmptyTrashArgs, ListType}
+import docspell.common.EmptyTrashArgs
+import docspell.common.ListType
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s._
@@ -56,7 +57,12 @@ object CollectiveRoutes {
                 settings.classifier.listType
               )
             ),
-            Some(settings.emptyTrashSchedule)
+            Some(
+              OCollective.EmptyTrash(
+                settings.emptyTrash.schedule,
+                settings.emptyTrash.minAge
+              )
+            )
           )
           res <-
             backend.collective
@@ -67,11 +73,11 @@ object CollectiveRoutes {
       case GET -> Root / "settings" =>
         for {
           settDb <- backend.collective.findSettings(user.account.collective)
+          trash = settDb.flatMap(_.emptyTrash).getOrElse(OCollective.EmptyTrash.default)
           sett = settDb.map(c =>
             CollectiveSettings(
               c.language,
               c.integrationEnabled,
-              c.emptyTrash.getOrElse(EmptyTrashArgs.defaultSchedule),
               ClassifierSetting(
                 c.classifier.map(_.itemCount).getOrElse(0),
                 c.classifier
@@ -79,6 +85,10 @@ object CollectiveRoutes {
                   .getOrElse(CalEvent.unsafe("*-1/3-01 01:00:00")),
                 c.classifier.map(_.categories).getOrElse(Nil),
                 c.classifier.map(_.listType).getOrElse(ListType.whitelist)
+              ),
+              EmptyTrashSetting(
+                trash.schedule,
+                trash.minAge
               )
             )
           )
@@ -103,9 +113,12 @@ object CollectiveRoutes {
           resp <- Ok(BasicResult(true, "Task submitted"))
         } yield resp
 
-      case POST -> Root / "emptytrash" / "startonce" =>
+      case req @ POST -> Root / "emptytrash" / "startonce" =>
         for {
-          _    <- backend.collective.startEmptyTrash(user.account.collective)
+          data <- req.as[EmptyTrashSetting]
+          _ <- backend.collective.startEmptyTrash(
+            EmptyTrashArgs(user.account.collective, data.minAge)
+          )
           resp <- Ok(BasicResult(true, "Task submitted"))
         } yield resp
 
