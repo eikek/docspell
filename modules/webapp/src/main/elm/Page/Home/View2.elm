@@ -16,6 +16,7 @@ import Comp.SearchMenu
 import Comp.SearchStatsView
 import Data.Flags exposing (Flags)
 import Data.ItemSelection
+import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -78,6 +79,7 @@ confirmModal texts model =
                         texts.basics.yes
                         texts.basics.no
                         texts.reallyDeleteQuestion
+
                 ConfirmRestore ->
                     Comp.ConfirmModal.defaultSettings
                         RestoreSelectedConfirmed
@@ -85,7 +87,6 @@ confirmModal texts model =
                         texts.basics.yes
                         texts.basics.no
                         texts.reallyRestoreQuestion
-
     in
     case model.viewMode of
         SelectView svm ->
@@ -270,6 +271,7 @@ editMenuBar texts model svm =
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == DeleteSelected )
+                    , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
             , MB.CustomButton
@@ -280,6 +282,7 @@ editMenuBar texts model svm =
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == RestoreSelected )
+                    , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Normal )
                     ]
                 }
             ]
