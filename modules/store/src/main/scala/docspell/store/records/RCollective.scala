@@ -13,7 +13,6 @@ import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
-import com.github.eikek.calev._
 import doobie._
 import doobie.implicits._
 
@@ -75,16 +74,15 @@ object RCollective {
         )
       )
       now <- Timestamp.current[ConnectionIO]
-      cls = settings.classifier.map(_.toRecord(cid, now))
-      n2 <- cls match {
-        case Some(cr) =>
-          RClassifierSetting.update(cr)
+      n2 <- settings.classifier match {
+        case Some(cls) =>
+          RClassifierSetting.update(cls.toRecord(cid, now))
         case None =>
           RClassifierSetting.delete(cid)
       }
       n3 <- settings.emptyTrash match {
-        case Some(trashSchedule) =>
-          REmptyTrashSetting.update(REmptyTrashSetting(cid, trashSchedule, now))
+        case Some(trash) =>
+          REmptyTrashSetting.update(trash.toRecord(cid, now))
         case None =>
           REmptyTrashSetting.delete(cid)
       }
@@ -114,7 +112,8 @@ object RCollective {
         cs.itemCount.s,
         cs.categories.s,
         cs.listType.s,
-        es.schedule.s
+        es.schedule.s,
+        es.minAge.s
       ),
       from(c).leftJoin(cs, cs.cid === c.id).leftJoin(es, es.cid === c.id),
       c.id === coll
@@ -168,7 +167,7 @@ object RCollective {
       language: Language,
       integrationEnabled: Boolean,
       classifier: Option[RClassifierSetting.Classifier],
-      emptyTrash: Option[CalEvent]
+      emptyTrash: Option[REmptyTrashSetting.EmptyTrash]
   )
 
 }

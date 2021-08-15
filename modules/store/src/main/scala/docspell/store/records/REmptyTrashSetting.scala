@@ -21,6 +21,7 @@ import doobie.implicits._
 final case class REmptyTrashSetting(
     cid: Ident,
     schedule: CalEvent,
+    minAge: Duration,
     created: Timestamp
 )
 
@@ -31,8 +32,9 @@ object REmptyTrashSetting {
 
     val cid      = Column[Ident]("cid", this)
     val schedule = Column[CalEvent]("schedule", this)
+    val minAge   = Column[Duration]("min_age", this)
     val created  = Column[Timestamp]("created", this)
-    val all      = NonEmptyList.of[Column[_]](cid, schedule, created)
+    val all      = NonEmptyList.of[Column[_]](cid, schedule, minAge, created)
   }
 
   val T = Table(None)
@@ -43,7 +45,7 @@ object REmptyTrashSetting {
     DML.insert(
       T,
       T.all,
-      fr"${v.cid},${v.schedule},${v.created}"
+      fr"${v.cid},${v.schedule},${v.minAge},${v.created}"
     )
 
   def update(v: REmptyTrashSetting): ConnectionIO[Int] =
@@ -52,7 +54,8 @@ object REmptyTrashSetting {
         T,
         T.cid === v.cid,
         DML.set(
-          T.schedule.setTo(v.schedule)
+          T.schedule.setTo(v.schedule),
+          T.minAge.setTo(v.minAge)
         )
       )
       n2 <- if (n1 <= 0) insert(v) else 0.pure[ConnectionIO]
@@ -64,7 +67,7 @@ object REmptyTrashSetting {
   }
 
   def findForAllCollectives(
-      default: CalEvent,
+      default: EmptyTrash,
       chunkSize: Int
   ): Stream[ConnectionIO, REmptyTrashSetting] = {
     val c = RCollective.as("c")
@@ -72,7 +75,8 @@ object REmptyTrashSetting {
     val sql = run(
       select(
         c.id.s,
-        coalesce(e.schedule.s, const(default)).s,
+        coalesce(e.schedule.s, const(default.schedule)).s,
+        coalesce(e.minAge.s, const(default.minAge)).s,
         coalesce(e.created.s, c.created.s).s
       ),
       from(c).leftJoin(e, e.cid === c.id)
@@ -83,4 +87,13 @@ object REmptyTrashSetting {
   def delete(coll: Ident): ConnectionIO[Int] =
     DML.delete(T, T.cid === coll)
 
+  final case class EmptyTrash(schedule: CalEvent, minAge: Duration) {
+    def toRecord(coll: Ident, created: Timestamp): REmptyTrashSetting =
+      REmptyTrashSetting(coll, schedule, minAge, created)
+  }
+  object EmptyTrash {
+    val default = EmptyTrash(EmptyTrashArgs.defaultSchedule, Duration.days(7))
+    def fromRecord(r: REmptyTrashSetting): EmptyTrash =
+      EmptyTrash(r.schedule, r.minAge)
+  }
 }

@@ -46,7 +46,7 @@ object ScanMailboxRoutes {
           newId <- Ident.randomId[F]
           task  <- makeTask(newId, user.account, data)
           res <-
-            ut.executeNow(UserTaskScope(user.account), task)
+            ut.executeNow(UserTaskScope(user.account), None, task)
               .attempt
               .map(Conversions.basicResult(_, "Submitted successfully."))
           resp <- Ok(res)
@@ -66,7 +66,7 @@ object ScanMailboxRoutes {
           for {
             task <- makeTask(data.id, user.account, data)
             res <-
-              ut.submitScanMailbox(UserTaskScope(user.account), task)
+              ut.submitScanMailbox(UserTaskScope(user.account), None, task)
                 .attempt
                 .map(Conversions.basicResult(_, "Saved successfully."))
             resp <- Ok(res)
@@ -84,7 +84,7 @@ object ScanMailboxRoutes {
           newId <- Ident.randomId[F]
           task  <- makeTask(newId, user.account, data)
           res <-
-            ut.submitScanMailbox(UserTaskScope(user.account), task)
+            ut.submitScanMailbox(UserTaskScope(user.account), None, task)
               .attempt
               .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)

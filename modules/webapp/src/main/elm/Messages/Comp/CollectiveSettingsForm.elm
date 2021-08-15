@@ -40,6 +40,7 @@ type alias Texts =
     , languageLabel : Language -> String
     , classifierTaskStarted : String
     , emptyTrashTaskStarted : String
+    , emptyTrashStartInvalidForm : String
     , fulltextReindexSubmitted : String
     , fulltextReindexOkMissing : String
     , emptyTrash : String
@@ -71,6 +72,7 @@ gb =
     , languageLabel = Messages.Data.Language.gb
     , classifierTaskStarted = "Classifier task started."
     , emptyTrashTaskStarted = "Empty trash task started."
+    , emptyTrashStartInvalidForm = "The empty-trash form contains errors."
     , fulltextReindexSubmitted = "Fulltext Re-Index started."
     , fulltextReindexOkMissing =
         "Please type OK in the field if you really want to start re-indexing your data."
@@ -103,6 +105,7 @@ de =
     , languageLabel = Messages.Data.Language.de
     , classifierTaskStarted = "Kategorisierung gestartet."
     , emptyTrashTaskStarted = "Papierkorb löschen gestartet."
+    , emptyTrashStartInvalidForm = "Das Papierkorb-Löschen Formular ist fehlerhaft!"
     , fulltextReindexSubmitted = "Volltext Neu-Indexierung gestartet."
     , fulltextReindexOkMissing =
         "Bitte tippe OK in das Feld ein, wenn Du wirklich den Index neu erzeugen möchtest."

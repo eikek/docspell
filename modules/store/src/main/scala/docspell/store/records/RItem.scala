@@ -389,8 +389,16 @@ object RItem {
   def findById(itemId: Ident): ConnectionIO[Option[RItem]] =
     run(select(T.all), from(T), T.id === itemId).query[RItem].option
 
-  def findDeleted(collective: Ident, chunkSize: Int): Stream[ConnectionIO, RItem] =
-    run(select(T.all), from(T), T.cid === collective && T.state === ItemState.deleted)
+  def findDeleted(
+      collective: Ident,
+      maxUpdated: Timestamp,
+      chunkSize: Int
+  ): Stream[ConnectionIO, RItem] =
+    run(
+      select(T.all),
+      from(T),
+      T.cid === collective && T.state === ItemState.deleted && T.updated < maxUpdated
+    )
       .query[RItem]
       .streamWithChunkSize(chunkSize)
 

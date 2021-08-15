@@ -22,7 +22,6 @@ import Comp.ClassifierSettingsForm
 import Comp.Dropdown
 import Comp.EmptyTrashForm
 import Comp.MenuBar as MB
-import Data.CalEvent
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
@@ -54,11 +53,14 @@ type ClassifierResult
     | ClassifierResultSubmitError String
     | ClassifierResultOk
 
+
 type EmptyTrashResult
     = EmptyTrashResultInitial
     | EmptyTrashResultHttpError Http.Error
     | EmptyTrashResultSubmitError String
     | EmptyTrashResultOk
+    | EmptyTrashResultInvalidForm
+
 
 type FulltextReindexResult
     = FulltextReindexInitial
@@ -79,7 +81,7 @@ init flags settings =
             Comp.ClassifierSettingsForm.init flags settings.classifier
 
         ( em, ec ) =
-            Comp.EmptyTrashForm.init flags settings.emptyTrashSchedule
+            Comp.EmptyTrashForm.init flags settings.emptyTrash
     in
     ( { langModel =
             Comp.Dropdown.makeSingleList
@@ -101,24 +103,21 @@ init flags settings =
 
 getSettings : Model -> Maybe CollectiveSettings
 getSettings model =
-    Maybe.map
+    Maybe.map2
         (\cls ->
-            { language =
-                Comp.Dropdown.getSelected model.langModel
-                    |> List.head
-                    |> Maybe.map Data.Language.toIso3
-                    |> Maybe.withDefault model.initSettings.language
-            , integrationEnabled = model.intEnabled
-            , classifier = cls
-            , emptyTrashSchedule =
-                Comp.EmptyTrashForm.getSettings model.emptyTrashModel
-                    |> Maybe.withDefault Data.CalEvent.everyMonth
-                    |> Data.CalEvent.makeEvent
-            }
+            \trash ->
+                { language =
+                    Comp.Dropdown.getSelected model.langModel
+                        |> List.head
+                        |> Maybe.map Data.Language.toIso3
+                        |> Maybe.withDefault model.initSettings.language
+                , integrationEnabled = model.intEnabled
+                , classifier = cls
+                , emptyTrash = trash
+                }
         )
-        (Comp.ClassifierSettingsForm.getSettings
-            model.classifierModel
-        )
+        (Comp.ClassifierSettingsForm.getSettings model.classifierModel)
+        (Comp.EmptyTrashForm.getSettings model.emptyTrashModel)
 
 
 type Msg
@@ -233,8 +232,20 @@ update flags msg model =
             ( model, Api.startClassifier flags StartClassifierResp, Nothing )
 
         StartEmptyTrashTask ->
-            ( model, Api.startEmptyTrash flags StartEmptyTrashResp, Nothing )
+            case getSettings model of
+                Just settings ->
+                    ( model
+                    , Api.startEmptyTrash flags
+                        settings.emptyTrash
+                        StartEmptyTrashResp
+                    , Nothing
+                    )
 
+                Nothing ->
+                    ( { model | startEmptyTrashResult = EmptyTrashResultInvalidForm }
+                    , Cmd.none
+                    , Nothing
+                    )
 
         StartClassifierResp (Ok br) ->
             ( { model
@@ -273,6 +284,7 @@ update flags msg model =
             , Cmd.none
             , Nothing
             )
+
 
 
 --- View2
@@ -471,6 +483,7 @@ renderClassifierResultMessage texts result =
             , ( S.successMessage, isSuccess )
             , ( "hidden", result == ClassifierResultInitial )
             ]
+        , class "ml-2"
         ]
         [ case result of
             ClassifierResultInitial ->
@@ -505,6 +518,7 @@ renderFulltextReindexResultMessage texts result =
         FulltextReindexSubmitError m ->
             text m
 
+
 renderEmptyTrashResultMessage : Texts -> EmptyTrashResult -> Html msg
 renderEmptyTrashResultMessage texts result =
     let
@@ -525,6 +539,7 @@ renderEmptyTrashResultMessage texts result =
             , ( S.successMessage, isSuccess )
             , ( "hidden", result == EmptyTrashResultInitial )
             ]
+        , class "ml-2"
         ]
         [ case result of
             EmptyTrashResultInitial ->
@@ -538,4 +553,7 @@ renderEmptyTrashResultMessage texts result =
 
             EmptyTrashResultSubmitError m ->
                 text m
+
+            EmptyTrashResultInvalidForm ->
+                text texts.emptyTrashStartInvalidForm
         ]

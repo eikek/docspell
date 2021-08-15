@@ -23,7 +23,7 @@ import doobie.implicits._
 trait OItemSearch[F[_]] {
   def findItem(id: Ident, collective: Ident): F[Option[ItemData]]
 
-  def findDeleted(collective: Ident, limit: Int): F[Vector[RItem]]
+  def findDeleted(collective: Ident, maxUpdate: Timestamp, limit: Int): F[Vector[RItem]]
 
   def findItems(maxNoteLen: Int)(q: Query, batch: Batch): F[Vector[ListItem]]
 
@@ -147,9 +147,13 @@ object OItemSearch {
               .toVector
           }
 
-      def findDeleted(collective: Ident, limit: Int): F[Vector[RItem]] =
+      def findDeleted(
+          collective: Ident,
+          maxUpdate: Timestamp,
+          limit: Int
+      ): F[Vector[RItem]] =
         store
-          .transact(RItem.findDeleted(collective, limit))
+          .transact(RItem.findDeleted(collective, maxUpdate, limit))
           .take(limit.toLong)
           .compile
           .toVector

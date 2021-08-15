@@ -18,11 +18,12 @@ import io.circe.generic.semiauto._
   * items. These are items with state `ItemState.Deleted`.
   */
 case class EmptyTrashArgs(
-    collective: Ident
+    collective: Ident,
+    minAge: Duration
 ) {
 
   def makeSubject: String =
-    "Empty trash"
+    s"Empty Trash: Remove older than ${minAge.toJava}"
 
 }
 

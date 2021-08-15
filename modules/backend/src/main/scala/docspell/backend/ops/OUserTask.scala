@@ -33,6 +33,7 @@ trait OUserTask[F[_]] {
     */
   def submitScanMailbox(
       scope: UserTaskScope,
+      subject: Option[String],
       task: UserTask[ScanMailboxArgs]
   ): F[Unit]
 
@@ -51,6 +52,7 @@ trait OUserTask[F[_]] {
     */
   def submitNotifyDueItems(
       scope: UserTaskScope,
+      subject: Option[String],
       task: UserTask[NotifyDueItemsArgs]
   ): F[Unit]
 
@@ -61,8 +63,8 @@ trait OUserTask[F[_]] {
     * executor's queue. It will not update the corresponding periodic
     * task.
     */
-  def executeNow[A](scope: UserTaskScope, task: UserTask[A])(implicit
-      E: Encoder[A]
+  def executeNow[A](scope: UserTaskScope, subject: Option[String], task: UserTask[A])(
+      implicit E: Encoder[A]
   ): F[Unit]
 }
 
@@ -75,11 +77,11 @@ object OUserTask {
   ): Resource[F, OUserTask[F]] =
     Resource.pure[F, OUserTask[F]](new OUserTask[F] {
 
-      def executeNow[A](scope: UserTaskScope, task: UserTask[A])(implicit
-          E: Encoder[A]
+      def executeNow[A](scope: UserTaskScope, subject: Option[String], task: UserTask[A])(
+          implicit E: Encoder[A]
       ): F[Unit] =
         for {
-          ptask <- task.encode.toPeriodicTask(scope)
+          ptask <- task.encode.toPeriodicTask(scope, subject)
           job   <- ptask.toJob
           _     <- queue.insert(job)
           _     <- joex.notifyAllNodes
@@ -103,10 +105,11 @@ object OUserTask {
 
       def submitScanMailbox(
           scope: UserTaskScope,
+          subject: Option[String],
           task: UserTask[ScanMailboxArgs]
       ): F[Unit] =
         for {
-          _ <- store.updateTask[ScanMailboxArgs](scope, task)
+          _ <- store.updateTask[ScanMailboxArgs](scope, subject, task)
           _ <- joex.notifyAllNodes
         } yield ()
 
@@ -124,10 +127,11 @@ object OUserTask {
 
       def submitNotifyDueItems(
           scope: UserTaskScope,
+          subject: Option[String],
           task: UserTask[NotifyDueItemsArgs]
       ): F[Unit] =
         for {
-          _ <- store.updateTask[NotifyDueItemsArgs](scope, task)
+          _ <- store.updateTask[NotifyDueItemsArgs](scope, subject, task)
           _ <- joex.notifyAllNodes
         } yield ()
     })

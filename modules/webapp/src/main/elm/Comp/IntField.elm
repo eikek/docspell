@@ -47,13 +47,13 @@ init min max opt =
 tooLow : Model -> Int -> Bool
 tooLow model n =
     Maybe.map ((<) n) model.min
-        |> Maybe.withDefault (not model.optional)
+        |> Maybe.withDefault False
 
 
 tooHigh : Model -> Int -> Bool
 tooHigh model n =
     Maybe.map ((>) n) model.max
-        |> Maybe.withDefault (not model.optional)
+        |> Maybe.withDefault False
 
 
 update : Msg -> Model -> ( Model, Maybe Int )

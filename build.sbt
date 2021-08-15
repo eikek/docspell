@@ -242,6 +242,10 @@ val openapiScalaSettings = Seq(
         field =>
           field
             .copy(typeDef = TypeDef("SearchMode", Imports("docspell.common.SearchMode")))
+      case "duration" =>
+        field =>
+          field
+            .copy(typeDef = TypeDef("Duration", Imports("docspell.common.Duration")))
     }))
 )
 

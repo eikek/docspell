@@ -61,7 +61,9 @@ trait UserTaskStore[F[_]] {
     * exists, a new one is created. Otherwise the existing task is
     * updated.
     */
-  def updateTask[A](scope: UserTaskScope, ut: UserTask[A])(implicit E: Encoder[A]): F[Int]
+  def updateTask[A](scope: UserTaskScope, subject: Option[String], ut: UserTask[A])(
+      implicit E: Encoder[A]
+  ): F[Int]
 
   /** Delete the task with the given id of the given user.
     */
@@ -92,8 +94,8 @@ trait UserTaskStore[F[_]] {
     * the user `account`, they will all be removed and the given task
     * inserted!
     */
-  def updateOneTask[A](scope: UserTaskScope, ut: UserTask[A])(implicit
-      E: Encoder[A]
+  def updateOneTask[A](scope: UserTaskScope, subject: Option[String], ut: UserTask[A])(
+      implicit E: Encoder[A]
   ): F[UserTask[String]]
 
   /** Delete all tasks of the given user that have name `name'.
@@ -123,16 +125,16 @@ object UserTaskStore {
           case Left(err) => Stream.raiseError[F](new Exception(err))
         })
 
-      def updateTask[A](scope: UserTaskScope, ut: UserTask[A])(implicit
-          E: Encoder[A]
+      def updateTask[A](scope: UserTaskScope, subject: Option[String], ut: UserTask[A])(
+          implicit E: Encoder[A]
       ): F[Int] = {
         val exists = QUserTask.exists(ut.id)
-        val insert = QUserTask.insert(scope, ut.encode)
+        val insert = QUserTask.insert(scope, subject, ut.encode)
         store.add(insert, exists).flatMap {
           case AddResult.Success =>
             1.pure[F]
           case AddResult.EntityExists(_) =>
-            store.transact(QUserTask.update(scope, ut.encode))
+            store.transact(QUserTask.update(scope, subject, ut.encode))
           case AddResult.Failure(ex) =>
             Async[F].raiseError(ex)
         }
@@ -166,21 +168,25 @@ object UserTaskStore {
             case Left(err) => Async[F].raiseError(new Exception(err))
           })
 
-      def updateOneTask[A](scope: UserTaskScope, ut: UserTask[A])(implicit
+      def updateOneTask[A](
+          scope: UserTaskScope,
+          subject: Option[String],
+          ut: UserTask[A]
+      )(implicit
           E: Encoder[A]
       ): F[UserTask[String]] =
         getByNameRaw(scope, ut.name).compile.toList.flatMap {
           case a :: rest =>
             val task = ut.copy(id = a.id).encode
             for {
-              _ <- store.transact(QUserTask.update(scope, task))
+              _ <- store.transact(QUserTask.update(scope, subject, task))
               _ <- store.transact(
                 rest.traverse(t => QUserTask.delete(scope.toAccountId, t.id))
               )
             } yield task
           case Nil =>
             val task = ut.encode
-            store.transact(QUserTask.insert(scope, task)).map(_ => task)
+            store.transact(QUserTask.insert(scope, subject, task)).map(_ => task)
         }
 
       def deleteAll(scope: UserTaskScope, name: Ident): F[Int] =

@@ -61,7 +61,7 @@ trait OCollective[F[_]] {
 
   def startLearnClassifier(collective: Ident): F[Unit]
 
-  def startEmptyTrash(collective: Ident): F[Unit]
+  def startEmptyTrash(args: EmptyTrashArgs): F[Unit]
 
   /** Submits a task that (re)generates the preview images for all
     * attachments of the given collective.
@@ -88,6 +88,8 @@ object OCollective {
   val Settings = RCollective.Settings
   type Classifier = RClassifierSetting.Classifier
   val Classifier = RClassifierSetting.Classifier
+  type EmptyTrash = REmptyTrashSetting.EmptyTrash
+  val EmptyTrash = REmptyTrashSetting.EmptyTrash
 
   sealed trait PassResetResult
   object PassResetResult {
@@ -160,51 +162,47 @@ object OCollective {
           id <- Ident.randomId[F]
           on    = sett.classifier.map(_.enabled).getOrElse(false)
           timer = sett.classifier.map(_.schedule).getOrElse(CalEvent.unsafe(""))
+          args  = LearnClassifierArgs(coll)
           ut = UserTask(
             id,
             LearnClassifierArgs.taskName,
             on,
             timer,
             None,
-            LearnClassifierArgs(coll)
+            args
           )
-          _ <- uts.updateOneTask(UserTaskScope(coll), ut)
+          _ <- uts.updateOneTask(UserTaskScope(coll), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
         } yield ()
 
       private def updateEmptyTrashTask(coll: Ident, sett: Settings): F[Unit] =
         for {
           id <- Ident.randomId[F]
-          timer = sett.emptyTrash.getOrElse(CalEvent.unsafe(""))
-          ut = UserTask(
-            id,
-            EmptyTrashArgs.taskName,
-            true,
-            timer,
-            None,
-            EmptyTrashArgs(coll)
-          )
-          _ <- uts.updateOneTask(UserTaskScope(coll), ut)
+          settings = sett.emptyTrash.getOrElse(EmptyTrash.default)
+          args     = EmptyTrashArgs(coll, settings.minAge)
+          ut       = UserTask(id, EmptyTrashArgs.taskName, true, settings.schedule, None, args)
+          _ <- uts.updateOneTask(UserTaskScope(coll), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
         } yield ()
 
       def startLearnClassifier(collective: Ident): F[Unit] =
         for {
           id <- Ident.randomId[F]
+          args = LearnClassifierArgs(collective)
           ut <- UserTask(
             id,
             LearnClassifierArgs.taskName,
             true,
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
             None,
-            LearnClassifierArgs(collective)
-          ).encode.toPeriodicTask(UserTaskScope(collective))
+            args
+          ).encode.toPeriodicTask(UserTaskScope(collective), args.makeSubject.some)
           job <- ut.toJob
           _   <- queue.insert(job)
           _   <- joex.notifyAllNodes
         } yield ()
 
-      def startEmptyTrash(collective: Ident): F[Unit] =
+      def startEmptyTrash(args: EmptyTrashArgs): F[Unit] =
         for {
           id <- Ident.randomId[F]
           ut <- UserTask(
@@ -213,8 +211,8 @@ object OCollective {
             true,
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
             None,
-            EmptyTrashArgs(collective)
-          ).encode.toPeriodicTask(UserTaskScope(collective))
+            args
+          ).encode.toPeriodicTask(UserTaskScope(args.collective), args.makeSubject.some)
           job <- ut.toJob
           _   <- queue.insert(job)
           _   <- joex.notifyAllNodes
