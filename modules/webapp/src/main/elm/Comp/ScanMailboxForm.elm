@@ -762,12 +762,19 @@ view2 texts flags extraClasses settings model =
                 , icon = Just "fa fa-play"
                 }
 
-        tabActive t =
+        tabLook t =
             if Set.member t.name model.openTabs then
-                ( Comp.Tabs.Open, ToggleAkkordionTab t.name )
+                { folded = Comp.Tabs.Open
+                , look = Comp.Tabs.Normal
+                }
 
             else
-                ( Comp.Tabs.Closed, ToggleAkkordionTab t.name )
+                { folded = Comp.Tabs.Closed
+                , look = Comp.Tabs.Normal
+                }
+
+        tabActive t =
+            ( tabLook t, ToggleAkkordionTab t.name )
     in
     div
         [ class extraClasses
