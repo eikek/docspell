@@ -81,11 +81,12 @@ object Merge {
       def moveAttachments(items: NonEmptyList[Ident]): F[Int] = {
         val target = items.head
         for {
+          nextPos <- store.transact(RAttachment.nextPosition(target))
           attachs <- store.transact(items.tail.traverse(id => RAttachment.findByItem(id)))
           attachFlat = attachs.flatMap(_.toList)
-          n <- attachFlat.traverse(a =>
-            store.transact(RAttachment.updateItemId(a.id, target))
-          )
+          n <- attachFlat.zipWithIndex.traverse({ case (a, idx) =>
+            store.transact(RAttachment.updateItemId(a.id, target, nextPos + idx))
+          })
         } yield n.sum
       }
 
