@@ -51,11 +51,7 @@ viewContent texts flags settings model =
         ]
         (searchStats texts flags settings model
             ++ itemsBar texts flags settings model
-            ++ [ div [ class "sm:relative" ]
-                    (itemMergeView texts settings model
-                        ++ itemCardList texts flags settings model
-                    )
-               ]
+            ++ mainView texts flags settings model
             ++ confirmModal texts model
         )
 
@@ -64,26 +60,37 @@ viewContent texts flags settings model =
 --- Helpers
 
 
-itemMergeView : Texts -> UiSettings -> Model -> List (Html Msg)
-itemMergeView texts settings model =
-    case model.viewMode of
-        SelectView svm ->
-            case svm.action of
-                MergeSelected ->
-                    [ div
-                        [ class S.dimmerMerge
-                        , class "mt-10 sm:mt-0"
-                        ]
-                        [ Html.map MergeItemsMsg
-                            (Comp.ItemMerge.view texts.itemMerge settings svm.mergeModel)
-                        ]
-                    ]
+mainView : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+mainView texts flags settings model =
+    let
+        mergeView =
+            case model.viewMode of
+                SelectView svm ->
+                    case svm.action of
+                        MergeSelected ->
+                            Just svm
+
+                        _ ->
+                            Nothing
 
                 _ ->
-                    []
+                    Nothing
+    in
+    case mergeView of
+        Just svm ->
+            [ div [ class "sm:relative mb-2" ]
+                (itemMergeView texts settings svm)
+            ]
 
-        _ ->
-            []
+        Nothing ->
+            itemCardList texts flags settings model
+
+
+itemMergeView : Texts -> UiSettings -> SelectViewModel -> List (Html Msg)
+itemMergeView texts settings svm =
+    [ Html.map MergeItemsMsg
+        (Comp.ItemMerge.view texts.itemMerge settings svm.mergeModel)
+    ]
 
 
 confirmModal : Texts -> Model -> List (Html Msg)

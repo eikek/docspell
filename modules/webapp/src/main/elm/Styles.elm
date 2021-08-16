@@ -343,11 +343,6 @@ dimmerCard =
     " absolute top-0 left-0 w-full h-full bg-black bg-opacity-60 dark:bg-lightblue-900 dark:bg-opacity-60 z-30 flex flex-col items-center justify-center px-4 py-2 "
 
 
-dimmerMerge : String
-dimmerMerge =
-    " absolute top-0 left-0 w-full h-full bg-white bg-opacity-100 dark:bg-bluegray-800 dark:bg-opacity-100 z-40 flex flex-col"
-
-
 tableMain : String
 tableMain =
     "border-collapse table w-full"

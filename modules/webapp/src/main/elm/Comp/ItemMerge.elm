@@ -126,6 +126,8 @@ type Msg
     | SubmitMerge
     | CancelMerge
     | MergeResp (Result Http.Error BasicResult)
+    | RemoveItem String
+    | MoveItem Int Int
 
 
 update : Flags -> Msg -> Model -> UpdateResult
@@ -183,6 +185,23 @@ update flags msg model =
 
                 Nothing ->
                     notDoneResult ( model_, Cmd.none )
+
+        RemoveItem id ->
+            let
+                remove item =
+                    item.id /= id
+            in
+            notDoneResult
+                ( { model | items = List.filter remove model.items }
+                , Cmd.none
+                )
+
+        MoveItem index before ->
+            let
+                items =
+                    Util.List.changePosition index before model.items
+            in
+            notDoneResult ( { model | items = items }, Cmd.none )
 
         SubmitMerge ->
             let
@@ -295,16 +314,17 @@ itemCard texts settings model index item =
             currentDrop == Just index && currentDrag /= Just index && currentDrag /= Just (index - 1)
     in
     div
-        ([ classList [ ( "pt-12 mx-2", dropActive ) ]
-         ]
-            ++ droppable DragDrop index
+        (classList
+            [ ( "pt-12 mx-2", dropActive )
+            ]
+            :: droppable DragDrop index
         )
         [ div
             ([ class "flex flex-col sm:flex-row rounded"
              , class "cursor-pointer items-center"
              , classList
-                [ ( "border-2 border-blue-500 dark:border-blue-500", index == 0 )
-                , ( "bg-blue-100 dark:bg-lightblue-900", index == 0 )
+                [ ( "border-2 border-blue-500 dark:border-blue-500", index == 0 && not dropActive )
+                , ( "bg-blue-100 dark:bg-lightblue-900", index == 0 && not dropActive )
                 , ( "border border-gray-400 dark:border-bluegray-600 dark:hover:border-bluegray-500 bg-white dark:bg-bluegray-700 mt-2", index /= 0 )
                 , ( "bg-yellow-50 dark:bg-lime-900 mt-4", dropActive )
                 ]
@@ -312,20 +332,22 @@ itemCard texts settings model index item =
              ]
                 ++ draggable DragDrop index
             )
-            [ div
-                [ class "mr-2 sm:rounded-l w-16 bg-white"
+            [ div [ class "hidden sm:block" ]
+                [ span [ class "px-3" ]
+                    [ i [ class "fa fa-ellipsis-v" ] []
+                    ]
+                ]
+            , div
+                [ class "mr-2 w-16 bg-white"
                 , classList [ ( "hidden", fieldHidden Data.Fields.PreviewImage ) ]
                 ]
                 [ img
-                    [ class "preview-image mx-auto pt-1"
-                    , classList
-                        [ ( "sm:rounded-l", True )
-                        ]
+                    [ class "preview-image mx-auto"
                     , src previewUrl
                     ]
                     []
                 ]
-            , div [ class "flex-grow flex flex-col py-1 px-2" ]
+            , div [ class "flex-grow flex flex-col py-1 px-2 h-full" ]
                 [ div [ class "flex flex-col sm:flex-row items-center" ]
                     [ div
                         [ class "font-bold text-lg"
@@ -345,6 +367,41 @@ itemCard texts settings model index item =
                     ]
                 , mainData texts settings item
                 , mainTagsAndFields2 settings item
+                ]
+            , div [ class "flex flex-row w-full sm:flex-col sm:w-auto items-center border-t sm:border-0 mt-2 sm:mt-0" ]
+                [ div [ class "flex flex-grow justify-center" ]
+                    [ Comp.Basic.genericButton
+                        { label = ""
+                        , icon = "fa fa-arrow-up"
+                        , disabled = index == 0
+                        , handler = onClick (MoveItem index (index - 1))
+                        , attrs = [ href "#" ]
+                        , baseStyle = "py-2 px-4 h-full w-full" ++ S.secondaryBasicButtonMain
+                        , activeStyle = S.secondaryBasicButtonHover
+                        }
+                    ]
+                , div [ class "flex flex-grow justify-center" ]
+                    [ Comp.Basic.genericButton
+                        { label = ""
+                        , icon = "fa fa-times"
+                        , disabled = False
+                        , handler = onClick (RemoveItem item.id)
+                        , attrs = [ href "#" ]
+                        , baseStyle = "py-2 px-4 h-full w-full" ++ S.secondaryBasicButtonMain
+                        , activeStyle = S.secondaryBasicButtonHover
+                        }
+                    ]
+                , div [ class "flex flex-grow justify-center" ]
+                    [ Comp.Basic.genericButton
+                        { label = ""
+                        , icon = "fa fa-arrow-down"
+                        , disabled = index == List.length model.items - 1
+                        , handler = onClick (MoveItem (index + 1) index)
+                        , attrs = [ href "#" ]
+                        , baseStyle = "py-2 px-4 h-full w-full" ++ S.secondaryBasicButtonMain
+                        , activeStyle = S.secondaryBasicButtonHover
+                        }
+                    ]
                 ]
             ]
         ]

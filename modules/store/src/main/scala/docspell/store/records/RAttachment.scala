@@ -69,9 +69,9 @@ object RAttachment {
       DML.set(T.position.increment(1))
     )
 
-  def nextPosition(id: Ident): ConnectionIO[Int] =
+  def nextPosition(itemId: Ident): ConnectionIO[Int] =
     for {
-      max <- Select(max(T.position).s, from(T), T.itemId === id).build
+      max <- Select(max(T.position).s, from(T), T.itemId === itemId).build
         .query[Option[Int]]
         .unique
     } yield max.map(_ + 1).getOrElse(0)
@@ -97,8 +97,15 @@ object RAttachment {
       DML.set(T.fileId.setTo(fId))
     )
 
-  def updateItemId(attachId: Ident, itemId: Ident): ConnectionIO[Int] =
-    DML.update(T, T.id === attachId, DML.set(T.itemId.setTo(itemId)))
+  def updateItemId(attachId: Ident, itemId: Ident, pos: Int): ConnectionIO[Int] =
+    DML.update(
+      T,
+      T.id === attachId,
+      DML.set(
+        T.itemId.setTo(itemId),
+        T.position.setTo(pos)
+      )
+    )
 
   def updatePosition(attachId: Ident, pos: Int): ConnectionIO[Int] =
     DML.update(T, T.id === attachId, DML.set(T.position.setTo(pos)))
