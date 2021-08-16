@@ -30,9 +30,7 @@ selected items.
 {{ figure(file="merge-02.png") }}
 
 The order of this list can matter when merging (see below). You can
-move items via drag and drop:
-
-{{ figure(file="merge-03.png") }}
+move items via drag and drop or the buttons on the right.
 
 
 ## Click merge
