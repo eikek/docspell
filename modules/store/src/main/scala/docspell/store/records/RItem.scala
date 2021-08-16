@@ -130,6 +130,30 @@ object RItem {
   def getCollective(itemId: Ident): ConnectionIO[Option[Ident]] =
     Select(T.cid.s, from(T), T.id === itemId).build.query[Ident].option
 
+  def updateAll(item: RItem): ConnectionIO[Int] =
+    for {
+      t <- currentTime
+      n <- DML.update(
+        T,
+        T.id === item.id,
+        DML.set(
+          T.name.setTo(item.name),
+          T.itemDate.setTo(item.itemDate),
+          T.source.setTo(item.source),
+          T.incoming.setTo(item.direction),
+          T.corrOrg.setTo(item.corrOrg),
+          T.corrPerson.setTo(item.corrPerson),
+          T.concPerson.setTo(item.concPerson),
+          T.concEquipment.setTo(item.concEquipment),
+          T.inReplyTo.setTo(item.inReplyTo),
+          T.dueDate.setTo(item.dueDate),
+          T.notes.setTo(item.notes),
+          T.folder.setTo(item.folderId),
+          T.updated.setTo(t)
+        )
+      )
+    } yield n
+
   def updateState(
       itemId: Ident,
       itemState: ItemState,

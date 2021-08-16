@@ -97,6 +97,9 @@ object RAttachment {
       DML.set(T.fileId.setTo(fId))
     )
 
+  def updateItemId(attachId: Ident, itemId: Ident): ConnectionIO[Int] =
+    DML.update(T, T.id === attachId, DML.set(T.itemId.setTo(itemId)))
+
   def updatePosition(attachId: Ident, pos: Int): ConnectionIO[Int] =
     DML.update(T, T.id === attachId, DML.set(T.position.setTo(pos)))
 

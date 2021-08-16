@@ -12,7 +12,7 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
-import docspell.common.ItemState
+import docspell.common._
 import docspell.restapi.model._
 import docspell.restserver.conv.{Conversions, MultiIdSupport}
 
@@ -20,8 +20,10 @@ import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
+import org.log4s.getLogger
 
 object ItemMultiRoutes extends MultiIdSupport {
+  private[this] val log4sLogger = getLogger
 
   def apply[F[_]: Async](
       backend: BackendApp[F],
@@ -217,6 +219,14 @@ object ItemMultiRoutes extends MultiIdSupport {
           resp <- Ok(Conversions.basicResult(res, "Custom fields removed."))
         } yield resp
 
+      case req @ POST -> Root / "merge" =>
+        for {
+          json  <- req.as[IdList]
+          items <- readIds[F](json.ids)
+          logger = Logger.log4s(log4sLogger)
+          res  <- backend.item.merge(logger, items, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Items merged"))
+        } yield resp
     }
   }
 

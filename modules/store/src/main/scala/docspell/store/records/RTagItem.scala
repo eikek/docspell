@@ -34,6 +34,22 @@ object RTagItem {
   def insert(v: RTagItem): ConnectionIO[Int] =
     DML.insert(T, T.all, fr"${v.tagItemId},${v.itemId},${v.tagId}")
 
+  def moveTags(fromItem: Ident, toItem: Ident): ConnectionIO[Int] =
+    for {
+      both <- intersect(
+        Select(select(T.tagId), from(T), T.itemId === fromItem).distinct,
+        Select(select(T.tagId), from(T), T.itemId === toItem).distinct
+      ).build
+        .query[Ident]
+        .to[List]
+      skipIds = NonEmptyList.fromList(both)
+      n <- DML.update(
+        T,
+        T.itemId === fromItem &&? skipIds.map(ids => T.tagId.notIn(ids)),
+        DML.set(T.itemId.setTo(toItem))
+      )
+    } yield n
+
   def deleteItemTags(item: Ident): ConnectionIO[Int] =
     DML.delete(T, T.itemId === item)
 
