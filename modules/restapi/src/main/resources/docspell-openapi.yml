@@ -2332,6 +2332,34 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
 
+  /sec/items/merge:
+    post:
+      operationId: "sec-items-merge"
+      tags:
+        - Item (Multi Edit)
+      summary: Merge multiple items into one.
+      description: |
+        A list of items is merged into one item by copying all
+        metadata into the first item in the list. Metadata is only
+        written, if there is no value present. So the order of items
+        in the list matters - the first item with a correspondent or
+        folder will win. For metadata that allow multiple values, like
+        tags or custom fields the values are combined.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/items/deleteAll:
     post:
       operationId: "sec-items-delete-all"

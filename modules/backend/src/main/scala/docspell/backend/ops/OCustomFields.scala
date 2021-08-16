@@ -13,6 +13,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.ops.OCustomFields.CustomFieldData
+import docspell.backend.ops.OCustomFields.FieldValue
 import docspell.backend.ops.OCustomFields.NewCustomField
 import docspell.backend.ops.OCustomFields.RemoveValue
 import docspell.backend.ops.OCustomFields.SetValue
@@ -53,12 +54,18 @@ trait OCustomFields[F[_]] {
 
   /** Deletes a value for a given field an item. */
   def deleteValue(in: RemoveValue): F[UpdateResult]
+
+  /** Finds all values to the given items */
+  def findAllValues(itemIds: NonEmptyList[Ident]): F[List[FieldValue]]
 }
 
 object OCustomFields {
 
   type CustomFieldData = QCustomField.CustomFieldData
   val CustomFieldData = QCustomField.CustomFieldData
+
+  type FieldValue = QCustomField.FieldValue
+  val FieldValue = QCustomField.FieldValue
 
   case class NewCustomField(
       name: Ident,
@@ -99,6 +106,9 @@ object OCustomFields {
     Resource.pure[F, OCustomFields[F]](new OCustomFields[F] {
 
       private[this] val logger = Logger.log4s[ConnectionIO](getLogger)
+
+      def findAllValues(itemIds: NonEmptyList[Ident]): F[List[FieldValue]] =
+        store.transact(QCustomField.findAllValues(itemIds))
 
       def findAll(coll: Ident, nameQuery: Option[String]): F[Vector[CustomFieldData]] =
         store.transact(

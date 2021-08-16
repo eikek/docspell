@@ -34,6 +34,9 @@ object RTagItem {
   def insert(v: RTagItem): ConnectionIO[Int] =
     DML.insert(T, T.all, fr"${v.tagItemId},${v.itemId},${v.tagId}")
 
+  def moveTags(from: Ident, to: Ident): ConnectionIO[Int] =
+    DML.update(T, T.itemId === from, DML.set(T.itemId.setTo(to)))
+
   def deleteItemTags(item: Ident): ConnectionIO[Int] =
     DML.delete(T, T.itemId === item)
 

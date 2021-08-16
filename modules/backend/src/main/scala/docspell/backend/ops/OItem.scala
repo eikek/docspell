@@ -12,6 +12,7 @@ import cats.implicits._
 
 import docspell.backend.JobFactory
 import docspell.backend.fulltext.CreateIndex
+import docspell.backend.item.Merge
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.store.queries.{QAttachment, QItem, QMoveAttachment}
@@ -206,6 +207,14 @@ trait OItem[F[_]] {
       storeMode: MakePreviewArgs.StoreMode,
       notifyJoex: Boolean
   ): F[UpdateResult]
+
+  /** Merges a list of items into one item. The remaining items are deleted.
+    */
+  def merge(
+      logger: Logger[F],
+      items: NonEmptyList[Ident],
+      collective: Ident
+  ): F[UpdateResult]
 }
 
 object OItem {
@@ -223,6 +232,18 @@ object OItem {
       oequip <- OEquipment(store)
       logger <- Resource.pure[F, Logger[F]](Logger.log4s(getLogger))
       oitem <- Resource.pure[F, OItem[F]](new OItem[F] {
+
+        def merge(
+            logger: Logger[F],
+            items: NonEmptyList[Ident],
+            collective: Ident
+        ): F[UpdateResult] =
+          Merge(logger, store, this, createIndex).merge(items, collective).attempt.map {
+            case Right(Right(_))                  => UpdateResult.success
+            case Right(Left(Merge.Error.NoItems)) => UpdateResult.NotFound
+            case Left(ex)                         => UpdateResult.failure(ex)
+          }
+
         def moveAttachmentBefore(
             itemId: Ident,
             source: Ident,

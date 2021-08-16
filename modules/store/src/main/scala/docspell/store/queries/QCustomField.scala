@@ -6,6 +6,7 @@
 
 package docspell.store.queries
 
+import cats.data.{NonEmptyList => Nel}
 import cats.implicits._
 
 import docspell.common._
@@ -19,7 +20,7 @@ object QCustomField {
   private val f = RCustomField.as("f")
   private val v = RCustomFieldValue.as("v")
 
-  case class CustomFieldData(field: RCustomField, usageCount: Int)
+  final case class CustomFieldData(field: RCustomField, usageCount: Int)
 
   def findAllLike(
       coll: Ident,
@@ -47,4 +48,24 @@ object QCustomField {
       GroupBy(f.all)
     )
   }
+
+  final case class FieldValue(
+      field: RCustomField,
+      itemId: Ident,
+      value: String
+  )
+
+  def findAllValues(itemIds: Nel[Ident]): ConnectionIO[List[FieldValue]] = {
+    val cf = RCustomField.as("cf")
+    val cv = RCustomFieldValue.as("cv")
+
+    run(
+      select(cf.all, Nel.of(cv.itemId, cv.value)),
+      from(cv).innerJoin(cf, cv.field === cf.id),
+      cv.itemId.in(itemIds)
+    )
+      .query[FieldValue]
+      .to[List]
+  }
+
 }
