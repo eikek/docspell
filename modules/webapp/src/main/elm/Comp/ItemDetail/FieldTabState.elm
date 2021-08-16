@@ -154,14 +154,21 @@ tabState settings openTabs cfmodel toggle tab =
                 _ ->
                     False
 
-        state =
-            if hidden then
-                TB.Hidden
-
-            else if Set.member tab.name openTabs then
+        folded =
+            if Set.member tab.name openTabs then
                 TB.Open
 
             else
                 TB.Closed
+
+        state =
+            { folded = folded
+            , look =
+                if hidden then
+                    TB.Hidden
+
+                else
+                    TB.Normal
+            }
     in
     ( state, toggle tab )

@@ -6,7 +6,9 @@
 
 
 module Comp.Tabs exposing
-    ( State(..)
+    ( Folded(..)
+    , Look(..)
+    , State
     , Style
     , Tab
     , akkordion
@@ -37,10 +39,21 @@ type alias Style =
     }
 
 
-type State
+type Folded
     = Open
     | Closed
-    | Hidden
+
+
+type Look
+    = Hidden
+    | Active
+    | Normal
+
+
+type alias State =
+    { look : Look
+    , folded : Folded
+    }
 
 
 defaultStyle : Style
@@ -88,11 +101,14 @@ akkordionTab style state toggle tab =
                 ]
                 (a
                     [ class "flex flex-row items-center flex-grow"
+                    , classList
+                        [ ( "font-bold text-indigo-600 dark:text-yellow-500", state.look == Active )
+                        ]
                     , href "#"
                     , onClick toggle
                     ]
                     [ div [ class "inline-flex mr-2 w-2" ]
-                        [ if state == Open then
+                        [ if state.folded == Open then
                             i [ class "fa fa-caret-down" ] []
 
                           else
@@ -112,7 +128,7 @@ akkordionTab style state toggle tab =
 
         tabContent =
             div
-                [ classList [ ( "hidden", state == Closed ) ]
+                [ classList [ ( "hidden", state.folded == Closed ) ]
                 , class style.bodyClasses
                 ]
                 tab.body
@@ -120,7 +136,9 @@ akkordionTab style state toggle tab =
     div
         [ class style.tabClasses
         , class "flex flex-col"
-        , classList [ ( "hidden", state == Hidden ) ]
+        , classList
+            [ ( "hidden", state.look == Hidden )
+            ]
         ]
         [ tabTitle
         , tabContent

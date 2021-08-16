@@ -489,10 +489,14 @@ view2 texts flags settings model =
     let
         state tab =
             if Set.member tab.name model.openTabs then
-                Comp.Tabs.Open
+                { folded = Comp.Tabs.Open
+                , look = Comp.Tabs.Normal
+                }
 
             else
-                Comp.Tabs.Closed
+                { folded = Comp.Tabs.Closed
+                , look = Comp.Tabs.Normal
+                }
     in
     div [ class "flex flex-col" ]
         [ Comp.Tabs.akkordion
