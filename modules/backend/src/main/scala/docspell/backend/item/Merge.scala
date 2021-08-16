@@ -58,7 +58,7 @@ object Merge {
           )
           _ <- EitherT.right[Error](
             NonEmptyList.fromList(items.tail.map(_.id)) match {
-              case Some(nel) => itemOps.setDeletedState(nel, collective)
+              case Some(nel) => itemOps.deleteItemMultiple(nel, collective)
               case None      => 0.pure[F]
             }
           )
@@ -146,7 +146,7 @@ object Merge {
 
       case CustomFieldType.Text =>
         val text = fields.toList
-          .map(fv => CustomFieldType.Text.parseValue(fv.value).toOption)
+          .flatMap(fv => CustomFieldType.Text.parseValue(fv.value).toOption)
           .mkString(", ")
         fields.head.copy(value = CustomFieldType.Text.valueString(text))
     }
