@@ -583,7 +583,7 @@ update mId key flags settings msg model =
                 SelectView svm ->
                     let
                         result =
-                            Comp.ItemMerge.update lmsg svm.mergeModel
+                            Comp.ItemMerge.update flags lmsg svm.mergeModel
 
                         nextView =
                             if result.done then

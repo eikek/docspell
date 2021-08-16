@@ -18,6 +18,7 @@ import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightList exposing (ItemLightList)
+import Comp.Basic
 import Comp.MenuBar as MB
 import Data.Direction
 import Data.Fields
@@ -89,6 +90,7 @@ type FormState
     | FormStateHttp Http.Error
     | FormStateMergeSuccessful
     | FormStateError String
+    | FormStateMergeInProcess
 
 
 
@@ -119,8 +121,8 @@ type Msg
     | MergeResp (Result Http.Error BasicResult)
 
 
-update : Msg -> Model -> UpdateResult
-update msg model =
+update : Flags -> Msg -> Model -> UpdateResult
+update flags msg model =
     case msg of
         ItemResp (Ok list) ->
             notDoneResult ( init (flatten list), Cmd.none )
@@ -176,7 +178,14 @@ update msg model =
                     notDoneResult ( model_, Cmd.none )
 
         SubmitMerge ->
-            notDoneResult ( model, Cmd.none )
+            let
+                ids =
+                    List.map .id model.items
+            in
+            notDoneResult
+                ( { model | formState = FormStateMergeInProcess }
+                , Api.mergeItems flags ids MergeResp
+                )
 
         CancelMerge ->
             { model = model
@@ -429,7 +438,7 @@ renderFormState texts model =
         FormStateError msg ->
             div
                 [ class S.errorMessage
-                , class "py-2"
+                , class "my-2"
                 ]
                 [ text msg
                 ]
@@ -437,7 +446,7 @@ renderFormState texts model =
         FormStateHttp err ->
             div
                 [ class S.errorMessage
-                , class "py-2"
+                , class "my-2"
                 ]
                 [ text (texts.httpError err)
                 ]
@@ -445,10 +454,16 @@ renderFormState texts model =
         FormStateMergeSuccessful ->
             div
                 [ class S.successMessage
-                , class "py-2"
+                , class "my-2"
                 ]
                 [ text texts.mergeSuccessful
                 ]
+
+        FormStateMergeInProcess ->
+            Comp.Basic.loadingDimmer
+                { active = True
+                , label = texts.mergeInProcess
+                }
 
 
 templateCtx : Texts -> IT.TemplateContext

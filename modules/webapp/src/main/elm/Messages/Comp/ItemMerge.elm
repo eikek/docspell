@@ -31,6 +31,7 @@ type alias Texts =
     , submitMergeTitle : String
     , cancelMergeTitle : String
     , mergeSuccessful : String
+    , mergeInProcess : String
     }
 
 
@@ -48,6 +49,7 @@ gb =
     , cancelMerge = "Cancel"
     , cancelMergeTitle = "Back to select view"
     , mergeSuccessful = "Items merged successfully"
+    , mergeInProcess = "Items are merged …"
     }
 
 
@@ -65,4 +67,5 @@ de =
     , cancelMerge = "Abbrechen"
     , cancelMergeTitle = "Zurück zur Auswahl"
     , mergeSuccessful = "Die Dokumente wurden erfolgreich zusammengeführt."
+    , mergeInProcess = "Dokumente werden zusammengeführt…"
     }

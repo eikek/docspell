@@ -80,6 +80,7 @@ module Api exposing
     , login
     , loginSession
     , logout
+    , mergeItems
     , moveAttachmentBefore
     , newInvite
     , postCustomField
@@ -1468,6 +1469,20 @@ getJobQueueStateTask flags =
 
 
 --- Item (Mulit Edit)
+
+
+mergeItems :
+    Flags
+    -> List String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+mergeItems flags items receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/merge"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList items))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 reprocessMultiple :

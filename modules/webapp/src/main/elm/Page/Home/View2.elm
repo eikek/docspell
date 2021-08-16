@@ -51,7 +51,7 @@ viewContent texts flags settings model =
         ]
         (searchStats texts flags settings model
             ++ itemsBar texts flags settings model
-            ++ [ div [ class "relative" ]
+            ++ [ div [ class "sm:relative" ]
                     (itemMergeView texts settings model
                         ++ itemCardList texts flags settings model
                     )
@@ -72,6 +72,7 @@ itemMergeView texts settings model =
                 MergeSelected ->
                     [ div
                         [ class S.dimmerMerge
+                        , class "mt-10 sm:mt-0"
                         ]
                         [ Html.map MergeItemsMsg
                             (Comp.ItemMerge.view texts.itemMerge settings svm.mergeModel)
