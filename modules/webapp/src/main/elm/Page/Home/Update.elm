@@ -586,16 +586,36 @@ update mId key flags settings msg model =
                             Comp.ItemMerge.update flags lmsg svm.mergeModel
 
                         nextView =
-                            if result.done then
-                                SelectView { svm | action = NoneAction }
+                            case result.outcome of
+                                Comp.ItemMerge.OutcomeCancel ->
+                                    SelectView { svm | action = NoneAction }
 
-                            else
-                                SelectView { svm | mergeModel = result.model }
+                                Comp.ItemMerge.OutcomeNotYet ->
+                                    SelectView { svm | mergeModel = result.model }
+
+                                Comp.ItemMerge.OutcomeMerged ->
+                                    if settings.searchMenuVisible then
+                                        SearchView
+
+                                    else
+                                        SimpleView
+
+                        model_ =
+                            { model | viewMode = nextView }
                     in
-                    noSub
-                        ( { model | viewMode = nextView }
-                        , Cmd.map MergeItemsMsg result.cmd
-                        )
+                    if result.outcome == Comp.ItemMerge.OutcomeMerged then
+                        update mId
+                            key
+                            flags
+                            settings
+                            (DoSearch model.searchTypeDropdownValue)
+                            model_
+
+                    else
+                        noSub
+                            ( model_
+                            , Cmd.map MergeItemsMsg result.cmd
+                            )
 
                 _ ->
                     noSub ( model, Cmd.none )

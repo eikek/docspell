@@ -8,6 +8,7 @@
 module Comp.ItemMerge exposing
     ( Model
     , Msg
+    , Outcome(..)
     , init
     , initQuery
     , update
@@ -97,10 +98,16 @@ type FormState
 --- Update
 
 
+type Outcome
+    = OutcomeCancel
+    | OutcomeMerged
+    | OutcomeNotYet
+
+
 type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
-    , done : Bool
+    , outcome : Outcome
     }
 
 
@@ -108,7 +115,7 @@ notDoneResult : ( Model, Cmd Msg ) -> UpdateResult
 notDoneResult t =
     { model = Tuple.first t
     , cmd = Tuple.second t
-    , done = False
+    , outcome = OutcomeNotYet
     }
 
 
@@ -134,19 +141,19 @@ update flags msg model =
             if result.success then
                 { model = { model | formState = FormStateMergeSuccessful }
                 , cmd = Cmd.none
-                , done = True
+                , outcome = OutcomeMerged
                 }
 
             else
                 { model = { model | formState = FormStateError result.message }
                 , cmd = Cmd.none
-                , done = False
+                , outcome = OutcomeNotYet
                 }
 
         MergeResp (Err err) ->
             { model = { model | formState = FormStateHttp err }
             , cmd = Cmd.none
-            , done = False
+            , outcome = OutcomeNotYet
             }
 
         ToggleInfoText ->
@@ -190,7 +197,7 @@ update flags msg model =
         CancelMerge ->
             { model = model
             , cmd = Cmd.none
-            , done = True
+            , outcome = OutcomeCancel
             }
 
 
