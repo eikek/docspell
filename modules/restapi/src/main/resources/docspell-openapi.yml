@@ -2340,11 +2340,20 @@ paths:
       summary: Merge multiple items into one.
       description: |
         A list of items is merged into one item by copying all
-        metadata into the first item in the list. Metadata is only
-        written, if there is no value present. So the order of items
-        in the list matters - the first item with a correspondent or
-        folder will win. For metadata that allow multiple values, like
-        tags or custom fields the values are combined.
+        metadata into the first item in the list.
+
+        Metadata is copied into the target item, if there is no value
+        present. So the order of items in the list matters - the first
+        item with a correspondent or folder will win.
+
+        For metadata that allow multiple values, like tags or custom
+        fields the values are combined. Notes are concatenated from
+        all items and custom fields with the same name are added
+        together for money/numeric fields, concatenated for text
+        fields or the first value is used for other field types.
+
+        After a successful merge, the remaining items are deleted from
+        the database (they cannot be restored).
       security:
         - authTokenHeader: []
       requestBody:
