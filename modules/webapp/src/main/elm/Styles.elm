@@ -351,3 +351,8 @@ tableMain =
 tableRow : String
 tableRow =
     "border-t dark:border-bluegray-600"
+
+
+qrCode : String
+qrCode =
+    "max-w-min dark:bg-bluegray-400 bg-gray-50 mx-auto md:mx-0"

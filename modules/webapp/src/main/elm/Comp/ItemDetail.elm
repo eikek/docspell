@@ -38,6 +38,6 @@ update =
     Comp.ItemDetail.Update.update
 
 
-view2 : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
+view2 : Texts -> Flags -> ItemNav -> UiSettings -> Model -> Html Msg
 view2 =
     Comp.ItemDetail.View2.view

@@ -6,9 +6,7 @@
 
 
 module Data.Icons exposing
-    ( addFiles
-    , addFiles2
-    , addFilesIcon
+    ( addFiles2
     , addFilesIcon2
     , concerned
     , concerned2
@@ -60,6 +58,8 @@ module Data.Icons exposing
     , personIcon2
     , search
     , searchIcon
+    , showQr
+    , showQrIcon
     , source
     , source2
     , sourceIcon
@@ -321,24 +321,24 @@ editNotesIcon =
     i [ class editNotes ] []
 
 
-addFiles : String
-addFiles =
-    "file plus icon"
-
-
 addFiles2 : String
 addFiles2 =
     "fa fa-file-upload"
 
 
-addFilesIcon : Html msg
-addFilesIcon =
-    i [ class addFiles ] []
-
-
 addFilesIcon2 : String -> Html msg
 addFilesIcon2 classes =
     i [ class addFiles2, class classes ] []
+
+
+showQr : String
+showQr =
+    "fa fa-qrcode"
+
+
+showQrIcon : String -> Html msg
+showQrIcon classes =
+    i [ class showQr, class classes ] []
 
 
 tag : String
