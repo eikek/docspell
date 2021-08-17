@@ -8,6 +8,7 @@
 port module Ports exposing
     ( checkSearchQueryString
     , initClipboard
+    , printElement
     , receiveCheckQueryResult
     , receiveUiSettings
     , removeAccount
@@ -46,6 +47,12 @@ port receiveUiSettings : (StoredUiSettings -> msg) -> Sub msg
 
 
 port requestUiSettings : AuthResult -> Cmd msg
+
+
+{-| Creates a new window/tab, writes the contents of the given element
+and calls the print dialog.
+-}
+port printElement : String -> Cmd msg
 
 
 setUiTheme : UiTheme -> Cmd msg

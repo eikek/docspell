@@ -18,7 +18,10 @@ module Comp.ItemDetail.Model exposing
     , ViewMode(..)
     , emptyModel
     , initSelectViewModel
+    , initShowQrModel
     , isEditNotes
+    , isShowQrAttach
+    , isShowQrItem
     , personMatchesOrg
     , resultModel
     , resultModelCmd
@@ -40,7 +43,6 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagList exposing (TagList)
 import Comp.AttachmentMeta
-import Comp.ConfirmModal
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.DetailEdit
@@ -118,7 +120,31 @@ type alias Model =
     , attachmentDropdownOpen : Bool
     , editMenuTabsOpen : Set String
     , viewMode : ViewMode
+    , showQrModel : ShowQrModel
     }
+
+
+type alias ShowQrModel =
+    { item : Bool
+    , attach : Bool
+    }
+
+
+initShowQrModel : ShowQrModel
+initShowQrModel =
+    { item = False
+    , attach = False
+    }
+
+
+isShowQrItem : ShowQrModel -> Bool
+isShowQrItem model =
+    model.item
+
+
+isShowQrAttach : ShowQrModel -> Bool
+isShowQrAttach model =
+    model.attach
 
 
 type ConfirmModalValue
@@ -230,6 +256,7 @@ emptyModel =
     , attachmentDropdownOpen = False
     , editMenuTabsOpen = Set.empty
     , viewMode = SimpleView
+    , showQrModel = initShowQrModel
     }
 
 
@@ -340,6 +367,9 @@ type Msg
     | ReprocessItemConfirmed
     | ToggleSelectView
     | RestoreItem
+    | ToggleShowQrItem String
+    | ToggleShowQrAttach String
+    | PrintElement String
 
 
 type SaveNameState

@@ -105,3 +105,31 @@ elmApp.ports.checkSearchQueryString.subscribe(function(args) {
         elmApp.ports.receiveCheckQueryResult.send(answer);
     }
 });
+
+elmApp.ports.printElement.subscribe(function(id) {
+    if (id) {
+        var el = document.getElementById(id);
+        var head = document.getElementsByTagName('head');
+        if (head && head.length > 0) {
+            head = head[0];
+        }
+        if (el) {
+            var w = window.open();
+            w.document.write('<html>');
+            if (head) {
+                w.document.write('<head>');
+                ['title', 'meta'].forEach(function(el) {
+                    var headEls = head.getElementsByTagName(el);
+                    for (var i=0; i<headEls.length; i++) {
+                        w.document.write(headEls.item(i).outerHTML);
+                    }
+                });
+                w.document.write('</head>');
+            }
+            w.document.write('<body>');
+            w.document.write(el.outerHTML);
+            w.document.write('<script type="application/javascript">window.print(); window.close();</script>');
+            w.document.write('</body></html>');
+        }
+    }
+});

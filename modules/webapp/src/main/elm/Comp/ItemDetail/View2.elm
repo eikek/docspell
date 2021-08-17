@@ -19,12 +19,15 @@ import Comp.ItemDetail.Model
         , Msg(..)
         , NotesField(..)
         , SaveNameState(..)
+        , isShowQrItem
         )
 import Comp.ItemDetail.Notes
+import Comp.ItemDetail.ShowQrCode
 import Comp.ItemDetail.SingleAttachment
 import Comp.ItemMail
 import Comp.MenuBar as MB
 import Comp.SentMails
+import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
@@ -36,12 +39,12 @@ import Page exposing (Page(..))
 import Styles as S
 
 
-view : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
-view texts inav settings model =
+view : Texts -> Flags -> ItemNav -> UiSettings -> Model -> Html Msg
+view texts flags inav settings model =
     div [ class "flex flex-col h-full" ]
         [ header texts settings model
         , menuBar texts inav settings model
-        , body texts inav settings model
+        , body texts flags inav settings model
         , itemModal texts model
         ]
 
@@ -146,7 +149,7 @@ menuBar texts inav settings model =
                         [ ( "bg-gray-200 dark:bg-bluegray-600", model.addFilesOpen )
                         ]
                     , if model.addFilesOpen then
-                        title "Close"
+                        title texts.close
 
                       else
                         title texts.addMoreFiles
@@ -155,6 +158,22 @@ menuBar texts inav settings model =
                     , href "#"
                     ]
                     [ Icons.addFilesIcon2 ""
+                    ]
+            , MB.CustomElement <|
+                a
+                    [ classList
+                        [ ( "bg-gray-200 dark:bg-bluegray-600", isShowQrItem model.showQrModel )
+                        ]
+                    , if isShowQrItem model.showQrModel then
+                        title texts.close
+
+                      else
+                        title texts.showQrCode
+                    , onClick (ToggleShowQrItem model.item.id)
+                    , class S.secondaryBasicButton
+                    , href "#"
+                    ]
+                    [ Icons.showQrIcon ""
                     ]
             , MB.CustomElement <|
                 a
@@ -214,20 +233,24 @@ menuBar texts inav settings model =
         }
 
 
-body : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
-body texts _ settings model =
+body : Texts -> Flags -> ItemNav -> UiSettings -> Model -> Html Msg
+body texts flags _ settings model =
     div [ class "grid gap-2 grid-cols-1 md:grid-cols-3 h-full" ]
-        [ leftArea texts settings model
-        , rightArea texts settings model
+        [ leftArea texts flags settings model
+        , rightArea texts flags settings model
         ]
 
 
-leftArea : Texts -> UiSettings -> Model -> Html Msg
-leftArea texts settings model =
+leftArea : Texts -> Flags -> UiSettings -> Model -> Html Msg
+leftArea texts flags settings model =
     div [ class "w-full md:order-first md:mr-2 flex flex-col" ]
         [ addDetailForm texts settings model
         , sendMailForm texts settings model
         , Comp.ItemDetail.AddFilesForm.view texts.addFilesForm model
+        , Comp.ItemDetail.ShowQrCode.view flags
+            (S.border ++ " mb-4")
+            model
+            (Comp.ItemDetail.ShowQrCode.Item model.item.id)
         , Comp.ItemDetail.Notes.view texts.notes model
         , div
             [ classList
@@ -245,15 +268,15 @@ leftArea texts settings model =
         ]
 
 
-rightArea : Texts -> UiSettings -> Model -> Html Msg
-rightArea texts settings model =
+rightArea : Texts -> Flags -> UiSettings -> Model -> Html Msg
+rightArea texts flags settings model =
     div [ class "md:col-span-2 h-full" ]
-        (attachmentsBody texts settings model)
+        (attachmentsBody texts flags settings model)
 
 
-attachmentsBody : Texts -> UiSettings -> Model -> List (Html Msg)
-attachmentsBody texts settings model =
-    List.indexedMap (Comp.ItemDetail.SingleAttachment.view texts.singleAttachment settings model)
+attachmentsBody : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+attachmentsBody texts flags settings model =
+    List.indexedMap (Comp.ItemDetail.SingleAttachment.view texts.singleAttachment flags settings model)
         model.item.attachments
 
 

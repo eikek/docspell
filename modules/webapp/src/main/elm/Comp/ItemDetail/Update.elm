@@ -42,7 +42,10 @@ import Comp.ItemDetail.Model
         , UpdateResult
         , ViewMode(..)
         , initSelectViewModel
+        , initShowQrModel
         , isEditNotes
+        , isShowQrAttach
+        , isShowQrItem
         , resultModel
         , resultModelCmd
         , resultModelCmdSub
@@ -66,6 +69,7 @@ import Dict
 import Html5.DragDrop as DD
 import Http
 import Page exposing (Page(..))
+import Ports
 import Set exposing (Set)
 import Throttle
 import Time
@@ -1606,6 +1610,29 @@ update key flags inav settings msg model =
 
         RestoreItem ->
             resultModelCmd ( model, Api.restoreItem flags model.item.id SaveResp )
+
+        ToggleShowQrItem id ->
+            let
+                sqm =
+                    model.showQrModel
+
+                next =
+                    { sqm | item = not sqm.item }
+            in
+            resultModel { model | showQrModel = next }
+
+        ToggleShowQrAttach id ->
+            let
+                sqm =
+                    model.showQrModel
+
+                next =
+                    { sqm | attach = not sqm.attach }
+            in
+            resultModel { model | attachmentDropdownOpen = False, showQrModel = next }
+
+        PrintElement id ->
+            resultModelCmd ( model, Ports.printElement id )
 
 
 

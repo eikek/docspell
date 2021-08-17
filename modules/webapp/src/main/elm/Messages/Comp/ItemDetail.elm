@@ -55,6 +55,8 @@ type alias Texts =
     , sendingMailNow : String
     , formatDateTime : Int -> String
     , mailSendSuccessful : String
+    , showQrCode : String
+    , close : String
     }
 
 
@@ -89,6 +91,8 @@ gb =
     , sendingMailNow = "Sending e-mail…"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     , mailSendSuccessful = "Mail sent."
+    , showQrCode = "Show the URL to this page as QR code"
+    , close = "Close"
     }
 
 
@@ -123,4 +127,6 @@ de =
     , sendingMailNow = "E-Mail wird gesendet…"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
     , mailSendSuccessful = "E-Mail wurde versendet."
+    , showQrCode = "Den Link zu dieser Seite als QR code anzeigen"
+    , close = "Schließen"
     }

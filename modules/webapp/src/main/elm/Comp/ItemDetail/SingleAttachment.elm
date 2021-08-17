@@ -11,8 +11,19 @@ import Api
 import Api.Model.Attachment exposing (Attachment)
 import Comp.AttachmentMeta
 import Comp.ItemDetail.ConfirmModalView
-import Comp.ItemDetail.Model exposing (Model, Msg(..), NotesField(..), SaveNameState(..), ViewMode(..))
+import Comp.ItemDetail.Model
+    exposing
+        ( Model
+        , Msg(..)
+        , NotesField(..)
+        , SaveNameState(..)
+        , ViewMode(..)
+        , isShowQrAttach
+        )
+import Comp.ItemDetail.ShowQrCode
 import Comp.MenuBar as MB
+import Data.Flags exposing (Flags)
+import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Dict
 import Html exposing (..)
@@ -27,8 +38,8 @@ import Util.Size
 import Util.String
 
 
-view : Texts -> UiSettings -> Model -> Int -> Attachment -> Html Msg
-view texts settings model pos attach =
+view : Texts -> Flags -> UiSettings -> Model -> Int -> Attachment -> Html Msg
+view texts flags settings model pos attach =
     let
         fileUrl =
             Api.fileURL attach.id
@@ -60,6 +71,11 @@ view texts settings model pos attach =
 
                 Nothing ->
                     span [ class "hidden" ] []
+
+          else if isShowQrAttach model.showQrModel then
+            Comp.ItemDetail.ShowQrCode.view1 flags
+                "border-r border-l border-b dark:border-bluegray-600 h-full"
+                (Comp.ItemDetail.ShowQrCode.Attach attach.id)
 
           else
             div
@@ -266,6 +282,13 @@ attachHeader texts settings model _ attach =
                           , label = texts.reprocessFile
                           , attrs =
                                 [ onClick (RequestReprocessFile attach.id)
+                                , href "#"
+                                ]
+                          }
+                        , { icon = Icons.showQr
+                          , label = texts.showQrCode
+                          , attrs =
+                                [ onClick (ToggleShowQrAttach attach.id)
                                 , href "#"
                                 ]
                           }

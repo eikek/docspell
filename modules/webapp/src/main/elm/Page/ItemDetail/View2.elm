@@ -61,11 +61,11 @@ viewSidebar texts visible flags settings model =
 
 
 viewContent : Texts -> ItemNav -> Flags -> UiSettings -> Model -> Html Msg
-viewContent texts inav _ settings model =
+viewContent texts inav flags settings model =
     div
         [ id "content"
         , class S.content
         ]
         [ Html.map ItemDetailMsg
-            (Comp.ItemDetail.view2 texts.itemDetail inav settings model.detail)
+            (Comp.ItemDetail.view2 texts.itemDetail flags inav settings model.detail)
         ]

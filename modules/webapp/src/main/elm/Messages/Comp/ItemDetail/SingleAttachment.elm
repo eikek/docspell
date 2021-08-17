@@ -31,6 +31,7 @@ type alias Texts =
     , selectModeTitle : String
     , exitSelectMode : String
     , deleteAttachments : String
+    , showQrCode : String
     }
 
 
@@ -51,6 +52,7 @@ gb =
     , selectModeTitle = "Select Mode"
     , exitSelectMode = "Exit Select Mode"
     , deleteAttachments = "Delete attachments"
+    , showQrCode = "Show URL as QR code"
     }
 
 
@@ -71,4 +73,5 @@ de =
     , selectModeTitle = "Auswahlmodus"
     , exitSelectMode = "Auswahlmodus beenden"
     , deleteAttachments = "Anhänge löschen"
+    , showQrCode = "Link als QR Code anzeigen"
     }

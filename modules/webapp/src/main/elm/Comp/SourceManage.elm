@@ -279,9 +279,6 @@ viewLinks2 texts flags _ source =
 
         styleUrl =
             "truncate px-2 py-2 border-0 border-t border-b border-r font-mono text-sm my-auto rounded-r border-gray-400 dark:border-bluegray-500"
-
-        styleQr =
-            "max-w-min dark:bg-bluegray-400 bg-gray-50 mx-auto md:mx-0"
     in
     div
         []
@@ -350,7 +347,7 @@ viewLinks2 texts flags _ source =
         , div [ class "py-2" ]
             [ div
                 [ class S.border
-                , class styleQr
+                , class S.qrCode
                 ]
                 [ qrCodeView texts appUrl
                 ]
@@ -386,7 +383,7 @@ viewLinks2 texts flags _ source =
         , div [ class "py-2" ]
             [ div
                 [ class S.border
-                , class styleQr
+                , class S.qrCode
                 ]
                 [ qrCodeView texts apiUrl
                 ]
