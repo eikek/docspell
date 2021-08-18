@@ -81,7 +81,8 @@ trait UserTaskStore[F[_]] {
     *
     * Unlike `updateTask`, this ensures that there is at most one task of some name in the
     * db. Multiple same tasks (task with same name) may not be allowed to run, depending
-    * on what they do. This is not ensured by the database, though.
+    * on what they do. This is not ensured by the database, though. The task is identified
+    * by task name, submitter and group.
     *
     * If there are currently multiple tasks with same name as `ut` for the user `account`,
     * they will all be removed and the given task inserted!

@@ -40,6 +40,8 @@ import docspell.store.records.{REmptyTrashSetting, RJobLog}
 import emil.javamail._
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
+import docspell.store.usertask.UserTaskStore
+import docspell.store.usertask.UserTaskScope
 
 final class JoexAppImpl[F[_]: Async](
     cfg: Config,
@@ -91,9 +93,15 @@ final class JoexAppImpl[F[_]: Async](
         REmptyTrashSetting.findForAllCollectives(OCollective.EmptyTrash.default, 50)
       )
       .evalMap(es =>
-        EmptyTrashTask.periodicTask(EmptyTrashArgs(es.cid, es.minAge), es.schedule)
+        UserTaskStore(store).use { uts =>
+          val args = EmptyTrashArgs(es.cid, es.minAge)
+          uts.updateOneTask(
+            UserTaskScope(args.collective),
+            args.makeSubject.some,
+            EmptyTrashTask.userTask(args, es.schedule)
+          )
+        }
       )
-      .evalMap(pstore.insert)
       .compile
       .drain
 
