@@ -167,7 +167,9 @@ directories.
 
 The `watch` subcommand can be used to watch one or more directories
 and upload files when they arrive. It uses the `upload` command under
-the hood and therefore most options are also available here.
+the hood and therefore most options are also available here. You can
+upload via a source url, the integration endpoint or a valid session
+(requires to login).
 
 It detects file creations and skips a rename within a watched folder.
 The flag `-r` or `--recursive` is required to recursively watch a
@@ -190,6 +192,10 @@ If watching a directory is not possible due to system constraints
 (e.g. when using NFS or SAMBA shares), a less efficient option is to
 use the `upload` subcommand with `--poll` option which periodically
 traverses a directory.
+
+When using the integration endpoint, it requires to specify `-i` and
+potentially a secret if the endpoint is protected with a secret.
+
 
 ## Download files
 
@@ -303,7 +309,8 @@ commands require the [admin
 secret](@/docs/configure/_index.md#admin-endpoint) either in the
 config file or as an argument.
 
-Reset user password:
+### Reset user password
+
 ``` shell
 ❯ dsc admin reset-password --account demo
 ┌─────────┬──────────────┬──────────────────┐
@@ -313,7 +320,8 @@ Reset user password:
 └─────────┴──────────────┴──────────────────┘
 ```
 
-Recreate fulltext index:
+### Recreate fulltext index
+
 ``` shell
 ❯ dsc admin --admin-secret admin123 recreate-index
 ┌─────────┬─────────────────────────────────────┐
@@ -322,6 +330,34 @@ Recreate fulltext index:
 │ true    │ Full-text index will be re-created. │
 └─────────┴─────────────────────────────────────┘
 ```
+
+### Convert all files to PDF
+``` shell
+❯ dsc admin --admin-secret admin123 convert-all-pdf
+┌─────────┬─────────────────────────────────┐
+│ success │ message                         │
+├─────────┼─────────────────────────────────┤
+│ true    │ Convert all PDFs task submitted │
+└─────────┴─────────────────────────────────┘
+```
+
+This may be necessary if you disabled pdf conversion before and are
+enabling it now.
+
+### Regenerate preview images
+
+``` shell
+❯ dsc admin --admin-secret admin123 convert-all-pdf
+┌─────────┬───────────────────────────────────────┐
+│ success │ message                               │
+├─────────┼───────────────────────────────────────┤
+│ true    │ Generate all previews task submitted. │
+└─────────┴───────────────────────────────────────┘
+```
+
+This submits tasks to (re)generate preview images of all files. This
+is necessary if you changed the `preview.dpi` setting in joex'
+config.
 
 ## Search for items
 

@@ -7,8 +7,9 @@ To get started, here are some quick links:
 
 - Using [docker and docker-compose](@/docs/install/docker.md). This
   sets up everything: all prerequisites, both docspell components and
-  a container running the [consumedir.sh](@/docs/tools/consumedir.md)
-  script to import files that are dropped in a folder.
+  a container running the [dsc
+  watch](@/docs/tools/cli.md#watch-a-directory) script to import files
+  that are dropped in a folder.
 - [Download, Unpack and Run](@/docs/install/download_run.md). This
   option is also very quick, but you need to check the
   [prerequisites](@/docs/install/prereq.md) yourself. Database is
@@ -27,9 +28,9 @@ To get started, here are some quick links:
   thread](https://forums.unraid.net/topic/103425-docspell-hilfe/) in
   the German Unraid forum. Thanks for providing these!
 
-Every [component](@/docs/intro/_index.md#components) (restserver, joex,
-consumedir) can run on different machines and multiple times. Most of
-the time running all on one machine is sufficient and also for
+Every [component](@/docs/intro/_index.md#components) (restserver,
+joex, dsc watch) can run on different machines and multiple times.
+Most of the time running all on one machine is sufficient and also for
 simplicity, the docker-compose setup reflects this variant.
 
 While there are many different ways to run docspell, at some point all
