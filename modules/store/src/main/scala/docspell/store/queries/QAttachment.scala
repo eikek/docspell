@@ -46,9 +46,8 @@ object QAttachment {
       .foldMonoid
   }
 
-  /** Deletes an attachment, its related source and meta data records.
-    * It will only delete an related archive file, if this is the last
-    * attachment in that archive.
+  /** Deletes an attachment, its related source and meta data records. It will only delete
+    * an related archive file, if this is the last attachment in that archive.
     */
   def deleteSingleAttachment[F[_]: Sync](
       store: Store[F]
@@ -77,9 +76,9 @@ object QAttachment {
     } yield n + k + f
   }
 
-  /** This deletes the attachment and *all* its related files. This used
-    * when deleting an item and should not be used to delete a
-    * *single* attachment where the item should stay.
+  /** This deletes the attachment and *all* its related files. This used when deleting an
+    * item and should not be used to delete a *single* attachment where the item should
+    * stay.
     */
   private def deleteAttachment[F[_]: Sync](store: Store[F])(ra: RAttachment): F[Int] =
     for {

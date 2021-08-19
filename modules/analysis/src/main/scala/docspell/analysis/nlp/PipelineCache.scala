@@ -17,8 +17,8 @@ import docspell.common._
 
 import org.log4s.getLogger
 
-/** Creating the StanfordCoreNLP pipeline is quite expensive as it
-  * involves IO and initializing large objects.
+/** Creating the StanfordCoreNLP pipeline is quite expensive as it involves IO and
+  * initializing large objects.
   *
   * Therefore, the instances are cached, because they are thread-safe.
   *

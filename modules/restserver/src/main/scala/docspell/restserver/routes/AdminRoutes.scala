@@ -56,5 +56,5 @@ object AdminRoutes {
 
   private def compareSecret(s1: String)(s2: String): Boolean =
     s1.length > 0 && s1.length == s2.length &&
-      s1.zip(s2).forall({ case (a, b) => a == b })
+      s1.zip(s2).forall { case (a, b) => a == b }
 }

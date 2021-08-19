@@ -18,8 +18,8 @@ import docspell.store.queries.QItem
 
 trait CreateIndex[F[_]] {
 
-  /** Low-level function to re-index data. It is not submitted as a job,
-    * but invoked on the current machine.
+  /** Low-level function to re-index data. It is not submitted as a job, but invoked on
+    * the current machine.
     */
   def reIndexData(
       logger: Logger[F],

@@ -41,6 +41,6 @@ private[auth] object TokenUtil {
 
   def constTimeEq(s1: String, s2: String): Boolean =
     s1.zip(s2)
-      .foldLeft(true)({ case (r, (c1, c2)) => r & c1 == c2 }) & s1.length == s2.length
+      .foldLeft(true) { case (r, (c1, c2)) => r & c1 == c2 } & s1.length == s2.length
 
 }

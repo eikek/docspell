@@ -26,9 +26,8 @@ import bitpeace.RangeDef
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 
-/** Converts the given attachment file using ocrmypdf if it is a pdf
-  * and has not already been converted (the source file is the same as
-  * in the attachment).
+/** Converts the given attachment file using ocrmypdf if it is a pdf and has not already
+  * been converted (the source file is the same as in the attachment).
   */
 object PdfConvTask {
   case class Args(attachId: Ident)
@@ -100,7 +99,7 @@ object PdfConvTask {
       .through(bp.fetchData2(RangeDef.all))
 
     val storeResult: ConversionResult.Handler[F, Unit] =
-      Kleisli({
+      Kleisli {
         case ConversionResult.SuccessPdf(file) =>
           storeToAttachment(ctx, in, file)
 
@@ -109,15 +108,15 @@ object PdfConvTask {
 
         case ConversionResult.UnsupportedFormat(mime) =>
           ctx.logger.warn(
-            s"Unable to convert '${mime}' file ${ctx.args}: unsupported format."
+            s"Unable to convert '$mime' file ${ctx.args}: unsupported format."
           )
 
         case ConversionResult.InputMalformed(mime, reason) =>
-          ctx.logger.warn(s"Unable to convert '${mime}' file ${ctx.args}: $reason")
+          ctx.logger.warn(s"Unable to convert '$mime' file ${ctx.args}: $reason")
 
         case ConversionResult.Failure(ex) =>
           Sync[F].raiseError(ex)
-      })
+      }
 
     def ocrMyPdf(lang: Language): F[Unit] =
       OcrMyPdf.toPDF[F, Unit](

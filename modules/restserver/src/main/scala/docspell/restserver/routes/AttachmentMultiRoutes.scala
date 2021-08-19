@@ -33,7 +33,7 @@ object AttachmentMultiRoutes extends MultiIdSupport {
       for {
         json        <- req.as[IdList]
         attachments <- readIds[F](json.ids)
-        n           <- backend.item.deleteAttachmentMultiple(attachments, user.account.collective)
+        n <- backend.item.deleteAttachmentMultiple(attachments, user.account.collective)
         res = BasicResult(
           n > 0,
           if (n > 0) "Attachment(s) deleted" else "Attachment deletion failed."

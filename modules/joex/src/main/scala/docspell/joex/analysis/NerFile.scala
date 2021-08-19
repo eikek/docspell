@@ -97,7 +97,7 @@ object NerFile {
 
     private def sanitizeRegex(str: String): String =
       str.trim.toLowerCase.foldLeft("") { (res, ch) =>
-        if (invalidChars.contains(ch)) s"${res}\\$ch"
+        if (invalidChars.contains(ch)) s"$res\\$ch"
         else s"$res$ch"
       }
   }

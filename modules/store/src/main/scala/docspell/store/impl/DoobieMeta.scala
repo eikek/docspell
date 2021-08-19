@@ -22,12 +22,12 @@ import io.circe.{Decoder, Encoder}
 
 trait DoobieMeta extends EmilDoobieMeta {
 
-  implicit val sqlLogging = LogHandler({
+  implicit val sqlLogging = LogHandler {
     case e @ Success(_, _, _, _) =>
       DoobieMeta.logger.trace("SQL " + e)
     case e =>
       DoobieMeta.logger.error(s"SQL Failure: $e")
-  })
+  }
 
   def jsonMeta[A](implicit d: Decoder[A], e: Encoder[A]): Meta[A] =
     Meta[String].imap(str => str.parseJsonAs[A].fold(ex => throw ex, identity))(a =>

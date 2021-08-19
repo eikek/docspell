@@ -17,8 +17,8 @@ sealed trait UserTaskScope { self: Product =>
 
   def fold[A](fa: AccountId => A, fb: Ident => A): A
 
-  /** Maps to the account or uses the collective for both parts if the
-    * scope is collective wide.
+  /** Maps to the account or uses the collective for both parts if the scope is collective
+    * wide.
     */
   private[usertask] def toAccountId: AccountId =
     AccountId(collective, fold(_.user, identity))

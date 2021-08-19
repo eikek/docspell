@@ -109,16 +109,16 @@ object ItemMultiRoutes extends MultiIdSupport {
         for {
           json  <- req.as[ItemsAndRef]
           items <- readIds[F](json.items)
-          res   <- backend.item.setFolderMultiple(items, json.ref, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Folder updated"))
+          res  <- backend.item.setFolderMultiple(items, json.ref, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Folder updated"))
         } yield resp
 
       case req @ PUT -> Root / "direction" =>
         for {
           json  <- req.as[ItemsAndDirection]
           items <- readIds[F](json.items)
-          res   <- backend.item.setDirection(items, json.direction, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Direction updated"))
+          res <- backend.item.setDirection(items, json.direction, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Direction updated"))
         } yield resp
 
       case req @ PUT -> Root / "date" =>

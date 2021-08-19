@@ -48,7 +48,7 @@ trait FileChecks {
     storePdfTxtHandler(file, file.resolveSibling("unexpected.txt")).map(_._1)
 
   def storePdfTxtHandler(filePdf: Path, fileTxt: Path): Handler[IO, (Path, Path)] =
-    Kleisli({
+    Kleisli {
       case ConversionResult.SuccessPdfTxt(pdf, txt) =>
         for {
           pout <- pdf.through(storeFile(filePdf)).compile.lastOrError
@@ -64,7 +64,7 @@ trait FileChecks {
 
       case cr =>
         throw new Exception(s"Unexpected result: $cr")
-    })
+    }
 
   def commandExists(cmd: String): Boolean =
     Runtime.getRuntime.exec(Array("which", cmd)).waitFor() == 0

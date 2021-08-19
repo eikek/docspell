@@ -22,13 +22,12 @@ sealed trait FromExpr {
   def leftJoin(sel: Select, alias: String, on: Condition): Joined =
     leftJoin(Relation.SubSelect(sel, alias), on)
 
-  /** Prepends the given from expression to existing joins. It will
-    * replace the current [[FromExpr.From]] value.
+  /** Prepends the given from expression to existing joins. It will replace the current
+    * [[FromExpr.From]] value.
     *
-    * If this is a [[FromExpr.From]], it is replaced by the given
-    * expression. If this is a [[FromExpr.Joined]] then the given
-    * expression replaces the current `From` and the joins are
-    * prepended to the existing joins.
+    * If this is a [[FromExpr.From]], it is replaced by the given expression. If this is a
+    * [[FromExpr.Joined]] then the given expression replaces the current `From` and the
+    * joins are prepended to the existing joins.
     */
   def prepend(fe: FromExpr): FromExpr
 }

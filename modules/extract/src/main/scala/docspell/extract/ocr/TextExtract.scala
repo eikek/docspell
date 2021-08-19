@@ -31,7 +31,7 @@ object TextExtract {
   ): Stream[F, Text] =
     Stream
       .eval(TikaMimetype.detect(in, MimeTypeHint.none))
-      .flatMap({
+      .flatMap {
         case MimeType.pdf =>
           Stream.eval(Ocr.extractPdf(in, logger, lang, config)).unNoneTerminate
 
@@ -40,7 +40,7 @@ object TextExtract {
 
         case mt =>
           raiseError(s"File `$mt` not supported")
-      })
+      }
       .map(Text.apply)
 
   private def raiseError[F[_]: Sync](msg: String): Stream[F, Nothing] =

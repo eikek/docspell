@@ -23,19 +23,16 @@ import docspell.store.syntax.MimeTypes._
 
 import bitpeace.{Mimetype, MimetypeHint, RangeDef}
 
-/** Goes through all attachments and creates a PDF version of it where
-  * supported.
+/** Goes through all attachments and creates a PDF version of it where supported.
   *
-  * The `attachment` record is updated with the PDF version while the
-  * original file has been stored in the `attachment_source` record.
+  * The `attachment` record is updated with the PDF version while the original file has
+  * been stored in the `attachment_source` record.
   *
-  * If pdf conversion is not possible or if the input is already a
-  * pdf, both files are identical. That is, the `file_id`s point to
-  * the same file. Since the name of an attachment may be changed by
-  * the user, the `attachment_origin` record keeps that, too.
+  * If pdf conversion is not possible or if the input is already a pdf, both files are
+  * identical. That is, the `file_id`s point to the same file. Since the name of an
+  * attachment may be changed by the user, the `attachment_origin` record keeps that, too.
   *
-  * This step assumes an existing premature item, it traverses its
-  * attachments.
+  * This step assumes an existing premature item, it traverses its attachments.
   */
 object ConvertPdf {
 
@@ -104,7 +101,7 @@ object ConvertPdf {
       ra: RAttachment,
       item: ItemData
   ): Handler[F, (RAttachment, Option[RAttachmentMeta])] =
-    Kleisli({
+    Kleisli {
       case ConversionResult.SuccessPdf(pdf) =>
         ctx.logger.info(s"Conversion to pdf successful. Saving file.") *>
           storePDF(ctx, cfg, ra, pdf)
@@ -142,7 +139,7 @@ object ConvertPdf {
         ctx.logger
           .error(s"PDF conversion failed: ${ex.getMessage}. Go without PDF file") *>
           (ra, None: Option[RAttachmentMeta]).pure[F]
-    })
+    }
 
   private def storePDF[F[_]: Sync](
       ctx: Context[F, ProcessItemArgs],
@@ -196,7 +193,7 @@ object ConvertPdf {
                       case Right(_) => ().pure[F]
                       case Left(ex) =>
                         ctx.logger
-                          .error(ex)(s"Cannot delete previous attachment file: ${raPrev}")
+                          .error(ex)(s"Cannot delete previous attachment file: $raPrev")
 
                     }
           } yield ()

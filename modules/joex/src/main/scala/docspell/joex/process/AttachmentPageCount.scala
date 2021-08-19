@@ -22,9 +22,8 @@ import docspell.store.syntax.MimeTypes._
 
 import bitpeace.{Mimetype, RangeDef}
 
-/** Goes through all attachments that must be already converted into a
-  * pdf. If it is a pdf, the number of pages are retrieved and stored
-  * in the attachment metadata.
+/** Goes through all attachments that must be already converted into a pdf. If it is a
+  * pdf, the number of pages are retrieved and stored in the attachment metadata.
   */
 object AttachmentPageCount {
 

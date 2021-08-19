@@ -20,9 +20,8 @@ import doobie._
 import doobie.implicits._
 import io.circe.Encoder
 
-/** A periodic task is a special job description, that shares a few
-  * properties of a `RJob`. It must provide all information to create
-  * a `RJob` value eventually.
+/** A periodic task is a special job description, that shares a few properties of a
+  * `RJob`. It must provide all information to create a `RJob` value eventually.
   */
 case class RPeriodicTask(
     id: Ident,

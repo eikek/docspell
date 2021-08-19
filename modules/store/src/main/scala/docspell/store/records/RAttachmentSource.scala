@@ -16,8 +16,8 @@ import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
 
-/** The origin file of an attachment. The `id` is shared with the
-  * attachment, to create a 1-1 (or 0..1-1) relationship.
+/** The origin file of an attachment. The `id` is shared with the attachment, to create a
+  * 1-1 (or 0..1-1) relationship.
   */
 case class RAttachmentSource(
     id: Ident, //same as RAttachment.id

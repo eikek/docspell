@@ -368,8 +368,8 @@ object QItem {
       from.query[ListItem].stream
     }
 
-  /** Same as `findItems` but resolves the tags for each item. Note that
-    * this is implemented by running an additional query per item.
+  /** Same as `findItems` but resolves the tags for each item. Note that this is
+    * implemented by running an additional query per item.
     */
   def findItemsWithTags(
       collective: Ident,

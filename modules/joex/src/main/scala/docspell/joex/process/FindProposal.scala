@@ -19,8 +19,8 @@ import docspell.joex.Config
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.records._
 
-/** Super simple approach to find corresponding meta data to an item
-  * by looking up values from NER in the users address book.
+/** Super simple approach to find corresponding meta data to an item by looking up values
+  * from NER in the users address book.
   */
 object FindProposal {
   type Args = ProcessItemArgs

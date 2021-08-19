@@ -22,13 +22,11 @@ object StanfordNerAnnotator {
   /** Runs named entity recognition on the given `text`.
     *
     * This uses the classifier pipeline from stanford-nlp, see
-    * https://nlp.stanford.edu/software/CRF-NER.html. Creating these
-    * classifiers is quite expensive, it involves loading large model
-    * files. The classifiers are thread-safe and so they are cached.
-    * The `cacheKey` defines the "slot" where classifiers are stored
-    * and retrieved. If for a given `cacheKey` the `settings` change,
-    * a new classifier must be created. It will then replace the
-    * previous one.
+    * https://nlp.stanford.edu/software/CRF-NER.html. Creating these classifiers is quite
+    * expensive, it involves loading large model files. The classifiers are thread-safe
+    * and so they are cached. The `cacheKey` defines the "slot" where classifiers are
+    * stored and retrieved. If for a given `cacheKey` the `settings` change, a new
+    * classifier must be created. It will then replace the previous one.
     */
   def nerAnnotate(nerClassifier: StanfordCoreNLP, text: String): Vector[NerLabel] = {
     val doc = new CoreDocument(text)

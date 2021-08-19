@@ -20,20 +20,17 @@ import fs2.io.file.Path
 
 object ImageSize {
 
-  /** Return the image size from its header without reading
-    * the whole image into memory.
+  /** Return the image size from its header without reading the whole image into memory.
     */
   def get(file: Path): Option[Dimension] =
     Using(new FileImageInputStream(file.toNioPath.toFile))(getDimension).toOption.flatten
 
-  /** Return the image size from its header without reading
-    * the whole image into memory.
+  /** Return the image size from its header without reading the whole image into memory.
     */
   def get(in: InputStream): Option[Dimension] =
     Option(ImageIO.createImageInputStream(in)).flatMap(getDimension)
 
-  /** Return the image size from its header without reading
-    * the whole image into memory.
+  /** Return the image size from its header without reading the whole image into memory.
     */
   def get[F[_]: Sync](data: Stream[F, Byte]): F[Option[Dimension]] =
     data.take(768).compile.to(Array).map { ar =>

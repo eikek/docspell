@@ -150,12 +150,12 @@ class ConversionTest extends FunSuite with FileChecks {
     conversion
       .use { conv =>
         def check: Handler[IO, Unit] =
-          Kleisli({
+          Kleisli {
             case ConversionResult.InputMalformed(_, _) =>
               ().pure[IO]
             case cr =>
               IO.raiseError(new Exception(s"Unexpected result: $cr"))
-          })
+          }
 
         runConversion(bombs, _ => check, conv).compile.drain
       }
@@ -171,12 +171,12 @@ class ConversionTest extends FunSuite with FileChecks {
       .emits(uris)
       .covary[IO]
       .zipWithIndex
-      .evalMap({ case (uri, index) =>
+      .evalMap { case (uri, index) =>
         val load     = uri.readURL[IO](8192)
         val dataType = DataType.filename(uri.path.segments.last)
         logger.info(s"Processing file ${uri.path.asString}") *>
           conv.toPDF(dataType, Language.German, handler(index))(load)
-      })
+      }
 
   def commandsExist: Boolean =
     commandExists(convertConfig.unoconv.command.program) &&

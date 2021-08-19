@@ -37,9 +37,9 @@ class StanfordTextClassifierSuite extends FunSuite {
             .repeat
             .take(10)
         )
-        .flatMap({ case (a, b) =>
+        .flatMap { case (a, b) =>
           Stream.emits(Seq(a, b))
-        })
+        }
         .covary[IO]
 
     val modelExists = {
@@ -52,7 +52,7 @@ class StanfordTextClassifierSuite extends FunSuite {
   }
 
   test("run classifier") {
-    val cfg    = TextClassifierConfig(File.path(Paths.get("target")), NonEmptyList.of(Map()))
+    val cfg = TextClassifierConfig(File.path(Paths.get("target")), NonEmptyList.of(Map()))
     val things = File.withTempDir[IO](File.path(Paths.get("target")), "testcls")
 
     things

@@ -57,7 +57,7 @@ object LinkProposal {
       case Some(a) =>
         val ids = a.values.map(_.ref.id.id)
         ctx.logger.info(
-          s"Found many (${a.size}, ${ids}) candidates for ${a.proposalType}. Setting first."
+          s"Found many (${a.size}, $ids) candidates for ${a.proposalType}. Setting first."
         ) *>
           setItemMeta(data.item.id, ctx, a.proposalType, a.values.head.ref.id).map(_ =>
             Result.multiple(mpt)

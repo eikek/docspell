@@ -23,9 +23,8 @@ trait OFolder[F[_]] {
 
   def findById(id: Ident, account: AccountId): F[Option[OFolder.FolderDetail]]
 
-  /** Adds a new folder. If `login` is non-empty, the `folder.user`
-    * property is ignored and the user-id is determined by the given
-    * login name.
+  /** Adds a new folder. If `login` is non-empty, the `folder.user` property is ignored
+    * and the user-id is determined by the given login name.
     */
   def add(folder: RFolder, login: Option[Ident]): F[AddResult]
 

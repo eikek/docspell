@@ -11,10 +11,9 @@ import io.circe.{Decoder, Encoder}
 
 /** Arguments when re-processing an item.
   *
-  * The `itemId` must exist and point to some item. If the attachment
-  * list is non-empty, only those attachments are re-processed. They
-  * must belong to the given item. If the list is empty, then all
-  * attachments are re-processed.
+  * The `itemId` must exist and point to some item. If the attachment list is non-empty,
+  * only those attachments are re-processed. They must belong to the given item. If the
+  * list is empty, then all attachments are re-processed.
   */
 case class ReProcessItemArgs(itemId: Ident, attachments: List[Ident])
 

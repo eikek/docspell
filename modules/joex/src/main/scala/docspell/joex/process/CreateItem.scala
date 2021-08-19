@@ -45,9 +45,9 @@ object CreateItem {
             Stream
               .emits(ctx.args.files)
               .flatMap(f => ctx.store.bitpeace.get(f.fileMetaId.id).map(fm => (f, fm)))
-              .collect({ case (f, Some(fm)) if isValidFile(fm) => f })
+              .collect { case (f, Some(fm)) if isValidFile(fm) => f }
               .zipWithIndex
-              .evalMap({ case (f, index) =>
+              .evalMap { case (f, index) =>
                 Ident
                   .randomId[F]
                   .map(id =>
@@ -60,7 +60,7 @@ object CreateItem {
                       f.name
                     )
                   )
-              })
+              }
           }
           .compile
           .toVector
@@ -152,7 +152,7 @@ object CreateItem {
                   .transact(RAttachment.findByItemCollectiveSource(ri.id, ri.cid, fids))
                   .flatTap(ats =>
                     ctx.logger.debug(
-                      s"Found ${ats.size} attachments. Use only those from task args: ${fileMetaIds}"
+                      s"Found ${ats.size} attachments. Use only those from task args: $fileMetaIds"
                     )
                   )
               )

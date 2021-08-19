@@ -52,7 +52,7 @@ object EmptyTrashTask {
           s"Starting removing all soft-deleted items older than ${maxDate.asString}"
         )
         nDeleted <- deleteAll(ctx.args, maxDate, itemOps, itemSearchOps, ctx)
-        _        <- ctx.logger.info(s"Finished deleting ${nDeleted} items")
+        _        <- ctx.logger.info(s"Finished deleting $nDeleted items")
       } yield ()
     }
 

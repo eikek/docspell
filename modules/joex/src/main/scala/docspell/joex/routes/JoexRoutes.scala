@@ -50,7 +50,10 @@ object JoexRoutes {
         for {
           optJob <- app.scheduler.getRunning.map(_.find(_.id == id))
           optLog <- optJob.traverse(j => app.findLogs(j.id))
-          jAndL = for { job <- optJob; log <- optLog } yield mkJobLog(job, log)
+          jAndL = for {
+            job <- optJob
+            log <- optLog
+          } yield mkJobLog(job, log)
           resp <- jAndL.map(Ok(_)).getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 

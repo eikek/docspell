@@ -101,7 +101,7 @@ object FtsWork {
       def recoverWith(
           other: FtsWork[F]
       )(implicit ev: ApplicativeError[F, Throwable]): FtsWork[F] =
-        Kleisli(ctx => mt.run(ctx).onError({ case _ => other.run(ctx) }))
+        Kleisli(ctx => mt.run(ctx).onError { case _ => other.run(ctx) })
 
       def forContext(
           cfg: Config.FullTextSearch,

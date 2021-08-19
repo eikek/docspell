@@ -91,13 +91,12 @@ object MetaProposalList {
       .getOrElse(empty)
 
   def fromMap(m: Map[MetaProposalType, MetaProposal]): MetaProposalList =
-    new MetaProposalList(m.toList.map({ case (k, v) => v.copy(proposalType = k) }))
+    new MetaProposalList(m.toList.map { case (k, v) => v.copy(proposalType = k) })
 
-  /** Flattens the given list of meta-proposals into a single list,
-    * where each meta-proposal type exists at most once. Candidates to
-    * equal proposal-types are merged together. The candidate's order
-    * is preserved and candidates of proposals are appended as given
-    * by the order of the given `seq'.
+  /** Flattens the given list of meta-proposals into a single list, where each
+    * meta-proposal type exists at most once. Candidates to equal proposal-types are
+    * merged together. The candidate's order is preserved and candidates of proposals are
+    * appended as given by the order of the given `seq'.
     */
   def flatten(ml: Seq[MetaProposalList]): MetaProposalList =
     flatten0(

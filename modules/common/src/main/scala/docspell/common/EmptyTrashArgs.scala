@@ -14,8 +14,8 @@ import io.circe.generic.semiauto._
 
 /** Arguments to the empty-trash task.
   *
-  * This task is run periodically to really delete all soft-deleted
-  * items. These are items with state `ItemState.Deleted`.
+  * This task is run periodically to really delete all soft-deleted items. These are items
+  * with state `ItemState.Deleted`.
   */
 case class EmptyTrashArgs(
     collective: Ident,

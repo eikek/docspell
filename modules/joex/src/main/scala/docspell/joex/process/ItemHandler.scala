@@ -77,7 +77,7 @@ object ItemHandler {
   )(data: ItemData): Task[F, Args, ItemData] =
     isLastRetry[F].flatMap {
       case true =>
-        ProcessItem[F](cfg, itemOps, fts, analyser, regexNer)(data).attempt.flatMap({
+        ProcessItem[F](cfg, itemOps, fts, analyser, regexNer)(data).attempt.flatMap {
           case Right(d) =>
             Task.pure(d)
           case Left(ex) =>
@@ -85,7 +85,7 @@ object ItemHandler {
               "Processing failed on last retry. Creating item but without proposals."
             ).flatMap(_ => itemStateTask(ItemState.Created)(data))
               .andThen(_ => Sync[F].raiseError(ex))
-        })
+        }
       case false =>
         ProcessItem[F](cfg, itemOps, fts, analyser, regexNer)(data)
           .flatMap(itemStateTask(ItemState.Created))

@@ -23,7 +23,7 @@ object ClassifierName {
   private val categoryPrefix = "tagcategory-"
 
   def tagCategory(cat: String): ClassifierName =
-    apply(s"${categoryPrefix}${cat}")
+    apply(s"$categoryPrefix$cat")
 
   val concernedPerson: ClassifierName =
     apply("concernedperson")
@@ -56,7 +56,7 @@ object ClassifierName {
   def findOrphanTagModels[F[_]](coll: Ident): ConnectionIO[List[RClassifierModel]] =
     for {
       cats <- RClassifierSetting.getActiveCategories(coll)
-      allModels = RClassifierModel.findAllByQuery(coll, s"${categoryPrefix}%")
+      allModels = RClassifierModel.findAllByQuery(coll, s"$categoryPrefix%")
       result <- NonEmptyList.fromList(cats) match {
         case Some(nel) =>
           allModels.flatMap(all =>

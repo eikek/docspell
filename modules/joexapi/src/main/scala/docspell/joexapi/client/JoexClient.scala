@@ -51,7 +51,7 @@ object JoexClient {
             if (succ) ()
             else
               logger.warn(
-                s"Notifying Joex instance '${base.asString}' returned with failure: ${msg}"
+                s"Notifying Joex instance '${base.asString}' returned with failure: $msg"
               )
           case Left(ex) =>
             logger.warn(

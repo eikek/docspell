@@ -22,8 +22,7 @@ import docspell.store.records.RPerson
 import io.circe.syntax._
 import org.log4s.getLogger
 
-/** Maintains a custom regex-ner file per collective for stanford's
-  * regexner annotator.
+/** Maintains a custom regex-ner file per collective for stanford's regexner annotator.
   */
 trait RegexNerFile[F[_]] {
 
@@ -64,7 +63,7 @@ object RegexNerFile {
             val dur = Duration.between(nf.creation, now)
             if (dur > cfg.minTime)
               logger.fdebug(
-                s"Cache time elapsed (${dur} > ${cfg.minTime}). Check for new state."
+                s"Cache time elapsed ($dur > ${cfg.minTime}). Check for new state."
               ) *> updateFile(
                 collective,
                 now,
@@ -141,7 +140,7 @@ object RegexNerFile {
         )
 
       for {
-        _     <- logger.finfo(s"Generating custom NER file for collective '${collective.id}'")
+        _ <- logger.finfo(s"Generating custom NER file for collective '${collective.id}'")
         names <- store.transact(QCollective.allNames(collective, cfg.maxEntries))
         nerFile = NerFile(collective, lastUpdate, now)
         _ <- update(nerFile, NerFile.mkNerConfig(names))

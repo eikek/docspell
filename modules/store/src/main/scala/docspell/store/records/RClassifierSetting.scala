@@ -87,10 +87,9 @@ object RClassifierSetting {
   def delete(coll: Ident): ConnectionIO[Int] =
     DML.delete(T, T.cid === coll)
 
-  /** Finds tag categories that exist and match the classifier setting.
-    * If the setting contains a black list, they are removed from the
-    * existing categories. If it is a whitelist, the intersection is
-    * returned.
+  /** Finds tag categories that exist and match the classifier setting. If the setting
+    * contains a black list, they are removed from the existing categories. If it is a
+    * whitelist, the intersection is returned.
     */
   def getActiveCategories(coll: Ident): ConnectionIO[List[String]] =
     (for {
@@ -104,7 +103,9 @@ object RClassifierSetting {
       }
     } yield res).getOrElse(Nil)
 
-  /** Checks the json array of tag categories and removes those that are not present anymore. */
+  /** Checks the json array of tag categories and removes those that are not present
+    * anymore.
+    */
   def fixCategoryList(coll: Ident): ConnectionIO[Int] =
     (for {
       sett <- OptionT(findById(coll))

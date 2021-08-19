@@ -17,8 +17,8 @@ import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
 
-/** The archive file of some attachment. The `id` is shared with the
-  * attachment, to create a 0..1-1 relationship.
+/** The archive file of some attachment. The `id` is shared with the attachment, to create
+  * a 0..1-1 relationship.
   */
 case class RAttachmentArchive(
     id: Ident, //same as RAttachment.id
@@ -113,9 +113,8 @@ object RAttachmentArchive {
     ).orderBy(b.position.asc).build.query[(RAttachmentArchive, FileMeta)].to[Vector]
   }
 
-  /** If the given attachment id has an associated archive, this returns
-    * the number of all associated attachments. Returns 0 if there is
-    * no archive for the given attachment.
+  /** If the given attachment id has an associated archive, this returns the number of all
+    * associated attachments. Returns 0 if there is no archive for the given attachment.
     */
   def countEntries(attachId: Ident): ConnectionIO[Int] =
     Select(

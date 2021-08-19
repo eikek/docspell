@@ -43,14 +43,14 @@ object QJob {
         else ().pure[F]
       }
       .find(_.isRight)
-      .flatMap({
+      .flatMap {
         case Right(job) =>
           Stream.emit(job)
         case Left(_) =>
           Stream
             .eval(logger.fwarn[F]("Cannot mark job, even after retrying. Give up."))
             .map(_ => None)
-      })
+      }
       .compile
       .last
       .map(_.flatten)

@@ -28,9 +28,9 @@ object ZolaPlugin extends AutoPlugin {
 
   def zolaSettings: Seq[Setting[_]] =
     Seq(
-      zolaRootDir := baseDirectory.value / "site",
-      zolaOutputDir := target.value / "zola-site",
-      zolaCommand := "zola",
+      zolaRootDir     := baseDirectory.value / "site",
+      zolaOutputDir   := target.value / "zola-site",
+      zolaCommand     := "zola",
       zolaTestBaseUrl := "http://localhost:1234",
       zolaBuild := {
         val logger = streams.value.log

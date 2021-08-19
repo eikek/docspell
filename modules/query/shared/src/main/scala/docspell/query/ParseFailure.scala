@@ -45,7 +45,7 @@ object ParseFailure {
     def render: String = {
       val opts = expected.mkString(", ")
       val dots = if (exhaustive) "" else "…"
-      s"Expected: ${opts}${dots}"
+      s"Expected: $opts$dots"
     }
   }
 
@@ -57,11 +57,11 @@ object ParseFailure {
     )
 
   private[query] def packMsg(msg: Nel[Message]): Nel[Message] = {
-    val expectMsg = combineExpected(msg.collect({ case em: ExpectMessage => em }))
+    val expectMsg = combineExpected(msg.collect { case em: ExpectMessage => em })
       .sortBy(_.offset)
       .headOption
 
-    val simpleMsg = msg.collect({ case sm: SimpleMessage => sm })
+    val simpleMsg = msg.collect { case sm: SimpleMessage => sm }
 
     Nel.fromListUnsafe((simpleMsg ++ expectMsg).sortBy(_.offset))
   }
@@ -69,13 +69,13 @@ object ParseFailure {
   private[query] def combineExpected(msg: List[ExpectMessage]): List[ExpectMessage] =
     msg
       .groupBy(_.offset)
-      .map({ case (offset, es) =>
+      .map { case (offset, es) =>
         ExpectMessage(
           offset,
           es.flatMap(_.expected).distinct.sorted,
           es.forall(_.exhaustive)
         )
-      })
+      }
       .toList
 
   private[query] def expectationToMsg(e: Parser.Expectation): Message =
@@ -89,7 +89,7 @@ object ParseFailure {
       case InRange(offset, lower, upper) =>
         if (lower == upper) ExpectMessage(offset, List(lower.toString), true)
         else {
-          val expect = s"${lower}-${upper}"
+          val expect = s"$lower-$upper"
           ExpectMessage(offset, List(expect), true)
         }
 

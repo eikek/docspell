@@ -12,8 +12,8 @@ import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb.{Condition, Select}
 
-/** A helper class combining information from `RTag` and `RTagItem`.
-  * This is not a "record", there is no corresponding table.
+/** A helper class combining information from `RTag` and `RTagItem`. This is not a
+  * "record", there is no corresponding table.
   */
 case class TagItemName(
     tagId: Ident,

@@ -3,17 +3,16 @@ package docspell.build
 import sbt.{Def, _}
 import sbt.Keys._
 
-/** Take some files from dependencies and put them into the resources
-  * of a local sbt project.
+/** Take some files from dependencies and put them into the resources of a local sbt
+  * project.
   *
-  * The reason is that the stanford ner model files are very very
-  * large: the jar file for the english models is about 1G and the jar
-  * file for the german models is about 170M. But I only need one file
-  * that is about 60M from each jar. So just for the sake to save 1GB
-  * file size when packaging docspell, this ugly plugin exists….
+  * The reason is that the stanford ner model files are very very large: the jar file for
+  * the english models is about 1G and the jar file for the german models is about 170M.
+  * But I only need one file that is about 60M from each jar. So just for the sake to save
+  * 1GB file size when packaging docspell, this ugly plugin exists….
   *
-  * The jar files to filter must be added to the libraryDependencies
-  * in config "NerModels".
+  * The jar files to filter must be added to the libraryDependencies in config
+  * "NerModels".
   */
 object NerModelsPlugin extends AutoPlugin {
 
