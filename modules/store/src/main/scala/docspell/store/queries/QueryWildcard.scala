@@ -31,5 +31,5 @@ object QueryWildcard {
 
   def addAtEnd(s: String): String =
     if (s.endsWith("*")) atEnd(s)
-    else s"${s}%"
+    else s"$s%"
 }

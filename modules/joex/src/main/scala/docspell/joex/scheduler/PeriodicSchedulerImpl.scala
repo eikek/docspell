@@ -53,8 +53,8 @@ final class PeriodicSchedulerImpl[F[_]: Async](
 
   // internal
 
-  /** On startup, get all periodic jobs from this scheduler and remove
-    * the mark, so they get picked up again.
+  /** On startup, get all periodic jobs from this scheduler and remove the mark, so they
+    * get picked up again.
     */
   def init: F[Unit] =
     logError("Error clearing marks")(store.clearMarks(config.name))
@@ -68,7 +68,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
         go <- logThrow("Error getting next task")(
           store
             .takeNext(config.name, None)
-            .use({
+            .use {
               case Marked.Found(pj) =>
                 logger
                   .fdebug(s"Found periodic task '${pj.subject}/${pj.timer.asString}'") *>
@@ -79,7 +79,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
               case Marked.NotMarkable =>
                 logger.fdebug("Periodic job cannot be marked. Trying again.") *> true
                   .pure[F]
-            })
+            }
         )
       } yield go
 
@@ -90,7 +90,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
         else ().pure[F]
       )
       .flatMap(if (_) Stream.empty else Stream.eval(cancelNotify *> body))
-      .flatMap({
+      .flatMap {
         case true =>
           mainLoop
         case false =>
@@ -98,7 +98,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
             waiter.discrete.take(2).drain ++
             logger.sdebug(s"Notify signal, going into main loop") ++
             mainLoop
-      })
+      }
   }
 
   def isTriggered(pj: RPeriodicTask, now: Timestamp): Boolean =
@@ -107,7 +107,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
   def submitJob(pj: RPeriodicTask): F[Boolean] =
     store
       .findNonFinalJob(pj.id)
-      .flatMap({
+      .flatMap {
         case Some(job) =>
           logger.finfo[F](
             s"There is already a job with non-final state '${job.state}' in the queue"
@@ -116,7 +116,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
         case None =>
           logger.finfo[F](s"Submitting job for periodic task '${pj.task.id}'") *>
             pj.toJob.flatMap(queue.insert) *> notifyJoex *> true.pure[F]
-      })
+      }
 
   def notifyJoex: F[Unit] =
     sch.notifyChange *> store.findJoexNodes.flatMap(
@@ -145,12 +145,12 @@ final class PeriodicSchedulerImpl[F[_]: Async](
   def cancelNotify: F[Unit] =
     state
       .modify(_.clearNotify)
-      .flatMap({
+      .flatMap {
         case Some(fb) =>
           fb.cancel
         case None =>
           ().pure[F]
-      })
+      }
 
   private def logError(msg: => String)(fa: F[Unit]): F[Unit] =
     fa.attempt.flatMap {
@@ -159,12 +159,10 @@ final class PeriodicSchedulerImpl[F[_]: Async](
     }
 
   private def logThrow[A](msg: => String)(fa: F[A]): F[A] =
-    fa.attempt
-      .flatMap({
-        case r @ Right(_) => (r: Either[Throwable, A]).pure[F]
-        case l @ Left(ex) => logger.ferror(ex)(msg).map(_ => (l: Either[Throwable, A]))
-      })
-      .rethrow
+    fa.attempt.flatMap {
+      case r @ Right(_) => (r: Either[Throwable, A]).pure[F]
+      case l @ Left(ex) => logger.ferror(ex)(msg).map(_ => (l: Either[Throwable, A]))
+    }.rethrow
 }
 
 object PeriodicSchedulerImpl {

@@ -43,10 +43,10 @@ object QOrganization {
       .query[(ROrganization, Option[RContact])]
       .stream
       .groupAdjacentBy(_._1)
-      .map({ case (ro, chunk) =>
+      .map { case (ro, chunk) =>
         val cs = chunk.toVector.flatMap(_._2)
         (ro, cs)
-      })
+      }
   }
 
   def getOrgAndContact(
@@ -63,10 +63,10 @@ object QOrganization {
       .query[(ROrganization, Option[RContact])]
       .stream
       .groupAdjacentBy(_._1)
-      .map({ case (ro, chunk) =>
+      .map { case (ro, chunk) =>
         val cs = chunk.toVector.flatMap(_._2)
         (ro, cs)
-      })
+      }
       .compile
       .last
   }
@@ -91,11 +91,11 @@ object QOrganization {
       .query[(RPerson, Option[ROrganization], Option[RContact])]
       .stream
       .groupAdjacentBy(_._1)
-      .map({ case (rp, chunk) =>
+      .map { case (rp, chunk) =>
         val cs = chunk.toVector.flatMap(_._3)
         val ro = chunk.map(_._2).head.flatten
         (rp, ro, cs)
-      })
+      }
   }
 
   def getPersonAndContact(
@@ -115,11 +115,11 @@ object QOrganization {
       .query[(RPerson, Option[ROrganization], Option[RContact])]
       .stream
       .groupAdjacentBy(_._1)
-      .map({ case (rp, chunk) =>
+      .map { case (rp, chunk) =>
         val cs = chunk.toVector.flatMap(_._3)
         val ro = chunk.map(_._2).head.flatten
         (rp, ro, cs)
-      })
+      }
       .compile
       .last
   }

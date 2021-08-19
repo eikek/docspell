@@ -13,11 +13,10 @@ import io.circe.generic.semiauto._
 
 /** Arguments to the notification task.
   *
-  * This tasks queries items with a due date and informs the user via
-  * mail.
+  * This tasks queries items with a due date and informs the user via mail.
   *
-  * If the structure changes, there must be some database migration to
-  * update or remove the json data of the corresponding task.
+  * If the structure changes, there must be some database migration to update or remove
+  * the json data of the corresponding task.
   */
 case class NotifyDueItemsArgs(
     account: AccountId,

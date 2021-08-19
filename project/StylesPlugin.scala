@@ -6,9 +6,8 @@ import scala.sys.process._
 
 /** Integrates the tailwind build into sbt.
   *
-  * It assumes the required config (postcss.conf.js,
-  * tailwind.config.js) files in the base directory. It requires to
-  * have nodejs installed and the npx command available (or
+  * It assumes the required config (postcss.conf.js, tailwind.config.js) files in the base
+  * directory. It requires to have nodejs installed and the npx command available (or
   * configured).
   */
 object StylesPlugin extends AutoPlugin {
@@ -43,7 +42,7 @@ object StylesPlugin extends AutoPlugin {
         "META-INF" / "resources" / "webjars" / name.value / version.value,
       stylesNpxCommand := "npx",
       stylesNpmCommand := "npm",
-      stylesMode := StylesMode.Dev,
+      stylesMode       := StylesMode.Dev,
       stylesBuild := {
         val logger = streams.value.log
         val npx    = stylesNpxCommand.value
@@ -98,7 +97,7 @@ object StylesPlugin extends AutoPlugin {
       Seq(
         npx,
         "postcss",
-        s"${inDir}/*.css",
+        s"$inDir/*.css",
         "-o",
         target.absolutePath,
         "--env",

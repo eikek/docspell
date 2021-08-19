@@ -13,14 +13,12 @@ import fs2.concurrent.SignallingRef
 import docspell.joexapi.client.JoexClient
 import docspell.store.queue._
 
-/** A periodic scheduler takes care to submit periodic tasks to the
-  * job queue.
+/** A periodic scheduler takes care to submit periodic tasks to the job queue.
   *
-  * It is run in the background to regularily find a periodic task to
-  * execute. If the task is due, it will be submitted into the job
-  * queue where it will be picked up by the scheduler from some joex
-  * instance. If it is due in the future, a notification is scheduled
-  * to be received at that time so the task can be looked up again.
+  * It is run in the background to regularily find a periodic task to execute. If the task
+  * is due, it will be submitted into the job queue where it will be picked up by the
+  * scheduler from some joex instance. If it is due in the future, a notification is
+  * scheduled to be received at that time so the task can be looked up again.
   */
 trait PeriodicScheduler[F[_]] {
 

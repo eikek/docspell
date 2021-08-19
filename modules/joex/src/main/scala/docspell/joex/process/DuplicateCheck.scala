@@ -52,7 +52,7 @@ object DuplicateCheck {
     val fname = ctx.args.files.find(_.fileMetaId.id == fd.fm.id).flatMap(_.name)
     if (fd.exists)
       ctx.logger
-        .info(s"Deleting duplicate file ${fname}!") *> ctx.store.bitpeace
+        .info(s"Deleting duplicate file $fname!") *> ctx.store.bitpeace
         .delete(fd.fm.id)
         .compile
         .drain

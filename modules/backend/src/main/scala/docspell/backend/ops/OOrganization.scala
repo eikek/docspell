@@ -64,14 +64,14 @@ object OOrganization {
       ): F[Vector[OrgAndContacts]] =
         store
           .transact(QOrganization.findOrgAndContact(account.collective, query, _.name))
-          .map({ case (org, cont) => OrgAndContacts(org, cont) })
+          .map { case (org, cont) => OrgAndContacts(org, cont) }
           .compile
           .toVector
 
       def findOrg(account: AccountId, orgId: Ident): F[Option[OrgAndContacts]] =
         store
           .transact(QOrganization.getOrgAndContact(account.collective, orgId))
-          .map(_.map({ case (org, cont) => OrgAndContacts(org, cont) }))
+          .map(_.map { case (org, cont) => OrgAndContacts(org, cont) })
 
       def findAllOrgRefs(
           account: AccountId,
@@ -91,14 +91,14 @@ object OOrganization {
       ): F[Vector[PersonAndContacts]] =
         store
           .transact(QOrganization.findPersonAndContact(account.collective, query, _.name))
-          .map({ case (person, org, cont) => PersonAndContacts(person, org, cont) })
+          .map { case (person, org, cont) => PersonAndContacts(person, org, cont) }
           .compile
           .toVector
 
       def findPerson(account: AccountId, persId: Ident): F[Option[PersonAndContacts]] =
         store
           .transact(QOrganization.getPersonAndContact(account.collective, persId))
-          .map(_.map({ case (pers, org, cont) => PersonAndContacts(pers, org, cont) }))
+          .map(_.map { case (pers, org, cont) => PersonAndContacts(pers, org, cont) })
 
       def findAllPersonRefs(
           account: AccountId,

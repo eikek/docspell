@@ -31,10 +31,9 @@ trait OUpload[F[_]] {
       itemId: Option[Ident]
   ): F[OUpload.UploadResult]
 
-  /** Submit files via a given source identifier. The source is looked
-    * up to identify the collective the files belong to. Metadata
-    * defined in the source is used as a fallback to those specified
-    * here (in UploadData).
+  /** Submit files via a given source identifier. The source is looked up to identify the
+    * collective the files belong to. Metadata defined in the source is used as a fallback
+    * to those specified here (in UploadData).
     */
   def submit(
       data: OUpload.UploadData[F],
@@ -103,8 +102,7 @@ object OUpload {
 
     def noSource: UploadResult = NoSource
 
-    /** When adding files to an item, no item was found using the given
-      * item-id.
+    /** When adding files to an item, no item was found using the given item-id.
       */
     case object NoItem extends UploadResult
 

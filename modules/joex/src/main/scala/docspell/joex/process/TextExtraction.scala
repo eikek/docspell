@@ -106,7 +106,7 @@ object TextExtraction {
       item: ItemData
   )(ra: RAttachment): F[(RAttachmentMeta, List[String])] =
     for {
-      _    <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
+      _ <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
       dst  <- Duration.stopTime[F]
       fids <- filesToExtract(ctx)(item, ra)
       res  <- extractTextFallback(ctx, cfg, ra, lang)(fids)
@@ -158,7 +158,7 @@ object TextExtraction {
         val extr = Extraction.create[F](ctx.logger, cfg)
 
         extractText[F](ctx, extr, lang)(id)
-          .flatMap({
+          .flatMap {
             case res @ ExtractResult.Success(_, _) =>
               res.some.pure[F]
 
@@ -173,15 +173,14 @@ object TextExtraction {
               ctx.logger
                 .warn(s"Cannot extract text: ${ex.getMessage}. Try with converted file")
                 .flatMap(_ => extractTextFallback[F](ctx, cfg, ra, lang)(rest))
-          })
+          }
     }
 
-  /** Returns the fileIds to extract text from. First, the source file
-    * is tried. If that fails, the converted file is tried.
+  /** Returns the fileIds to extract text from. First, the source file is tried. If that
+    * fails, the converted file is tried.
     *
-    * If the source file is a PDF, then use the converted file. This
-    * may then already contain the text if ocrmypdf is enabled. If it
-    * is disabled, both files are the same.
+    * If the source file is a PDF, then use the converted file. This may then already
+    * contain the text if ocrmypdf is enabled. If it is disabled, both files are the same.
     */
   private def filesToExtract[F[_]: Sync](ctx: Context[F, _])(
       item: ItemData,

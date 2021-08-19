@@ -32,7 +32,7 @@ object Domain {
     Tld
       .findTld(str)
       .map(tld => (str.dropRight(tld.length), tld))
-      .map({ case (names, tld) =>
+      .map { case (names, tld) =>
         names.split('.').toList match {
           case Nil => Left(s"Not a domain: $str")
           case segs
@@ -43,7 +43,7 @@ object Domain {
             Right(Domain(NonEmptyList.fromListUnsafe(segs), tld))
           case _ => Left(s"Not a domain: $str")
         }
-      })
+      }
       .getOrElse(Left(s"Not a domain $str"))
 
   def isDomain(str: String): Boolean =

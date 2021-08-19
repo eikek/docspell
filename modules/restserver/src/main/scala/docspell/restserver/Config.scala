@@ -54,12 +54,12 @@ object Config {
         lazy val ipParts = ip.split('.')
 
         def checkSingle(pattern: String): Boolean =
-          pattern == ip || (inet.isLoopbackAddress && pattern == "127.0.0.1") || (pattern
+          pattern == ip || (inet.isLoopbackAddress && pattern == "127.0.0.1") || pattern
             .split('.')
             .zip(ipParts)
             .foldLeft(true) { case (r, (a, b)) =>
               r && (a == "*" || a == b)
-            })
+            }
 
         ips.exists(checkSingle)
       }

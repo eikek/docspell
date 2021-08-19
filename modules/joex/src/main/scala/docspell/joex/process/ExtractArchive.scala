@@ -25,16 +25,13 @@ import docspell.store.syntax.MimeTypes._
 import bitpeace.{Mimetype, MimetypeHint, RangeDef}
 import emil.Mail
 
-/** Goes through all attachments and extracts archive files, like zip
-  * files. The process is recursive, until all archives have been
-  * extracted.
+/** Goes through all attachments and extracts archive files, like zip files. The process
+  * is recursive, until all archives have been extracted.
   *
-  * The archive file is stored as a `attachment_archive` record that
-  * references all its elements. If there are inner archive, only the
-  * outer archive file is preserved.
+  * The archive file is stored as a `attachment_archive` record that references all its
+  * elements. If there are inner archive, only the outer archive file is preserved.
   *
-  * This step assumes an existing premature item, it traverses its
-  * attachments.
+  * This step assumes an existing premature item, it traverses its attachments.
   */
 object ExtractArchive {
 
@@ -78,11 +75,10 @@ object ExtractArchive {
       )
     }
 
-  /** After all files have been extracted, the `extract' contains the
-    * whole (combined) result. This fixes positions of the attachments
-    * such that the elements of an archive are "spliced" into the
-    * attachment list at the position of the archive. If there is no
-    * archive, positions don't need to be fixed.
+  /** After all files have been extracted, the `extract' contains the whole (combined)
+    * result. This fixes positions of the attachments such that the elements of an archive
+    * are "spliced" into the attachment list at the position of the archive. If there is
+    * no archive, positions don't need to be fixed.
     */
   private def fixPositions(extract: Extracted): Extracted =
     if (extract.archives.isEmpty) extract
@@ -203,8 +199,8 @@ object ExtractArchive {
       tentry: (Binary[F], Long)
   ): Stream[F, Extracted] = {
     val (entry, subPos) = tentry
-    val mimeHint        = MimetypeHint.filename(entry.name).withAdvertised(entry.mime.asString)
-    val fileMeta        = ctx.store.bitpeace.saveNew(entry.data, 8192, mimeHint)
+    val mimeHint = MimetypeHint.filename(entry.name).withAdvertised(entry.mime.asString)
+    val fileMeta = ctx.store.bitpeace.saveNew(entry.data, 8192, mimeHint)
     Stream.eval(ctx.logger.debug(s"Extracted ${entry.name}. Storing as attachment.")) >>
       fileMeta.evalMap { fm =>
         Ident.randomId.map { id =>
@@ -267,7 +263,7 @@ object ExtractArchive {
           val sorted = nel.sorted
           val offset = sorted.head.first
           val pos =
-            sorted.zipWithIndex.map({ case (p, i) => p.id -> (i + offset) }).toList.toMap
+            sorted.zipWithIndex.map { case (p, i) => p.id -> (i + offset) }.toList.toMap
           val nf =
             files.map(f => pos.get(f.id).map(n => f.copy(position = n)).getOrElse(f))
           copy(files = nf)

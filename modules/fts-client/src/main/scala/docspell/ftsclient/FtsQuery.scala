@@ -10,16 +10,14 @@ import docspell.common._
 
 /** A fulltext query.
   *
-  * The query itself is a raw string. Each implementation may
-  * interpret it according to the system in use.
+  * The query itself is a raw string. Each implementation may interpret it according to
+  * the system in use.
   *
-  * Searches must only look for given collective and in the given list
-  * of item ids, if it is non-empty. If the item set is empty, then
-  * don't restrict the result in this way.
+  * Searches must only look for given collective and in the given list of item ids, if it
+  * is non-empty. If the item set is empty, then don't restrict the result in this way.
   *
-  * The set of folders must be used to restrict the results only to
-  * items that have one of the folders set or no folder set. If the
-  * set is empty, the restriction does not apply.
+  * The set of folders must be used to restrict the results only to items that have one of
+  * the folders set or no folder set. If the set is empty, the restriction does not apply.
   */
 final case class FtsQuery(
     q: String,

@@ -12,18 +12,23 @@ import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
 
 /** Data that is carried across all processing tasks.
   *
-  * @param item the stored item record
-  * @param attachments the attachments belonging to the item
-  * @param metas the meta data to each attachment; depending on the
-  * state of processing, this may be empty
-  * @param dateLabels a separate list of found dates
-  * @param originFile a mapping from an attachment id to a filemeta-id
-  * containng the source or origin file
-  * @param givenMeta meta data to this item that was not "guessed"
-  * from an attachment but given and thus is always correct
-  * @param classifyProposals these are proposals that were obtained by
-  * a trained classifier. There are no ner-tags, it will only provide a
-  * single label
+  * @param item
+  *   the stored item record
+  * @param attachments
+  *   the attachments belonging to the item
+  * @param metas
+  *   the meta data to each attachment; depending on the state of processing, this may be
+  *   empty
+  * @param dateLabels
+  *   a separate list of found dates
+  * @param originFile
+  *   a mapping from an attachment id to a filemeta-id containng the source or origin file
+  * @param givenMeta
+  *   meta data to this item that was not "guessed" from an attachment but given and thus
+  *   is always correct
+  * @param classifyProposals
+  *   these are proposals that were obtained by a trained classifier. There are no
+  *   ner-tags, it will only provide a single label
   */
 case class ItemData(
     item: RItem,
@@ -31,7 +36,7 @@ case class ItemData(
     metas: Vector[RAttachmentMeta],
     dateLabels: Vector[AttachmentDates],
     originFile: Map[Ident, Ident], // maps RAttachment.id -> FileMeta.id
-    givenMeta: MetaProposalList,   // given meta data not associated to a specific attachment
+    givenMeta: MetaProposalList, // given meta data not associated to a specific attachment
     // a list of tags (names or ids) attached to the item if they exist
     tags: List[String],
     // proposals obtained from the classifier
@@ -39,9 +44,8 @@ case class ItemData(
     classifyTags: List[String]
 ) {
 
-  /** sort by weight; order of equal weights is not important, just
-    * choose one others are then suggestions
-    *  doc-date is only set when given explicitely, not from "guessing"
+  /** sort by weight; order of equal weights is not important, just choose one others are
+    * then suggestions doc-date is only set when given explicitely, not from "guessing"
     */
   def finalProposals: MetaProposalList =
     MetaProposalList

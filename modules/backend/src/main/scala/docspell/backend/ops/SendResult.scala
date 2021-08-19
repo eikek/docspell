@@ -16,8 +16,7 @@ object SendResult {
     */
   case class Success(id: Ident) extends SendResult
 
-  /** There was a failure sending the mail. The mail is then not saved
-    * to db.
+  /** There was a failure sending the mail. The mail is then not saved to db.
     */
   case class SendFailure(ex: Throwable) extends SendResult
 
@@ -25,8 +24,7 @@ object SendResult {
     */
   case class StoreFailure(ex: Throwable) extends SendResult
 
-  /** Something could not be found required for sending (mail configs,
-    * items etc).
+  /** Something could not be found required for sending (mail configs, items etc).
     */
   case object NotFound extends SendResult
 }

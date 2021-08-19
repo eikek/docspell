@@ -40,7 +40,7 @@ object RNode {
     val updated  = Column[Timestamp]("updated", this)
     val created  = Column[Timestamp]("created", this)
     val notFound = Column[Int]("not_found", this)
-    val all      = NonEmptyList.of[Column[_]](id, nodeType, url, updated, created, notFound)
+    val all = NonEmptyList.of[Column[_]](id, nodeType, url, updated, created, notFound)
   }
 
   def as(alias: String): Table =

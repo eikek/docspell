@@ -67,7 +67,7 @@ object SetGivenData {
       val tags =
         (ctx.args.meta.tags.getOrElse(Nil) ++ data.tags ++ data.classifyTags).distinct
       for {
-        _ <- ctx.logger.info(s"Set tags from given data: ${tags}")
+        _ <- ctx.logger.info(s"Set tags from given data: $tags")
         e <- ops.linkTags(itemId, tags, collective).attempt
         _ <- e.fold(
           ex => ctx.logger.warn(s"Error setting tags: ${ex.getMessage}"),

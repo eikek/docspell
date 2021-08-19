@@ -183,7 +183,7 @@ object OItemSearch {
       def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
         store
           .transact(RAttachment.findByIdAndCollective(id, collective))
-          .flatMap({
+          .flatMap {
             case Some(ra) =>
               makeBinaryData(ra.fileId) { m =>
                 AttachmentData[F](
@@ -195,7 +195,7 @@ object OItemSearch {
 
             case None =>
               (None: Option[AttachmentData[F]]).pure[F]
-          })
+          }
 
       def findAttachmentSource(
           id: Ident,
@@ -203,7 +203,7 @@ object OItemSearch {
       ): F[Option[AttachmentSourceData[F]]] =
         store
           .transact(RAttachmentSource.findByIdAndCollective(id, collective))
-          .flatMap({
+          .flatMap {
             case Some(ra) =>
               makeBinaryData(ra.fileId) { m =>
                 AttachmentSourceData[F](
@@ -215,7 +215,7 @@ object OItemSearch {
 
             case None =>
               (None: Option[AttachmentSourceData[F]]).pure[F]
-          })
+          }
 
       def findAttachmentPreview(
           id: Ident,
@@ -223,7 +223,7 @@ object OItemSearch {
       ): F[Option[AttachmentPreviewData[F]]] =
         store
           .transact(RAttachmentPreview.findByIdAndCollective(id, collective))
-          .flatMap({
+          .flatMap {
             case Some(ra) =>
               makeBinaryData(ra.fileId) { m =>
                 AttachmentPreviewData[F](
@@ -235,7 +235,7 @@ object OItemSearch {
 
             case None =>
               (None: Option[AttachmentPreviewData[F]]).pure[F]
-          })
+          }
 
       def findItemPreview(
           item: Ident,
@@ -243,7 +243,7 @@ object OItemSearch {
       ): F[Option[AttachmentPreviewData[F]]] =
         store
           .transact(RAttachmentPreview.findByItemAndCollective(item, collective))
-          .flatMap({
+          .flatMap {
             case Some(ra) =>
               makeBinaryData(ra.fileId) { m =>
                 AttachmentPreviewData[F](
@@ -255,7 +255,7 @@ object OItemSearch {
 
             case None =>
               (None: Option[AttachmentPreviewData[F]]).pure[F]
-          })
+          }
 
       def findAttachmentArchive(
           id: Ident,
@@ -263,7 +263,7 @@ object OItemSearch {
       ): F[Option[AttachmentArchiveData[F]]] =
         store
           .transact(RAttachmentArchive.findByIdAndCollective(id, collective))
-          .flatMap({
+          .flatMap {
             case Some(ra) =>
               makeBinaryData(ra.fileId) { m =>
                 AttachmentArchiveData[F](
@@ -275,7 +275,7 @@ object OItemSearch {
 
             case None =>
               (None: Option[AttachmentArchiveData[F]]).pure[F]
-          })
+          }
 
       private def makeBinaryData[A](fileId: Ident)(f: FileMeta => A): F[Option[A]] =
         store.bitpeace

@@ -40,7 +40,7 @@ object NotifyDueItemsTask {
         _ <- createMail(cfg, mailCfg, ctx)
           .semiflatMap { mail =>
             for {
-              _   <- ctx.logger.info(s"Sending notification mail to ${ctx.args.recipients}")
+              _ <- ctx.logger.info(s"Sending notification mail to ${ctx.args.recipients}")
               res <- emil(mailCfg.toMailConfig).send(mail).map(_.head)
               _   <- ctx.logger.info(s"Sent mail with id: $res")
             } yield ()

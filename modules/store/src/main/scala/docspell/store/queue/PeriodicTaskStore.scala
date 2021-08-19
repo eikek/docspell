@@ -19,12 +19,10 @@ import org.log4s.getLogger
 
 trait PeriodicTaskStore[F[_]] {
 
-  /** Get the free periodic task due next and reserve it to the given
-    * worker.
+  /** Get the free periodic task due next and reserve it to the given worker.
     *
-    * If found, the task is returned and resource finalization takes
-    * care of unmarking the task after use and updating `nextRun` with
-    * the next timestamp.
+    * If found, the task is returned and resource finalization takes care of unmarking the
+    * task after use and updating `nextRun` with the next timestamp.
     */
   def takeNext(
       worker: Ident,
@@ -69,10 +67,10 @@ object PeriodicTaskStore {
               Marked.notFound.pure[F]
           }
 
-        Resource.make(chooseNext)({
+        Resource.make(chooseNext) {
           case Marked.Found(pj) => unmark(pj)
           case _                => ().pure[F]
-        })
+        }
       }
 
       def getNext(excl: Option[Ident]): F[Option[RPeriodicTask]] =

@@ -88,7 +88,7 @@ object RFolder {
       case Some(id) => id.pure[ConnectionIO]
       case None =>
         Sync[ConnectionIO].raiseError(
-          new Exception(s"No folder found for: id=${folderId.id} or name=${name}")
+          new Exception(s"No folder found for: id=${folderId.id} or name=$name")
         )
     }
   }

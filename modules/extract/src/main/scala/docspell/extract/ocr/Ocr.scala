@@ -62,8 +62,8 @@ object Ocr {
   ): Stream[F, String] =
     runTesseractFile(img, logger, lang, config)
 
-  /** Run ghostscript to extract all pdf pages into tiff files. The
-    * files are stored to a temporary location on disk and returned.
+  /** Run ghostscript to extract all pdf pages into tiff files. The files are stored to a
+    * temporary location on disk and returned.
     */
   private[extract] def runGhostscript[F[_]: Async](
       pdf: Stream[F, Byte],
@@ -88,8 +88,8 @@ object Ocr {
       .flatMap(_ => File.listFiles(pathEndsWith(".tif"), wd))
   }
 
-  /** Run ghostscript to extract all pdf pages into tiff files. The
-    * files are stored to a temporary location on disk and returned.
+  /** Run ghostscript to extract all pdf pages into tiff files. The files are stored to a
+    * temporary location on disk and returned.
     */
   private[extract] def runGhostscriptFile[F[_]: Async](
       pdf: Path,
@@ -111,8 +111,8 @@ object Ocr {
   private def pathEndsWith(ext: String): Path => Boolean =
     p => p.fileName.toString.endsWith(ext)
 
-  /** Run unpaper to optimize the image for ocr. The
-    * files are stored to a temporary location on disk and returned.
+  /** Run unpaper to optimize the image for ocr. The files are stored to a temporary
+    * location on disk and returned.
     */
   private[extract] def runUnpaperFile[F[_]: Async](
       img: Path,
@@ -139,8 +139,7 @@ object Ocr {
       }
   }
 
-  /** Run tesseract on the given image file and return the extracted
-    * text.
+  /** Run tesseract on the given image file and return the extracted text.
     */
   private[extract] def runTesseractFile[F[_]: Async](
       img: Path,
@@ -160,8 +159,7 @@ object Ocr {
         .map(_.stdout)
     }
 
-  /** Run tesseract on the given image file and return the extracted
-    * text.
+  /** Run tesseract on the given image file and return the extracted text.
     */
   private[extract] def runTesseractStdin[F[_]: Async](
       img: Stream[F, Byte],

@@ -14,12 +14,10 @@ import cats.implicits._
 import docspell.common._
 import docspell.joex.scheduler.Task
 
-/** After candidates have been determined, the set is reduced by doing
-  * some cross checks. For example: if a organization is suggested as
-  * correspondent, the correspondent person must be linked to that
-  * organization. So this *removes all* person candidates that are not
-  * linked to the first organization candidate (which will be linked
-  * to the item).
+/** After candidates have been determined, the set is reduced by doing some cross checks.
+  * For example: if a organization is suggested as correspondent, the correspondent person
+  * must be linked to that organization. So this *removes all* person candidates that are
+  * not linked to the first organization candidate (which will be linked to the item).
   */
 object CrossCheckProposals {
 

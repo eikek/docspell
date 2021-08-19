@@ -21,10 +21,9 @@ import edu.stanford.nlp.ie.crf.CRFClassifier
 import edu.stanford.nlp.ling.{CoreAnnotations, CoreLabel}
 import org.log4s.getLogger
 
-/** This is only using the CRFClassifier without building an analysis
-  * pipeline. The ner-classifier cannot use results from POS-tagging
-  * etc. and is therefore not as good as the [[StanfordNerAnnotator]].
-  * But it uses less memory, while still being not bad.
+/** This is only using the CRFClassifier without building an analysis pipeline. The
+  * ner-classifier cannot use results from POS-tagging etc. and is therefore not as good
+  * as the [[StanfordNerAnnotator]]. But it uses less memory, while still being not bad.
   */
 object BasicCRFAnnotator {
   private[this] val logger = getLogger

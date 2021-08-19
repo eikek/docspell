@@ -28,9 +28,8 @@ trait OItem[F[_]] {
   /** Sets the given tags (removing all existing ones). */
   def setTags(item: Ident, tagIds: List[String], collective: Ident): F[UpdateResult]
 
-  /** Sets tags for multiple items. The tags of the items will be
-    * replaced with the given ones. Same as `setTags` but for multiple
-    * items.
+  /** Sets tags for multiple items. The tags of the items will be replaced with the given
+    * ones. Same as `setTags` but for multiple items.
     */
   def setTagsMultipleItems(
       items: NonEmptyList[Ident],
@@ -41,8 +40,8 @@ trait OItem[F[_]] {
   /** Create a new tag and add it to the item. */
   def addNewTag(item: Ident, tag: RTag): F[AddResult]
 
-  /** Apply all tags to the given item. Tags must exist, but can be IDs
-    * or names. Existing tags on the item are left unchanged.
+  /** Apply all tags to the given item. Tags must exist, but can be IDs or names. Existing
+    * tags on the item are left unchanged.
     */
   def linkTags(item: Ident, tags: List[String], collective: Ident): F[UpdateResult]
 
@@ -163,10 +162,9 @@ trait OItem[F[_]] {
       collective: Ident
   ): F[UpdateResult]
 
-  /** Submits the item for re-processing. The list of attachment ids can
-    * be used to only re-process a subset of the item's attachments.
-    * If this list is empty, all attachments are reprocessed. This
-    * call only submits the job into the queue.
+  /** Submits the item for re-processing. The list of attachment ids can be used to only
+    * re-process a subset of the item's attachments. If this list is empty, all
+    * attachments are reprocessed. This call only submits the job into the queue.
     */
   def reprocess(
       item: Ident,
@@ -181,9 +179,8 @@ trait OItem[F[_]] {
       notifyJoex: Boolean
   ): F[UpdateResult]
 
-  /** Submits a task that finds all non-converted pdfs and triggers
-    * converting them using ocrmypdf. Each file is converted by a
-    * separate task.
+  /** Submits a task that finds all non-converted pdfs and triggers converting them using
+    * ocrmypdf. Each file is converted by a separate task.
     */
   def convertAllPdf(
       collective: Option[Ident],
@@ -191,8 +188,7 @@ trait OItem[F[_]] {
       notifyJoex: Boolean
   ): F[UpdateResult]
 
-  /** Submits a task that (re)generates the preview image for an
-    * attachment.
+  /** Submits a task that (re)generates the preview image for an attachment.
     */
   def generatePreview(
       args: MakePreviewArgs,
@@ -200,8 +196,7 @@ trait OItem[F[_]] {
       notifyJoex: Boolean
   ): F[UpdateResult]
 
-  /** Submits a task that (re)generates the preview images for all
-    * attachments.
+  /** Submits a task that (re)generates the preview images for all attachments.
     */
   def generateAllPreviews(
       storeMode: MakePreviewArgs.StoreMode,

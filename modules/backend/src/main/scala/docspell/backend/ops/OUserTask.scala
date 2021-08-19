@@ -37,8 +37,7 @@ trait OUserTask[F[_]] {
       task: UserTask[ScanMailboxArgs]
   ): F[Unit]
 
-  /** Return the settings for all the notify-due-items task of the
-    * current user.
+  /** Return the settings for all the notify-due-items task of the current user.
     */
   def getNotifyDueItems(scope: UserTaskScope): Stream[F, UserTask[NotifyDueItemsArgs]]
 
@@ -59,9 +58,8 @@ trait OUserTask[F[_]] {
   /** Removes a user task with the given id. */
   def deleteTask(scope: UserTaskScope, id: Ident): F[Unit]
 
-  /** Discards the schedule and immediately submits the task to the job
-    * executor's queue. It will not update the corresponding periodic
-    * task.
+  /** Discards the schedule and immediately submits the task to the job executor's queue.
+    * It will not update the corresponding periodic task.
     */
   def executeNow[A](scope: UserTaskScope, subject: Option[String], task: UserTask[A])(
       implicit E: Encoder[A]

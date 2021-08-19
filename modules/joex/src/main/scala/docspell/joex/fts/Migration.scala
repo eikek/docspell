@@ -19,9 +19,8 @@ import docspell.store.Store
 
 /** Migrating the index from the previous version to this version.
   *
-  * The migration asks the fulltext search client for a list of
-  * migration tasks to run. It may be empty when there is no migration
-  * required.
+  * The migration asks the fulltext search client for a list of migration tasks to run. It
+  * may be empty when there is no migration required.
   */
 case class Migration[F[_]](
     version: Int,

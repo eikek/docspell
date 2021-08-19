@@ -15,7 +15,7 @@ object MonthName {
 
   private def merge(n0: List[List[String]], ns: List[List[String]]*): List[List[String]] =
     ns.foldLeft(n0) { (res, el) =>
-      res.zip(el).map({ case (a, b) => a ++ b })
+      res.zip(el).map { case (a, b) => a ++ b }
     }
 
   private def forLang(lang: Language): List[List[String]] =

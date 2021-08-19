@@ -10,11 +10,10 @@ import cats.implicits._
 
 import docspell.common.Priority
 
-/** A counting scheme to indicate a ratio between scheduling high and
-  * low priority jobs.
+/** A counting scheme to indicate a ratio between scheduling high and low priority jobs.
   *
-  * For example high=4, low=1 means: ”schedule 4 high priority jobs
-  * and then 1 low priority job“.
+  * For example high=4, low=1 means: ”schedule 4 high priority jobs and then 1 low
+  * priority job“.
   */
 case class CountingScheme(high: Int, low: Int, counter: Int = 0) {
 

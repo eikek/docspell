@@ -49,13 +49,12 @@ trait OFulltext[F[_]] {
   def findIndexOnlySummary(account: AccountId, fts: OFulltext.FtsInput): F[SearchSummary]
   def findItemsSummary(q: Query, fts: OFulltext.FtsInput): F[SearchSummary]
 
-  /** Clears the full-text index completely and launches a task that
-    * indexes all data.
+  /** Clears the full-text index completely and launches a task that indexes all data.
     */
   def reindexAll: F[Unit]
 
-  /** Clears the full-text index for the given collective and starts a
-    * task indexing all their data.
+  /** Clears the full-text index for the given collective and starts a task indexing all
+    * their data.
     */
   def reindexCollective(account: AccountId): F[Unit]
 }
@@ -125,7 +124,7 @@ object OFulltext {
           FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
         )
         for {
-          _       <- logger.ftrace(s"Find index only: ${ftsQ.query}/${batch}")
+          _       <- logger.ftrace(s"Find index only: ${ftsQ.query}/$batch")
           folders <- store.transact(QFolder.getMemberFolders(account))
           ftsR    <- fts.search(fq.withFolders(folders))
           ftsItems = ftsR.results.groupBy(_.itemId)
@@ -154,7 +153,7 @@ object OFulltext {
           res =
             itemsWithTags
               .collect(convertFtsData(ftsR, ftsItems))
-              .map({ case (li, fd) => FtsItemWithTags(li, fd) })
+              .map { case (li, fd) => FtsItemWithTags(li, fd) }
         } yield res
       }
 
@@ -203,7 +202,7 @@ object OFulltext {
         )
           .drop(batch.offset.toLong)
           .take(batch.limit.toLong)
-          .map({ case (li, fd) => FtsItem(li, fd) })
+          .map { case (li, fd) => FtsItem(li, fd) }
           .compile
           .toVector
 
@@ -221,7 +220,7 @@ object OFulltext {
         )
           .drop(batch.offset.toLong)
           .take(batch.limit.toLong)
-          .map({ case (li, fd) => FtsItemWithTags(li, fd) })
+          .map { case (li, fd) => FtsItemWithTags(li, fd) }
           .compile
           .toVector
 

@@ -46,7 +46,7 @@ object ScanMailboxTask {
         userId   = ctx.args.account.user
         imapConn = ctx.args.imapConnection
         _ <- ctx.logger.info(
-          s"Reading mails for user ${userId.id} from ${imapConn.id}/${folders}"
+          s"Reading mails for user ${userId.id} from ${imapConn.id}/$folders"
         )
         _ <- importMails(cfg, mailCfg, emil, upload, joex, ctx)
       } yield ()

@@ -16,14 +16,11 @@ trait Glob {
   /** Matches the input string against this glob. */
   def matches(caseSensitive: Boolean)(in: String): Boolean
 
-  /** If this glob consists of multiple segments, it is the same as
-    * `matches`. If it is only a single segment, it is matched against
-    * the last segment of the input string that is assumed to be a
-    * pathname separated by slash.
+  /** If this glob consists of multiple segments, it is the same as `matches`. If it is
+    * only a single segment, it is matched against the last segment of the input string
+    * that is assumed to be a pathname separated by slash.
     *
-    * Example:
-    *  test.*  <>  "/a/b/test.txt" => true
-    *  /test.* <>  "/a/b/test.txt" => false
+    * Example: test.* <> "/a/b/test.txt" => true /test.* <> "/a/b/test.txt" => false
     */
   def matchFilenameOrPath(in: String): Boolean
 

@@ -155,10 +155,8 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
   case class TrainResult(score: Double, model: ClassifierModel)
 
   def prepend(pre: String, data: Map[String, String]): Map[String, String] =
-    data.toList
-      .map({ case (k, v) =>
-        if (k.startsWith(pre)) (k, v)
-        else (pre + k, v)
-      })
-      .toMap
+    data.toList.map { case (k, v) =>
+      if (k.startsWith(pre)) (k, v)
+      else (pre + k, v)
+    }.toMap
 }

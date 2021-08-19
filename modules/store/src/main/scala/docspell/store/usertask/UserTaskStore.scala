@@ -17,21 +17,18 @@ import docspell.store.{AddResult, Store}
 
 import io.circe._
 
-/** User tasks are `RPeriodicTask`s that can be managed by the user.
-  * The user can change arguments, enable/disable it or run it just
-  * once.
+/** User tasks are `RPeriodicTask`s that can be managed by the user. The user can change
+  * arguments, enable/disable it or run it just once.
   *
-  * This class defines methods at a higher level, dealing with
-  * `UserTask` and `UserTaskScope` instead of directly using
-  * `RPeriodicTask`. A user task is associated to a specific user (not
-  * just the collective). But it can be associated to the whole
-  * collective by using the collective as submitter, too. This is
-  * abstracted in `UserTaskScope`.
+  * This class defines methods at a higher level, dealing with `UserTask` and
+  * `UserTaskScope` instead of directly using `RPeriodicTask`. A user task is associated
+  * to a specific user (not just the collective). But it can be associated to the whole
+  * collective by using the collective as submitter, too. This is abstracted in
+  * `UserTaskScope`.
   *
-  * implNote: The mapping is as follows: The collective is the task
-  * group. The submitter property contains the username. Once a task
-  * is saved to the database, it can only be referenced uniquely by its
-  * id. A user may submit multiple same tasks (with different
+  * implNote: The mapping is as follows: The collective is the task group. The submitter
+  * property contains the username. Once a task is saved to the database, it can only be
+  * referenced uniquely by its id. A user may submit multiple same tasks (with different
   * properties).
   */
 trait UserTaskStore[F[_]] {
@@ -40,13 +37,13 @@ trait UserTaskStore[F[_]] {
     */
   def getAll(scope: UserTaskScope): Stream[F, UserTask[String]]
 
-  /** Return all tasks of the given name and user. The task's arguments
-    * are returned as stored in the database.
+  /** Return all tasks of the given name and user. The task's arguments are returned as
+    * stored in the database.
     */
   def getByNameRaw(scope: UserTaskScope, name: Ident): Stream[F, UserTask[String]]
 
-  /** Return all tasks of the given name and user. The task's arguments
-    * are decoded using the given json decoder.
+  /** Return all tasks of the given name and user. The task's arguments are decoded using
+    * the given json decoder.
     */
   def getByName[A](scope: UserTaskScope, name: Ident)(implicit
       D: Decoder[A]
@@ -57,9 +54,8 @@ trait UserTaskStore[F[_]] {
 
   /** Updates or inserts the given task.
     *
-    * The task is identified by its id. If no task with this id
-    * exists, a new one is created. Otherwise the existing task is
-    * updated.
+    * The task is identified by its id. If no task with this id exists, a new one is
+    * created. Otherwise the existing task is updated.
     */
   def updateTask[A](scope: UserTaskScope, subject: Option[String], ut: UserTask[A])(
       implicit E: Encoder[A]
@@ -69,15 +65,13 @@ trait UserTaskStore[F[_]] {
     */
   def deleteTask(scope: UserTaskScope, id: Ident): F[Int]
 
-  /** Return the task of the given user and name. If multiple exists, an
-    * error is returned. The task's arguments are returned as stored
-    * in the database.
+  /** Return the task of the given user and name. If multiple exists, an error is
+    * returned. The task's arguments are returned as stored in the database.
     */
   def getOneByNameRaw(scope: UserTaskScope, name: Ident): OptionT[F, UserTask[String]]
 
-  /** Return the task of the given user and name. If multiple exists, an
-    * error is returned. The task's arguments are decoded using the
-    * given json decoder.
+  /** Return the task of the given user and name. If multiple exists, an error is
+    * returned. The task's arguments are decoded using the given json decoder.
     */
   def getOneByName[A](scope: UserTaskScope, name: Ident)(implicit
       D: Decoder[A]
@@ -85,14 +79,12 @@ trait UserTaskStore[F[_]] {
 
   /** Updates or inserts the given task.
     *
-    * Unlike `updateTask`, this ensures that there is at most one task
-    * of some name in the db. Multiple same tasks (task with same
-    * name) may not be allowed to run, depending on what they do.
-    * This is not ensured by the database, though.
+    * Unlike `updateTask`, this ensures that there is at most one task of some name in the
+    * db. Multiple same tasks (task with same name) may not be allowed to run, depending
+    * on what they do. This is not ensured by the database, though.
     *
-    * If there are currently multiple tasks with same name as `ut` for
-    * the user `account`, they will all be removed and the given task
-    * inserted!
+    * If there are currently multiple tasks with same name as `ut` for the user `account`,
+    * they will all be removed and the given task inserted!
     */
   def updateOneTask[A](scope: UserTaskScope, subject: Option[String], ut: UserTask[A])(
       implicit E: Encoder[A]
@@ -155,7 +147,7 @@ object UserTaskStore {
             .flatMap {
               case Nil       => (None: Option[UserTask[String]]).pure[F]
               case ut :: Nil => ut.some.pure[F]
-              case _         => Async[F].raiseError(new Exception("More than one result found"))
+              case _ => Async[F].raiseError(new Exception("More than one result found"))
             }
         )
 

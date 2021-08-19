@@ -14,8 +14,8 @@ case class FileName private (name: String) {
       case n  => (name.take(n), Some(name.drop(n + 1)))
     }
 
-  /** Returns the name part without the extension. If there is no
-    * extension, it is the same as fullname.
+  /** Returns the name part without the extension. If there is no extension, it is the
+    * same as fullname.
     */
   def baseName: String =
     base
@@ -27,20 +27,20 @@ case class FileName private (name: String) {
   def fullName: String =
     name
 
-  /** Creates a new name where part is spliced into the name before the
-    * extension, separated by separator.
+  /** Creates a new name where part is spliced into the name before the extension,
+    * separated by separator.
     */
   def withPart(part: String, sep: Char): FileName =
     if (part.isEmpty()) this
     else
       ext
-        .map(e => new FileName(s"${base}${sep}${part}.${e}"))
-        .getOrElse(new FileName(s"${base}${sep}${part}"))
+        .map(e => new FileName(s"$base$sep$part.$e"))
+        .getOrElse(new FileName(s"$base$sep$part"))
 
   /** Create a new name using the given extension. */
   def withExtension(newExt: String): FileName =
     if (newExt.isEmpty()) new FileName(base)
-    else new FileName(s"${base}.${newExt}")
+    else new FileName(s"$base.$newExt")
 
 }
 object FileName {

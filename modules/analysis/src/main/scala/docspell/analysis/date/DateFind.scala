@@ -160,11 +160,11 @@ object DateFind {
         Reader(words => Nel.of(reader, more: _*).map(_.read(words)).reduce)
 
       def readFirst[A](f: Word => Option[A]): Reader[A] =
-        Reader({
+        Reader {
           case Nil => Result.Failure
           case a :: as =>
             f(a).map(value => Result.Success(value, as)).getOrElse(Result.Failure)
-        })
+        }
     }
 
     sealed trait Result[+A] {

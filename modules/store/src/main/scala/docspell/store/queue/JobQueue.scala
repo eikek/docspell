@@ -19,14 +19,13 @@ import org.log4s._
 
 trait JobQueue[F[_]] {
 
-  /** Inserts the job into the queue to get picked up as soon as
-    * possible. The job must have a new unique id.
+  /** Inserts the job into the queue to get picked up as soon as possible. The job must
+    * have a new unique id.
     */
   def insert(job: RJob): F[Unit]
 
-  /** Inserts the job into the queue only, if there is no job with the
-    * same tracker-id running at the moment. The job id must be a new
-    * unique id.
+  /** Inserts the job into the queue only, if there is no job with the same tracker-id
+    * running at the moment. The job id must be a new unique id.
     *
     * If the job has no tracker defined, it is simply inserted.
     */

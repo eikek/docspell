@@ -15,17 +15,15 @@ object CollectiveState {
   /** A normal active collective */
   case object Active extends CollectiveState
 
-  /** A collective may be readonly in cases it is implicitly closed
-    * (e.g. no payment). Users can still see there data and
-    * download, but have no write access.
+  /** A collective may be readonly in cases it is implicitly closed (e.g. no payment).
+    * Users can still see there data and download, but have no write access.
     */
   case object ReadOnly extends CollectiveState
 
   /** A collective that has been explicitely closed. */
   case object Closed extends CollectiveState
 
-  /** A collective blocked by a super user, usually some emergency
-    * action.
+  /** A collective blocked by a super user, usually some emergency action.
     */
   case object Blocked extends CollectiveState
 

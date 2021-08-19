@@ -13,11 +13,10 @@ import io.circe.generic.semiauto._
 
 /** Arguments to the poll-mailbox task.
   *
-  * This tasks queries user mailboxes and pushes found mails into
-  * docspell for processing.
+  * This tasks queries user mailboxes and pushes found mails into docspell for processing.
   *
-  * If the structure changes, there must be some database migration to
-  * update or remove the json data of the corresponding task.
+  * If the structure changes, there must be some database migration to update or remove
+  * the json data of the corresponding task.
   */
 case class ScanMailboxArgs(
     // the docspell user account

@@ -63,8 +63,8 @@ trait OCollective[F[_]] {
 
   def startEmptyTrash(args: EmptyTrashArgs): F[Unit]
 
-  /** Submits a task that (re)generates the preview images for all
-    * attachments of the given collective.
+  /** Submits a task that (re)generates the preview images for all attachments of the
+    * given collective.
     */
   def generatePreviews(
       storeMode: MakePreviewArgs.StoreMode,
@@ -180,7 +180,7 @@ object OCollective {
           id <- Ident.randomId[F]
           settings = sett.emptyTrash.getOrElse(EmptyTrash.default)
           args     = EmptyTrashArgs(coll, settings.minAge)
-          ut       = UserTask(id, EmptyTrashArgs.taskName, true, settings.schedule, None, args)
+          ut = UserTask(id, EmptyTrashArgs.taskName, true, settings.schedule, None, args)
           _ <- uts.updateOneTask(UserTaskScope(coll), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
         } yield ()

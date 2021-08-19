@@ -84,9 +84,9 @@ object Merge {
           nextPos <- store.transact(RAttachment.nextPosition(target))
           attachs <- store.transact(items.tail.traverse(id => RAttachment.findByItem(id)))
           attachFlat = attachs.flatMap(_.toList)
-          n <- attachFlat.zipWithIndex.traverse({ case (a, idx) =>
+          n <- attachFlat.zipWithIndex.traverse { case (a, idx) =>
             store.transact(RAttachment.updateItemId(a.id, target, nextPos + idx))
-          })
+          }
         } yield n.sum
       }
 

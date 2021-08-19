@@ -30,7 +30,7 @@ object RItemProposal {
     val classifyProposals = Column[MetaProposalList]("classifier_proposals", this)
     val classifyTags      = Column[List[IdRef]]("classifier_tags", this)
     val created           = Column[Timestamp]("created", this)
-    val all               = NonEmptyList.of[Column[_]](itemId, classifyProposals, classifyTags, created)
+    val all = NonEmptyList.of[Column[_]](itemId, classifyProposals, classifyTags, created)
   }
 
   val T = Table(None)

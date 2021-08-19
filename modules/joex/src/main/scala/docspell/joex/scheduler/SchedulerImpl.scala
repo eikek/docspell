@@ -36,8 +36,8 @@ final class SchedulerImpl[F[_]: Async](
 
   private[this] val logger = getLogger
 
-  /** On startup, get all jobs in state running from this scheduler
-    * and put them into waiting state, so they get picked up again.
+  /** On startup, get all jobs in state running from this scheduler and put them into
+    * waiting state, so they get picked up again.
     */
   def init: F[Unit] =
     QJob.runningToWaiting(config.name, store)
@@ -132,7 +132,7 @@ final class SchedulerImpl[F[_]: Async](
         else ().pure[F]
       )
       .flatMap(if (_) Stream.empty else Stream.eval(body))
-      .flatMap({
+      .flatMap {
         case true =>
           mainLoop
         case false =>
@@ -140,7 +140,7 @@ final class SchedulerImpl[F[_]: Async](
             waiter.discrete.take(2).drain ++
             logger.sdebug(s"Notify signal, going into main loop") ++
             mainLoop
-      })
+      }
   }
 
   private def executeCancel(job: RJob): F[Unit] = {
@@ -214,7 +214,7 @@ final class SchedulerImpl[F[_]: Async](
   ): Task[F, String, Unit] =
     task
       .mapF(fa => onStart(job) *> logger.fdebug("Starting task now") *> fa)
-      .mapF(_.attempt.flatMap({
+      .mapF(_.attempt.flatMap {
         case Right(()) =>
           logger.info(s"Job execution successful: ${job.info}")
           ctx.logger.info("Job execution successful") *>
@@ -239,7 +239,7 @@ final class SchedulerImpl[F[_]: Async](
                     .map(_ => JobState.Stuck: JobState)
               }
           }
-      }))
+      })
       .mapF(_.attempt.flatMap {
         case Right(jstate) =>
           onFinish(job, jstate)
@@ -262,12 +262,12 @@ final class SchedulerImpl[F[_]: Async](
         .map(fiber =>
           logger.fdebug(s"Cancelling job ${job.info}") *>
             fiber.cancel *>
-            onCancel.attempt.map({
+            onCancel.attempt.map {
               case Right(_) => ()
               case Left(ex) =>
                 logger.error(ex)(s"Task's cancelling code failed. Job ${job.info}.")
                 ()
-            }) *>
+            } *>
             state.modify(_.markCancelled(job)) *>
             onFinish(job, JobState.Cancelled) *>
             ctx.logger.warn("Job has been cancelled.") *>

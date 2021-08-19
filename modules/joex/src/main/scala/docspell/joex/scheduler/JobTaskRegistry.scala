@@ -8,9 +8,8 @@ package docspell.joex.scheduler
 
 import docspell.common.Ident
 
-/** This is a mapping from some identifier to a task. This is used by
-  * the scheduler to lookup an implementation using the taskName field
-  * of the RJob database record.
+/** This is a mapping from some identifier to a task. This is used by the scheduler to
+  * lookup an implementation using the taskName field of the RJob database record.
   */
 final class JobTaskRegistry[F[_]](tasks: Map[Ident, JobTask[F]]) {
 

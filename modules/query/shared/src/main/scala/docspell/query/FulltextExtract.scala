@@ -14,8 +14,7 @@ import docspell.query.ItemQuery.Expr.NotExpr
 import docspell.query.ItemQuery.Expr.OrExpr
 import docspell.query.ItemQuery._
 
-/** Currently, fulltext in a query is only supported when in "root
-  * AND" position
+/** Currently, fulltext in a query is only supported when in "root AND" position
   */
 object FulltextExtract {
 
@@ -45,15 +44,15 @@ object FulltextExtract {
   def findFulltext(expr: Expr): Result =
     lookForFulltext(expr)
 
-  /** Extracts the fulltext node from the given expr and returns it
-    * together with the expr without that node.
+  /** Extracts the fulltext node from the given expr and returns it together with the expr
+    * without that node.
     */
   private def lookForFulltext(expr: Expr): Result =
     expr match {
       case Expr.Fulltext(ftq) =>
         Result.SuccessNoExpr(ftq)
       case Expr.AndExpr(inner) =>
-        inner.collect({ case Expr.Fulltext(fq) => fq }) match {
+        inner.collect { case Expr.Fulltext(fq) => fq } match {
           case Nil =>
             checkPosition(expr, 0)
           case e :: Nil =>

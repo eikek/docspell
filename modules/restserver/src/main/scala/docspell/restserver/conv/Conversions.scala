@@ -579,7 +579,7 @@ trait Conversions {
     )
 
   def newSource[F[_]: Sync](s: Source, cid: Ident): F[RSource] =
-    timeId.map({ case (id, now) =>
+    timeId.map { case (id, now) =>
       RSource(
         id,
         cid,
@@ -593,7 +593,7 @@ trait Conversions {
         s.fileFilter,
         s.language
       )
-    })
+    }
 
   def changeSource[F[_]](s: Source, coll: Ident): RSource =
     RSource(
@@ -615,9 +615,9 @@ trait Conversions {
     Equipment(re.eid, re.name, re.created, re.notes, re.use)
 
   def newEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
-    timeId.map({ case (id, now) =>
+    timeId.map { case (id, now) =>
       REquipment(id, cid, e.name.trim, now, now, e.notes, e.use)
-    })
+    }
 
   def changeEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
     Timestamp

@@ -13,8 +13,8 @@ import docspell.query.ItemQuery._
 
 object ExprUtil {
 
-  /** Does some basic transformation, like unfolding nested and trees
-    * containing one value etc.
+  /** Does some basic transformation, like unfolding nested and trees containing one value
+    * etc.
     */
   def reduce(expr: Expr): Expr =
     expr match {

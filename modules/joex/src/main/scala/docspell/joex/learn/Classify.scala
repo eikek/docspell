@@ -47,7 +47,7 @@ object Classify {
           .flatMap(_ => classifier.classify(logger, ClassifierModel(modelFile), text))
       }).filter(_ != LearnClassifierTask.noClass)
         .flatTapNone(logger.debug("Guessed: <none>"))
-      _ <- OptionT.liftF(logger.debug(s"Guessed: ${cls}"))
+      _ <- OptionT.liftF(logger.debug(s"Guessed: $cls"))
     } yield cls).value
 
 }

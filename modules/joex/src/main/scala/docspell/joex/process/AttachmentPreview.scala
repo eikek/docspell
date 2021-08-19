@@ -24,9 +24,9 @@ import docspell.store.syntax.MimeTypes._
 
 import bitpeace.{Mimetype, MimetypeHint, RangeDef}
 
-/** Goes through all attachments that must be already converted into a
-  * pdf. If it is a pdf, the first page is converted into a small
-  * preview png image and linked to the attachment.
+/** Goes through all attachments that must be already converted into a pdf. If it is a
+  * pdf, the first page is converted into a small preview png image and linked to the
+  * attachment.
   */
 object AttachmentPreview {
 

@@ -35,12 +35,12 @@ object Annotator {
     *
     * There are the following ways:
     *
-    * - disabled: it returns a no-op annotator that always gives an empty list
-    * - full: the complete stanford pipeline is used
-    * - basic: only the ner classifier is used
+    *   - disabled: it returns a no-op annotator that always gives an empty list
+    *   - full: the complete stanford pipeline is used
+    *   - basic: only the ner classifier is used
     *
-    * Additionally, if there is a regexNer-file specified, the regexner annotator is
-    * also run. In case the full pipeline is used, this is already included.
+    * Additionally, if there is a regexNer-file specified, the regexner annotator is also
+    * run. In case the full pipeline is used, this is already included.
     */
   def apply[F[_]: Sync](mode: NlpMode)(settings: NlpSettings): Annotator[F] =
     mode match {

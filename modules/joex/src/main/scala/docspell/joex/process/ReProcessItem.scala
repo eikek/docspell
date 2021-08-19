@@ -149,14 +149,14 @@ object ReProcessItem {
     isLastRetry[F].flatMap {
       case true =>
         processFiles[F](cfg, fts, itemOps, analyser, regexNer, data).attempt
-          .flatMap({
+          .flatMap {
             case Right(d) =>
               Task.pure(d)
             case Left(ex) =>
               logWarn[F](
                 "Processing failed on last retry."
               ).andThen(_ => Sync[F].raiseError(ex))
-          })
+          }
       case false =>
         processFiles[F](cfg, fts, itemOps, analyser, regexNer, data)
     }

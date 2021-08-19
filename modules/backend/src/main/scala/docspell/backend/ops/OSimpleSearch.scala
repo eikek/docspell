@@ -19,31 +19,27 @@ import docspell.store.queries.SearchSummary
 
 import org.log4s.getLogger
 
-/** A "porcelain" api on top of OFulltext and OItemSearch. This takes
-  * care of restricting the items to a subset, e.g. only items that
-  * have a "valid" state.
+/** A "porcelain" api on top of OFulltext and OItemSearch. This takes care of restricting
+  * the items to a subset, e.g. only items that have a "valid" state.
   */
 trait OSimpleSearch[F[_]] {
 
-  /** Search for items using the given query and optional fulltext
-    * search.
+  /** Search for items using the given query and optional fulltext search.
     *
-    * When using fulltext search only (the query is empty), only the
-    * index is searched. It is assumed that the index doesn't contain
-    * "invalid" items. When using a query, then a condition to select
-    * only valid items is added to it.
+    * When using fulltext search only (the query is empty), only the index is searched. It
+    * is assumed that the index doesn't contain "invalid" items. When using a query, then
+    * a condition to select only valid items is added to it.
     */
   def search(settings: Settings)(q: Query, fulltextQuery: Option[String]): F[Items]
 
-  /** Using the same arguments as in `search`, this returns a summary
-    * and not the results.
+  /** Using the same arguments as in `search`, this returns a summary and not the results.
     */
   def searchSummary(
       settings: StatsSettings
   )(q: Query, fulltextQuery: Option[String]): F[SearchSummary]
 
-  /** Calls `search` by parsing the given query string into a query that
-    * is then amended wtih the given `fix` query.
+  /** Calls `search` by parsing the given query string into a query that is then amended
+    * wtih the given `fix` query.
     */
   final def searchByString(
       settings: Settings
@@ -52,8 +48,7 @@ trait OSimpleSearch[F[_]] {
   ): F[StringSearchResult[Items]] =
     OSimpleSearch.applySearch[F, Items](fix, q)((iq, fts) => search(settings)(iq, fts))
 
-  /** Same as `searchByString` but returning a summary instead of the
-    * results.
+  /** Same as `searchByString` but returning a summary instead of the results.
     */
   final def searchSummaryByString(
       settings: StatsSettings
@@ -190,8 +185,8 @@ object OSimpleSearch {
     }
   }
 
-  /** Calls `run` with one of the success results when extracting the
-    * fulltext search node from the query.
+  /** Calls `run` with one of the success results when extracting the fulltext search node
+    * from the query.
     */
   private def runQuery[F[_]: Applicative, A](
       itemQuery: Option[ItemQuery]
@@ -211,10 +206,9 @@ object OSimpleSearch {
   final class Impl[F[_]: Sync](fts: OFulltext[F], is: OItemSearch[F])
       extends OSimpleSearch[F] {
 
-    /** Implements searching like this: it exploits the fact that teh
-      * fulltext index only contains valid items. When searching via
-      * sql the query expression selecting only valid items is added
-      * here.
+    /** Implements searching like this: it exploits the fact that teh fulltext index only
+      * contains valid items. When searching via sql the query expression selecting only
+      * valid items is added here.
       */
     def search(
         settings: Settings

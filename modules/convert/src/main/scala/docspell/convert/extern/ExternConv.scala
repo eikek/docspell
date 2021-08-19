@@ -132,7 +132,7 @@ private[extern] object ExternConv {
   ): Pipe[F, Byte, Unit] =
     in =>
       Stream
-        .eval(logger.debug(s"Storing input to file ${inFile} for running $name"))
+        .eval(logger.debug(s"Storing input to file $inFile for running $name"))
         .drain ++
         Stream.eval(storeFile(in, inFile))
 

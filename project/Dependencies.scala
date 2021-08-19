@@ -271,8 +271,8 @@ object Dependencies {
     "org.typelevel" %% "munit-cats-effect-3" % MUnitCatsEffectVersion
   )
 
-  val kindProjectorPlugin = "org.typelevel" %% "kind-projector"     % KindProjectorVersion
-  val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion
+  val kindProjectorPlugin = "org.typelevel" %% "kind-projector" % KindProjectorVersion
+  val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
     "org.webjars" % "swagger-ui"   % SwaggerUIVersion,

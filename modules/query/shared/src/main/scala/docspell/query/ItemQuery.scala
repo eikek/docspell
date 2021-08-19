@@ -10,12 +10,10 @@ import cats.data.{NonEmptyList => Nel}
 
 import docspell.query.ItemQuery.Attr.{DateAttr, IntAttr, StringAttr}
 
-/** A query evaluates to `true` or `false` given enough details about
-  * an item.
+/** A query evaluates to `true` or `false` given enough details about an item.
   *
-  * It may consist of (field,op,value) tuples that specify some checks
-  * against a specific field of an item using some operator or a
-  * combination thereof.
+  * It may consist of (field,op,value) tuples that specify some checks against a specific
+  * field of an item using some operator or a combination thereof.
   */
 final case class ItemQuery(expr: ItemQuery.Expr, raw: Option[String]) {
   def findFulltext: FulltextExtract.Result =

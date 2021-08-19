@@ -19,14 +19,14 @@ val scalafixSettings = Seq(
 )
 
 val sharedSettings = Seq(
-  organization := "com.github.eikek",
-  scalaVersion := "2.13.6",
+  organization     := "com.github.eikek",
+  scalaVersion     := "2.13.6",
   organizationName := "Docspell Contributors",
   licenses += ("GPL-3.0-or-later", url(
     "https://spdx.org/licenses/GPL-3.0-or-later.html"
   )),
-  startYear := Some(2020),
-  headerLicenseStyle := HeaderLicenseStyle.SpdxSyntax,
+  startYear                     := Some(2020),
+  headerLicenseStyle            := HeaderLicenseStyle.SpdxSyntax,
   headerSources / excludeFilter := HiddenFileFilter || "*.java" || "StringUtil.scala",
   scalacOptions ++= Seq(
     "-deprecation",
@@ -62,8 +62,8 @@ val testSettingsMUnit = Seq(
 )
 
 lazy val noPublish = Seq(
-  publish := {},
-  publishLocal := {},
+  publish         := {},
+  publishLocal    := {},
   publishArtifact := false
 )
 
@@ -157,10 +157,10 @@ val buildInfoSettings = Seq(
 val openapiScalaSettings = Seq(
   openapiScalaConfig := ScalaConfig()
     .withJson(ScalaJson.circeSemiauto)
-    .addMapping(CustomMapping.forType({ case TypeDef("LocalDateTime", _) =>
+    .addMapping(CustomMapping.forType { case TypeDef("LocalDateTime", _) =>
       TypeDef("Timestamp", Imports("docspell.common.Timestamp"))
-    }))
-    .addMapping(CustomMapping.forFormatType({
+    })
+    .addMapping(CustomMapping.forFormatType {
       case "ident" =>
         field => field.copy(typeDef = TypeDef("Ident", Imports("docspell.common.Ident")))
       case "accountid" =>
@@ -246,7 +246,7 @@ val openapiScalaSettings = Seq(
         field =>
           field
             .copy(typeDef = TypeDef("Duration", Imports("docspell.common.Duration")))
-    }))
+    })
 )
 
 // --- Modules
@@ -287,7 +287,7 @@ val files = project
       val files = (base ** (_.isFile)).pair(sbt.io.Path.relativeTo(base))
       val lines = files.toList.map(_._2).map { s =>
         val ident = s.replaceAll("[^a-zA-Z0-9_]+", "_")
-        ident -> s"""val $ident = createUrl("${s}")"""
+        ident -> s"""val $ident = createUrl("$s")"""
       }
       val content = s"""package docspell.files
 
@@ -301,7 +301,7 @@ ${lines.map(_._1).mkString(",\n")}
 
 }
 """
-      val target  = (Test / sourceManaged).value / "scala" / "ExampleFiles.scala"
+      val target = (Test / sourceManaged).value / "scala" / "ExampleFiles.scala"
       IO.createDirectory(target.getParentFile)
       IO.write(target, content)
       Seq(target)
@@ -436,9 +436,9 @@ val restapi = project
     libraryDependencies ++=
       Dependencies.circe,
     openapiTargetLanguage := Language.Scala,
-    openapiPackage := Pkg("docspell.restapi.model"),
-    openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
-    openapiStaticGen := OpenApiDocGenerator.Redoc
+    openapiPackage        := Pkg("docspell.restapi.model"),
+    openapiSpec           := (Compile / resourceDirectory).value / "docspell-openapi.yml",
+    openapiStaticGen      := OpenApiDocGenerator.Redoc
   )
   .dependsOn(common)
 
@@ -456,9 +456,9 @@ val joexapi = project
         Dependencies.http4sCirce ++
         Dependencies.http4sClient,
     openapiTargetLanguage := Language.Scala,
-    openapiPackage := Pkg("docspell.joexapi.model"),
-    openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml",
-    openapiStaticGen := OpenApiDocGenerator.Redoc
+    openapiPackage        := Pkg("docspell.joexapi.model"),
+    openapiSpec           := (Compile / resourceDirectory).value / "joex-openapi.yml",
+    openapiStaticGen      := OpenApiDocGenerator.Redoc
   )
   .dependsOn(common)
 
@@ -487,9 +487,9 @@ val webapp = project
   .settings(stylesSettings)
   .settings(webjarSettings(query.js))
   .settings(
-    name := "docspell-webapp",
+    name                  := "docspell-webapp",
     openapiTargetLanguage := Language.Elm,
-    openapiPackage := Pkg("Api.Model"),
+    openapiPackage        := Pkg("Api.Model"),
     openapiSpec := (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
@@ -507,7 +507,7 @@ val joex = project
   .settings(
     name := "docspell-joex",
     description := "The joex component (job executor) for docspell which executes long-running tasks.",
-    packageSummary := "Docspell Joex",
+    packageSummary     := "Docspell Joex",
     packageDescription := description.value,
     libraryDependencies ++=
       Dependencies.fs2 ++
@@ -544,9 +544,9 @@ val restserver = project
   .settings(debianSettings("docspell-server"))
   .settings(buildInfoSettings)
   .settings(
-    name := "docspell-restserver",
-    description := "Docspell server providing the user interface and a REST Api.",
-    packageSummary := "Docspell Rest server",
+    name               := "docspell-restserver",
+    description        := "Docspell server providing the user interface and a REST Api.",
+    packageSummary     := "Docspell Rest server",
     packageDescription := description.value,
     libraryDependencies ++=
       Dependencies.http4sServer ++
@@ -601,12 +601,12 @@ val website = project
   .enablePlugins(ZolaPlugin, GitHubPagesPlugin)
   .settings(sharedSettings)
   .settings(
-    name := "docspell-website",
-    publishArtifact := false,
-    publish / skip := true,
-    gitHubPagesOrgName := "eikek",
+    name                := "docspell-website",
+    publishArtifact     := false,
+    publish / skip      := true,
+    gitHubPagesOrgName  := "eikek",
     gitHubPagesRepoName := "docspell",
-    gitHubPagesSiteDir := zolaOutputDir.value,
+    gitHubPagesSiteDir  := zolaOutputDir.value,
     Compile / resourceGenerators += Def.task {
       val templateOut = baseDirectory.value / "site" / "templates" / "shortcodes"
       val staticOut   = baseDirectory.value / "site" / "static" / "openapi"
@@ -614,11 +614,11 @@ val website = project
       val logger = streams.value.log
 
       val files = Seq(
-        (restserver / Compile / resourceDirectory).value / "reference.conf"       -> templateOut / "server.conf",
-        (joex / Compile / resourceDirectory).value / "reference.conf"             -> templateOut / "joex.conf",
+        (restserver / Compile / resourceDirectory).value / "reference.conf" -> templateOut / "server.conf",
+        (joex / Compile / resourceDirectory).value / "reference.conf" -> templateOut / "joex.conf",
         (LocalRootProject / baseDirectory).value / "tools" / "exim" / "exim.conf" -> templateOut / "sample-exim.conf",
-        (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml"    -> staticOut / "docspell-openapi.yml",
-        (restapi / Compile / openapiStaticDoc).value                              -> staticOut / "docspell-openapi.html"
+        (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml" -> staticOut / "docspell-openapi.yml",
+        (restapi / Compile / openapiStaticDoc).value -> staticOut / "docspell-openapi.html"
       )
       IO.copy(files)
       files.map(_._2)
@@ -759,7 +759,7 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
   val target = dir / "target"
   IO.delete(target)
   IO.createDirectory(target)
-  val archive = target / s"docspell-tools-${version}.zip"
+  val archive = target / s"docspell-tools-$version.zip"
   logger.info(s"Packaging tools to $archive ...")
   val webext = target / "docspell-firefox-extension.xpi"
   val wx     = dir / "webextension"
@@ -782,13 +782,13 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
     (dir ** "*")
       .filter(f => !excludes.exists(p => f.absolutePath.startsWith(p.absolutePath)))
       .pair(sbt.io.Path.relativeTo(dir))
-      .map({ case (f, name) => (f, s"docspell-tools-${version}/$name") })
+      .map { case (f, name) => (f, s"docspell-tools-$version/$name") }
 
   IO.zip(
     Seq(
-      webext                          -> s"docspell-tools-${version}/firefox/docspell-extension.xpi",
-      wx / "native/app_manifest.json" -> s"docspell-tools-${version}/firefox/native/app_manifest.json",
-      wx / "native/native.py"         -> s"docspell-tools-${version}/firefox/native/native.py"
+      webext -> s"docspell-tools-$version/firefox/docspell-extension.xpi",
+      wx / "native/app_manifest.json" -> s"docspell-tools-$version/firefox/native/app_manifest.json",
+      wx / "native/native.py" -> s"docspell-tools-$version/firefox/native/native.py"
     ) ++ files,
     archive,
     None
