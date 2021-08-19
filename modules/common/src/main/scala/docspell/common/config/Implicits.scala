@@ -21,6 +21,9 @@ import scodec.bits.ByteVector
 
 object Implicits {
 
+  implicit val accountIdReader: ConfigReader[AccountId] =
+    ConfigReader[String].emap(reason(AccountId.parse))
+
   implicit val pathReader: ConfigReader[Path] =
     ConfigReader[JPath].map(Path.fromNioPath)
 

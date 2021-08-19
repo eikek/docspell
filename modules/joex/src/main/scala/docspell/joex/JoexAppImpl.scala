@@ -32,16 +32,17 @@ import docspell.joex.process.ItemHandler
 import docspell.joex.process.ReProcessItem
 import docspell.joex.scanmailbox._
 import docspell.joex.scheduler._
+import docspell.joex.updatecheck._
 import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue._
 import docspell.store.records.{REmptyTrashSetting, RJobLog}
+import docspell.store.usertask.UserTaskScope
+import docspell.store.usertask.UserTaskStore
 
 import emil.javamail._
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
-import docspell.store.usertask.UserTaskStore
-import docspell.store.usertask.UserTaskScope
 
 final class JoexAppImpl[F[_]: Async](
     cfg: Config,
@@ -81,6 +82,9 @@ final class JoexAppImpl[F[_]: Async](
       .periodicTask[F](cfg.houseKeeping.schedule)
       .flatMap(pstore.insert) *>
       scheduleEmptyTrashTasks *>
+      UpdateCheckTask
+        .periodicTask(cfg.updateCheck)
+        .flatMap(pstore.insert) *>
       MigrationTask.job.flatMap(queue.insertIfNew) *>
       AllPreviewsTask
         .job(MakePreviewArgs.StoreMode.WhenMissing, None)
@@ -130,6 +134,7 @@ object JoexAppImpl {
       itemSearchOps <- OItemSearch(store)
       analyser      <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
       regexNer      <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
+      updateCheck   <- UpdateCheck.resource(httpClient)
       javaEmil =
         JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, store)
@@ -237,6 +242,13 @@ object JoexAppImpl {
             EmptyTrashArgs.taskName,
             EmptyTrashTask[F](itemOps, itemSearchOps),
             EmptyTrashTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            UpdateCheckTask.taskName,
+            UpdateCheckTask[F](cfg.updateCheck, cfg.sendMail, javaEmil, updateCheck),
+            UpdateCheckTask.onCancel[F]
           )
         )
         .resource
