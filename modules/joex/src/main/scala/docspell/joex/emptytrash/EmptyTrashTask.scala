@@ -13,8 +13,8 @@ import fs2.Stream
 import docspell.backend.ops.{OItem, OItemSearch}
 import docspell.common._
 import docspell.joex.scheduler._
-import docspell.store.records.{RItem, RPeriodicTask}
-import docspell.store.usertask.{UserTask, UserTaskScope}
+import docspell.store.records.RItem
+import docspell.store.usertask.UserTask
 
 import com.github.eikek.calev.CalEvent
 
@@ -26,19 +26,15 @@ object EmptyTrashTask {
 
   private val pageSize = 20
 
-  def periodicTask[F[_]: Sync](args: EmptyTrashArgs, ce: CalEvent): F[RPeriodicTask] =
-    Ident
-      .randomId[F]
-      .flatMap(id =>
-        UserTask(
-          id,
-          EmptyTrashArgs.taskName,
-          true,
-          ce,
-          None,
-          args
-        ).encode.toPeriodicTask(UserTaskScope(args.collective), args.makeSubject.some)
-      )
+  def userTask(args: EmptyTrashArgs, ce: CalEvent): UserTask[EmptyTrashArgs] =
+    UserTask(
+      args.periodicTaskId,
+      EmptyTrashArgs.taskName,
+      true,
+      ce,
+      None,
+      args
+    )
 
   def apply[F[_]: Async](
       itemOps: OItem[F],

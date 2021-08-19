@@ -63,6 +63,27 @@ let
         min-not-found = 2;
       };
     };
+    update-check = {
+      enabled = false;
+      test-run = false;
+      schedule = "Sun *-*-* 00:00:00";
+      sender-account = "";
+      smtp-id = "";
+      recipients = [];
+      subject = "Docspell {{ latestVersion }} is available";
+      body = ''
+Hello,
+
+You are currently running Docspell {{ currentVersion }}. Version *{{ latestVersion }}*
+is now available, which was released on {{ releasedAt }}. Check the release page at:
+
+<https://github.com/eikek/docspell/releases/latest>
+
+Have a nice day!
+
+Docpell Update Check
+'';
+    };
     extraction = {
       pdf = {
         min-text-len = 500;
@@ -568,6 +589,88 @@ in {
         description = ''
           Docspell uses periodic house keeping tasks, like cleaning expired
           invites, that can be configured here.
+        '';
+      };
+
+      update-check = mkOption {
+        type = types.submodule({
+          options = {
+            enabled = mkOption {
+              type = types.bool;
+              default = defaults.update-check.enabled;
+              description = "Whether this task is enabled.";
+            };
+            test-run = mkOption {
+              type = types.bool;
+              default = defaults.update-check.test-run;
+              description = ''
+                Sends the mail without checking the latest release. Can be used
+                if you want to see if mail sending works, but don't want to wait
+                until a new release is published.
+              '';
+            };
+            schedule = mkOption {
+              type = types.str;
+              default = defaults.update-check.schedule;
+              description = ''
+                When the check-update task should execute. Default is to run every
+                week.
+              '';
+            };
+            sender-account = mkOption {
+              type = types.str;
+              default = defaults.update-check.sender-account;
+              description = ''
+                An account id in form of `collective/user` (or just `user` if
+                collective and user name are the same). This user account must
+                have at least one valid SMTP settings which are used to send the
+                mail.
+              '';
+            };
+            smtp-id = mkOption {
+              type = types.str;
+              default = defaults.update-check.smtp-id;
+              description = ''
+                The SMTP connection id that should be used for sending the mail.
+              '';
+            };
+            recipients = mkOption {
+              type = types.listOf types.str;
+              default = defaults.update-check.recipients;
+              example = [ "josh.doe@gmail.com" ];
+              description = ''
+                A list of recipient e-mail addresses.
+              '';
+            };
+            subject = mkOption {
+              type = types.str;
+              default = defaults.update-check.subject;
+              description = ''
+                The subject of the mail. It supports the same variables as the body.
+              '';
+            };
+            body = mkOption {
+              type = types.str;
+              default = defaults.update-check.body;
+              description = ''
+                The body of the mail. Subject and body can contain these
+                variables which are replaced:
+
+                - `latestVersion` the latest available version of Docspell
+                - `currentVersion` the currently running (old) version of Docspell
+                - `releasedAt` a date when the release was published
+
+                The body is processed as markdown after the variables have been
+                replaced.
+              '';
+            };
+          };
+        });
+        default = defaults.update-check;
+        description = ''
+          A periodic task to check for new releases of docspell. It can
+          inform about a new release via e-mail. You need to specify an
+          account that has SMTP settings to use for sending.
         '';
       };
 

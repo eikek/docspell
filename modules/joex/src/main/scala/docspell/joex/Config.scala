@@ -19,6 +19,7 @@ import docspell.ftssolr.SolrConfig
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.hk.HouseKeepingConfig
 import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
+import docspell.joex.updatecheck.UpdateCheckConfig
 import docspell.store.JdbcConfig
 
 case class Config(
@@ -36,7 +37,8 @@ case class Config(
     sendMail: MailSendConfig,
     files: Files,
     mailDebug: Boolean,
-    fullTextSearch: Config.FullTextSearch
+    fullTextSearch: Config.FullTextSearch,
+    updateCheck: UpdateCheckConfig
 )
 
 object Config {

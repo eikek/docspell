@@ -25,6 +25,8 @@ case class EmptyTrashArgs(
   def makeSubject: String =
     s"Empty Trash: Remove older than ${minAge.toJava}"
 
+  def periodicTaskId: Ident =
+    EmptyTrashArgs.periodicTaskId(collective)
 }
 
 object EmptyTrashArgs {
@@ -32,6 +34,9 @@ object EmptyTrashArgs {
   val taskName = Ident.unsafe("empty-trash")
 
   val defaultSchedule = CalEvent.unsafe("*-*-1/7 03:00:00")
+
+  def periodicTaskId(coll: Ident): Ident =
+    Ident.unsafe(s"docspell") / taskName / coll
 
   implicit val jsonEncoder: Encoder[EmptyTrashArgs] =
     deriveEncoder[EmptyTrashArgs]
