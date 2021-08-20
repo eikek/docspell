@@ -39,13 +39,6 @@ if [[ $version == *SNAPSHOT* ]]; then
     echo ">>>> Building nightly images for $version <<<<<"
     url_base="https://github.com/eikek/docspell/releases/download/nightly"
 
-    echo "============ Building Tools ============"
-    docker buildx build \
-           --platform="$platforms" $push \
-           --build-arg tools_url="$url_base/docspell-tools-$version.zip" \
-           --tag docspell/tools:nightly \
-           -f tools.dockerfile .
-
     echo "============ Building Restserver ============"
     docker buildx build \
            --platform="$platforms" $push \
@@ -61,14 +54,6 @@ if [[ $version == *SNAPSHOT* ]]; then
            -f joex.dockerfile .
 else
     echo ">>>> Building release images for $version <<<<<"
-    echo "============ Building Tools ============"
-    docker buildx build \
-           --platform="$platforms" $push \
-           --build-arg version=$version \
-           --tag docspell/tools:v$version \
-           --tag docspell/tools:latest \
-           -f tools.dockerfile .
-
     echo "============ Building Restserver ============"
     docker buildx build \
            --platform="$platforms" $push \
