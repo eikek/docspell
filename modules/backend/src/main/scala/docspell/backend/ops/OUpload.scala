@@ -73,7 +73,8 @@ object OUpload {
       skipDuplicates: Boolean,
       fileFilter: Glob,
       tags: List[String],
-      language: Option[Language]
+      language: Option[Language],
+      attachmentsOnly: Option[Boolean]
   )
 
   case class UploadData[F[_]](
@@ -150,7 +151,8 @@ object OUpload {
             data.meta.skipDuplicates,
             data.meta.fileFilter.some,
             data.meta.tags.some,
-            false
+            false,
+            data.meta.attachmentsOnly
           )
           args =
             if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
