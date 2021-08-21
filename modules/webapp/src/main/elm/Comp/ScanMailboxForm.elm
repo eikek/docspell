@@ -83,6 +83,7 @@ type alias Model =
     , language : Maybe Language
     , postHandleAll : Bool
     , summary : Maybe String
+    , attachmentsOnly : Bool
     , openTabs : Set String
     }
 
@@ -166,6 +167,7 @@ type Msg
     | TogglePostHandleAll
     | ToggleAkkordionTab String
     | SetSummary String
+    | ToggleAttachmentsOnly
 
 
 initWith : Flags -> ScanMailboxSettings -> ( Model, Cmd Msg )
@@ -212,6 +214,7 @@ initWith flags s =
             Comp.FixedDropdown.init Data.Language.all
         , language = Maybe.andThen Data.Language.fromString s.language
         , postHandleAll = Maybe.withDefault False s.postHandleAll
+        , attachmentsOnly = Maybe.withDefault False s.attachmentsOnly
         , summary = s.summary
       }
     , Cmd.batch
@@ -260,6 +263,7 @@ init flags =
       , language = Nothing
       , postHandleAll = False
       , summary = Nothing
+      , attachmentsOnly = False
       , openTabs = Set.singleton (tabName TabGeneral)
       }
     , Cmd.batch
@@ -327,6 +331,7 @@ makeSettings model =
                 , language = Maybe.map Data.Language.toIso3 model.language
                 , postHandleAll = Just model.postHandleAll
                 , summary = model.summary
+                , attachmentsOnly = Just model.attachmentsOnly
             }
     in
     Result.map3 make conn schedule_ infolders
@@ -697,6 +702,12 @@ update flags msg model =
             , Cmd.none
             )
 
+        ToggleAttachmentsOnly ->
+            ( { model | attachmentsOnly = not model.attachmentsOnly }
+            , NoAction
+            , Cmd.none
+            )
+
         ToggleAkkordionTab name ->
             let
                 tabs =
@@ -992,6 +1003,18 @@ viewAdditionalFilter2 texts model =
             []
         , div [ class "opacity-50 text-sm" ]
             [ Markdown.toHtml [] texts.fileFilterInfo
+            ]
+        ]
+    , div [ class "mb-4" ]
+        [ MB.viewItem <|
+            MB.Checkbox
+                { id = "scanmail-attachments-only"
+                , value = model.attachmentsOnly
+                , label = texts.attachmentsOnlyLabel
+                , tagger = \_ -> ToggleAttachmentsOnly
+                }
+        , span [ class "opacity-50 text-sm mt-1" ]
+            [ Markdown.toHtml [] texts.attachmentsOnlyInfo
             ]
         ]
     , div

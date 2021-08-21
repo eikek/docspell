@@ -4336,6 +4336,10 @@ components:
           format: language
         postHandleAll:
           type: boolean
+        attachmentsOnly:
+          type: boolean
+          description: |
+            Import only the attachments e-mails and discard the body
 
     ImapSettingsList:
       description: |
@@ -5282,6 +5286,14 @@ components:
           description: |
             The `language` of the document may be specified, otherwise
             the one from settings is used.
+        attachmentsOnly:
+          type: boolean
+          default: false
+          description: |
+            Only applies to e-mail files. If `true` then only
+            attachments of the e-mail are imported and the e-mail body
+            is discarded. E-mails that don't have any attachments are
+            skipped.
 
     Collective:
       description: |

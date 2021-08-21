@@ -44,7 +44,9 @@ case class ScanMailboxArgs(
     // the language for extraction and analysis
     language: Option[Language],
     // apply additional filter to all mails or only imported
-    postHandleAll: Option[Boolean]
+    postHandleAll: Option[Boolean],
+    // Exclude the mail body when importing
+    attachmentsOnly: Option[Boolean]
 )
 
 object ScanMailboxArgs {

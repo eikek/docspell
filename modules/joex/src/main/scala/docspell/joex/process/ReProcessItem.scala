@@ -114,7 +114,8 @@ object ReProcessItem {
               false,
               None,
               None,
-              true
+              true,
+              None // attachOnly (not used when reprocessing attachments)
             ),
             Nil
           ).pure[F]

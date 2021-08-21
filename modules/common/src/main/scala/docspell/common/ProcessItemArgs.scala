@@ -51,7 +51,8 @@ object ProcessItemArgs {
       skipDuplicate: Boolean,
       fileFilter: Option[Glob],
       tags: Option[List[String]],
-      reprocess: Boolean
+      reprocess: Boolean,
+      attachmentsOnly: Option[Boolean]
   )
 
   object ProcessMeta {

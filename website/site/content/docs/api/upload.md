@@ -52,6 +52,7 @@ specified via a JSON structure in a part with name `meta`:
 , tags: Maybe StringList
 , fileFilter: Maybe String
 , language: Maybe String
+, attachmentsOnly: Maybe Bool
 }
 ```
 
@@ -90,6 +91,10 @@ specified via a JSON structure in a part with name `meta`:
 - The `language` is used for processing the document(s) contained in
   the request. If not specified the collective's default language is
   used.
+- The `attachmentsOnly` property only applies to e-mail files (usually
+  `*.eml`). If this is `true`, then the e-mail body is discarded and
+  only the attachments are imported. An e-mail without any attachments
+  is therefore skipped.
 
 
 # Endpoints

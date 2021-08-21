@@ -161,7 +161,8 @@ object ExtractArchive {
       .unNoneTerminate
       .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
 
-    val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
+    val glob       = ctx.args.meta.fileFilter.getOrElse(Glob.all)
+    val attachOnly = ctx.args.meta.attachmentsOnly.getOrElse(false)
     ctx.logger.debug(s"Filtering email attachments with '${glob.asString}'") *>
       email
         .through(ReadMail.bytesToMail[F](ctx.logger))
@@ -174,7 +175,7 @@ object ExtractArchive {
             } yield s
 
           ReadMail
-            .mailToEntries(ctx.logger, glob)(mail)
+            .mailToEntries(ctx.logger, glob, attachOnly)(mail)
             .zipWithIndex
             .flatMap(handleEntry(ctx, ra, pos, archive, mId)) ++ Stream.eval(givenMeta)
         }

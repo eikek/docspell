@@ -70,6 +70,8 @@ type alias Texts =
     , connectionMissing : String
     , noProcessingFolders : String
     , invalidCalEvent : String
+    , attachmentsOnlyLabel : String
+    , attachmentsOnlyInfo : String
     }
 
 
@@ -149,6 +151,8 @@ gb =
     , connectionMissing = "No E-Mail connections configured. Goto E-Mail Settings to add one."
     , noProcessingFolders = "No processing folders given."
     , invalidCalEvent = "The calendar event is not valid."
+    , attachmentsOnlyLabel = "Only import e-mail attachments"
+    , attachmentsOnlyInfo = "Discards the e-mail body and only imports the attachments."
     }
 
 
@@ -223,4 +227,6 @@ kann hier ein Wert für alle festgelegt werden. Bei 'Automatisch' wird auf den S
     , connectionMissing = "Keine E-Mail-Verbindung definiert. Gehe zu den E-Mail-Einstellungen und füge eine hinzu."
     , noProcessingFolders = "Keine Postfachordner ausgewählt."
     , invalidCalEvent = "Das Kalenderereignis ist ungültig."
+    , attachmentsOnlyLabel = "Nur Anhänge importieren"
+    , attachmentsOnlyInfo = "Verwirft den E-Mail Text und importiert nur die Anhänge."
     }
