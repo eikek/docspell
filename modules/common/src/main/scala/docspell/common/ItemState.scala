@@ -52,6 +52,9 @@ object ItemState {
   val invalidStates: NonEmptyList[ItemState] =
     NonEmptyList.of(Premature, Processing)
 
+  val validStatesAndDeleted: NonEmptyList[ItemState] =
+    validStates.append(deleted)
+
   def unsafe(str: String): ItemState =
     fromString(str).fold(sys.error, identity)
 

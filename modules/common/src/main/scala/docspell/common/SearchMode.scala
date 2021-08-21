@@ -22,11 +22,13 @@ object SearchMode {
 
   final case object Normal  extends SearchMode
   final case object Trashed extends SearchMode
+  final case object All     extends SearchMode
 
   def fromString(str: String): Either[String, SearchMode] =
     str.toLowerCase match {
       case "normal"  => Right(Normal)
       case "trashed" => Right(Trashed)
+      case "all"     => Right(All)
       case _         => Left(s"Invalid search mode: $str")
     }
 

@@ -129,6 +129,9 @@ object ItemQueryGenerator {
       case Expr.Trashed =>
         tables.item.state === ItemState.Deleted
 
+      case Expr.ValidItemsOrTrashed =>
+        tables.item.state.in(ItemState.validStatesAndDeleted)
+
       case Expr.TagIdsMatch(op, tags) =>
         val ids = tags.toList.flatMap(s => Ident.fromString(s).toOption)
         Nel

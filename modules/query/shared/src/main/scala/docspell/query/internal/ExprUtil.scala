@@ -79,6 +79,8 @@ object ExprUtil {
         expr
       case Trashed =>
         expr
+      case ValidItemsOrTrashed =>
+        expr
     }
 
   private def spliceAnd(nodes: Nel[Expr]): Nel[Expr] =

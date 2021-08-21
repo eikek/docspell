@@ -4228,6 +4228,7 @@ components:
           enum:
             - normal
             - trashed
+            - all
           default: normal
           description: |
             Specify whether the search query should apply to
@@ -5990,10 +5991,12 @@ components:
     searchMode:
       name: searchMode
       in: query
-      description: Whether to search in soft-deleted items only.
       schema:
         type: string
         format: searchmode
+      description: |
+        Specify whether the search query should apply to soft-deleted
+        items or not.
     name:
       name: name
       in: path
