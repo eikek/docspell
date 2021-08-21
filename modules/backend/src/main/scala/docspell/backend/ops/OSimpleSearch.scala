@@ -220,6 +220,7 @@ object OSimpleSearch {
         settings.searchMode match {
           case SearchMode.Trashed => q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
           case SearchMode.Normal  => q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+          case SearchMode.All => q.withFix(_.andQuery(ItemQuery.Expr.ValidItemsOrTrashed))
         }
       fulltextQuery match {
         case Some(ftq) if settings.useFTS =>
@@ -282,6 +283,7 @@ object OSimpleSearch {
         settings.searchMode match {
           case SearchMode.Trashed => q.withFix(_.andQuery(ItemQuery.Expr.Trashed))
           case SearchMode.Normal  => q.withFix(_.andQuery(ItemQuery.Expr.ValidItemStates))
+          case SearchMode.All => q.withFix(_.andQuery(ItemQuery.Expr.ValidItemsOrTrashed))
         }
       fulltextQuery match {
         case Some(ftq) if settings.useFTS =>
