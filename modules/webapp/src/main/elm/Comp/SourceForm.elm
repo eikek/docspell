@@ -57,6 +57,7 @@ type alias Model =
     , fileFilter : Maybe String
     , languageModel : Comp.Dropdown.Model Language
     , language : Maybe String
+    , attachmentsOnly : Bool
     }
 
 
@@ -80,6 +81,7 @@ emptyModel =
             , selected = Nothing
             }
     , language = Nothing
+    , attachmentsOnly = False
     }
 
 
@@ -119,6 +121,7 @@ getSource model =
                 , folder = model.folderId
                 , fileFilter = model.fileFilter
                 , language = model.language
+                , attachmentsOnly = model.attachmentsOnly
             }
     in
     { st | source = n, tags = TagList (List.length tags) tags }
@@ -136,6 +139,7 @@ type Msg
     | TagDropdownMsg (Comp.Dropdown.Msg Tag)
     | SetFileFilter String
     | LanguageMsg (Comp.Dropdown.Msg Language)
+    | ToggleAttachmentsOnly
 
 
 
@@ -218,6 +222,9 @@ update flags msg model =
 
         ToggleEnabled ->
             ( { model | enabled = not model.enabled }, Cmd.none )
+
+        ToggleAttachmentsOnly ->
+            ( { model | attachmentsOnly = not model.attachmentsOnly }, Cmd.none )
 
         SetAbbrev n ->
             ( { model | abbrev = n }, Cmd.none )
@@ -494,6 +501,24 @@ view2 flags texts settings model =
                 []
             , div [ class "opacity-50 text-sm" ]
                 [ Markdown.toHtml [] texts.fileFilterInfo
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ label
+                [ class "inline-flex items-center"
+                , for "attachments-only"
+                ]
+                [ input
+                    [ type_ "checkbox"
+                    , onCheck (\_ -> ToggleAttachmentsOnly)
+                    , checked model.attachmentsOnly
+                    , class S.checkboxInput
+                    , id "attachments-only"
+                    ]
+                    []
+                , span [ class "ml-2" ]
+                    [ text texts.attachmentsOnly
+                    ]
                 ]
             ]
         , div [ class "mb-4" ]
