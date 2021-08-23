@@ -118,7 +118,6 @@ object Language {
     val iso3 = "heb"
   }
 
-
   val all: List[Language] =
     List(
       German,
