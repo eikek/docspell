@@ -353,7 +353,9 @@ val store = project
         Dependencies.emil ++
         Dependencies.emilDoobie ++
         Dependencies.calevCore ++
-        Dependencies.calevFs2
+        Dependencies.calevFs2,
+    libraryDependencies ++=
+      Dependencies.testContainer.map(_ % Test)
   )
   .dependsOn(common, query.jvm)
 

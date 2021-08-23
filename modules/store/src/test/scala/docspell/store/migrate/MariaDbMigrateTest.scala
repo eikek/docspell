@@ -1,0 +1,33 @@
+/*
+ * Copyright 2020 Docspell Contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+package docspell.store.migrate
+
+import cats.effect._
+import cats.effect.unsafe.implicits._
+
+import docspell.common.LenientUri
+import docspell.store.JdbcConfig
+
+import com.dimafeng.testcontainers.MariaDBContainer
+import com.dimafeng.testcontainers.munit.TestContainerForAll
+import munit._
+import org.testcontainers.utility.DockerImageName
+
+class MariaDbMigrateTest extends FunSuite with TestContainerForAll {
+  override val containerDef: MariaDBContainer.Def =
+    MariaDBContainer.Def(DockerImageName.parse("mariadb:10.5"))
+
+  test("mariadb empty schema migration") {
+    assume(Docker.existsUnsafe, "docker doesn't exist!")
+    withContainers { cnt =>
+      val jdbc =
+        JdbcConfig(LenientUri.unsafe(cnt.jdbcUrl), cnt.dbUsername, cnt.dbPassword)
+      val result = FlywayMigrate.run[IO](jdbc).unsafeRunSync()
+      assert(result.migrationsExecuted > 0)
+    }
+  }
+}

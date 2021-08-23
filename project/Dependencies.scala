@@ -41,9 +41,16 @@ object Dependencies {
   val TikaVersion             = "2.0.0"
   val YamuscaVersion          = "0.8.1"
   val SwaggerUIVersion        = "3.51.2"
+  val TestContainerVersion    = "0.39.6"
   val TwelveMonkeysVersion    = "3.7.0"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.9"
+
+  val testContainer = Seq(
+    "com.dimafeng" %% "testcontainers-scala-munit"      % TestContainerVersion,
+    "com.dimafeng" %% "testcontainers-scala-mariadb"    % TestContainerVersion,
+    "com.dimafeng" %% "testcontainers-scala-postgresql" % TestContainerVersion
+  )
 
   val catsParse = Seq(
     "org.typelevel" %% "cats-parse" % CatsParseVersion
