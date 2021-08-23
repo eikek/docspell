@@ -26,7 +26,8 @@ case class RSource(
     created: Timestamp,
     folderId: Option[Ident],
     fileFilter: Option[Glob],
-    language: Option[Language]
+    language: Option[Language],
+    attachmentsOnly: Boolean
 ) {
 
   def fileFilterOrAll: Glob =
@@ -49,6 +50,7 @@ object RSource {
     val folder      = Column[Ident]("folder_id", this)
     val fileFilter  = Column[Glob]("file_filter", this)
     val language    = Column[Language]("doc_lang", this)
+    val attachOnly  = Column[Boolean]("attachments_only", this)
 
     val all =
       NonEmptyList.of[Column[_]](
@@ -62,7 +64,8 @@ object RSource {
         created,
         folder,
         fileFilter,
-        language
+        language,
+        attachOnly
       )
   }
 
@@ -90,7 +93,8 @@ object RSource {
         table.priority.setTo(v.priority),
         table.folder.setTo(v.folderId),
         table.fileFilter.setTo(v.fileFilter),
-        table.language.setTo(v.language)
+        table.language.setTo(v.language),
+        table.attachOnly.setTo(v.attachmentsOnly)
       )
     )
 

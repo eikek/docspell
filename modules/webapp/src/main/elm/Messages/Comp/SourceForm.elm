@@ -31,6 +31,7 @@ type alias Texts =
     , language : String
     , languageInfo : String
     , languageLabel : Language -> String
+    , attachmentsOnly : String
     }
 
 
@@ -61,6 +62,7 @@ Specify a file glob to filter files when uploading archives
         "Used for text extraction and analysis. The collective's "
             ++ "default language is used if not specified here."
     , languageLabel = Messages.Data.Language.gb
+    , attachmentsOnly = "Only import attachments for e-mails"
     }
 
 
@@ -93,4 +95,5 @@ importieren: `*.pdf`. Globs können auch mittels OR kombiniert werden:
         "Wird für die Texterkennung und -analyse verwendet. Die Standardsprache des Kollektivs "
             ++ "wird verwendet, falls hier nicht angegeben."
     , languageLabel = Messages.Data.Language.de
+    , attachmentsOnly = "Bei E-Mails nur die Anhänge importieren"
     }

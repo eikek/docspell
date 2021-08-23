@@ -5402,6 +5402,7 @@ components:
         - enabled
         - priority
         - created
+        - attachmentsOnly
       properties:
         id:
           type: string
@@ -5434,6 +5435,8 @@ components:
           description: DateTime
           type: integer
           format: date-time
+        attachmentsOnly:
+          type: boolean
     SourceTagIn:
       description: |
         A source and optional tags (ids or names) for updating/adding.

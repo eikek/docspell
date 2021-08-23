@@ -183,7 +183,9 @@ object OUpload {
                 if (data.meta.fileFilter == Glob.all) src.source.fileFilterOrAll
                 else data.meta.fileFilter,
               tags = (data.meta.tags ++ src.tags.map(_.tagId.id)).distinct,
-              language = data.meta.language.orElse(src.source.language)
+              language = data.meta.language.orElse(src.source.language),
+              attachmentsOnly =
+                data.meta.attachmentsOnly.orElse(src.source.attachmentsOnly.some)
             ),
             priority = src.source.priority
           )

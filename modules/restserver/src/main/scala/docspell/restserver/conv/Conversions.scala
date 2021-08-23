@@ -584,7 +584,8 @@ trait Conversions {
         s.source.folderId,
         s.source.fileFilter,
         s.source.language,
-        s.source.created
+        s.source.created,
+        s.source.attachmentsOnly
       ),
       TagList(s.tags.length, s.tags.map(mkTag).toList)
     )
@@ -602,7 +603,8 @@ trait Conversions {
         now,
         s.folder,
         s.fileFilter,
-        s.language
+        s.language,
+        s.attachmentsOnly
       )
     }
 
@@ -618,7 +620,8 @@ trait Conversions {
       s.created,
       s.folder,
       s.fileFilter,
-      s.language
+      s.language,
+      s.attachmentsOnly
     )
 
   // equipment
