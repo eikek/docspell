@@ -30,6 +30,7 @@ type Language
     | Dutch
     | Latvian
     | Japanese
+    | Hebrew
 
 
 fromString : String -> Maybe Language
@@ -81,6 +82,9 @@ fromString str =
 
     else if str == "jpn" || str == "ja" || str == "japanese" then
         Just Japanese
+
+    else if str == "heb" || str == "he" || str == "hebrew" then
+        Just Hebrew
 
     else
         Nothing
@@ -137,6 +141,9 @@ toIso3 lang =
         Japanese ->
             "jpn"
 
+        Hebrew ->
+            "heb"
+
 
 all : List Language
 all =
@@ -156,4 +163,5 @@ all =
     , Romanian
     , Latvian
     , Japanese
+    , Hebrew
     ]

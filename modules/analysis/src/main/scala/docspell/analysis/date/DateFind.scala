@@ -102,6 +102,7 @@ object DateFind {
         case Language.Dutch      => dmy.or(ymd).or(mdy)
         case Language.Latvian    => dmy.or(lavLong).or(ymd)
         case Language.Japanese   => ymd
+        case Language.Hebrew     => dmy
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>

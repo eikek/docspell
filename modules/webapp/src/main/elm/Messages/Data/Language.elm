@@ -64,6 +64,9 @@ gb lang =
         Japanese ->
             "Japanese"
 
+        Hebrew ->
+            "Hebrew"
+
 
 de : Language -> String
 de lang =
@@ -115,3 +118,6 @@ de lang =
 
         Japanese ->
             "Japanisch"
+
+        Hebrew ->
+            "Hebräisch"
