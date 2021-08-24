@@ -28,6 +28,7 @@ import Data.DropdownStyle as DS
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
 import Data.ItemTemplate as IT exposing (ItemTemplate)
+import Data.TagOrder
 import Data.UiSettings exposing (ItemPattern, Pos(..), UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
@@ -160,7 +161,7 @@ init flags settings =
             Comp.FixedDropdown.init Messages.UiLanguage.all
       , openTabs = Set.empty
       }
-    , Api.getTags flags "" GetTagsResp
+    , Api.getTags flags "" Data.TagOrder.NameAsc GetTagsResp
     )
 
 

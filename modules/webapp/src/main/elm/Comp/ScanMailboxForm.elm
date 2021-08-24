@@ -37,7 +37,9 @@ import Data.CalEvent exposing (CalEvent)
 import Data.Direction exposing (Direction(..))
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
+import Data.FolderOrder
 import Data.Language exposing (Language)
+import Data.TagOrder
 import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
@@ -221,8 +223,8 @@ initWith flags s =
         [ Api.getImapSettings flags "" ConnResp
         , nc
         , Cmd.map CalEventMsg sc
-        , Api.getFolders flags "" False GetFolderResp
-        , Api.getTags flags "" GetTagResp
+        , Api.getFolders flags "" Data.FolderOrder.NameAsc False GetFolderResp
+        , Api.getTags flags "" Data.TagOrder.NameAsc GetTagResp
         ]
     )
 
@@ -268,8 +270,8 @@ init flags =
       }
     , Cmd.batch
         [ Api.getImapSettings flags "" ConnResp
-        , Api.getFolders flags "" False GetFolderResp
-        , Api.getTags flags "" GetTagResp
+        , Api.getFolders flags "" Data.FolderOrder.NameAsc False GetFolderResp
+        , Api.getTags flags "" Data.TagOrder.NameAsc GetTagResp
         , Cmd.map CalEventMsg scmd
         ]
     )

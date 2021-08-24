@@ -40,10 +40,12 @@ import Comp.TagSelect
 import Data.CustomFieldChange exposing (CustomFieldValueCollect)
 import Data.Direction exposing (Direction)
 import Data.DropdownStyle as DS
+import Data.EquipmentOrder
 import Data.EquipmentUse
 import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.ItemQuery as Q exposing (ItemQuery)
+import Data.PersonOrder
 import Data.PersonUse
 import Data.SearchMode exposing (SearchMode)
 import Data.UiSettings exposing (UiSettings)
@@ -441,8 +443,8 @@ updateDrop ddm flags settings msg model =
                 Cmd.batch
                     [ Api.itemSearchStats flags Api.Model.ItemQuery.empty GetAllTagsResp
                     , Api.getOrgLight flags GetOrgResp
-                    , Api.getEquipments flags "" GetEquipResp
-                    , Api.getPersons flags "" GetPersonResp
+                    , Api.getEquipments flags "" Data.EquipmentOrder.NameAsc GetEquipResp
+                    , Api.getPersons flags "" Data.PersonOrder.NameAsc GetPersonResp
                     , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     , cdp
                     ]
@@ -1088,7 +1090,7 @@ findTab tab =
             Nothing
 
 
-tabLook :UiSettings -> Model -> SearchTab -> Comp.Tabs.Look
+tabLook : UiSettings -> Model -> SearchTab -> Comp.Tabs.Look
 tabLook settings model tab =
     let
         isHidden f =
@@ -1097,6 +1099,7 @@ tabLook settings model tab =
         hiddenOr fields default =
             if List.all isHidden fields then
                 Comp.Tabs.Hidden
+
             else
                 default
 
@@ -1126,41 +1129,41 @@ tabLook settings model tab =
             activeWhen model.inboxCheckbox
 
         TabTags ->
-            hiddenOr [Data.Fields.Tag]
+            hiddenOr [ Data.Fields.Tag ]
                 (activeWhenNotEmpty model.tagSelection.includeTags model.tagSelection.excludeTags)
 
         TabTagCategories ->
-            hiddenOr [Data.Fields.Tag]
+            hiddenOr [ Data.Fields.Tag ]
                 (activeWhenNotEmpty model.tagSelection.includeCats model.tagSelection.excludeCats)
 
         TabFolder ->
-            hiddenOr [Data.Fields.Folder]
+            hiddenOr [ Data.Fields.Folder ]
                 (activeWhenJust model.selectedFolder)
 
         TabCorrespondent ->
-            hiddenOr [Data.Fields.CorrOrg, Data.Fields.CorrPerson] <|
+            hiddenOr [ Data.Fields.CorrOrg, Data.Fields.CorrPerson ] <|
                 activeWhenNotEmpty (Comp.Dropdown.getSelected model.orgModel)
                     (Comp.Dropdown.getSelected model.corrPersonModel)
 
         TabConcerning ->
-            hiddenOr [Data.Fields.ConcPerson, Data.Fields.ConcEquip ] <|
+            hiddenOr [ Data.Fields.ConcPerson, Data.Fields.ConcEquip ] <|
                 activeWhenNotEmpty (Comp.Dropdown.getSelected model.concPersonModel)
                     (Comp.Dropdown.getSelected model.concEquipmentModel)
 
         TabDate ->
-            hiddenOr [Data.Fields.Date] <|
-                activeWhenJust (Util.Maybe.or [model.fromDate, model.untilDate])
+            hiddenOr [ Data.Fields.Date ] <|
+                activeWhenJust (Util.Maybe.or [ model.fromDate, model.untilDate ])
 
         TabDueDate ->
-            hiddenOr [Data.Fields.DueDate] <|
-                activeWhenJust (Util.Maybe.or [model.fromDueDate, model.untilDueDate])
+            hiddenOr [ Data.Fields.DueDate ] <|
+                activeWhenJust (Util.Maybe.or [ model.fromDueDate, model.untilDueDate ])
 
         TabSource ->
-            hiddenOr [Data.Fields.SourceName] <|
+            hiddenOr [ Data.Fields.SourceName ] <|
                 activeWhenJust model.sourceModel
 
         TabDirection ->
-            hiddenOr [Data.Fields.Direction] <|
+            hiddenOr [ Data.Fields.Direction ] <|
                 activeWhenNotEmpty (Comp.Dropdown.getSelected model.directionModel) []
 
         TabTrashed ->
@@ -1179,7 +1182,6 @@ searchTabState settings model tab =
         searchTab =
             findTab tab
 
-
         folded =
             if Set.member tab.name model.openTabs then
                 Comp.Tabs.Open
@@ -1189,10 +1191,10 @@ searchTabState settings model tab =
 
         state =
             { folded = folded
-            , look =  Maybe.map (tabLook settings model) searchTab
-                      |> Maybe.withDefault Comp.Tabs.Normal
+            , look =
+                Maybe.map (tabLook settings model) searchTab
+                    |> Maybe.withDefault Comp.Tabs.Normal
             }
-
     in
     ( state, ToggleAkkordionTab tab.name )
 

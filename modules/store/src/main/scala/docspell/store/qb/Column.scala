@@ -12,6 +12,7 @@ case class Column[A](name: String, table: TableDef) {
 
   def cast[B]: Column[B] =
     this.asInstanceOf[Column[B]]
+
 }
 
 object Column {}

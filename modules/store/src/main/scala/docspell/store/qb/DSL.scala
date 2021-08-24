@@ -303,6 +303,12 @@ trait DSL extends DoobieMeta {
     def as(otherCol: Column[_]): SelectExpr =
       SelectExpr.SelectFun(dbf, Some(otherCol.name))
 
+    def asc: OrderBy =
+      OrderBy(SelectExpr.SelectFun(dbf, None), OrderBy.OrderType.Asc)
+
+    def desc: OrderBy =
+      OrderBy(SelectExpr.SelectFun(dbf, None), OrderBy.OrderType.Desc)
+
     def ===[A](value: A)(implicit P: Put[A]): Condition =
       Condition.CompareFVal(dbf.s, Operator.Eq, value)
 

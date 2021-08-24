@@ -22,6 +22,7 @@ import Comp.EquipmentForm
 import Comp.EquipmentTable
 import Comp.MenuBar as MB
 import Comp.YesNoDimmer
+import Data.EquipmentOrder exposing (EquipmentOrder)
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -40,6 +41,7 @@ type alias Model =
     , loading : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
     , query : String
+    , order : EquipmentOrder
     }
 
 
@@ -64,6 +66,7 @@ emptyModel =
     , loading = False
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , query = ""
+    , order = Data.EquipmentOrder.NameAsc
     }
 
 
@@ -86,8 +89,11 @@ update flags msg model =
     case msg of
         TableMsg m ->
             let
-                ( tm, tc ) =
+                ( tm, tc, maybeOrder ) =
                     Comp.EquipmentTable.update flags m model.tableModel
+
+                newOrder =
+                    Maybe.withDefault model.order maybeOrder
 
                 ( m2, c2 ) =
                     ( { model
@@ -99,6 +105,7 @@ update flags msg model =
 
                             else
                                 model.formError
+                        , order = newOrder
                       }
                     , Cmd.map TableMsg tc
                     )
@@ -110,8 +117,15 @@ update flags msg model =
 
                         Nothing ->
                             ( m2, Cmd.none )
+
+                ( m4, c4 ) =
+                    if model.order == newOrder then
+                        ( m3, Cmd.none )
+
+                    else
+                        update flags LoadEquipments m3
             in
-            ( m3, Cmd.batch [ c2, c3 ] )
+            ( m4, Cmd.batch [ c2, c3, c4 ] )
 
         FormMsg m ->
             let
@@ -121,7 +135,7 @@ update flags msg model =
             ( { model | formModel = m2 }, Cmd.map FormMsg c2 )
 
         LoadEquipments ->
-            ( { model | loading = True }, Api.getEquipments flags "" EquipmentResp )
+            ( { model | loading = True }, Api.getEquipments flags model.query model.order EquipmentResp )
 
         EquipmentResp (Ok equipments) ->
             let
@@ -211,7 +225,7 @@ update flags msg model =
                 m =
                     { model | query = str }
             in
-            ( m, Api.getEquipments flags str EquipmentResp )
+            ( m, Api.getEquipments flags str model.order EquipmentResp )
 
 
 
@@ -251,6 +265,7 @@ viewTable2 texts model =
             }
         , Html.map TableMsg
             (Comp.EquipmentTable.view2 texts.equipmentTable
+                model.order
                 model.tableModel
             )
         , div

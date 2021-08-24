@@ -12,6 +12,7 @@ import cats.implicits._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.OOrganization.OrganizationOrder
 import docspell.common.Ident
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
@@ -29,15 +30,21 @@ object OrganizationRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? QueryParam.FullOpt(full) +& QueryParam.QueryOpt(q) =>
+      case GET -> Root :? QueryParam.FullOpt(full) +&
+          QueryParam.QueryOpt(q) +& QueryParam.OrgSort(sort) =>
+        val order = sort.getOrElse(OrganizationOrder.NameAsc)
         if (full.getOrElse(false))
           for {
-            data <- backend.organization.findAllOrg(user.account, q.map(_.q))
+            data <- backend.organization.findAllOrg(
+              user.account,
+              q.map(_.q),
+              order
+            )
             resp <- Ok(OrganizationList(data.map(mkOrg).toList))
           } yield resp
         else
           for {
-            data <- backend.organization.findAllOrgRefs(user.account, q.map(_.q))
+            data <- backend.organization.findAllOrgRefs(user.account, q.map(_.q), order)
             resp <- Ok(ReferenceList(data.map(mkIdName).toList))
           } yield resp
 

@@ -24,9 +24,10 @@ object QCustomField {
 
   def findAllLike(
       coll: Ident,
-      nameQuery: Option[String]
+      nameQuery: Option[String],
+      order: RCustomField.Table => Nel[OrderBy]
   ): ConnectionIO[Vector[CustomFieldData]] =
-    findFragment(coll, nameQuery, None).build.query[CustomFieldData].to[Vector]
+    findFragment(coll, nameQuery, None, order).build.query[CustomFieldData].to[Vector]
 
   def findById(field: Ident, collective: Ident): ConnectionIO[Option[CustomFieldData]] =
     findFragment(collective, None, field.some).build.query[CustomFieldData].option
@@ -34,7 +35,8 @@ object QCustomField {
   private def findFragment(
       coll: Ident,
       nameQuery: Option[String],
-      fieldId: Option[Ident]
+      fieldId: Option[Ident],
+      order: RCustomField.Table => Nel[OrderBy] = t => Nel.of(t.name.asc)
   ): Select = {
     val nameFilter = nameQuery.map { q =>
       f.name.likes(q) || (f.label.isNotNull && f.label.like(q))
@@ -46,7 +48,7 @@ object QCustomField {
         .leftJoin(v, f.id === v.field),
       f.cid === coll &&? nameFilter &&? fieldId.map(fid => f.id === fid),
       GroupBy(f.all)
-    )
+    ).orderBy(order(f))
   }
 
   final case class FieldValue(

@@ -17,8 +17,10 @@ import Api.Model.Organization exposing (Organization)
 import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Data.OrgUse
+import Data.OrganizationOrder exposing (OrganizationOrder)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Messages.Comp.OrgTable exposing (Texts)
 import Styles as S
 import Util.Address
@@ -42,27 +44,50 @@ type Msg
     = SetOrgs (List Organization)
     | Select Organization
     | Deselect
+    | ToggleOrder OrganizationOrder
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe OrganizationOrder )
 update _ msg model =
     case msg of
         SetOrgs list ->
-            ( { model | orgs = list, selected = Nothing }, Cmd.none )
+            ( { model | orgs = list, selected = Nothing }, Cmd.none, Nothing )
 
         Select equip ->
-            ( { model | selected = Just equip }, Cmd.none )
+            ( { model | selected = Just equip }, Cmd.none, Nothing )
 
         Deselect ->
-            ( { model | selected = Nothing }, Cmd.none )
+            ( { model | selected = Nothing }, Cmd.none, Nothing )
+
+        ToggleOrder order ->
+            ( model, Cmd.none, Just order )
+
+
+newOrder : OrganizationOrder -> OrganizationOrder
+newOrder current =
+    case current of
+        Data.OrganizationOrder.NameAsc ->
+            Data.OrganizationOrder.NameDesc
+
+        Data.OrganizationOrder.NameDesc ->
+            Data.OrganizationOrder.NameAsc
 
 
 
 --- View2
 
 
-view2 : Texts -> Model -> Html Msg
-view2 texts model =
+view2 : Texts -> OrganizationOrder -> Model -> Html Msg
+view2 texts order model =
+    let
+        nameSortIcon =
+            case order of
+                Data.OrganizationOrder.NameAsc ->
+                    "fa fa-sort-alpha-up"
+
+                Data.OrganizationOrder.NameDesc ->
+                    "fa fa-sort-alpha-down-alt"
+    in
     table [ class S.tableMain ]
         [ thead []
             [ tr []
@@ -71,7 +96,10 @@ view2 texts model =
                     [ text texts.use
                     ]
                 , th [ class "text-left" ]
-                    [ text texts.basics.name
+                    [ a [ href "#", onClick (ToggleOrder <| newOrder order) ]
+                        [ i [ class nameSortIcon, class "mr-1" ] []
+                        , text texts.basics.name
+                        ]
                     ]
                 , th [ class "text-left hidden md:table-cell" ]
                     [ text texts.address

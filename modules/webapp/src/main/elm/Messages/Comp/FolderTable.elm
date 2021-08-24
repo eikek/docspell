@@ -20,6 +20,7 @@ type alias Texts =
     { basics : Messages.Basics.Texts
     , memberCount : String
     , formatDateShort : Int -> String
+    , owner : String
     }
 
 
@@ -28,6 +29,7 @@ gb =
     { basics = Messages.Basics.gb
     , memberCount = "#Member"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.English
+    , owner = "Owner"
     }
 
 
@@ -36,4 +38,5 @@ de =
     { basics = Messages.Basics.de
     , memberCount = "#Mitglieder"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.German
+    , owner = "Besitzer"
     }

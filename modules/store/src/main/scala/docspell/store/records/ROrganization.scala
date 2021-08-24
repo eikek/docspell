@@ -7,7 +7,7 @@
 package docspell.store.records
 
 import cats.Eq
-import cats.data.NonEmptyList
+import cats.data.{NonEmptyList => Nel}
 import fs2.Stream
 
 import docspell.common.{IdRef, _}
@@ -52,7 +52,7 @@ object ROrganization {
     val shortName = Column[String]("short_name", this)
     val use       = Column[OrgUse]("org_use", this)
     val all =
-      NonEmptyList.of[Column[_]](
+      Nel.of[Column[_]](
         oid,
         cid,
         name,
@@ -122,7 +122,7 @@ object ROrganization {
   def findLike(
       coll: Ident,
       orgName: String,
-      use: NonEmptyList[OrgUse]
+      use: Nel[OrgUse]
   ): ConnectionIO[Vector[IdRef]] =
     run(
       select(T.oid, T.name),
@@ -163,7 +163,7 @@ object ROrganization {
   def findAllRef(
       coll: Ident,
       nameQ: Option[String],
-      order: Table => Column[_]
+      order: Table => Nel[OrderBy]
   ): ConnectionIO[Vector[IdRef]] = {
     val nameFilter = nameQ.map(s =>
       T.name.like(s"%${s.toLowerCase}%") || T.shortName.like(s"%${s.toLowerCase}%")

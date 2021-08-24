@@ -501,11 +501,14 @@ paths:
       tags: [ Tags ]
       summary: Get a list of tags
       description: |
-        Return a list of all configured tags.
+        Return a list of all configured tags. The `sort` query
+        parameter is optional and can specify how the list is sorted.
+        Possible values are: `name`, `-name`, `category`, `-category`.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -579,12 +582,16 @@ paths:
       tags: [ Organization ]
       summary: Get a list of organizations.
       description: |
-        Return a list of all organizations. Only name and id are returned.
+        Return a list of all organizations. Only name and id are
+        returned. If `full` is specified, the list contains all
+        organization data. The `sort` parameter can be either `name`
+        or `-name` to specify the order.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/full"
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -677,12 +684,17 @@ paths:
       tags: [ Person ]
       summary: Get a list of persons.
       description: |
-        Return a list of all persons. Only name and id are returned.
+        Return a list of all persons. Only name and id are returned
+        unless the `full` parameter is specified. The `sort` parameter
+        can be used to control the order of the result. Use one of:
+        `name`, `-name`, `org`, `-org`. Note that order by `org` only
+        works when retrieving the full list.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/full"
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -775,11 +787,14 @@ paths:
       tags: [ Equipment ]
       summary: Get a list of equipments
       description: |
-        Return a list of all configured equipments.
+        Return a list of all configured equipments. The sort query
+        parameter is optional and can be one of `name` or `-name` to
+        sort the list of equipments.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -3771,11 +3786,15 @@ paths:
       tags: [ Custom Fields ]
       summary: Get all defined custom fields.
       description: |
-        Get all custom fields defined for the current collective.
+        Get all custom fields defined for the current collective. The
+        `sort` parameter can be used to control the order of the
+        returned list. It can take a value from: `name`, `-name`,
+        `label`, `-label`, `type`, `-type`.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -5985,6 +6004,14 @@ components:
       schema:
         type: integer
         format: int32
+    sort:
+      name: sort
+      in: query
+      required: false
+      description: |
+        How to sort the returned list
+      schema:
+        type: string
     withDetails:
       name: withDetails
       in: query

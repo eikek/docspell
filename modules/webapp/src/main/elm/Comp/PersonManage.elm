@@ -24,6 +24,7 @@ import Comp.PersonForm
 import Comp.PersonTable
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.PersonOrder exposing (PersonOrder)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -42,6 +43,7 @@ type alias Model =
     , loading : Int
     , deleteConfirm : Comp.YesNoDimmer.Model
     , query : String
+    , order : PersonOrder
     }
 
 
@@ -66,6 +68,7 @@ emptyModel =
     , loading = 0
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , query = ""
+    , order = Data.PersonOrder.NameAsc
     }
 
 
@@ -89,8 +92,11 @@ update flags msg model =
     case msg of
         TableMsg m ->
             let
-                ( tm, tc ) =
+                ( tm, tc, maybeOrder ) =
                     Comp.PersonTable.update flags m model.tableModel
+
+                newOrder =
+                    Maybe.withDefault model.order maybeOrder
 
                 ( m2, c2 ) =
                     ( { model
@@ -102,6 +108,7 @@ update flags msg model =
 
                             else
                                 model.formError
+                        , order = newOrder
                       }
                     , Cmd.map TableMsg tc
                     )
@@ -113,8 +120,15 @@ update flags msg model =
 
                         Nothing ->
                             ( m2, Cmd.none )
+
+                ( m4, c4 ) =
+                    if model.order == newOrder then
+                        ( m3, Cmd.none )
+
+                    else
+                        update flags LoadPersons m3
             in
-            ( m3, Cmd.batch [ c2, c3 ] )
+            ( m4, Cmd.batch [ c2, c3, c4 ] )
 
         FormMsg m ->
             let
@@ -126,7 +140,7 @@ update flags msg model =
         LoadPersons ->
             ( { model | loading = model.loading + 2 }
             , Cmd.batch
-                [ Api.getPersons flags model.query PersonResp
+                [ Api.getPersons flags model.query model.order PersonResp
                 , Api.getOrgLight flags GetOrgResp
                 ]
             )
@@ -244,7 +258,7 @@ update flags msg model =
                 m =
                     { model | query = str }
             in
-            ( m, Api.getPersons flags str PersonResp )
+            ( m, Api.getPersons flags str model.order PersonResp )
 
 
 isLoading : Model -> Bool
@@ -287,7 +301,7 @@ viewTable2 texts model =
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.PersonTable.view2 texts.personTable model.tableModel)
+        , Html.map TableMsg (Comp.PersonTable.view2 texts.personTable model.order model.tableModel)
         , B.loadingDimmer
             { active = isLoading model
             , label = texts.basics.loading

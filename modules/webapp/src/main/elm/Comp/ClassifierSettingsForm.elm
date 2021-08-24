@@ -25,6 +25,7 @@ import Data.CalEvent exposing (CalEvent)
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.ListType exposing (ListType)
+import Data.TagOrder
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -90,7 +91,7 @@ init flags sett =
             Comp.FixedDropdown.init Data.ListType.all
       }
     , Cmd.batch
-        [ Api.getTags flags "" GetTagsResp
+        [ Api.getTags flags "" Data.TagOrder.NameAsc GetTagsResp
         , Cmd.map ScheduleMsg cec
         ]
     )

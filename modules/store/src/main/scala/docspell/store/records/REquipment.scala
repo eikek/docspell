@@ -87,7 +87,7 @@ object REquipment {
   def findAll(
       coll: Ident,
       nameQ: Option[String],
-      order: Table => Column[_]
+      order: Table => NonEmptyList[OrderBy]
   ): ConnectionIO[Vector[REquipment]] = {
     val t = Table(None)
 

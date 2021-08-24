@@ -23,6 +23,7 @@ import Comp.OrgForm
 import Comp.OrgTable
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.OrganizationOrder exposing (OrganizationOrder)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -41,6 +42,7 @@ type alias Model =
     , loading : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
     , query : String
+    , order : OrganizationOrder
     }
 
 
@@ -65,6 +67,7 @@ emptyModel =
     , loading = False
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , query = ""
+    , order = Data.OrganizationOrder.NameAsc
     }
 
 
@@ -87,7 +90,7 @@ update flags msg model =
     case msg of
         TableMsg m ->
             let
-                ( tm, tc ) =
+                ( tm, tc, maybeOrder ) =
                     Comp.OrgTable.update flags m model.tableModel
 
                 ( m2, c2 ) =
@@ -100,6 +103,7 @@ update flags msg model =
 
                             else
                                 model.formError
+                        , order = Maybe.withDefault model.order maybeOrder
                       }
                     , Cmd.map TableMsg tc
                     )
@@ -111,8 +115,15 @@ update flags msg model =
 
                         Nothing ->
                             ( m2, Cmd.none )
+
+                ( m4, c4 ) =
+                    if maybeOrder /= Nothing && maybeOrder /= Just model.order then
+                        update flags LoadOrgs m3
+
+                    else
+                        ( m3, Cmd.none )
             in
-            ( m3, Cmd.batch [ c2, c3 ] )
+            ( m4, Cmd.batch [ c2, c3, c4 ] )
 
         FormMsg m ->
             let
@@ -122,7 +133,13 @@ update flags msg model =
             ( { model | formModel = m2 }, Cmd.map FormMsg c2 )
 
         LoadOrgs ->
-            ( { model | loading = True }, Api.getOrganizations flags model.query OrgResp )
+            ( { model | loading = True }
+            , Api.getOrganizations
+                flags
+                model.query
+                model.order
+                OrgResp
+            )
 
         OrgResp (Ok orgs) ->
             let
@@ -212,7 +229,7 @@ update flags msg model =
                 m =
                     { model | query = str }
             in
-            ( m, Api.getOrganizations flags str OrgResp )
+            ( m, Api.getOrganizations flags str model.order OrgResp )
 
 
 
@@ -250,7 +267,7 @@ viewTable2 texts model =
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.OrgTable.view2 texts.orgTable model.tableModel)
+        , Html.map TableMsg (Comp.OrgTable.view2 texts.orgTable model.order model.tableModel)
         , B.loadingDimmer
             { active = model.loading
             , label = texts.basics.loading

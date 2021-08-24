@@ -11,6 +11,7 @@ import cats.implicits._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.OTag.TagOrder
 import docspell.common.Ident
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
@@ -28,9 +29,13 @@ object TagRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? QueryParam.QueryOpt(q) =>
+      case GET -> Root :? QueryParam.QueryOpt(q) :? QueryParam.TagSort(sort) =>
         for {
-          all  <- backend.tag.findAll(user.account, q.map(_.q))
+          all <- backend.tag.findAll(
+            user.account,
+            q.map(_.q),
+            sort.getOrElse(TagOrder.NameAsc)
+          )
           resp <- Ok(TagList(all.size, all.map(mkTag).toList))
         } yield resp
 

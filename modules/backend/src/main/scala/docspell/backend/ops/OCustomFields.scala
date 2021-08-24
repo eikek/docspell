@@ -7,12 +7,13 @@
 package docspell.backend.ops
 
 import cats.data.EitherT
-import cats.data.NonEmptyList
 import cats.data.OptionT
+import cats.data.{NonEmptyList => Nel}
 import cats.effect._
 import cats.implicits._
 
 import docspell.backend.ops.OCustomFields.CustomFieldData
+import docspell.backend.ops.OCustomFields.CustomFieldOrder
 import docspell.backend.ops.OCustomFields.FieldValue
 import docspell.backend.ops.OCustomFields.NewCustomField
 import docspell.backend.ops.OCustomFields.RemoveValue
@@ -33,7 +34,11 @@ import org.log4s.getLogger
 trait OCustomFields[F[_]] {
 
   /** Find all fields using an optional query on the name and label */
-  def findAll(coll: Ident, nameQuery: Option[String]): F[Vector[CustomFieldData]]
+  def findAll(
+      coll: Ident,
+      nameQuery: Option[String],
+      order: CustomFieldOrder
+  ): F[Vector[CustomFieldData]]
 
   /** Find one field by its id */
   def findById(coll: Ident, fieldId: Ident): F[Option[CustomFieldData]]
@@ -50,13 +55,13 @@ trait OCustomFields[F[_]] {
   /** Sets a value given a field an an item. Existing values are overwritten. */
   def setValue(item: Ident, value: SetValue): F[SetValueResult]
 
-  def setValueMultiple(items: NonEmptyList[Ident], value: SetValue): F[SetValueResult]
+  def setValueMultiple(items: Nel[Ident], value: SetValue): F[SetValueResult]
 
   /** Deletes a value for a given field an item. */
   def deleteValue(in: RemoveValue): F[UpdateResult]
 
   /** Finds all values to the given items */
-  def findAllValues(itemIds: NonEmptyList[Ident]): F[List[FieldValue]]
+  def findAllValues(itemIds: Nel[Ident]): F[List[FieldValue]]
 }
 
 object OCustomFields {
@@ -96,9 +101,47 @@ object OCustomFields {
 
   case class RemoveValue(
       field: Ident,
-      item: NonEmptyList[Ident],
+      item: Nel[Ident],
       collective: Ident
   )
+
+  sealed trait CustomFieldOrder
+  object CustomFieldOrder {
+    import docspell.store.qb.DSL._
+
+    final case object NameAsc   extends CustomFieldOrder
+    final case object NameDesc  extends CustomFieldOrder
+    final case object LabelAsc  extends CustomFieldOrder
+    final case object LabelDesc extends CustomFieldOrder
+    final case object TypeAsc   extends CustomFieldOrder
+    final case object TypeDesc  extends CustomFieldOrder
+
+    def parse(str: String): Either[String, CustomFieldOrder] =
+      str.toLowerCase match {
+        case "name"   => Right(NameAsc)
+        case "-name"  => Right(NameDesc)
+        case "label"  => Right(LabelAsc)
+        case "-label" => Right(LabelDesc)
+        case "type"   => Right(TypeAsc)
+        case "-type"  => Right(TypeDesc)
+        case _        => Left(s"Unknown sort property for custom field: $str")
+      }
+
+    def parseOrDefault(str: String): CustomFieldOrder =
+      parse(str).toOption.getOrElse(NameAsc)
+
+    private[ops] def apply(
+        order: CustomFieldOrder
+    )(field: RCustomField.Table) =
+      order match {
+        case NameAsc   => Nel.of(field.name.asc)
+        case NameDesc  => Nel.of(field.name.desc)
+        case LabelAsc  => Nel.of(coalesce(field.label.s, field.name.s).asc)
+        case LabelDesc => Nel.of(coalesce(field.label.s, field.name.s).desc)
+        case TypeAsc   => Nel.of(field.ftype.asc, field.name.asc)
+        case TypeDesc  => Nel.of(field.ftype.desc, field.name.desc)
+      }
+  }
 
   def apply[F[_]: Async](
       store: Store[F]
@@ -107,14 +150,19 @@ object OCustomFields {
 
       private[this] val logger = Logger.log4s[ConnectionIO](getLogger)
 
-      def findAllValues(itemIds: NonEmptyList[Ident]): F[List[FieldValue]] =
+      def findAllValues(itemIds: Nel[Ident]): F[List[FieldValue]] =
         store.transact(QCustomField.findAllValues(itemIds))
 
-      def findAll(coll: Ident, nameQuery: Option[String]): F[Vector[CustomFieldData]] =
+      def findAll(
+          coll: Ident,
+          nameQuery: Option[String],
+          order: CustomFieldOrder
+      ): F[Vector[CustomFieldData]] =
         store.transact(
           QCustomField.findAllLike(
             coll,
-            nameQuery.map(WildcardString.apply).flatMap(_.both)
+            nameQuery.map(WildcardString.apply).flatMap(_.both),
+            CustomFieldOrder(order)
           )
         )
 
@@ -149,10 +197,10 @@ object OCustomFields {
       }
 
       def setValue(item: Ident, value: SetValue): F[SetValueResult] =
-        setValueMultiple(NonEmptyList.of(item), value)
+        setValueMultiple(Nel.of(item), value)
 
       def setValueMultiple(
-          items: NonEmptyList[Ident],
+          items: Nel[Ident],
           value: SetValue
       ): F[SetValueResult] =
         (for {

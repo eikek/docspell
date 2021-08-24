@@ -30,6 +30,7 @@ import Comp.YesNoDimmer
 import Data.CalEvent exposing (CalEvent)
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
+import Data.TagOrder
 import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
@@ -182,7 +183,7 @@ init flags =
       }
     , Cmd.batch
         [ Api.getMailSettings flags "" ConnResp
-        , Api.getTags flags "" GetTagsResp
+        , Api.getTags flags "" Data.TagOrder.NameAsc GetTagsResp
         , Cmd.map CalEventMsg scmd
         ]
     )

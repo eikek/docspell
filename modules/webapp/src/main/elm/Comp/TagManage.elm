@@ -23,6 +23,7 @@ import Comp.TagForm
 import Comp.TagTable
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
+import Data.TagOrder exposing (TagOrder)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
@@ -42,6 +43,7 @@ type alias Model =
     , loading : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
     , query : String
+    , order : TagOrder
     }
 
 
@@ -66,6 +68,7 @@ emptyModel =
     , loading = False
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     , query = ""
+    , order = Data.TagOrder.NameAsc
     }
 
 
@@ -88,12 +91,16 @@ update flags msg model =
     case msg of
         TableMsg m ->
             let
-                ( tm, tc ) =
+                ( tm, tc, maybeOrder ) =
                     Comp.TagTable.update flags m model.tagTableModel
+
+                newOrder =
+                    Maybe.withDefault model.order maybeOrder
 
                 ( m2, c2 ) =
                     ( { model
                         | tagTableModel = tm
+                        , order = newOrder
                         , viewMode = Maybe.map (\_ -> Form) tm.selected |> Maybe.withDefault Table
                         , formError =
                             if Util.Maybe.nonEmpty tm.selected then
@@ -112,8 +119,15 @@ update flags msg model =
 
                         Nothing ->
                             ( m2, Cmd.none )
+
+                ( m4, c4 ) =
+                    if model.order == newOrder then
+                        ( m3, Cmd.none )
+
+                    else
+                        update flags LoadTags m3
             in
-            ( m3, Cmd.batch [ c2, c3 ] )
+            ( m4, Cmd.batch [ c2, c3, c4 ] )
 
         FormMsg m ->
             let
@@ -123,7 +137,9 @@ update flags msg model =
             ( { model | tagFormModel = m2 }, Cmd.map FormMsg c2 )
 
         LoadTags ->
-            ( { model | loading = True }, Api.getTags flags model.query (TagResp model.query) )
+            ( { model | loading = True }
+            , Api.getTags flags model.query model.order (TagResp model.query)
+            )
 
         TagResp query (Ok tags) ->
             let
@@ -224,7 +240,7 @@ update flags msg model =
                 m =
                     { model | query = str }
             in
-            ( m, Api.getTags flags str (TagResp str) )
+            ( m, Api.getTags flags str model.order (TagResp str) )
 
 
 
@@ -262,7 +278,7 @@ viewTable2 texts model =
                 ]
             , rootClasses = "mb-4"
             }
-        , Html.map TableMsg (Comp.TagTable.view2 texts.tagTable model.tagTableModel)
+        , Html.map TableMsg (Comp.TagTable.view2 texts.tagTable model.order model.tagTableModel)
         , div
             [ classList
                 [ ( "ui dimmer", True )

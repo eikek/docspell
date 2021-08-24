@@ -59,10 +59,14 @@ import Comp.PersonForm
 import Comp.SentMails
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction
+import Data.EquipmentOrder
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
+import Data.FolderOrder
 import Data.ItemNav exposing (ItemNav)
+import Data.PersonOrder
 import Data.PersonUse
+import Data.TagOrder
 import Data.UiSettings exposing (UiSettings)
 import DatePicker
 import Dict
@@ -265,7 +269,7 @@ update key flags inav settings msg model =
                     , getOptions flags
                     , proposalCmd
                     , Api.getSentMails flags item.id SentMailsResp
-                    , Api.getPersons flags "" GetPersonResp
+                    , Api.getPersons flags "" Data.PersonOrder.NameAsc GetPersonResp
                     , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     ]
             , sub =
@@ -1642,11 +1646,11 @@ update key flags inav settings msg model =
 getOptions : Flags -> Cmd Msg
 getOptions flags =
     Cmd.batch
-        [ Api.getTags flags "" GetTagsResp
+        [ Api.getTags flags "" Data.TagOrder.NameAsc GetTagsResp
         , Api.getOrgLight flags GetOrgResp
-        , Api.getPersons flags "" GetPersonResp
-        , Api.getEquipments flags "" GetEquipResp
-        , Api.getFolders flags "" False GetFolderResp
+        , Api.getPersons flags "" Data.PersonOrder.NameAsc GetPersonResp
+        , Api.getEquipments flags "" Data.EquipmentOrder.NameAsc GetEquipResp
+        , Api.getFolders flags "" Data.FolderOrder.NameAsc False GetFolderResp
         ]
 
 

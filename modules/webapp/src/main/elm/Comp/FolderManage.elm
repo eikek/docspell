@@ -24,6 +24,7 @@ import Comp.FolderDetail
 import Comp.FolderTable
 import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
+import Data.FolderOrder exposing (FolderOrder)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
@@ -39,6 +40,7 @@ type alias Model =
     , query : String
     , owningOnly : Bool
     , loading : Bool
+    , order : FolderOrder
     }
 
 
@@ -62,6 +64,7 @@ empty =
     , query = ""
     , owningOnly = True
     , loading = False
+    , order = Data.FolderOrder.NameAsc
     }
 
 
@@ -70,7 +73,7 @@ init flags =
     ( empty
     , Cmd.batch
         [ Api.getUsers flags UserListResp
-        , Api.getFolders flags empty.query empty.owningOnly FolderListResp
+        , loadFolders flags empty
         ]
     )
 
@@ -79,23 +82,41 @@ init flags =
 --- Update
 
 
+loadFolders : Flags -> Model -> Cmd Msg
+loadFolders flags model =
+    Api.getFolders flags model.query model.order model.owningOnly FolderListResp
+
+
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
         TableMsg lm ->
             let
-                ( tm, action ) =
+                ( tm, action, maybeOrder ) =
                     Comp.FolderTable.update lm model.tableModel
 
-                cmd =
+                newOrder =
+                    Maybe.withDefault model.order maybeOrder
+
+                newModel =
+                    { model | tableModel = tm, order = newOrder }
+
+                detailCmd =
                     case action of
                         Comp.FolderTable.EditAction item ->
                             Api.getFolderDetail flags item.id FolderDetailResp
 
                         Comp.FolderTable.NoAction ->
                             Cmd.none
+
+                refreshCmd =
+                    if model.order == newOrder then
+                        Cmd.none
+
+                    else
+                        loadFolders flags newModel
             in
-            ( { model | tableModel = tm }, cmd )
+            ( newModel, Cmd.batch [ detailCmd, refreshCmd ] )
 
         DetailMsg lm ->
             case model.detailModel of
@@ -106,7 +127,7 @@ update flags msg model =
 
                         cmd =
                             if back then
-                                Api.getFolders flags model.query model.owningOnly FolderListResp
+                                loadFolders flags model
 
                             else
                                 Cmd.none
@@ -129,17 +150,24 @@ update flags msg model =
                     ( model, Cmd.none )
 
         SetQuery str ->
-            ( { model | query = str }
-            , Api.getFolders flags str model.owningOnly FolderListResp
+            let
+                nm =
+                    { model | query = str }
+            in
+            ( nm
+            , loadFolders flags nm
             )
 
         ToggleOwningOnly ->
             let
                 newOwning =
                     not model.owningOnly
+
+                nm =
+                    { model | owningOnly = newOwning }
             in
-            ( { model | owningOnly = newOwning }
-            , Api.getFolders flags model.query newOwning FolderListResp
+            ( nm
+            , loadFolders flags nm
             )
 
         UserListResp (Ok ul) ->
@@ -241,6 +269,7 @@ viewTable2 texts model =
         , Html.map TableMsg
             (Comp.FolderTable.view2
                 texts.folderTable
+                model.order
                 model.tableModel
                 model.folders
             )

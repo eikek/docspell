@@ -6,6 +6,7 @@
 
 package docspell.backend.ops
 
+import cats.data.NonEmptyList
 import cats.effect.{Async, Resource}
 import cats.implicits._
 
@@ -16,7 +17,11 @@ import docspell.store.{AddResult, Store}
 
 trait OTag[F[_]] {
 
-  def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[RTag]]
+  def findAll(
+      account: AccountId,
+      query: Option[String],
+      order: OTag.TagOrder
+  ): F[Vector[RTag]]
 
   def add(s: RTag): F[AddResult]
 
@@ -30,11 +35,43 @@ trait OTag[F[_]] {
 }
 
 object OTag {
+  import docspell.store.qb.DSL._
+
+  sealed trait TagOrder
+  object TagOrder {
+    final case object NameAsc      extends TagOrder
+    final case object NameDesc     extends TagOrder
+    final case object CategoryAsc  extends TagOrder
+    final case object CategoryDesc extends TagOrder
+
+    def parse(str: String): Either[String, TagOrder] =
+      str.toLowerCase match {
+        case "name"      => Right(NameAsc)
+        case "-name"     => Right(NameDesc)
+        case "category"  => Right(CategoryAsc)
+        case "-category" => Right(CategoryDesc)
+        case _           => Left(s"Unknown sort property for tags: $str")
+      }
+
+    def parseOrDefault(str: String): TagOrder =
+      parse(str).toOption.getOrElse(NameAsc)
+
+    private[ops] def apply(order: TagOrder)(table: RTag.Table) = order match {
+      case NameAsc      => NonEmptyList.of(table.name.asc)
+      case CategoryAsc  => NonEmptyList.of(table.category.asc, table.name.asc)
+      case NameDesc     => NonEmptyList.of(table.name.desc)
+      case CategoryDesc => NonEmptyList.of(table.category.desc, table.name.desc)
+    }
+  }
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OTag[F]] =
     Resource.pure[F, OTag[F]](new OTag[F] {
-      def findAll(account: AccountId, nameQuery: Option[String]): F[Vector[RTag]] =
-        store.transact(RTag.findAll(account.collective, nameQuery, _.name))
+      def findAll(
+          account: AccountId,
+          query: Option[String],
+          order: TagOrder
+      ): F[Vector[RTag]] =
+        store.transact(RTag.findAll(account.collective, query, TagOrder(order)))
 
       def add(t: RTag): F[AddResult] = {
         def insert = RTag.insert(t)

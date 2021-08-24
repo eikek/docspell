@@ -216,8 +216,14 @@ import Api.Model.UserList exposing (UserList)
 import Api.Model.UserPass exposing (UserPass)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Data.ContactType exposing (ContactType)
+import Data.CustomFieldOrder exposing (CustomFieldOrder)
+import Data.EquipmentOrder exposing (EquipmentOrder)
 import Data.Flags exposing (Flags)
+import Data.FolderOrder exposing (FolderOrder)
+import Data.OrganizationOrder exposing (OrganizationOrder)
+import Data.PersonOrder exposing (PersonOrder)
 import Data.Priority exposing (Priority)
+import Data.TagOrder exposing (TagOrder)
 import Data.UiSettings exposing (UiSettings)
 import File exposing (File)
 import Http
@@ -291,13 +297,15 @@ putCustomValue flags item fieldValue receive =
         }
 
 
-getCustomFields : Flags -> String -> (Result Http.Error CustomFieldList -> msg) -> Cmd msg
-getCustomFields flags query receive =
+getCustomFields : Flags -> String -> CustomFieldOrder -> (Result Http.Error CustomFieldList -> msg) -> Cmd msg
+getCustomFields flags query order receive =
     Http2.authGet
         { url =
             flags.config.baseUrl
                 ++ "/api/v1/sec/customfield?q="
                 ++ Url.percentEncode query
+                ++ "&sort="
+                ++ Data.CustomFieldOrder.asString order
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.CustomFieldList.decoder
         }
@@ -402,13 +410,21 @@ getFolderDetail flags id receive =
         }
 
 
-getFolders : Flags -> String -> Bool -> (Result Http.Error FolderList -> msg) -> Cmd msg
-getFolders flags query owningOnly receive =
+getFolders :
+    Flags
+    -> String
+    -> FolderOrder
+    -> Bool
+    -> (Result Http.Error FolderList -> msg)
+    -> Cmd msg
+getFolders flags query order owningOnly receive =
     Http2.authGet
         { url =
             flags.config.baseUrl
                 ++ "/api/v1/sec/folder?q="
                 ++ Url.percentEncode query
+                ++ "&sort="
+                ++ Data.FolderOrder.asString order
                 ++ (if owningOnly then
                         "&owning=true"
 
@@ -1109,10 +1125,15 @@ getContacts flags kind q receive =
 --- Tags
 
 
-getTags : Flags -> String -> (Result Http.Error TagList -> msg) -> Cmd msg
-getTags flags query receive =
+getTags : Flags -> String -> TagOrder -> (Result Http.Error TagList -> msg) -> Cmd msg
+getTags flags query order receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/tag?q=" ++ Url.percentEncode query
+        { url =
+            flags.config.baseUrl
+                ++ "/api/v1/sec/tag?sort="
+                ++ Data.TagOrder.asString order
+                ++ "&q="
+                ++ Url.percentEncode query
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.TagList.decoder
         }
@@ -1148,10 +1169,15 @@ deleteTag flags tag receive =
 --- Equipments
 
 
-getEquipments : Flags -> String -> (Result Http.Error EquipmentList -> msg) -> Cmd msg
-getEquipments flags query receive =
+getEquipments : Flags -> String -> EquipmentOrder -> (Result Http.Error EquipmentList -> msg) -> Cmd msg
+getEquipments flags query order receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/equipment?q=" ++ Url.percentEncode query
+        { url =
+            flags.config.baseUrl
+                ++ "/api/v1/sec/equipment?q="
+                ++ Url.percentEncode query
+                ++ "&sort="
+                ++ Data.EquipmentOrder.asString order
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.EquipmentList.decoder
         }
@@ -1214,10 +1240,20 @@ getOrgFull id flags receive =
         }
 
 
-getOrganizations : Flags -> String -> (Result Http.Error OrganizationList -> msg) -> Cmd msg
-getOrganizations flags query receive =
+getOrganizations :
+    Flags
+    -> String
+    -> OrganizationOrder
+    -> (Result Http.Error OrganizationList -> msg)
+    -> Cmd msg
+getOrganizations flags query order receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/organization?full=true&q=" ++ Url.percentEncode query
+        { url =
+            flags.config.baseUrl
+                ++ "/api/v1/sec/organization?full=true&q="
+                ++ Url.percentEncode query
+                ++ "&sort="
+                ++ Data.OrganizationOrder.asString order
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.OrganizationList.decoder
         }
@@ -1271,10 +1307,15 @@ getPersonFull id flags receive =
         }
 
 
-getPersons : Flags -> String -> (Result Http.Error PersonList -> msg) -> Cmd msg
-getPersons flags query receive =
+getPersons : Flags -> String -> PersonOrder -> (Result Http.Error PersonList -> msg) -> Cmd msg
+getPersons flags query order receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/person?full=true&q=" ++ Url.percentEncode query
+        { url =
+            flags.config.baseUrl
+                ++ "/api/v1/sec/person?full=true&q="
+                ++ Url.percentEncode query
+                ++ "&sort="
+                ++ Data.PersonOrder.asString order
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.PersonList.decoder
         }
