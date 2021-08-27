@@ -1,4 +1,0 @@
-docker/
-!docker/joex-entrypoint.sh
-!docker/restserver-entrypoint.sh
-!docker/docspell.conf
