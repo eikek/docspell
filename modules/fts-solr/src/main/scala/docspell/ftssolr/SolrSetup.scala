@@ -18,6 +18,7 @@ import org.http4s._
 import org.http4s.circe._
 import org.http4s.client.Client
 import org.http4s.client.dsl.Http4sClientDsl
+import org.log4s.getLogger
 
 trait SolrSetup[F[_]] {
 
@@ -29,6 +30,7 @@ trait SolrSetup[F[_]] {
 
 object SolrSetup {
   private val versionDocId = "6d8f09f4-8d7e-4bc9-98b8-7c89223b36dd"
+  private[this] val logger = getLogger
 
   def apply[F[_]: Async](cfg: SolrConfig, client: Client[F]): SolrSetup[F] = {
     val dsl = new Http4sClientDsl[F] {}
@@ -117,10 +119,15 @@ object SolrSetup {
           SolrMigration.reIndexAll(15, "Re-Index after adding japanese content field"),
           SolrMigration[F](
             16,
+            "Add new field type for hebrew content",
+            addFieldType(AddFieldType.textHe)
+          ),
+          SolrMigration[F](
+            17,
             "Add hebrew content field",
             addContentField(Language.Hebrew)
           ),
-          SolrMigration.reIndexAll(17, "Re-Index after adding hebrew content field")
+          SolrMigration.reIndexAll(18, "Re-Index after adding hebrew content field")
         )
 
       def addFolderField: F[Unit] =
@@ -194,6 +201,15 @@ object SolrSetup {
             run(DeleteField.command(DeleteField(field))).attempt *>
               run(AddField.command(AddField.textLang(field, lang)))
         }
+
+      private def addFieldType(ft: AddFieldType): F[Unit] =
+        run(AddFieldType.command(ft)).attempt.flatMap {
+          case Right(_) => ().pure[F]
+          case Left(ex) =>
+            Async[F].delay(
+              logger.warn(s"Adding new field type '$ft' failed: ${ex.getMessage()}")
+            )
+        }
     }
   }
 
@@ -233,5 +249,53 @@ object SolrSetup {
 
     def command(body: DeleteField): Json =
       Map("delete-field" -> body.asJson).asJson
+  }
+
+  final case class AddFieldType(
+      name: String,
+      `class`: String,
+      analyzer: AddFieldType.Analyzer
+  )
+  object AddFieldType {
+
+    val textHe = AddFieldType(
+      "text_he",
+      "solr.TextField",
+      Analyzer(
+        Tokenizer("solr.StandardTokenizerFactory", Map.empty),
+        List(
+          Filter("solr.LowerCaseFilterFactory", Map.empty)
+        )
+      )
+    )
+
+    final case class Filter(`class`: String, attr: Map[String, String])
+    final case class Tokenizer(`class`: String, attr: Map[String, String])
+    final case class Analyzer(tokenizer: Tokenizer, filter: List[Filter])
+
+    object Filter {
+      implicit val jsonEncoder: Encoder[Filter] =
+        Encoder.encodeJson.contramap { filter =>
+          val m = filter.attr.updated("class", filter.`class`)
+          m.asJson
+        }
+    }
+    object Tokenizer {
+      implicit val jsonEncoder: Encoder[Tokenizer] =
+        Encoder.encodeJson.contramap { tokenizer =>
+          val m = tokenizer.attr.updated("class", tokenizer.`class`)
+          m.asJson
+        }
+    }
+    object Analyzer {
+      implicit val jsonEncoder: Encoder[Analyzer] =
+        deriveEncoder[Analyzer]
+    }
+
+    def command(body: AddFieldType): Json =
+      Map("add-field-type" -> body.asJson).asJson
+
+    implicit val jsonEncoder: Encoder[AddFieldType] =
+      deriveEncoder[AddFieldType]
   }
 }
