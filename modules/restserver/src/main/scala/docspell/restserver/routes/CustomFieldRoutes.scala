@@ -13,7 +13,7 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields
-import docspell.backend.ops.OCustomFields.CustomFieldData
+import docspell.backend.ops.OCustomFields.{CustomFieldData, CustomFieldOrder}
 import docspell.common._
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
@@ -34,9 +34,14 @@ object CustomFieldRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? QueryParam.QueryOpt(param) =>
+      case GET -> Root :? QueryParam.QueryOpt(param) +& QueryParam.FieldSort(sort) =>
+        val order = sort.getOrElse(CustomFieldOrder.NameAsc)
         for {
-          fs  <- backend.customFields.findAll(user.account.collective, param.map(_.q))
+          fs <- backend.customFields.findAll(
+            user.account.collective,
+            param.map(_.q),
+            order
+          )
           res <- Ok(CustomFieldList(fs.map(convertField).toList))
         } yield res
 

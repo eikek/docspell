@@ -15,10 +15,12 @@ module Comp.EquipmentTable exposing
 
 import Api.Model.Equipment exposing (Equipment)
 import Comp.Basic as B
+import Data.EquipmentOrder exposing (EquipmentOrder)
 import Data.EquipmentUse
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Messages.Comp.EquipmentTable exposing (Texts)
 import Styles as S
 
@@ -40,27 +42,50 @@ type Msg
     = SetEquipments (List Equipment)
     | Select Equipment
     | Deselect
+    | ToggleOrder EquipmentOrder
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe EquipmentOrder )
 update _ msg model =
     case msg of
         SetEquipments list ->
-            ( { model | equips = list, selected = Nothing }, Cmd.none )
+            ( { model | equips = list, selected = Nothing }, Cmd.none, Nothing )
 
         Select equip ->
-            ( { model | selected = Just equip }, Cmd.none )
+            ( { model | selected = Just equip }, Cmd.none, Nothing )
 
         Deselect ->
-            ( { model | selected = Nothing }, Cmd.none )
+            ( { model | selected = Nothing }, Cmd.none, Nothing )
+
+        ToggleOrder order ->
+            ( model, Cmd.none, Just order )
+
+
+newOrder : EquipmentOrder -> EquipmentOrder
+newOrder current =
+    case current of
+        Data.EquipmentOrder.NameAsc ->
+            Data.EquipmentOrder.NameDesc
+
+        Data.EquipmentOrder.NameDesc ->
+            Data.EquipmentOrder.NameAsc
 
 
 
 --- View2
 
 
-view2 : Texts -> Model -> Html Msg
-view2 texts model =
+view2 : Texts -> EquipmentOrder -> Model -> Html Msg
+view2 texts order model =
+    let
+        nameSortIcon =
+            case order of
+                Data.EquipmentOrder.NameAsc ->
+                    "fa fa-sort-alpha-up"
+
+                Data.EquipmentOrder.NameDesc ->
+                    "fa fa-sort-alpha-down-alt"
+    in
     table [ class S.tableMain ]
         [ thead []
             [ tr []
@@ -68,7 +93,12 @@ view2 texts model =
                 , th [ class "text-left pr-1 md:px-2 w-20" ]
                     [ text texts.use
                     ]
-                , th [ class "text-left" ] [ text texts.basics.name ]
+                , th [ class "text-left" ]
+                    [ a [ href "#", onClick (ToggleOrder <| newOrder order) ]
+                        [ i [ class nameSortIcon, class "mr-1" ] []
+                        , text texts.basics.name
+                        ]
+                    ]
                 ]
             ]
         , tbody []

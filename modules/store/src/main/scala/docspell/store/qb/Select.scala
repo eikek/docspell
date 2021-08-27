@@ -135,6 +135,9 @@ object Select {
 
     def orderBy(ob: OrderBy, obs: OrderBy*): Ordered =
       Ordered(this, ob, obs.toVector)
+
+    def orderBy(ob: Nel[OrderBy]): Ordered =
+      Ordered(this, ob.head, ob.tail.toVector)
   }
 
   case class RawSelect(fragment: Fragment) extends Select {

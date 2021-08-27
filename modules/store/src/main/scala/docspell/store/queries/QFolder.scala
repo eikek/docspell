@@ -7,6 +7,7 @@
 package docspell.store.queries
 
 import cats.data.OptionT
+import cats.data.{NonEmptyList => Nel}
 import cats.implicits._
 
 import docspell.common._
@@ -156,8 +157,11 @@ object QFolder {
     ).query[IdRef].to[Vector]
 
     (for {
-      folder <- OptionT(findAll(account, Some(id), None, None).map(_.headOption))
-      memb   <- OptionT.liftF(memberQ)
+      folder <- OptionT(
+        findAll(account, Some(id), None, None, (ft, _) => Nel.of(ft.name.asc))
+          .map(_.headOption)
+      )
+      memb <- OptionT.liftF(memberQ)
     } yield folder.withMembers(memb.toList)).value
   }
 
@@ -165,7 +169,8 @@ object QFolder {
       account: AccountId,
       idQ: Option[Ident],
       ownerLogin: Option[Ident],
-      nameQ: Option[String]
+      nameQ: Option[String],
+      order: (RFolder.Table, RUser.Table) => Nel[OrderBy]
   ): ConnectionIO[Vector[FolderItem]] = {
 // with memberlogin as
 //   (select m.folder_id,u.login
@@ -239,7 +244,7 @@ object QFolder {
             nameQ.map(q => folder.name.like(s"%${q.toLowerCase}%")) &&?
             ownerLogin.map(login => user.login === login)
         )
-      ).orderBy(folder.name.asc)
+      ).orderBy(order(folder, user))
     ).build.query[FolderItem].to[Vector]
   }
 

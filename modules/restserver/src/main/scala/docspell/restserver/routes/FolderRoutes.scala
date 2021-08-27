@@ -31,11 +31,13 @@ object FolderRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? QueryParam.QueryOpt(q) :? QueryParam.OwningOpt(owning) =>
+      case GET -> Root :? QueryParam.QueryOpt(q) :?
+          QueryParam.OwningOpt(owning) +& QueryParam.FolderSort(sort) =>
+        val order = sort.getOrElse(OFolder.FolderOrder.NameAsc)
         val login =
           owning.filter(identity).map(_ => user.account.user)
         for {
-          all  <- backend.folder.findAll(user.account, login, q.map(_.q))
+          all  <- backend.folder.findAll(user.account, login, q.map(_.q), order)
           resp <- Ok(FolderList(all.map(mkFolder).toList))
         } yield resp
 

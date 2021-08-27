@@ -75,10 +75,11 @@ object RTag {
 
   def findAll(
       coll: Ident,
-      nameQ: Option[String],
-      order: Table => Column[_]
+      query: Option[String],
+      order: Table => NonEmptyList[OrderBy]
   ): ConnectionIO[Vector[RTag]] = {
-    val nameFilter = nameQ.map(s => T.name.like(s"%${s.toLowerCase}%"))
+    val nameFilter =
+      query.map(_.toLowerCase).map(s => T.name.like(s"%$s%") || T.category.like(s"%$s%"))
     val sql =
       Select(select(T.all), from(T), T.cid === coll &&? nameFilter).orderBy(order(T))
     sql.build.query[RTag].to[Vector]

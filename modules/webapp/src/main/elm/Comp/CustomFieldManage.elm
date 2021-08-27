@@ -21,6 +21,7 @@ import Comp.Basic as B
 import Comp.CustomFieldForm
 import Comp.CustomFieldTable
 import Comp.MenuBar as MB
+import Data.CustomFieldOrder exposing (CustomFieldOrder)
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -36,6 +37,7 @@ type alias Model =
     , fields : List CustomField
     , query : String
     , loading : Bool
+    , order : CustomFieldOrder
     }
 
 
@@ -54,13 +56,14 @@ empty =
     , fields = []
     , query = ""
     , loading = False
+    , order = Data.CustomFieldOrder.LabelAsc
     }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( empty
-    , Api.getCustomFields flags empty.query CustomFieldListResp
+    , loadFields flags empty
     )
 
 
@@ -68,13 +71,21 @@ init flags =
 --- Update
 
 
+loadFields : Flags -> Model -> Cmd Msg
+loadFields flags model =
+    Api.getCustomFields flags model.query model.order CustomFieldListResp
+
+
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
         TableMsg lm ->
             let
-                ( tm, action ) =
+                ( tm, action, maybeOrder ) =
                     Comp.CustomFieldTable.update lm model.tableModel
+
+                newOrder =
+                    Maybe.withDefault model.order maybeOrder
 
                 detail =
                     case action of
@@ -83,8 +94,22 @@ update flags msg model =
 
                         Comp.CustomFieldTable.NoAction ->
                             model.detailModel
+
+                newModel =
+                    { model
+                        | tableModel = tm
+                        , detailModel = detail
+                        , order = newOrder
+                    }
+
+                ( m1, c1 ) =
+                    if model.order == newOrder then
+                        ( newModel, Cmd.none )
+
+                    else
+                        ( newModel, loadFields flags newModel )
             in
-            ( { model | tableModel = tm, detailModel = detail }, Cmd.none )
+            ( m1, c1 )
 
         DetailMsg lm ->
             case model.detailModel of
@@ -95,7 +120,7 @@ update flags msg model =
 
                         cmd =
                             if back then
-                                Api.getCustomFields flags model.query CustomFieldListResp
+                                loadFields flags model
 
                             else
                                 Cmd.none
@@ -118,8 +143,12 @@ update flags msg model =
                     ( model, Cmd.none )
 
         SetQuery str ->
-            ( { model | query = str }
-            , Api.getCustomFields flags str CustomFieldListResp
+            let
+                newModel =
+                    { model | query = str }
+            in
+            ( newModel
+            , loadFields flags newModel
             )
 
         CustomFieldListResp (Ok sl) ->
@@ -207,6 +236,7 @@ viewTable2 texts model =
             }
         , Html.map TableMsg
             (Comp.CustomFieldTable.view2 texts.fieldTable
+                model.order
                 model.tableModel
                 model.fields
             )

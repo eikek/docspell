@@ -12,6 +12,7 @@ import cats.implicits._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.OEquipment
 import docspell.common.Ident
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
@@ -29,9 +30,13 @@ object EquipmentRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? QueryParam.QueryOpt(q) =>
+      case GET -> Root :? QueryParam.QueryOpt(q) :? QueryParam.EquipSort(sort) =>
         for {
-          data <- backend.equipment.findAll(user.account, q.map(_.q))
+          data <- backend.equipment.findAll(
+            user.account,
+            q.map(_.q),
+            sort.getOrElse(OEquipment.EquipmentOrder.NameAsc)
+          )
           resp <- Ok(EquipmentList(data.map(mkEquipment).toList))
         } yield resp
 

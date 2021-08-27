@@ -29,6 +29,7 @@ import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.CustomFieldInput
 import Comp.FixedDropdown
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
+import Data.CustomFieldOrder
 import Data.CustomFieldType
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
@@ -116,7 +117,7 @@ init flags =
 
 initCmd : Flags -> Cmd Msg
 initCmd flags =
-    Api.getCustomFields flags "" CustomFieldResp
+    Api.getCustomFields flags "" Data.CustomFieldOrder.LabelAsc CustomFieldResp
 
 
 setValues : List ItemFieldValue -> Msg

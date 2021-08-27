@@ -6,7 +6,7 @@
 
 package docspell.store.queries
 
-import cats.data.NonEmptyList
+import cats.data.{NonEmptyList => Nel}
 import cats.implicits._
 import fs2._
 
@@ -27,7 +27,7 @@ object QOrganization {
   def findOrgAndContact(
       coll: Ident,
       query: Option[String],
-      order: ROrganization.Table => Column[_]
+      order: ROrganization.Table => Nel[OrderBy]
   ): Stream[ConnectionIO, (ROrganization, Vector[RContact])] = {
     val valFilter = query.map { q =>
       val v = s"%$q%"
@@ -74,18 +74,18 @@ object QOrganization {
   def findPersonAndContact(
       coll: Ident,
       query: Option[String],
-      order: RPerson.Table => Column[_]
+      order: (RPerson.Table, ROrganization.Table) => Nel[OrderBy]
   ): Stream[ConnectionIO, (RPerson, Option[ROrganization], Vector[RContact])] = {
     val valFilter = query
       .map(s => s"%$s%")
-      .map(v => c.value.like(v) || p.name.like(v) || p.notes.like(v))
+      .map(v => c.value.like(v) || p.name.like(v) || org.name.like(v) || p.notes.like(v))
     val sql = Select(
       select(p.all, org.all, c.all),
       from(p)
         .leftJoin(org, org.oid === p.oid)
         .leftJoin(c, c.personId === p.pid),
       p.cid === coll &&? valFilter
-    ).orderBy(order(p))
+    ).orderBy(order(p, org))
 
     sql.build
       .query[(RPerson, Option[ROrganization], Option[RContact])]
@@ -128,7 +128,7 @@ object QOrganization {
       coll: Ident,
       value: String,
       ck: Option[ContactKind],
-      use: Option[NonEmptyList[PersonUse]]
+      use: Option[Nel[PersonUse]]
   ): Stream[ConnectionIO, RPerson] =
     runDistinct(
       select(p.all),

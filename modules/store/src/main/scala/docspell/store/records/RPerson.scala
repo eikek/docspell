@@ -7,7 +7,7 @@
 package docspell.store.records
 
 import cats.Eq
-import cats.data.NonEmptyList
+import cats.data.{NonEmptyList => Nel}
 import cats.effect._
 import fs2.Stream
 
@@ -52,7 +52,7 @@ object RPerson {
     val updated = Column[Timestamp]("updated", this)
     val oid     = Column[Ident]("oid", this)
     val use     = Column[PersonUse]("person_use", this)
-    val all = NonEmptyList.of[Column[_]](
+    val all = Nel.of[Column[_]](
       pid,
       cid,
       name,
@@ -122,7 +122,7 @@ object RPerson {
   def findLike(
       coll: Ident,
       personName: String,
-      use: NonEmptyList[PersonUse]
+      use: Nel[PersonUse]
   ): ConnectionIO[Vector[IdRef]] =
     run(
       select(T.pid, T.name),
@@ -134,7 +134,7 @@ object RPerson {
       coll: Ident,
       contactKind: ContactKind,
       value: String,
-      use: NonEmptyList[PersonUse]
+      use: Nel[PersonUse]
   ): ConnectionIO[Vector[IdRef]] = {
     val p = RPerson.as("p")
     val c = RContact.as("c")
@@ -162,7 +162,7 @@ object RPerson {
   def findAllRef(
       coll: Ident,
       nameQ: Option[String],
-      order: Table => Column[_]
+      order: Table => Nel[OrderBy]
   ): ConnectionIO[Vector[IdRef]] = {
 
     val nameFilter = nameQ.map(s => T.name.like(s"%${s.toLowerCase}%"))
@@ -176,7 +176,7 @@ object RPerson {
     DML.delete(T, T.pid === personId && T.cid === coll)
 
   def findOrganization(ids: Set[Ident]): ConnectionIO[Vector[PersonRef]] =
-    NonEmptyList.fromList(ids.toList) match {
+    Nel.fromList(ids.toList) match {
       case Some(nel) =>
         run(select(T.pid, T.name, T.oid), from(T), T.pid.in(nel))
           .query[PersonRef]

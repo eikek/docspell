@@ -27,8 +27,10 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FixedDropdown
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
+import Data.FolderOrder
 import Data.Language exposing (Language)
 import Data.Priority exposing (Priority)
+import Data.TagOrder
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -89,8 +91,8 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( emptyModel
     , Cmd.batch
-        [ Api.getFolders flags "" False GetFolderResp
-        , Api.getTags flags "" GetTagResp
+        [ Api.getFolders flags "" Data.FolderOrder.NameAsc False GetFolderResp
+        , Api.getTags flags "" Data.TagOrder.NameAsc GetTagResp
         ]
     )
 

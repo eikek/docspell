@@ -12,6 +12,7 @@ import cats.implicits._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.OOrganization
 import docspell.common.Ident
 import docspell.common.syntax.all._
 import docspell.restapi.model._
@@ -32,15 +33,25 @@ object PersonRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root :? QueryParam.FullOpt(full) +& QueryParam.QueryOpt(q) =>
+      case GET -> Root :? QueryParam.FullOpt(full) +&
+          QueryParam.QueryOpt(q) +& QueryParam.PersonSort(sort) =>
+        val order = sort.getOrElse(OOrganization.PersonOrder.NameAsc)
         if (full.getOrElse(false))
           for {
-            data <- backend.organization.findAllPerson(user.account, q.map(_.q))
+            data <- backend.organization.findAllPerson(
+              user.account,
+              q.map(_.q),
+              order
+            )
             resp <- Ok(PersonList(data.map(mkPerson).toList))
           } yield resp
         else
           for {
-            data <- backend.organization.findAllPersonRefs(user.account, q.map(_.q))
+            data <- backend.organization.findAllPersonRefs(
+              user.account,
+              q.map(_.q),
+              order
+            )
             resp <- Ok(ReferenceList(data.map(mkIdName).toList))
           } yield resp
 

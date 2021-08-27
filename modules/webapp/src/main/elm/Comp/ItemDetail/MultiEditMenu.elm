@@ -35,10 +35,14 @@ import Comp.Tabs as TB
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction exposing (Direction)
 import Data.DropdownStyle
+import Data.EquipmentOrder
 import Data.Fields
 import Data.Flags exposing (Flags)
+import Data.FolderOrder
 import Data.Icons as Icons
+import Data.PersonOrder
 import Data.PersonUse
+import Data.TagOrder
 import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
@@ -157,11 +161,11 @@ loadModel flags =
             Comp.DatePicker.init
     in
     Cmd.batch
-        [ Api.getTags flags "" GetTagsResp
+        [ Api.getTags flags "" Data.TagOrder.NameAsc GetTagsResp
         , Api.getOrgLight flags GetOrgResp
-        , Api.getPersons flags "" GetPersonResp
-        , Api.getEquipments flags "" GetEquipResp
-        , Api.getFolders flags "" False GetFolderResp
+        , Api.getPersons flags "" Data.PersonOrder.NameAsc GetPersonResp
+        , Api.getEquipments flags "" Data.EquipmentOrder.NameAsc GetEquipResp
+        , Api.getFolders flags "" Data.FolderOrder.NameAsc False GetFolderResp
         , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
         , Cmd.map ItemDatePickerMsg dpc
         , Cmd.map DueDatePickerMsg dpc
