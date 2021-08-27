@@ -246,6 +246,13 @@ exports/
 |       └── FTUnhZ3AE1H-…-RQ9KhtRi486 -> ../../items/FT/FTUnhZ3AE1H-…-RQ9KhtRi486
 │   ├── …
 │   └── 2021-07
+├── by_folder
+│   ├── Finance
+|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -> ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
+|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -> ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
+|   │   ├── Bank
+|   │   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -> ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
+|   │   │   ├── 93npVoA73Cx-…-BnxYNsf4Qvi -> ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
 ├── by_tag
 │   ├── Contract
 │   ├── Important
@@ -272,14 +279,25 @@ item id. Inside this folder, a folder with the complete item id is
 created and there all the data to the item is stored: the metadata in
 `metadata.json` and all files below `files/`.
 
-The options `--date-links` and `--tag-links` create the other two
-folders: `by_tag` and `by_date`. In there you'll find symlinks into
-the `items` folder that are organized by some metadata, namely tag and
-the item date.
+The options `--date-links`, `--folder-links`, and `--tag-links` create
+the other two folders: `by_tag`, `by_folder` and `by_date`. In there
+you'll find symlinks into the `items` folder that are organized by
+some metadata, namely tags, folder, and the item's date.
 
-Example run:
+With the `--link-naming` option you can control the filename used for
+the links created in the `by_*` folders. The default is the items' id,
+which is not very self-speaking and thus might not fit your needs. Using
+`--link-naming name` you can configure it to use the item's name instead.
+
+If you use path separators in your folder names, such as the "/" in
+`Finance/Institute`, you can configure export to unwrap your folder names
+into recursive paths (as shown in the example output above) using the
+`--folder-delimiter "/"` option. Otherwise, the name would be sanitized
+resulting in `Finance-Institute`.
+
+Example run (producing output shown above):
 ``` shell
-❯ dsc export --all --date-links --tag-links --target exports
+❯ dsc export --all --date-links --folder-links --folder-delimiter "/" --tag-links --target exports
 Exported item: test3.zip
 Exported item: README.md
 Exported item: LICENSE.txt
