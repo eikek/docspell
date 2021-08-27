@@ -78,7 +78,7 @@ object RSource {
     DML.insert(
       table,
       table.all,
-      fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created},${v.folderId},${v.fileFilter},${v.language}"
+      fr"${v.sid},${v.cid},${v.abbrev},${v.description},${v.counter},${v.enabled},${v.priority},${v.created},${v.folderId},${v.fileFilter},${v.language},${v.attachmentsOnly}"
     )
 
   def updateNoCounter(v: RSource): ConnectionIO[Int] =
