@@ -285,6 +285,15 @@
                                 
                             </li>
                             
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/merge/"
+                                   >
+                                    Merge Items
+                                </a>
+                                
+                            </li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -313,6 +322,11 @@ server. Every e-mail provider has this information somewhere
 available.</p>
 <p>Configure this in <em>User Settings -&gt; E-Mail Settings (SMTP)</em>:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;mail-settings-1.png">
 </figure>
 <p>First, you need to provide some name that is used to recognize this
@@ -343,6 +357,11 @@ an IMAP server. Your e-mail provider should have this information
 somewhere available.</p>
 <p>Configure this in <em>User Settings -&gt; E-Mail Settings (IMAP)</em>:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;mail-settings-2.png">
 </figure>
 <p>First you need to define a <em>Name</em> to recognize this connection inside
@@ -405,7 +424,7 @@ Download the <code>oauth2.py</code> script from
 <a href="https://github.com/google/gmail-oauth2-tools">here</a> and first create
 an <em>oauth2-token</em>:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">./oauth2.py --user</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">your.name@gmail.com \
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">./oauth2.py --user</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">your.name@gmail.com \
    --client_id</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">106701....d8c.apps.googleusercontent.com \
    --client_secret</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">5Z1...Kir_t \
    --generate_oauth2_token
@@ -443,7 +462,7 @@ cron-job or similiar which uses the <code>oauth2.py</code> tool to generate new
 access tokens and update your imap settings via a
 <a href="https://docspell.org/docs/api/">REST</a> call.</p>
 <pre style="background-color:#282828;">
-<code><span style="font-style:italic;color:#928374;">#!/usr/bin/env bash
+<code class="language-bash" data-lang="bash"><span style="font-style:italic;color:#928374;">#!/usr/bin/env bash
 </span><span style="color:#fabd2f;">set </span><span style="color:#fdf4c1;">-e
 
 </span><span style="font-style:italic;color:#928374;">## Change this to your values:
@@ -510,7 +529,7 @@ echo </span><span style="color:#b8bb26;">&quot;New Settings:&quot;
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

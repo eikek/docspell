@@ -235,7 +235,7 @@ to change the <code>bind.address</code> setting to be either <code>0.0.0.0</code
 ip address of the network interface that the reverse proxy server
 connects to.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.server {
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server {
 </span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
 </span><span style="color:#fdf4c1;">  bind {
 </span><span style="color:#fdf4c1;">    address = </span><span style="color:#b8bb26;">&quot;192.168.1.11&quot;
@@ -251,7 +251,7 @@ the server to every network interface.</p>
 setting should point to the external address. Using above values, it
 would be <code>https://docspell.example.com</code>.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.server {
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server {
 </span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
 </span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># to create absolute URLs and to configure the cookie.
 </span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;https://docspell.example.com&quot;
@@ -275,7 +275,7 @@ to the https variant. Additionally it defines the let's encrypt
 certificates and acts as a proxy for the application at
 <code>192.168.1.11:7880</code>.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">server {
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">server {
     listen 0.0.0.0:80 ;
     listen </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::</span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;">:80 ;
     server_name docspell.example.com ;
@@ -318,7 +318,7 @@ server {
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

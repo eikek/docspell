@@ -381,7 +381,7 @@ There is an
 for this exact use case.</p>
 <p>This is the sample code:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">imgtopdf</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">file</span><span style="color:#fdf4c1aa;">: </span><span style="color:#8ec07c;">String</span><span style="color:#fdf4c1aa;">): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+<code class="language-scala" data-lang="scala"><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">imgtopdf</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">file</span><span style="color:#fdf4c1aa;">: </span><span style="color:#8ec07c;">String</span><span style="color:#fdf4c1aa;">): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
   </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">jpg </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Paths</span><span style="color:#fdf4c1aa;">.get(file).toAbsolutePath
   </span><span style="color:#fa5c4b;">if </span><span style="color:#fdf4c1aa;">(!</span><span style="color:#fabd2f;">Files</span><span style="color:#fdf4c1aa;">.exists(jpg)) {
     sys.error(</span><span style="color:#fabd2f;">s</span><span style="color:#b8bb26;">&quot;file doesn&#39;t exist: </span><span style="color:#fdf4c1;">$jpg</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1aa;">)
@@ -503,7 +503,7 @@ extraction is required anyways.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

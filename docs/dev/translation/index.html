@@ -276,7 +276,7 @@ translating, just start the application.</p>
 <p>Use git to clone the docspell repository to your machine. In a
 terminal type:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">❯ git clone https://github.com/eikek/docspell.git
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ git clone https://github.com/eikek/docspell.git
 Cloning into </span><span style="color:#b8bb26;">&#39;docspell&#39;</span><span style="color:#fdf4c1;">...
 remote: Enumerating objects: 1861, done.
 remote: Counting objects: 100% (1861/1861</span><span style="color:#fdf4c1aa;">)</span><span style="color:#fdf4c1;">, done.
@@ -291,7 +291,7 @@ Resolving deltas: 100% (14658/14658</span><span style="color:#fdf4c1aa;">)</span
 <p>This creates a new directory <code>docspell</code>. Change into it, create a
 <code>DOCSPELL_ENV</code> environment variable and run sbt:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">❯ cd docspell
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ cd docspell
 docspell on  master via 🌳 v0.19.1 via ☕ v11.0.9 via ⬢ v12.21.0
 ❯ export DOCSPELL_ENV=dev
 ❯ sbt
@@ -310,19 +310,19 @@ sbt:docspell-root</span><span style="color:#fe8019;">&gt;
 <p>This downloads some stuff and puts you in the sbt shell. Now compile
 everything (only needed the first time after checkout):</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">sbt:</span><span style="color:#fabd2f;">docspell-root&gt; make
+<code class="language-sbt" data-lang="sbt"><span style="color:#fdf4c1aa;">sbt:</span><span style="color:#fabd2f;">docspell-root&gt; make
 </span></code></pre>
 <p>This will take a while, you need to wait until this is finished.</p>
 <h2 id="start-the-application">Start the application<a class="zola-anchor" href="#start-the-application" aria-label="Anchor link for: start-the-application">🔗</a></h2>
 <p>If sbt is not started, start sbt from within the source root. Also
 export the <code>DOCSPELL_ENV</code> variable <em>before</em> starting sbt:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1aa;"> export </span><span style="color:#fdf4c1;">DOCSPELL_ENV</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">dev
+<code class="language-bash" data-lang="bash"><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1aa;"> export </span><span style="color:#fdf4c1;">DOCSPELL_ENV</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">dev
 </span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1aa;"> sbt
 </span></code></pre>
 <p>Then start the application:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">sbt:</span><span style="color:#fabd2f;">docspell-root&gt; reStart
+<code class="language-sbt" data-lang="sbt"><span style="color:#fdf4c1aa;">sbt:</span><span style="color:#fabd2f;">docspell-root&gt; reStart
 </span></code></pre>
 <p>This starts docspell (joex and the restserver). Once the output gets a
 bit quiter, open a browser and navigate to <code>http://localhost:7880</code>.
@@ -340,7 +340,7 @@ to the running server. For this, a script is provided in the
 <p>Now open another terminal and <code>cd</code> into the docspell folder as before
 and run the following:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">❯ ./project/dev-ui-build.sh watch
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ ./project/dev-ui-build.sh watch
 Compile elm to js …
 Success!
 
@@ -371,7 +371,7 @@ below for details.</p>
 <p>Start by editing <code>UiLanguage.elm</code> and add another language to the
 list:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">type </span><span style="color:#8ec07c;">UiLanguage
+<code class="language-elm" data-lang="elm"><span style="color:#fa5c4b;">type </span><span style="color:#8ec07c;">UiLanguage
     </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">English
     </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">German
 </span></code></pre>
@@ -380,7 +380,7 @@ English name here, because this is source code.</p>
 <p>Also add it to the list of all languages below. Simply add the new
 language separated by a comma <code>,</code>.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#8ec07c;">all </span><span style="color:#fa5c4b;">: List UiLanguage
+<code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">all </span><span style="color:#fa5c4b;">: List UiLanguage
 </span><span style="color:#8ec07c;">all </span><span style="color:#fe8019;">=
     </span><span style="color:#fabd2f;">[ </span><span style="color:#fdf4c1;">English
     </span><span style="color:#fabd2f;">, </span><span style="color:#fdf4c1;">German
@@ -416,7 +416,7 @@ Open this file, you see at the and a value of name <code>gb</code> for English.
 Copy it to another name, <code>de</code> for this example (it's good practice to
 stick to the two letter country code).</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Messages
+<code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Messages
 </span><span style="color:#8ec07c;">de </span><span style="color:#fe8019;">=
     </span><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> lang </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">German
     </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> iso2 </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;de&quot;
@@ -444,14 +444,14 @@ additional information.</p>
 <p>Now the error can be fixed. Go to line 45 and add another branch to
 the <code>case</code> expression:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#8ec07c;">get </span><span style="color:#fa5c4b;">: UiLanguage -&gt; Messages
+<code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">get </span><span style="color:#fa5c4b;">: UiLanguage -&gt; Messages
 </span><span style="color:#8ec07c;">get </span><span style="color:#fdf4c1aa;">lang </span><span style="color:#fe8019;">=
     </span><span style="color:#fa5c4b;">case </span><span style="color:#fdf4c1aa;">lang </span><span style="color:#fa5c4b;">of
-        </span><span style="color:#fdf4c1;">English </span><span style="color:#fe8019;">-&gt;</span><span style="color:#fdf4c1aa;">
-            gb
+        </span><span style="color:#fdf4c1;">English </span><span style="color:#fe8019;">-&gt;
+</span><span style="color:#fdf4c1aa;">            gb
 
-        </span><span style="color:#fdf4c1;">German </span><span style="color:#fe8019;">-&gt;</span><span style="color:#fdf4c1aa;">
-            de
+        </span><span style="color:#fdf4c1;">German </span><span style="color:#fe8019;">-&gt;
+</span><span style="color:#fdf4c1aa;">            de
 </span></code></pre>
 <p>This makes the compiler happy again. If you refresh the browser, you
 should see the new language in the dropdown menu. You can already
@@ -469,7 +469,7 @@ first one which is <code>Messages.App</code>. The file to this is
 find a file to an elm module. Open this file and you'll see again a
 <code>gb</code> value at the end. Copy it to <code>de</code> and start translating:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Texts
+<code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Texts
 </span><span style="color:#8ec07c;">de </span><span style="color:#fe8019;">=
     </span><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> collectiveProfile </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Kollektiv-Profil&quot;
     </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> userProfile </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Benutzer-Profil&quot;
@@ -487,7 +487,7 @@ find a file to an elm module. Open this file and you'll see again a
 list of &quot;exposed&quot; values. This is necessary so it can be used from
 within the <code>Messages.elm</code> module.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">module </span><span style="color:#fabd2f;">Messages.App </span><span style="color:#fa5c4b;">exposing
+<code class="language-elm" data-lang="elm"><span style="color:#fa5c4b;">module </span><span style="color:#fabd2f;">Messages.App </span><span style="color:#fa5c4b;">exposing
     ( </span><span style="color:#fdf4c1;">Texts
     </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> de </span><span style="font-style:italic;color:#928374;">{- the new value -}
     </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> gb
@@ -496,7 +496,7 @@ within the <code>Messages.elm</code> module.</p>
 <p>Now you can go back to <code>Messages.elm</code> and exchange <code>Messages.App.gb</code>
 with <code>Messages.App.de</code>.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Messages
+<code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Messages
 </span><span style="color:#8ec07c;">de </span><span style="color:#fe8019;">=
     </span><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> lang </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">German
     </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> iso2 </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;de&quot;
@@ -571,7 +571,7 @@ work, try:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

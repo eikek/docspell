@@ -267,69 +267,6 @@
                                 
                             </li>
                             
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/ds/"
-                                   >
-                                    Upload Cli (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/consumedir/"
-                                   >
-                                    Consume Directory (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/reset-password/"
-                                   >
-                                    Reset Password (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/regenerate-previews/"
-                                   >
-                                    Regenerate Preview Images (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/consumedir-cleaner/"
-                                   >
-                                    Directory Cleaner (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/convert-all-pdf/"
-                                   >
-                                    Convert All Pdfs (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/export-files/"
-                                   >
-                                    Export Files (⊗)
-                                </a>
-                                
-                            </li>
-                            
                         </ul>
                     </div>
                 </div>
@@ -363,7 +300,7 @@ example the docspell url, the admin secret etc. They can be overriden
 by specifying them as options.</p>
 <p>The config looks like this:</p>
 <pre style="background-color:#282828;">
-<code><span style="font-weight:bold;color:#8ec07c;">docspell_url </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
+<code class="language-toml" data-lang="toml"><span style="font-weight:bold;color:#8ec07c;">docspell_url </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
 </span><span style="font-weight:bold;color:#8ec07c;">default_format </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;Tabular&quot;
 </span><span style="font-weight:bold;color:#8ec07c;">admin_secret </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;admin123&quot;
 </span><span style="font-weight:bold;color:#8ec07c;">default_account </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;demo&quot;
@@ -413,7 +350,7 @@ command doesn't require to be logged in, it can also upload via a
 <p>A source id can be given in the config file, then there are no
 additional options required. The simplest form is this:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc upload *.pdf
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc upload *.pdf
 File already in Docspell: article-velo.pdf
 Adding to request: test-ocr.pdf
 Sending request …
@@ -436,7 +373,7 @@ in a separate request, so the <code>--single-item</code> option cannot be used.<
 <p>There are options to exclude/include files based on a <a href="https://docs.rs/glob/0.3.0/glob/struct.Pattern.html">glob
 pattern</a>.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc upload --traverse .
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc upload --traverse .
 File already in Docspell: article-velo.pdf
 File already in Docspell: demo/dirc/scan.21-03-12.15-50-54.pdf
 File already in Docspell: demo/dirc/test-stamp.pdf
@@ -456,12 +393,14 @@ directories.</p>
 <h2 id="watch-a-directory">Watch a directory<a class="zola-anchor" href="#watch-a-directory" aria-label="Anchor link for: watch-a-directory">🔗</a></h2>
 <p>The <code>watch</code> subcommand can be used to watch one or more directories
 and upload files when they arrive. It uses the <code>upload</code> command under
-the hood and therefore most options are also available here.</p>
+the hood and therefore most options are also available here. You can
+upload via a source url, the integration endpoint or a valid session
+(requires to login).</p>
 <p>It detects file creations and skips a rename within a watched folder.
 The flag <code>-r</code> or <code>--recursive</code> is required to recursively watch a
 directory.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc watch -r .
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc watch -r .
 Watching directory (Recursive): .
 Press Ctrl-C to quit.
 ------------------------------------------------------------------------------
@@ -475,13 +414,15 @@ Server: Files submitted.
 (e.g. when using NFS or SAMBA shares), a less efficient option is to
 use the <code>upload</code> subcommand with <code>--poll</code> option which periodically
 traverses a directory.</p>
+<p>When using the integration endpoint, it requires to specify <code>-i</code> and
+potentially a secret if the endpoint is protected with a secret.</p>
 <h2 id="download-files">Download files<a class="zola-anchor" href="#download-files" aria-label="Anchor link for: download-files">🔗</a></h2>
 <p>The <code>download</code> command allows to download files that match a given
 query. It is possible to download them all flat into some directory or
 directly into a zip file. For example, download all files that are
 tagged with <code>todo</code> into a zip file:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc download --zip &#39;tag:todo&#39;
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc download --zip &#39;tag:todo&#39;
 Zipping 2 attachments into docspell-files.zip
 Downloading DOC-20191223-155707.jpg.pdf …
 Downloading DOC-20200803-174448.jpg.pdf …
@@ -489,7 +430,7 @@ Downloading DOC-20200803-174448.jpg.pdf …
 <p>It downloads the converted PDF files by default, which can be changed
 via some options.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc download --zip --original &#39;tag:todo&#39;
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc download --zip --original &#39;tag:todo&#39;
 Zipping original files of 2 attachments into docspell-files.zip
 Downloading DOC-20191223-155707.jpg …
 Downloading DOC-20200803-174448.jpg …
@@ -513,6 +454,13 @@ structure as follows:</p>
 |       └── FTUnhZ3AE1H-…-RQ9KhtRi486 -&gt; ../../items/FT/FTUnhZ3AE1H-…-RQ9KhtRi486
 │   ├── …
 │   └── 2021-07
+├── by_folder
+│   ├── Finance
+|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
+|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
+|   │   ├── Bank
+|   │   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
+|   │   │   ├── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
 ├── by_tag
 │   ├── Contract
 │   ├── Important
@@ -537,13 +485,22 @@ subdirectories that are created from the first two characters of the
 item id. Inside this folder, a folder with the complete item id is
 created and there all the data to the item is stored: the metadata in
 <code>metadata.json</code> and all files below <code>files/</code>.</p>
-<p>The options <code>--date-links</code> and <code>--tag-links</code> create the other two
-folders: <code>by_tag</code> and <code>by_date</code>. In there you'll find symlinks into
-the <code>items</code> folder that are organized by some metadata, namely tag and
-the item date.</p>
-<p>Example run:</p>
+<p>The options <code>--date-links</code>, <code>--folder-links</code>, and <code>--tag-links</code> create
+the other two folders: <code>by_tag</code>, <code>by_folder</code> and <code>by_date</code>. In there
+you'll find symlinks into the <code>items</code> folder that are organized by
+some metadata, namely tags, folder, and the item's date.</p>
+<p>With the <code>--link-naming</code> option you can control the filename used for
+the links created in the <code>by_*</code> folders. The default is the items' id,
+which is not very self-speaking and thus might not fit your needs. Using
+<code>--link-naming name</code> you can configure it to use the item's name instead.</p>
+<p>If you use path separators in your folder names, such as the &quot;/&quot; in
+<code>Finance/Institute</code>, you can configure export to unwrap your folder names
+into recursive paths (as shown in the example output above) using the
+<code>--folder-delimiter &quot;/&quot;</code> option. Otherwise, the name would be sanitized
+resulting in <code>Finance-Institute</code>.</p>
+<p>Example run (producing output shown above):</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc export --all --date-links --tag-links --target exports
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc export --all --date-links --folder-links --folder-delimiter &quot;/&quot; --tag-links --target exports
 Exported item: test3.zip
 Exported item: README.md
 Exported item: LICENSE.txt
@@ -569,28 +526,50 @@ submit a maintenance task or to reset the password of some user. These
 commands require the <a href="https://docspell.org/docs/configure/#admin-endpoint">admin
 secret</a> either in the
 config file or as an argument.</p>
-<p>Reset user password:</p>
+<h3 id="reset-user-password">Reset user password<a class="zola-anchor" href="#reset-user-password" aria-label="Anchor link for: reset-user-password">🔗</a></h3>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc admin reset-password --account demo
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc admin reset-password --account demo
 ┌─────────┬──────────────┬──────────────────┐
 │ success │ new password │ message          │
 ├─────────┼──────────────┼──────────────────┤
 │ true    │ 2q2UeCVvMYg  │ Password updated │
 └─────────┴──────────────┴──────────────────┘
-</span></code></pre>
-<p>Recreate fulltext index:</p>
+</span></code></pre><h3 id="recreate-fulltext-index">Recreate fulltext index<a class="zola-anchor" href="#recreate-fulltext-index" aria-label="Anchor link for: recreate-fulltext-index">🔗</a></h3>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc admin --admin-secret admin123 recreate-index
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc admin --admin-secret admin123 recreate-index
 ┌─────────┬─────────────────────────────────────┐
 │ success │ message                             │
 ├─────────┼─────────────────────────────────────┤
 │ true    │ Full-text index will be re-created. │
 └─────────┴─────────────────────────────────────┘
-</span></code></pre><h2 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h2>
+</span></code></pre><h3 id="convert-all-files-to-pdf">Convert all files to PDF<a class="zola-anchor" href="#convert-all-files-to-pdf" aria-label="Anchor link for: convert-all-files-to-pdf">🔗</a></h3>
+<pre style="background-color:#282828;">
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc admin --admin-secret admin123 convert-all-pdf
+┌─────────┬─────────────────────────────────┐
+│ success │ message                         │
+├─────────┼─────────────────────────────────┤
+│ true    │ Convert all PDFs task submitted │
+└─────────┴─────────────────────────────────┘
+</span></code></pre>
+<p>This may be necessary if you disabled pdf conversion before and are
+enabling it now.</p>
+<h3 id="regenerate-preview-images">Regenerate preview images<a class="zola-anchor" href="#regenerate-preview-images" aria-label="Anchor link for: regenerate-preview-images">🔗</a></h3>
+<pre style="background-color:#282828;">
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc admin --admin-secret admin123 convert-all-pdf
+┌─────────┬───────────────────────────────────────┐
+│ success │ message                               │
+├─────────┼───────────────────────────────────────┤
+│ true    │ Generate all previews task submitted. │
+└─────────┴───────────────────────────────────────┘
+</span></code></pre>
+<p>This submits tasks to (re)generate preview images of all files. This
+is necessary if you changed the <code>preview.dpi</code> setting in joex'
+config.</p>
+<h2 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h2>
 <p>The <code>search</code> command takes a <a href="https://docspell.org/docs/query/">query</a> and
 prints the results.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc search &#39;corr:*&#39;
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc search &#39;corr:*&#39;
 ┌──────────┬────────────────────────────┬───────────┬────────────┬─────┬───────────────────────────┬───────────────┬────────┬─────────────┬────────────┬───────┐
 │ id       │ name                       │ state     │ date       │ due │ correspondent             │ concerning    │ folder │ tags        │ fields     │ files │
 ├──────────┼────────────────────────────┼───────────┼────────────┼─────┼───────────────────────────┼───────────────┼────────┼─────────────┼────────────┼───────┤
@@ -606,7 +585,7 @@ prints the results.</p>
 </span></code></pre>
 <p>The same can be formatted as json and, for example, only print the ids:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">❯ dsc -f json search &#39;corr:*&#39; | jq &#39;.groups[].items[].id&#39;
+<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc -f json search &#39;corr:*&#39; | jq &#39;.groups[].items[].id&#39;
 &quot;HVK7JuCFt4W-qxkcwq1cWCV-dvpGo4DpZzU-Q16Xoujojas&quot;
 &quot;3odNawKE1Ek-YJrWfPzekAq-47cjt14sexd-GK35JAEAanx&quot;
 &quot;3MA5NdhSrbx-3JkjEpqHiyU-XyVNb15tioh-SUVjMLi1aoV&quot;
@@ -629,7 +608,7 @@ shared between the rest-server and the <code>dsc</code> tool. This can be done b
 defining an environment variable which gets picked up by the
 containers defined in <code>docker-compose.yml</code>:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">DOCSPELL_HEADER_VALUE</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;my-secret&quot;
+<code class="language-bash" data-lang="bash"><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">DOCSPELL_HEADER_VALUE</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;my-secret&quot;
 </span><span style="color:#fdf4c1;">docker-compose up
 </span></code></pre>
 <p>Now you can create a folder <code>./docs/&lt;collective-name&gt;</code> and place all
@@ -646,7 +625,7 @@ the <code>consumedir</code> container will push it to docspell.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

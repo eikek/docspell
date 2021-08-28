@@ -154,28 +154,7 @@
         <loc>https://docspell.org/docs/tools/cli/</loc>
     </url>
     <url>
-        <loc>https://docspell.org/docs/tools/consumedir-cleaner/</loc>
-    </url>
-    <url>
-        <loc>https://docspell.org/docs/tools/consumedir/</loc>
-    </url>
-    <url>
-        <loc>https://docspell.org/docs/tools/convert-all-pdf/</loc>
-    </url>
-    <url>
-        <loc>https://docspell.org/docs/tools/ds/</loc>
-    </url>
-    <url>
-        <loc>https://docspell.org/docs/tools/export-files/</loc>
-    </url>
-    <url>
         <loc>https://docspell.org/docs/tools/paperless-import/</loc>
-    </url>
-    <url>
-        <loc>https://docspell.org/docs/tools/regenerate-previews/</loc>
-    </url>
-    <url>
-        <loc>https://docspell.org/docs/tools/reset-password/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/tools/smtpgateway/</loc>
@@ -203,6 +182,9 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/webapp/mailitem/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/webapp/merge/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/webapp/metadata/</loc>

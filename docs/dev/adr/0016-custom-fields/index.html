@@ -363,7 +363,7 @@ don't have any value associated and could be deleted.</li>
 <h3 id="database">Database<a class="zola-anchor" href="#database" aria-label="Anchor link for: database">🔗</a></h3>
 <p>Initial sketch:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">CREATE TABLE </span><span style="color:#8ec07c;">custom_field</span><span style="color:#fdf4c1aa;"> (
+<code class="language-sql" data-lang="sql"><span style="color:#fa5c4b;">CREATE TABLE </span><span style="color:#8ec07c;">custom_field</span><span style="color:#fdf4c1aa;"> (
   id </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">244</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null </span><span style="color:#fa5c4b;">primary key</span><span style="color:#fdf4c1aa;">,
   name </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">100</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
   cid </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
@@ -435,7 +435,7 @@ functions</li>
 and converts accordingly (e.g. string-&gt;date)</li>
 <li>json only knows number, strings and bools (and null).</li>
 <li>make a structure to allow to specify all json types:<pre style="background-color:#282828;">
-<code><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> value_str</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
+<code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> value_str</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> value_num</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Float
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> value_bool</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
 </span><span style="color:#fabd2f;">}
@@ -450,7 +450,7 @@ field with some type (e.g. setting <code>value_str</code> for setting a
 <p>Input 2:</p>
 <ul>
 <li>send one value as a string<pre style="background-color:#282828;">
-<code><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> value</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">String
+<code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> value</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">String
 </span><span style="color:#fabd2f;">}
 </span></code></pre></li>
 <li>string must be in a specific format according to its type. server
@@ -502,7 +502,7 @@ fields</li>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

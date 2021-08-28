@@ -242,7 +242,7 @@ derivation</a>.</p>
 <p>For example, the <code>builtins.fetchTarball</code> function can be used to
 retrieve the files; then import the <code>release.nix</code> file:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">let
+<code class="language-nix" data-lang="nix"><span style="color:#fa5c4b;">let
   </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span style="color:#fdf4c1aa;">;
 </span><span style="color:#fa5c4b;">in
 </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span style="background-color:#932b1e;color:#fdf4c1;">;</span><span style="color:#fdf4c1aa;">
@@ -251,7 +251,7 @@ retrieve the files; then import the <code>release.nix</code> file:</p>
 docspell. This then needs to be called like other custom packages. For
 example, in your <code>~/.nixpkgs/config.nix</code> you could write this:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">let
+<code class="language-nix" data-lang="nix"><span style="color:#fa5c4b;">let
   </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span style="color:#fdf4c1aa;">;
   </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span style="color:#fdf4c1aa;">;
 </span><span style="color:#fa5c4b;">in
@@ -269,7 +269,7 @@ for all 3 installable docspell programs: the restserver, joex and the
 tools.</p>
 <p>Then you can install docspell via <code>nix-shell</code> or <code>nix-env</code>, for example:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ nix-env -iA nixpkgs.docspell.server nixpkgs.docspell.joex nixpkgs.docspell.tools
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ nix-env -iA nixpkgs.docspell.server nixpkgs.docspell.joex nixpkgs.docspell.tools
 </span></code></pre>
 <p>You may need to replace <code>nixpkgs</code> with <code>nixos</code> when you're on NixOS.</p>
 <p>The expression <code>docspell.currentPkg</code> refers to the most current
@@ -277,8 +277,8 @@ release of Docspell. So even if you use the tarball of the current
 master branch, the <code>release.nix</code> file only contains derivations for
 releases. The expression <code>docspell.currentPkg</code> is a shortcut for
 selecting the most current release. For example it translates to
-<code>docspell.pkg docspell.cfg.v0_25_1</code> – if the current version
-is <code>0.25.1</code>.</p>
+<code>docspell.pkg docspell.cfg.v&lt;pre data-shortcode&gt;0_26_0&lt;/pre&gt;</code> – if the current version
+is <code>&lt;pre data-shortcode&gt;0.26.0&lt;/pre&gt;</code>.</p>
 <h2 id="upgrading">Upgrading<a class="zola-anchor" href="#upgrading" aria-label="Anchor link for: upgrading">🔗</a></h2>
 <p>Since <a href="https://docspell.org/docs/install/downgrading/">downgrading</a> is not supported,
 it is recommended to backup your database before upgrading. Should
@@ -300,7 +300,7 @@ definition for installing Docspell as a service using systemd.</p>
 <code>configuration.nix</code> and then append the docspell module to your list of
 modules. Here is an example:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">config</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">, ... </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+<code class="language-nix" data-lang="nix"><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">config</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">, ... </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
 </span><span style="color:#fa5c4b;">let
   </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span style="color:#fdf4c1aa;">;
   </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span style="color:#fdf4c1aa;">;
@@ -351,7 +351,7 @@ appropriate commit.</p>
 postgres database. This snippet can be used to create a vm (using
 <code>nixos-rebuild build-vm</code> as shown above) or a container, for example.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">config</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">, ... </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+<code class="language-nix" data-lang="nix"><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">config</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">, ... </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
 </span><span style="color:#fa5c4b;">let
   </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span style="color:#fdf4c1aa;">;
   </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span style="color:#fdf4c1aa;">;
@@ -457,7 +457,7 @@ postgres database. This snippet can be used to create a vm (using
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

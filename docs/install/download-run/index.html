@@ -261,19 +261,19 @@
 <h2 id="using-zip-files">Using zip files<a class="zola-anchor" href="#using-zip-files" aria-label="Anchor link for: using-zip-files">🔗</a></h2>
 <p>You need to download the two files:</p>
 <ul>
-<li><a href="https://github.com/eikek/docspell/releases/download/v0.25.1/docspell-restserver-0.25.1.zip">docspell-restserver-0.25.1.zip</a></li>
-<li><a href="https://github.com/eikek/docspell/releases/download/v0.25.1/docspell-joex-0.25.1.zip">docspell-joex-0.25.1.zip</a></li>
+<li>[docspell-restserver-0.26.0.zip](https://github.com/eikek/docspell/releases/download/v0.26.0/docspell-restserver-0.26.0.zip)</li>
+<li>[docspell-joex-0.26.0.zip](https://github.com/eikek/docspell/releases/download/v0.26.0/docspell-joex-0.26.0.zip)</li>
 </ul>
 <ol>
 <li>Unzip both files:<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ unzip docspell-</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.zip
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ unzip docspell-</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.zip
 </span></code></pre></li>
 <li>Open two terminal windows and navigate to the the directory
 containing the zip files.</li>
 <li>Start both components executing:<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ ./docspell-restserver</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-restserver
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ ./docspell-restserver</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-restserver
 </span></code></pre>in one terminal and<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ ./docspell-joex</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-joex
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ ./docspell-joex</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-joex
 </span></code></pre>in the other.</li>
 <li>Point your browser to: <a href="http://localhost:7880/app">http://localhost:7880/app</a></li>
 <li>Register a new account, sign in and try it.</li>
@@ -282,23 +282,23 @@ containing the zip files.</li>
 fulltext search. Using zip/deb files requires to take care of the
 <a href="https://docspell.org/docs/install/prereq/">prerequisites</a> yourself.</p>
 <p>The provided scripts in
-<a href="https://github.com/eikek/docspell/releases/download/v0.25.1/docspell-tools-0.25.1.zip">docspell-tools-0.25.1.zip</a>
+[docspell-tools-0.26.0.zip](https://github.com/eikek/docspell/releases/download/v0.26.0/docspell-tools-0.26.0.zip)
 must be extracted and installed manually somewhere in your <code>$PATH</code>.</p>
 <h2 id="using-deb-files">Using deb files<a class="zola-anchor" href="#using-deb-files" aria-label="Anchor link for: using-deb-files">🔗</a></h2>
 <p>Packages are also provided at the release page:</p>
 <ul>
-<li><a href="https://github.com/eikek/docspell/releases/download/v0.25.1/docspell-restserver_0.25.1_all.deb">docspell-restserver_0.25.1_all.deb</a></li>
-<li><a href="https://github.com/eikek/docspell/releases/download/v0.25.1/docspell-joex_0.25.1_all.deb">docspell-joex_0.25.1_all.deb</a></li>
+<li>[docspell-restserver_0.26.0<em>all.deb](https://github.com/eikek/docspell/releases/download/v0.26.0/docspell-restserver</em>0.26.0_all.deb)</li>
+<li>[docspell-joex_0.26.0<em>all.deb](https://github.com/eikek/docspell/releases/download/v0.26.0/docspell-joex</em>0.26.0_all.deb)</li>
 </ul>
 <p>The DEB packages can be installed on Debian, or Debian based Distros:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ sudo dpkg -i docspell</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.deb
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ sudo dpkg -i docspell</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.deb
 </span></code></pre>
 <p>Then the start scripts are in your <code>$PATH</code>. Run <code>docspell-restserver</code>
 or <code>docspell-joex</code> from a terminal window.</p>
 <p>The packages come with a systemd unit file that will be installed to
 autostart the services.</p>
-<p>The provided scripts in <code>docspell-tools-0.25.1.zip</code> must be
+<p>The provided scripts in <code>docspell-tools-&lt;pre data-shortcode&gt;0.26.0&lt;/pre&gt;.zip</code> must be
 extracted and installed manually somewhere in your <code>$PATH</code>. There are
 no deb files provided.</p>
 <h2 id="running">Running<a class="zola-anchor" href="#running" aria-label="Anchor link for: running">🔗</a></h2>
@@ -352,7 +352,7 @@ create a system service that runs the script in &quot;watch mode&quot;.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

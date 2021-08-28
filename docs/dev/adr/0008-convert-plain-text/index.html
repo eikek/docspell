@@ -418,7 +418,7 @@ HTML, then use existing machinery described in <a href="https://docspell.org/doc
 and then create a PDF from the resulting html.</p>
 <p>Using the following snippet:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">renderMarkdown</span><span style="color:#fdf4c1aa;">(): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+<code class="language-scala" data-lang="scala"><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">renderMarkdown</span><span style="color:#fdf4c1aa;">(): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
     </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">opts </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">MutableDataSet</span><span style="color:#fdf4c1aa;">()
     opts.set(</span><span style="color:#fabd2f;">Parser</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">EXTENSIONS</span><span style="color:#fdf4c1aa;">.asInstanceOf[</span><span style="color:#8ec07c;">DataKey</span><span style="color:#fdf4c1aa;">[</span><span style="color:#fabd2f;">util</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">Collection</span><span style="color:#fdf4c1aa;">[</span><span style="color:#fdf4c1;">_</span><span style="color:#fdf4c1aa;">]]],
       util.</span><span style="color:#fabd2f;">Arrays</span><span style="color:#fdf4c1aa;">.asList(</span><span style="color:#fabd2f;">TablesExtension</span><span style="color:#fdf4c1aa;">.create(),
@@ -440,10 +440,20 @@ and then create a PDF from the resulting html.</p>
 <p>Then run the result through <code>wkhtmltopdf</code>.</p>
 <p>Markdown file:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-md-java.jpg">
 </figure>
 <p>TXT file:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-txt-java.jpg">
 </figure>
 <h2 id="pandoc">pandoc<a class="zola-anchor" href="#pandoc" aria-label="Anchor link for: pandoc">🔗</a></h2>
@@ -453,18 +463,38 @@ and then create a PDF from the resulting html.</p>
 </span></code></pre>
 <p>Markdown/Latex:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-md-pandoc-latex.jpg">
 </figure>
 <p>Markdown/Html:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-md-pandoc-html.jpg">
 </figure>
 <p>Text/Latex:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-txt-pandoc-latex.jpg">
 </figure>
 <p>Text/Html:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-txt-pandoc-html.jpg">
 </figure>
 <h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
@@ -489,7 +519,7 @@ and then the already existing html-&gt;pdf conversion.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

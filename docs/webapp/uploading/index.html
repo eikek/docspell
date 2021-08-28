@@ -264,6 +264,15 @@
                                 
                             </li>
                             
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/merge/"
+                                   >
+                                    Merge Items
+                                </a>
+                                
+                            </li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -301,6 +310,11 @@ delete it any time and no passwords or secrets are visible, even your
 username is not visible.</p>
 <p>Example screenshot:</p>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;sources-edit.png">
 </figure>
 <p>This example shows a source with name &quot;test&quot;. Besides a description
@@ -316,6 +330,11 @@ this endpoint, into this folder.</p>
 <li><code>/api/v1/open/upload/item/&lt;id&gt;</code></li>
 </ul>
 <figure class="image">
+    
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;sources-form.png">
 </figure>
 <p>The first points to a web page where everyone could upload files into
@@ -327,7 +346,7 @@ App</a> to upload files.</p>
 <p>Another example is to use curl for uploading files from the command
 line::</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ curl -XPOST -F file=@test.pdf http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -F file=@test.pdf http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
 {</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Files submitted.&quot;</span><span style="color:#fdf4c1aa;">}
 </span></code></pre>
 <p>There is a <a href="https://docspell.org/docs/tools/cli/">cli</a> to upload files from the command
@@ -354,7 +373,7 @@ can be found <a href="https://docspell.org/docs/api/upload/">here</a>.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

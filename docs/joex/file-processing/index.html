@@ -246,7 +246,7 @@ command (add, remove options etc) in the config file. As an example,
 here is the <code>wkhtmltopdf</code> command that is used to convert html files
 to pdf:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">convert {
+<code class="language-conf" data-lang="conf"><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">convert {
 </span><span style="color:#fa5c4b;">  wkhtmlpdf </span><span style="color:#fdf4c1aa;">{
     </span><span style="color:#fdf4c1;">command </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
       </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;wkhtmltopdf&quot;
@@ -258,12 +258,12 @@ to pdf:</p>
         </span><span style="color:#b8bb26;">&quot;--load-error-handling&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fe8019;">,
         </span><span style="color:#b8bb26;">&quot;--load-media-error-handling&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fe8019;">,
         </span><span style="color:#b8bb26;">&quot;-&quot;</span><span style="color:#fe8019;">,
-        </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1aa;">
-      ]
-      </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;2 minutes&quot;</span><span style="color:#fdf4c1aa;">
-    }
-    </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;</span><span style="color:#fdf4c1aa;">
-  }
+        </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;
+</span><span style="color:#fdf4c1aa;">      ]
+      </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;2 minutes&quot;
+</span><span style="color:#fdf4c1aa;">    }
+    </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
+</span><span style="color:#fdf4c1aa;">  }
 }
 </span></code></pre>
 <p>Strings in <code>{{…}}</code> are replaced by docspell with the appropriate
@@ -291,7 +291,7 @@ commands used.</p>
 <p>See the section <code>docspell.joex.convert</code> in the config file.</p>
 <p>The following config options apply to the conversion as a whole:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">convert {
+<code class="language-conf" data-lang="conf"><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">convert {
   </span><span style="color:#fdf4c1;">converted-filename-part </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;converted&quot;
   </span><span style="color:#fdf4c1;">max-image-size </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">extraction</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">ocr</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">max</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">image</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">size}
 }
@@ -371,11 +371,11 @@ tika.</p>
 text that is greater than the configured minimum length, it is used.
 Otherwise, OCR is started for the whole pdf file page by page.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
+<code class="language-conf" data-lang="conf"><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
 </span><span style="color:#fa5c4b;">  extraction </span><span style="color:#fdf4c1aa;">{
 </span><span style="color:#fa5c4b;">    pdf </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#fdf4c1;">min-text-len </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">500</span><span style="color:#fdf4c1aa;">
-    }
+      </span><span style="color:#fdf4c1;">min-text-len </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">500
+</span><span style="color:#fdf4c1aa;">    }
   }
 }
 </span></code></pre>
@@ -396,13 +396,13 @@ extract single pages into image files and
 the images for ocr. Unpaper is optional, if it is not found, it is
 skipped, which may be a compromise on slow machines.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
+<code class="language-conf" data-lang="conf"><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
 </span><span style="color:#fa5c4b;">  extraction </span><span style="color:#fdf4c1aa;">{
 </span><span style="color:#fa5c4b;">    ocr </span><span style="color:#fdf4c1aa;">{
       </span><span style="color:#fdf4c1;">max-image-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">14000000
       </span><span style="color:#fdf4c1;">page-range </span><span style="color:#fdf4c1aa;">{
-        </span><span style="color:#fdf4c1;">begin </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10</span><span style="color:#fdf4c1aa;">
-      }
+        </span><span style="color:#fdf4c1;">begin </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">10
+</span><span style="color:#fdf4c1aa;">      }
 </span><span style="color:#fa5c4b;">      ghostscript </span><span style="color:#fdf4c1aa;">{
 </span><span style="color:#fa5c4b;">        command </span><span style="color:#fdf4c1aa;">{
           </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;gs&quot;
@@ -411,18 +411,18 @@ skipped, which may be a compromise on slow machines.</p>
                  </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-dSAFER&quot;
                  </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-sDEVICE=tiffscaled8&quot;
                  </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-sOutputFile={{outfile}}&quot;
-                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1aa;">
-                 ]
-          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
-        }
-        </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-extraction&quot;</span><span style="color:#fdf4c1aa;">
-      }
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;
+</span><span style="color:#fdf4c1aa;">                 ]
+          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+</span><span style="color:#fdf4c1aa;">        }
+        </span><span style="color:#fdf4c1;">working-dir </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> ${java</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">io</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-extraction&quot;
+</span><span style="color:#fdf4c1aa;">      }
 </span><span style="color:#fa5c4b;">      unpaper </span><span style="color:#fdf4c1aa;">{
 </span><span style="color:#fa5c4b;">        command </span><span style="color:#fdf4c1aa;">{
           </span><span style="color:#fdf4c1;">program </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;unpaper&quot;
           </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [ </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1aa;"> ]
-          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
-        }
+          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+</span><span style="color:#fdf4c1aa;">        }
       }
 </span><span style="color:#fa5c4b;">      tesseract </span><span style="color:#fdf4c1aa;">{
 </span><span style="color:#fa5c4b;">        command </span><span style="color:#fdf4c1aa;">{
@@ -430,10 +430,10 @@ skipped, which may be a compromise on slow machines.</p>
           </span><span style="color:#fdf4c1;">args </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> [</span><span style="color:#b8bb26;">&quot;{{file}}&quot;
                  </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;stdout&quot;
                  </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;-l&quot;
-                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fdf4c1aa;">
-                 ]
-          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1aa;">
-        }
+                 </span><span style="color:#fe8019;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;
+</span><span style="color:#fdf4c1aa;">                 ]
+          </span><span style="color:#fdf4c1;">timeout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+</span><span style="color:#fdf4c1aa;">        }
       }
     }
   }
@@ -446,11 +446,11 @@ default is set to 32dpi, which results roughly in a 200x300px image.
 For comparison, a standard A4 is usually rendered at 96dpi, which
 results in a 790x1100px image.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
+<code class="language-conf" data-lang="conf"><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1aa;">joex {
 </span><span style="color:#fa5c4b;">  extraction </span><span style="color:#fdf4c1aa;">{
 </span><span style="color:#fa5c4b;">    preview </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#fdf4c1;">dpi </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">32</span><span style="color:#fdf4c1aa;">
-    }
+      </span><span style="color:#fdf4c1;">dpi </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">32
+</span><span style="color:#fdf4c1aa;">    }
   }
 }
 </span></code></pre><div class="notification is-warning is-light" style="z-index: 0">
@@ -463,6 +463,7 @@ results in a 790x1100px image.</p>
 the api for this, there is an endpoint to regenerate all preview
 images for a collective. The <a href="../../tools/cli/">cli tool</a> can be
 used for this.</p>
+
         </div>
     </div>
 </div>
@@ -592,7 +593,7 @@ to disable it by setting it to <code>0</code>.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

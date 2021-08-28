@@ -6438,7 +6438,7 @@ var $author$project$Demo$demo = function (data) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('mt-5')
+								$elm$html$Html$Attributes$class('mt-5 columns is-centered')
 							]),
 						_List_fromArray(
 							[

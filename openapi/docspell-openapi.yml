@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.25.1
+  version: 0.26.0
   description: |
     This is the remote API to Docspell. Docspell is a free document
     management system focused on small groups or families.
@@ -501,11 +501,14 @@ paths:
       tags: [ Tags ]
       summary: Get a list of tags
       description: |
-        Return a list of all configured tags.
+        Return a list of all configured tags. The `sort` query
+        parameter is optional and can specify how the list is sorted.
+        Possible values are: `name`, `-name`, `category`, `-category`.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -579,12 +582,16 @@ paths:
       tags: [ Organization ]
       summary: Get a list of organizations.
       description: |
-        Return a list of all organizations. Only name and id are returned.
+        Return a list of all organizations. Only name and id are
+        returned. If `full` is specified, the list contains all
+        organization data. The `sort` parameter can be either `name`
+        or `-name` to specify the order.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/full"
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -677,12 +684,17 @@ paths:
       tags: [ Person ]
       summary: Get a list of persons.
       description: |
-        Return a list of all persons. Only name and id are returned.
+        Return a list of all persons. Only name and id are returned
+        unless the `full` parameter is specified. The `sort` parameter
+        can be used to control the order of the result. Use one of:
+        `name`, `-name`, `org`, `-org`. Note that order by `org` only
+        works when retrieving the full list.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/full"
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -775,11 +787,14 @@ paths:
       tags: [ Equipment ]
       summary: Get a list of equipments
       description: |
-        Return a list of all configured equipments.
+        Return a list of all configured equipments. The sort query
+        parameter is optional and can be one of `name` or `-name` to
+        sort the list of equipments.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -1136,6 +1151,32 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/collective/emptytrash/startonce:
+    post:
+      operationId: "sec-collective-emptytrash-start-now"
+      tags: [ Collective ]
+      summary: Starts the empty trash task
+      description: |
+        Submits a task to remove all items from the database that have
+        been "soft-deleted". This task is also run periodically and
+        can be triggered here to be immediatly submitted.
+
+        The request is empty, settings are used from the collective.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmptyTrashSetting"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/user:
     get:
       operationId: "sec-user-get-all"
@@ -1478,6 +1519,7 @@ paths:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
         - $ref: "#/components/parameters/withDetails"
+        - $ref: "#/components/parameters/searchMode"
       responses:
         200:
           description: Ok
@@ -1576,6 +1618,7 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/searchMode"
       responses:
         200:
           description: Ok
@@ -1607,7 +1650,9 @@ paths:
       tags: [ Item ]
       summary: Delete an item.
       description: |
-        Delete an item and all its data permanently.
+        Delete an item and all its data. This is a "soft delete", the
+        item is still in the database and can be undeleted. A periodic
+        job will eventually remove this item from the database.
       security:
         - authTokenHeader: []
       parameters:
@@ -1619,6 +1664,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/item/{id}/restore:
+    post:
+      operationId: "sec-item-restore-by-id"
+      tags: [ Item ]
+      summary: Restore a deleted item.
+      description: |
+        A deleted item can be restored as long it is still in the
+        database. This action sets the item state to `created`.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/item/{id}/tags:
     put:
       operationId: "sec-item-get-tags"
@@ -2282,6 +2347,43 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
 
+  /sec/items/merge:
+    post:
+      operationId: "sec-items-merge"
+      tags:
+        - Item (Multi Edit)
+      summary: Merge multiple items into one.
+      description: |
+        A list of items is merged into one item by copying all
+        metadata into the first item in the list.
+
+        Metadata is copied into the target item, if there is no value
+        present. So the order of items in the list matters - the first
+        item with a correspondent or folder will win.
+
+        For metadata that allow multiple values, like tags or custom
+        fields the values are combined. Notes are concatenated from
+        all items and custom fields with the same name are added
+        together for money/numeric fields, concatenated for text
+        fields or the first value is used for other field types.
+
+        After a successful merge, the remaining items are deleted from
+        the database (they cannot be restored).
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/items/deleteAll:
     post:
       operationId: "sec-items-delete-all"
@@ -2290,6 +2392,29 @@ paths:
       summary: Delete multiple items.
       description: |
         Given a list of item ids, deletes all of them.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdList"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/items/restoreAll:
+    post:
+      operationId: "sec-items-restore-all"
+      tags:
+        - Item (Multi Edit)
+      summary: Restore multiple items.
+      description: |
+        Given a list of item ids, restores all of them.
       security:
         - authTokenHeader: []
       requestBody:
@@ -3661,11 +3786,15 @@ paths:
       tags: [ Custom Fields ]
       summary: Get all defined custom fields.
       description: |
-        Get all custom fields defined for the current collective.
+        Get all custom fields defined for the current collective. The
+        `sort` parameter can be used to control the order of the
+        returned list. It can take a value from: `name`, `-name`,
+        `label`, `-label`, `type`, `-type`.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: Ok
@@ -4112,6 +4241,17 @@ components:
         withDetails:
           type: boolean
           default: false
+        searchMode:
+          type: string
+          format: searchmode
+          enum:
+            - normal
+            - trashed
+            - all
+          default: normal
+          description: |
+            Specify whether the search query should apply to
+            soft-deleted items or not.
         query:
           type: string
           description: |
@@ -4216,6 +4356,10 @@ components:
           format: language
         postHandleAll:
           type: boolean
+        attachmentsOnly:
+          type: boolean
+          description: |
+            Import only the attachments e-mails and discard the body
 
     ImapSettingsList:
       description: |
@@ -4569,6 +4713,7 @@ components:
       required:
         - incomingCount
         - outgoingCount
+        - deletedCount
         - itemSize
         - tagCloud
       properties:
@@ -4576,6 +4721,9 @@ components:
           type: integer
           format: int32
         outgoingCount:
+          type: integer
+          format: int32
+        deletedCount:
           type: integer
           format: int32
         itemSize:
@@ -5158,6 +5306,14 @@ components:
           description: |
             The `language` of the document may be specified, otherwise
             the one from settings is used.
+        attachmentsOnly:
+          type: boolean
+          default: false
+          description: |
+            Only applies to e-mail files. If `true` then only
+            attachments of the e-mail are imported and the e-mail body
+            is discarded. E-mails that don't have any attachments are
+            skipped.
 
     Collective:
       description: |
@@ -5185,6 +5341,7 @@ components:
         - language
         - integrationEnabled
         - classifier
+        - emptyTrash
       properties:
         language:
           type: string
@@ -5196,6 +5353,22 @@ components:
             enabled.
         classifier:
           $ref: "#/components/schemas/ClassifierSetting"
+        emptyTrash:
+          $ref: "#/components/schemas/EmptyTrashSetting"
+
+    EmptyTrashSetting:
+      description: |
+        Settings for clearing the trash of items.
+      required:
+        - schedule
+        - minAge
+      properties:
+        schedule:
+          type: string
+          format: calevent
+        minAge:
+          type: integer
+          format: duration
 
     ClassifierSetting:
       description: |
@@ -5248,6 +5421,7 @@ components:
         - enabled
         - priority
         - created
+        - attachmentsOnly
       properties:
         id:
           type: string
@@ -5280,6 +5454,8 @@ components:
           description: DateTime
           type: integer
           format: date-time
+        attachmentsOnly:
+          type: boolean
     SourceTagIn:
       description: |
         A source and optional tags (ids or names) for updating/adding.
@@ -5828,12 +6004,29 @@ components:
       schema:
         type: integer
         format: int32
+    sort:
+      name: sort
+      in: query
+      required: false
+      description: |
+        How to sort the returned list
+      schema:
+        type: string
     withDetails:
       name: withDetails
       in: query
       description: Whether to return details to each item.
       schema:
         type: boolean
+    searchMode:
+      name: searchMode
+      in: query
+      schema:
+        type: string
+        format: searchmode
+      description: |
+        Specify whether the search query should apply to soft-deleted
+        items or not.
     name:
       name: name
       in: path

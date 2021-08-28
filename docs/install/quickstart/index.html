@@ -203,8 +203,9 @@
 <ul>
 <li>Using <a href="https://docspell.org/docs/install/docker/">docker and docker-compose</a>. This
 sets up everything: all prerequisites, both docspell components and
-a container running the <a href="https://docspell.org/docs/tools/consumedir/">consumedir.sh</a>
-script to import files that are dropped in a folder.</li>
+a container running the <a href="https://docspell.org/docs/tools/cli/#watch-a-directory">dsc
+watch</a> script to import files
+that are dropped in a folder.</li>
 <li><a href="https://docspell.org/docs/install/download-run/">Download, Unpack and Run</a>. This
 option is also very quick, but you need to check the
 <a href="https://docspell.org/docs/install/prereq/">prerequisites</a> yourself. Database is
@@ -223,9 +224,9 @@ which can get you started. There is also an <a href="https://forums.unraid.net/t
 thread</a> in
 the German Unraid forum. Thanks for providing these!</li>
 </ul>
-<p>Every <a href="https://docspell.org/docs/intro/#components">component</a> (restserver, joex,
-consumedir) can run on different machines and multiple times. Most of
-the time running all on one machine is sufficient and also for
+<p>Every <a href="https://docspell.org/docs/intro/#components">component</a> (restserver,
+joex, dsc watch) can run on different machines and multiple times.
+Most of the time running all on one machine is sufficient and also for
 simplicity, the docker-compose setup reflects this variant.</p>
 <p>While there are many different ways to run docspell, at some point all
 call docspell binaries. These accept one argument: a <a href="https://docspell.org/docs/configure/">config
@@ -238,11 +239,12 @@ likely you want to change these to match your use-case/setup.</p>
             ⚠ Please note
         </p>
         <div>
-            <p>Please have a look at the <a href="@/docs/configure/_index.md">configuration
-page</a> page, before making docspell
-publicly available. By default, everyone can create an account. This
-is great for trying out and using it in an internal network. But when
-opened up to the outside, it is recommended to lock this down.</p>
+            <p>Please have a look at the <a href="/docs/configure/">configuration page</a> page,
+before making docspell publicly available. By default, everyone can
+create an account. This is great for trying out and using it in an
+internal network. But when opened up to the outside, it is recommended
+to lock this down.</p>
+
         </div>
     </div>
 </div>
@@ -257,7 +259,7 @@ opened up to the outside, it is recommended to lock this down.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

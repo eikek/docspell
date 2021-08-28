@@ -243,7 +243,7 @@ docspell is the admin and knows this secret (and may share it) and
 requests must provide it as a http header <code>Docspell-Admin-Secret</code>.</p>
 <p>Example: re-create the fulltext index (over all collectives):</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&quot;Docspell-Admin-Secret: test123&quot;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/admin/fts/reIndexAll
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&quot;Docspell-Admin-Secret: test123&quot;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/admin/fts/reIndexAll
 </span></code></pre>
 <p>To enable these endpoints, you must provide a secret in the
 <a href="https://docspell.org/docs/configure/#admin-endpoint">configuration</a>.</p>
@@ -260,7 +260,7 @@ url:</p>
 <a href="https://curl.haxx.se/">curl</a>.</p>
 <h3 id="login">Login<a class="zola-anchor" href="#login" aria-label="Anchor link for: login">🔗</a></h3>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ curl -X POST -d </span><span style="color:#b8bb26;">&#39;{&quot;account&quot;: &quot;smith&quot;, &quot;password&quot;: &quot;test&quot;}&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/open/auth/login
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -X POST -d </span><span style="color:#b8bb26;">&#39;{&quot;account&quot;: &quot;smith&quot;, &quot;password&quot;: &quot;test&quot;}&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/open/auth/login
 {</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;user&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true
@@ -270,7 +270,7 @@ url:</p>
 </span><span style="color:#fdf4c1aa;">}
 </span></code></pre><h3 id="get-new-token">Get new token<a class="zola-anchor" href="#get-new-token" aria-label="Anchor link for: get-new-token">🔗</a></h3>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142350115-ZWlrZS9laWtl-$2a$10$rGZUFDAVNIKh4Tj6u6tlI.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/auth/session
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142350115-ZWlrZS9laWtl-$2a$10$rGZUFDAVNIKh4Tj6u6tlI.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/auth/session
 {</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;user&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true
@@ -280,7 +280,7 @@ url:</p>
 </span><span style="color:#fdf4c1aa;">}
 </span></code></pre><h3 id="get-some-insights">Get some insights<a class="zola-anchor" href="#get-some-insights" aria-label="Anchor link for: get-some-insights">🔗</a></h3>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ curl -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142446077-ZWlrZS9laWtl-$2a$10$3B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/collective/insights
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142446077-ZWlrZS9laWtl-$2a$10$3B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/collective/insights
 {</span><span style="color:#b8bb26;">&quot;incomingCount&quot;</span><span style="color:#fdf4c1;">:3
 ,</span><span style="color:#b8bb26;">&quot;outgoingCount&quot;</span><span style="color:#fdf4c1;">:1
 ,</span><span style="color:#b8bb26;">&quot;itemSize&quot;</span><span style="color:#fdf4c1;">:207310
@@ -288,7 +288,7 @@ url:</p>
 }
 </span></code></pre><h3 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h3>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ curl -i -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1615240493…kYtFynj4&#39; </span><span style="color:#fdf4c1;">\
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -i -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1615240493…kYtFynj4&#39; </span><span style="color:#fdf4c1;">\
   </span><span style="color:#b8bb26;">&#39;http://localhost:7880/api/v1/sec/item/search?q=tag=todo,invoice%20year:2021&#39;
 </span><span style="color:#fdf4c1aa;">{
   </span><span style="color:#b8bb26;">&quot;groups&quot;</span><span style="color:#fdf4c1;">: [
@@ -365,7 +365,7 @@ url:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

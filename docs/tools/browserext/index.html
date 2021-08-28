@@ -192,69 +192,6 @@
                                 
                             </li>
                             
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/ds/"
-                                   >
-                                    Upload Cli (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/consumedir/"
-                                   >
-                                    Consume Directory (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/reset-password/"
-                                   >
-                                    Reset Password (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/regenerate-previews/"
-                                   >
-                                    Regenerate Preview Images (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/consumedir-cleaner/"
-                                   >
-                                    Directory Cleaner (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/convert-all-pdf/"
-                                   >
-                                    Convert All Pdfs (⊗)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/export-files/"
-                                   >
-                                    Export Files (⊗)
-                                </a>
-                                
-                            </li>
-                            
                         </ul>
                     </div>
                 </div>
@@ -277,12 +214,12 @@ tools and the web extension. Both work together.</p>
 <p>Copy or symlink the <code>native.py</code> script into some known location. For
 example:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">ln -s ~/docspell-checkout/tools/webextension/native/native.py /usr/local/share/docspell/native.py
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">ln -s ~/docspell-checkout/tools/webextension/native/native.py /usr/local/share/docspell/native.py
 </span></code></pre>
 <p>Then copy the <code>app_manifest.json</code> to
 <code>$HOME/.mozilla/native-messaging-hosts/docspell.json</code>. For example:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">cp ~/docspell-checkout/tools/webextension/native/app_manifest.json  ~/.mozilla/native-messaging-hosts/docspell.json
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">cp ~/docspell-checkout/tools/webextension/native/app_manifest.json  ~/.mozilla/native-messaging-hosts/docspell.json
 </span></code></pre>
 <p>See
 <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests#manifest_location">here</a>
@@ -333,7 +270,7 @@ there.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

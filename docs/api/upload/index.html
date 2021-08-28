@@ -201,7 +201,7 @@ have support for this.</p>
 <p>For example, here is a curl command uploading two files with meta
 data. Since <code>multiple</code> is <code>false</code>, both files are added to one item:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">curl -XPOST -F meta=</span><span style="color:#b8bb26;">&#39;{&quot;multiple&quot;:false, &quot;direction&quot;: &quot;outgoing&quot;, &quot;tags&quot;: {&quot;items&quot;:[&quot;Order&quot;]}}&#39; </span><span style="color:#fdf4c1;">\
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">curl -XPOST -F meta=</span><span style="color:#b8bb26;">&#39;{&quot;multiple&quot;:false, &quot;direction&quot;: &quot;outgoing&quot;, &quot;tags&quot;: {&quot;items&quot;:[&quot;Order&quot;]}}&#39; </span><span style="color:#fdf4c1;">\
             -F file=@letter-en.pdf \
             -F file=@letter-de.pdf \
             http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
@@ -210,13 +210,14 @@ data. Since <code>multiple</code> is <code>false</code>, both files are added to
 applied to the item(s) that are created from this upload. This is
 specified via a JSON structure in a part with name <code>meta</code>:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> multiple</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Bool
+<code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> multiple</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Bool
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> direction</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> folder</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> skipDuplicates</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> tags</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe StringList
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> fileFilter</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
 </span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> language</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
+</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> attachmentsOnly</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
 </span><span style="color:#fabd2f;">}
 </span></code></pre>
 <ul>
@@ -249,7 +250,7 @@ in docspell.</p>
 automatically. The <code>StringList</code> is a json object containing one
 field <code>items</code> that is a list of strings:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> items</span><span style="color:#fe8019;">: </span><span style="color:#fa5c4b;">(</span><span style="color:#fdf4c1;">List String</span><span style="color:#fa5c4b;">)
+<code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> items</span><span style="color:#fe8019;">: </span><span style="color:#fa5c4b;">(</span><span style="color:#fdf4c1;">List String</span><span style="color:#fa5c4b;">)
 </span><span style="color:#fabd2f;">}
 </span></code></pre>
 <p>Tags can be defined using their ids or names.</p>
@@ -266,6 +267,12 @@ to the attachments).</p>
 <p>The <code>language</code> is used for processing the document(s) contained in
 the request. If not specified the collective's default language is
 used.</p>
+</li>
+<li>
+<p>The <code>attachmentsOnly</code> property only applies to e-mail files (usually
+<code>*.eml</code>). If this is <code>true</code>, then the e-mail body is discarded and
+only the attachments are imported. An e-mail without any attachments
+is therefore skipped.</p>
 </li>
 </ul>
 <h1 id="endpoints">Endpoints<a class="zola-anchor" href="#endpoints" aria-label="Anchor link for: endpoints">🔗</a></h1>
@@ -332,7 +339,7 @@ this endpoint.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

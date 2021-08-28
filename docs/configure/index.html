@@ -282,7 +282,7 @@ specified for the rest server and joex. By default, a H2 database in
 the current <code>/tmp</code> directory is configured.</p>
 <p>The config looks like this (both components):</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.joex.jdbc {
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.joex.jdbc {
   url = ...
   user = ...
   password = ...
@@ -321,7 +321,7 @@ include these options:</p>
 for adminstration tasks. This is disabled by default and can be
 enabled by providing a secret:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">...
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">...
   admin-endpoint {
     secret = </span><span style="color:#b8bb26;">&quot;123&quot;
   </span><span style="color:#fdf4c1;">}
@@ -334,7 +334,7 @@ full-text search. Both docspell components must provide the same
 connection setup. This is defined in the <code>full-text-search.solr</code>
 subsection:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">...
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">...
   full-text-search {
     enabled = true
     ...
@@ -360,7 +360,7 @@ restserver.</p>
 re-create the entire index (for all collectives). This is possible via
 a call:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&quot;Docspell-Admin-Secret: test123&quot;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/admin/fts/reIndexAll
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&quot;Docspell-Admin-Secret: test123&quot;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/admin/fts/reIndexAll
 </span></code></pre>
 <p>Here the <code>test123</code> is the key defined with <code>admin-endpoint.secret</code>. If
 it is empty (the default), this call is disabled (all admin routes).
@@ -384,7 +384,7 @@ to be backed up.</p>
 components. The joex component also exposes a small REST api to
 inspect its state and notify the scheduler.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.server.bind {
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server.bind {
   address = localhost
   port = 7880
 }
@@ -424,7 +424,7 @@ and joex <code>joex1</code>. It is recommended to overwrite this setting to have
 an explicit and stable identifier should multiple instances are
 intended.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.server.app-id = </span><span style="color:#b8bb26;">&quot;rest1&quot;
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server.app-id = </span><span style="color:#b8bb26;">&quot;rest1&quot;
 </span><span style="color:#fdf4c1;">docspell.joex.app-id = </span><span style="color:#b8bb26;">&quot;joex1&quot;
 </span></code></pre><h2 id="registration-options">Registration Options<a class="zola-anchor" href="#registration-options" aria-label="Anchor link for: registration-options">🔗</a></h2>
 <p>This defines if and how new users can create accounts. There are 3
@@ -436,7 +436,7 @@ options:</p>
 </ul>
 <p>This applies only to the REST sevrer component.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.server.backend.signup {
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server.backend.signup {
   mode = </span><span style="color:#b8bb26;">&quot;open&quot;
 
   </span><span style="font-style:italic;color:#928374;"># If mode == &#39;invite&#39;, a password must be provided to generate
@@ -456,7 +456,7 @@ this. If it is not set, then invitation won't work. New invitation
 keys can be generated from within the web application or via REST
 calls (using <code>curl</code>, for example).</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">curl -X POST -d </span><span style="color:#b8bb26;">&#39;{&quot;password&quot;:&quot;blabla&quot;}&#39; &quot;http://localhost:7880/api/v1/open/signup/newinvite&quot;
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">curl -X POST -d </span><span style="color:#b8bb26;">&#39;{&quot;password&quot;:&quot;blabla&quot;}&#39; &quot;http://localhost:7880/api/v1/open/signup/newinvite&quot;
 </span></code></pre><h2 id="authentication">Authentication<a class="zola-anchor" href="#authentication" aria-label="Anchor link for: authentication">🔗</a></h2>
 <p>Authentication works in two ways:</p>
 <ul>
@@ -469,7 +469,7 @@ some time. Subsequent calls to secured routes can use this token. The
 token can be given as a normal http header or via a cookie header.</p>
 <p>These settings apply only to the REST server.</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.server.auth {
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server.auth {
   server-secret = </span><span style="color:#b8bb26;">&quot;hex:caffee&quot; </span><span style="font-style:italic;color:#928374;"># or &quot;b64:Y2FmZmVlCg==&quot;
 </span><span style="color:#fdf4c1;">  session-valid = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
 </span><span style="color:#fdf4c1;">}
@@ -595,7 +595,7 @@ you need to add an option to use G1GC (<code>-XX:+UseG1GC</code>), for java11
 this is not necessary (but doesn't hurt either). This could look like
 this:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">./docspell-joex-0.25.1/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+<code><span style="color:#fdf4c1aa;">./docspell-joex-&lt;pre data-shortcode&gt;0.26.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
 </span></code></pre>
 <p>Using these options you can define how much memory the JVM process is
 able to use. This might be necessary to adopt depending on the usage
@@ -609,11 +609,11 @@ for how to configure logging.</p>
 <p>If you created your logback config file, it can be added as argument
 to the executable using this syntax:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">/path/to/docspell -Dlogback.configurationFile=/path/to/your/logging-config-file
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">/path/to/docspell -Dlogback.configurationFile=/path/to/your/logging-config-file
 </span></code></pre>
 <p>To get started, the default config looks like this:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#83a598;">&lt;</span><span style="font-weight:bold;color:#8ec07c;">configuration</span><span style="color:#83a598;">&gt;
+<code class="language-xml" data-lang="xml"><span style="color:#83a598;">&lt;</span><span style="font-weight:bold;color:#8ec07c;">configuration</span><span style="color:#83a598;">&gt;
   &lt;</span><span style="font-weight:bold;color:#8ec07c;">appender </span><span style="color:#8ec07c;">name=</span><span style="color:#b8bb26;">&quot;STDOUT&quot; </span><span style="color:#8ec07c;">class=</span><span style="color:#b8bb26;">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span style="color:#83a598;">&gt;
     &lt;</span><span style="font-weight:bold;color:#8ec07c;">withJansi</span><span style="color:#83a598;">&gt;</span><span style="color:#fdf4c1aa;">true</span><span style="color:#83a598;">&lt;/</span><span style="font-weight:bold;color:#8ec07c;">withJansi</span><span style="color:#83a598;">&gt;
 
@@ -634,12 +634,16 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 <h1 id="default-config">Default Config<a class="zola-anchor" href="#default-config" aria-label="Anchor link for: default-config">🔗</a></h1>
 <h2 id="rest-server">Rest Server<a class="zola-anchor" href="#rest-server" aria-label="Anchor link for: rest-server">🔗</a></h2>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.server {
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1;">docspell.server {
+
   </span><span style="font-style:italic;color:#928374;"># This is shown in the top right corner of the web application
 </span><span style="color:#fdf4c1;">  app-name = </span><span style="color:#b8bb26;">&quot;Docspell&quot;
+
   </span><span style="font-style:italic;color:#928374;"># This is the id of this node. If you run more than one server, you
   # have to make sure to provide unique ids per node.
 </span><span style="color:#fdf4c1;">  app-id = </span><span style="color:#b8bb26;">&quot;rest1&quot;
+
   </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
   # to create absolute URLs and to configure the cookie.
   #
@@ -647,43 +651,53 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
   # used instead or the value of the `X-Forwarded-For` header. If set
   # to some other value, the request is not inspected.
 </span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
+
   </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
 </span><span style="color:#fdf4c1;">  bind {
-    address = </span><span style="color:#b8bb26;">&quot;localhost&quot;</span><span style="color:#fdf4c1;">
-    port = 7880
+    address = </span><span style="color:#b8bb26;">&quot;localhost&quot;
+</span><span style="color:#fdf4c1;">    port = 7880
   }
+
   </span><span style="font-style:italic;color:#928374;"># This is a hard limit to restrict the size of a batch that is
   # returned when searching for items. The user can set this limit
   # within the client config, but it is restricted by the server to
   # the number defined here. An admin might choose a lower number
   # depending on the available resources.
 </span><span style="color:#fdf4c1;">  max-item-page-size = 200
+
   </span><span style="font-style:italic;color:#928374;"># The number of characters to return for each item notes when
   # searching. Item notes may be very long, when returning them with
   # all the results from a search, they add quite some data to return.
   # In order to keep this low, a limit can be defined here.
 </span><span style="color:#fdf4c1;">  max-note-length = 180
+
+
   </span><span style="font-style:italic;color:#928374;"># This defines whether the classification form in the collective
   # settings is displayed or not. If all joex instances have document
   # classification disabled, it makes sense to hide its settings from
   # users.
 </span><span style="color:#fdf4c1;">  show-classification-settings = true
+
   </span><span style="font-style:italic;color:#928374;"># Authentication.
 </span><span style="color:#fdf4c1;">  auth {
+
     </span><span style="font-style:italic;color:#928374;"># The secret for this server that is used to sign the authenicator
     # tokens. If multiple servers are running, all must share the same
     # secret. You can use base64 or hex strings (prefix with b64: and
     # hex:, respectively).
 </span><span style="color:#fdf4c1;">    server-secret = </span><span style="color:#b8bb26;">&quot;hex:caffee&quot;
+
     </span><span style="font-style:italic;color:#928374;"># How long an authentication token is valid. The web application
     # will get a new one periodically.
-</span><span style="color:#fdf4c1;">    session-valid = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;</span><span style="color:#fdf4c1;">
-    remember-me {
+</span><span style="color:#fdf4c1;">    session-valid = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+
+</span><span style="color:#fdf4c1;">    remember-me {
       enabled = true
       </span><span style="font-style:italic;color:#928374;"># How long the remember me cookie/token is valid.
 </span><span style="color:#fdf4c1;">      valid = </span><span style="color:#b8bb26;">&quot;30 days&quot;
     </span><span style="color:#fdf4c1;">}
   }
+
   </span><span style="font-style:italic;color:#928374;"># This endpoint allows to upload files to any collective. The
   # intention is that local software integrates with docspell more
   # easily. Therefore the endpoint is not protected by the usual
@@ -698,11 +712,14 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
   # protected at all!
 </span><span style="color:#fdf4c1;">  integration-endpoint {
     enabled = false
+
     </span><span style="font-style:italic;color:#928374;"># The priority to use when submitting files through this endpoint.
 </span><span style="color:#fdf4c1;">    priority = </span><span style="color:#b8bb26;">&quot;low&quot;
+
     </span><span style="font-style:italic;color:#928374;"># The name used for the item &quot;source&quot; property when uploaded
     # through this endpoint.
 </span><span style="color:#fdf4c1;">    source-name = </span><span style="color:#b8bb26;">&quot;integration&quot;
+
     </span><span style="font-style:italic;color:#928374;"># IPv4 addresses to allow access. An empty list, if enabled,
     # prohibits all requests. IP addresses may be specified as simple
     # globs: a part marked as `*&#39; matches any octet, like in
@@ -712,22 +729,25 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       enabled = false
       ips = </span><span style="color:#fa5c4b;">[ </span><span style="color:#b8bb26;">&quot;127.0.0.1&quot; </span><span style="color:#fa5c4b;">]
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># Requests are expected to use http basic auth when uploading
     # files.
 </span><span style="color:#fdf4c1;">    http-basic {
       enabled = false
-      realm = </span><span style="color:#b8bb26;">&quot;Docspell Integration&quot;</span><span style="color:#fdf4c1;">
-      user = </span><span style="color:#b8bb26;">&quot;docspell-int&quot;</span><span style="color:#fdf4c1;">
-      password = </span><span style="color:#b8bb26;">&quot;docspell-int&quot;
+      realm = </span><span style="color:#b8bb26;">&quot;Docspell Integration&quot;
+</span><span style="color:#fdf4c1;">      user = </span><span style="color:#b8bb26;">&quot;docspell-int&quot;
+</span><span style="color:#fdf4c1;">      password = </span><span style="color:#b8bb26;">&quot;docspell-int&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># Requests are expected to supply some specific header when
     # uploading files.
 </span><span style="color:#fdf4c1;">    http-header {
       enabled = false
-      header-name = </span><span style="color:#b8bb26;">&quot;Docspell-Integration&quot;</span><span style="color:#fdf4c1;">
-      header-value = </span><span style="color:#b8bb26;">&quot;some-secret&quot;
+      header-name = </span><span style="color:#b8bb26;">&quot;Docspell-Integration&quot;
+</span><span style="color:#fdf4c1;">      header-value = </span><span style="color:#b8bb26;">&quot;some-secret&quot;
     </span><span style="color:#fdf4c1;">}
   }
+
   </span><span style="font-style:italic;color:#928374;"># This is a special endpoint that allows some basic administration.
   #
   # It is intended to be used by admins only, that is users who
@@ -742,6 +762,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     </span><span style="font-style:italic;color:#928374;"># The secret. If empty, the endpoint is disabled.
 </span><span style="color:#fdf4c1;">    secret = </span><span style="color:#b8bb26;">&quot;&quot;
   </span><span style="color:#fdf4c1;">}
+
   </span><span style="font-style:italic;color:#928374;"># Configuration of the full-text search engine.
 </span><span style="color:#fdf4c1;">  full-text-search {
     </span><span style="font-style:italic;color:#928374;"># The full-text search feature can be disabled. It requires an
@@ -750,6 +771,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     #
     # Currently the SOLR search platform is supported.
 </span><span style="color:#fdf4c1;">    enabled = false
+
     </span><span style="font-style:italic;color:#928374;"># Configuration for the SOLR backend.
 </span><span style="color:#fdf4c1;">    solr = {
       </span><span style="font-style:italic;color:#928374;"># The URL to solr
@@ -766,6 +788,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span><span style="color:#fdf4c1;">      q-op = </span><span style="color:#b8bb26;">&quot;OR&quot;
     </span><span style="color:#fdf4c1;">}
   }
+
   </span><span style="font-style:italic;color:#928374;"># Configuration for the backend.
 </span><span style="color:#fdf4c1;">  backend {
     </span><span style="font-style:italic;color:#928374;"># Enable or disable debugging for e-mail related functionality. This
@@ -773,18 +796,21 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     # logging is not very extensive on authentication failures. Setting
     # this to true, results in a lot of data printed to stdout.
 </span><span style="color:#fdf4c1;">    mail-debug = false
+
     </span><span style="font-style:italic;color:#928374;"># The database connection.
     #
     # By default a H2 file-based database is configured. You can
     # provide a postgresql or mariadb connection here. When using H2
     # use the PostgreSQL compatibility mode and AUTO_SERVER feature.
 </span><span style="color:#fdf4c1;">    jdbc {
-      url = </span><span style="color:#b8bb26;">&quot;jdbc:h2://&quot;</span><span style="color:#fdf4c1;">${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;</span><span style="color:#fdf4c1;">
-      user = </span><span style="color:#b8bb26;">&quot;sa&quot;</span><span style="color:#fdf4c1;">
-      password = </span><span style="color:#b8bb26;">&quot;&quot;
+      url = </span><span style="color:#b8bb26;">&quot;jdbc:h2://&quot;</span><span style="color:#fdf4c1;">${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+</span><span style="color:#fdf4c1;">      user = </span><span style="color:#b8bb26;">&quot;sa&quot;
+</span><span style="color:#fdf4c1;">      password = </span><span style="color:#b8bb26;">&quot;&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># Configuration for registering new users.
 </span><span style="color:#fdf4c1;">    signup {
+
       </span><span style="font-style:italic;color:#928374;"># The mode defines if new users can signup or not. It can have
       # three values:
       #
@@ -794,13 +820,16 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       #   server.
       # - closed: signing up is disabled.
 </span><span style="color:#fdf4c1;">      mode = </span><span style="color:#b8bb26;">&quot;open&quot;
+
       </span><span style="font-style:italic;color:#928374;"># If mode == &#39;invite&#39;, a password must be provided to generate
       # invitation keys. It must not be empty.
 </span><span style="color:#fdf4c1;">      new-invite-password = </span><span style="color:#b8bb26;">&quot;&quot;
+
       </span><span style="font-style:italic;color:#928374;"># If mode == &#39;invite&#39;, this is the period an invitation token is
       # considered valid.
 </span><span style="color:#fdf4c1;">      invite-time = </span><span style="color:#b8bb26;">&quot;3 days&quot;
     </span><span style="color:#fdf4c1;">}
+
     files {
       </span><span style="font-style:italic;color:#928374;"># Defines the chunk size (in bytes) used to store the files.
       # This will affect the memory footprint when uploading and
@@ -810,6 +839,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       # It also defines the chunk size used for the blobs inside the
       # database.
 </span><span style="color:#fdf4c1;">      chunk-size = 524288
+
       </span><span style="font-style:italic;color:#928374;"># The file content types that are considered valid. Docspell
       # will only pass these files to processing. The processing code
       # itself has also checks for which files are supported and which
@@ -822,21 +852,27 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 }
 </span></code></pre><h2 id="joex">Joex<a class="zola-anchor" href="#joex" aria-label="Anchor link for: joex">🔗</a></h2>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">docspell.joex {
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1;">docspell.joex {
+
   </span><span style="font-style:italic;color:#928374;"># This is the id of this node. If you run more than one server, you
   # have to make sure to provide unique ids per node.
 </span><span style="color:#fdf4c1;">  app-id = </span><span style="color:#b8bb26;">&quot;joex1&quot;
+
+
   </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
   # to register this joex instance such that docspell rest servers can
   # reach them
 </span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;http://localhost:7878&quot;
+
   </span><span style="font-style:italic;color:#928374;"># Where the REST server binds to.
   #
   # JOEX provides a very simple REST interface to inspect its state.
 </span><span style="color:#fdf4c1;">  bind {
-    address = </span><span style="color:#b8bb26;">&quot;localhost&quot;</span><span style="color:#fdf4c1;">
-    port = 7878
+    address = </span><span style="color:#b8bb26;">&quot;localhost&quot;
+</span><span style="color:#fdf4c1;">    port = 7878
   }
+
   </span><span style="font-style:italic;color:#928374;"># The database connection.
   #
   # By default a H2 file-based database is configured. You can provide
@@ -845,15 +881,17 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
   #
   # It must be the same connection as the rest server is using.
 </span><span style="color:#fdf4c1;">  jdbc {
-    url = </span><span style="color:#b8bb26;">&quot;jdbc:h2://&quot;</span><span style="color:#fdf4c1;">${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;</span><span style="color:#fdf4c1;">
-    user = </span><span style="color:#b8bb26;">&quot;sa&quot;</span><span style="color:#fdf4c1;">
-    password = </span><span style="color:#b8bb26;">&quot;&quot;
+    url = </span><span style="color:#b8bb26;">&quot;jdbc:h2://&quot;</span><span style="color:#fdf4c1;">${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+</span><span style="color:#fdf4c1;">    user = </span><span style="color:#b8bb26;">&quot;sa&quot;
+</span><span style="color:#fdf4c1;">    password = </span><span style="color:#b8bb26;">&quot;&quot;
   </span><span style="color:#fdf4c1;">}
+
   </span><span style="font-style:italic;color:#928374;"># Enable or disable debugging for e-mail related functionality. This
   # applies to both sending and receiving mails. For security reasons
   # logging is not very extensive on authentication failures. Setting
   # this to true, results in a lot of data printed to stdout.
 </span><span style="color:#fdf4c1;">  mail-debug = false
+
   send-mail {
     </span><span style="font-style:italic;color:#928374;"># This is used as the List-Id e-mail header when mails are sent
     # from docspell to its users (example: for notification mails). It
@@ -866,41 +904,53 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     # of this header.
 </span><span style="color:#fdf4c1;">    list-id = </span><span style="color:#b8bb26;">&quot;&quot;
   </span><span style="color:#fdf4c1;">}
+
   </span><span style="font-style:italic;color:#928374;"># Configuration for the job scheduler.
 </span><span style="color:#fdf4c1;">  scheduler {
+
     </span><span style="font-style:italic;color:#928374;"># Each scheduler needs a unique name. This defaults to the node
     # name, which must be unique, too.
 </span><span style="color:#fdf4c1;">    name = ${docspell.joex.app</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1;">id}
+
     </span><span style="font-style:italic;color:#928374;"># Number of processing allowed in parallel.
 </span><span style="color:#fdf4c1;">    pool-size = 1
+
     </span><span style="font-style:italic;color:#928374;"># A counting scheme determines the ratio of how high- and low-prio
     # jobs are run. For example: 4,1 means run 4 high prio jobs, then
     # 1 low prio and then start over.
 </span><span style="color:#fdf4c1;">    counting-scheme = </span><span style="color:#b8bb26;">&quot;4,1&quot;
+
     </span><span style="font-style:italic;color:#928374;"># How often a failed job should be retried until it enters failed
     # state. If a job fails, it becomes &quot;stuck&quot; and will be retried
     # after a delay.
 </span><span style="color:#fdf4c1;">    retries = 2
+
     </span><span style="font-style:italic;color:#928374;"># The delay until the next try is performed for a failed job. This
     # delay is increased exponentially with the number of retries.
 </span><span style="color:#fdf4c1;">    retry-delay = </span><span style="color:#b8bb26;">&quot;1 minute&quot;
+
     </span><span style="font-style:italic;color:#928374;"># The queue size of log statements from a job.
 </span><span style="color:#fdf4c1;">    log-buffer-size = 500
+
     </span><span style="font-style:italic;color:#928374;"># If no job is left in the queue, the scheduler will wait until a
     # notify is requested (using the REST interface). To also retry
     # stuck jobs, it will notify itself periodically.
 </span><span style="color:#fdf4c1;">    wakeup-period = </span><span style="color:#b8bb26;">&quot;30 minutes&quot;
   </span><span style="color:#fdf4c1;">}
+
   periodic-scheduler {
+
     </span><span style="font-style:italic;color:#928374;"># Each scheduler needs a unique name. This defaults to the node
     # name, which must be unique, too.
 </span><span style="color:#fdf4c1;">    name = ${docspell.joex.app</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1;">id}
+
     </span><span style="font-style:italic;color:#928374;"># A fallback to start looking for due periodic tasks regularily.
     # Usually joex instances should be notified via REST calls if
     # external processes change tasks. But these requests may get
     # lost.
 </span><span style="color:#fdf4c1;">    wakeup-period = </span><span style="color:#b8bb26;">&quot;10 minutes&quot;
   </span><span style="color:#fdf4c1;">}
+
   </span><span style="font-style:italic;color:#928374;"># Configuration for the user-tasks.
 </span><span style="color:#fdf4c1;">  user-tasks {
     </span><span style="font-style:italic;color:#928374;"># Allows to import e-mails by scanning a mailbox.
@@ -909,11 +959,13 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       # configures more than this, only upto this limit folders are
       # scanned and a warning is logged.
 </span><span style="color:#fdf4c1;">      max-folders = 50
+
       </span><span style="font-style:italic;color:#928374;"># How many mails (headers only) to retrieve in one chunk.
       #
       # If this is greater than `max-mails&#39; it is set automatically to
       # the value of `max-mails&#39;.
 </span><span style="color:#fdf4c1;">      mail-chunk-size = 50
+
       </span><span style="font-style:italic;color:#928374;"># A limit on how many mails to process in one job run. This is
       # meant to avoid too heavy resource allocation to one
       # user/collective.
@@ -923,44 +975,57 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span><span style="color:#fdf4c1;">      max-mails = 500
     }
   }
+
+
   </span><span style="font-style:italic;color:#928374;"># Docspell uses periodic house keeping tasks, like cleaning expired
   # invites, that can be configured here.
 </span><span style="color:#fdf4c1;">  house-keeping {
+
     </span><span style="font-style:italic;color:#928374;"># When the house keeping tasks execute. Default is to run every
     # week.
 </span><span style="color:#fdf4c1;">    schedule = </span><span style="color:#b8bb26;">&quot;Sun *-*-* 00:00:00&quot;
+
     </span><span style="font-style:italic;color:#928374;"># This task removes invitation keys that have been created but not
     # used. The timespan here must be greater than the `invite-time&#39;
     # setting in the rest server config file.
 </span><span style="color:#fdf4c1;">    cleanup-invites = {
+
       </span><span style="font-style:italic;color:#928374;"># Whether this task is enabled.
 </span><span style="color:#fdf4c1;">      enabled = true
+
       </span><span style="font-style:italic;color:#928374;"># The minimum age of invites to be deleted.
 </span><span style="color:#fdf4c1;">      older-than = </span><span style="color:#b8bb26;">&quot;30 days&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># This task removes expired remember-me tokens. The timespan
     # should be greater than the `valid` time in the restserver
     # config.
 </span><span style="color:#fdf4c1;">    cleanup-remember-me = {
       </span><span style="font-style:italic;color:#928374;"># Whether the job is enabled.
 </span><span style="color:#fdf4c1;">      enabled = true
+
       </span><span style="font-style:italic;color:#928374;"># The minimum age of tokens to be deleted.
 </span><span style="color:#fdf4c1;">      older-than = </span><span style="color:#b8bb26;">&quot;30 days&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># Jobs store their log output in the database. Normally this data
     # is only interesting for some period of time. The processing logs
     # of old files can be removed eventually.
 </span><span style="color:#fdf4c1;">    cleanup-jobs = {
+
       </span><span style="font-style:italic;color:#928374;"># Whether this task is enabled.
 </span><span style="color:#fdf4c1;">      enabled = true
+
       </span><span style="font-style:italic;color:#928374;"># The minimum age of jobs to delete. It is matched against the
       # `finished&#39; timestamp.
 </span><span style="color:#fdf4c1;">      older-than = </span><span style="color:#b8bb26;">&quot;30 days&quot;
+
       </span><span style="font-style:italic;color:#928374;"># This defines how many jobs are deleted in one transaction.
       # Since the data to delete may get large, it can be configured
       # whether more or less memory should be used.
 </span><span style="color:#fdf4c1;">      delete-batch = </span><span style="color:#b8bb26;">&quot;100&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># Removes node entries that are not reachable anymore.
 </span><span style="color:#fdf4c1;">    check-nodes {
       </span><span style="font-style:italic;color:#928374;"># Whether this task is enabled
@@ -969,6 +1034,63 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span><span style="color:#fdf4c1;">      min-not-found = 2
     }
   }
+
+  </span><span style="font-style:italic;color:#928374;"># A periodic task to check for new releases of docspell. It can
+  # inform about a new release via e-mail. You need to specify an
+  # account that has SMTP settings to use for sending.
+</span><span style="color:#fdf4c1;">  update-check {
+    </span><span style="font-style:italic;color:#928374;"># Whether to enable this task
+</span><span style="color:#fdf4c1;">    enabled = false
+
+    </span><span style="font-style:italic;color:#928374;"># Sends the mail without checking the latest release. Can be used
+    # if you want to see if mail sending works, but don&#39;t want to wait
+    # until a new release is published.
+</span><span style="color:#fdf4c1;">    test-run = false
+
+    </span><span style="font-style:italic;color:#928374;"># When the update check should execute. Default is to run every
+    # week.
+</span><span style="color:#fdf4c1;">    schedule = </span><span style="color:#b8bb26;">&quot;Sun *-*-* 00:00:00&quot;
+
+    </span><span style="font-style:italic;color:#928374;"># An account id in form of `collective/user` (or just `user` if
+    # collective and user name are the same). This user account must
+    # have at least one valid SMTP settings which are used to send the
+    # mail.
+</span><span style="color:#fdf4c1;">    sender-account = </span><span style="color:#b8bb26;">&quot;&quot;
+
+    </span><span style="font-style:italic;color:#928374;"># The SMTP connection id that should be used for sending the mail.
+</span><span style="color:#fdf4c1;">    smtp-id = </span><span style="color:#b8bb26;">&quot;&quot;
+
+    </span><span style="font-style:italic;color:#928374;"># A list of recipient e-mail addresses.
+    # Example: `[ &quot;john.doe@gmail.com&quot; ]`
+</span><span style="color:#fdf4c1;">    recipients = </span><span style="color:#fa5c4b;">[]
+
+    </span><span style="font-style:italic;color:#928374;"># The subject of the mail. It supports the same variables as the
+    # body.
+</span><span style="color:#fdf4c1;">    subject = </span><span style="color:#b8bb26;">&quot;Docspell {{ latestVersion }} is available&quot;
+
+    </span><span style="font-style:italic;color:#928374;"># The body of the mail. Subject and body can contain these
+    # variables which are replaced:
+    #
+    # - `latestVersion` the latest available version of Docspell
+    # - `currentVersion` the currently running (old) version of Docspell
+    # - `releasedAt` a date when the release was published
+    #
+    # The body is processed as markdown after the variables have been
+    # replaced.
+</span><span style="color:#fdf4c1;">    body = </span><span style="color:#b8bb26;">&quot;&quot;&quot;
+Hello,
+
+You are currently running Docspell {{ currentVersion }}. Version *{{ latestVersion }}*
+is now available, which was released on {{ releasedAt }}. Check the release page at:
+
+&lt;https://github.com/eikek/docspell/releases/latest&gt;
+
+Have a nice day!
+
+Docpell Update Check
+&quot;&quot;&quot;
+  </span><span style="color:#fdf4c1;">}
+
   </span><span style="font-style:italic;color:#928374;"># Configuration of text extraction
 </span><span style="color:#fdf4c1;">  extraction {
     </span><span style="font-style:italic;color:#928374;"># For PDF files it is first tried to read the text parts of the
@@ -979,6 +1101,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span><span style="color:#fdf4c1;">    pdf {
       min-text-len = 500
     }
+
     preview {
       </span><span style="font-style:italic;color:#928374;"># When rendering a pdf page, use this dpi. This results in
       # scaling the image. A standard A4 page rendered at 96dpi
@@ -990,16 +1113,19 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       # to regenerate all for a collective.
 </span><span style="color:#fdf4c1;">      dpi = 32
     }
+
     </span><span style="font-style:italic;color:#928374;"># Extracting text using OCR works for image and pdf files. It will
     # first run ghostscript to create a gray image from a pdf. Then
     # unpaper is run to optimize the image for the upcoming ocr, which
     # will be done by tesseract. All these programs must be available
     # in your PATH or the absolute path can be specified below.
 </span><span style="color:#fdf4c1;">    ocr {
+
       </span><span style="font-style:italic;color:#928374;"># Images greater than this size are skipped. Note that every
       # image is loaded completely into memory for doing OCR. This is
       # the pixel count, `height * width` of the image.
 </span><span style="color:#fdf4c1;">      max-image-size = 14000000
+
       </span><span style="font-style:italic;color:#928374;"># Defines what pages to process. If a PDF with 600 pages is
       # submitted, it is probably not necessary to scan through all of
       # them. This would take a long time and occupy resources for no
@@ -1014,43 +1140,47 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span><span style="color:#fdf4c1;">      page-range {
         begin = 10
       }
+
       </span><span style="font-style:italic;color:#928374;"># The ghostscript command.
 </span><span style="color:#fdf4c1;">      ghostscript {
         command {
-          program = </span><span style="color:#b8bb26;">&quot;gs&quot;</span><span style="color:#fdf4c1;">
-          args = [ </span><span style="color:#b8bb26;">&quot;-dNOPAUSE&quot;
+          program = </span><span style="color:#b8bb26;">&quot;gs&quot;
+</span><span style="color:#fdf4c1;">          args = [ </span><span style="color:#b8bb26;">&quot;-dNOPAUSE&quot;
                  </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-dBATCH&quot;
                  </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-dSAFER&quot;
                  </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-sDEVICE=tiffscaled8&quot;
                  </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-sOutputFile={{outfile}}&quot;
-                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">
-                 ]
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;
+</span><span style="color:#fdf4c1;">                 ]
           timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
         </span><span style="color:#fdf4c1;">}
         working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-extraction&quot;
       </span><span style="color:#fdf4c1;">}
+
       </span><span style="font-style:italic;color:#928374;"># The unpaper command.
 </span><span style="color:#fdf4c1;">      unpaper {
         command {
-          program = </span><span style="color:#b8bb26;">&quot;unpaper&quot;</span><span style="color:#fdf4c1;">
-          args = </span><span style="color:#fa5c4b;">[ </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot; </span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;">
-          timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
+          program = </span><span style="color:#b8bb26;">&quot;unpaper&quot;
+</span><span style="color:#fdf4c1;">          args = </span><span style="color:#fa5c4b;">[ </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot; </span><span style="color:#fa5c4b;">]
+</span><span style="color:#fdf4c1;">          timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
         </span><span style="color:#fdf4c1;">}
       }
+
       </span><span style="font-style:italic;color:#928374;"># The tesseract command.
 </span><span style="color:#fdf4c1;">      tesseract {
         command {
-          program = </span><span style="color:#b8bb26;">&quot;tesseract&quot;</span><span style="color:#fdf4c1;">
-          args = [</span><span style="color:#b8bb26;">&quot;{{file}}&quot;
+          program = </span><span style="color:#b8bb26;">&quot;tesseract&quot;
+</span><span style="color:#fdf4c1;">          args = [</span><span style="color:#b8bb26;">&quot;{{file}}&quot;
                  </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;stdout&quot;
                  </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;-l&quot;
-                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fdf4c1;">
-                 ]
+                 </span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;
+</span><span style="color:#fdf4c1;">                 ]
           timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
         </span><span style="color:#fdf4c1;">}
       }
     }
   }
+
   </span><span style="font-style:italic;color:#928374;"># Settings for text analysis
 </span><span style="color:#fdf4c1;">  text-analysis {
     </span><span style="font-style:italic;color:#928374;"># Maximum length of text to be analysed.
@@ -1065,10 +1195,12 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     # This values applies to nlp and the classifier. If this value is
     # &lt;= 0, the limit is disabled.
 </span><span style="color:#fdf4c1;">    max-length = 5000
+
     </span><span style="font-style:italic;color:#928374;"># A working directory for the analyser to store temporary/working
     # files.
-</span><span style="color:#fdf4c1;">    working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-analysis&quot;</span><span style="color:#fdf4c1;">
-    nlp {
+</span><span style="color:#fdf4c1;">    working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-analysis&quot;
+
+</span><span style="color:#fdf4c1;">    nlp {
       </span><span style="font-style:italic;color:#928374;"># The mode for configuring NLP models:
       #
       # 1. full – builds the complete pipeline
@@ -1097,6 +1229,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       # and you won&#39;t get any suggestions. Only what the classifier
       # returns (if enabled).
 </span><span style="color:#fdf4c1;">      mode = full
+
       </span><span style="font-style:italic;color:#928374;"># The StanfordCoreNLP library caches language models which
       # requires quite some amount of memory. Setting this interval to a
       # positive duration, the cache is cleared after this amount of
@@ -1105,9 +1238,11 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       #
       # This has only any effect, if mode != disabled.
 </span><span style="color:#fdf4c1;">      clear-interval = </span><span style="color:#b8bb26;">&quot;15 minutes&quot;
+
       </span><span style="font-style:italic;color:#928374;"># Restricts proposals for due dates. Only dates earlier than this
       # number of years in the future are considered.
 </span><span style="color:#fdf4c1;">      max-due-date-years = 10
+
       regex-ner {
         </span><span style="font-style:italic;color:#928374;"># Whether to enable custom NER annotation. This uses the
         # address book of a collective as input for NER tagging (to
@@ -1123,6 +1258,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
         # Note, this is only relevant if nlp-config.mode is not
         # &quot;disabled&quot;.
 </span><span style="color:#fdf4c1;">        max-entries = 1000
+
         </span><span style="font-style:italic;color:#928374;"># The NER annotation uses a file of patterns that is derived
         # from a collective&#39;s address book. This is is the time how
         # long this data will be kept until a check for a state change
@@ -1130,6 +1266,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span><span style="color:#fdf4c1;">        file-cache-time = </span><span style="color:#b8bb26;">&quot;1 minute&quot;
       </span><span style="color:#fdf4c1;">}
     }
+
     </span><span style="font-style:italic;color:#928374;"># Settings for doing document classification.
     #
     # This works by learning from existing documents. This requires a
@@ -1145,6 +1282,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       # finding correspondents and concerned entities, if enabled
       # here.
 </span><span style="color:#fdf4c1;">      enabled = true
+
       </span><span style="font-style:italic;color:#928374;"># If concerned with memory consumption, this restricts the
       # number of items to consider. More are better for training. A
       # negative value or zero means to train on all items.
@@ -1153,6 +1291,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       # memory is required. On weaker hardware, it is advised to play
       # with these values.
 </span><span style="color:#fdf4c1;">      item-count = 600
+
       </span><span style="font-style:italic;color:#928374;"># These settings are used to configure the classifier. If
       # multiple are given, they are all tried and the &quot;best&quot; is
       # chosen at the end. See
@@ -1174,22 +1313,27 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       ]
     }
   }
+
   </span><span style="font-style:italic;color:#928374;"># Configuration for converting files into PDFs.
   #
   # Most of it is delegated to external tools, which can be configured
   # below. They must be in the PATH environment or specify the full
   # path below via the `program` key.
 </span><span style="color:#fdf4c1;">  convert {
+
     </span><span style="font-style:italic;color:#928374;"># The chunk size used when storing files. This should be the same
     # as used with the rest server.
 </span><span style="color:#fdf4c1;">    chunk-size = 524288
+
     </span><span style="font-style:italic;color:#928374;"># A string used to change the filename of the converted pdf file.
     # If empty, the original file name is used for the pdf file ( the
     # extension is always replaced with `pdf`).
 </span><span style="color:#fdf4c1;">    converted-filename-part = </span><span style="color:#b8bb26;">&quot;converted&quot;
+
     </span><span style="font-style:italic;color:#928374;"># When reading images, this is the maximum size. Images that are
     # larger are not processed.
 </span><span style="color:#fdf4c1;">    max-image-size = ${docspell.joex.extraction.ocr.max</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1;">image-size}
+
     </span><span style="font-style:italic;color:#928374;"># Settings when processing markdown files (and other text files)
     # to HTML.
     #
@@ -1197,17 +1341,19 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     # to HTML using a markdown processor. The resulting HTML is then
     # converted to a PDF file.
 </span><span style="color:#fdf4c1;">    markdown {
+
       </span><span style="font-style:italic;color:#928374;"># The CSS that is used to style the resulting HTML.
 </span><span style="color:#fdf4c1;">      internal-css = </span><span style="color:#b8bb26;">&quot;&quot;&quot;
         body { padding: 2em 5em; }
       &quot;&quot;&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># To convert HTML files into PDF files, the external tool
     # wkhtmltopdf is used.
 </span><span style="color:#fdf4c1;">    wkhtmlpdf {
       command = {
-        program = </span><span style="color:#b8bb26;">&quot;wkhtmltopdf&quot;</span><span style="color:#fdf4c1;">
-        args = [
+        program = </span><span style="color:#b8bb26;">&quot;wkhtmltopdf&quot;
+</span><span style="color:#fdf4c1;">        args = [
           </span><span style="color:#b8bb26;">&quot;-s&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;A4&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;--encoding&quot;</span><span style="color:#fdf4c1;">,
@@ -1215,29 +1361,31 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
           </span><span style="color:#b8bb26;">&quot;--load-error-handling&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;--load-media-error-handling&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;ignore&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;-&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1;">
-        ]
+          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;
+</span><span style="color:#fdf4c1;">        ]
         timeout = </span><span style="color:#b8bb26;">&quot;2 minutes&quot;
       </span><span style="color:#fdf4c1;">}
       working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># To convert image files to PDF files, tesseract is used. This
     # also extracts the text in one go.
 </span><span style="color:#fdf4c1;">    tesseract = {
       command = {
-        program = </span><span style="color:#b8bb26;">&quot;tesseract&quot;</span><span style="color:#fdf4c1;">
-        args = [
+        program = </span><span style="color:#b8bb26;">&quot;tesseract&quot;
+</span><span style="color:#fdf4c1;">        args = [
           </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;out&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;-l&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;pdf&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;txt&quot;</span><span style="color:#fdf4c1;">
-        ]
+          </span><span style="color:#b8bb26;">&quot;txt&quot;
+</span><span style="color:#fdf4c1;">        ]
         timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
       </span><span style="color:#fdf4c1;">}
       working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># To convert &quot;office&quot; files to PDF files, the external tool
     # unoconv is used. Unoconv uses libreoffice/openoffice for
     # converting. So it supports all formats that are possible to read
@@ -1248,18 +1396,19 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     # process.
 </span><span style="color:#fdf4c1;">    unoconv = {
       command = {
-        program = </span><span style="color:#b8bb26;">&quot;unoconv&quot;</span><span style="color:#fdf4c1;">
-        args = [
+        program = </span><span style="color:#b8bb26;">&quot;unoconv&quot;
+</span><span style="color:#fdf4c1;">        args = [
           </span><span style="color:#b8bb26;">&quot;-f&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;pdf&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;-o&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">
-        ]
+          </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;
+</span><span style="color:#fdf4c1;">        ]
         timeout = </span><span style="color:#b8bb26;">&quot;2 minutes&quot;
       </span><span style="color:#fdf4c1;">}
       working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># The tool ocrmypdf can be used to convert pdf files to pdf files
     # in order to add extracted text as a separate layer. This makes
     # image-only pdfs searchable and you can select and copy/paste the
@@ -1279,20 +1428,21 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span><span style="color:#fdf4c1;">    ocrmypdf = {
       enabled = true
       command = {
-        program = </span><span style="color:#b8bb26;">&quot;ocrmypdf&quot;</span><span style="color:#fdf4c1;">
-        args = [
+        program = </span><span style="color:#b8bb26;">&quot;ocrmypdf&quot;
+</span><span style="color:#fdf4c1;">        args = [
           </span><span style="color:#b8bb26;">&quot;-l&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;{{lang}}&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;--skip-text&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;--deskew&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;-j&quot;</span><span style="color:#fdf4c1;">, </span><span style="color:#b8bb26;">&quot;1&quot;</span><span style="color:#fdf4c1;">,
           </span><span style="color:#b8bb26;">&quot;{{infile}}&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;</span><span style="color:#fdf4c1;">
-        ]
+          </span><span style="color:#b8bb26;">&quot;{{outfile}}&quot;
+</span><span style="color:#fdf4c1;">        ]
         timeout = </span><span style="color:#b8bb26;">&quot;5 minutes&quot;
       </span><span style="color:#fdf4c1;">}
       working-dir = ${java.io.tmpdir}</span><span style="color:#b8bb26;">&quot;/docspell-convert&quot;
     </span><span style="color:#fdf4c1;">}
   }
+
   </span><span style="font-style:italic;color:#928374;"># The same section is also present in the rest-server config. It is
   # used when submitting files into the job queue for processing.
   #
@@ -1307,6 +1457,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     # It also defines the chunk size used for the blobs inside the
     # database.
 </span><span style="color:#fdf4c1;">    chunk-size = 524288
+
     </span><span style="font-style:italic;color:#928374;"># The file content types that are considered valid. Docspell
     # will only pass these files to processing. The processing code
     # itself has also checks for which files are supported and which
@@ -1315,6 +1466,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     # By default all files are allowed.
 </span><span style="color:#fdf4c1;">    valid-mime-types = </span><span style="color:#fa5c4b;">[ ]
   </span><span style="color:#fdf4c1;">}
+
   </span><span style="font-style:italic;color:#928374;"># Configuration of the full-text search engine.
 </span><span style="color:#fdf4c1;">  full-text-search {
     </span><span style="font-style:italic;color:#928374;"># The full-text search feature can be disabled. It requires an
@@ -1323,6 +1475,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     #
     # Currently the SOLR search platform is supported.
 </span><span style="color:#fdf4c1;">    enabled = false
+
     </span><span style="font-style:italic;color:#928374;"># Configuration for the SOLR backend.
 </span><span style="color:#fdf4c1;">    solr = {
       </span><span style="font-style:italic;color:#928374;"># The URL to solr
@@ -1338,6 +1491,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
       </span><span style="font-style:italic;color:#928374;"># The default combiner for tokens. One of {AND, OR}.
 </span><span style="color:#fdf4c1;">      q-op = </span><span style="color:#b8bb26;">&quot;OR&quot;
     </span><span style="color:#fdf4c1;">}
+
     </span><span style="font-style:italic;color:#928374;"># Settings for running the index migration tasks
 </span><span style="color:#fdf4c1;">    migration = {
       </span><span style="font-style:italic;color:#928374;"># Chunk size to use when indexing data from the database. This
@@ -1360,7 +1514,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

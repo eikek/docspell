@@ -246,6 +246,10 @@ your documents. It is targeted at &quot;power users&quot; and it needs to be
 enabled explicitely in your user settings.</p>
 <div class="colums">
 <figure class="image">
+    
+    
+    
+
     <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;enable-powersearch.png">
 </figure>
 </div>
@@ -571,10 +575,12 @@ one value.</p>
 </span></code></pre><h1 id="attach-id">Attach-Id<a class="zola-anchor" href="#attach-id" aria-label="Anchor link for: attach-id">🔗</a></h1>
 <p>The <code>attach.id</code> field is a special field to find items by providing
 the id of an attachment. This can be helpful in certain situations
-when you only have the id of an attachment. It always uses equality,
-so all other operators are not supported.</p>
+when you only have the id or part of that of an attachment. It uses
+equality if no wildcard is present. A wildcard <code>*</code> can be used at
+beginning or end if only a part of the id is known.</p>
 <pre style="background-color:#282828;">
 <code><span style="color:#fdf4c1aa;">attach.id=5YjdnuTAdKJ-V6ofWTYsqKV-mAwB5aXTNWE-FAbeRU58qLb
+attach.id=5YjdnuTAdKJ*
 </span></code></pre><h1 id="shortcuts">Shortcuts<a class="zola-anchor" href="#shortcuts" aria-label="Anchor link for: shortcuts">🔗</a></h1>
 <p>Shortcuts are only a short form of a longer query and are provided for
 convenience. The following exist:</p>
@@ -663,7 +669,7 @@ fields <code>paid</code> as a date and <code>usd</code> as money):</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>

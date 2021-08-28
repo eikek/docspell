@@ -251,7 +251,7 @@ results in recompile+restart once a source file is modified.</p>
 it exists. So you can create a custom config file for development. For
 example, a custom database for development may be setup this way:</p>
 <pre style="background-color:#282828;">
-<code><span style="font-style:italic;color:#928374;">#jdbcurl = &quot;jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+<code class="language-bash" data-lang="bash"><span style="font-style:italic;color:#928374;">#jdbcurl = &quot;jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
 </span><span style="color:#fdf4c1;">jdbcurl = </span><span style="color:#b8bb26;">&quot;jdbc:postgresql://localhost:5432/docspelldev&quot;
 </span><span style="font-style:italic;color:#928374;">#jdbcurl = &quot;jdbc:mariadb://localhost:3306/docspelldev&quot;
 
@@ -259,8 +259,8 @@ example, a custom database for development may be setup this way:</p>
   backend {
     jdbc {
       url = ${jdbcurl}
-      user = </span><span style="color:#b8bb26;">&quot;dev&quot;</span><span style="color:#fdf4c1;">
-      password = </span><span style="color:#b8bb26;">&quot;dev&quot;
+      user = </span><span style="color:#b8bb26;">&quot;dev&quot;
+</span><span style="color:#fdf4c1;">      password = </span><span style="color:#b8bb26;">&quot;dev&quot;
     </span><span style="color:#fdf4c1;">}
   }
 }
@@ -268,8 +268,8 @@ example, a custom database for development may be setup this way:</p>
 docspell.joex {
   jdbc {
     url = ${jdbcurl}
-    user = </span><span style="color:#b8bb26;">&quot;dev&quot;</span><span style="color:#fdf4c1;">
-    password = </span><span style="color:#b8bb26;">&quot;dev&quot;
+    user = </span><span style="color:#b8bb26;">&quot;dev&quot;
+</span><span style="color:#fdf4c1;">    password = </span><span style="color:#b8bb26;">&quot;dev&quot;
   </span><span style="color:#fdf4c1;">}
   scheduler {
     pool-size = 1
@@ -304,7 +304,7 @@ value <code>dev</code>. Docspell then adds a response header, preventing the
 browser to cache these files. This must be done, obviously, before
 starting the restserver:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">$ export DOCSPELL_ENV=dev
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ export DOCSPELL_ENV=dev
 $ sbt </span><span style="color:#b8bb26;">&quot;restserver/reStart&quot;
 </span></code></pre><h1 id="developing-backend">Developing Backend<a class="zola-anchor" href="#developing-backend" aria-label="Anchor link for: developing-backend">🔗</a></h1>
 <h2 id="openapi">OpenAPI<a class="zola-anchor" href="#openapi" aria-label="Anchor link for: openapi">🔗</a></h2>
@@ -314,8 +314,8 @@ and the server, so that both are always in sync. However, the route
 definitions are not checked against the server implementation.</p>
 <p>Changes to the openapi files can be checked by running a sbt task:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">restapi/openapiLint </span><span style="font-style:italic;color:#928374;">//and/or</span><span style="color:#fdf4c1aa;">
-joexapi/openapiLint
+<code class="language-scala" data-lang="scala"><span style="color:#fdf4c1aa;">restapi/openapiLint </span><span style="font-style:italic;color:#928374;">//and/or
+</span><span style="color:#fdf4c1aa;">joexapi/openapiLint
 </span></code></pre>
 <p>These tasks must not show any errors (it is checked by the CI). The
 warnings should also be fixed.</p>
@@ -326,7 +326,7 @@ the nix package manager and to integrate it into NixOS.</p>
 <p>The modules can be build by building the <code>configuration-test.nix</code> file
 together with some nixpkgs version. For example:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">nixos-rebuild build-vm -I nixos-config=./configuration-test.nix \
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">nixos-rebuild build-vm -I nixos-config=./configuration-test.nix \
   -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
 </span></code></pre>
 <p>This will build all modules imported in <code>configuration-test.nix</code> and
@@ -335,17 +335,17 @@ the system configuration can be found behind the <code>./result/system</code>
 symlink. So it is possible to look at the generated systemd config for
 example:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service
 </span></code></pre>
 <p>And with some more commands (there probably is an easier way…) the
 config file can be checked:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">grep ExecStart </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">cut -d</span><span style="color:#b8bb26;">&#39;=&#39;</span><span style="color:#fdf4c1;"> -f2 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">tail -n1 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">awk </span><span style="color:#b8bb26;">&#39;{print $NF}&#39;</span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">sed </span><span style="color:#b8bb26;">&#39;s/.$//&#39; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq
+<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">grep ExecStart </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">cut -d</span><span style="color:#b8bb26;">&#39;=&#39;</span><span style="color:#fdf4c1;"> -f2 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">tail -n1 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">awk </span><span style="color:#b8bb26;">&#39;{print $NF}&#39;</span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">sed </span><span style="color:#b8bb26;">&#39;s/.$//&#39; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq
 </span></code></pre>
 <p>To see the module in action, the vm can be started (the first line
 sets more memory for the vm):</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">QEMU_OPTS</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;-m 2048&quot;
+<code class="language-bash" data-lang="bash"><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">QEMU_OPTS</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;-m 2048&quot;
 </span><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">QEMU_NET_OPTS </span><span style="color:#b8bb26;">&quot;hostfwd=tcp::7880-:7880&quot;
 </span><span style="color:#fdf4c1;">./result/bin/run-docspelltest-vm
 </span></code></pre><h1 id="release">Release<a class="zola-anchor" href="#release" aria-label="Anchor link for: release">🔗</a></h1>
@@ -403,7 +403,7 @@ internal/background info for various topics.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.25.1
+                Docspell 0.26.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
