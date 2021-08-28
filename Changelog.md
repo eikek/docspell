@@ -1,5 +1,80 @@
 # Changelog
 
+## v0.26.0
+
+*Aug 28, 2021*
+
+- Add ability to merge items (#414). You can now select multiple items
+  and merge them all into one. The first item in the list is the
+  target item, all others are deleted after a successful merge. The
+  webapp allows to reorder this list, of course.
+- Add option to only import attachments of e-mails (#983). 
+- Improve *Manage Data* page by sorting the tables (#965, #538)
+- Allow wildcard searches in queries using `attach.id` (#971). Before
+  you would have to specify the complete id. This is inconvenient when
+  using from the command line client.
+- Add Hebrew to the document languages (#1027, thans @wallace11).
+  Please note, that the SOLR support is very basic for this language.
+- Add a periodic task to check for Docspell updates (#990). Let's you
+  check periodically for new versions of docspell. It uses an existing
+  user account and its mail settings to send an e-mail.
+- Show the link to an item and its attachments as a QR code in item
+  details (#836). This might be useful when you want to attach this
+  link to physical devices.
+- The search menu highlights the sections that contain active filters
+  (#966)
+- Safe deletion of items (#347). When deleting items, they are now
+  *marked as deleted* and can therefore be restored. A periodic job
+  will really delete them from the database eventually.
+- Improves German translation (#985, thanks @monnypython)
+- The [dsc](https://github.com/docspell/dsc) tool has also been
+  improved, thanks to @seijikun.
+- Upgrade the website to work with newer zola versions (#847)
+- Remove the scripts in `tools/` since these are now obsolete. The new
+  [command line interface](https://github.com/docspell/dsc) covers
+  these features now. Note that the docker images are also NOT built
+  anymore. The directory still exits and is still a place for scripts
+  and little tooling around docspell.
+- Fixes a regression where the browser would not display the pdf (#975)
+- Fixes the health checks in the docker setup (#976)
+- Fixes an issue with text extraction for Japanese documents where
+  numbers were extracted as special unicode points (#973). This only
+  affects the docker setup, when not using the docker images you need
+  to setup tesseract to use different training data for Japanese.
+
+### Rest API Changes
+
+Complete
+[diff](https://github.com/eikek/docspell/compare/v0.25.1...master#diff-5dfb63e478c5511c16420f5e4d139666603d1c625546af06c4de50d0ae64a94f)
+(need to click the *Files changed* tab)
+
+- The routes to fetch a list of tags, organizations, persons, fields
+  etc can now optionally take a `sort` query parameter to specify how
+  to order the list.
+- Added `/sec/collective/emptytrash/startonce` to run the task to
+  empty the trash immediately
+- The search endpoints can now take an optional parameter `searchMode`
+  that defines whether to search in trashed items or not
+- Deleting an item via the api now only changes its state to *Trashed* 
+- Added `/sec/item/{id}/restore` to restore a trashed item (unless it
+  has been deleted from the database).
+- Added `/sec/items/restoreAll` to restore multiple of trashed items
+- Added `/sec/items/merge` that accepts a POST request with a list of
+  items to merge. The first item is the "target" item. All other items
+  are deleted after the merge was successful.
+- The `ScanMailboxSettings`, `Source` and `ItemUploadMeta` structures
+  now contains a boolean field `attachmentsOnly`
+- `ItemInsights` structure now contains a counter for trashed items
+- `CollectiveSettings` structure now has a section to specify settings
+  for periodically deleting trashed items.
+
+### Configuration Changes
+
+- Joex: A new section for configuring the update task has been added.
+  See section `update-check` in the default [config
+  file](https://docspell.org/docs/configure/#joex).
+
+
 ## v0.25.1
 
 *Jul 29, 2021*
