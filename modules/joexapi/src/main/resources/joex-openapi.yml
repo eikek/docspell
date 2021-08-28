@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell JOEX
-  version: 0.26.0-SNAPSHOT
+  version: 0.26.0
   description: |
     This is the remote API to the job executor component of Docspell.
     Docspell is a free document management system focused on small
