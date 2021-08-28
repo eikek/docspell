@@ -51,32 +51,4 @@ in
     inherit meta;
   };
 
-  tools = stdenv.mkDerivation {
-    name = "docspell-tools-${cfg.version}";
-
-    src = fetchzip cfg.tools;
-
-    buildPhase = "true";
-
-    installPhase = ''
-      mkdir -p $out/bin
-      cp $src/ds.sh $out/bin/ds
-      sed -i 's,CURL_CMD="curl",CURL_CMD="${curl}/bin/curl",g' $out/bin/ds
-
-      while read f; do
-        target="ds-$(basename "$f" ".sh")"
-        echo "Installing $f -> $target"
-        cp "$f" "$out/bin/$target"
-        sed -i 's,CURL_CMD="curl",CURL_CMD="${curl}/bin/curl",g' $out/bin/$target
-        sed -i 's,INOTIFY_CMD="inotifywait",INOTIFY_CMD="${inotifyTools}/bin/inotifywait",g' $out/bin/$target
-        sed -i 's,JQ_CMD="jq",JQ_CMD="${jq}/bin/jq",g' $out/bin/$target
-        sed -i 's,SQLITE_CMD="sqlite3",SQLITE_CMD="${sqlite}/bin/sqlite3",g' $out/bin/$target
-      done < <(find . -name "*.sh" -mindepth 2 -not -path "*webextension*")
-
-      chmod 755 $out/bin/*
-    '';
-
-    inherit meta;
-  };
-
 }

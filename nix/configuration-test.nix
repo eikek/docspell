@@ -50,19 +50,9 @@ in
     };
     inherit full-text-search;
   };
-  services.docspell-consumedir = {
-    enable = true;
-    integration-endpoint = {
-      enabled = true;
-      header = "Docspell-Integration:test123";
-    };
-    watchDirs = ["/tmp/docs"];
-    urls = ["http://localhost:7880/api/v1/open/integration/item"];
-  };
 
   environment.systemPackages =
-    [ pkgs.docspell.tools
-      pkgs.docspell.server
+    [ pkgs.docspell.server
       pkgs.docspell.joex
       pkgs.jq
       pkgs.telnet
@@ -80,11 +70,6 @@ in
     firewall.allowedTCPPorts = [7880];
   };
 
-  system.activationScripts = {
-    initUploadDir = ''
-      mkdir -p ${builtins.concatStringsSep " " config.services.docspell-consumedir.watchDirs}
-    '';
-  };
-  system.stateVersion = "20.03";
+  system.stateVersion = "21.05";
 
 }
