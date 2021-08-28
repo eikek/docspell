@@ -17,7 +17,6 @@ case class ListItem(
     source: String,
     direction: Direction,
     created: Timestamp,
-    fileCount: Int,
     corrOrg: Option[IdRef],
     corrPerson: Option[IdRef],
     concPerson: Option[IdRef],
