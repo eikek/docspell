@@ -21,6 +21,7 @@ object Dependencies {
   val H2Version               = "1.4.200"
   val Http4sVersion           = "0.23.1"
   val Icu4jVersion            = "69.1"
+  val javaOtpVersion          = "0.3.0"
   val JsoupVersion            = "1.14.2"
   val KindProjectorVersion    = "0.10.3"
   val KittensVersion          = "2.3.2"
@@ -36,6 +37,7 @@ object Dependencies {
   val PostgresVersion         = "42.2.23"
   val PureConfigVersion       = "0.16.0"
   val ScalaJavaTimeVersion    = "2.3.0"
+  val ScodecBitsVersion       = "1.1.27"
   val Slf4jVersion            = "1.7.32"
   val StanfordNlpVersion      = "4.2.2"
   val TikaVersion             = "2.1.0"
@@ -45,6 +47,14 @@ object Dependencies {
   val TwelveMonkeysVersion    = "3.7.0"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.9"
+
+  val scodecBits = Seq(
+    "org.scodec" %% "scodec-bits" % ScodecBitsVersion
+  )
+
+  val javaOtp = Seq(
+    "com.eatthepath" % "java-otp" % "0.3.0"
+  )
 
   val testContainer = Seq(
     "com.dimafeng" %% "testcontainers-scala-munit"      % TestContainerVersion,

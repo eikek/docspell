@@ -335,6 +335,20 @@ val query =
         Dependencies.scalaJsStubs
     )
 
+val totp = project
+  .in(file("modules/totp"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "docspell-totp",
+    libraryDependencies ++=
+      Dependencies.javaOtp ++
+        Dependencies.scodecBits ++
+        Dependencies.fs2 ++
+        Dependencies.circe
+  )
+
 val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
@@ -676,7 +690,8 @@ val root = project
     restapi,
     restserver,
     query.jvm,
-    query.js
+    query.js,
+    totp
   )
 
 // --- Helpers
