@@ -290,12 +290,15 @@ object OFulltext {
         val qres =
           for {
             items <- sqlResult
-            ids = items.map(a => ItemId[A].itemId(a))
+            ids    = items.map(a => ItemId[A].itemId(a))
+            idsNel = NonEmptyList.fromFoldable(ids)
             // must find all index results involving the items.
             // Currently there is one result per item + one result per
             // attachment
-            limit = items.map(a => ItemId[A].fileCount(a)).sum + items.size
-            ftsQ  = fq.copy(items = ids.toSet, limit = limit)
+            limit <- idsNel
+              .map(itemIds => store.transact(QItem.countAttachmentsAndItems(itemIds)))
+              .getOrElse(0.pure[F])
+            ftsQ = fq.copy(items = ids.toSet, limit = limit)
             ftsR <- fts.search(ftsQ)
             ftsItems = ftsR.results.groupBy(_.itemId)
             res      = items.collect(convert(ftsR, ftsItems))
@@ -320,22 +323,19 @@ object OFulltext {
 
   trait ItemId[A] {
     def itemId(a: A): Ident
-
-    def fileCount(a: A): Int
   }
   object ItemId {
     def apply[A](implicit ev: ItemId[A]): ItemId[A] = ev
 
-    def from[A](f: A => Ident, g: A => Int): ItemId[A] =
+    def from[A](f: A => Ident): ItemId[A] =
       new ItemId[A] {
-        def itemId(a: A)    = f(a)
-        def fileCount(a: A) = g(a)
+        def itemId(a: A) = f(a)
       }
 
     implicit val listItemId: ItemId[ListItem] =
-      ItemId.from(_.id, _.fileCount)
+      ItemId.from(_.id)
 
     implicit val listItemWithTagsId: ItemId[ListItemWithTags] =
-      ItemId.from(_.item.id, _.item.fileCount)
+      ItemId.from(_.item.id)
   }
 }

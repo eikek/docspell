@@ -43,6 +43,12 @@ object QItem {
   private val tag   = RTag.as("t")
   private val ti    = RTagItem.as("ti")
 
+  def countAttachmentsAndItems(items: Nel[Ident]): ConnectionIO[Int] =
+    Select(count(a.id).s, from(a), a.itemId.in(items)).build
+      .query[Int]
+      .unique
+      .map(_ + items.size)
+
   def findItem(id: Ident): ConnectionIO[Option[ItemData]] = {
     val ref = RItem.as("ref")
     val cq =
@@ -105,8 +111,7 @@ object QItem {
     ).build.query[ItemFieldValue].to[Vector]
 
   private def findItemsBase(q: Query.Fix, today: LocalDate, noteMaxLen: Int): Select = {
-    val attachs = AttachCountTable("cta")
-    val coll    = q.account.collective
+    val coll = q.account.collective
 
     Select(
       select(
@@ -118,7 +123,6 @@ object QItem {
         i.source.s,
         i.incoming.s,
         i.created.s,
-        coalesce(attachs.num.s, const(0)).s,
         org.oid.s,
         org.name.s,
         pers0.pid.s,
@@ -136,17 +140,6 @@ object QItem {
       ),
       from(i)
         .leftJoin(f, f.id === i.folder && f.collective === coll)
-        .leftJoin(
-          Select(
-            select(countAll.as(attachs.num), a.itemId.as(attachs.itemId)),
-            from(a)
-              .innerJoin(i, i.id === a.itemId),
-            i.cid === q.account.collective,
-            GroupBy(a.itemId)
-          ),
-          attachs.aliasName,
-          attachs.itemId === i.id
-        )
         .leftJoin(pers0, pers0.pid === i.corrPerson && pers0.cid === coll)
         .leftJoin(org, org.oid === i.corrOrg && org.cid === coll)
         .leftJoin(pers1, pers1.pid === i.concPerson && pers1.cid === coll)
@@ -158,7 +151,7 @@ object QItem {
             i.folder.in(QFolder.findMemberFolderIds(q.account))
           )
       )
-    ).distinct.orderBy(
+    ).orderBy(
       q.orderAsc
         .map(of => OrderBy.asc(coalesce(of(i).s, i.created.s).s))
         .getOrElse(OrderBy.desc(coalesce(i.itemDate.s, i.created.s).s))
@@ -234,7 +227,7 @@ object QItem {
 
     val tagCloud =
       findItemsBase(q.fix, today, 0).unwrap
-        .withSelect(select(tag.all).append(count(i.id).as("num")))
+        .withSelect(select(tag.all).append(countDistinct(i.id).as("num")))
         .changeFrom(_.prepend(tagFrom))
         .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
         .groupBy(tag.tid)
@@ -338,11 +331,11 @@ object QItem {
       val i = RItem.as("i")
 
       object Tids extends TableDef {
-        val tableName             = "tids"
-        val alias: Option[String] = Some("tw")
-        val itemId                = Column[Ident]("item_id", this)
-        val weight                = Column[Double]("weight", this)
-        val all                   = Vector[Column[_]](itemId, weight)
+        val tableName = "tids"
+        val alias     = Some("tw")
+        val itemId    = Column[Ident]("item_id", this)
+        val weight    = Column[Double]("weight", this)
+        val all       = Vector[Column[_]](itemId, weight)
       }
 
       val cte =
