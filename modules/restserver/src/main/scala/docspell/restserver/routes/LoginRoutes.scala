@@ -82,7 +82,8 @@ object LoginRoutes {
               true,
               "Login successful",
               Some(cd.asString),
-              cfg.auth.sessionValid.millis
+              cfg.auth.sessionValid.millis,
+              token.requireSecondFactor
             )
           ).map(cd.addCookie(getBaseUrl(cfg, req)))
             .map(resp =>
@@ -93,7 +94,7 @@ object LoginRoutes {
 
         } yield resp
       case _ =>
-        Ok(AuthResult("", account, false, "Login failed.", None, 0L))
+        Ok(AuthResult("", account, false, "Login failed.", None, 0L, false))
     }
   }
 

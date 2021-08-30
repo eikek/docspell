@@ -250,6 +250,10 @@ val openapiScalaSettings = Seq(
         field =>
           field
             .copy(typeDef = TypeDef("Duration", Imports("docspell.common.Duration")))
+      case "uri" =>
+        field =>
+          field
+            .copy(typeDef = TypeDef("LenientUri", Imports("docspell.common.LenientUri")))
     })
 )
 
@@ -371,7 +375,7 @@ val store = project
     libraryDependencies ++=
       Dependencies.testContainer.map(_ % Test)
   )
-  .dependsOn(common, query.jvm)
+  .dependsOn(common, query.jvm, totp)
 
 val extract = project
   .in(file("modules/extract"))
@@ -496,7 +500,7 @@ val backend = project
         Dependencies.http4sClient ++
         Dependencies.emil
   )
-  .dependsOn(store, joexapi, ftsclient)
+  .dependsOn(store, joexapi, ftsclient, totp)
 
 val webapp = project
   .in(file("modules/webapp"))

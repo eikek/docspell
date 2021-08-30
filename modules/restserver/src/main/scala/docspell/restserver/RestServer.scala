@@ -76,6 +76,7 @@ object RestServer {
       "organization"            -> OrganizationRoutes(restApp.backend, token),
       "person"                  -> PersonRoutes(restApp.backend, token),
       "source"                  -> SourceRoutes(restApp.backend, token),
+      "user/otp"                -> TotpRoutes(restApp.backend, cfg, token),
       "user"                    -> UserRoutes(restApp.backend, token),
       "collective"              -> CollectiveRoutes(restApp.backend, token),
       "queue"                   -> JobQueueRoutes(restApp.backend, token),
@@ -109,6 +110,7 @@ object RestServer {
   def adminRoutes[F[_]: Async](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
     Router(
       "fts"         -> FullTextIndexRoutes.admin(cfg, restApp.backend),
+      "user/otp"    -> TotpRoutes.admin(restApp.backend),
       "user"        -> UserRoutes.admin(restApp.backend),
       "info"        -> InfoRoutes.admin(cfg),
       "attachments" -> AttachmentRoutes.admin(restApp.backend)

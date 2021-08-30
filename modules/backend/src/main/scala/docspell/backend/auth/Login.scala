@@ -68,11 +68,15 @@ object Login {
     case object InvalidTime extends Result {
       val toEither = Left("Authentication failed.")
     }
+    case object InvalidFactor extends Result {
+      val toEither = Left("Authentication requires second factor.")
+    }
 
     def ok(session: AuthToken, remember: Option[RememberToken]): Result =
       Ok(session, remember)
-    def invalidAuth: Result = InvalidAuth
-    def invalidTime: Result = InvalidTime
+    def invalidAuth: Result   = InvalidAuth
+    def invalidTime: Result   = InvalidTime
+    def invalidFactor: Result = InvalidFactor
   }
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, Login[F]] =
@@ -87,6 +91,8 @@ object Login {
               logF.warn("Cookie signature invalid!") *> Result.invalidAuth.pure[F]
             else if (at.isExpired(config.sessionValid))
               logF.debug("Auth Cookie expired") *> Result.invalidTime.pure[F]
+            else if (at.requireSecondFactor)
+              logF.debug("Auth requires second factor!") *> Result.invalidFactor.pure[F]
             else Result.ok(at, None).pure[F]
           case Left(_) =>
             Result.invalidAuth.pure[F]
@@ -136,7 +142,7 @@ object Login {
               if (checkNoPassword(data))
                 logF.info("RememberMe auth successful") *> okResult(data.account)
               else
-                logF.warn("RememberMe auth not successfull") *> Result.invalidAuth.pure[F]
+                logF.warn("RememberMe auth not successful") *> Result.invalidAuth.pure[F]
             )
           } yield res).getOrElseF(
             logF.info("RememberMe not found in database.") *> Result.invalidAuth.pure[F]

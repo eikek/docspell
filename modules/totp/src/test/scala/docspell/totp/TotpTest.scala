@@ -48,7 +48,7 @@ class TotpTest extends FunSuite {
   }
 
   test("check password 15s later") {
-    assert(totp.checkPassword(key, OnetimePassword("410352"),time.plusSeconds(15)))
+    assert(totp.checkPassword(key, OnetimePassword("410352"), time.plusSeconds(15)))
   }
 
   test("check password 29s later") {
@@ -56,6 +56,6 @@ class TotpTest extends FunSuite {
   }
 
   test("check password 31s later (too late)") {
-    assert(!totp.checkPassword(key, OnetimePassword("410352"),time.plusSeconds(31)))
+    assert(!totp.checkPassword(key, OnetimePassword("410352"), time.plusSeconds(31)))
   }
 }

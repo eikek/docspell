@@ -11,6 +11,7 @@ import java.time.{Instant, LocalDate}
 
 import docspell.common._
 import docspell.common.syntax.all._
+import docspell.totp.Key
 
 import com.github.eikek.calev.CalEvent
 import doobie._
@@ -125,6 +126,9 @@ trait DoobieMeta extends EmilDoobieMeta {
 
   implicit val metaJsonString: Meta[Json] =
     Meta[String].timap(DoobieMeta.parseJsonUnsafe)(_.noSpaces)
+
+  implicit val metaKey: Meta[Key] =
+    Meta[String].timap(Key.unsafeFromString)(_.asString)
 }
 
 object DoobieMeta extends DoobieMeta {

@@ -46,6 +46,7 @@ trait BackendApp[F[_]] {
   def customFields: OCustomFields[F]
   def simpleSearch: OSimpleSearch[F]
   def clientSettings: OClientSettings[F]
+  def totp: OTotp[F]
 }
 
 object BackendApp {
@@ -59,6 +60,7 @@ object BackendApp {
     for {
       utStore        <- UserTaskStore(store)
       queue          <- JobQueue(store)
+      totpImpl       <- OTotp(store)
       loginImpl      <- Login[F](store)
       signupImpl     <- OSignup[F](store)
       joexImpl       <- OJoex(JoexClient(httpClient), store)
@@ -103,6 +105,7 @@ object BackendApp {
       val customFields   = customFieldsImpl
       val simpleSearch   = simpleSearchImpl
       val clientSettings = clientSettingsImpl
+      val totp           = totpImpl
     }
 
   def apply[F[_]: Async](

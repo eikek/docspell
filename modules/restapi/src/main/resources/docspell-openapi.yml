@@ -1275,6 +1275,91 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/user/otp/state:
+    get:
+      operationId: "sec-user-otp-state"
+      tags: [ Collective ]
+      summary: Gets the otp state for the current user.
+      description: |
+        Returns whether the current account as OTP enabled or not.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtpState"
+                  
+  /sec/user/otp/init:
+    post:
+      operationId: "sec-user-otp-init"
+      tags: [ Collective, Authentication ]
+      summary: Initialize two factor auth via OTP
+      description: |
+        Requests to enable two factor authentication for this user. A
+        secret key is generated and returned. The client is expected
+        to insert it into some OTP application. Currently, only time
+        based OTP is supported.
+
+        The request body is empty.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtpResult"
+                
+  /sec/user/otp/confirm:
+    post:
+      operationId: "sec-user-otp-confirm"
+      tags: [ Collective, Authentication ]
+      summary: Confirms two factor authentication
+      description: |
+        Confirms using two factor authentication by sending a one time
+        password. If the password is correct, this enables two factor
+        authentication for the current user.
+
+        If there exists no unapproved otp request or the password is
+        not correct, an error is returned. If 2fa is already enabled
+        for this account, success is returned.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtpConfirm"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/user/otp/disable:
+    post:
+      operationId: "sec-user-otp-disable"
+      tags: [ Collective, Authentication ]
+      summary: Disables two factor authentication.
+      description: |
+        Disables two factor authentication for the current user. If
+        the user has no two factor authentication enabled, this
+        returns success, too.
+
+        After this completes successfully, two factor auth can be
+        enabled again by initializing it anew.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/clientSettings/{clientId}:
     parameters:
       - $ref: "#/components/parameters/clientId"
@@ -1364,6 +1449,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResetPasswordResult"
+  /admin/user/resetOTP:
+    post:
+      operationId: "admin-user-reset-otp"
+      tags: [ Collective, Admin ]
+      summary: Disables OTP two factor auth for the given user.
+      description: |
+        Removes the OTP setup for the given user account. The account
+        can login afterwards with a correct password. A second factor
+        is not required. Two factor auth can be setup again for this
+        account.
+      security:
+        - adminHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPassword"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
   /admin/attachments/generatePreviews:
     post:
@@ -3885,6 +3994,49 @@ paths:
 
 components:
   schemas:
+    OtpState:
+      description: |
+        The state for OTP for an account
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
+        created:
+          type: integer
+          format: date-time        
+    OtpResult:
+      description: |
+        The result from initializing OTP. It contains the shared
+        secret.
+      required:
+        - authenticatorUrl
+        - secret
+        - authType
+        - issuer
+      properties:
+        authenticatorUrl:
+          type: string
+          format: uri
+        secret:
+          type: string
+        authType:
+          type: string
+          enum:
+            - totp
+        issuer:
+          type: string
+
+    OtpConfirm:
+      description: |
+        Transports a one time password.
+      required:
+        - otp
+      properties:
+        otp:
+          type: string
+          format: password          
+
     ResetPassword:
       description: |
         The account to reset the password.
@@ -5888,6 +6040,7 @@ components:
       required:
         - collective
         - user
+        - requireSecondFactor
         - success
         - message
         - validMs
@@ -5910,6 +6063,8 @@ components:
             How long the token is valid in ms.
           type: integer
           format: int64
+        requireSecondFactor:
+          type: boolean
     VersionInfo:
       description: |
         Information about the software.

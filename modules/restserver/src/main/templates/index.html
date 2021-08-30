@@ -39,6 +39,10 @@
         <script type="application/javascript">
          var storedAccount = localStorage.getItem('account');
          var account = storedAccount ? JSON.parse(storedAccount) : null;
+         if (account && !account.hasOwnProperty("requireSecondFactor")) {
+             // this is required for transitioning; elm fails to parse the account
+             account["requireSecondFactor"] = false;
+         }
          var elmFlags = {
              "account": account,
              "config": {{{flagsJson}}}
