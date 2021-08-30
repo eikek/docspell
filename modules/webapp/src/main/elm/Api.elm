@@ -19,6 +19,7 @@ module Api exposing
     , changePassword
     , checkCalEvent
     , confirmMultiple
+    , confirmOtp
     , createImapSettings
     , createMailSettings
     , createNewFolder
@@ -42,6 +43,7 @@ module Api exposing
     , deleteSource
     , deleteTag
     , deleteUser
+    , disableOtp
     , fileURL
     , getAttachmentMeta
     , getClientSettings
@@ -63,6 +65,7 @@ module Api exposing
     , getOrgFull
     , getOrgLight
     , getOrganizations
+    , getOtpState
     , getPersonFull
     , getPersons
     , getPersonsLight
@@ -72,6 +75,7 @@ module Api exposing
     , getTagCloud
     , getTags
     , getUsers
+    , initOtp
     , itemBasePreviewURL
     , itemDetail
     , itemIndexSearch
@@ -194,6 +198,9 @@ import Api.Model.OptionalId exposing (OptionalId)
 import Api.Model.OptionalText exposing (OptionalText)
 import Api.Model.Organization exposing (Organization)
 import Api.Model.OrganizationList exposing (OrganizationList)
+import Api.Model.OtpConfirm exposing (OtpConfirm)
+import Api.Model.OtpResult exposing (OtpResult)
+import Api.Model.OtpState exposing (OtpState)
 import Api.Model.PasswordChange exposing (PasswordChange)
 import Api.Model.Person exposing (Person)
 import Api.Model.PersonList exposing (PersonList)
@@ -2123,6 +2130,49 @@ saveClientSettings flags settings receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/webClient"
         , account = getAccount flags
         , body = Http.jsonBody encode
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+
+--- OTP
+
+
+getOtpState : Flags -> (Result Http.Error OtpState -> msg) -> Cmd msg
+getOtpState flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/user/otp/state"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.OtpState.decoder
+        }
+
+
+initOtp : Flags -> (Result Http.Error OtpResult -> msg) -> Cmd msg
+initOtp flags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/user/otp/init"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.OtpResult.decoder
+        }
+
+
+confirmOtp : Flags -> OtpConfirm -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+confirmOtp flags confirm receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/user/otp/confirm"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OtpConfirm.encode confirm)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+disableOtp : Flags -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+disableOtp flags receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/user/otp/disable"
+        , account = getAccount flags
+        , body = Http.emptyBody
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

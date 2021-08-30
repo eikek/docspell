@@ -15,6 +15,7 @@ import Messages.Comp.ChangePasswordForm
 import Messages.Comp.EmailSettingsManage
 import Messages.Comp.ImapSettingsManage
 import Messages.Comp.NotificationManage
+import Messages.Comp.OtpSetup
 import Messages.Comp.ScanMailboxManage
 import Messages.Comp.UiSettingsManage
 
@@ -26,6 +27,7 @@ type alias Texts =
     , imapSettingsManage : Messages.Comp.ImapSettingsManage.Texts
     , notificationManage : Messages.Comp.NotificationManage.Texts
     , scanMailboxManage : Messages.Comp.ScanMailboxManage.Texts
+    , otpSetup : Messages.Comp.OtpSetup.Texts
     , userSettings : String
     , uiSettings : String
     , notifications : String
@@ -38,6 +40,7 @@ type alias Texts =
     , notificationRemindDaysInfo : String
     , scanMailboxInfo1 : String
     , scanMailboxInfo2 : String
+    , otpMenu : String
     }
 
 
@@ -49,6 +52,7 @@ gb =
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.gb
     , notificationManage = Messages.Comp.NotificationManage.gb
     , scanMailboxManage = Messages.Comp.ScanMailboxManage.gb
+    , otpSetup = Messages.Comp.OtpSetup.gb
     , userSettings = "User Settings"
     , uiSettings = "UI Settings"
     , notifications = "Notifications"
@@ -80,6 +84,7 @@ gb =
             or to just leave it there. In the latter case you should
             adjust the schedule to avoid reading over the same mails
             again."""
+    , otpMenu = "Two Factor"
     }
 
 
@@ -91,6 +96,7 @@ de =
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.de
     , notificationManage = Messages.Comp.NotificationManage.de
     , scanMailboxManage = Messages.Comp.ScanMailboxManage.de
+    , otpSetup = Messages.Comp.OtpSetup.de
     , userSettings = "Benutzereinstellung"
     , uiSettings = "Oberfläche"
     , notifications = "Benachrichtigungen"
@@ -122,4 +128,5 @@ E-Mail-Einstellungen (IMAP) notwendig."""
             ist es gut, die Kriterien so zu gestalten, dass die
             gleichen E-Mails möglichst nicht noch einmal eingelesen
             werden."""
+    , otpMenu = "Zwei Faktor Auth"
     }

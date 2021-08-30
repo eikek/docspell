@@ -16,6 +16,7 @@ import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
 import Comp.NotificationManage
+import Comp.OtpSetup
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
@@ -30,6 +31,7 @@ type alias Model =
     , notificationModel : Comp.NotificationManage.Model
     , scanMailboxModel : Comp.ScanMailboxManage.Model
     , uiSettingsModel : Comp.UiSettingsManage.Model
+    , otpSetupModel : Comp.OtpSetup.Model
     }
 
 
@@ -38,6 +40,9 @@ init flags settings =
     let
         ( um, uc ) =
             Comp.UiSettingsManage.init flags settings
+
+        ( otpm, otpc ) =
+            Comp.OtpSetup.init flags
     in
     ( { currentTab = Just UiSettingsTab
       , changePassModel = Comp.ChangePasswordForm.emptyModel
@@ -46,8 +51,12 @@ init flags settings =
       , notificationModel = Tuple.first (Comp.NotificationManage.init flags)
       , scanMailboxModel = Tuple.first (Comp.ScanMailboxManage.init flags)
       , uiSettingsModel = um
+      , otpSetupModel = otpm
       }
-    , Cmd.map UiSettingsMsg uc
+    , Cmd.batch
+        [ Cmd.map UiSettingsMsg uc
+        , Cmd.map OtpSetupMsg otpc
+        ]
     )
 
 
@@ -58,6 +67,7 @@ type Tab
     | NotificationTab
     | ScanMailboxTab
     | UiSettingsTab
+    | OtpTab
 
 
 type Msg
@@ -68,5 +78,6 @@ type Msg
     | ImapSettingsMsg Comp.ImapSettingsManage.Msg
     | ScanMailboxMsg Comp.ScanMailboxManage.Msg
     | UiSettingsMsg Comp.UiSettingsManage.Msg
+    | OtpSetupMsg Comp.OtpSetup.Msg
     | UpdateSettings
     | ReceiveBrowserSettings StoredUiSettings
