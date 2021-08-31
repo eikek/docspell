@@ -28,9 +28,6 @@ gb ct =
         Email ->
             "Email"
 
-        Docspell ->
-            "Docspell"
-
         Website ->
             "Website"
 
@@ -49,9 +46,6 @@ de ct =
 
         Email ->
             "E-Mail"
-
-        Docspell ->
-            "Docspell"
 
         Website ->
             "Webseite"
