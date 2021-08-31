@@ -18,7 +18,6 @@ type ContactType
     | Mobile
     | Fax
     | Email
-    | Docspell
     | Website
 
 
@@ -36,9 +35,6 @@ fromString str =
 
         "email" ->
             Just Email
-
-        "docspell" ->
-            Just Docspell
 
         "website" ->
             Just Website
@@ -62,9 +58,6 @@ toString ct =
         Email ->
             "Email"
 
-        Docspell ->
-            "Docspell"
-
         Website ->
             "Website"
 
@@ -76,5 +69,4 @@ all =
     , Email
     , Website
     , Fax
-    , Docspell
     ]
