@@ -6,7 +6,8 @@
 
 
 module Page.Login.Data exposing
-    ( FormState(..)
+    ( AuthStep(..)
+    , FormState(..)
     , Model
     , Msg(..)
     , emptyModel
@@ -20,8 +21,10 @@ import Page exposing (Page(..))
 type alias Model =
     { username : String
     , password : String
+    , otp : String
     , rememberMe : Bool
     , formState : FormState
+    , authStep : AuthStep
     }
 
 
@@ -32,12 +35,19 @@ type FormState
     | FormInitial
 
 
+type AuthStep
+    = StepLogin
+    | StepOtp AuthResult
+
+
 emptyModel : Model
 emptyModel =
     { username = ""
     , password = ""
+    , otp = ""
     , rememberMe = False
     , formState = FormInitial
+    , authStep = StepLogin
     }
 
 
@@ -47,3 +57,5 @@ type Msg
     | ToggleRememberMe
     | Authenticate
     | AuthResp (Result Http.Error AuthResult)
+    | SetOtp String
+    | AuthOtp AuthResult

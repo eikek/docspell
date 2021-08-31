@@ -24,7 +24,8 @@ private[auth] object TokenUtil {
   }
 
   def sign(cd: AuthToken, key: ByteVector): String = {
-    val raw = cd.nowMillis.toString + cd.account.asString + cd.salt
+    val raw =
+      cd.nowMillis.toString + cd.account.asString + cd.requireSecondFactor + cd.salt
     val mac = Mac.getInstance("HmacSHA1")
     mac.init(new SecretKeySpec(key.toArray, "HmacSHA1"))
     ByteVector.view(mac.doFinal(raw.getBytes(utf8))).toBase64

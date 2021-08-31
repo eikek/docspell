@@ -42,7 +42,7 @@ case class AuthToken(
   }
 
   def validate(key: ByteVector, validity: Duration): Boolean =
-    sigValid(key) && notExpired(validity)
+    sigValid(key) && notExpired(validity) && !requireSecondFactor
 
 }
 
@@ -62,11 +62,15 @@ object AuthToken {
         Left("Invalid authenticator")
     }
 
-  def user[F[_]: Sync](accountId: AccountId, key: ByteVector): F[AuthToken] =
+  def user[F[_]: Sync](
+      accountId: AccountId,
+      requireSecondFactor: Boolean,
+      key: ByteVector
+  ): F[AuthToken] =
     for {
       salt <- Common.genSaltString[F]
       millis = Instant.now.toEpochMilli
-      cd     = AuthToken(millis, accountId, false, salt, "")
+      cd     = AuthToken(millis, accountId, requireSecondFactor, salt, "")
       sig    = TokenUtil.sign(cd, key)
     } yield cd.copy(sig = sig)
 

@@ -141,6 +141,7 @@ module Api exposing
     , startReIndex
     , submitNotifyDueItems
     , toggleTags
+    , twoFactor
     , unconfirmMultiple
     , updateNotifyDueItems
     , updateScanMailbox
@@ -209,6 +210,7 @@ import Api.Model.Registration exposing (Registration)
 import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
 import Api.Model.ScanMailboxSettingsList exposing (ScanMailboxSettingsList)
 import Api.Model.SearchStats exposing (SearchStats)
+import Api.Model.SecondFactor exposing (SecondFactor)
 import Api.Model.SentMails exposing (SentMails)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.SourceAndTags exposing (SourceAndTags)
@@ -938,6 +940,15 @@ login flags up receive =
     Http.post
         { url = flags.config.baseUrl ++ "/api/v1/open/auth/login"
         , body = Http.jsonBody (Api.Model.UserPass.encode up)
+        , expect = Http.expectJson receive Api.Model.AuthResult.decoder
+        }
+
+
+twoFactor : Flags -> SecondFactor -> (Result Http.Error AuthResult -> msg) -> Cmd msg
+twoFactor flags sf receive =
+    Http.post
+        { url = flags.config.baseUrl ++ "/api/v1/open/auth/two-factor"
+        , body = Http.jsonBody (Api.Model.SecondFactor.encode sf)
         , expect = Http.expectJson receive Api.Model.AuthResult.decoder
         }
 

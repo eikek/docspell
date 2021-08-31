@@ -128,5 +128,5 @@ E-Mail-Einstellungen (IMAP) notwendig."""
             ist es gut, die Kriterien so zu gestalten, dass die
             gleichen E-Mails möglichst nicht noch einmal eingelesen
             werden."""
-    , otpMenu = "Zwei Faktor Auth"
+    , otpMenu = "Zwei-Faktor-Authentifizierung"
     }

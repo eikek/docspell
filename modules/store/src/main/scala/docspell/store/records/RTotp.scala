@@ -70,6 +70,16 @@ object RTotp {
       }
     } yield n
 
+  def isEnabled(accountId: AccountId): ConnectionIO[Boolean] = {
+    val t = RTotp.as("t")
+    val u = RUser.as("u")
+    Select(
+      select(count(t.userId)),
+      from(t).innerJoin(u, t.userId === u.uid),
+      u.login === accountId.user && u.cid === accountId.collective && t.enabled === true
+    ).build.query[Int].unique.map(_ > 0)
+  }
+
   def findEnabledByLogin(
       accountId: AccountId,
       enabled: Boolean

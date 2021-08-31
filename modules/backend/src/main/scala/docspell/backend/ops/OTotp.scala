@@ -74,10 +74,9 @@ object OTotp {
     case object Failed  extends ConfirmResult
   }
 
-  def apply[F[_]: Async](store: Store[F]): Resource[F, OTotp[F]] =
+  def apply[F[_]: Async](store: Store[F], totp: Totp): Resource[F, OTotp[F]] =
     Resource.pure[F, OTotp[F]](new OTotp[F] {
-      val totp = Totp.default
-      val log  = Logger.log4s[F](logger)
+      val log = Logger.log4s[F](logger)
 
       def initialize(accountId: AccountId): F[InitResult] =
         for {

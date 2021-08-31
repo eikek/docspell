@@ -54,6 +54,9 @@ paths:
 
         If successful, an authentication token is returned that can be
         used for subsequent calls to protected routes.
+
+        If the account has two-factor auth enabled, the returned token
+        must be used to supply the second factor.
       requestBody:
         content:
           application/json:
@@ -66,6 +69,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResult"
+  /open/auth/two-factor:
+    post:
+      operationId: "open-auth-two-factor"
+      tags: [ Authentication ]
+      summary: Provide the second factor to finalize authentication
+      description: |
+        After a login with account name and password, a second factor
+        must be supplied (only for accounts that enabled it) in order
+        to complete login.
+
+        If the code is correct, a new token is returned that can be
+        used for subsequent calls to protected routes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SecondFactor"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+
   /open/checkfile/{id}/{checksum}:
     get:
       operationId: "open-checkfile-checksum-by-id"
@@ -3994,6 +4022,21 @@ paths:
 
 components:
   schemas:
+    SecondFactor:
+      description: |
+        Provide a second factor for login.
+      required:
+        - token
+        - otp
+        - rememberMe
+      properties:
+        token:
+          type: string
+        otp:
+          type: string
+          format: password
+        rememberMe:
+          type: boolean          
     OtpState:
       description: |
         The state for OTP for an account
