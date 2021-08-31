@@ -9,13 +9,13 @@ package docspell.common
 import io.circe._
 
 case class AccountId(collective: Ident, user: Ident) {
-
   def asString =
-    s"${collective.id}/${user.id}"
+    if (collective == user) user.id
+    else s"${collective.id}/${user.id}"
 }
 
 object AccountId {
-  private[this] val sepearatorChars: String = "/\\:"
+  private[this] val separatorChars: String = "/\\:"
 
   def parse(str: String): Either[String, AccountId] = {
     val input = str.replaceAll("\\s+", "").trim
@@ -36,7 +36,7 @@ object AccountId {
           invalid
       }
 
-    val separated = sepearatorChars.foldRight(invalid)((c, v) => v.orElse(parse0(c)))
+    val separated = separatorChars.foldRight(invalid)((c, v) => v.orElse(parse0(c)))
 
     separated.orElse(Ident.fromString(str).map(id => AccountId(id, id)))
   }

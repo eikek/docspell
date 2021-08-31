@@ -42,6 +42,7 @@ object AddResult {
     def withMsg(msg: String): EntityExists =
       EntityExists(msg)
   }
+  def entityExists(msg: String): AddResult = EntityExists(msg)
 
   case class Failure(ex: Throwable) extends AddResult {
     def toEither  = Left(ex)

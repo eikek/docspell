@@ -7,6 +7,7 @@
 
 module Page.Login.View2 exposing (viewContent, viewSidebar)
 
+import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
@@ -46,104 +47,12 @@ viewContent texts flags versionInfo _ model =
             , div [ class "font-medium self-center text-xl sm:text-2xl" ]
                 [ text texts.loginToDocspell
                 ]
-            , Html.form
-                [ action "#"
-                , onSubmit Authenticate
-                , autocomplete False
-                ]
-                [ div [ class "flex flex-col mt-6" ]
-                    [ label
-                        [ for "username"
-                        , class S.inputLabel
-                        ]
-                        [ text texts.username
-                        ]
-                    , div [ class "relative" ]
-                        [ div [ class S.inputIcon ]
-                            [ i [ class "fa fa-user" ] []
-                            ]
-                        , input
-                            [ type_ "text"
-                            , name "username"
-                            , autocomplete False
-                            , onInput SetUsername
-                            , value model.username
-                            , autofocus True
-                            , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder texts.collectiveSlashLogin
-                            ]
-                            []
-                        ]
-                    ]
-                , div [ class "flex flex-col my-3" ]
-                    [ label
-                        [ for "password"
-                        , class S.inputLabel
-                        ]
-                        [ text texts.password
-                        ]
-                    , div [ class "relative" ]
-                        [ div [ class S.inputIcon ]
-                            [ i [ class "fa fa-lock" ] []
-                            ]
-                        , input
-                            [ type_ "password"
-                            , name "password"
-                            , autocomplete False
-                            , onInput SetPassword
-                            , value model.password
-                            , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder texts.password
-                            ]
-                            []
-                        ]
-                    ]
-                , div [ class "flex flex-col my-3" ]
-                    [ label
-                        [ class "inline-flex items-center"
-                        , for "rememberme"
-                        ]
-                        [ input
-                            [ id "rememberme"
-                            , type_ "checkbox"
-                            , onCheck (\_ -> ToggleRememberMe)
-                            , checked model.rememberMe
-                            , name "rememberme"
-                            , class S.checkboxInput
-                            ]
-                            []
-                        , span
-                            [ class "mb-1 ml-2 text-xs sm:text-sm tracking-wide my-1"
-                            ]
-                            [ text texts.rememberMe
-                            ]
-                        ]
-                    ]
-                , div [ class "flex flex-col my-3" ]
-                    [ button
-                        [ type_ "submit"
-                        , class S.primaryButton
-                        ]
-                        [ text texts.loginButton
-                        ]
-                    ]
-                , resultMessage texts model
-                , div
-                    [ class "flex justify-end text-sm pt-4"
-                    , classList [ ( "hidden", flags.config.signupMode == "closed" ) ]
-                    ]
-                    [ span []
-                        [ text texts.noAccount
-                        ]
-                    , a
-                        [ Page.href RegisterPage
-                        , class ("ml-2" ++ S.link)
-                        ]
-                        [ i [ class "fa fa-user-plus mr-1" ] []
-                        , text texts.signupLink
-                        ]
-                    ]
-                ]
+            , case model.authStep of
+                StepOtp token ->
+                    otpForm texts flags model token
+
+                StepLogin ->
+                    loginForm texts flags model
             ]
         , a
             [ class "inline-flex items-center mt-4 text-xs opacity-50 hover:opacity-90"
@@ -158,6 +67,151 @@ viewContent texts flags versionInfo _ model =
             , span []
                 [ text "Docspell "
                 , text versionInfo.version
+                ]
+            ]
+        ]
+
+
+otpForm : Texts -> Flags -> Model -> AuthResult -> Html Msg
+otpForm texts flags model acc =
+    Html.form
+        [ action "#"
+        , onSubmit (AuthOtp acc)
+        , autocomplete False
+        ]
+        [ div [ class "flex flex-col mt-6" ]
+            [ label
+                [ for "otp"
+                , class S.inputLabel
+                ]
+                [ text texts.otpCode
+                ]
+            , div [ class "relative" ]
+                [ div [ class S.inputIcon ]
+                    [ i [ class "fa fa-key" ] []
+                    ]
+                , input
+                    [ type_ "text"
+                    , name "otp"
+                    , autocomplete False
+                    , onInput SetOtp
+                    , value model.otp
+                    , autofocus True
+                    , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
+                    , placeholder "123456"
+                    ]
+                    []
+                ]
+            , div [ class "flex flex-col my-3" ]
+                [ button
+                    [ type_ "submit"
+                    , class S.primaryButton
+                    ]
+                    [ text texts.loginButton
+                    ]
+                ]
+            , resultMessage texts model
+            ]
+        ]
+
+
+loginForm : Texts -> Flags -> Model -> Html Msg
+loginForm texts flags model =
+    Html.form
+        [ action "#"
+        , onSubmit Authenticate
+        , autocomplete False
+        ]
+        [ div [ class "flex flex-col mt-6" ]
+            [ label
+                [ for "username"
+                , class S.inputLabel
+                ]
+                [ text texts.username
+                ]
+            , div [ class "relative" ]
+                [ div [ class S.inputIcon ]
+                    [ i [ class "fa fa-user" ] []
+                    ]
+                , input
+                    [ type_ "text"
+                    , name "username"
+                    , autocomplete False
+                    , onInput SetUsername
+                    , value model.username
+                    , autofocus True
+                    , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
+                    , placeholder texts.collectiveSlashLogin
+                    ]
+                    []
+                ]
+            ]
+        , div [ class "flex flex-col my-3" ]
+            [ label
+                [ for "password"
+                , class S.inputLabel
+                ]
+                [ text texts.password
+                ]
+            , div [ class "relative" ]
+                [ div [ class S.inputIcon ]
+                    [ i [ class "fa fa-lock" ] []
+                    ]
+                , input
+                    [ type_ "password"
+                    , name "password"
+                    , autocomplete False
+                    , onInput SetPassword
+                    , value model.password
+                    , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
+                    , placeholder texts.password
+                    ]
+                    []
+                ]
+            ]
+        , div [ class "flex flex-col my-3" ]
+            [ label
+                [ class "inline-flex items-center"
+                , for "rememberme"
+                ]
+                [ input
+                    [ id "rememberme"
+                    , type_ "checkbox"
+                    , onCheck (\_ -> ToggleRememberMe)
+                    , checked model.rememberMe
+                    , name "rememberme"
+                    , class S.checkboxInput
+                    ]
+                    []
+                , span
+                    [ class "mb-1 ml-2 text-xs sm:text-sm tracking-wide my-1"
+                    ]
+                    [ text texts.rememberMe
+                    ]
+                ]
+            ]
+        , div [ class "flex flex-col my-3" ]
+            [ button
+                [ type_ "submit"
+                , class S.primaryButton
+                ]
+                [ text texts.loginButton
+                ]
+            ]
+        , resultMessage texts model
+        , div
+            [ class "flex justify-end text-sm pt-4"
+            , classList [ ( "hidden", flags.config.signupMode == "closed" ) ]
+            ]
+            [ span []
+                [ text texts.noAccount
+                ]
+            , a
+                [ Page.href RegisterPage
+                , class ("ml-2" ++ S.link)
+                ]
+                [ i [ class "fa fa-user-plus mr-1" ] []
+                , text texts.signupLink
                 ]
             ]
         ]

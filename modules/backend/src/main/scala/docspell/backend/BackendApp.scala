@@ -19,6 +19,7 @@ import docspell.joexapi.client.JoexClient
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.usertask.UserTaskStore
+import docspell.totp.Totp
 
 import emil.javamail.{JavaMailEmil, Settings}
 import org.http4s.blaze.client.BlazeClientBuilder
@@ -46,6 +47,7 @@ trait BackendApp[F[_]] {
   def customFields: OCustomFields[F]
   def simpleSearch: OSimpleSearch[F]
   def clientSettings: OClientSettings[F]
+  def totp: OTotp[F]
 }
 
 object BackendApp {
@@ -59,7 +61,8 @@ object BackendApp {
     for {
       utStore        <- UserTaskStore(store)
       queue          <- JobQueue(store)
-      loginImpl      <- Login[F](store)
+      totpImpl       <- OTotp(store, Totp.default)
+      loginImpl      <- Login[F](store, Totp.default)
       signupImpl     <- OSignup[F](store)
       joexImpl       <- OJoex(JoexClient(httpClient), store)
       collImpl       <- OCollective[F](store, utStore, queue, joexImpl)
@@ -103,6 +106,7 @@ object BackendApp {
       val customFields   = customFieldsImpl
       val simpleSearch   = simpleSearchImpl
       val clientSettings = clientSettingsImpl
+      val totp           = totpImpl
     }
 
   def apply[F[_]: Async](

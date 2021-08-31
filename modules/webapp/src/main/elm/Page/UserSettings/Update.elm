@@ -11,6 +11,7 @@ import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
 import Comp.NotificationManage
+import Comp.OtpSetup
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
@@ -79,6 +80,9 @@ update flags settings msg model =
                 UiSettingsTab ->
                     UpdateResult m Cmd.none Sub.none Nothing
 
+                OtpTab ->
+                    UpdateResult m Cmd.none Sub.none Nothing
+
         ChangePassMsg m ->
             let
                 ( m2, c2 ) =
@@ -143,6 +147,17 @@ update flags settings msg model =
             , cmd = Cmd.map UiSettingsMsg res.cmd
             , sub = Sub.map UiSettingsMsg res.sub
             , newSettings = res.newSettings
+            }
+
+        OtpSetupMsg lm ->
+            let
+                ( otpm, otpc ) =
+                    Comp.OtpSetup.update flags lm model.otpSetupModel
+            in
+            { model = { model | otpSetupModel = otpm }
+            , cmd = Cmd.map OtpSetupMsg otpc
+            , sub = Sub.none
+            , newSettings = Nothing
             }
 
         UpdateSettings ->

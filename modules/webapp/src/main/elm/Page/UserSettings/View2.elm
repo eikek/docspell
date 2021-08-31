@@ -11,6 +11,7 @@ import Comp.ChangePasswordForm
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
 import Comp.NotificationManage
+import Comp.OtpSetup
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
@@ -104,6 +105,17 @@ viewSidebar texts visible _ _ model =
                     [ class "ml-3" ]
                     [ text texts.changePassword ]
                 ]
+            , a
+                [ href "#"
+                , onClick (SetTab OtpTab)
+                , menuEntryActive model OtpTab
+                , class S.sidebarLink
+                ]
+                [ i [ class "fa fa-key" ] []
+                , span
+                    [ class "ml-3" ]
+                    [ text texts.otpMenu ]
+                ]
             ]
         ]
 
@@ -133,6 +145,9 @@ viewContent texts flags settings model =
             Just UiSettingsTab ->
                 viewUiSettings texts flags settings model
 
+            Just OtpTab ->
+                viewOtpSetup texts settings model
+
             Nothing ->
                 []
         )
@@ -149,6 +164,25 @@ menuEntryActive model tab =
 
     else
         class ""
+
+
+viewOtpSetup : Texts -> UiSettings -> Model -> List (Html Msg)
+viewOtpSetup texts _ model =
+    [ h2
+        [ class S.header1
+        , class "inline-flex items-center"
+        ]
+        [ i [ class "fa fa-key" ] []
+        , div [ class "ml-3" ]
+            [ text texts.otpMenu
+            ]
+        ]
+    , Html.map OtpSetupMsg
+        (Comp.OtpSetup.view
+            texts.otpSetup
+            model.otpSetupModel
+        )
+    ]
 
 
 viewChangePassword : Texts -> Model -> List (Html Msg)

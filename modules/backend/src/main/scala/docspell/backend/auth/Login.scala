@@ -6,7 +6,7 @@
 
 package docspell.backend.auth
 
-import cats.data.OptionT
+import cats.data.{EitherT, OptionT}
 import cats.effect._
 import cats.implicits._
 
@@ -15,6 +15,7 @@ import docspell.common._
 import docspell.store.Store
 import docspell.store.queries.QLogin
 import docspell.store.records._
+import docspell.totp.{OnetimePassword, Totp}
 
 import org.log4s.getLogger
 import org.mindrot.jbcrypt.BCrypt
@@ -25,6 +26,8 @@ trait Login[F[_]] {
   def loginSession(config: Config)(sessionKey: String): F[Result]
 
   def loginUserPass(config: Config)(up: UserPass): F[Result]
+
+  def loginSecondFactor(config: Config)(sf: SecondFactor): F[Result]
 
   def loginRememberMe(config: Config)(token: String): F[Result]
 
@@ -54,6 +57,12 @@ object Login {
       else copy(pass = "***")
   }
 
+  final case class SecondFactor(
+      token: AuthToken,
+      rememberMe: Boolean,
+      otp: OnetimePassword
+  )
+
   sealed trait Result {
     def toEither: Either[String, AuthToken]
   }
@@ -68,14 +77,18 @@ object Login {
     case object InvalidTime extends Result {
       val toEither = Left("Authentication failed.")
     }
+    case object InvalidFactor extends Result {
+      val toEither = Left("Authentication requires second factor.")
+    }
 
     def ok(session: AuthToken, remember: Option[RememberToken]): Result =
       Ok(session, remember)
-    def invalidAuth: Result = InvalidAuth
-    def invalidTime: Result = InvalidTime
+    def invalidAuth: Result   = InvalidAuth
+    def invalidTime: Result   = InvalidTime
+    def invalidFactor: Result = InvalidFactor
   }
 
-  def apply[F[_]: Async](store: Store[F]): Resource[F, Login[F]] =
+  def apply[F[_]: Async](store: Store[F], totp: Totp): Resource[F, Login[F]] =
     Resource.pure[F, Login[F]](new Login[F] {
 
       private val logF = Logger.log4s(logger)
@@ -87,9 +100,11 @@ object Login {
               logF.warn("Cookie signature invalid!") *> Result.invalidAuth.pure[F]
             else if (at.isExpired(config.sessionValid))
               logF.debug("Auth Cookie expired") *> Result.invalidTime.pure[F]
+            else if (at.requireSecondFactor)
+              logF.debug("Auth requires second factor!") *> Result.invalidFactor.pure[F]
             else Result.ok(at, None).pure[F]
-          case Left(_) =>
-            Result.invalidAuth.pure[F]
+          case Left(err) =>
+            logF.debug(s"Invalid session token: $err") *> Result.invalidAuth.pure[F]
         }
 
       def loginUserPass(config: Config)(up: UserPass): F[Result] =
@@ -97,10 +112,13 @@ object Login {
           case Right(acc) =>
             val okResult =
               for {
-                _     <- store.transact(RUser.updateLogin(acc))
-                token <- AuthToken.user(acc, config.serverSecret)
+                require2FA <- store.transact(RTotp.isEnabled(acc))
+                _ <-
+                  if (require2FA) ().pure[F]
+                  else store.transact(RUser.updateLogin(acc))
+                token <- AuthToken.user(acc, require2FA, config.serverSecret)
                 rem <- OptionT
-                  .whenF(up.rememberMe && config.rememberMe.enabled)(
+                  .whenF(!require2FA && up.rememberMe && config.rememberMe.enabled)(
                     insertRememberToken(store, acc, config)
                   )
                   .value
@@ -117,11 +135,54 @@ object Login {
               Result.invalidAuth.pure[F]
         }
 
+      def loginSecondFactor(config: Config)(sf: SecondFactor): F[Result] = {
+        val okResult: F[Result] =
+          for {
+            _        <- store.transact(RUser.updateLogin(sf.token.account))
+            newToken <- AuthToken.user(sf.token.account, false, config.serverSecret)
+            rem <- OptionT
+              .whenF(sf.rememberMe && config.rememberMe.enabled)(
+                insertRememberToken(store, sf.token.account, config)
+              )
+              .value
+          } yield Result.ok(newToken, rem)
+
+        val validateToken: EitherT[F, Result, Unit] = for {
+          _ <- EitherT
+            .cond[F](sf.token.sigValid(config.serverSecret), (), Result.invalidAuth)
+            .leftSemiflatTap(_ =>
+              logF.warn("OTP authentication token signature invalid!")
+            )
+          _ <- EitherT
+            .cond[F](sf.token.notExpired(config.sessionValid), (), Result.invalidTime)
+            .leftSemiflatTap(_ => logF.info("OTP Token expired."))
+          _ <- EitherT
+            .cond[F](sf.token.requireSecondFactor, (), Result.invalidAuth)
+            .leftSemiflatTap(_ =>
+              logF.warn("OTP received for token that is not allowed for 2FA!")
+            )
+        } yield ()
+
+        (for {
+          _ <- validateToken
+          key <- EitherT.fromOptionF(
+            store.transact(RTotp.findEnabledByLogin(sf.token.account, true)),
+            Result.invalidAuth
+          )
+          now <- EitherT.right[Result](Timestamp.current[F])
+          _ <- EitherT.cond[F](
+            totp.checkPassword(key.secret, sf.otp, now.value),
+            (),
+            Result.invalidAuth
+          )
+        } yield ()).swap.getOrElseF(okResult)
+      }
+
       def loginRememberMe(config: Config)(token: String): F[Result] = {
         def okResult(acc: AccountId) =
           for {
             _     <- store.transact(RUser.updateLogin(acc))
-            token <- AuthToken.user(acc, config.serverSecret)
+            token <- AuthToken.user(acc, false, config.serverSecret)
           } yield Result.ok(token, None)
 
         def doLogin(rid: Ident) =
@@ -136,7 +197,7 @@ object Login {
               if (checkNoPassword(data))
                 logF.info("RememberMe auth successful") *> okResult(data.account)
               else
-                logF.warn("RememberMe auth not successfull") *> Result.invalidAuth.pure[F]
+                logF.warn("RememberMe auth not successful") *> Result.invalidAuth.pure[F]
             )
           } yield res).getOrElseF(
             logF.info("RememberMe not found in database.") *> Result.invalidAuth.pure[F]

@@ -15,6 +15,7 @@ import docspell.restapi.model._
 import docspell.restserver._
 import docspell.restserver.auth._
 import docspell.restserver.http4s.ClientRequestInfo
+import docspell.totp.OnetimePassword
 
 import org.http4s._
 import org.http4s.circe.CirceEntityDecoder._
@@ -27,14 +28,31 @@ object LoginRoutes {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
-    HttpRoutes.of[F] { case req @ POST -> Root / "login" =>
-      for {
-        up <- req.as[UserPass]
-        res <- S.loginUserPass(cfg.auth)(
-          Login.UserPass(up.account, up.password, up.rememberMe.getOrElse(false))
-        )
-        resp <- makeResponse(dsl, cfg, req, res, up.account)
-      } yield resp
+    HttpRoutes.of[F] {
+      case req @ POST -> Root / "two-factor" =>
+        for {
+          sf <- req.as[SecondFactor]
+          tokenParsed = AuthToken.fromString(sf.token)
+          resp <- tokenParsed match {
+            case Right(token) =>
+              S.loginSecondFactor(cfg.auth)(
+                Login.SecondFactor(token, sf.rememberMe, OnetimePassword(sf.otp.pass))
+              ).flatMap(result =>
+                makeResponse(dsl, cfg, req, result, token.account.asString)
+              )
+            case Left(err) =>
+              BadRequest(BasicResult(false, s"Invalid authentication token: $err"))
+          }
+        } yield resp
+
+      case req @ POST -> Root / "login" =>
+        for {
+          up <- req.as[UserPass]
+          res <- S.loginUserPass(cfg.auth)(
+            Login.UserPass(up.account, up.password, up.rememberMe.getOrElse(false))
+          )
+          resp <- makeResponse(dsl, cfg, req, res, up.account)
+        } yield resp
     }
   }
 
@@ -82,7 +100,8 @@ object LoginRoutes {
               true,
               "Login successful",
               Some(cd.asString),
-              cfg.auth.sessionValid.millis
+              cfg.auth.sessionValid.millis,
+              token.requireSecondFactor
             )
           ).map(cd.addCookie(getBaseUrl(cfg, req)))
             .map(resp =>
@@ -93,7 +112,7 @@ object LoginRoutes {
 
         } yield resp
       case _ =>
-        Ok(AuthResult("", account, false, "Login failed.", None, 0L))
+        Ok(AuthResult("", account, false, "Login failed.", None, 0L, false))
     }
   }
 

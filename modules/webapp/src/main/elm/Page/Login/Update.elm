@@ -24,6 +24,9 @@ update referrer flags msg model =
         SetPassword str ->
             ( { model | password = str }, Cmd.none, Nothing )
 
+        SetOtp str ->
+            ( { model | otp = str }, Cmd.none, Nothing )
+
         ToggleRememberMe ->
             ( { model | rememberMe = not model.rememberMe }, Cmd.none, Nothing )
 
@@ -37,15 +40,31 @@ update referrer flags msg model =
             in
             ( model, Api.login flags userPass AuthResp, Nothing )
 
+        AuthOtp acc ->
+            let
+                sf =
+                    { rememberMe = model.rememberMe
+                    , token = Maybe.withDefault "" acc.token
+                    , otp = model.otp
+                    }
+            in
+            ( model, Api.twoFactor flags sf AuthResp, Nothing )
+
         AuthResp (Ok lr) ->
             let
                 gotoRef =
                     Maybe.withDefault HomePage referrer |> Page.goto
             in
-            if lr.success then
+            if lr.success && not lr.requireSecondFactor then
                 ( { model | formState = AuthSuccess lr, password = "" }
                 , Cmd.batch [ setAccount lr, gotoRef ]
                 , Just lr
+                )
+
+            else if lr.success && lr.requireSecondFactor then
+                ( { model | formState = FormInitial, authStep = StepOtp lr, password = "" }
+                , Cmd.none
+                , Nothing
                 )
 
             else

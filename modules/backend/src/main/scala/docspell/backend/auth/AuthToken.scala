@@ -16,8 +16,15 @@ import docspell.common._
 
 import scodec.bits.ByteVector
 
-case class AuthToken(nowMillis: Long, account: AccountId, salt: String, sig: String) {
-  def asString = s"$nowMillis-${TokenUtil.b64enc(account.asString)}-$salt-$sig"
+case class AuthToken(
+    nowMillis: Long,
+    account: AccountId,
+    requireSecondFactor: Boolean,
+    salt: String,
+    sig: String
+) {
+  def asString =
+    s"$nowMillis-${TokenUtil.b64enc(account.asString)}-$requireSecondFactor-$salt-$sig"
 
   def sigValid(key: ByteVector): Boolean = {
     val newSig = TokenUtil.sign(this, key)
@@ -35,30 +42,35 @@ case class AuthToken(nowMillis: Long, account: AccountId, salt: String, sig: Str
   }
 
   def validate(key: ByteVector, validity: Duration): Boolean =
-    sigValid(key) && notExpired(validity)
+    sigValid(key) && notExpired(validity) && !requireSecondFactor
 
 }
 
 object AuthToken {
 
   def fromString(s: String): Either[String, AuthToken] =
-    s.split("\\-", 4) match {
-      case Array(ms, as, salt, sig) =>
+    s.split("\\-", 5) match {
+      case Array(ms, as, fa, salt, sig) =>
         for {
           millis <- TokenUtil.asInt(ms).toRight("Cannot read authenticator data")
           acc    <- TokenUtil.b64dec(as).toRight("Cannot read authenticator data")
           accId  <- AccountId.parse(acc)
-        } yield AuthToken(millis, accId, salt, sig)
+          twofac <- Right[String, Boolean](java.lang.Boolean.parseBoolean(fa))
+        } yield AuthToken(millis, accId, twofac, salt, sig)
 
       case _ =>
         Left("Invalid authenticator")
     }
 
-  def user[F[_]: Sync](accountId: AccountId, key: ByteVector): F[AuthToken] =
+  def user[F[_]: Sync](
+      accountId: AccountId,
+      requireSecondFactor: Boolean,
+      key: ByteVector
+  ): F[AuthToken] =
     for {
       salt <- Common.genSaltString[F]
       millis = Instant.now.toEpochMilli
-      cd     = AuthToken(millis, accountId, salt, "")
+      cd     = AuthToken(millis, accountId, requireSecondFactor, salt, "")
       sig    = TokenUtil.sign(cd, key)
     } yield cd.copy(sig = sig)
 
@@ -66,7 +78,7 @@ object AuthToken {
     for {
       now  <- Timestamp.current[F]
       salt <- Common.genSaltString[F]
-      data = AuthToken(now.toMillis, token.account, salt, "")
+      data = AuthToken(now.toMillis, token.account, token.requireSecondFactor, salt, "")
       sig  = TokenUtil.sign(data, key)
     } yield data.copy(sig = sig)
 }

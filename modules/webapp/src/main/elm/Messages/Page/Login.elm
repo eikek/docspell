@@ -28,6 +28,7 @@ type alias Texts =
     , loginSuccessful : String
     , noAccount : String
     , signupLink : String
+    , otpCode : String
     }
 
 
@@ -45,6 +46,7 @@ gb =
     , loginSuccessful = "Login successful"
     , noAccount = "No account?"
     , signupLink = "Sign up!"
+    , otpCode = "Authentication code"
     }
 
 
@@ -62,4 +64,5 @@ de =
     , loginSuccessful = "Anmeldung erfolgreich"
     , noAccount = "Kein Konto?"
     , signupLink = "Hier registrieren!"
+    , otpCode = "Authentifizierungscode"
     }

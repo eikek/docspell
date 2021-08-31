@@ -55,6 +55,8 @@ object RUser {
       )
   }
 
+  val T = Table(None)
+
   def as(alias: String): Table =
     Table(Some(alias))
 
@@ -104,6 +106,15 @@ object RUser {
     val sql = Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).build
     sql.query[RUser].to[Vector]
   }
+
+  def findIdByAccount(accountId: AccountId): ConnectionIO[Option[Ident]] =
+    run(
+      select(T.uid),
+      from(T),
+      T.login === accountId.user && T.cid === accountId.collective
+    )
+      .query[Ident]
+      .option
 
   def updateLogin(accountId: AccountId): ConnectionIO[Int] = {
     val t = Table(None)
