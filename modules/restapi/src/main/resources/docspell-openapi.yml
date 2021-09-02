@@ -1477,7 +1477,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResetPasswordResult"
-  /admin/user/resetOTP:
+  /admin/user/otp/resetOTP:
     post:
       operationId: "admin-user-reset-otp"
       tags: [ Collective, Admin ]
