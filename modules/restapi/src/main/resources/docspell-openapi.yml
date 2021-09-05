@@ -5405,6 +5405,7 @@ components:
         - id
         - login
         - state
+        - source
         - loginCount
         - created
       properties:
@@ -5420,6 +5421,12 @@ components:
           enum:
             - active
             - disabled
+        source:
+          type: string
+          format: accountsource
+          enum:
+            - local
+            - openid
         password:
           type: string
           format: password

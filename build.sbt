@@ -254,6 +254,12 @@ val openapiScalaSettings = Seq(
         field =>
           field
             .copy(typeDef = TypeDef("LenientUri", Imports("docspell.common.LenientUri")))
+      case "accountsource" =>
+        field =>
+          field
+            .copy(typeDef =
+              TypeDef("AccountSource", Imports("docspell.common.AccountSource"))
+            )
     })
 )
 

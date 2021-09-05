@@ -20,6 +20,7 @@ type alias Texts =
     { basics : Messages.Basics.Texts
     , login : String
     , state : String
+    , source : String
     , email : String
     , logins : String
     , lastLogin : String
@@ -32,6 +33,7 @@ gb =
     { basics = Messages.Basics.gb
     , login = "Login"
     , state = "State"
+    , source = "Type"
     , email = "E-Mail"
     , logins = "Logins"
     , lastLogin = "Last Login"
@@ -44,6 +46,7 @@ de =
     { basics = Messages.Basics.de
     , login = "Benutzername"
     , state = "Status"
+    , source = "Typ"
     , email = "E-Mail"
     , logins = "Anmeldungen"
     , lastLogin = "Letzte Anmeldung"

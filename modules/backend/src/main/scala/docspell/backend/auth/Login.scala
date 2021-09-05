@@ -194,7 +194,7 @@ object Login {
               logF.info(s"Account lookup via remember me: $data")
             )
             res <- OptionT.liftF(
-              if (checkNoPassword(data))
+              if (checkNoPassword(data, AccountSource.all.toList.toSet))
                 logF.info("RememberMe auth successful") *> okResult(data.account)
               else
                 logF.warn("RememberMe auth not successful") *> Result.invalidAuth.pure[F]
@@ -260,13 +260,17 @@ object Login {
 
       private def check(given: String)(data: QLogin.Data): Boolean = {
         val passOk = BCrypt.checkpw(given, data.password.pass)
-        checkNoPassword(data) && passOk
+        checkNoPassword(data, Set(AccountSource.Local)) && passOk
       }
 
-      private def checkNoPassword(data: QLogin.Data): Boolean = {
+      def checkNoPassword(
+          data: QLogin.Data,
+          expectedSources: Set[AccountSource]
+      ): Boolean = {
         val collOk = data.collectiveState == CollectiveState.Active ||
           data.collectiveState == CollectiveState.ReadOnly
-        val userOk = data.userState == UserState.Active
+        val userOk =
+          data.userState == UserState.Active && expectedSources.contains(data.source)
         collOk && userOk
       }
     })

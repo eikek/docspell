@@ -21,6 +21,7 @@ case class RUser(
     cid: Ident,
     password: Password,
     state: UserState,
+    source: AccountSource,
     email: Option[String],
     loginCount: Int,
     lastLogin: Option[Timestamp],
@@ -36,6 +37,7 @@ object RUser {
     val cid        = Column[Ident]("cid", this)
     val password   = Column[Password]("password", this)
     val state      = Column[UserState]("state", this)
+    val source     = Column[AccountSource]("account_source", this)
     val email      = Column[String]("email", this)
     val loginCount = Column[Int]("logincount", this)
     val lastLogin  = Column[Timestamp]("lastlogin", this)
@@ -48,6 +50,7 @@ object RUser {
         cid,
         password,
         state,
+        source,
         email,
         loginCount,
         lastLogin,
@@ -65,7 +68,7 @@ object RUser {
     DML.insert(
       t,
       t.all,
-      fr"${v.uid},${v.login},${v.cid},${v.password},${v.state},${v.email},${v.loginCount},${v.lastLogin},${v.created}"
+      fr"${v.uid},${v.login},${v.cid},${v.password},${v.state},${v.source},${v.email},${v.loginCount},${v.lastLogin},${v.created}"
     )
   }
 
@@ -134,7 +137,7 @@ object RUser {
     val t = Table(None)
     DML.update(
       t,
-      t.cid === accountId.collective && t.login === accountId.user,
+      t.cid === accountId.collective && t.login === accountId.user && t.source === AccountSource.Local,
       DML.set(t.password.setTo(hashedPass))
     )
   }

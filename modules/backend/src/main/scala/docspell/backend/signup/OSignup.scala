@@ -109,6 +109,7 @@ object OSignup {
               data.collName,
               PasswordCrypt.crypt(data.password),
               UserState.Active,
+              AccountSource.Local,
               None,
               0,
               None,

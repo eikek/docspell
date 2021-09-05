@@ -86,6 +86,12 @@ object UserRoutes {
               Password(""),
               "Password update failed. User not found."
             )
+          case OCollective.PassResetResult.UserNotLocal =>
+            ResetPasswordResult(
+              false,
+              Password(""),
+              "Password update failed. User is not local, passwords are managed externally."
+            )
         })
       } yield resp
     }

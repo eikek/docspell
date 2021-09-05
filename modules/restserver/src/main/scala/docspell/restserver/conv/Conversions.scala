@@ -522,6 +522,7 @@ trait Conversions {
       ru.uid,
       ru.login,
       ru.state,
+      ru.source,
       None,
       ru.email,
       ru.lastLogin,
@@ -537,6 +538,7 @@ trait Conversions {
         cid,
         u.password.getOrElse(Password.empty),
         u.state,
+        u.source,
         u.email,
         0,
         None,
@@ -551,6 +553,7 @@ trait Conversions {
       cid,
       u.password.getOrElse(Password.empty),
       u.state,
+      u.source,
       u.email,
       u.loginCount,
       u.lastLogin,
@@ -706,6 +709,8 @@ trait Conversions {
       case PassChangeResult.PasswordMismatch =>
         BasicResult(false, "The current password is incorrect.")
       case PassChangeResult.UserNotFound => BasicResult(false, "User not found.")
+      case PassChangeResult.UserNotLocal =>
+        BasicResult(false, "User is not local, passwords are managed externally.")
     }
 
   def basicResult(e: Either[Throwable, _], successMsg: String): BasicResult =

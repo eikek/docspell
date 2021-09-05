@@ -24,7 +24,8 @@ object QLogin {
       account: AccountId,
       password: Password,
       collectiveState: CollectiveState,
-      userState: UserState
+      userState: UserState,
+      source: AccountSource
   )
 
   def findUser(acc: AccountId): ConnectionIO[Option[Data]] = {
@@ -32,7 +33,7 @@ object QLogin {
     val coll = RCollective.as("c")
     val sql =
       Select(
-        select(user.cid, user.login, user.password, coll.state, user.state),
+        select(user.cid, user.login, user.password, coll.state, user.state, user.source),
         from(user).innerJoin(coll, user.cid === coll.id),
         user.login === acc.user && user.cid === acc.collective
       ).build
