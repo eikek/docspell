@@ -17,6 +17,12 @@ module Data.Flags exposing
 import Api.Model.AuthResult exposing (AuthResult)
 
 
+type alias OpenIdAuth =
+    { provider : String
+    , name : String
+    }
+
+
 type alias Config =
     { appName : String
     , baseUrl : String
@@ -27,6 +33,7 @@ type alias Config =
     , maxPageSize : Int
     , maxNoteLength : Int
     , showClassificationSettings : Bool
+    , openIdAuth : List OpenIdAuth
     }
 
 

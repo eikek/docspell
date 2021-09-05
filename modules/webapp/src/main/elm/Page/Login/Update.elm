@@ -15,8 +15,8 @@ import Page.Login.Data exposing (..)
 import Ports
 
 
-update : Maybe Page -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
-update referrer flags msg model =
+update : ( Maybe Page, Bool ) -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
+update ( referrer, oauth ) flags msg model =
     case msg of
         SetUsername str ->
             ( { model | username = str }, Cmd.none, Nothing )

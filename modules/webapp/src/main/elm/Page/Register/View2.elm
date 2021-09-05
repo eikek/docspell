@@ -232,7 +232,7 @@ viewContent texts flags _ model =
                         [ text texts.alreadySignedUp
                         ]
                     , a
-                        [ Page.href (LoginPage Nothing)
+                        [ Page.href (LoginPage ( Nothing, False ))
                         , class ("ml-2" ++ S.link)
                         ]
                         [ i [ class "fa fa-user-plus mr-1" ] []

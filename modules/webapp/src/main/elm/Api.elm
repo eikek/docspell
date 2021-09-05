@@ -87,6 +87,7 @@ module Api exposing
     , mergeItems
     , moveAttachmentBefore
     , newInvite
+    , openIdAuthLink
     , postCustomField
     , postEquipment
     , postNewUser
@@ -933,6 +934,11 @@ newInvite flags req receive =
 
 
 --- Login
+
+
+openIdAuthLink : Flags -> String -> String
+openIdAuthLink flags provider =
+    flags.config.baseUrl ++ "/api/v1/open/auth/openid/" ++ provider
 
 
 login : Flags -> UserPass -> (Result Http.Error AuthResult -> msg) -> Cmd msg

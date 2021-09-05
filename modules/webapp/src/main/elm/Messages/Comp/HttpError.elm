@@ -26,6 +26,7 @@ gb err =
             , invalidInput = "Invalid input when processing the request."
             , notFound = "The requested resource doesn't exist."
             , invalidBody = \str -> "There was an error decoding the response: " ++ str
+            , accessDenied = "Access denied"
             }
     in
     errorToString texts err
@@ -44,6 +45,7 @@ de err =
             , invalidInput = "Die Daten im Request waren ungültig."
             , notFound = "Die angegebene Ressource wurde nicht gefunden."
             , invalidBody = \str -> "Es gab einen Fehler beim Dekodieren der Antwort: " ++ str
+            , accessDenied = "Zugriff verweigert"
             }
     in
     errorToString texts err
@@ -61,6 +63,7 @@ type alias Texts =
     , invalidInput : String
     , notFound : String
     , invalidBody : String -> String
+    , accessDenied : String
     }
 
 
@@ -89,6 +92,9 @@ errorToString texts error =
         f sc =
             if sc == 404 then
                 texts.notFound
+
+            else if sc == 403 then
+                texts.accessDenied
 
             else if sc >= 400 && sc < 500 then
                 texts.invalidInput

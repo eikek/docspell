@@ -7,8 +7,10 @@
 
 module Page.Login.View2 exposing (viewContent, viewSidebar)
 
+import Api
 import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
+import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -53,6 +55,7 @@ viewContent texts flags versionInfo _ model =
 
                 StepLogin ->
                     loginForm texts flags model
+            , openIdLinks texts flags
             ]
         , a
             [ class "inline-flex items-center mt-4 text-xs opacity-50 hover:opacity-90"
@@ -70,6 +73,35 @@ viewContent texts flags versionInfo _ model =
                 ]
             ]
         ]
+
+
+openIdLinks : Texts -> Flags -> Html Msg
+openIdLinks texts flags =
+    let
+        renderLink prov =
+            a
+                [ href (Api.openIdAuthLink flags prov.provider)
+                , class S.link
+                ]
+                [ i [ class "fab fa-openid mr-1" ] []
+                , text prov.name
+                ]
+    in
+    case flags.config.openIdAuth of
+        [] ->
+            span [ class "hidden" ] []
+
+        provs ->
+            div [ class "mt-3" ]
+                [ B.horizontalDivider
+                    { label = texts.or
+                    , topCss = "w-2/3 mb-4 hidden md:inline-flex w-full"
+                    , labelCss = "px-4 bg-gray-200 bg-opacity-50"
+                    , lineColor = "bg-gray-300 dark:bg-bluegray-600"
+                    }
+                , div [ class "flex flex-row space-x-4 items-center justify-center" ]
+                    (List.map renderLink provs)
+                ]
 
 
 otpForm : Texts -> Flags -> Model -> AuthResult -> Html Msg

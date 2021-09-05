@@ -33,7 +33,7 @@ import Util.Maybe
 
 type Page
     = HomePage
-    | LoginPage (Maybe Page)
+    | LoginPage ( Maybe Page, Bool )
     | ManageDataPage
     | CollectiveSettingPage
     | UserSettingPage
@@ -99,10 +99,10 @@ loginPage : Page -> Page
 loginPage p =
     case p of
         LoginPage _ ->
-            LoginPage Nothing
+            LoginPage ( Nothing, False )
 
         _ ->
-            LoginPage (Just p)
+            LoginPage ( Just p, False )
 
 
 pageName : Page -> String
@@ -144,14 +144,14 @@ pageName page =
             "Item"
 
 
-loginPageReferrer : Page -> Maybe Page
+loginPageReferrer : Page -> ( Maybe Page, Bool )
 loginPageReferrer page =
     case page of
-        LoginPage r ->
-            r
+        LoginPage ( r, flag ) ->
+            ( r, flag )
 
         _ ->
-            Nothing
+            ( Nothing, False )
 
 
 uploadId : Page -> Maybe String
@@ -170,7 +170,7 @@ pageToString page =
         HomePage ->
             "/app/home"
 
-        LoginPage referer ->
+        LoginPage ( referer, _ ) ->
             case referer of
                 Just (LoginPage _) ->
                     "/app/login"
@@ -253,7 +253,7 @@ parser =
                 , s pathPrefix </> s "home"
                 ]
             )
-        , Parser.map LoginPage (s pathPrefix </> s "login" <?> pageQuery)
+        , Parser.map LoginPage (s pathPrefix </> s "login" <?> loginPageParser)
         , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
         , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")
         , Parser.map UserSettingPage (s pathPrefix </> s "usettings")
@@ -278,6 +278,16 @@ fromString str =
             Url Url.Http "localhost" Nothing str Nothing Nothing
     in
     fromUrl url
+
+
+loginPageOAuthQuery : Query.Parser Bool
+loginPageOAuthQuery =
+    Query.map Util.Maybe.nonEmpty (Query.string "openid")
+
+
+loginPageParser : Query.Parser ( Maybe Page, Bool )
+loginPageParser =
+    Query.map2 Tuple.pair pageQuery loginPageOAuthQuery
 
 
 pageQuery : Query.Parser (Maybe Page)

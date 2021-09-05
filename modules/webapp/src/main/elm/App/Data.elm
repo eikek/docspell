@@ -82,6 +82,12 @@ init key url flags_ settings =
         ( csm, csc ) =
             Page.CollectiveSettings.Data.init flags
 
+        ( loginm, loginc ) =
+            Page.Login.Data.init flags
+                (Page.loginPageReferrer page
+                    |> Tuple.second
+                )
+
         homeViewMode =
             if settings.searchMenuVisible then
                 Page.Home.Data.SearchView
@@ -94,7 +100,7 @@ init key url flags_ settings =
       , page = page
       , version = Api.Model.VersionInfo.empty
       , homeModel = Page.Home.Data.init flags homeViewMode
-      , loginModel = Page.Login.Data.emptyModel
+      , loginModel = loginm
       , manageDataModel = mdm
       , collSettingsModel = csm
       , userSettingsModel = um
@@ -116,6 +122,7 @@ init key url flags_ settings =
         [ Cmd.map UserSettingsMsg uc
         , Cmd.map ManageDataMsg mdc
         , Cmd.map CollSettingsMsg csc
+        , Cmd.map LoginMsg loginc
         ]
     )
 

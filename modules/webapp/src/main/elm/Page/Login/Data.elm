@@ -11,9 +11,12 @@ module Page.Login.Data exposing
     , Model
     , Msg(..)
     , emptyModel
+    , init
     )
 
+import Api
 import Api.Model.AuthResult exposing (AuthResult)
+import Data.Flags exposing (Flags)
 import Http
 import Page exposing (Page(..))
 
@@ -49,6 +52,19 @@ emptyModel =
     , formState = FormInitial
     , authStep = StepLogin
     }
+
+
+init : Flags -> Bool -> ( Model, Cmd Msg )
+init flags oauth =
+    let
+        cmd =
+            if oauth then
+                Api.loginSession flags AuthResp
+
+            else
+                Cmd.none
+    in
+    ( emptyModel, cmd )
 
 
 type Msg
