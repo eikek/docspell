@@ -6,12 +6,10 @@
 
 package docspell.oidc
 
-import cats.data.OptionT
+import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.implicits._
-
 import docspell.common._
-
 import org.http4s.HttpRoutes
 import org.http4s._
 import org.http4s.client.Client
@@ -22,7 +20,16 @@ import org.log4s.getLogger
 object CodeFlowRoutes {
   private[this] val log4sLogger = getLogger
 
-  def apply[F[_]: Async, A](
+  def apply[F[_]: Async](
+      enabled: Boolean,
+      onUserInfo: OnUserInfo[F],
+      config: CodeFlowConfig[F],
+      client: Client[F]
+  ): HttpRoutes[F] =
+    if (enabled) route[F](onUserInfo, config, client)
+    else Kleisli(_ => OptionT.pure(Response.notFound[F]))
+
+  def route[F[_]: Async](
       onUserInfo: OnUserInfo[F],
       config: CodeFlowConfig[F],
       client: Client[F]

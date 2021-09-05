@@ -20,21 +20,26 @@ object UserInfoDecoder {
     findSomeId("preferred_username")
 
   /** Looks recursively in the JSON for the first attribute with name `key` and returns
-    * its value (expecting an Ident).
+    * its value.
     */
-  def findSomeId(key: String): Decoder[Ident] =
+  def findSomeString(key: String): Decoder[String] =
     Decoder.instance { cursor =>
       cursor.value
         .findAllByKey(key)
         .find(_.isString)
         .flatMap(_.asString)
         .toRight(s"No value found in JSON for key '$key'")
-        .flatMap(normalizeUid)
         .left
         .map(msg => DecodingFailure(msg, Nil))
     }
 
-  private def normalizeUid(uid: String): Either[String, Ident] =
+  /** Looks recursively in the JSON for the first attribute with name `key` and returns
+    * its value (expecting an Ident).
+    */
+  def findSomeId(key: String): Decoder[Ident] =
+    findSomeString(key).emap(normalizeUid)
+
+  def normalizeUid(uid: String): Either[String, Ident] =
     Ident(uid.filter(Ident.chars.contains))
       .flatMap(id =>
         if (id.nonEmpty) Right(id) else Left(s"Id '$uid' empty after normalizing!'")

@@ -1,6 +1,13 @@
+/*
+ * Copyright 2020 Docspell Contributors
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package docspell.common
 
 import cats.data.NonEmptyList
+
 import io.circe.{Decoder, Encoder}
 
 sealed trait AccountSource { self: Product =>

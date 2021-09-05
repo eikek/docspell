@@ -9,6 +9,7 @@ package docspell.backend.ops
 import cats.effect.{Async, Resource}
 import cats.implicits._
 import fs2.Stream
+
 import docspell.backend.JobFactory
 import docspell.backend.PasswordCrypt
 import docspell.backend.ops.OCollective._
@@ -19,6 +20,7 @@ import docspell.store.queue.JobQueue
 import docspell.store.records._
 import docspell.store.usertask.{UserTask, UserTaskScope, UserTaskStore}
 import docspell.store.{AddResult, Store}
+
 import com.github.eikek.calev._
 
 trait OCollective[F[_]] {

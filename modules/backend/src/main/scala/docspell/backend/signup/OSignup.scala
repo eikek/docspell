@@ -8,11 +8,13 @@ package docspell.backend.signup
 
 import cats.effect.{Async, Resource}
 import cats.implicits._
+
 import docspell.backend.PasswordCrypt
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.records.{RCollective, RInvitation, RUser}
 import docspell.store.{AddResult, Store}
+
 import doobie.free.connection.ConnectionIO
 import org.log4s.getLogger
 
@@ -83,23 +85,29 @@ object OSignup {
             SignupResult.signupClosed.pure[F]
           case _ =>
             if (data.source == AccountSource.Local)
-              SignupResult.failure(new Exception("Account source must not be LOCAL!")).pure[F]
-            else for {
-              recs <- makeRecords(data.collName, data.login, Password(""), data.source)
-              cres <- store.add(RCollective.insert(recs._1), RCollective.existsById(data.collName))
-              ures <- store.add(RUser.insert(recs._2), RUser.exists(data.login))
-              res = cres match {
-                case AddResult.Failure(ex) =>
-                  SignupResult.failure(ex)
-                case _ =>
-                  ures match {
-                    case AddResult.Failure(ex) =>
-                      SignupResult.failure(ex)
-                    case _ =>
-                      SignupResult.success
-                  }
-              }
-            } yield res
+              SignupResult
+                .failure(new Exception("Account source must not be LOCAL!"))
+                .pure[F]
+            else
+              for {
+                recs <- makeRecords(data.collName, data.login, Password(""), data.source)
+                cres <- store.add(
+                  RCollective.insert(recs._1),
+                  RCollective.existsById(data.collName)
+                )
+                ures <- store.add(RUser.insert(recs._2), RUser.exists(data.login))
+                res = cres match {
+                  case AddResult.Failure(ex) =>
+                    SignupResult.failure(ex)
+                  case _ =>
+                    ures match {
+                      case AddResult.Failure(ex) =>
+                        SignupResult.failure(ex)
+                      case _ =>
+                        SignupResult.success
+                    }
+                }
+              } yield res
         }
 
       private def retryInvite(res: SignupResult): Boolean =

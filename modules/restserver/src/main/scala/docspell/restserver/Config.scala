@@ -12,6 +12,7 @@ import docspell.common._
 import docspell.ftssolr.SolrConfig
 import docspell.oidc.ProviderConfig
 import docspell.restserver.Config.OpenIdConfig
+import docspell.restserver.auth.OpenId
 
 import com.comcast.ip4s.IpAddress
 
@@ -29,7 +30,10 @@ case class Config(
     fullTextSearch: Config.FullTextSearch,
     adminEndpoint: Config.AdminEndpoint,
     openid: List[OpenIdConfig]
-)
+) {
+  def openIdEnabled: Boolean =
+    openid.exists(_.enabled)
+}
 
 object Config {
 
@@ -73,6 +77,11 @@ object Config {
 
   object FullTextSearch {}
 
-  final case class OpenIdConfig(enabled: Boolean, provider: ProviderConfig)
+  final case class OpenIdConfig(
+      enabled: Boolean,
+      collectiveKey: OpenId.UserInfo.Extractor,
+      userKey: String,
+      provider: ProviderConfig
+  )
 
 }

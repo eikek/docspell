@@ -110,6 +110,7 @@ object RestServer {
   ): HttpRoutes[F] =
     Router(
       "auth/oauth" -> CodeFlowRoutes(
+        cfg.openIdEnabled,
         OpenId.handle[F](restApp.backend, cfg),
         OpenId.codeFlowConfig(cfg),
         client
