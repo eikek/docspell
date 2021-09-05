@@ -10,6 +10,8 @@ import docspell.backend.auth.Login
 import docspell.backend.{Config => BackendConfig}
 import docspell.common._
 import docspell.ftssolr.SolrConfig
+import docspell.oidc.ProviderConfig
+import docspell.restserver.Config.OpenIdConfig
 
 import com.comcast.ip4s.IpAddress
 
@@ -25,7 +27,8 @@ case class Config(
     maxItemPageSize: Int,
     maxNoteLength: Int,
     fullTextSearch: Config.FullTextSearch,
-    adminEndpoint: Config.AdminEndpoint
+    adminEndpoint: Config.AdminEndpoint,
+    openid: List[OpenIdConfig]
 )
 
 object Config {
@@ -69,5 +72,7 @@ object Config {
   case class FullTextSearch(enabled: Boolean, solr: SolrConfig)
 
   object FullTextSearch {}
+
+  final case class OpenIdConfig(enabled: Boolean, provider: ProviderConfig)
 
 }

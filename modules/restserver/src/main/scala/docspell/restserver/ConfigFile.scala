@@ -8,6 +8,7 @@ package docspell.restserver
 
 import docspell.backend.signup.{Config => SignupConfig}
 import docspell.common.config.Implicits._
+import docspell.oidc.SignatureAlgo
 
 import pureconfig._
 import pureconfig.generic.auto._
@@ -21,5 +22,8 @@ object ConfigFile {
   object Implicits {
     implicit val signupModeReader: ConfigReader[SignupConfig.Mode] =
       ConfigReader[String].emap(reason(SignupConfig.Mode.fromString))
+
+    implicit val sigAlgoReader: ConfigReader[SignatureAlgo] =
+      ConfigReader[String].emap(reason(SignatureAlgo.fromString))
   }
 }
