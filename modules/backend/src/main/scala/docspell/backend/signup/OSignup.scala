@@ -10,7 +10,6 @@ import cats.effect.{Async, Resource}
 import cats.implicits._
 
 import docspell.backend.PasswordCrypt
-import docspell.backend.ops.OCollective.RegisterData
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.records.{RCollective, RInvitation, RUser}

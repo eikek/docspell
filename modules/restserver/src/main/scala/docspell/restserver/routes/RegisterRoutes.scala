@@ -10,8 +10,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.BackendApp
-import docspell.backend.ops.OCollective.RegisterData
-import docspell.backend.signup.{NewInviteResult, SignupResult}
+import docspell.backend.signup.{NewInviteResult, RegisterData, SignupResult}
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.http4s.ResponseGenerator

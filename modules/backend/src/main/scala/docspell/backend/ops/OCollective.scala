@@ -115,28 +115,6 @@ object OCollective {
     def userNotLocal: PassChangeResult     = UserNotLocal
   }
 
-  case class RegisterData(
-      collName: Ident,
-      login: Ident,
-      password: Password,
-      invite: Option[Ident]
-  )
-
-  sealed trait RegisterResult {
-    def toEither: Either[Throwable, Unit]
-  }
-  object RegisterResult {
-    case object Success extends RegisterResult {
-      val toEither = Right(())
-    }
-    case class CollectiveExists(id: Ident) extends RegisterResult {
-      val toEither = Left(new Exception())
-    }
-    case class Error(ex: Throwable) extends RegisterResult {
-      val toEither = Left(ex)
-    }
-  }
-
   def apply[F[_]: Async](
       store: Store[F],
       uts: UserTaskStore[F],
