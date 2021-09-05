@@ -9,6 +9,7 @@ package docspell.restserver.webapp
 import docspell.backend.signup.{Config => SignupConfig}
 import docspell.common.{Ident, LenientUri}
 import docspell.restserver.{BuildInfo, Config}
+
 import io.circe._
 import io.circe.generic.semiauto._
 import yamusca.implicits._

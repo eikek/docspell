@@ -158,7 +158,7 @@ updateWithSub msg model =
 
         LogoutResp _ ->
             ( { model | loginModel = Page.Login.Data.emptyModel }
-            , Page.goto (LoginPage ( Nothing, False ))
+            , Page.goto (LoginPage Page.emptyLoginData)
             , Sub.none
             )
 

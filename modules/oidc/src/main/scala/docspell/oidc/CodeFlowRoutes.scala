@@ -9,7 +9,9 @@ package docspell.oidc
 import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
+
 import org.http4s.HttpRoutes
 import org.http4s._
 import org.http4s.client.Client

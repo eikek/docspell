@@ -97,7 +97,7 @@ update flags msg model =
 
                 cmd =
                     if r.success then
-                        Page.goto (LoginPage ( Nothing, False ))
+                        Page.goto (LoginPage Page.emptyLoginData)
 
                     else
                         Cmd.none

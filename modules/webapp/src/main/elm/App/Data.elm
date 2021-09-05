@@ -83,10 +83,7 @@ init key url flags_ settings =
             Page.CollectiveSettings.Data.init flags
 
         ( loginm, loginc ) =
-            Page.Login.Data.init flags
-                (Page.loginPageReferrer page
-                    |> Tuple.second
-                )
+            Page.Login.Data.init flags (Page.loginPageReferrer page)
 
         homeViewMode =
             if settings.searchMenuVisible then

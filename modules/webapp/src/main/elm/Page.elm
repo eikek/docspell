@@ -6,7 +6,9 @@
 
 
 module Page exposing
-    ( Page(..)
+    ( LoginData
+    , Page(..)
+    , emptyLoginData
     , fromUrl
     , goto
     , hasSidebar
@@ -31,9 +33,24 @@ import Url.Parser.Query as Query
 import Util.Maybe
 
 
+type alias LoginData =
+    { referrer : Maybe Page
+    , session : Maybe String
+    , openid : Int
+    }
+
+
+emptyLoginData : LoginData
+emptyLoginData =
+    { referrer = Nothing
+    , session = Nothing
+    , openid = 0
+    }
+
+
 type Page
     = HomePage
-    | LoginPage ( Maybe Page, Bool )
+    | LoginPage LoginData
     | ManageDataPage
     | CollectiveSettingPage
     | UserSettingPage
@@ -99,10 +116,10 @@ loginPage : Page -> Page
 loginPage p =
     case p of
         LoginPage _ ->
-            LoginPage ( Nothing, False )
+            LoginPage emptyLoginData
 
         _ ->
-            LoginPage ( Just p, False )
+            LoginPage { emptyLoginData | referrer = Just p }
 
 
 pageName : Page -> String
@@ -144,14 +161,14 @@ pageName page =
             "Item"
 
 
-loginPageReferrer : Page -> ( Maybe Page, Bool )
+loginPageReferrer : Page -> LoginData
 loginPageReferrer page =
     case page of
-        LoginPage ( r, flag ) ->
-            ( r, flag )
+        LoginPage data ->
+            data
 
         _ ->
-            ( Nothing, False )
+            emptyLoginData
 
 
 uploadId : Page -> Maybe String
@@ -170,8 +187,8 @@ pageToString page =
         HomePage ->
             "/app/home"
 
-        LoginPage ( referer, _ ) ->
-            case referer of
+        LoginPage data ->
+            case data.referrer of
                 Just (LoginPage _) ->
                     "/app/login"
 
@@ -280,14 +297,19 @@ fromString str =
     fromUrl url
 
 
-loginPageOAuthQuery : Query.Parser Bool
+loginPageOAuthQuery : Query.Parser Int
 loginPageOAuthQuery =
-    Query.map Util.Maybe.nonEmpty (Query.string "openid")
+    Query.map (Maybe.withDefault 0) (Query.int "openid")
 
 
-loginPageParser : Query.Parser ( Maybe Page, Bool )
+loginPageSessionQuery : Query.Parser (Maybe String)
+loginPageSessionQuery =
+    Query.string "auth"
+
+
+loginPageParser : Query.Parser LoginData
 loginPageParser =
-    Query.map2 Tuple.pair pageQuery loginPageOAuthQuery
+    Query.map3 LoginData pageQuery loginPageSessionQuery loginPageOAuthQuery
 
 
 pageQuery : Query.Parser (Maybe Page)

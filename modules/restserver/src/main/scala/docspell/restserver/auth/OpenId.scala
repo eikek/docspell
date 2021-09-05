@@ -54,7 +54,9 @@ object OpenId {
 
           extractColl match {
             case ExtractResult.Failure(message) =>
-              logger.warn(s"Can't retrieve user data using collective-key=${cfg.collectiveKey.asString}: $message") *>
+              logger.warn(
+                s"Can't retrieve user data using collective-key=${cfg.collectiveKey.asString}: $message"
+              ) *>
                 TemporaryRedirect(location)
 
             case ExtractResult.Account(accountId) =>
@@ -63,7 +65,9 @@ object OpenId {
             case ExtractResult.Identifier(coll) =>
               Extractor.Lookup(cfg.userKey).find(userJson) match {
                 case ExtractResult.Failure(message) =>
-                  logger.warn(s"Can't retrieve user data using user-key=${cfg.userKey}: $message") *>
+                  logger.warn(
+                    s"Can't retrieve user data using user-key=${cfg.userKey}: $message"
+                  ) *>
                     TemporaryRedirect(location)
 
                 case ExtractResult.Identifier(name) =>
@@ -144,7 +148,15 @@ object OpenId {
       login <- backend.login.loginExternal(config.auth)(accountId)
       resp <- login match {
         case Login.Result.Ok(session, _) =>
-          TemporaryRedirect(location)
+          val loc =
+            if (session.requireSecondFactor)
+              location.copy(uri =
+                location.uri
+                  .withQueryParam("openid", "2")
+                  .withQueryParam("auth", session.asString)
+              )
+            else location
+          TemporaryRedirect(loc)
             .map(_.addCookie(CookieData(session).asCookie(baseUrl)))
 
         case failed =>

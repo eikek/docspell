@@ -104,11 +104,11 @@ openIdLinks texts flags =
                 ]
 
 
-otpForm : Texts -> Flags -> Model -> AuthResult -> Html Msg
-otpForm texts flags model acc =
+otpForm : Texts -> Flags -> Model -> String -> Html Msg
+otpForm texts flags model token =
     Html.form
         [ action "#"
-        , onSubmit (AuthOtp acc)
+        , onSubmit (AuthOtp token)
         , autocomplete False
         ]
         [ div [ class "flex flex-col mt-6" ]
