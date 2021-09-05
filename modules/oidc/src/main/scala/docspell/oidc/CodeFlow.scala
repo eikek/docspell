@@ -45,13 +45,13 @@ object CodeFlow {
 
     for {
       _ <- OptionT.liftF(
-        logger.debug(
+        logger.trace(
           s"Obtaining access_token for provider ${cfg.providerId.id} and code $code"
         )
       )
       token <- fetchAccessToken[F](c, dsl, cfg, redirectUri, code)
       _ <- OptionT.liftF(
-        logger.debug(
+        logger.trace(
           s"Obtaining user-info for provider ${cfg.providerId.id} and token $token"
         )
       )
@@ -70,7 +70,7 @@ object CodeFlow {
         case _ =>
           OptionT
             .liftF(
-              logger.error(
+              logger.warn(
                 s"No signature specified and no user endpoint url. Cannot obtain user info from access token!"
               )
             )
@@ -113,7 +113,7 @@ object CodeFlow {
           token <- r.attemptAs[AccessToken].value
           _ <- token match {
             case Right(t) =>
-              logger.debug(s"Got token response: $t")
+              logger.trace(s"Got token response: $t")
             case Left(err) =>
               logger.error(err)(s"Error decoding access token: ${err.getMessage}")
           }

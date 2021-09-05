@@ -50,18 +50,18 @@ object CodeFlowRoutes {
               )
               .withQuery("response_type", "code")
             logger.debug(
-              s"Redirecting to OAuth provider ${cfg.providerId.id}: ${uri.asString}"
-            )
-            SeeOther().map(_.withHeaders(Location(Uri.unsafeFromString(uri.asString))))
+              s"Redirecting to OAuth/OIDC provider ${cfg.providerId.id}: ${uri.asString}"
+            ) *>
+              SeeOther().map(_.withHeaders(Location(Uri.unsafeFromString(uri.asString))))
           case None =>
-            logger.debug(s"No oauth provider found with id '$id'") *>
+            logger.debug(s"No OAuth/OIDC provider found with id '$id'") *>
               NotFound()
         }
 
       case req @ GET -> Root / Ident(id) / "resume" =>
         config.findProvider(id) match {
           case None =>
-            logger.debug(s"No oauth provider found with id '$id'") *>
+            logger.debug(s"No OAuth/OIDC provider found with id '$id'") *>
               NotFound()
           case Some(provider) =>
             val codeFromReq = OptionT.fromOption[F](req.params.get("code"))
@@ -70,7 +70,7 @@ object CodeFlowRoutes {
               _    <- OptionT.liftF(logger.info(s"Resume OAuth/OIDC flow for ${id.id}"))
               code <- codeFromReq
               _ <- OptionT.liftF(
-                logger.debug(
+                logger.trace(
                   s"Resume OAuth/OIDC flow from ${provider.providerId.id} with auth_code=$code"
                 )
               )
@@ -92,7 +92,7 @@ object CodeFlowRoutes {
                   .map(err => s": $err")
                   .getOrElse("")
 
-                logger.error(s"Error resuming code flow from '${id.id}'$reason") *>
+                logger.warn(s"Error resuming code flow from '${id.id}'$reason") *>
                   onUserInfo.handle(req, provider, None)
             }
         }

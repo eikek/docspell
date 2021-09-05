@@ -31,7 +31,7 @@ object OpenId {
     CodeFlowConfig(
       req =>
         ClientRequestInfo
-          .getBaseUrl(config, req) / "api" / "v1" / "open" / "auth" / "oauth",
+          .getBaseUrl(config, req) / "api" / "v1" / "open" / "auth" / "openid",
       id =>
         config.openid.filter(_.enabled).find(_.provider.providerId == id).map(_.provider)
     )
@@ -42,7 +42,7 @@ object OpenId {
       import dsl._
       val logger   = Logger.log4s(log)
       val baseUrl  = ClientRequestInfo.getBaseUrl(config, req)
-      val uri      = baseUrl.withQuery("oauth", "1") / "app" / "login"
+      val uri      = baseUrl.withQuery("openid", "1") / "app" / "login"
       val location = Location(Uri.unsafeFromString(uri.asString))
       val cfg = config.openid
         .find(_.provider.providerId == provider.providerId)
@@ -54,7 +54,7 @@ object OpenId {
 
           extractColl match {
             case ExtractResult.Failure(message) =>
-              logger.error(s"Error retrieving user data: $message") *>
+              logger.warn(s"Can't retrieve user data using collective-key=${cfg.collectiveKey.asString}: $message") *>
                 TemporaryRedirect(location)
 
             case ExtractResult.Account(accountId) =>
@@ -63,7 +63,7 @@ object OpenId {
             case ExtractResult.Identifier(coll) =>
               Extractor.Lookup(cfg.userKey).find(userJson) match {
                 case ExtractResult.Failure(message) =>
-                  logger.error(s"Error retrieving user data: $message") *>
+                  logger.warn(s"Can't retrieve user data using user-key=${cfg.userKey}: $message") *>
                     TemporaryRedirect(location)
 
                 case ExtractResult.Identifier(name) =>
@@ -158,6 +158,7 @@ object OpenId {
 
     sealed trait Extractor {
       def find(json: Json): ExtractResult
+      def asString: String
     }
     object Extractor {
       final case class Fixed(value: String) extends Extractor {
@@ -165,6 +166,8 @@ object OpenId {
           UserInfoDecoder
             .normalizeUid(value)
             .fold(err => ExtractResult.Failure(err), ExtractResult.Identifier)
+
+        val asString = s"fixed:$value"
       }
 
       final case class Lookup(value: String) extends Extractor {
@@ -176,6 +179,8 @@ object OpenId {
               err => ExtractResult.Failure(err.getMessage()),
               ExtractResult.Identifier
             )
+
+        val asString = s"lookup:$value"
       }
 
       final case class AccountLookup(value: String) extends Extractor {
@@ -185,6 +190,8 @@ object OpenId {
             .emap(AccountId.parse)
             .decodeJson(json)
             .fold(df => ExtractResult.Failure(df.getMessage()), ExtractResult.Account)
+
+        def asString = s"account:$value"
       }
 
       def fromString(str: String): Either[String, Extractor] =

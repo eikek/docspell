@@ -78,7 +78,8 @@ object Config {
   object FullTextSearch {}
 
   final case class OpenIdConfig(
-      enabled: Boolean,
+    enabled: Boolean,
+    display: String,
       collectiveKey: OpenId.UserInfo.Extractor,
       userKey: String,
       provider: ProviderConfig
