@@ -29,6 +29,28 @@ case class RUser(
 ) {}
 
 object RUser {
+
+  def makeDefault(
+      id: Ident,
+      login: Ident,
+      collName: Ident,
+      password: Password,
+      source: AccountSource,
+      created: Timestamp
+  ): RUser =
+    RUser(
+      id,
+      login,
+      collName,
+      password,
+      UserState.Active,
+      source,
+      None,
+      0,
+      None,
+      created
+    )
+
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "user_"
 

@@ -37,6 +37,9 @@ object RCollective {
     val all = NonEmptyList.of[Column[_]](id, state, language, integration, created)
   }
 
+  def makeDefault(collName: Ident, created: Timestamp): RCollective =
+    RCollective(collName, CollectiveState.Active, Language.German, true, created)
+
   val T = Table(None)
   def as(alias: String): Table =
     Table(Some(alias))
