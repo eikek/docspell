@@ -31,7 +31,7 @@ object RRememberMe {
     val all      = NonEmptyList.of[Column[_]](id, cid, username, created, uses)
   }
 
-  private val T = Table(None)
+  val T = Table(None)
   def as(alias: String): Table =
     Table(Some(alias))
 
