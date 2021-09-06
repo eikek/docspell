@@ -48,6 +48,19 @@ in
         header-value = "test123";
       };
     };
+    openid = [
+      { enabled = true;
+        display = "Local";
+        provider = {
+          provider-id = "local";
+          client-id = "cid1";
+          client-secret = "csecret-1";
+          authorize-url = "http:auth";
+          token-url = "http:token";
+          sign-key = "b64:uiaeuae";
+        };
+      }
+    ];
     inherit full-text-search;
   };
 
