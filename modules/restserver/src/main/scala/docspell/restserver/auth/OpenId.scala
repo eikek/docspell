@@ -57,7 +57,7 @@ object OpenId {
               logger.warn(
                 s"Can't retrieve user data using collective-key=${cfg.collectiveKey.asString}: $message"
               ) *>
-                TemporaryRedirect(location)
+                SeeOther(location)
 
             case ExtractResult.Account(accountId) =>
               signUpAndLogin[F](backend)(config, accountId, location, baseUrl)
@@ -68,7 +68,7 @@ object OpenId {
                   logger.warn(
                     s"Can't retrieve user data using user-key=${cfg.userKey}: $message"
                   ) *>
-                    TemporaryRedirect(location)
+                    SeeOther(location)
 
                 case ExtractResult.Identifier(name) =>
                   signUpAndLogin[F](backend)(
@@ -112,23 +112,23 @@ object OpenId {
       res <- setup match {
         case SignupResult.Failure(ex) =>
           logger.error(ex)(s"Error when creating external account!") *>
-            TemporaryRedirect(location)
+            SeeOther(location)
 
         case SignupResult.SignupClosed =>
           logger.error(s"External accounts don't work when signup is closed!") *>
-            TemporaryRedirect(location)
+            SeeOther(location)
 
         case SignupResult.CollectiveExists =>
           logger.error(
             s"Error when creating external accounts! Collective exists error reported. This is a bug!"
           ) *>
-            TemporaryRedirect(location)
+            SeeOther(location)
 
         case SignupResult.InvalidInvitationKey =>
           logger.error(
             s"Error when creating external accounts! Invalid invitation key reported. This is a bug!"
           ) *>
-            TemporaryRedirect(location)
+            SeeOther(location)
 
         case SignupResult.Success =>
           loginAndVerify(backend, cfg)(accountId, location, baseUrl)
@@ -156,12 +156,12 @@ object OpenId {
                   .withQueryParam("auth", session.asString)
               )
             else location
-          TemporaryRedirect(loc)
+          SeeOther(loc)
             .map(_.addCookie(CookieData(session).asCookie(baseUrl)))
 
         case failed =>
           Logger.log4s(log).error(s"External login failed: $failed") *>
-            TemporaryRedirect(location)
+            SeeOther(location)
       }
     } yield resp
   }

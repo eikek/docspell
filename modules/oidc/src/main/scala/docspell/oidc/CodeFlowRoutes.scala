@@ -54,7 +54,7 @@ object CodeFlowRoutes {
             logger.debug(
               s"Redirecting to OAuth/OIDC provider ${cfg.providerId.id}: ${uri.asString}"
             ) *>
-              SeeOther().map(_.withHeaders(Location(Uri.unsafeFromString(uri.asString))))
+              Found(Location(Uri.unsafeFromString(uri.asString)))
           case None =>
             logger.debug(s"No OAuth/OIDC provider found with id '$id'") *>
               NotFound()
