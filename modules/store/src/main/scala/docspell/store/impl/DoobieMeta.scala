@@ -35,6 +35,9 @@ trait DoobieMeta extends EmilDoobieMeta {
       e.apply(a).noSpaces
     )
 
+  implicit val metaAccountSource: Meta[AccountSource] =
+    Meta[String].imap(AccountSource.unsafeFromString)(_.name)
+
   implicit val metaDuration: Meta[Duration] =
     Meta[Long].imap(Duration.millis)(_.millis)
 

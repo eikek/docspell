@@ -95,9 +95,11 @@ object OCollective {
   object PassResetResult {
     case class Success(newPw: Password) extends PassResetResult
     case object NotFound                extends PassResetResult
+    case object UserNotLocal            extends PassResetResult
 
     def success(np: Password): PassResetResult = Success(np)
     def notFound: PassResetResult              = NotFound
+    def userNotLocal: PassResetResult          = UserNotLocal
   }
 
   sealed trait PassChangeResult
@@ -105,34 +107,14 @@ object OCollective {
     case object UserNotFound     extends PassChangeResult
     case object PasswordMismatch extends PassChangeResult
     case object UpdateFailed     extends PassChangeResult
+    case object UserNotLocal     extends PassChangeResult
     case object Success          extends PassChangeResult
 
     def userNotFound: PassChangeResult     = UserNotFound
     def passwordMismatch: PassChangeResult = PasswordMismatch
     def success: PassChangeResult          = Success
     def updateFailed: PassChangeResult     = UpdateFailed
-  }
-
-  case class RegisterData(
-      collName: Ident,
-      login: Ident,
-      password: Password,
-      invite: Option[Ident]
-  )
-
-  sealed trait RegisterResult {
-    def toEither: Either[Throwable, Unit]
-  }
-  object RegisterResult {
-    case object Success extends RegisterResult {
-      val toEither = Right(())
-    }
-    case class CollectiveExists(id: Ident) extends RegisterResult {
-      val toEither = Left(new Exception())
-    }
-    case class Error(ex: Throwable) extends RegisterResult {
-      val toEither = Left(ex)
-    }
+    def userNotLocal: PassChangeResult     = UserNotLocal
   }
 
   def apply[F[_]: Async](
@@ -245,11 +227,14 @@ object OCollective {
       def resetPassword(accountId: AccountId): F[PassResetResult] =
         for {
           newPass <- Password.generate[F]
+          optUser <- store.transact(RUser.findByAccount(accountId))
           n <- store.transact(
             RUser.updatePassword(accountId, PasswordCrypt.crypt(newPass))
           )
           res =
-            if (n <= 0) PassResetResult.notFound
+            if (optUser.exists(_.source != AccountSource.Local))
+              PassResetResult.userNotLocal
+            else if (n <= 0) PassResetResult.notFound
             else PassResetResult.success(newPass)
         } yield res
 
@@ -270,6 +255,8 @@ object OCollective {
           res = check match {
             case Some(true) =>
               if (n.getOrElse(0) > 0) PassChangeResult.success
+              else if (optUser.exists(_.source != AccountSource.Local))
+                PassChangeResult.userNotLocal
               else PassChangeResult.updateFailed
             case Some(false) =>
               PassChangeResult.passwordMismatch

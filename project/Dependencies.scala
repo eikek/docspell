@@ -23,6 +23,7 @@ object Dependencies {
   val Icu4jVersion            = "69.1"
   val javaOtpVersion          = "0.3.0"
   val JsoupVersion            = "1.14.2"
+  val JwtScalaVersion         = "9.0.1"
   val KindProjectorVersion    = "0.10.3"
   val KittensVersion          = "2.3.2"
   val LevigoJbig2Version      = "2.0"
@@ -47,6 +48,10 @@ object Dependencies {
   val TwelveMonkeysVersion    = "3.7.0"
   val JQueryVersion           = "3.5.1"
   val ViewerJSVersion         = "0.5.9"
+
+  val jwtScala = Seq(
+    "com.github.jwt-scala" %% "jwt-circe" % JwtScalaVersion
+  )
 
   val scodecBits = Seq(
     "org.scodec" %% "scodec-bits" % ScodecBitsVersion

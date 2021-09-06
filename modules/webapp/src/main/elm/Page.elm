@@ -6,7 +6,9 @@
 
 
 module Page exposing
-    ( Page(..)
+    ( LoginData
+    , Page(..)
+    , emptyLoginData
     , fromUrl
     , goto
     , hasSidebar
@@ -31,9 +33,24 @@ import Url.Parser.Query as Query
 import Util.Maybe
 
 
+type alias LoginData =
+    { referrer : Maybe Page
+    , session : Maybe String
+    , openid : Int
+    }
+
+
+emptyLoginData : LoginData
+emptyLoginData =
+    { referrer = Nothing
+    , session = Nothing
+    , openid = 0
+    }
+
+
 type Page
     = HomePage
-    | LoginPage (Maybe Page)
+    | LoginPage LoginData
     | ManageDataPage
     | CollectiveSettingPage
     | UserSettingPage
@@ -99,10 +116,10 @@ loginPage : Page -> Page
 loginPage p =
     case p of
         LoginPage _ ->
-            LoginPage Nothing
+            LoginPage emptyLoginData
 
         _ ->
-            LoginPage (Just p)
+            LoginPage { emptyLoginData | referrer = Just p }
 
 
 pageName : Page -> String
@@ -144,14 +161,14 @@ pageName page =
             "Item"
 
 
-loginPageReferrer : Page -> Maybe Page
+loginPageReferrer : Page -> LoginData
 loginPageReferrer page =
     case page of
-        LoginPage r ->
-            r
+        LoginPage data ->
+            data
 
         _ ->
-            Nothing
+            emptyLoginData
 
 
 uploadId : Page -> Maybe String
@@ -170,8 +187,8 @@ pageToString page =
         HomePage ->
             "/app/home"
 
-        LoginPage referer ->
-            case referer of
+        LoginPage data ->
+            case data.referrer of
                 Just (LoginPage _) ->
                     "/app/login"
 
@@ -253,7 +270,7 @@ parser =
                 , s pathPrefix </> s "home"
                 ]
             )
-        , Parser.map LoginPage (s pathPrefix </> s "login" <?> pageQuery)
+        , Parser.map LoginPage (s pathPrefix </> s "login" <?> loginPageParser)
         , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
         , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")
         , Parser.map UserSettingPage (s pathPrefix </> s "usettings")
@@ -278,6 +295,21 @@ fromString str =
             Url Url.Http "localhost" Nothing str Nothing Nothing
     in
     fromUrl url
+
+
+loginPageOAuthQuery : Query.Parser Int
+loginPageOAuthQuery =
+    Query.map (Maybe.withDefault 0) (Query.int "openid")
+
+
+loginPageSessionQuery : Query.Parser (Maybe String)
+loginPageSessionQuery =
+    Query.string "auth"
+
+
+loginPageParser : Query.Parser LoginData
+loginPageParser =
+    Query.map3 LoginData pageQuery loginPageSessionQuery loginPageOAuthQuery
 
 
 pageQuery : Query.Parser (Maybe Page)

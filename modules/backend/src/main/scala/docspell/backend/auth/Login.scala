@@ -23,6 +23,8 @@ import scodec.bits.ByteVector
 
 trait Login[F[_]] {
 
+  def loginExternal(config: Config)(accountId: AccountId): F[Result]
+
   def loginSession(config: Config)(sessionKey: String): F[Result]
 
   def loginUserPass(config: Config)(up: UserPass): F[Result]
@@ -93,6 +95,16 @@ object Login {
 
       private val logF = Logger.log4s(logger)
 
+      def loginExternal(config: Config)(accountId: AccountId): F[Result] =
+        for {
+          data <- store.transact(QLogin.findUser(accountId))
+          _    <- logF.trace(s"Account lookup: $data")
+          res <-
+            if (data.exists(checkNoPassword(_, Set(AccountSource.OpenId))))
+              doLogin(config, accountId, false)
+            else Result.invalidAuth.pure[F]
+        } yield res
+
       def loginSession(config: Config)(sessionKey: String): F[Result] =
         AuthToken.fromString(sessionKey) match {
           case Right(at) =>
@@ -110,24 +122,11 @@ object Login {
       def loginUserPass(config: Config)(up: UserPass): F[Result] =
         AccountId.parse(up.user) match {
           case Right(acc) =>
-            val okResult =
-              for {
-                require2FA <- store.transact(RTotp.isEnabled(acc))
-                _ <-
-                  if (require2FA) ().pure[F]
-                  else store.transact(RUser.updateLogin(acc))
-                token <- AuthToken.user(acc, require2FA, config.serverSecret)
-                rem <- OptionT
-                  .whenF(!require2FA && up.rememberMe && config.rememberMe.enabled)(
-                    insertRememberToken(store, acc, config)
-                  )
-                  .value
-              } yield Result.ok(token, rem)
             for {
               data <- store.transact(QLogin.findUser(acc))
               _    <- Sync[F].delay(logger.trace(s"Account lookup: $data"))
               res <-
-                if (data.exists(check(up.pass))) okResult
+                if (data.exists(check(up.pass))) doLogin(config, acc, up.rememberMe)
                 else Result.invalidAuth.pure[F]
             } yield res
           case Left(_) =>
@@ -194,7 +193,7 @@ object Login {
               logF.info(s"Account lookup via remember me: $data")
             )
             res <- OptionT.liftF(
-              if (checkNoPassword(data))
+              if (checkNoPassword(data, AccountSource.all.toList.toSet))
                 logF.info("RememberMe auth successful") *> okResult(data.account)
               else
                 logF.warn("RememberMe auth not successful") *> Result.invalidAuth.pure[F]
@@ -247,6 +246,24 @@ object Login {
             0.pure[F]
         }
 
+      private def doLogin(
+          config: Config,
+          acc: AccountId,
+          rememberMe: Boolean
+      ): F[Result] =
+        for {
+          require2FA <- store.transact(RTotp.isEnabled(acc))
+          _ <-
+            if (require2FA) ().pure[F]
+            else store.transact(RUser.updateLogin(acc))
+          token <- AuthToken.user(acc, require2FA, config.serverSecret)
+          rem <- OptionT
+            .whenF(!require2FA && rememberMe && config.rememberMe.enabled)(
+              insertRememberToken(store, acc, config)
+            )
+            .value
+        } yield Result.ok(token, rem)
+
       private def insertRememberToken(
           store: Store[F],
           acc: AccountId,
@@ -260,13 +277,17 @@ object Login {
 
       private def check(given: String)(data: QLogin.Data): Boolean = {
         val passOk = BCrypt.checkpw(given, data.password.pass)
-        checkNoPassword(data) && passOk
+        checkNoPassword(data, Set(AccountSource.Local)) && passOk
       }
 
-      private def checkNoPassword(data: QLogin.Data): Boolean = {
+      def checkNoPassword(
+          data: QLogin.Data,
+          expectedSources: Set[AccountSource]
+      ): Boolean = {
         val collOk = data.collectiveState == CollectiveState.Active ||
           data.collectiveState == CollectiveState.ReadOnly
-        val userOk = data.userState == UserState.Active
+        val userOk =
+          data.userState == UserState.Active && expectedSources.contains(data.source)
         collOk && userOk
       }
     })

@@ -11,11 +11,14 @@ module Page.Login.Data exposing
     , Model
     , Msg(..)
     , emptyModel
+    , init
     )
 
+import Api
 import Api.Model.AuthResult exposing (AuthResult)
+import Data.Flags exposing (Flags)
 import Http
-import Page exposing (Page(..))
+import Page exposing (LoginData, Page(..))
 
 
 type alias Model =
@@ -37,7 +40,7 @@ type FormState
 
 type AuthStep
     = StepLogin
-    | StepOtp AuthResult
+    | StepOtp String
 
 
 emptyModel : Model
@@ -51,6 +54,19 @@ emptyModel =
     }
 
 
+init : Flags -> LoginData -> ( Model, Cmd Msg )
+init flags ld =
+    let
+        cmd =
+            if ld.openid > 0 then
+                Api.loginSession flags AuthResp
+
+            else
+                Cmd.none
+    in
+    ( emptyModel, cmd )
+
+
 type Msg
     = SetUsername String
     | SetPassword String
@@ -58,4 +74,4 @@ type Msg
     | Authenticate
     | AuthResp (Result Http.Error AuthResult)
     | SetOtp String
-    | AuthOtp AuthResult
+    | AuthOtp String

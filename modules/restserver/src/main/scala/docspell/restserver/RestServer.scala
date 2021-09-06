@@ -12,12 +12,16 @@ import fs2.Stream
 
 import docspell.backend.auth.AuthToken
 import docspell.common._
+import docspell.oidc.CodeFlowRoutes
+import docspell.restserver.auth.OpenId
 import docspell.restserver.http4s.EnvMiddleware
 import docspell.restserver.routes._
 import docspell.restserver.webapp._
 
 import org.http4s._
+import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.blaze.server.BlazeServerBuilder
+import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
 import org.http4s.implicits._
@@ -33,9 +37,10 @@ object RestServer {
       restApp <-
         RestAppImpl
           .create[F](cfg, pools.connectEC, pools.httpClientEC)
+      httpClient <- BlazeClientBuilder[F](pools.httpClientEC).resource
       httpApp = Router(
         "/api/info"     -> routes.InfoRoutes(),
-        "/api/v1/open/" -> openRoutes(cfg, restApp),
+        "/api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
           securedRoutes(cfg, restApp, token)
         },
@@ -98,8 +103,18 @@ object RestServer {
       "clientSettings" -> ClientSettingsRoutes(restApp.backend, token)
     )
 
-  def openRoutes[F[_]: Async](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
+  def openRoutes[F[_]: Async](
+      cfg: Config,
+      client: Client[F],
+      restApp: RestApp[F]
+  ): HttpRoutes[F] =
     Router(
+      "auth/openid" -> CodeFlowRoutes(
+        cfg.openIdEnabled,
+        OpenId.handle[F](restApp.backend, cfg),
+        OpenId.codeFlowConfig(cfg),
+        client
+      ),
       "auth"        -> LoginRoutes.login(restApp.backend.login, cfg),
       "signup"      -> RegisterRoutes(restApp.backend, cfg),
       "upload"      -> UploadRoutes.open(restApp.backend, cfg),

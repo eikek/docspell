@@ -66,6 +66,7 @@ view2 texts model =
                 [ th [ class "w-px whitespace-nowrap" ] []
                 , th [ class "text-left" ] [ text texts.login ]
                 , th [ class "text-center" ] [ text texts.state ]
+                , th [ class "text-center" ] [ text texts.source ]
                 , th [ class "hidden md:table-cell text-left" ] [ text texts.email ]
                 , th [ class "hidden md:table-cell text-center" ] [ text texts.logins ]
                 , th [ class "hidden sm:table-cell text-center" ] [ text texts.lastLogin ]
@@ -91,6 +92,9 @@ renderUserLine2 texts model user =
             ]
         , td [ class "text-center" ]
             [ text user.state
+            ]
+        , td [ class "text-center" ]
+            [ text user.source
             ]
         , td [ class "hidden md:table-cell text-left" ]
             [ Maybe.withDefault "" user.email |> text

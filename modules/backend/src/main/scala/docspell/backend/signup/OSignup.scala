@@ -10,7 +10,6 @@ import cats.effect.{Async, Resource}
 import cats.implicits._
 
 import docspell.backend.PasswordCrypt
-import docspell.backend.ops.OCollective.RegisterData
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.records.{RCollective, RInvitation, RUser}
@@ -22,6 +21,9 @@ import org.log4s.getLogger
 trait OSignup[F[_]] {
 
   def register(cfg: Config)(data: RegisterData): F[SignupResult]
+
+  /** Creates the given account if it doesn't exist. */
+  def setupExternal(cfg: Config)(data: ExternalAccount): F[SignupResult]
 
   def newInvite(cfg: Config)(password: Password): F[NewInviteResult]
 }
@@ -77,6 +79,37 @@ object OSignup {
             }
         }
 
+      def setupExternal(cfg: Config)(data: ExternalAccount): F[SignupResult] =
+        cfg.mode match {
+          case Config.Mode.Closed =>
+            SignupResult.signupClosed.pure[F]
+          case _ =>
+            if (data.source == AccountSource.Local)
+              SignupResult
+                .failure(new Exception("Account source must not be LOCAL!"))
+                .pure[F]
+            else
+              for {
+                recs <- makeRecords(data.collName, data.login, Password(""), data.source)
+                cres <- store.add(
+                  RCollective.insert(recs._1),
+                  RCollective.existsById(data.collName)
+                )
+                ures <- store.add(RUser.insert(recs._2), RUser.exists(data.login))
+                res = cres match {
+                  case AddResult.Failure(ex) =>
+                    SignupResult.failure(ex)
+                  case _ =>
+                    ures match {
+                      case AddResult.Failure(ex) =>
+                        SignupResult.failure(ex)
+                      case _ =>
+                        SignupResult.success
+                    }
+                }
+              } yield res
+        }
+
       private def retryInvite(res: SignupResult): Boolean =
         res match {
           case SignupResult.CollectiveExists =>
@@ -92,30 +125,6 @@ object OSignup {
         }
 
       private def addUser(data: RegisterData): F[AddResult] = {
-        def toRecords: F[(RCollective, RUser)] =
-          for {
-            id2 <- Ident.randomId[F]
-            now <- Timestamp.current[F]
-            c = RCollective(
-              data.collName,
-              CollectiveState.Active,
-              Language.German,
-              true,
-              now
-            )
-            u = RUser(
-              id2,
-              data.login,
-              data.collName,
-              PasswordCrypt.crypt(data.password),
-              UserState.Active,
-              None,
-              0,
-              None,
-              now
-            )
-          } yield (c, u)
-
         def insert(coll: RCollective, user: RUser): ConnectionIO[Int] =
           for {
             n1 <- RCollective.insert(coll)
@@ -127,9 +136,29 @@ object OSignup {
 
         val msg = s"The collective '${data.collName}' already exists."
         for {
-          cu   <- toRecords
+          cu <- makeRecords(data.collName, data.login, data.password, AccountSource.Local)
           save <- store.add(insert(cu._1, cu._2), collectiveExists)
         } yield save.fold(identity, _.withMsg(msg), identity)
       }
+
+      private def makeRecords(
+          collName: Ident,
+          login: Ident,
+          password: Password,
+          source: AccountSource
+      ): F[(RCollective, RUser)] =
+        for {
+          id2 <- Ident.randomId[F]
+          now <- Timestamp.current[F]
+          c = RCollective.makeDefault(collName, now)
+          u = RUser.makeDefault(
+            id2,
+            login,
+            collName,
+            PasswordCrypt.crypt(password),
+            source,
+            now
+          )
+        } yield (c, u)
     })
 }

@@ -29,6 +29,7 @@ type alias Texts =
     , noAccount : String
     , signupLink : String
     , otpCode : String
+    , or : String
     }
 
 
@@ -47,6 +48,7 @@ gb =
     , noAccount = "No account?"
     , signupLink = "Sign up!"
     , otpCode = "Authentication code"
+    , or = "Or"
     }
 
 
@@ -65,4 +67,5 @@ de =
     , noAccount = "Kein Konto?"
     , signupLink = "Hier registrieren!"
     , otpCode = "Authentifizierungscode"
+    , or = "Oder"
     }

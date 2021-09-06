@@ -31,8 +31,11 @@ description = "A list of features and limitations."
   jobs, set priorities
 - Everything available via a [documented](https://www.openapis.org/)
   [REST Api](@/docs/api/_index.md); allows to [generate
-  clients](https://openapi-generator.tech/docs/generators) for
-  (almost) any language
+  clients](https://openapi-generator.tech/docs/generators) for many
+  languages
+- [OpenID Connect](@/docs/configure/_index.md#openid-connect-oauth2)
+  support allows Docspell to integrate into your SSO setup, for
+  example with keycloak.
 - mobile-friendly Web-UI with dark and light theme
 - [Create anonymous
   “upload-urls”](@/docs/webapp/uploading.md#anonymous-upload) to

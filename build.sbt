@@ -254,6 +254,12 @@ val openapiScalaSettings = Seq(
         field =>
           field
             .copy(typeDef = TypeDef("LenientUri", Imports("docspell.common.LenientUri")))
+      case "accountsource" =>
+        field =>
+          field
+            .copy(typeDef =
+              TypeDef("AccountSource", Imports("docspell.common.AccountSource"))
+            )
     })
 )
 
@@ -502,6 +508,24 @@ val backend = project
   )
   .dependsOn(store, joexapi, ftsclient, totp)
 
+val oidc = project
+  .in(file("modules/oidc"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "docspell-oidc",
+    libraryDependencies ++=
+      Dependencies.loggingApi ++
+        Dependencies.fs2 ++
+        Dependencies.http4sClient ++
+        Dependencies.http4sCirce ++
+        Dependencies.http4sDsl ++
+        Dependencies.circe ++
+        Dependencies.jwtScala
+  )
+  .dependsOn(common)
+
 val webapp = project
   .in(file("modules/webapp"))
   .disablePlugins(RevolverPlugin)
@@ -615,7 +639,7 @@ val restserver = project
       }
     }
   )
-  .dependsOn(restapi, joexapi, backend, webapp, ftssolr)
+  .dependsOn(restapi, joexapi, backend, webapp, ftssolr, oidc)
 
 // --- Website Documentation
 
@@ -695,7 +719,8 @@ val root = project
     restserver,
     query.jvm,
     query.js,
-    totp
+    totp,
+    oidc
   )
 
 // --- Helpers

@@ -44,6 +44,14 @@ must be `docspell_auth` and a custom header must be named
 The admin route (see below) `/admin/user/resetPassword` can be used to
 reset a password of a user.
 
+### OpenID Connect
+
+Docspell can be configured to be a relying party for OpenID Connect.
+Please see [the config
+section](@/docs/configure/_index.md#openid-connect-oauth2) for
+details.
+
+
 ## Admin
 
 There are some endpoints available for adminstration tasks, for

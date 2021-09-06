@@ -158,7 +158,7 @@ updateWithSub msg model =
 
         LogoutResp _ ->
             ( { model | loginModel = Page.Login.Data.emptyModel }
-            , Page.goto (LoginPage Nothing)
+            , Page.goto (LoginPage Page.emptyLoginData)
             , Sub.none
             )
 
@@ -216,20 +216,24 @@ updateWithSub msg model =
         NavRequest req ->
             case req of
                 Internal url ->
-                    let
-                        isCurrent =
-                            Page.fromUrl url
-                                |> Maybe.map (\p -> p == model.page)
-                                |> Maybe.withDefault True
-                    in
-                    ( model
-                    , if isCurrent then
-                        Cmd.none
+                    if String.startsWith "/app" url.path then
+                        let
+                            isCurrent =
+                                Page.fromUrl url
+                                    |> Maybe.map (\p -> p == model.page)
+                                    |> Maybe.withDefault True
+                        in
+                        ( model
+                        , if isCurrent then
+                            Cmd.none
 
-                      else
-                        Nav.pushUrl model.key (Url.toString url)
-                    , Sub.none
-                    )
+                          else
+                            Nav.pushUrl model.key (Url.toString url)
+                        , Sub.none
+                        )
+
+                    else
+                        ( model, Nav.load <| Url.toString url, Sub.none )
 
                 External url ->
                     ( model

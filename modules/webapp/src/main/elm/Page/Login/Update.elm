@@ -10,13 +10,13 @@ module Page.Login.Update exposing (update)
 import Api
 import Api.Model.AuthResult exposing (AuthResult)
 import Data.Flags exposing (Flags)
-import Page exposing (Page(..))
+import Page exposing (LoginData, Page(..))
 import Page.Login.Data exposing (..)
 import Ports
 
 
-update : Maybe Page -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
-update referrer flags msg model =
+update : LoginData -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
+update loginData flags msg model =
     case msg of
         SetUsername str ->
             ( { model | username = str }, Cmd.none, Nothing )
@@ -40,11 +40,11 @@ update referrer flags msg model =
             in
             ( model, Api.login flags userPass AuthResp, Nothing )
 
-        AuthOtp acc ->
+        AuthOtp token ->
             let
                 sf =
                     { rememberMe = model.rememberMe
-                    , token = Maybe.withDefault "" acc.token
+                    , token = token
                     , otp = model.otp
                     }
             in
@@ -53,7 +53,7 @@ update referrer flags msg model =
         AuthResp (Ok lr) ->
             let
                 gotoRef =
-                    Maybe.withDefault HomePage referrer |> Page.goto
+                    Maybe.withDefault HomePage loginData.referrer |> Page.goto
             in
             if lr.success && not lr.requireSecondFactor then
                 ( { model | formState = AuthSuccess lr, password = "" }
@@ -62,7 +62,11 @@ update referrer flags msg model =
                 )
 
             else if lr.success && lr.requireSecondFactor then
-                ( { model | formState = FormInitial, authStep = StepOtp lr, password = "" }
+                ( { model
+                    | formState = FormInitial
+                    , authStep = StepOtp <| Maybe.withDefault "" lr.token
+                    , password = ""
+                  }
                 , Cmd.none
                 , Nothing
                 )
@@ -77,11 +81,22 @@ update referrer flags msg model =
             let
                 empty =
                     Api.Model.AuthResult.empty
+
+                session =
+                    Maybe.withDefault "" loginData.session
             in
-            ( { model | password = "", formState = HttpError err }
-            , Ports.removeAccount ()
-            , Just empty
-            )
+            -- A value of 2 indicates that TOTP is required
+            if loginData.openid == 2 then
+                ( { model | formState = FormInitial, authStep = StepOtp session, password = "" }
+                , Cmd.none
+                , Nothing
+                )
+
+            else
+                ( { model | password = "", formState = HttpError err }
+                , Ports.removeAccount ()
+                , Just empty
+                )
 
 
 setAccount : AuthResult -> Cmd msg

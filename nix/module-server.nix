@@ -61,6 +61,23 @@ let
         valid = "30 days";
       };
     };
+    openid = {
+      enabled = false;
+      display = "";
+      provider = {
+        provider-id = null;
+        client-id = null;
+        client-secret = null;
+        scope = "profile";
+        authorize-url = null;
+        token-url = null;
+        user-url = "";
+        sign-key = "";
+        sig-algo = "RS256";
+      };
+      user-key = "preferred_username";
+      collective-key = "lookup:preferred_username";
+    };
     backend = {
       mail-debug = false;
       jdbc = {
@@ -224,6 +241,90 @@ in {
         });
         default = defaults.auth;
         description = "Authentication";
+      };
+
+      openid = mkOption {
+        type = types.listOf (types.submodule {
+          options = {
+            enabled = mkOption {
+              type = types.bool;
+              default = defaults.openid.enabled;
+              description = "Whether to use these settings.";
+            };
+            display = mkOption {
+              type = types.str;
+              default = defaults.openid.display;
+              example = "via Keycloak";
+              description = "The name for the button on the login page.";
+            };
+            user-key = mkOption {
+              type = types.str;
+              default = defaults.openid.user-key;
+              description = "The key to retrieve the username";
+            };
+            collective-key = mkOption {
+              type = types.str;
+              default = defaults.openid.collective-key;
+              description = "How to retrieve the collective name.";
+            };
+            provider = mkOption {
+              type = (types.submodule {
+                options = {
+                  provider-id = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.provider-id;
+                    example = "keycloak";
+                    description = "The id of the provider, used in the URL and to distinguish other providers.";
+                  };
+                  client-id = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.client-id;
+                    description = "The client-id as registered at the OP.";
+                  };
+                  client-secret = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.client-secret;
+                    description = "The client-secret as registered at the OP.";
+                  };
+                  scope = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.scope;
+                    description = "A scope to define what data to return from OP";
+                  };
+                  authorize-url = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.authorize-url;
+                    description = "The URL used to authenticate the user";
+                  };
+                  token-url = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.token-url;
+                    description = "The URL used to retrieve the token.";
+                  };
+                  user-url = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.user-url;
+                    description = "The URL to the user-info endpoint.";
+                  };
+                  sign-key = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.sign-key;
+                    description = "The key for verifying the jwt signature.";
+                  };
+                  sig-algo = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.sig-algo;
+                    description = "The expected algorithm used to sign the token.";
+                  };
+                };
+              });
+              default = defaults.openid.provider;
+              description = "The config for an OpenID Connect provider.";
+            };
+          };
+        });
+        default = [];
+        description = "A list of OIDC provider configurations.";
       };
 
       integration-endpoint = mkOption {
