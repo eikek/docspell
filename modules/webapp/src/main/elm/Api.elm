@@ -43,6 +43,7 @@ module Api exposing
     , deleteSource
     , deleteTag
     , deleteUser
+    , deleteUserData
     , disableOtp
     , fileURL
     , getAttachmentMeta
@@ -162,6 +163,7 @@ import Api.Model.CollectiveSettings exposing (CollectiveSettings)
 import Api.Model.ContactList exposing (ContactList)
 import Api.Model.CustomFieldList exposing (CustomFieldList)
 import Api.Model.CustomFieldValue exposing (CustomFieldValue)
+import Api.Model.DeleteUserData exposing (DeleteUserData)
 import Api.Model.DirectionValue exposing (DirectionValue)
 import Api.Model.EmailSettings exposing (EmailSettings)
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
@@ -1464,6 +1466,15 @@ deleteUser flags user receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/user/" ++ user
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+deleteUserData : Flags -> String -> (Result Http.Error DeleteUserData -> msg) -> Cmd msg
+deleteUserData flags username receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/user/" ++ username ++ "/deleteData"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.DeleteUserData.decoder
         }
 
 
