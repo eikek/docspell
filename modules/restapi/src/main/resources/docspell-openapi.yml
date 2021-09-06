@@ -42,6 +42,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VersionInfo"
+
   /open/auth/login:
     post:
       operationId: "open-auth-login"
@@ -93,6 +94,51 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthResult"
+  /open/auth/openid/{providerId}:
+    get:
+      operationId: "open-auth-openid"
+      tags: [ Authentication ]
+      summary: Authenticates via OIDC at the external provider given by its id
+      description: |
+        Initiates the ["Authorization Code
+        Flow"](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth)
+        as described in the OpenID Connect specification. This only is
+        enabled, if an external provider has been configured correctly
+        in the config file.
+
+        This will redirect to the external provider to authenticate
+        the user. Once authenticated, the user is redirected back to
+        the `/resume` endpoint.
+      parameters:
+        - $ref: "#/components/parameters/providerId"
+      responses:
+        302:
+          description: Found. Redirect to external authentication provider
+        200:
+          description: Not used, is only here because openid requires it
+  /open/auth/openid/{providerId}/resume:
+    get:
+      operationId: "open-auth-openid-resume"
+      tags: [ Authentication ]
+      summary: The callback URL for the authentication provider
+      description: |
+        This URL is used to redirect the user back to the application
+        by the authentication provider after login is completed.
+
+        This will then try to find (or create) the account at docspell
+        using information about the user provided by the
+        authentication provider. If the required information cannot be
+        found, the user cannot be logged into the application.
+
+        If the process completed successfully, this endpoint redirects
+        into the web application which will take over from here.
+      parameters:
+        - $ref: "#/components/parameters/providerId"
+      responses:
+        303:
+          description: See Other. Redirect to the webapp
+        200:
+          description: Not used, is only here because openid requires it
 
   /open/checkfile/{id}/{checksum}:
     get:
@@ -6269,3 +6315,10 @@ components:
         some identifier for a client application
       schema:
         type: string
+    providerId:
+      name: providerId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: ident
