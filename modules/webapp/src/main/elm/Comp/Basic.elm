@@ -6,7 +6,9 @@
 
 
 module Comp.Basic exposing
-    ( editLinkLabel
+    ( contentDimmer
+    , deleteButton
+    , editLinkLabel
     , editLinkTableCell
     , genericButton
     , horizontalDivider
@@ -86,6 +88,27 @@ secondaryButton model =
         , attrs = model.attrs
         , baseStyle = S.secondaryButtonMain ++ S.secondaryButton
         , activeStyle = S.secondaryButtonHover
+        }
+
+
+deleteButton :
+    { x
+        | label : String
+        , icon : String
+        , disabled : Bool
+        , handler : Attribute msg
+        , attrs : List (Attribute msg)
+    }
+    -> Html msg
+deleteButton model =
+    genericButton
+        { label = model.label
+        , icon = model.icon
+        , handler = model.handler
+        , disabled = model.disabled
+        , attrs = model.attrs
+        , baseStyle = S.deleteButtonMain
+        , activeStyle = S.deleteButtonHover
         }
 
 
@@ -182,18 +205,27 @@ linkLabel model =
 
 loadingDimmer : { label : String, active : Bool } -> Html msg
 loadingDimmer cfg =
+    let
+        content =
+            div [ class "text-gray-200" ]
+                [ i [ class "fa fa-circle-notch animate-spin" ] []
+                , span [ class "ml-2" ]
+                    [ text cfg.label
+                    ]
+                ]
+    in
+    contentDimmer cfg.active content
+
+
+contentDimmer : Bool -> Html msg -> Html msg
+contentDimmer active content =
     div
         [ classList
-            [ ( "hidden", not cfg.active )
+            [ ( "hidden", not active )
             ]
         , class S.dimmer
         ]
-        [ div [ class "text-gray-200" ]
-            [ i [ class "fa fa-circle-notch animate-spin" ] []
-            , span [ class "ml-2" ]
-                [ text cfg.label
-                ]
-            ]
+        [ content
         ]
 
 

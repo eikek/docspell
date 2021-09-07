@@ -43,7 +43,6 @@ module Api exposing
     , deleteSource
     , deleteTag
     , deleteUser
-    , deleteUserData
     , disableOtp
     , fileURL
     , getAttachmentMeta
@@ -52,6 +51,7 @@ module Api exposing
     , getCollectiveSettings
     , getContacts
     , getCustomFields
+    , getDeleteUserData
     , getEquipment
     , getEquipments
     , getFolderDetail
@@ -1469,8 +1469,8 @@ deleteUser flags user receive =
         }
 
 
-deleteUserData : Flags -> String -> (Result Http.Error DeleteUserData -> msg) -> Cmd msg
-deleteUserData flags username receive =
+getDeleteUserData : Flags -> String -> (Result Http.Error DeleteUserData -> msg) -> Cmd msg
+getDeleteUserData flags username receive =
     Http2.authGet
         { url = flags.config.baseUrl ++ "/api/v1/sec/user/" ++ username ++ "/deleteData"
         , account = getAccount flags
