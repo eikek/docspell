@@ -214,10 +214,13 @@ object OCollective {
         store.transact(RUser.findAll(collective, _.login))
 
       def add(s: RUser): F[AddResult] =
-        store.add(
-          RUser.insert(s.copy(password = PasswordCrypt.crypt(s.password))),
-          RUser.exists(s.login)
-        )
+        if (s.source != AccountSource.Local)
+          AddResult.failure(new Exception("Only local accounts can be created!")).pure[F]
+        else
+          store.add(
+            RUser.insert(s.copy(password = PasswordCrypt.crypt(s.password))),
+            RUser.exists(s.login)
+          )
 
       def update(s: RUser): F[AddResult] =
         store.add(RUser.update(s), RUser.exists(s.login))

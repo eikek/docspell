@@ -85,6 +85,7 @@ getUser model =
         , email = model.email
         , state = state
         , password = model.password
+        , source = "local"
     }
 
 
