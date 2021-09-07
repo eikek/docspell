@@ -8,19 +8,20 @@ package docspell.store.qb
 
 import cats.data.{NonEmptyList => Nel}
 
+import docspell.store.impl.DoobieMeta
 import docspell.store.qb.impl._
 
 import doobie._
 import doobie.implicits._
 
-object DML {
+object DML extends DoobieMeta {
   private val comma = fr","
 
   def delete(table: TableDef, cond: Condition): ConnectionIO[Int] =
     deleteFragment(table, cond).update.run
 
   def deleteFragment(table: TableDef, cond: Condition): Fragment =
-    fr"DELETE FROM" ++ FromExprBuilder.buildTable(table) ++ fr"WHERE" ++ ConditionBuilder
+    fr"DELETE FROM" ++ FromExprBuilder.buildTable(table) ++ fr" WHERE" ++ ConditionBuilder
       .build(cond)
 
   def insert(table: TableDef, cols: Nel[Column[_]], values: Fragment): ConnectionIO[Int] =
