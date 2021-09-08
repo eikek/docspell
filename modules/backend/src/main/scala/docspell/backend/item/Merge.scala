@@ -17,10 +17,7 @@ import docspell.common._
 import docspell.store.Store
 import docspell.store.queries.QCustomField
 import docspell.store.queries.QCustomField.FieldValue
-import docspell.store.records.RAttachment
-import docspell.store.records.RCustomField
-import docspell.store.records.RItem
-import docspell.store.records.RTagItem
+import docspell.store.records._
 
 trait Merge[F[_]] {
   def merge(items: NonEmptyList[Ident], collective: Ident): F[Merge.Result[RItem]]
@@ -52,6 +49,7 @@ object Merge {
           _ <- EitherT.right[Error](moveTags(ids))
           _ <- EitherT.right[Error](moveCustomFields(ids))
           _ <- EitherT.right[Error](moveAttachments(ids))
+          _ <- EitherT.right[Error](moveSentMails(ids))
           _ <- EitherT.right[Error](
             createIndex
               .reIndexData(logger, collective.some, NonEmptyList.one(ids.head).some, 50)
@@ -109,6 +107,14 @@ object Merge {
             store.transact(RCustomField.setValue(fv.field, items.head, fv.value))
           )
         } yield ()
+
+      def moveSentMails(items: NonEmptyList[Ident]): F[Int] =
+        NonEmptyList.fromList(items.tail) match {
+          case Some(others) =>
+            store.transact(RSentMailItem.moveToItem(items.head, others))
+          case None =>
+            0.pure[F]
+        }
     }
 
   private def mergeFields(

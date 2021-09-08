@@ -71,4 +71,7 @@ object RSentMailItem {
 
   def deleteAllByItem(item: Ident): ConnectionIO[Int] =
     DML.delete(T, T.itemId === item)
+
+  def moveToItem(target: Ident, others: NonEmptyList[Ident]): ConnectionIO[Int] =
+    DML.update(T, T.itemId.in(others), DML.set(T.itemId.setTo(target)))
 }
