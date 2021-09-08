@@ -66,6 +66,14 @@ object UserRoutes {
           ar   <- backend.collective.deleteUser(id, user.account.collective)
           resp <- Ok(basicResult(ar, "User deleted."))
         } yield resp
+
+      case GET -> Root / Ident(username) / "deleteData" =>
+        for {
+          data <- backend.collective.getDeleteUserData(
+            AccountId(user.account.collective, username)
+          )
+          resp <- Ok(DeleteUserData(data.ownedFolders.map(_.id), data.sentMails))
+        } yield resp
     }
   }
 

@@ -50,4 +50,6 @@ object AddResult {
     def fold[A](fa: Success.type => A, fb: EntityExists => A, fc: Failure => A): A =
       fc(this)
   }
+  def failure(ex: Exception): AddResult =
+    Failure(ex)
 }

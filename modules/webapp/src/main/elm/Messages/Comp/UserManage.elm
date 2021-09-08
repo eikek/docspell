@@ -30,6 +30,7 @@ type alias Texts =
     , basics : Messages.Basics.Texts
     , deleteThisUser : String
     , pleaseCorrectErrors : String
+    , notDeleteCurrentUser : String
     }
 
 
@@ -46,6 +47,7 @@ gb =
     , createNewUser = "Create new user"
     , deleteThisUser = "Delete this user"
     , pleaseCorrectErrors = "Please correct the errors in the form."
+    , notDeleteCurrentUser = "You can't delete the user you are currently logged in with."
     }
 
 
@@ -62,4 +64,5 @@ de =
     , createNewUser = "Neuen Benutzer erstellen"
     , deleteThisUser = "Benutzer löschen"
     , pleaseCorrectErrors = "Bitte korrigiere die Fehler im Formular."
+    , notDeleteCurrentUser = "Der aktuelle Benutzer kann nicht gelöscht werden."
     }

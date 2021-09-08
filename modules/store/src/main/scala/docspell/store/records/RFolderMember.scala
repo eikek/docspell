@@ -64,4 +64,7 @@ object RFolderMember {
 
   def deleteAll(folderId: Ident): ConnectionIO[Int] =
     DML.delete(T, T.folder === folderId)
+
+  def deleteMemberships(userId: Ident): ConnectionIO[Int] =
+    DML.delete(T, T.user === userId)
 }

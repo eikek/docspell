@@ -1309,9 +1309,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
-  /sec/user/{id}:
+  /sec/user/{username}:
     delete:
-      operationId: "sec-user-delete-by-id"
+      operationId: "sec-user-delete-by-username"
       tags: [ Collective ]
       summary: Delete a user.
       description: |
@@ -1319,7 +1319,7 @@ paths:
       security:
         - authTokenHeader: []
       parameters:
-        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/username"
       responses:
         200:
           description: Ok
@@ -1327,6 +1327,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+  /sec/user/{username}/deleteData:
+    get:
+      operationId: "sec-user-delete-data"
+      tags: [ Collective ]
+      summary: Shows some data that would be deleted if the user is deleted
+      description: |
+        Gets some data that would be deleted, when the user with the
+        given username is deleted. The `username` must be part of this
+        collective.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/username"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteUserData"
+
   /sec/user/changePassword:
     post:
       operationId: "sec-user-change-password"
@@ -4068,6 +4089,23 @@ paths:
 
 components:
   schemas:
+    DeleteUserData:
+      description: |
+        An excerpt of data that would be deleted when deleting the
+        associated user.
+      required:
+        - folders
+        - sentMails
+      properties:
+        folders:
+          type: array
+          items:
+            type: string
+            format: ident
+        sentMails:
+          type: integer
+          format: int32
+
     SecondFactor:
       description: |
         Provide a second factor for login.
@@ -6204,6 +6242,13 @@ components:
       in: path
       description: An identifier
       required: true
+      schema:
+        type: string
+    username:
+      name: username
+      in: path
+      required: true
+      description: The username of a user of this collective
       schema:
         type: string
     itemId:

@@ -15,18 +15,18 @@ module Comp.UserManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.DeleteUserData exposing (DeleteUserData)
 import Api.Model.User
 import Api.Model.UserList exposing (UserList)
 import Comp.Basic as B
 import Comp.MenuBar as MB
 import Comp.UserForm
 import Comp.UserTable
-import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onSubmit)
+import Html.Events exposing (onClick, onSubmit)
 import Http
 import Messages.Comp.UserManage exposing (Texts)
 import Styles as S
@@ -39,8 +39,14 @@ type alias Model =
     , viewMode : ViewMode
     , formError : FormError
     , loading : Bool
-    , deleteConfirm : Comp.YesNoDimmer.Model
+    , deleteConfirm : DimmerMode
     }
+
+
+type DimmerMode
+    = DimmerOff
+    | DimmerLoading
+    | DimmerUserData DeleteUserData
 
 
 type ViewMode
@@ -53,6 +59,7 @@ type FormError
     | FormErrorSubmit String
     | FormErrorHttp Http.Error
     | FormErrorInvalid
+    | FormErrorCurrentUser
 
 
 emptyModel : Model
@@ -62,7 +69,7 @@ emptyModel =
     , viewMode = Table
     , formError = FormErrorNone
     , loading = False
-    , deleteConfirm = Comp.YesNoDimmer.emptyModel
+    , deleteConfirm = DimmerOff
     }
 
 
@@ -75,8 +82,10 @@ type Msg
     | InitNewUser
     | Submit
     | SubmitResp (Result Http.Error BasicResult)
-    | YesNoMsg Comp.YesNoDimmer.Msg
     | RequestDelete
+    | GetDeleteDataResp (Result Http.Error DeleteUserData)
+    | DeleteUserNow String
+    | CancelDelete
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -183,12 +192,44 @@ update flags msg model =
                     ( m3, c3 ) =
                         update flags LoadUsers m2
                 in
-                ( { m3 | loading = False }, Cmd.batch [ c2, c3 ] )
+                ( { m3 | loading = False, deleteConfirm = DimmerOff }, Cmd.batch [ c2, c3 ] )
 
             else
-                ( { model | formError = FormErrorSubmit res.message, loading = False }, Cmd.none )
+                ( { model
+                    | formError = FormErrorSubmit res.message
+                    , loading = False
+                    , deleteConfirm = DimmerOff
+                  }
+                , Cmd.none
+                )
 
         SubmitResp (Err err) ->
+            ( { model
+                | formError = FormErrorHttp err
+                , loading = False
+                , deleteConfirm = DimmerOff
+              }
+            , Cmd.none
+            )
+
+        RequestDelete ->
+            let
+                login =
+                    Maybe.map .user flags.account
+                        |> Maybe.withDefault ""
+            in
+            if model.formModel.user.login == login then
+                ( { model | formError = FormErrorCurrentUser }, Cmd.none )
+
+            else
+                ( { model | deleteConfirm = DimmerLoading }
+                , Api.getDeleteUserData flags model.formModel.user.login GetDeleteDataResp
+                )
+
+        GetDeleteDataResp (Ok data) ->
+            ( { model | deleteConfirm = DimmerUserData data }, Cmd.none )
+
+        GetDeleteDataResp (Err err) ->
             ( { model
                 | formError = FormErrorHttp err
                 , loading = False
@@ -196,29 +237,15 @@ update flags msg model =
             , Cmd.none
             )
 
-        RequestDelete ->
-            update flags (YesNoMsg Comp.YesNoDimmer.activate) model
+        CancelDelete ->
+            ( { model | deleteConfirm = DimmerOff }, Cmd.none )
 
-        YesNoMsg m ->
-            let
-                ( cm, confirmed ) =
-                    Comp.YesNoDimmer.update m model.deleteConfirm
-
-                user =
-                    Comp.UserForm.getUser model.formModel
-
-                cmd =
-                    if confirmed then
-                        Api.deleteUser flags user.login SubmitResp
-
-                    else
-                        Cmd.none
-            in
-            ( { model | deleteConfirm = cm }, cmd )
+        DeleteUserNow login ->
+            ( { model | deleteConfirm = DimmerLoading }, Api.deleteUser flags login SubmitResp )
 
 
 
---- View2
+--- View
 
 
 view2 : Texts -> UiSettings -> Model -> Html Msg
@@ -253,27 +280,82 @@ viewTable2 texts model =
         ]
 
 
+renderDeleteConfirm : Texts -> UiSettings -> Model -> Html Msg
+renderDeleteConfirm texts settings model =
+    case model.deleteConfirm of
+        DimmerOff ->
+            span [ class "hidden" ] []
+
+        DimmerLoading ->
+            B.loadingDimmer
+                { label = "Loading..."
+                , active = True
+                }
+
+        DimmerUserData data ->
+            let
+                empty =
+                    List.isEmpty data.folders && data.sentMails == 0
+
+                folderNames =
+                    String.join ", " data.folders
+            in
+            B.contentDimmer True <|
+                div [ class "flex flex-col" ] <|
+                    (if empty then
+                        [ div []
+                            [ text texts.reallyDeleteUser
+                            ]
+                        ]
+
+                     else
+                        [ div []
+                            [ text texts.reallyDeleteUser
+                            , text " "
+                            , text "The following data will be deleted:"
+                            ]
+                        , ul [ class "list-inside list-disc" ]
+                            [ li [ classList [ ( "hidden", List.isEmpty data.folders ) ] ]
+                                [ text "Folders: "
+                                , text folderNames
+                                ]
+                            , li [ classList [ ( "hidden", data.sentMails == 0 ) ] ]
+                                [ text (String.fromInt data.sentMails)
+                                , text " sent mails"
+                                ]
+                            ]
+                        ]
+                    )
+                        ++ [ div [ class "mt-4 flex flex-row items-center" ]
+                                [ B.deleteButton
+                                    { label = texts.basics.yes
+                                    , icon = "fa fa-check"
+                                    , disabled = False
+                                    , handler = onClick (DeleteUserNow model.formModel.user.login)
+                                    , attrs = [ href "#" ]
+                                    }
+                                , B.secondaryButton
+                                    { label = texts.basics.no
+                                    , icon = "fa fa-times"
+                                    , disabled = False
+                                    , handler = onClick CancelDelete
+                                    , attrs = [ href "#", class "ml-2" ]
+                                    }
+                                ]
+                           ]
+
+
 viewForm2 : Texts -> UiSettings -> Model -> Html Msg
 viewForm2 texts settings model =
     let
         newUser =
             Comp.UserForm.isNewUser model.formModel
-
-        dimmerSettings : Comp.YesNoDimmer.Settings
-        dimmerSettings =
-            Comp.YesNoDimmer.defaultSettings texts.reallyDeleteUser
-                texts.basics.yes
-                texts.basics.no
     in
     Html.form
         [ class "flex flex-col md:relative"
         , onSubmit Submit
         ]
-        [ Html.map YesNoMsg
-            (Comp.YesNoDimmer.viewN True
-                dimmerSettings
-                model.deleteConfirm
-            )
+        [ renderDeleteConfirm texts settings model
         , if newUser then
             h3 [ class S.header2 ]
                 [ text texts.createNewUser
@@ -331,6 +413,9 @@ viewForm2 texts settings model =
 
                 FormErrorInvalid ->
                     text texts.pleaseCorrectErrors
+
+                FormErrorCurrentUser ->
+                    text texts.notDeleteCurrentUser
             ]
         , B.loadingDimmer
             { active = model.loading

@@ -15,7 +15,7 @@ import docspell.backend.PasswordCrypt
 import docspell.backend.ops.OCollective._
 import docspell.common._
 import docspell.store.UpdateResult
-import docspell.store.queries.QCollective
+import docspell.store.queries.{QCollective, QUser}
 import docspell.store.queue.JobQueue
 import docspell.store.records._
 import docspell.store.usertask.{UserTask, UserTaskScope, UserTaskStore}
@@ -37,7 +37,11 @@ trait OCollective[F[_]] {
 
   def update(s: RUser): F[AddResult]
 
-  def deleteUser(login: Ident, collective: Ident): F[AddResult]
+  /** Deletes the user and all its data. */
+  def deleteUser(login: Ident, collective: Ident): F[UpdateResult]
+
+  /** Return an excerpt of what would be deleted, when the user is deleted. */
+  def getDeleteUserData(accountId: AccountId): F[DeleteUserData]
 
   def insights(collective: Ident): F[InsightData]
 
@@ -90,6 +94,9 @@ object OCollective {
   val Classifier = RClassifierSetting.Classifier
   type EmptyTrash = REmptyTrashSetting.EmptyTrash
   val EmptyTrash = REmptyTrashSetting.EmptyTrash
+
+  type DeleteUserData = QUser.UserData
+  val DeleteUserData = QUser.UserData
 
   sealed trait PassResetResult
   object PassResetResult {
@@ -207,16 +214,24 @@ object OCollective {
         store.transact(RUser.findAll(collective, _.login))
 
       def add(s: RUser): F[AddResult] =
-        store.add(
-          RUser.insert(s.copy(password = PasswordCrypt.crypt(s.password))),
-          RUser.exists(s.login)
-        )
+        if (s.source != AccountSource.Local)
+          AddResult.failure(new Exception("Only local accounts can be created!")).pure[F]
+        else
+          store.add(
+            RUser.insert(s.copy(password = PasswordCrypt.crypt(s.password))),
+            RUser.exists(s.login)
+          )
 
       def update(s: RUser): F[AddResult] =
         store.add(RUser.update(s), RUser.exists(s.login))
 
-      def deleteUser(login: Ident, collective: Ident): F[AddResult] =
-        store.transact(RUser.delete(login, collective)).attempt.map(AddResult.fromUpdate)
+      def getDeleteUserData(accountId: AccountId): F[DeleteUserData] =
+        store.transact(QUser.getUserData(accountId))
+
+      def deleteUser(login: Ident, collective: Ident): F[UpdateResult] =
+        UpdateResult.fromUpdate(
+          store.transact(QUser.deleteUserAndData(AccountId(collective, login)))
+        )
 
       def insights(collective: Ident): F[InsightData] =
         store.transact(QCollective.getInsights(collective))

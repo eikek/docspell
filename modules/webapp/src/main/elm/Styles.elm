@@ -197,7 +197,17 @@ secondaryBasicButtonHover =
 
 deleteButton : String
 deleteButton =
-    " rounded my-auto whitespace-nowrap border border-red-500 dark:border-lightred-500 text-red-500 dark:text-orange-500 text-center px-4 py-2 shadow-none focus:outline-none focus:ring focus:ring-opacity-75 hover:bg-red-600 hover:text-white dark:hover:text-white dark:hover:bg-orange-500 dark:hover:text-bluegray-900 "
+    deleteButtonMain ++ deleteButtonHover
+
+
+deleteButtonMain : String
+deleteButtonMain =
+    " rounded my-auto whitespace-nowrap border border-red-500 dark:border-lightred-500 text-red-500 dark:text-orange-500 text-center px-4 py-2 shadow-none focus:outline-none focus:ring focus:ring-opacity-75 "
+
+
+deleteButtonHover : String
+deleteButtonHover =
+    " hover:bg-red-600 hover:text-white dark:hover:bg-orange-500 dark:hover:text-bluegray-900 "
 
 
 undeleteButton : String

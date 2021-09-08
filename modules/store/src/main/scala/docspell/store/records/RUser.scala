@@ -168,4 +168,7 @@ object RUser {
     val t = Table(None)
     DML.delete(t, t.cid === coll && t.login === user)
   }
+
+  def deleteById(uid: Ident): ConnectionIO[Int] =
+    DML.delete(T, T.uid === uid)
 }
