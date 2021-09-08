@@ -547,7 +547,13 @@ val webapp = project
 
 val joex = project
   .in(file("modules/joex"))
-  .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
+  .enablePlugins(
+    BuildInfoPlugin,
+    JavaServerAppPackaging,
+    DebianPlugin,
+    SystemdPlugin,
+    ClasspathJarPlugin
+  )
   .settings(sharedSettings)
   .settings(testSettingsMUnit)
   .settings(debianSettings("docspell-joex"))
@@ -586,7 +592,13 @@ val joex = project
 
 val restserver = project
   .in(file("modules/restserver"))
-  .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
+  .enablePlugins(
+    BuildInfoPlugin,
+    JavaServerAppPackaging,
+    DebianPlugin,
+    SystemdPlugin,
+    ClasspathJarPlugin
+  )
   .settings(sharedSettings)
   .settings(testSettingsMUnit)
   .settings(debianSettings("docspell-server"))
