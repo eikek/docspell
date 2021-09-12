@@ -259,7 +259,7 @@ object Dependencies {
     "com.h2database" % "h2" % H2Version
   )
   val mariadb = Seq(
-    "org.mariadb.jdbc" % "mariadb-java-client" % MariaDbVersion //flyway doesn't work with newer mariadb
+    "org.mariadb.jdbc" % "mariadb-java-client" % MariaDbVersion
   )
   val postgres = Seq(
     "org.postgresql" % "postgresql" % PostgresVersion
