@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 21.12-SNAPSHOT
+  version: 0.27.0-SNAPSHOT
   description: |
     This is the remote API to Docspell. Docspell is a free document
     management system focused on small groups or families.
