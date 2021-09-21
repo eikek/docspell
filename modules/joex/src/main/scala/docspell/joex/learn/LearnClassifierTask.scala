@@ -90,8 +90,8 @@ object LearnClassifierTask {
       )
       n <- ctx.store.transact(RClassifierModel.deleteAll(list.map(_.id)))
       _ <- list
-        .map(_.fileId.id)
-        .traverse(id => ctx.store.bitpeace.delete(id).compile.drain)
+        .map(_.fileId)
+        .traverse(id => ctx.store.fileStore.delete(id))
       _ <- ctx.logger.debug(s"Deleted $n model files.")
     } yield ()
 

@@ -26,7 +26,6 @@ import docspell.store.queries.{AttachmentLight => QAttachmentLight}
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
 
-import bitpeace.FileMeta
 import org.http4s.headers.`Content-Type`
 import org.http4s.multipart.Multipart
 import org.log4s.Logger
@@ -140,17 +139,23 @@ trait Conversions {
 
   def mkAttachment(
       item: OItemSearch.ItemData
-  )(ra: RAttachment, m: FileMeta): Attachment = {
+  )(ra: RAttachment, m: RFileMeta): Attachment = {
     val converted =
       item.sources.find(_._1.id == ra.id).exists(_._2.checksum != m.checksum)
-    Attachment(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString), converted)
+    Attachment(
+      ra.id,
+      ra.name,
+      m.length.bytes,
+      MimeType.unsafe(m.mimetype.asString),
+      converted
+    )
   }
 
-  def mkAttachmentSource(ra: RAttachmentSource, m: FileMeta): AttachmentSource =
-    AttachmentSource(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString))
+  def mkAttachmentSource(ra: RAttachmentSource, m: RFileMeta): AttachmentSource =
+    AttachmentSource(ra.id, ra.name, m.length.bytes, MimeType.unsafe(m.mimetype.asString))
 
-  def mkAttachmentArchive(ra: RAttachmentArchive, m: FileMeta): AttachmentSource =
-    AttachmentSource(ra.id, ra.name, m.length, MimeType.unsafe(m.mimetype.asString))
+  def mkAttachmentArchive(ra: RAttachmentArchive, m: RFileMeta): AttachmentSource =
+    AttachmentSource(ra.id, ra.name, m.length.bytes, MimeType.unsafe(m.mimetype.asString))
 
   // item list
 

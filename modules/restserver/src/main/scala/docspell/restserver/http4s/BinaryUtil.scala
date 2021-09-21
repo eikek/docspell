@@ -12,8 +12,8 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.ops._
+import docspell.store.records.RFileMeta
 
-import bitpeace.FileMeta
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
@@ -30,8 +30,8 @@ object BinaryUtil {
 
     val mt     = MediaType.unsafeParse(data.meta.mimetype.asString)
     val ctype  = `Content-Type`(mt)
-    val cntLen = `Content-Length`.unsafeFromLong(data.meta.length)
-    val eTag   = ETag(data.meta.checksum)
+    val cntLen = `Content-Length`.unsafeFromLong(data.meta.length.bytes)
+    val eTag   = ETag(data.meta.checksum.toHex)
     val disp =
       `Content-Disposition`(
         "inline",
@@ -48,16 +48,16 @@ object BinaryUtil {
       dsl: Http4sDsl[F]
   )(data: OItemSearch.BinaryData[F]): F[Response[F]] = {
     import dsl._
-    withResponseHeaders(dsl, Ok(data.data.take(data.meta.length)))(data)
+    withResponseHeaders(dsl, Ok(data.data.take(data.meta.length.bytes)))(data)
   }
 
   def matchETag[F[_]](
-      fileData: Option[FileMeta],
+      fileData: Option[RFileMeta],
       noneMatch: Option[NonEmptyList[EntityTag]]
   ): Boolean =
     (fileData, noneMatch) match {
       case (Some(meta), Some(nm)) =>
-        meta.checksum == nm.head.tag
+        meta.checksum.toHex == nm.head.tag
       case _ =>
         false
     }

@@ -38,10 +38,10 @@ object QAttachment {
 
     Stream
       .evalSeq(store.transact(findPreview))
-      .map(_.fileId.id)
+      .map(_.fileId)
       .evalTap(_ => store.transact(RAttachmentPreview.delete(attachId)))
-      .flatMap(store.bitpeace.delete)
-      .map(flag => if (flag) 1 else 0)
+      .evalMap(store.fileStore.delete)
+      .map(_ => 1)
       .compile
       .foldMonoid
   }
@@ -68,9 +68,8 @@ object QAttachment {
       f <-
         Stream
           .emits(files._1)
-          .map(_.id)
-          .flatMap(store.bitpeace.delete)
-          .map(flag => if (flag) 1 else 0)
+          .evalMap(store.fileStore.delete)
+          .map(_ => 1)
           .compile
           .foldMonoid
     } yield n + k + f
@@ -91,9 +90,9 @@ object QAttachment {
       )
       f <-
         Stream
-          .emits(ra.fileId.id +: (s.map(_.fileId.id).toSeq ++ p.map(_.fileId.id).toSeq))
-          .flatMap(store.bitpeace.delete)
-          .map(flag => if (flag) 1 else 0)
+          .emits(ra.fileId +: (s.map(_.fileId).toSeq ++ p.map(_.fileId).toSeq))
+          .evalMap(store.fileStore.delete)
+          .map(_ => 1)
           .compile
           .foldMonoid
     } yield n + f
@@ -104,8 +103,8 @@ object QAttachment {
       n  <- OptionT.liftF(store.transact(RAttachmentArchive.deleteAll(aa.fileId)))
       _ <- OptionT.liftF(
         Stream
-          .emit(aa.fileId.id)
-          .flatMap(store.bitpeace.delete)
+          .emit(aa.fileId)
+          .evalMap(store.fileStore.delete)
           .compile
           .drain
       )

@@ -15,7 +15,6 @@ import docspell.store.queries.QItem
 import docspell.store.records.RFileMeta
 import docspell.store.records.RJob
 
-import bitpeace.FileMeta
 import doobie._
 
 object DuplicateCheck {
@@ -40,7 +39,7 @@ object DuplicateCheck {
       _         <- fileMetas.traverse(deleteDuplicate(ctx))
       ids = fileMetas.filter(_.exists).map(_.fm.id).toSet
     } yield ctx.args.copy(files =
-      ctx.args.files.filterNot(f => ids.contains(f.fileMetaId.id))
+      ctx.args.files.filterNot(f => ids.contains(f.fileMetaId))
     )
 
   private def getRetryCount[F[_]: Sync](ctx: Context[F, Args]): F[Int] =
@@ -49,13 +48,11 @@ object DuplicateCheck {
   private def deleteDuplicate[F[_]: Sync](
       ctx: Context[F, Args]
   )(fd: FileMetaDupes): F[Unit] = {
-    val fname = ctx.args.files.find(_.fileMetaId.id == fd.fm.id).flatMap(_.name)
+    val fname = ctx.args.files.find(_.fileMetaId == fd.fm.id).flatMap(_.name)
     if (fd.exists)
       ctx.logger
-        .info(s"Deleting duplicate file $fname!") *> ctx.store.bitpeace
+        .info(s"Deleting duplicate file $fname!") *> ctx.store.fileStore
         .delete(fd.fm.id)
-        .compile
-        .drain
     else ().pure[F]
   }
 
@@ -69,12 +66,12 @@ object DuplicateCheck {
 
   private def checkDuplicate[F[_]](
       ctx: Context[F, Args]
-  )(fm: FileMeta): ConnectionIO[FileMetaDupes] = {
+  )(fm: RFileMeta): ConnectionIO[FileMetaDupes] = {
     val excludes = ctx.args.files.map(_.fileMetaId).toSet
     QItem
-      .findByChecksum(fm.checksum, ctx.args.meta.collective, excludes)
+      .findByChecksum(fm.checksum.toHex, ctx.args.meta.collective, excludes)
       .map(v => FileMetaDupes(fm, v.nonEmpty))
   }
 
-  case class FileMetaDupes(fm: FileMeta, exists: Boolean)
+  case class FileMetaDupes(fm: RFileMeta, exists: Boolean)
 }

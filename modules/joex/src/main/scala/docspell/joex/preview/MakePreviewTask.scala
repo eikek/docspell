@@ -10,7 +10,6 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.convert.ConvertConfig
 import docspell.extract.pdfbox.PdfboxPreview
 import docspell.extract.pdfbox.PreviewConfig
 import docspell.joex.process.AttachmentPreview
@@ -23,7 +22,7 @@ object MakePreviewTask {
 
   type Args = MakePreviewArgs
 
-  def apply[F[_]: Sync](cfg: ConvertConfig, pcfg: PreviewConfig): Task[F, Args, Unit] =
+  def apply[F[_]: Sync](pcfg: PreviewConfig): Task[F, Args, Unit] =
     Task { ctx =>
       for {
         exists  <- previewExists(ctx)
@@ -36,7 +35,7 @@ object MakePreviewTask {
           else
             ctx.logger.info(
               s"Generating preview image for attachment ${ctx.args.attachment}"
-            ) *> generatePreview(ctx, preview, cfg)
+            ) *> generatePreview(ctx, preview)
       } yield ()
     }
 
@@ -45,13 +44,12 @@ object MakePreviewTask {
 
   private def generatePreview[F[_]: Sync](
       ctx: Context[F, Args],
-      preview: PdfboxPreview[F],
-      cfg: ConvertConfig
+      preview: PdfboxPreview[F]
   ): F[Unit] =
     for {
       ra <- ctx.store.transact(RAttachment.findById(ctx.args.attachment))
       _ <- ra
-        .map(AttachmentPreview.createPreview(ctx, preview, cfg.chunkSize))
+        .map(AttachmentPreview.createPreview(ctx, preview))
         .getOrElse(
           ctx.logger.error(s"No attachment found with id: ${ctx.args.attachment}")
         )

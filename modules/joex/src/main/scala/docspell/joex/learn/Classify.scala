@@ -17,8 +17,6 @@ import docspell.common._
 import docspell.store.Store
 import docspell.store.records.RClassifierModel
 
-import bitpeace.RangeDef
-
 object Classify {
 
   def apply[F[_]: Async](
@@ -33,11 +31,7 @@ object Classify {
       _ <- OptionT.liftF(logger.info(s"Guessing label for ${cname.name} …"))
       model <- OptionT(store.transact(RClassifierModel.findByName(coll, cname.name)))
         .flatTapNone(logger.debug("No classifier model found."))
-      modelData =
-        store.bitpeace
-          .get(model.fileId.id)
-          .unNoneTerminate
-          .through(store.bitpeace.fetchData2(RangeDef.all))
+      modelData = store.fileStore.getBytes(model.fileId)
       cls <- OptionT(File.withTempDir(workingDir, "classify").use { dir =>
         val modelFile = dir.resolve("model.ser.gz")
         modelData

@@ -9,7 +9,6 @@ package docspell.backend.ops
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import fs2.Stream
 
 import docspell.backend.ops.OMail._
 import docspell.common._
@@ -18,7 +17,6 @@ import docspell.store.queries.QMails
 import docspell.store.records._
 import docspell.store.syntax.MimeTypes._
 
-import bitpeace.{FileMeta, RangeDef}
 import emil._
 
 trait OMail[F[_]] {
@@ -81,14 +79,17 @@ object OMail {
   )
 
   sealed trait AttachSelection {
-    def filter(v: Vector[(RAttachment, FileMeta)]): Vector[(RAttachment, FileMeta)]
+    def filter(v: Vector[(RAttachment, RFileMeta)]): Vector[(RAttachment, RFileMeta)]
   }
   object AttachSelection {
     case object All extends AttachSelection {
-      def filter(v: Vector[(RAttachment, FileMeta)]): Vector[(RAttachment, FileMeta)] = v
+      def filter(v: Vector[(RAttachment, RFileMeta)]): Vector[(RAttachment, RFileMeta)] =
+        v
     }
     case class Selected(ids: List[Ident]) extends AttachSelection {
-      def filter(v: Vector[(RAttachment, FileMeta)]): Vector[(RAttachment, FileMeta)] = {
+      def filter(
+          v: Vector[(RAttachment, RFileMeta)]
+      ): Vector[(RAttachment, RFileMeta)] = {
         val set = ids.toSet
         v.filter(set contains _._1.id)
       }
@@ -232,10 +233,10 @@ object OMail {
           } yield {
             val addAttach = m.attach.filter(ras).map { a =>
               Attach[F](
-                Stream.emit(a._2).through(store.bitpeace.fetchData2(RangeDef.all))
+                store.fileStore.getBytes(a._2.id)
               ).withFilename(a._1.name)
-                .withLength(a._2.length)
-                .withMimeType(a._2.mimetype.toLocal.toEmil)
+                .withLength(a._2.length.bytes)
+                .withMimeType(a._2.mimetype.toEmil)
             }
             val fields: Seq[Trans[F]] = Seq(
               From(sett.mailFrom),

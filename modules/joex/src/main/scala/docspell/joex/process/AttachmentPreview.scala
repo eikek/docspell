@@ -13,16 +13,12 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
-import docspell.convert._
 import docspell.extract.pdfbox.PdfboxPreview
 import docspell.extract.pdfbox.PreviewConfig
 import docspell.joex.scheduler._
 import docspell.store.queries.QAttachment
 import docspell.store.records.RAttachment
 import docspell.store.records._
-import docspell.store.syntax.MimeTypes._
-
-import bitpeace.{Mimetype, MimetypeHint, RangeDef}
 
 /** Goes through all attachments that must be already converted into a pdf. If it is a
   * pdf, the first page is converted into a small preview png image and linked to the
@@ -30,7 +26,7 @@ import bitpeace.{Mimetype, MimetypeHint, RangeDef}
   */
 object AttachmentPreview {
 
-  def apply[F[_]: Sync](cfg: ConvertConfig, pcfg: PreviewConfig)(
+  def apply[F[_]: Sync](pcfg: PreviewConfig)(
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
@@ -40,7 +36,7 @@ object AttachmentPreview {
         )
         preview <- PdfboxPreview(pcfg)
         _ <- item.attachments
-          .traverse(createPreview(ctx, preview, cfg.chunkSize))
+          .traverse(createPreview(ctx, preview))
           .attempt
           .flatMap {
             case Right(_) => ().pure[F]
@@ -54,8 +50,7 @@ object AttachmentPreview {
 
   def createPreview[F[_]: Sync](
       ctx: Context[F, _],
-      preview: PdfboxPreview[F],
-      chunkSize: Int
+      preview: PdfboxPreview[F]
   )(
       ra: RAttachment
   ): F[Option[RAttachmentPreview]] =
@@ -64,7 +59,7 @@ object AttachmentPreview {
         preview.previewPNG(loadFile(ctx)(ra)).flatMap {
           case Some(out) =>
             ctx.logger.debug("Preview generated, saving to database…") *>
-              createRecord(ctx, out, ra, chunkSize).map(_.some)
+              createRecord(ctx, out, ra).map(_.some)
           case None =>
             ctx.logger
               .info(s"Preview could not be generated. Maybe the pdf has no pages?") *>
@@ -79,23 +74,20 @@ object AttachmentPreview {
   private def createRecord[F[_]: Sync](
       ctx: Context[F, _],
       png: Stream[F, Byte],
-      ra: RAttachment,
-      chunkSize: Int
+      ra: RAttachment
   ): F[RAttachmentPreview] = {
     val name = ra.name
       .map(FileName.apply)
       .map(_.withPart("preview", '_').withExtension("png"))
     for {
-      fileMeta <- ctx.store.bitpeace
-        .saveNew(
-          png,
-          chunkSize,
-          MimetypeHint(name.map(_.fullName), Some("image/png"))
+      fileId <- png
+        .through(
+          ctx.store.fileStore.save(MimeTypeHint(name.map(_.fullName), Some("image/png")))
         )
         .compile
         .lastOrError
       now <- Timestamp.current[F]
-      rp = RAttachmentPreview(ra.id, Ident.unsafe(fileMeta.id), name.map(_.fullName), now)
+      rp = RAttachmentPreview(ra.id, fileId, name.map(_.fullName), now)
       _ <- QAttachment.deletePreview(ctx.store)(ra.id)
       _ <- ctx.store.transact(RAttachmentPreview.insert(rp))
     } yield rp
@@ -104,13 +96,8 @@ object AttachmentPreview {
   def findMime[F[_]: Functor](ctx: Context[F, _])(ra: RAttachment): F[MimeType] =
     OptionT(ctx.store.transact(RFileMeta.findById(ra.fileId)))
       .map(_.mimetype)
-      .getOrElse(Mimetype.applicationOctetStream)
-      .map(_.toLocal)
+      .getOrElse(MimeType.octetStream)
 
   def loadFile[F[_]](ctx: Context[F, _])(ra: RAttachment): Stream[F, Byte] =
-    ctx.store.bitpeace
-      .get(ra.fileId.id)
-      .unNoneTerminate
-      .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
-
+    ctx.store.fileStore.getBytes(ra.fileId)
 }

@@ -10,6 +10,9 @@ case class MimeTypeHint(filename: Option[String], advertised: Option[String]) {
 
   def withName(name: String): MimeTypeHint =
     copy(filename = Some(name))
+
+  def withAdvertised(advertised: String): MimeTypeHint =
+    copy(advertised = Some(advertised))
 }
 
 object MimeTypeHint {

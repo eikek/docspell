@@ -496,7 +496,7 @@ object QItem {
       where(
         i.cid === collective &&
           i.state.in(ItemState.validStates) &&
-          Condition.Or(fms.map(m => m.checksum === checksum)) &&?
+          Condition.Or(fms.map(m => m.checksum ==== checksum)) &&?
           Nel
             .fromList(excludeFileMeta.toList)
             .map(excl => Condition.And(fms.map(m => m.id.isNull || m.id.notIn(excl))))

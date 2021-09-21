@@ -18,9 +18,6 @@ import docspell.extract.pdfbox.PdfboxExtract
 import docspell.joex.scheduler._
 import docspell.store.records.RAttachment
 import docspell.store.records._
-import docspell.store.syntax.MimeTypes._
-
-import bitpeace.{Mimetype, RangeDef}
 
 /** Goes through all attachments that must be already converted into a pdf. If it is a
   * pdf, the number of pages are retrieved and stored in the attachment metadata.
@@ -100,13 +97,8 @@ object AttachmentPageCount {
   def findMime[F[_]: Functor](ctx: Context[F, _])(ra: RAttachment): F[MimeType] =
     OptionT(ctx.store.transact(RFileMeta.findById(ra.fileId)))
       .map(_.mimetype)
-      .getOrElse(Mimetype.applicationOctetStream)
-      .map(_.toLocal)
+      .getOrElse(MimeType.octetStream)
 
   def loadFile[F[_]](ctx: Context[F, _])(ra: RAttachment): Stream[F, Byte] =
-    ctx.store.bitpeace
-      .get(ra.fileId.id)
-      .unNoneTerminate
-      .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
-
+    ctx.store.fileStore.getBytes(ra.fileId)
 }

@@ -15,9 +15,7 @@ import fs2.Stream
 import docspell.common._
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.queries.QItem
-import docspell.store.records.{RAttachment, RAttachmentSource, RItem}
-
-import bitpeace.FileMeta
+import docspell.store.records._
 
 /** Task that creates the item.
   */
@@ -31,12 +29,10 @@ object CreateItem {
 
   def createNew[F[_]: Sync]: Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
-      def isValidFile(fm: FileMeta) =
+      def isValidFile(fm: RFileMeta) =
         ctx.args.meta.validFileTypes.isEmpty ||
-          ctx.args.meta.validFileTypes
-            .map(_.asString)
-            .toSet
-            .contains(fm.mimetype.baseType)
+          ctx.args.meta.validFileTypes.toSet
+            .contains(fm.mimetype)
 
       def fileMetas(itemId: Ident, now: Timestamp) =
         Stream
@@ -44,7 +40,9 @@ object CreateItem {
           .flatMap { offset =>
             Stream
               .emits(ctx.args.files)
-              .flatMap(f => ctx.store.bitpeace.get(f.fileMetaId.id).map(fm => (f, fm)))
+              .evalMap(f =>
+                ctx.store.fileStore.findMeta(f.fileMetaId).value.map(fm => (f, fm))
+              )
               .collect { case (f, Some(fm)) if isValidFile(fm) => f }
               .zipWithIndex
               .evalMap { case (f, index) =>

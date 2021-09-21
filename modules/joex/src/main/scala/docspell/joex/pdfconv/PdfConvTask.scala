@@ -19,10 +19,6 @@ import docspell.joex.Config
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.records._
 
-import bitpeace.FileMeta
-import bitpeace.Mimetype
-import bitpeace.MimetypeHint
-import bitpeace.RangeDef
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 
@@ -55,8 +51,11 @@ object PdfConvTask {
   // --- Helper
 
   // check if file exists and if it is pdf and if source id is the same and if ocrmypdf is enabled
-  def checkInputs[F[_]: Sync](cfg: Config, ctx: Context[F, Args]): F[Option[FileMeta]] = {
-    val none: Option[FileMeta] = None
+  def checkInputs[F[_]: Sync](
+      cfg: Config,
+      ctx: Context[F, Args]
+  ): F[Option[RFileMeta]] = {
+    val none: Option[RFileMeta] = None
     val checkSameFiles =
       (for {
         ra <- OptionT(ctx.store.transact(RAttachment.findById(ctx.args.attachId)))
@@ -67,7 +66,7 @@ object PdfConvTask {
     val existsPdf =
       for {
         meta <- ctx.store.transact(RAttachment.findMeta(ctx.args.attachId))
-        res = meta.filter(_.mimetype.matches(Mimetype.applicationPdf))
+        res = meta.filter(_.mimetype.matches(MimeType.pdf))
         _ <-
           if (res.isEmpty)
             ctx.logger.info(
@@ -91,12 +90,10 @@ object PdfConvTask {
   def convert[F[_]: Async](
       cfg: Config,
       ctx: Context[F, Args],
-      in: FileMeta
+      in: RFileMeta
   ): F[Unit] = {
-    val bp = ctx.store.bitpeace
-    val data = Stream
-      .emit(in)
-      .through(bp.fetchData2(RangeDef.all))
+    val fs   = ctx.store.fileStore
+    val data = fs.getBytes(in.id)
 
     val storeResult: ConversionResult.Handler[F, Unit] =
       Kleisli {
@@ -122,7 +119,7 @@ object PdfConvTask {
       OcrMyPdf.toPDF[F, Unit](
         cfg.convert.ocrmypdf,
         lang,
-        in.chunksize,
+        cfg.files.chunkSize,
         ctx.logger
       )(data, storeResult)
 
@@ -140,18 +137,13 @@ object PdfConvTask {
 
   def storeToAttachment[F[_]: Sync](
       ctx: Context[F, Args],
-      meta: FileMeta,
+      meta: RFileMeta,
       newFile: Stream[F, Byte]
   ): F[Unit] = {
-    val mimeHint = MimetypeHint.advertised(meta.mimetype.asString)
+    val mimeHint = MimeTypeHint.advertised(meta.mimetype)
     for {
-      time <- Timestamp.current[F]
-      fid  <- Ident.randomId[F]
-      _ <-
-        ctx.store.bitpeace
-          .saveNew(newFile, meta.chunksize, mimeHint, Some(fid.id), time.value)
-          .compile
-          .lastOrError
+      fid <-
+        newFile.through(ctx.store.fileStore.save(mimeHint)).compile.lastOrError
       _ <- ctx.store.transact(RAttachment.updateFileId(ctx.args.attachId, fid))
     } yield ()
   }

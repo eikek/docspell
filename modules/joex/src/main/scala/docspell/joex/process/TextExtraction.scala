@@ -15,9 +15,6 @@ import docspell.extract.{ExtractConfig, ExtractResult, Extraction}
 import docspell.ftsclient.{FtsClient, TextData}
 import docspell.joex.scheduler.{Context, Task}
 import docspell.store.records.{RAttachment, RAttachmentMeta, RFileMeta}
-import docspell.store.syntax.MimeTypes._
-
-import bitpeace.{Mimetype, RangeDef}
 
 object TextExtraction {
 
@@ -130,18 +127,15 @@ object TextExtraction {
       extr: Extraction[F],
       lang: Language
   )(fileId: Ident): F[ExtractResult] = {
-    val data = ctx.store.bitpeace
-      .get(fileId.id)
-      .unNoneTerminate
-      .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
+    val data = ctx.store.fileStore.getBytes(fileId)
 
-    def findMime: F[Mimetype] =
+    def findMime: F[MimeType] =
       OptionT(ctx.store.transact(RFileMeta.findById(fileId)))
         .map(_.mimetype)
-        .getOrElse(Mimetype.applicationOctetStream)
+        .getOrElse(MimeType.octetStream)
 
     findMime
-      .flatMap(mt => extr.extractText(data, DataType(mt.toLocal), lang))
+      .flatMap(mt => extr.extractText(data, DataType(mt), lang))
   }
 
   private def extractTextFallback[F[_]: Async](

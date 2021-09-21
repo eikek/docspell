@@ -13,7 +13,6 @@ import docspell.store.qb.DSL._
 import docspell.store.qb.TableDef
 import docspell.store.qb._
 
-import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
 
@@ -98,9 +97,7 @@ object RAttachmentArchive {
 
   def findByItemWithMeta(
       id: Ident
-  ): ConnectionIO[Vector[(RAttachmentArchive, FileMeta)]] = {
-    import bitpeace.sql._
-
+  ): ConnectionIO[Vector[(RAttachmentArchive, RFileMeta)]] = {
     val a = RAttachmentArchive.as("a")
     val b = RAttachment.as("b")
     val m = RFileMeta.as("m")
@@ -110,7 +107,7 @@ object RAttachmentArchive {
         .innerJoin(m, a.fileId === m.id)
         .innerJoin(b, a.id === b.id),
       b.itemId === id
-    ).orderBy(b.position.asc).build.query[(RAttachmentArchive, FileMeta)].to[Vector]
+    ).orderBy(b.position.asc).build.query[(RAttachmentArchive, RFileMeta)].to[Vector]
   }
 
   /** If the given attachment id has an associated archive, this returns the number of all

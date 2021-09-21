@@ -16,8 +16,6 @@ import docspell.joex.scheduler._
 import docspell.store.Store
 import docspell.store.records.RClassifierModel
 
-import bitpeace.MimetypeHint
-
 object StoreClassifierModel {
 
   def handleModel[F[_]: Async](
@@ -43,16 +41,16 @@ object StoreClassifierModel {
       )
       _ <- logger.debug(s"Storing new trained model for: ${modelName.name}")
       fileData = Files[F].readAll(trainedModel.model)
-      newFile <-
-        store.bitpeace.saveNew(fileData, 4096, MimetypeHint.none).compile.lastOrError
+      newFileId <-
+        fileData.through(store.fileStore.save(MimeTypeHint.none)).compile.lastOrError
       _ <- store.transact(
-        RClassifierModel.updateFile(collective, modelName.name, Ident.unsafe(newFile.id))
+        RClassifierModel.updateFile(collective, modelName.name, newFileId)
       )
-      _ <- logger.debug(s"New model stored at file ${newFile.id}")
+      _ <- logger.debug(s"New model stored at file ${newFileId.id}")
       _ <- oldFile match {
         case Some(fid) =>
           logger.debug(s"Deleting old model file ${fid.id}") *>
-            store.bitpeace.delete(fid.id).compile.drain
+            store.fileStore.delete(fid)
         case None => ().pure[F]
       }
     } yield ()
