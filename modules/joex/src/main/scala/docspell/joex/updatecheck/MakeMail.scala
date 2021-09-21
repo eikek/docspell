@@ -24,10 +24,11 @@ object MakeMail {
       sendCfg: MailSendConfig,
       cfg: UpdateCheckConfig,
       smtpCfg: RUserEmail,
-      latestRelease: UpdateCheck.Release
+      latestRelease: UpdateCheck.Release,
+      thisVersion: ThisVersion
   ): Mail[F] = {
 
-    val templateCtx = TemplateCtx(latestRelease)
+    val templateCtx = TemplateCtx(latestRelease, thisVersion)
     val md          = templateCtx.render(cfg.body)
     val subj        = templateCtx.render(cfg.subject)
 
@@ -49,8 +50,8 @@ object MakeMail {
       releasedAt: String
   )
   object TemplateCtx {
-    def apply(release: UpdateCheck.Release): TemplateCtx =
-      TemplateCtx(UpdateCheck.currentVersion, release.version, release.published_at)
+    def apply(release: UpdateCheck.Release, thisVersion: ThisVersion): TemplateCtx =
+      TemplateCtx(thisVersion.get, release.version, release.published_at)
 
     implicit val yamuscaConverter: ValueConverter[TemplateCtx] =
       ValueConverter.deriveConverter[TemplateCtx]
