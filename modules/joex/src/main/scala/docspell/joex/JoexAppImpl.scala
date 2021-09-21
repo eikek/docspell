@@ -247,7 +247,13 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             UpdateCheckTask.taskName,
-            UpdateCheckTask[F](cfg.updateCheck, cfg.sendMail, javaEmil, updateCheck),
+            UpdateCheckTask[F](
+              cfg.updateCheck,
+              cfg.sendMail,
+              javaEmil,
+              updateCheck,
+              ThisVersion.default
+            ),
             UpdateCheckTask.onCancel[F]
           )
         )

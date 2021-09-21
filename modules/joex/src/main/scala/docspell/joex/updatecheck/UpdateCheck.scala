@@ -8,8 +8,6 @@ package docspell.joex.updatecheck
 
 import cats.effect._
 
-import docspell.joex.BuildInfo
-
 import io.circe.Decoder
 import io.circe.generic.semiauto._
 import org.http4s.circe.CirceEntityDecoder._
@@ -24,9 +22,6 @@ trait UpdateCheck[F[_]] {
 
 object UpdateCheck {
 
-  val currentVersion: String =
-    BuildInfo.version
-
   final case class Release(
       html_url: String,
       id: Int,
@@ -36,13 +31,14 @@ object UpdateCheck {
       published_at: String
   ) {
 
-    def version: String = tag_name
+    def version: String = tag_name.replaceFirst("v", "")
 
-    def isCurrent: Boolean = {
-      val version = BuildInfo.version
-      version.endsWith("SNAPSHOT") || version == tag_name
+    /** Checks if `thisVersion` is either a SNAPSHOT version or the same as this release.
+      */
+    def matchesVersion(tv: ThisVersion): Boolean = {
+      val myVersion = tv.get
+      myVersion.endsWith("SNAPSHOT") || myVersion == version
     }
-
   }
 
   object Release {

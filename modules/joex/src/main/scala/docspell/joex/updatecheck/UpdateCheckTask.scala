@@ -45,13 +45,14 @@ object UpdateCheckTask {
       cfg: UpdateCheckConfig,
       sendCfg: MailSendConfig,
       emil: Emil[F],
-      updateCheck: UpdateCheck[F]
+      updateCheck: UpdateCheck[F],
+      thisVersion: ThisVersion
   ): Task[F, Args, Unit] =
     if (cfg.enabled)
       Task { ctx =>
         for {
           _ <- ctx.logger.info(
-            s"Check for updates. Current version is: ${UpdateCheck.currentVersion}"
+            s"Check for updates. Current version is: ${thisVersion.get}"
           )
           _ <- ctx.logger.debug(
             s"Get SMTP connection for ${cfg.senderAccount.asString} and ${cfg.smtpId}"
@@ -67,7 +68,7 @@ object UpdateCheckTask {
               )
             else ().pure[F]
           _ <-
-            if (latest.isCurrent && !cfg.testRun)
+            if (latest.matchesVersion(thisVersion) && !cfg.testRun)
               ctx.logger.info(
                 s"Latest release is ${latest.version}, which is the current one. Everything uptodate."
               )
@@ -75,7 +76,7 @@ object UpdateCheckTask {
               ctx.logger.info(
                 s"Sending mail about new release: ${latest.tag_name}"
               ) *> emil(smtpCfg.toMailConfig).send(
-                MakeMail(sendCfg, cfg, smtpCfg, latest)
+                MakeMail(sendCfg, cfg, smtpCfg, latest, thisVersion)
               )
         } yield ()
       }
