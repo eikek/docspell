@@ -31,7 +31,7 @@ object AttachmentMultiRoutes extends MultiIdSupport {
 
     HttpRoutes.of { case req @ POST -> Root / "delete" =>
       for {
-        json        <- req.as[IdList]
+        json <- req.as[IdList]
         attachments <- readIds[F](json.ids)
         n <- backend.item.deleteAttachmentMultiple(attachments, user.account.collective)
         res = BasicResult(

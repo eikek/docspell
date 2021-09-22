@@ -61,7 +61,7 @@ object RUserEmail {
   ): F[RUserEmail] =
     for {
       now <- Timestamp.current[F]
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
     } yield RUserEmail(
       id,
       uid,
@@ -90,8 +90,8 @@ object RUserEmail {
       mailReplyTo: Option[MailAddress]
   ): OptionT[ConnectionIO, RUserEmail] =
     for {
-      now  <- OptionT.liftF(Timestamp.current[ConnectionIO])
-      id   <- OptionT.liftF(Ident.randomId[ConnectionIO])
+      now <- OptionT.liftF(Timestamp.current[ConnectionIO])
+      id <- OptionT.liftF(Ident.randomId[ConnectionIO])
       user <- OptionT(RUser.findByAccount(accId))
     } yield RUserEmail(
       id,
@@ -111,18 +111,18 @@ object RUserEmail {
 
     val tableName = "useremail"
 
-    val id            = Column[Ident]("id", this)
-    val uid           = Column[Ident]("uid", this)
-    val name          = Column[Ident]("name", this)
-    val smtpHost      = Column[String]("smtp_host", this)
-    val smtpPort      = Column[Int]("smtp_port", this)
-    val smtpUser      = Column[String]("smtp_user", this)
-    val smtpPass      = Column[Password]("smtp_password", this)
-    val smtpSsl       = Column[SSLType]("smtp_ssl", this)
+    val id = Column[Ident]("id", this)
+    val uid = Column[Ident]("uid", this)
+    val name = Column[Ident]("name", this)
+    val smtpHost = Column[String]("smtp_host", this)
+    val smtpPort = Column[Int]("smtp_port", this)
+    val smtpUser = Column[String]("smtp_user", this)
+    val smtpPass = Column[Password]("smtp_password", this)
+    val smtpSsl = Column[SSLType]("smtp_ssl", this)
     val smtpCertCheck = Column[Boolean]("smtp_certcheck", this)
-    val mailFrom      = Column[MailAddress]("mail_from", this)
-    val mailReplyTo   = Column[MailAddress]("mail_replyto", this)
-    val created       = Column[Timestamp]("created", this)
+    val mailFrom = Column[MailAddress]("mail_from", this)
+    val mailReplyTo = Column[MailAddress]("mail_replyto", this)
+    val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](
       id,
@@ -181,7 +181,7 @@ object RUserEmail {
       nameQ: Option[String],
       exact: Boolean
   ): Query0[RUserEmail] = {
-    val user  = RUser.as("u")
+    val user = RUser.as("u")
     val email = as("m")
 
     val nameFilter = nameQ.map(s =>

@@ -24,11 +24,11 @@ object CourseRecord {
 
     override val tableName = "course"
 
-    val id         = Column[Long]("id", this)
-    val name       = Column[String]("name", this)
-    val ownerId    = Column[Long]("owner_id", this)
+    val id = Column[Long]("id", this)
+    val name = Column[String]("name", this)
+    val ownerId = Column[Long]("owner_id", this)
     val lecturerId = Column[Long]("lecturer_id", this)
-    val lessons    = Column[Int]("lessons", this)
+    val lessons = Column[Int]("lessons", this)
 
     val all = NonEmptyList.of[Column[_]](id, name, ownerId, lecturerId, lessons)
   }

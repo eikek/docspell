@@ -25,9 +25,9 @@ object QUser {
 
   def getUserData(accountId: AccountId): ConnectionIO[UserData] = {
     val folder = RFolder.as("f")
-    val mail   = RSentMail.as("m")
-    val mitem  = RSentMailItem.as("mi")
-    val user   = RUser.as("u")
+    val mail = RSentMail.as("m")
+    val mitem = RSentMailItem.as("mi")
+    val user = RUser.as("u")
 
     for {
       uid <- loadUserId(accountId).map(_.getOrElse(Ident.unsafe("")))
@@ -49,21 +49,21 @@ object QUser {
   def deleteUserAndData(accountId: AccountId): ConnectionIO[Int] =
     for {
       uid <- loadUserId(accountId).map(_.getOrElse(Ident.unsafe("")))
-      _   <- logger.info(s"Remove user ${accountId.asString} (uid=${uid.id})")
+      _ <- logger.info(s"Remove user ${accountId.asString} (uid=${uid.id})")
 
       n1 <- deleteUserFolders(uid)
 
       n2 <- deleteUserSentMails(uid)
-      _  <- logger.info(s"Removed $n2 sent mails")
+      _ <- logger.info(s"Removed $n2 sent mails")
 
       n3 <- deleteRememberMe(accountId)
-      _  <- logger.info(s"Removed $n3 remember me tokens")
+      _ <- logger.info(s"Removed $n3 remember me tokens")
 
       n4 <- deleteTotp(uid)
-      _  <- logger.info(s"Removed $n4 totp secrets")
+      _ <- logger.info(s"Removed $n4 totp secrets")
 
       n5 <- deleteMailSettings(uid)
-      _  <- logger.info(s"Removed $n5 mail settings")
+      _ <- logger.info(s"Removed $n5 mail settings")
 
       nu <- RUser.deleteById(uid)
     } yield nu + n1 + n2 + n3 + n4 + n5
@@ -80,16 +80,16 @@ object QUser {
       _ <- logger.info(s"Removing folders: ${folders.map(_.id)}")
 
       ri <- folders.traverse(RItem.removeFolder)
-      _  <- logger.info(s"Removed folders from items: $ri")
+      _ <- logger.info(s"Removed folders from items: $ri")
       rs <- folders.traverse(RSource.removeFolder)
-      _  <- logger.info(s"Removed folders from sources: $rs")
+      _ <- logger.info(s"Removed folders from sources: $rs")
       rf <- folders.traverse(RFolderMember.deleteAll)
-      _  <- logger.info(s"Removed folders from members: $rf")
+      _ <- logger.info(s"Removed folders from members: $rf")
 
       n1 <- DML.delete(member, member.user === uid)
-      _  <- logger.info(s"Removed $n1 members for owning folders.")
+      _ <- logger.info(s"Removed $n1 members for owning folders.")
       n2 <- DML.delete(folder, folder.owner === uid)
-      _  <- logger.info(s"Removed $n2 folders.")
+      _ <- logger.info(s"Removed $n2 folders.")
 
     } yield n1 + n2 + ri.sum + rs.sum + rf.sum
   }
@@ -98,8 +98,8 @@ object QUser {
     val mail = RSentMail.as("m")
     for {
       ids <- run(select(mail.id), from(mail), mail.uid === uid).query[Ident].to[List]
-      n1  <- ids.traverse(RSentMailItem.deleteMail)
-      n2  <- ids.traverse(RSentMail.delete)
+      n1 <- ids.traverse(RSentMailItem.deleteMail)
+      n2 <- ids.traverse(RSentMail.delete)
     } yield n1.sum + n2.sum
   }
 

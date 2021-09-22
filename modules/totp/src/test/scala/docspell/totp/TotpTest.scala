@@ -20,7 +20,7 @@ import scodec.bits.ByteVector
 class TotpTest extends FunSuite {
 
   val totp = Totp.default
-  val key  = Key(ByteVector.fromValidBase64("GGFWIWYnHB8F5Dp87iS2HP86k4A="), Mac.Sha1)
+  val key = Key(ByteVector.fromValidBase64("GGFWIWYnHB8F5Dp87iS2HP86k4A="), Mac.Sha1)
   val time = Instant.parse("2021-08-29T18:42:00Z")
 
   test("generate password") {
@@ -34,12 +34,12 @@ class TotpTest extends FunSuite {
   }
 
   for {
-    mac  <- Mac.all.toList
+    mac <- Mac.all.toList
     plen <- PassLength.all.toList
   } test(s"generate ${mac.identifier} with ${plen.toInt} characters") {
-    val key  = Key.generate[IO](mac).unsafeRunSync()
+    val key = Key.generate[IO](mac).unsafeRunSync()
     val totp = Totp(Settings(mac, plen, 30.seconds))
-    val otp  = totp.generate(key, time)
+    val otp = totp.generate(key, time)
     assertEquals(otp.pass.length, plen.toInt)
   }
 

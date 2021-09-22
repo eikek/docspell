@@ -88,15 +88,15 @@ object OCustomFields {
   sealed trait SetValueResult
   object SetValueResult {
 
-    case object ItemNotFound             extends SetValueResult
-    case object FieldNotFound            extends SetValueResult
+    case object ItemNotFound extends SetValueResult
+    case object FieldNotFound extends SetValueResult
     case class ValueInvalid(msg: String) extends SetValueResult
-    case object Success                  extends SetValueResult
+    case object Success extends SetValueResult
 
-    def itemNotFound: SetValueResult              = ItemNotFound
-    def fieldNotFound: SetValueResult             = FieldNotFound
+    def itemNotFound: SetValueResult = ItemNotFound
+    def fieldNotFound: SetValueResult = FieldNotFound
     def valueInvalid(msg: String): SetValueResult = ValueInvalid(msg)
-    def success: SetValueResult                   = Success
+    def success: SetValueResult = Success
   }
 
   case class RemoveValue(
@@ -109,12 +109,12 @@ object OCustomFields {
   object CustomFieldOrder {
     import docspell.store.qb.DSL._
 
-    final case object NameAsc   extends CustomFieldOrder
-    final case object NameDesc  extends CustomFieldOrder
-    final case object LabelAsc  extends CustomFieldOrder
+    final case object NameAsc extends CustomFieldOrder
+    final case object NameDesc extends CustomFieldOrder
+    final case object LabelAsc extends CustomFieldOrder
     final case object LabelDesc extends CustomFieldOrder
-    final case object TypeAsc   extends CustomFieldOrder
-    final case object TypeDesc  extends CustomFieldOrder
+    final case object TypeAsc extends CustomFieldOrder
+    final case object TypeDesc extends CustomFieldOrder
 
     def parse(str: String): Either[String, CustomFieldOrder] =
       str.toLowerCase match {
@@ -172,7 +172,7 @@ object OCustomFields {
       def create(field: NewCustomField): F[AddResult] = {
         val exists = RCustomField.exists(field.name, field.cid)
         val insert = for {
-          id  <- Ident.randomId[ConnectionIO]
+          id <- Ident.randomId[ConnectionIO]
           now <- Timestamp.current[ConnectionIO]
           rec = RCustomField(id, field.name, field.label, field.cid, field.ftype, now)
           n <- RCustomField.insert(rec)
@@ -188,9 +188,9 @@ object OCustomFields {
         val update =
           for {
             field <- OptionT(RCustomField.findByIdOrName(fieldIdOrName, coll))
-            _     <- OptionT.liftF(logger.info(s"Deleting field: $field"))
-            n     <- OptionT.liftF(RCustomFieldValue.deleteByField(field.id))
-            k     <- OptionT.liftF(RCustomField.deleteById(field.id, coll))
+            _ <- OptionT.liftF(logger.info(s"Deleting field: $field"))
+            n <- OptionT.liftF(RCustomFieldValue.deleteByField(field.id))
+            k <- OptionT.liftF(RCustomField.deleteById(field.id, coll))
           } yield n + k
 
         UpdateResult.fromUpdate(store.transact(update.getOrElse(0)))
@@ -230,8 +230,8 @@ object OCustomFields {
         val update =
           for {
             field <- OptionT(RCustomField.findByIdOrName(in.field, in.collective))
-            _     <- OptionT.liftF(logger.debug(s"Field found by '${in.field}': $field"))
-            n     <- OptionT.liftF(RCustomFieldValue.deleteValue(field.id, in.item))
+            _ <- OptionT.liftF(logger.debug(s"Field found by '${in.field}': $field"))
+            n <- OptionT.liftF(RCustomFieldValue.deleteValue(field.id, in.item))
           } yield n
 
         UpdateResult.fromUpdate(store.transact(update.getOrElse(0)))

@@ -81,8 +81,7 @@ object MetaProposal {
     implicit val order: Order[Candidate] =
       Order.by(_.ref)
 
-    /** This deviates from standard order to sort None at last.
-      */
+    /** This deviates from standard order to sort None at last. */
     val weightOrder: Order[Option[Double]] = new Order[Option[Double]] {
       def compare(x: Option[Double], y: Option[Double]) =
         (x, y) match {

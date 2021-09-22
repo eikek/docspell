@@ -16,12 +16,12 @@ class NerFileTest extends FunSuite {
 
   test("create valid case insensitive patterns") {
     val names = List(
-      "Some company AG"            -> "(?i)some company ag",
-      "Acme GmbH"                  -> "(?i)acme gmbh",
-      "UP"                         -> "(?i)up",
-      "1 & 1"                      -> "(?i)1 & 1",
+      "Some company AG" -> "(?i)some company ag",
+      "Acme GmbH" -> "(?i)acme gmbh",
+      "UP" -> "(?i)up",
+      "1 & 1" -> "(?i)1 & 1",
       "1 & 1 (Telefon / Internet)" -> "(?i)1 & 1 \\(telefon / internet\\)",
-      "X-corp (this)*-*[one]"      -> "(?i)x\\-corp \\(this\\)\\*\\-\\*\\[one\\]"
+      "X-corp (this)*-*[one]" -> "(?i)x\\-corp \\(this\\)\\*\\-\\*\\[one\\]"
     )
 
     for ((name, first) <- names) {

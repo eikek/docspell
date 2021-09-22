@@ -72,17 +72,17 @@ object QueryParam {
 
   object QueryOpt extends OptionalQueryParamDecoderMatcher[QueryString]("q")
 
-  object Query       extends OptionalQueryParamDecoderMatcher[String]("q")
-  object Limit       extends OptionalQueryParamDecoderMatcher[Int]("limit")
-  object Offset      extends OptionalQueryParamDecoderMatcher[Int]("offset")
+  object Query extends OptionalQueryParamDecoderMatcher[String]("q")
+  object Limit extends OptionalQueryParamDecoderMatcher[Int]("limit")
+  object Offset extends OptionalQueryParamDecoderMatcher[Int]("offset")
   object WithDetails extends OptionalQueryParamDecoderMatcher[Boolean]("withDetails")
-  object SearchKind  extends OptionalQueryParamDecoderMatcher[SearchMode]("searchMode")
-  object TagSort     extends OptionalQueryParamDecoderMatcher[TagOrder]("sort")
-  object EquipSort   extends OptionalQueryParamDecoderMatcher[EquipmentOrder]("sort")
-  object OrgSort     extends OptionalQueryParamDecoderMatcher[OrganizationOrder]("sort")
-  object PersonSort  extends OptionalQueryParamDecoderMatcher[PersonOrder]("sort")
-  object FolderSort  extends OptionalQueryParamDecoderMatcher[FolderOrder]("sort")
-  object FieldSort   extends OptionalQueryParamDecoderMatcher[CustomFieldOrder]("sort")
+  object SearchKind extends OptionalQueryParamDecoderMatcher[SearchMode]("searchMode")
+  object TagSort extends OptionalQueryParamDecoderMatcher[TagOrder]("sort")
+  object EquipSort extends OptionalQueryParamDecoderMatcher[EquipmentOrder]("sort")
+  object OrgSort extends OptionalQueryParamDecoderMatcher[OrganizationOrder]("sort")
+  object PersonSort extends OptionalQueryParamDecoderMatcher[PersonOrder]("sort")
+  object FolderSort extends OptionalQueryParamDecoderMatcher[FolderOrder]("sort")
+  object FieldSort extends OptionalQueryParamDecoderMatcher[CustomFieldOrder]("sort")
 
   object WithFallback extends OptionalQueryParamDecoderMatcher[Boolean]("withFallback")
 }

@@ -44,47 +44,47 @@ object Properties {
 
   def nerGerman(regexNerMappingFile: Option[String], highRecall: Boolean): JProps =
     Properties(
-      "annotators"           -> "tokenize,ssplit,mwt,pos,lemma,ner",
-      "tokenize.language"    -> "de",
-      "mwt.mappingFile"      -> "edu/stanford/nlp/models/mwt/german/german-mwt.tsv",
-      "pos.model"            -> "edu/stanford/nlp/models/pos-tagger/german-ud.tagger",
-      "ner.statisticalOnly"  -> "true",
-      "ner.rulesOnly"        -> "false",
+      "annotators" -> "tokenize,ssplit,mwt,pos,lemma,ner",
+      "tokenize.language" -> "de",
+      "mwt.mappingFile" -> "edu/stanford/nlp/models/mwt/german/german-mwt.tsv",
+      "pos.model" -> "edu/stanford/nlp/models/pos-tagger/german-ud.tagger",
+      "ner.statisticalOnly" -> "true",
+      "ner.rulesOnly" -> "false",
       "ner.applyFineGrained" -> "false",
       "ner.applyNumericClassifiers" -> "false", //only english supported, not needed currently
       "ner.useSUTime" -> "false", //only english, unused in docspell
-      "ner.language"  -> "de",
+      "ner.language" -> "de",
       "ner.model" -> "edu/stanford/nlp/models/ner/german.distsim.crf.ser.gz,edu/stanford/nlp/models/ner/english.conll.4class.distsim.crf.ser.gz"
     ).withRegexNer(regexNerMappingFile).withHighRecall(highRecall)
 
   def nerEnglish(regexNerMappingFile: Option[String]): JProps =
     Properties(
-      "annotators"        -> "tokenize,ssplit,pos,lemma,ner",
+      "annotators" -> "tokenize,ssplit,pos,lemma,ner",
       "tokenize.language" -> "en",
       "pos.model" -> "edu/stanford/nlp/models/pos-tagger/english-left3words-distsim.tagger",
-      "ner.statisticalOnly"         -> "true",
-      "ner.rulesOnly"               -> "false",
-      "ner.applyFineGrained"        -> "false",
+      "ner.statisticalOnly" -> "true",
+      "ner.rulesOnly" -> "false",
+      "ner.applyFineGrained" -> "false",
       "ner.applyNumericClassifiers" -> "false",
-      "ner.useSUTime"               -> "false",
-      "ner.language"                -> "en",
+      "ner.useSUTime" -> "false",
+      "ner.language" -> "en",
       "ner.model" -> "edu/stanford/nlp/models/ner/english.conll.4class.distsim.crf.ser.gz"
     ).withRegexNer(regexNerMappingFile)
 
   def nerFrench(regexNerMappingFile: Option[String], highRecall: Boolean): JProps =
     Properties(
-      "annotators"        -> "tokenize,ssplit,mwt,pos,lemma,ner",
+      "annotators" -> "tokenize,ssplit,mwt,pos,lemma,ner",
       "tokenize.language" -> "fr",
-      "mwt.mappingFile"   -> "edu/stanford/nlp/models/mwt/french/french-mwt.tsv",
-      "mwt.pos.model"     -> "edu/stanford/nlp/models/mwt/french/french-mwt.tagger",
+      "mwt.mappingFile" -> "edu/stanford/nlp/models/mwt/french/french-mwt.tsv",
+      "mwt.pos.model" -> "edu/stanford/nlp/models/mwt/french/french-mwt.tagger",
       "mwt.statisticalMappingFile" -> "edu/stanford/nlp/models/mwt/french/french-mwt-statistical.tsv",
-      "pos.model"            -> "edu/stanford/nlp/models/pos-tagger/french-ud.tagger",
-      "ner.statisticalOnly"  -> "true",
-      "ner.rulesOnly"        -> "false",
+      "pos.model" -> "edu/stanford/nlp/models/pos-tagger/french-ud.tagger",
+      "ner.statisticalOnly" -> "true",
+      "ner.rulesOnly" -> "false",
       "ner.applyFineGrained" -> "false",
       "ner.applyNumericClassifiers" -> "false",
-      "ner.useSUTime"               -> "false",
-      "ner.language"                -> "de",
+      "ner.useSUTime" -> "false",
+      "ner.language" -> "de",
       "ner.model" -> "edu/stanford/nlp/models/ner/french-wikiner-4class.crf.ser.gz,edu/stanford/nlp/models/ner/english.conll.4class.distsim.crf.ser.gz"
     ).withRegexNer(regexNerMappingFile).withHighRecall(highRecall)
 

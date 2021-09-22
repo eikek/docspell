@@ -35,9 +35,9 @@ object RFolderMember {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "folder_member"
 
-    val id      = Column[Ident]("id", this)
-    val folder  = Column[Ident]("folder_id", this)
-    val user    = Column[Ident]("user_id", this)
+    val id = Column[Ident]("id", this)
+    val folder = Column[Ident]("folder_id", this)
+    val user = Column[Ident]("user_id", this)
     val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, folder, user, created)

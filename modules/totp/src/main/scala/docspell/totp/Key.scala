@@ -43,7 +43,7 @@ object Key {
     if (dataStr.isEmpty) Left(s"No separator found in key string: $str")
     else
       for {
-        mac  <- Mac.fromString(macStr)
+        mac <- Mac.fromString(macStr)
         data <- ByteVector.fromBase32Descriptive(dataStr.dropWhile(_ == ':'))
       } yield Key(data, mac)
   }

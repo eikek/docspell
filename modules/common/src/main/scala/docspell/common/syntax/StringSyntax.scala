@@ -20,7 +20,7 @@ trait StringSyntax {
 
     def parseJsonAs[A](implicit d: Decoder[A]): Either[Throwable, A] =
       for {
-        json  <- parse(s).leftMap(_.underlying)
+        json <- parse(s).leftMap(_.underlying)
         value <- json.as[A]
       } yield value
   }

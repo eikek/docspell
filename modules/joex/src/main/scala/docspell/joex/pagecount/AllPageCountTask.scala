@@ -64,7 +64,7 @@ object AllPageCountTask {
 
   def job[F[_]: Sync]: F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
     } yield RJob.newJob(
       id,

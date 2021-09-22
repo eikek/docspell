@@ -13,12 +13,12 @@ sealed trait UpdateResult
 
 object UpdateResult {
 
-  case object Success                     extends UpdateResult
-  case object NotFound                    extends UpdateResult
+  case object Success extends UpdateResult
+  case object NotFound extends UpdateResult
   final case class Failure(ex: Throwable) extends UpdateResult
 
-  def success: UpdateResult                = Success
-  def notFound: UpdateResult               = NotFound
+  def success: UpdateResult = Success
+  def notFound: UpdateResult = NotFound
   def failure(ex: Throwable): UpdateResult = Failure(ex)
 
   def fromUpdateRows(n: Int): UpdateResult =

@@ -29,11 +29,11 @@ object RFileMeta {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "filemeta"
 
-    val id        = Column[Ident]("file_id", this)
+    val id = Column[Ident]("file_id", this)
     val timestamp = Column[Timestamp]("created", this)
-    val mimetype  = Column[MimeType]("mimetype", this)
-    val length    = Column[ByteSize]("length", this)
-    val checksum  = Column[ByteVector]("checksum", this)
+    val mimetype = Column[MimeType]("mimetype", this)
+    val length = Column[ByteSize]("length", this)
+    val checksum = Column[ByteVector]("checksum", this)
 
     val all = NonEmptyList
       .of[Column[_]](id, timestamp, mimetype, length, checksum)

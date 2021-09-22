@@ -14,8 +14,7 @@ import docspell.query.ItemQuery.Expr.NotExpr
 import docspell.query.ItemQuery.Expr.OrExpr
 import docspell.query.ItemQuery._
 
-/** Currently, fulltext in a query is only supported when in "root AND" position
-  */
+/** Currently, fulltext in a query is only supported when in "root AND" position */
 object FulltextExtract {
 
   sealed trait Result
@@ -26,18 +25,18 @@ object FulltextExtract {
   sealed trait FailureResult extends Result
   object Result {
     final case class SuccessNoFulltext(query: Expr) extends SuccessResult {
-      val getExprPart     = Some(query)
+      val getExprPart = Some(query)
       val getFulltextPart = None
     }
     final case class SuccessNoExpr(fts: String) extends SuccessResult {
-      val getExprPart     = None
+      val getExprPart = None
       val getFulltextPart = Some(fts)
     }
     final case class SuccessBoth(query: Expr, fts: String) extends SuccessResult {
-      val getExprPart     = Some(query)
+      val getExprPart = Some(query)
       val getFulltextPart = Some(fts)
     }
-    final case object TooMany             extends FailureResult
+    final case object TooMany extends FailureResult
     final case object UnsupportedPosition extends FailureResult
   }
 

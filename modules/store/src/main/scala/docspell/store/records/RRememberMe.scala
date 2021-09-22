@@ -23,12 +23,12 @@ object RRememberMe {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "rememberme"
 
-    val id       = Column[Ident]("id", this)
-    val cid      = Column[Ident]("cid", this)
+    val id = Column[Ident]("id", this)
+    val cid = Column[Ident]("cid", this)
     val username = Column[Ident]("login", this)
-    val created  = Column[Timestamp]("created", this)
-    val uses     = Column[Int]("uses", this)
-    val all      = NonEmptyList.of[Column[_]](id, cid, username, created, uses)
+    val created = Column[Timestamp]("created", this)
+    val uses = Column[Int]("uses", this)
+    val all = NonEmptyList.of[Column[_]](id, cid, username, created, uses)
   }
 
   val T = Table(None)
@@ -69,7 +69,7 @@ object RRememberMe {
       .option
     for {
       inv <- get
-      _   <- incrementUse(rid)
+      _ <- incrementUse(rid)
     } yield inv
   }
 

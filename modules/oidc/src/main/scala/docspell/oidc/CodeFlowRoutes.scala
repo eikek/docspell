@@ -69,7 +69,7 @@ object CodeFlowRoutes {
             val codeFromReq = OptionT.fromOption[F](req.params.get("code"))
 
             val userInfo = for {
-              _    <- OptionT.liftF(logger.info(s"Resume OAuth/OIDC flow for ${id.id}"))
+              _ <- OptionT.liftF(logger.info(s"Resume OAuth/OIDC flow for ${id.id}"))
               code <- codeFromReq
               _ <- OptionT.liftF(
                 logger.trace(

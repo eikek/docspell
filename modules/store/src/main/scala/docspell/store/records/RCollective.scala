@@ -28,11 +28,11 @@ object RCollective {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "collective"
 
-    val id          = Column[Ident]("cid", this)
-    val state       = Column[CollectiveState]("state", this)
-    val language    = Column[Language]("doclang", this)
+    val id = Column[Ident]("cid", this)
+    val state = Column[CollectiveState]("state", this)
+    val language = Column[Language]("doclang", this)
     val integration = Column[Boolean]("integration_enabled", this)
-    val created     = Column[Timestamp]("created", this)
+    val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, state, language, integration, created)
   }
@@ -103,7 +103,7 @@ object RCollective {
 
   private def getRawSettings(coll: Ident): ConnectionIO[Option[Settings]] = {
     import RClassifierSetting.stringListMeta
-    val c  = RCollective.as("c")
+    val c = RCollective.as("c")
     val cs = RClassifierSetting.as("cs")
     val es = REmptyTrashSetting.as("es")
 

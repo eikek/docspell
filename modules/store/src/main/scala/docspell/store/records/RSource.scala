@@ -39,18 +39,18 @@ object RSource {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "source"
 
-    val sid         = Column[Ident]("sid", this)
-    val cid         = Column[Ident]("cid", this)
-    val abbrev      = Column[String]("abbrev", this)
+    val sid = Column[Ident]("sid", this)
+    val cid = Column[Ident]("cid", this)
+    val abbrev = Column[String]("abbrev", this)
     val description = Column[String]("description", this)
-    val counter     = Column[Int]("counter", this)
-    val enabled     = Column[Boolean]("enabled", this)
-    val priority    = Column[Priority]("priority", this)
-    val created     = Column[Timestamp]("created", this)
-    val folder      = Column[Ident]("folder_id", this)
-    val fileFilter  = Column[Glob]("file_filter", this)
-    val language    = Column[Language]("doc_lang", this)
-    val attachOnly  = Column[Boolean]("attachments_only", this)
+    val counter = Column[Int]("counter", this)
+    val enabled = Column[Boolean]("enabled", this)
+    val priority = Column[Priority]("priority", this)
+    val created = Column[Timestamp]("created", this)
+    val folder = Column[Ident]("folder_id", this)
+    val fileFilter = Column[Glob]("file_filter", this)
+    val language = Column[Language]("doc_lang", this)
+    val attachOnly = Column[Boolean]("attachments_only", this)
 
     val all =
       NonEmptyList.of[Column[_]](

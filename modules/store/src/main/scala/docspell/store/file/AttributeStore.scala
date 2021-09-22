@@ -22,7 +22,7 @@ final private[file] class AttributeStore[F[_]: Sync](xa: Transactor[F])
   def saveAttr(id: BinaryId, attrs: F[BinaryAttributes]): F[Unit] =
     for {
       now <- Timestamp.current[F]
-      a   <- attrs
+      a <- attrs
       fm = RFileMeta(
         Ident.unsafe(id.id),
         now,

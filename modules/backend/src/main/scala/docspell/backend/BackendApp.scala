@@ -59,54 +59,54 @@ object BackendApp {
       ftsClient: FtsClient[F]
   ): Resource[F, BackendApp[F]] =
     for {
-      utStore        <- UserTaskStore(store)
-      queue          <- JobQueue(store)
-      totpImpl       <- OTotp(store, Totp.default)
-      loginImpl      <- Login[F](store, Totp.default)
-      signupImpl     <- OSignup[F](store)
-      joexImpl       <- OJoex(JoexClient(httpClient), store)
-      collImpl       <- OCollective[F](store, utStore, queue, joexImpl)
-      sourceImpl     <- OSource[F](store)
-      tagImpl        <- OTag[F](store)
-      equipImpl      <- OEquipment[F](store)
-      orgImpl        <- OOrganization(store)
-      uploadImpl     <- OUpload(store, queue, joexImpl)
-      nodeImpl       <- ONode(store)
-      jobImpl        <- OJob(store, joexImpl)
-      createIndex    <- CreateIndex.resource(ftsClient, store)
-      itemImpl       <- OItem(store, ftsClient, createIndex, queue, joexImpl)
+      utStore <- UserTaskStore(store)
+      queue <- JobQueue(store)
+      totpImpl <- OTotp(store, Totp.default)
+      loginImpl <- Login[F](store, Totp.default)
+      signupImpl <- OSignup[F](store)
+      joexImpl <- OJoex(JoexClient(httpClient), store)
+      collImpl <- OCollective[F](store, utStore, queue, joexImpl)
+      sourceImpl <- OSource[F](store)
+      tagImpl <- OTag[F](store)
+      equipImpl <- OEquipment[F](store)
+      orgImpl <- OOrganization(store)
+      uploadImpl <- OUpload(store, queue, joexImpl)
+      nodeImpl <- ONode(store)
+      jobImpl <- OJob(store, joexImpl)
+      createIndex <- CreateIndex.resource(ftsClient, store)
+      itemImpl <- OItem(store, ftsClient, createIndex, queue, joexImpl)
       itemSearchImpl <- OItemSearch(store)
-      fulltextImpl   <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
+      fulltextImpl <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
       javaEmil =
         JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
-      mailImpl         <- OMail(store, javaEmil)
-      userTaskImpl     <- OUserTask(utStore, queue, joexImpl)
-      folderImpl       <- OFolder(store)
+      mailImpl <- OMail(store, javaEmil)
+      userTaskImpl <- OUserTask(utStore, queue, joexImpl)
+      folderImpl <- OFolder(store)
       customFieldsImpl <- OCustomFields(store)
       simpleSearchImpl = OSimpleSearch(fulltextImpl, itemSearchImpl)
       clientSettingsImpl <- OClientSettings(store)
     } yield new BackendApp[F] {
-      val login          = loginImpl
-      val signup         = signupImpl
-      val collective     = collImpl
-      val source         = sourceImpl
-      val tag            = tagImpl
-      val equipment      = equipImpl
-      val organization   = orgImpl
-      val upload         = uploadImpl
-      val node           = nodeImpl
-      val job            = jobImpl
-      val item           = itemImpl
-      val itemSearch     = itemSearchImpl
-      val fulltext       = fulltextImpl
-      val mail           = mailImpl
-      val joex           = joexImpl
-      val userTask       = userTaskImpl
-      val folder         = folderImpl
-      val customFields   = customFieldsImpl
-      val simpleSearch   = simpleSearchImpl
+      val login = loginImpl
+      val signup = signupImpl
+      val collective = collImpl
+      val source = sourceImpl
+      val tag = tagImpl
+      val equipment = equipImpl
+      val organization = orgImpl
+      val upload = uploadImpl
+      val node = nodeImpl
+      val job = jobImpl
+      val item = itemImpl
+      val itemSearch = itemSearchImpl
+      val fulltext = fulltextImpl
+      val mail = mailImpl
+      val joex = joexImpl
+      val userTask = userTaskImpl
+      val folder = folderImpl
+      val customFields = customFieldsImpl
+      val simpleSearch = simpleSearchImpl
       val clientSettings = clientSettingsImpl
-      val totp           = totpImpl
+      val totp = totpImpl
     }
 
   def apply[F[_]: Async](
@@ -115,9 +115,9 @@ object BackendApp {
       httpClientEc: ExecutionContext
   )(ftsFactory: Client[F] => Resource[F, FtsClient[F]]): Resource[F, BackendApp[F]] =
     for {
-      store      <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
+      store <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
       httpClient <- BlazeClientBuilder[F](httpClientEc).resource
-      ftsClient  <- ftsFactory(httpClient)
-      backend    <- create(cfg, store, httpClient, ftsClient)
+      ftsClient <- ftsFactory(httpClient)
+      backend <- create(cfg, store, httpClient, ftsClient)
     } yield backend
 }

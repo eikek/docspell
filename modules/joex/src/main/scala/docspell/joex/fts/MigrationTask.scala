@@ -30,7 +30,7 @@ object MigrationTask {
         Task(ctx =>
           for {
             migs <- migrationTasks[F](fts)
-            res  <- Migration[F](cfg, fts, ctx.store, createIndex, ctx.logger).run(migs)
+            res <- Migration[F](cfg, fts, ctx.store, createIndex, ctx.logger).run(migs)
           } yield res
         )
       )
@@ -40,7 +40,7 @@ object MigrationTask {
 
   def job[F[_]: Sync]: F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
     } yield RJob.newJob(
       id,

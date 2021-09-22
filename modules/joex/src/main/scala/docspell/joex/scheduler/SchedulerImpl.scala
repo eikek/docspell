@@ -109,8 +109,8 @@ final class SchedulerImpl[F[_]: Async](
         _ <- permits.available.flatMap(a =>
           logger.fdebug(s"Try to acquire permit ($a free)")
         )
-        _    <- permits.acquire
-        _    <- logger.fdebug("New permit acquired")
+        _ <- permits.acquire
+        _ <- logger.fdebug("New permit acquired")
         down <- state.get.map(_.shutdownRequest)
         rjob <-
           if (down)
@@ -159,11 +159,11 @@ final class SchedulerImpl[F[_]: Async](
           _ <-
             logger.fdebug(s"Creating context for job ${job.info} to run cancellation $t")
           ctx <- Context[F, String](job, job.args, config, logSink, store)
-          _   <- t.onCancel.run(ctx)
-          _   <- state.modify(_.markCancelled(job))
-          _   <- onFinish(job, JobState.Cancelled)
-          _   <- ctx.logger.warn("Job has been cancelled.")
-          _   <- logger.fdebug(s"Job ${job.info} has been cancelled.")
+          _ <- t.onCancel.run(ctx)
+          _ <- state.modify(_.markCancelled(job))
+          _ <- onFinish(job, JobState.Cancelled)
+          _ <- ctx.logger.warn("Job has been cancelled.")
+          _ <- logger.fdebug(s"Job ${job.info} has been cancelled.")
         } yield ()
     }
   }
@@ -181,11 +181,11 @@ final class SchedulerImpl[F[_]: Async](
         logger.ferror(s"Unable to start a task for job ${job.info}: $err")
       case Right(t) =>
         for {
-          _   <- logger.fdebug(s"Creating context for job ${job.info} to run $t")
+          _ <- logger.fdebug(s"Creating context for job ${job.info} to run $t")
           ctx <- Context[F, String](job, job.args, config, logSink, store)
           jot = wrapTask(job, t.task, ctx)
           tok <- forkRun(job, jot.run(ctx), t.onCancel.run(ctx), ctx)
-          _   <- state.modify(_.addRunning(job, tok))
+          _ <- state.modify(_.addRunning(job, tok))
         } yield ()
     }
   }

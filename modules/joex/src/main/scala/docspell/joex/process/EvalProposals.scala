@@ -22,7 +22,7 @@ object EvalProposals {
   def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
       for {
-        now        <- Timestamp.current[F]
+        now <- Timestamp.current[F]
         personRefs <- findOrganizationRelation[F](data, ctx)
         metas = data.metas.map(calcCandidateWeight(now.toUtcDate, personRefs))
       } yield data.copy(metas = metas)
@@ -71,10 +71,10 @@ object EvalProposals {
           }
           .getOrElse(2000.0)
       case _ =>
-        val textLen  = rm.content.map(_.length).getOrElse(0)
+        val textLen = rm.content.map(_.length).getOrElse(0)
         val tagCount = cand.origin.size.toDouble
-        val pos      = cand.origin.map(_.startPosition).min
-        val words    = cand.origin.map(_.label.split(' ').length).max.toDouble
+        val pos = cand.origin.map(_.startPosition).min
+        val words = cand.origin.map(_.label.split(' ').length).max.toDouble
         val nerFac =
           cand.origin.map(label => nerTagFactor(label.tag, mp.proposalType)).min
         val corrPerFac = corrOrgPersonFactor(rm, mp, personRefs, cand)

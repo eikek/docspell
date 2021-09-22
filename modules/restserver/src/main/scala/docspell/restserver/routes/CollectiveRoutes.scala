@@ -33,14 +33,14 @@ object CollectiveRoutes {
     HttpRoutes.of {
       case GET -> Root / "insights" =>
         for {
-          ins  <- backend.collective.insights(user.account.collective)
+          ins <- backend.collective.insights(user.account.collective)
           resp <- Ok(Conversions.mkItemInsights(ins))
         } yield resp
 
       case GET -> Root / "tagcloud" =>
         for {
           cloud <- backend.collective.tagCloud(user.account.collective)
-          resp  <- Ok(Conversions.mkTagCloud(cloud))
+          resp <- Ok(Conversions.mkTagCloud(cloud))
         } yield resp
 
       case req @ POST -> Root / "settings" =>
@@ -109,7 +109,7 @@ object CollectiveRoutes {
 
       case POST -> Root / "classifier" / "startonce" =>
         for {
-          _    <- backend.collective.startLearnClassifier(user.account.collective)
+          _ <- backend.collective.startLearnClassifier(user.account.collective)
           resp <- Ok(BasicResult(true, "Task submitted"))
         } yield resp
 

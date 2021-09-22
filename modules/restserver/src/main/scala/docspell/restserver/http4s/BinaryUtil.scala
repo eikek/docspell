@@ -28,10 +28,10 @@ object BinaryUtil {
   ): F[Response[F]] = {
     import dsl._
 
-    val mt     = MediaType.unsafeParse(data.meta.mimetype.asString)
-    val ctype  = `Content-Type`(mt)
+    val mt = MediaType.unsafeParse(data.meta.mimetype.asString)
+    val ctype = `Content-Type`(mt)
     val cntLen = `Content-Length`.unsafeFromLong(data.meta.length.bytes)
-    val eTag   = ETag(data.meta.checksum.toHex)
+    val eTag = ETag(data.meta.checksum.toHex)
     val disp =
       `Content-Disposition`(
         "inline",

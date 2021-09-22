@@ -8,15 +8,14 @@ package docspell.analysis.split
 
 import fs2.Stream
 
-/** Splits text into words.
-  */
+/** Splits text into words. */
 object TextSplitter {
   private[this] val trimChars =
     ".,…_[]^!<>=&ſ/{}*?()-:#$|~`+%\\\"'; \t\r\n".toSet
 
   def split[F[_]](str: String, sep: Set[Char], start: Int = 0): Stream[F, Word] = {
     val indexes = sep.map(c => str.indexOf(c.toInt)).filter(_ >= 0)
-    val index   = if (indexes.isEmpty) -1 else indexes.min
+    val index = if (indexes.isEmpty) -1 else indexes.min
 
     if (index < 0) Stream.emit(Word(str, start, start + str.length))
     else if (index == 0) split(str.substring(1), sep, start + 1)

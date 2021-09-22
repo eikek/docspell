@@ -35,14 +35,14 @@ object Markdown {
     val r = createRenderer()
     Try {
       val reader = new InputStreamReader(is, cs)
-      val doc    = p.parseReader(reader)
+      val doc = p.parseReader(reader)
       wrapHtml(r.render(doc), cfg)
     }.toEither
   }
 
   def toHtml(md: String, cfg: MarkdownConfig): String = {
-    val p   = createParser()
-    val r   = createRenderer()
+    val p = createParser()
+    val r = createRenderer()
     val doc = p.parse(md)
     wrapHtml(r.render(doc), cfg)
   }

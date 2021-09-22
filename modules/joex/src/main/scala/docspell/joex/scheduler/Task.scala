@@ -13,8 +13,7 @@ import cats.implicits._
 
 import docspell.common.Logger
 
-/** The code that is executed by the scheduler
-  */
+/** The code that is executed by the scheduler */
 trait Task[F[_], A, B] {
 
   def run(ctx: Context[F, A]): F[B]

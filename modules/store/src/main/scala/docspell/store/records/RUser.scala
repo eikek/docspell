@@ -54,16 +54,16 @@ object RUser {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "user_"
 
-    val uid        = Column[Ident]("uid", this)
-    val login      = Column[Ident]("login", this)
-    val cid        = Column[Ident]("cid", this)
-    val password   = Column[Password]("password", this)
-    val state      = Column[UserState]("state", this)
-    val source     = Column[AccountSource]("account_source", this)
-    val email      = Column[String]("email", this)
+    val uid = Column[Ident]("uid", this)
+    val login = Column[Ident]("login", this)
+    val cid = Column[Ident]("cid", this)
+    val password = Column[Password]("password", this)
+    val state = Column[UserState]("state", this)
+    val source = Column[AccountSource]("account_source", this)
+    val email = Column[String]("email", this)
     val loginCount = Column[Int]("logincount", this)
-    val lastLogin  = Column[Timestamp]("lastlogin", this)
-    val created    = Column[Timestamp]("created", this)
+    val lastLogin = Column[Timestamp]("lastlogin", this)
+    val created = Column[Timestamp]("created", this)
 
     val all =
       NonEmptyList.of[Column[_]](
@@ -121,13 +121,13 @@ object RUser {
   }
 
   def findById(userId: Ident): ConnectionIO[Option[RUser]] = {
-    val t   = Table(None)
+    val t = Table(None)
     val sql = run(select(t.all), from(t), t.uid === userId)
     sql.query[RUser].option
   }
 
   def findAll(coll: Ident, order: Table => Column[_]): ConnectionIO[Vector[RUser]] = {
-    val t   = Table(None)
+    val t = Table(None)
     val sql = Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).build
     sql.query[RUser].to[Vector]
   }

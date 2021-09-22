@@ -36,7 +36,7 @@ object OEquipment {
 
   sealed trait EquipmentOrder
   object EquipmentOrder {
-    final case object NameAsc  extends EquipmentOrder
+    final case object NameAsc extends EquipmentOrder
     final case object NameDesc extends EquipmentOrder
 
     def parse(str: String): Either[String, EquipmentOrder] =

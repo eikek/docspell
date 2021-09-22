@@ -61,9 +61,9 @@ object Context {
       store: Store[F]
   ): F[Context[F, A]] =
     for {
-      _      <- log.ftrace("Creating logger for task run")
+      _ <- log.ftrace("Creating logger for task run")
       logger <- QueueLogger(job.id, job.info, config.logBufferSize, logSink)
-      _      <- log.ftrace("Logger created, instantiating context")
+      _ <- log.ftrace("Logger created, instantiating context")
       ctx = create[F, A](job.id, arg, config, logger, store)
     } yield ctx
 

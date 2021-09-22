@@ -20,8 +20,7 @@ object JobState {
   /** Waiting for being executed. */
   case object Waiting extends JobState {}
 
-  /** A scheduler has picked up this job and will pass it to the next free slot.
-    */
+  /** A scheduler has picked up this job and will pass it to the next free slot. */
   case object Scheduled extends JobState {}
 
   /** Is currently executing */
@@ -39,17 +38,17 @@ object JobState {
   /** Finished with success */
   case object Success extends JobState {}
 
-  val waiting: JobState   = Waiting
-  val stuck: JobState     = Stuck
+  val waiting: JobState = Waiting
+  val stuck: JobState = Stuck
   val scheduled: JobState = Scheduled
-  val running: JobState   = Running
-  val failed: JobState    = Failed
+  val running: JobState = Running
+  val failed: JobState = Failed
   val cancelled: JobState = Cancelled
-  val success: JobState   = Success
+  val success: JobState = Success
 
   val all: NonEmptyList[JobState] =
     NonEmptyList.of(Waiting, Scheduled, Running, Stuck, Failed, Cancelled, Success)
-  val queued: Set[JobState]        = Set(Waiting, Scheduled, Stuck)
+  val queued: Set[JobState] = Set(Waiting, Scheduled, Stuck)
   val done: NonEmptyList[JobState] = NonEmptyList.of(Failed, Cancelled, Success)
   val notDone: NonEmptyList[JobState] = //all - done
     NonEmptyList.of(Waiting, Scheduled, Running, Stuck)

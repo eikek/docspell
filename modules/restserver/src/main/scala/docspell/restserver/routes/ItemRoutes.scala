@@ -65,7 +65,7 @@ object ItemRoutes {
 
       case GET -> Root / "searchStats" :? QP.Query(q) :? QP.SearchKind(searchMode) =>
         val itemQuery = ItemQueryString(q)
-        val fixQuery  = Query.Fix(user.account, None, None)
+        val fixQuery = Query.Fix(user.account, None, None)
         val settings = OSimpleSearch.StatsSettings(
           useFTS = cfg.fullTextSearch.enabled,
           searchMode = searchMode.getOrElse(SearchMode.Normal)
@@ -97,7 +97,7 @@ object ItemRoutes {
         for {
           userQuery <- req.as[ItemQuery]
           itemQuery = ItemQueryString(userQuery.query)
-          fixQuery  = Query.Fix(user.account, None, None)
+          fixQuery = Query.Fix(user.account, None, None)
           settings = OSimpleSearch.StatsSettings(
             useFTS = cfg.fullTextSearch.enabled,
             searchMode = userQuery.searchMode.getOrElse(SearchMode.Normal)
@@ -140,26 +140,26 @@ object ItemRoutes {
 
       case POST -> Root / Ident(id) / "confirm" =>
         for {
-          res  <- backend.item.setState(id, ItemState.Confirmed, user.account.collective)
+          res <- backend.item.setState(id, ItemState.Confirmed, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Item data confirmed"))
         } yield resp
 
       case POST -> Root / Ident(id) / "unconfirm" =>
         for {
-          res  <- backend.item.setState(id, ItemState.Created, user.account.collective)
+          res <- backend.item.setState(id, ItemState.Created, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Item back to created."))
         } yield resp
 
       case POST -> Root / Ident(id) / "restore" =>
         for {
-          res  <- backend.item.restore(NonEmptyList.of(id), user.account.collective)
+          res <- backend.item.restore(NonEmptyList.of(id), user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Item restored."))
         } yield resp
 
       case req @ PUT -> Root / Ident(id) / "tags" =>
         for {
           tags <- req.as[StringList].map(_.items)
-          res  <- backend.item.setTags(id, tags, user.account.collective)
+          res <- backend.item.setTags(id, tags, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Tags updated"))
         } yield resp
 
@@ -167,21 +167,21 @@ object ItemRoutes {
         for {
           data <- req.as[Tag]
           rtag <- Conversions.newTag(data, user.account.collective)
-          res  <- backend.item.addNewTag(id, rtag)
+          res <- backend.item.addNewTag(id, rtag)
           resp <- Ok(Conversions.basicResult(res, "Tag added."))
         } yield resp
 
       case req @ PUT -> Root / Ident(id) / "taglink" =>
         for {
           tags <- req.as[StringList]
-          res  <- backend.item.linkTags(id, tags.items, user.account.collective)
+          res <- backend.item.linkTags(id, tags.items, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Tags linked"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "tagtoggle" =>
         for {
           tags <- req.as[StringList]
-          res  <- backend.item.toggleTags(id, tags.items, user.account.collective)
+          res <- backend.item.toggleTags(id, tags.items, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Tags linked"))
         } yield resp
 
@@ -210,8 +210,8 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "folder" =>
         for {
           idref <- req.as[OptionalId]
-          res   <- backend.item.setFolder(id, idref.id, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Folder updated"))
+          res <- backend.item.setFolder(id, idref.id, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Folder updated"))
         } yield resp
 
       case req @ PUT -> Root / Ident(id) / "corrOrg" =>
@@ -228,8 +228,8 @@ object ItemRoutes {
       case req @ POST -> Root / Ident(id) / "corrOrg" =>
         for {
           data <- req.as[Organization]
-          org  <- Conversions.newOrg(data, user.account.collective)
-          res  <- backend.item.addCorrOrg(id, org)
+          org <- Conversions.newOrg(data, user.account.collective)
+          res <- backend.item.addCorrOrg(id, org)
           resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
         } yield resp
 
@@ -248,7 +248,7 @@ object ItemRoutes {
         for {
           data <- req.as[Person]
           pers <- Conversions.newPerson(data, user.account.collective)
-          res  <- backend.item.addCorrPerson(id, pers)
+          res <- backend.item.addCorrPerson(id, pers)
           resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
         } yield resp
 
@@ -267,7 +267,7 @@ object ItemRoutes {
         for {
           data <- req.as[Person]
           pers <- Conversions.newPerson(data, user.account.collective)
-          res  <- backend.item.addConcPerson(id, pers)
+          res <- backend.item.addConcPerson(id, pers)
           resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
         } yield resp
 
@@ -284,16 +284,16 @@ object ItemRoutes {
 
       case req @ POST -> Root / Ident(id) / "concEquipment" =>
         for {
-          data  <- req.as[Equipment]
+          data <- req.as[Equipment]
           equip <- Conversions.newEquipment(data, user.account.collective)
-          res   <- backend.item.addConcEquip(id, equip)
-          resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+          res <- backend.item.addConcEquip(id, equip)
+          resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
         } yield resp
 
       case req @ PUT -> Root / Ident(id) / "notes" =>
         for {
           text <- req.as[OptionalText]
-          res  <- backend.item.setNotes(id, text.text.notEmpty, user.account.collective)
+          res <- backend.item.setNotes(id, text.text.notEmpty, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Notes updated"))
         } yield resp
 
@@ -311,7 +311,7 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "duedate" =>
         for {
           date <- req.as[OptionalDate]
-          _    <- logger.fdebug(s"Setting item due date to ${date.date}")
+          _ <- logger.fdebug(s"Setting item due date to ${date.date}")
           res <- backend.item.setItemDueDate(
             NonEmptyList.of(id),
             date.date,
@@ -323,7 +323,7 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "date" =>
         for {
           date <- req.as[OptionalDate]
-          _    <- logger.fdebug(s"Setting item date to ${date.date}")
+          _ <- logger.fdebug(s"Setting item date to ${date.date}")
           res <- backend.item.setItemDate(
             NonEmptyList.of(id),
             date.date,
@@ -342,8 +342,8 @@ object ItemRoutes {
       case req @ POST -> Root / Ident(id) / "attachment" / "movebefore" =>
         for {
           data <- req.as[MoveAttachment]
-          _    <- logger.fdebug(s"Move item (${id.id}) attachment $data")
-          res  <- backend.item.moveAttachmentBefore(id, data.source, data.target)
+          _ <- logger.fdebug(s"Move item (${id.id}) attachment $data")
+          res <- backend.item.moveAttachmentBefore(id, data.source, data.target)
           resp <- Ok(Conversions.basicResult(res, "Attachment moved."))
         } yield resp
 
@@ -352,8 +352,8 @@ object ItemRoutes {
           NotFound(BasicResult(false, "Not found"))
         for {
           preview <- backend.itemSearch.findItemPreview(id, user.account.collective)
-          inm      = req.headers.get[`If-None-Match`].flatMap(_.tags)
-          matches  = BinaryUtil.matchETag(preview.map(_.meta), inm)
+          inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
+          matches = BinaryUtil.matchETag(preview.map(_.meta), inm)
           fallback = flag.getOrElse(false)
           resp <-
             preview
@@ -380,8 +380,8 @@ object ItemRoutes {
         for {
           data <- req.as[IdList]
           ids = data.ids.flatMap(s => Ident.fromString(s).toOption)
-          _    <- logger.fdebug(s"Re-process item ${id.id}")
-          res  <- backend.item.reprocess(id, ids, user.account, true)
+          _ <- logger.fdebug(s"Re-process item ${id.id}")
+          res <- backend.item.reprocess(id, ids, user.account, true)
           resp <- Ok(Conversions.basicResult(res, "Re-process task submitted."))
         } yield resp
 

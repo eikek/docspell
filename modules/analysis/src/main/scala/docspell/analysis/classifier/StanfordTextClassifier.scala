@@ -31,10 +31,10 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
       .withTempDir(cfg.workingDir, "trainclassifier")
       .use { dir =>
         for {
-          rawData   <- writeDataFile(dir, data)
-          _         <- logger.debug(s"Learning from ${rawData.count} items.")
+          rawData <- writeDataFile(dir, data)
+          _ <- logger.debug(s"Learning from ${rawData.count} items.")
           trainData <- splitData(logger, rawData)
-          scores    <- cfg.classifierConfigs.traverse(m => train(logger, trainData, m))
+          scores <- cfg.classifierConfigs.traverse(m => train(logger, trainData, m))
           sorted = scores.sortBy(-_.score)
           res <- handler(sorted.head.model)
         } yield res
@@ -77,7 +77,7 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
     } yield res
 
   def splitData(logger: Logger[F], in: RawData): F[TrainData] = {
-    val f     = if (cfg.classifierConfigs.size > 1) 0.15 else 0.0
+    val f = if (cfg.classifierConfigs.size > 1) 0.15 else 0.0
     val nTest = (in.count * f).toLong
 
     val td =
@@ -142,8 +142,8 @@ final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
       props: Map[String, String]
   ): Map[String, String] =
     prepend("2.", props) ++ Map(
-      "trainFile"   -> trainData.train.absolutePathAsString,
-      "testFile"    -> trainData.test.absolutePathAsString,
+      "trainFile" -> trainData.train.absolutePathAsString,
+      "testFile" -> trainData.test.absolutePathAsString,
       "serializeTo" -> trainData.modelFile.absolutePathAsString
     ).toList
 

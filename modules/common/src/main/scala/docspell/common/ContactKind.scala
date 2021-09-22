@@ -16,10 +16,10 @@ sealed trait ContactKind { self: Product =>
 object ContactKind {
   val all = List()
 
-  case object Phone   extends ContactKind
-  case object Mobile  extends ContactKind
-  case object Fax     extends ContactKind
-  case object Email   extends ContactKind
+  case object Phone extends ContactKind
+  case object Mobile extends ContactKind
+  case object Fax extends ContactKind
+  case object Email extends ContactKind
   case object Website extends ContactKind
 
   def fromString(s: String): Either[String, ContactKind] =

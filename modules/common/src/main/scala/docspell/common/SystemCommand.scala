@@ -49,7 +49,7 @@ object SystemCommand {
     startProcess(cmd, wd, logger, stdin) { proc =>
       Stream.eval {
         for {
-          _    <- writeToProcess(stdin, proc)
+          _ <- writeToProcess(stdin, proc)
           term <- Sync[F].blocking(proc.waitFor(cmd.timeout.seconds, TimeUnit.SECONDS))
           _ <-
             if (term)
@@ -93,7 +93,7 @@ object SystemCommand {
   )(
       f: Process => Stream[F, A]
   ): Stream[F, A] = {
-    val log      = logger.debug(s"Running external command: ${cmd.cmdString}")
+    val log = logger.debug(s"Running external command: ${cmd.cmdString}")
     val hasStdin = stdin.take(1).compile.last.map(_.isDefined)
     val proc = log *> hasStdin.flatMap(flag =>
       Sync[F].blocking {

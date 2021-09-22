@@ -19,8 +19,7 @@ import io.circe.Encoder
 
 trait OUserTask[F[_]] {
 
-  /** Return the settings for all scan-mailbox tasks of the current user.
-    */
+  /** Return the settings for all scan-mailbox tasks of the current user. */
   def getScanMailbox(scope: UserTaskScope): Stream[F, UserTask[ScanMailboxArgs]]
 
   /** Find a scan-mailbox task by the given id. */
@@ -29,16 +28,14 @@ trait OUserTask[F[_]] {
       scope: UserTaskScope
   ): OptionT[F, UserTask[ScanMailboxArgs]]
 
-  /** Updates the scan-mailbox tasks and notifies the joex nodes.
-    */
+  /** Updates the scan-mailbox tasks and notifies the joex nodes. */
   def submitScanMailbox(
       scope: UserTaskScope,
       subject: Option[String],
       task: UserTask[ScanMailboxArgs]
   ): F[Unit]
 
-  /** Return the settings for all the notify-due-items task of the current user.
-    */
+  /** Return the settings for all the notify-due-items task of the current user. */
   def getNotifyDueItems(scope: UserTaskScope): Stream[F, UserTask[NotifyDueItemsArgs]]
 
   /** Find a notify-due-items task by the given id. */
@@ -47,8 +44,7 @@ trait OUserTask[F[_]] {
       scope: UserTaskScope
   ): OptionT[F, UserTask[NotifyDueItemsArgs]]
 
-  /** Updates the notify-due-items tasks and notifies the joex nodes.
-    */
+  /** Updates the notify-due-items tasks and notifies the joex nodes. */
   def submitNotifyDueItems(
       scope: UserTaskScope,
       subject: Option[String],
@@ -80,9 +76,9 @@ object OUserTask {
       ): F[Unit] =
         for {
           ptask <- task.encode.toPeriodicTask(scope, subject)
-          job   <- ptask.toJob
-          _     <- queue.insert(job)
-          _     <- joex.notifyAllNodes
+          job <- ptask.toJob
+          _ <- queue.insert(job)
+          _ <- joex.notifyAllNodes
         } yield ()
 
       def getScanMailbox(scope: UserTaskScope): Stream[F, UserTask[ScanMailboxArgs]] =

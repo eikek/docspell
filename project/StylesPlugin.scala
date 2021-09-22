@@ -17,12 +17,12 @@ object StylesPlugin extends AutoPlugin {
     sealed trait StylesMode
     object StylesMode {
       case object Prod extends StylesMode
-      case object Dev  extends StylesMode
+      case object Dev extends StylesMode
     }
 
-    val stylesDirectory  = settingKey[File]("The directory containing source styles")
-    val stylesOutputDir  = settingKey[File]("The directory to put the final outcome")
-    val stylesMode       = settingKey[StylesMode]("The compile mode, dev or production")
+    val stylesDirectory = settingKey[File]("The directory containing source styles")
+    val stylesOutputDir = settingKey[File]("The directory to put the final outcome")
+    val stylesMode = settingKey[StylesMode]("The compile mode, dev or production")
     val stylesNpxCommand = settingKey[String]("The npx executable")
     val stylesNpmCommand =
       settingKey[String]("The npm executable for installing dependencies")
@@ -42,15 +42,15 @@ object StylesPlugin extends AutoPlugin {
         "META-INF" / "resources" / "webjars" / name.value / version.value,
       stylesNpxCommand := "npx",
       stylesNpmCommand := "npm",
-      stylesMode       := StylesMode.Dev,
+      stylesMode := StylesMode.Dev,
       stylesBuild := {
         val logger = streams.value.log
-        val npx    = stylesNpxCommand.value
-        val npm    = stylesNpmCommand.value
-        val inDir  = stylesDirectory.value
+        val npx = stylesNpxCommand.value
+        val npm = stylesNpmCommand.value
+        val inDir = stylesDirectory.value
         val outDir = stylesOutputDir.value
-        val wd     = (Compile / baseDirectory).value
-        val mode   = stylesMode.value
+        val wd = (Compile / baseDirectory).value
+        val mode = stylesMode.value
         npmInstall(npm, wd, logger)
         val files = postCss(npx, inDir, outDir, wd, mode, logger) ++
           copyWebfonts(wd, outDir, logger) ++
@@ -60,8 +60,8 @@ object StylesPlugin extends AutoPlugin {
       },
       stylesInstall := {
         val logger = streams.value.log
-        val npm    = stylesNpmCommand.value
-        val wd     = (LocalRootProject / baseDirectory).value
+        val npm = stylesNpmCommand.value
+        val wd = (LocalRootProject / baseDirectory).value
         npmInstall(npm, wd, logger)
 
       }

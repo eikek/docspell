@@ -33,7 +33,7 @@ object Contact {
     if (atIdx <= 0 || str.indexOf('@', atIdx + 1) > 0) false
     else {
       val name = str.substring(0, atIdx)
-      val dom  = str.substring(atIdx + 1)
+      val dom = str.substring(atIdx + 1)
       Domain.isDomain(dom) && name.forall(c => !c.isWhitespace)
     }
   }

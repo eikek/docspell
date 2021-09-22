@@ -26,8 +26,8 @@ object JoexRoutes {
     HttpRoutes.of[F] {
       case POST -> Root / "notify" =>
         for {
-          _    <- app.scheduler.notifyChange
-          _    <- app.periodicScheduler.notifyChange
+          _ <- app.scheduler.notifyChange
+          _ <- app.periodicScheduler.notifyChange
           resp <- Ok(BasicResult(true, "Schedulers notified."))
         } yield resp
 

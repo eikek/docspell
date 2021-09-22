@@ -23,8 +23,7 @@ object CollectiveState {
   /** A collective that has been explicitely closed. */
   case object Closed extends CollectiveState
 
-  /** A collective blocked by a super user, usually some emergency action.
-    */
+  /** A collective blocked by a super user, usually some emergency action. */
   case object Blocked extends CollectiveState
 
   def fromString(s: String): Either[String, CollectiveState] =

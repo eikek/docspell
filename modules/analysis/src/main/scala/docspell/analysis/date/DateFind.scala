@@ -177,17 +177,17 @@ object DateFind {
 
     object Result {
       final case class Success[A](value: A, rest: List[Word]) extends Result[A] {
-        val toOption                                 = Some(value)
+        val toOption = Some(value)
         def flatMap[B](f: A => Result[B]): Result[B] = f(value)
-        def map[B](f: A => B): Result[B]             = Success(f(value), rest)
+        def map[B](f: A => B): Result[B] = Success(f(value), rest)
         def next[B](r: Reader[B]): Result[(A, B)] =
           r.read(rest).map(b => (value, b))
       }
       final case object Failure extends Result[Nothing] {
-        val toOption                                       = None
+        val toOption = None
         def flatMap[B](f: Nothing => Result[B]): Result[B] = this
-        def map[B](f: Nothing => B): Result[B]             = this
-        def next[B](r: Reader[B]): Result[(Nothing, B)]    = this
+        def map[B](f: Nothing => B): Result[B] = this
+        def next[B](r: Reader[B]): Result[(Nothing, B)] = this
       }
 
       implicit def resultSemigroup[A: Semigroup]: Semigroup[Result[A]] =

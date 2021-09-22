@@ -51,53 +51,54 @@ class UpdateCheckTest extends FunSuite {
 
 object UpdateCheckTest {
 
-  val exampleResponsePartial = """
-    |{
-    |  "url": "https://api.github.com/repos/eikek/docspell/releases/99899888",
-    |  "assets_url": "https://api.github.com/repos/eikek/docspell/releases/99899888/assets",
-    |  "upload_url": "https://uploads.github.com/repos/eikek/docspell/releases/99899888/assets{?name,label}",
-    |  "html_url": "https://github.com/eikek/docspell/releases/tag/v0.26.0",
-    |  "id": 99899888,
-    |  "node_id": "MDc6UmVsZWFzZTQ4NjEwNTY2",
-    |  "tag_name": "v0.26.0",
-    |  "target_commitish": "master",
-    |  "name": "Docspell 0.26.0",
-    |  "draft": false,
-    |  "prerelease": false,
-    |  "created_at": "2021-08-28T10:02:01Z",
-    |  "published_at": "2021-08-28T10:30:38Z",
-    |  "assets": [
-    |    {
-    |      "url": "https://api.github.com/repos/eikek/docspell/releases/assets/43494218",
-    |      "id": 43494218,
-    |      "node_id": "MDEyOlJlbGVhc2VBc3NldDQzNDk0MjE4",
-    |      "name": "docspell-joex-0.26.0.zip",
-    |      "label": "",
-    |      "content_type": "application/zip",
-    |      "state": "uploaded",
-    |      "size": 328163415,
-    |      "download_count": 24,
-    |      "created_at": "2021-08-28T10:16:24Z",
-    |      "updated_at": "2021-08-28T10:16:36Z",
-    |      "browser_download_url": "https://github.com/eikek/docspell/releases/download/v0.26.0/docspell-joex-0.26.0.zip"
-    |    },
-    |    {
-    |      "url": "https://api.github.com/repos/eikek/docspell/releases/assets/43494232",
-    |      "id": 43494232,
-    |      "node_id": "MDEyOlJlbGVhc2VBc3NldDQzNDk0MjMy",
-    |      "name": "docspell-joex_0.26.0_all.deb",
-    |      "label": "",
-    |      "content_type": "application/vnd.debian.binary-package",
-    |      "state": "uploaded",
-    |      "size": 337991872,
-    |      "download_count": 8,
-    |      "created_at": "2021-08-28T10:16:37Z",
-    |      "updated_at": "2021-08-28T10:16:53Z",
-    |      "browser_download_url": "https://github.com/eikek/docspell/releases/download/v0.26.0/docspell-joex_0.26.0_all.deb"
-    |    }
-    |  ],
-    |  "tarball_url": "https://api.github.com/repos/eikek/docspell/tarball/v0.26.0",
-    |  "zipball_url": "https://api.github.com/repos/eikek/docspell/zipball/v0.26.0"
-    |}
-    |""".stripMargin
+  val exampleResponsePartial =
+    """
+      |{
+      |  "url": "https://api.github.com/repos/eikek/docspell/releases/99899888",
+      |  "assets_url": "https://api.github.com/repos/eikek/docspell/releases/99899888/assets",
+      |  "upload_url": "https://uploads.github.com/repos/eikek/docspell/releases/99899888/assets{?name,label}",
+      |  "html_url": "https://github.com/eikek/docspell/releases/tag/v0.26.0",
+      |  "id": 99899888,
+      |  "node_id": "MDc6UmVsZWFzZTQ4NjEwNTY2",
+      |  "tag_name": "v0.26.0",
+      |  "target_commitish": "master",
+      |  "name": "Docspell 0.26.0",
+      |  "draft": false,
+      |  "prerelease": false,
+      |  "created_at": "2021-08-28T10:02:01Z",
+      |  "published_at": "2021-08-28T10:30:38Z",
+      |  "assets": [
+      |    {
+      |      "url": "https://api.github.com/repos/eikek/docspell/releases/assets/43494218",
+      |      "id": 43494218,
+      |      "node_id": "MDEyOlJlbGVhc2VBc3NldDQzNDk0MjE4",
+      |      "name": "docspell-joex-0.26.0.zip",
+      |      "label": "",
+      |      "content_type": "application/zip",
+      |      "state": "uploaded",
+      |      "size": 328163415,
+      |      "download_count": 24,
+      |      "created_at": "2021-08-28T10:16:24Z",
+      |      "updated_at": "2021-08-28T10:16:36Z",
+      |      "browser_download_url": "https://github.com/eikek/docspell/releases/download/v0.26.0/docspell-joex-0.26.0.zip"
+      |    },
+      |    {
+      |      "url": "https://api.github.com/repos/eikek/docspell/releases/assets/43494232",
+      |      "id": 43494232,
+      |      "node_id": "MDEyOlJlbGVhc2VBc3NldDQzNDk0MjMy",
+      |      "name": "docspell-joex_0.26.0_all.deb",
+      |      "label": "",
+      |      "content_type": "application/vnd.debian.binary-package",
+      |      "state": "uploaded",
+      |      "size": 337991872,
+      |      "download_count": 8,
+      |      "created_at": "2021-08-28T10:16:37Z",
+      |      "updated_at": "2021-08-28T10:16:53Z",
+      |      "browser_download_url": "https://github.com/eikek/docspell/releases/download/v0.26.0/docspell-joex_0.26.0_all.deb"
+      |    }
+      |  ],
+      |  "tarball_url": "https://api.github.com/repos/eikek/docspell/tarball/v0.26.0",
+      |  "zipball_url": "https://api.github.com/repos/eikek/docspell/zipball/v0.26.0"
+      |}
+      |""".stripMargin
 }

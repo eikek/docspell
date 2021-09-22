@@ -42,30 +42,30 @@ object EquipmentRoutes {
 
       case req @ POST -> Root =>
         for {
-          data  <- req.as[Equipment]
+          data <- req.as[Equipment]
           equip <- newEquipment(data, user.account.collective)
-          res   <- backend.equipment.add(equip)
-          resp  <- Ok(basicResult(res, "Equipment created"))
+          res <- backend.equipment.add(equip)
+          resp <- Ok(basicResult(res, "Equipment created"))
         } yield resp
 
       case req @ PUT -> Root =>
         for {
-          data  <- req.as[Equipment]
+          data <- req.as[Equipment]
           equip <- changeEquipment(data, user.account.collective)
-          res   <- backend.equipment.update(equip)
-          resp  <- Ok(basicResult(res, "Equipment updated."))
+          res <- backend.equipment.update(equip)
+          resp <- Ok(basicResult(res, "Equipment updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          del  <- backend.equipment.delete(id, user.account.collective)
+          del <- backend.equipment.delete(id, user.account.collective)
           resp <- Ok(basicResult(del, "Equipment deleted."))
         } yield resp
 
       case GET -> Root / Ident(id) =>
         (for {
           equip <- OptionT(backend.equipment.find(user.account, id))
-          resp  <- OptionT.liftF(Ok(mkEquipment(equip)))
+          resp <- OptionT.liftF(Ok(mkEquipment(equip)))
         } yield resp).getOrElseF(NotFound())
     }
   }

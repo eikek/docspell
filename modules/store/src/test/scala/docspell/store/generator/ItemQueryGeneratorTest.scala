@@ -51,14 +51,14 @@ class ItemQueryGeneratorTest extends FunSuite {
   }
 
   test("!conc:*") {
-    val q      = ItemQueryParser.parseUnsafe("!conc:*")
-    val cond   = ItemQueryGenerator(now, tables, Ident.unsafe("coll"))(q)
+    val q = ItemQueryParser.parseUnsafe("!conc:*")
+    val cond = ItemQueryGenerator(now, tables, Ident.unsafe("coll"))(q)
     val expect = not(tables.concPers.name.like("%") || tables.concEquip.name.like("%"))
     assertEquals(cond, expect)
   }
 
   test("attach.id with wildcard") {
-    val q    = ItemQueryParser.parseUnsafe("attach.id=abcde*")
+    val q = ItemQueryParser.parseUnsafe("attach.id=abcde*")
     val cond = ItemQueryGenerator(now, tables, Ident.unsafe("coll"))(q)
     val expect = tables.item.id.in(
       Select(
@@ -72,7 +72,7 @@ class ItemQueryGeneratorTest extends FunSuite {
   }
 
   test("attach.id with equals") {
-    val q    = ItemQueryParser.parseUnsafe("attach.id=abcde")
+    val q = ItemQueryParser.parseUnsafe("attach.id=abcde")
     val cond = ItemQueryGenerator(now, tables, Ident.unsafe("coll"))(q)
     val expect = tables.item.id.in(
       Select(

@@ -36,10 +36,10 @@ object SourceRoutes {
 
       case req @ POST -> Root =>
         for {
-          data  <- req.as[SourceTagIn]
-          src   <- newSource(data.source, user.account.collective)
+          data <- req.as[SourceTagIn]
+          src <- newSource(data.source, user.account.collective)
           added <- backend.source.add(src, data.tags)
-          resp  <- Ok(basicResult(added, "Source added."))
+          resp <- Ok(basicResult(added, "Source added."))
         } yield resp
 
       case req @ PUT -> Root =>
@@ -47,12 +47,12 @@ object SourceRoutes {
           data <- req.as[SourceTagIn]
           src = changeSource(data.source, user.account.collective)
           updated <- backend.source.update(src, data.tags)
-          resp    <- Ok(basicResult(updated, "Source updated."))
+          resp <- Ok(basicResult(updated, "Source updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          del  <- backend.source.delete(id, user.account.collective)
+          del <- backend.source.delete(id, user.account.collective)
           resp <- Ok(basicResult(del, "Source deleted."))
         } yield resp
     }

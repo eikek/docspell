@@ -22,20 +22,20 @@ class PdfboxExtractTest extends FunSuite {
 
   test("extract text from text PDFs by inputstream") {
     textPDFs.foreach { case (file, txt) =>
-      val url      = file.toJavaUrl.fold(sys.error, identity)
-      val str      = PdfboxExtract.getText(url.openStream()).fold(throw _, identity)
+      val url = file.toJavaUrl.fold(sys.error, identity)
+      val str = PdfboxExtract.getText(url.openStream()).fold(throw _, identity)
       val received = removeFormatting(str.value)
-      val expect   = removeFormatting(txt)
+      val expect = removeFormatting(txt)
       assertEquals(received, expect)
     }
   }
 
   test("extract text from text PDFs via Stream") {
     textPDFs.foreach { case (file, txt) =>
-      val data     = file.readURL[IO](8192)
-      val str      = PdfboxExtract.getText(data).unsafeRunSync().fold(throw _, identity)
+      val data = file.readURL[IO](8192)
+      val str = PdfboxExtract.getText(data).unsafeRunSync().fold(throw _, identity)
       val received = removeFormatting(str.value)
-      val expect   = removeFormatting(txt)
+      val expect = removeFormatting(txt)
       assertEquals(received, expect)
     }
   }

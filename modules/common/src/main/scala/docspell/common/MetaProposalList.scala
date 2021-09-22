@@ -20,7 +20,7 @@ import io.circe.generic.semiauto._
   */
 case class MetaProposalList private (proposals: List[MetaProposal]) {
 
-  def isEmpty: Boolean  = proposals.isEmpty
+  def isEmpty: Boolean = proposals.isEmpty
   def nonEmpty: Boolean = proposals.nonEmpty
 
   def hasResults(mt: MetaProposalType, mts: MetaProposalType*): Boolean =
@@ -115,7 +115,7 @@ object MetaProposalList {
           MetaProposal
       ) => Map[MetaProposalType, MetaProposal]
   ): MetaProposalList = {
-    val init   = Map.empty[MetaProposalType, MetaProposal]
+    val init = Map.empty[MetaProposalType, MetaProposal]
     val merged = ml.foldLeft(init)((map, el) => el.proposals.foldLeft(map)(merge))
     fromMap(merged)
   }

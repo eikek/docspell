@@ -20,8 +20,8 @@ import doobie._
 import doobie.implicits._
 
 object QOrganization {
-  private val p   = RPerson.as("p")
-  private val c   = RContact.as("c")
+  private val p = RPerson.as("p")
+  private val c = RContact.as("c")
   private val org = ROrganization.as("o")
 
   def findOrgAndContact(
@@ -144,7 +144,7 @@ object QOrganization {
       cid: Ident
   ): Store[F] => F[AddResult] = {
     val insert = for {
-      n  <- ROrganization.insert(org)
+      n <- ROrganization.insert(org)
       cs <- contacts.toList.traverse(RContact.insert)
     } yield n + cs.sum
 
@@ -159,7 +159,7 @@ object QOrganization {
       cid: Ident
   ): Store[F] => F[AddResult] = {
     val insert = for {
-      n  <- RPerson.insert(person)
+      n <- RPerson.insert(person)
       cs <- contacts.toList.traverse(RContact.insert)
     } yield n + cs.sum
 
@@ -174,8 +174,8 @@ object QOrganization {
       cid: Ident
   ): Store[F] => F[AddResult] = {
     val insert = for {
-      n  <- ROrganization.update(org)
-      d  <- RContact.deleteOrg(org.oid)
+      n <- ROrganization.update(org)
+      d <- RContact.deleteOrg(org.oid)
       cs <- contacts.toList.traverse(RContact.insert)
     } yield n + cs.sum + d
 
@@ -190,8 +190,8 @@ object QOrganization {
       cid: Ident
   ): Store[F] => F[AddResult] = {
     val insert = for {
-      n  <- RPerson.update(person)
-      d  <- RContact.deletePerson(person.pid)
+      n <- RPerson.update(person)
+      d <- RContact.deletePerson(person.pid)
       cs <- contacts.toList.traverse(RContact.insert)
     } yield n + cs.sum + d
 

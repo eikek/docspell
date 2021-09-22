@@ -74,9 +74,9 @@ object BasicCRFAnnotator {
   }
 
   final class Cache {
-    private[this] lazy val germanNerClassifier  = makeAnnotator(Language.German)
+    private[this] lazy val germanNerClassifier = makeAnnotator(Language.German)
     private[this] lazy val englishNerClassifier = makeAnnotator(Language.English)
-    private[this] lazy val frenchNerClassifier  = makeAnnotator(Language.French)
+    private[this] lazy val frenchNerClassifier = makeAnnotator(Language.French)
 
     def forLang(language: NLPLanguage): Annotator =
       language match {

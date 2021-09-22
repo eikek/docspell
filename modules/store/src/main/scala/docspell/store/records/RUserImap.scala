@@ -60,7 +60,7 @@ object RUserImap {
   ): F[RUserImap] =
     for {
       now <- Timestamp.current[F]
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
     } yield RUserImap(
       id,
       uid,
@@ -87,8 +87,8 @@ object RUserImap {
       imapOAuth2: Boolean
   ): OptionT[ConnectionIO, RUserImap] =
     for {
-      now  <- OptionT.liftF(Timestamp.current[ConnectionIO])
-      id   <- OptionT.liftF(Ident.randomId[ConnectionIO])
+      now <- OptionT.liftF(Timestamp.current[ConnectionIO])
+      id <- OptionT.liftF(Ident.randomId[ConnectionIO])
       user <- OptionT(RUser.findByAccount(accId))
     } yield RUserImap(
       id,
@@ -107,17 +107,17 @@ object RUserImap {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "userimap"
 
-    val id            = Column[Ident]("id", this)
-    val uid           = Column[Ident]("uid", this)
-    val name          = Column[Ident]("name", this)
-    val imapHost      = Column[String]("imap_host", this)
-    val imapPort      = Column[Int]("imap_port", this)
-    val imapUser      = Column[String]("imap_user", this)
-    val imapPass      = Column[Password]("imap_password", this)
-    val imapSsl       = Column[SSLType]("imap_ssl", this)
+    val id = Column[Ident]("id", this)
+    val uid = Column[Ident]("uid", this)
+    val name = Column[Ident]("name", this)
+    val imapHost = Column[String]("imap_host", this)
+    val imapPort = Column[Int]("imap_port", this)
+    val imapUser = Column[String]("imap_user", this)
+    val imapPass = Column[Password]("imap_password", this)
+    val imapSsl = Column[SSLType]("imap_ssl", this)
     val imapCertCheck = Column[Boolean]("imap_certcheck", this)
-    val imapOAuth2    = Column[Boolean]("imap_oauth2", this)
-    val created       = Column[Timestamp]("created", this)
+    val imapOAuth2 = Column[Boolean]("imap_oauth2", this)
+    val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](
       id,

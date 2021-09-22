@@ -56,8 +56,8 @@ object Config {
     case class AllowedIps(enabled: Boolean, ips: Set[String]) {
 
       def containsAddress(ipa: IpAddress): Boolean = {
-        val inet         = ipa.toInetAddress
-        val ip           = inet.getHostAddress
+        val inet = ipa.toInetAddress
+        val ip = inet.getHostAddress
         lazy val ipParts = ip.split('.')
 
         def checkSingle(pattern: String): Boolean =

@@ -40,18 +40,18 @@ object RPerson {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "person"
 
-    val pid     = Column[Ident]("pid", this)
-    val cid     = Column[Ident]("cid", this)
-    val name    = Column[String]("name", this)
-    val street  = Column[String]("street", this)
-    val zip     = Column[String]("zip", this)
-    val city    = Column[String]("city", this)
+    val pid = Column[Ident]("pid", this)
+    val cid = Column[Ident]("cid", this)
+    val name = Column[String]("name", this)
+    val street = Column[String]("street", this)
+    val zip = Column[String]("zip", this)
+    val city = Column[String]("city", this)
     val country = Column[String]("country", this)
-    val notes   = Column[String]("notes", this)
+    val notes = Column[String]("notes", this)
     val created = Column[Timestamp]("created", this)
     val updated = Column[Timestamp]("updated", this)
-    val oid     = Column[Ident]("oid", this)
-    val use     = Column[PersonUse]("person_use", this)
+    val oid = Column[Ident]("oid", this)
+    val use = Column[PersonUse]("person_use", this)
     val all = Nel.of[Column[_]](
       pid,
       cid,
@@ -99,7 +99,7 @@ object RPerson {
       )
     for {
       now <- Timestamp.current[ConnectionIO]
-      n   <- sql(now)
+      n <- sql(now)
     } yield n
   }
 

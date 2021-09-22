@@ -94,7 +94,7 @@ object OItemSearch {
   }
   case class AttachmentData[F[_]](ra: RAttachment, meta: RFileMeta, data: Stream[F, Byte])
       extends BinaryData[F] {
-    val name   = ra.name
+    val name = ra.name
     val fileId = ra.fileId
   }
 
@@ -103,7 +103,7 @@ object OItemSearch {
       meta: RFileMeta,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
-    val name   = rs.name
+    val name = rs.name
     val fileId = rs.fileId
   }
 
@@ -112,7 +112,7 @@ object OItemSearch {
       meta: RFileMeta,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
-    val name   = rs.name
+    val name = rs.name
     val fileId = rs.fileId
   }
 
@@ -121,7 +121,7 @@ object OItemSearch {
       meta: RFileMeta,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
-    val name   = rs.name
+    val name = rs.name
     val fileId = rs.fileId
   }
 
@@ -290,7 +290,7 @@ object OItemSearch {
 
       def findByFileSource(checksum: String, sourceId: Ident): F[Option[Vector[RItem]]] =
         store.transact((for {
-          coll  <- OptionT(RSource.findCollective(sourceId))
+          coll <- OptionT(RSource.findCollective(sourceId))
           items <- OptionT.liftF(QItem.findByChecksum(checksum, coll, Set.empty))
         } yield items).value)
 

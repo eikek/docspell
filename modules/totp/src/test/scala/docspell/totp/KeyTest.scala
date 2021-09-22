@@ -18,7 +18,7 @@ class KeyTest extends FunSuite {
 
   test("generate and read in key") {
     val jkey = Key.generateJavaKey(Mac.Sha1)
-    val key  = Key.fromSecretKey(jkey).fold(sys.error, identity)
+    val key = Key.fromSecretKey(jkey).fold(sys.error, identity)
     assertEquals(jkey, key.toJavaKey)
   }
 
@@ -30,9 +30,9 @@ class KeyTest extends FunSuite {
   }
 
   test("encode/decode json") {
-    val key     = Key.generate[IO](Mac.Sha1).unsafeRunSync()
+    val key = Key.generate[IO](Mac.Sha1).unsafeRunSync()
     val keyJson = key.asJson
-    val newKey  = keyJson.as[Key].fold(throw _, identity)
+    val newKey = keyJson.as[Key].fold(throw _, identity)
     assertEquals(key, newKey)
   }
 }

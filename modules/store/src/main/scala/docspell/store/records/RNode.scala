@@ -34,11 +34,11 @@ object RNode {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "node"
 
-    val id       = Column[Ident]("id", this)
+    val id = Column[Ident]("id", this)
     val nodeType = Column[NodeType]("type", this)
-    val url      = Column[LenientUri]("url", this)
-    val updated  = Column[Timestamp]("updated", this)
-    val created  = Column[Timestamp]("created", this)
+    val url = Column[LenientUri]("url", this)
+    val updated = Column[Timestamp]("updated", this)
+    val created = Column[Timestamp]("created", this)
     val notFound = Column[Int]("not_found", this)
     val all = NonEmptyList.of[Column[_]](id, nodeType, url, updated, created, notFound)
   }

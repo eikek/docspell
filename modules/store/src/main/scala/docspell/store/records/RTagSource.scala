@@ -23,10 +23,10 @@ object RTagSource {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "tagsource"
 
-    val id       = Column[Ident]("id", this)
+    val id = Column[Ident]("id", this)
     val sourceId = Column[Ident]("source_id", this)
-    val tagId    = Column[Ident]("tag_id", this)
-    val all      = NonEmptyList.of[Column[_]](id, sourceId, tagId)
+    val tagId = Column[Ident]("tag_id", this)
+    val all = NonEmptyList.of[Column[_]](id, sourceId, tagId)
   }
 
   private val t = Table(None)

@@ -48,8 +48,7 @@ trait OSimpleSearch[F[_]] {
   ): F[StringSearchResult[Items]] =
     OSimpleSearch.applySearch[F, Items](fix, q)((iq, fts) => search(settings)(iq, fts))
 
-  /** Same as `searchByString` but returning a summary instead of the results.
-    */
+  /** Same as `searchByString` but returning a summary instead of the results. */
   final def searchSummaryByString(
       settings: StatsSettings
   )(fix: Query.Fix, q: ItemQueryString)(implicit

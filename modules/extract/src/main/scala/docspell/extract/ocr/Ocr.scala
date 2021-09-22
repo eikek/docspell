@@ -14,8 +14,7 @@ import docspell.common._
 
 object Ocr {
 
-  /** Extract the text of all pages in the given pdf file.
-    */
+  /** Extract the text of all pages in the given pdf file. */
   def extractPdf[F[_]: Async](
       pdf: Stream[F, Byte],
       logger: Logger[F],
@@ -30,8 +29,7 @@ object Ocr {
         .last
     }
 
-  /** Extract the text from the given image file
-    */
+  /** Extract the text from the given image file */
   def extractImage[F[_]: Async](
       img: Stream[F, Byte],
       logger: Logger[F],
@@ -79,7 +77,7 @@ object Ocr {
       .copy(args = xargs)
       .replace(
         Map(
-          "{{infile}}"  -> "-",
+          "{{infile}}" -> "-",
           "{{outfile}}" -> "%d.tif"
         )
       )
@@ -99,7 +97,7 @@ object Ocr {
   ): Stream[F, Path] = {
     val cmd = ghostscript.replace(
       Map(
-        "{{infile}}"  -> pdf.absolute.toString,
+        "{{infile}}" -> pdf.absolute.toString,
         "{{outfile}}" -> "%d.tif"
       )
     )
@@ -123,7 +121,7 @@ object Ocr {
     val targetFile = img.resolveSibling("u-" + img.fileName.toString).absolute
     val cmd = unpaper.replace(
       Map(
-        "{{infile}}"  -> img.absolute.toString,
+        "{{infile}}" -> img.absolute.toString,
         "{{outfile}}" -> targetFile.toString
       )
     )
@@ -139,8 +137,7 @@ object Ocr {
       }
   }
 
-  /** Run tesseract on the given image file and return the extracted text.
-    */
+  /** Run tesseract on the given image file and return the extracted text. */
   private[extract] def runTesseractFile[F[_]: Async](
       img: Path,
       logger: Logger[F],
@@ -159,8 +156,7 @@ object Ocr {
         .map(_.stdout)
     }
 
-  /** Run tesseract on the given image file and return the extracted text.
-    */
+  /** Run tesseract on the given image file and return the extracted text. */
   private[extract] def runTesseractStdin[F[_]: Async](
       img: Stream[F, Byte],
       logger: Logger[F],

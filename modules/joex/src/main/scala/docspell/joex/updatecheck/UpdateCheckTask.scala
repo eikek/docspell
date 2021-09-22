@@ -58,9 +58,9 @@ object UpdateCheckTask {
             s"Get SMTP connection for ${cfg.senderAccount.asString} and ${cfg.smtpId}"
           )
           smtpCfg <- findConnection(ctx, cfg)
-          _       <- ctx.logger.debug("Checking for latest release at GitHub")
-          latest  <- updateCheck.latestRelease
-          _       <- ctx.logger.debug(s"Got latest release: $latest.")
+          _ <- ctx.logger.debug("Checking for latest release at GitHub")
+          latest <- updateCheck.latestRelease
+          _ <- ctx.logger.debug(s"Got latest release: $latest.")
           _ <-
             if (cfg.testRun)
               ctx.logger.info(

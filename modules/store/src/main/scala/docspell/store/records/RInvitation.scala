@@ -23,9 +23,9 @@ object RInvitation {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "invitation"
 
-    val id      = Column[Ident]("id", this)
+    val id = Column[Ident]("id", this)
     val created = Column[Timestamp]("created", this)
-    val all     = NonEmptyList.of[Column[_]](id, created)
+    val all = NonEmptyList.of[Column[_]](id, created)
   }
 
   val T = Table(None)
@@ -56,7 +56,7 @@ object RInvitation {
       .unique
     for {
       inv <- get
-      _   <- delete(invite)
+      _ <- delete(invite)
     } yield inv > 0
   }
 

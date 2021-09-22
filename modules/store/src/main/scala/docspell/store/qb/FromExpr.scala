@@ -81,7 +81,7 @@ object FromExpr {
   sealed trait Join
   object Join {
     final case class InnerJoin(table: Relation, cond: Condition) extends Join
-    final case class LeftJoin(table: Relation, cond: Condition)  extends Join
+    final case class LeftJoin(table: Relation, cond: Condition) extends Join
   }
 
 }

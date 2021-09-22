@@ -18,10 +18,10 @@ import doobie.implicits._
 
 object QMails {
 
-  private val item     = RItem.as("i")
-  private val smail    = RSentMail.as("sm")
+  private val item = RItem.as("i")
+  private val smail = RSentMail.as("sm")
   private val mailitem = RSentMailItem.as("mi")
-  private val user     = RUser.as("u")
+  private val user = RUser.as("u")
 
   def delete(coll: Ident, mailId: Ident): ConnectionIO[Int] =
     (for {

@@ -91,19 +91,19 @@ class StanfordNerAnnotatorSuite extends FunSuite {
 
     val regexNerContent =
       s"""(?i)volantino ag${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
-      |(?i)volantino${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
-      |(?i)ag${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
-      |(?i)andrea rossi${"\t"}PERSON${"\t"}LOCATION,MISC${"\t"}2
-      |(?i)andrea${"\t"}PERSON${"\t"}LOCATION,MISC${"\t"}2
-      |(?i)rossi${"\t"}PERSON${"\t"}LOCATION,MISC${"\t"}2
-      |""".stripMargin
+         |(?i)volantino${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
+         |(?i)ag${"\t"}ORGANIZATION${"\t"}LOCATION,PERSON,MISC${"\t"}3
+         |(?i)andrea rossi${"\t"}PERSON${"\t"}LOCATION,MISC${"\t"}2
+         |(?i)andrea${"\t"}PERSON${"\t"}LOCATION,MISC${"\t"}2
+         |(?i)rossi${"\t"}PERSON${"\t"}LOCATION,MISC${"\t"}2
+         |""".stripMargin
 
     File
       .withTempDir[IO](File.path(Paths.get("target")), "test-regex-ner")
       .use { dir =>
         for {
           out <- File.writeString[IO](dir / "regex.txt", regexNerContent)
-          ann    = StanfordNerAnnotator.makePipeline(StanfordNerSettings.RegexOnly(out))
+          ann = StanfordNerAnnotator.makePipeline(StanfordNerSettings.RegexOnly(out))
           labels = StanfordNerAnnotator.nerAnnotate(ann, "Hello Andrea Rossi, can you.")
           _ <- IO(
             assertEquals(

@@ -64,7 +64,7 @@ object QFolder {
       } yield FolderChangeResult.success
 
     (for {
-      uid    <- OptionT(findUserId(account))
+      uid <- OptionT(findUserId(account))
       folder <- OptionT(RFolder.findById(id))
       res <- OptionT.liftF(
         if (folder.owner == uid) tryDelete
@@ -87,7 +87,7 @@ object QFolder {
       } yield res
 
     (for {
-      uid    <- OptionT(findUserId(account))
+      uid <- OptionT(findUserId(account))
       folder <- OptionT(RFolder.findById(folder))
       res <- OptionT.liftF(
         if (folder.owner == uid) tryUpdate(folder.copy(name = name))
@@ -110,7 +110,7 @@ object QFolder {
       } yield res
 
     (for {
-      uid    <- OptionT(findUserId(account))
+      uid <- OptionT(findUserId(account))
       folder <- OptionT(RFolder.findById(folder))
       res <- OptionT.liftF(
         if (folder.owner == uid) tryRemove
@@ -134,7 +134,7 @@ object QFolder {
       } yield res
 
     (for {
-      uid    <- OptionT(findUserId(account))
+      uid <- OptionT(findUserId(account))
       folder <- OptionT(RFolder.findById(folder))
       res <- OptionT.liftF(
         if (folder.owner == uid) tryAdd
@@ -144,7 +144,7 @@ object QFolder {
   }
 
   def findById(id: Ident, account: AccountId): ConnectionIO[Option[FolderDetail]] = {
-    val user   = RUser.as("u")
+    val user = RUser.as("u")
     val member = RFolderMember.as("m")
     val folder = RFolder.as("s")
 
@@ -194,12 +194,12 @@ object QFolder {
 // inner join user_ u on u.uid = s.owner
 // where s.cid = 'eike';
 
-    val user     = RUser.as("u")
-    val member   = RFolderMember.as("m")
-    val folder   = RFolder.as("s")
+    val user = RUser.as("u")
+    val member = RFolderMember.as("m")
+    val folder = RFolder.as("s")
     val memlogin = TableDef("memberlogin")
     val mlFolder = Column[Ident]("folder", memlogin)
-    val mlLogin  = Column[Ident]("login", memlogin)
+    val mlLogin = Column[Ident]("login", memlogin)
 
     withCte(
       memlogin -> union(
@@ -251,8 +251,8 @@ object QFolder {
   /** Select all folder_id where the given account is member or owner. */
   def findMemberFolderIds(account: AccountId): Select = {
     val user = RUser.as("u")
-    val f    = RFolder.as("f")
-    val m    = RFolderMember.as("m")
+    val f = RFolder.as("f")
+    val m = RFolderMember.as("m")
     union(
       Select(
         select(f.id),

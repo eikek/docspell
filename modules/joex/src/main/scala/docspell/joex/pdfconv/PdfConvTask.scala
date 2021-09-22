@@ -39,9 +39,9 @@ object PdfConvTask {
   def apply[F[_]: Async](cfg: Config): Task[F, Args, Unit] =
     Task { ctx =>
       for {
-        _    <- ctx.logger.info(s"Converting pdf file ${ctx.args} using ocrmypdf")
+        _ <- ctx.logger.info(s"Converting pdf file ${ctx.args} using ocrmypdf")
         meta <- checkInputs(cfg, ctx)
-        _    <- meta.traverse(fm => convert(cfg, ctx, fm))
+        _ <- meta.traverse(fm => convert(cfg, ctx, fm))
       } yield ()
     }
 
@@ -92,7 +92,7 @@ object PdfConvTask {
       ctx: Context[F, Args],
       in: RFileMeta
   ): F[Unit] = {
-    val fs   = ctx.store.fileStore
+    val fs = ctx.store.fileStore
     val data = fs.getBytes(in.id)
 
     val storeResult: ConversionResult.Handler[F, Unit] =
@@ -125,7 +125,7 @@ object PdfConvTask {
 
     for {
       lang <- getLanguage(ctx)
-      _    <- ocrMyPdf(lang)
+      _ <- ocrMyPdf(lang)
     } yield ()
   }
 

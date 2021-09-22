@@ -31,9 +31,9 @@ object TikaMimetype {
   private def convert(mt: MediaType): MimeType =
     Option(mt) match {
       case Some(_) =>
-        val params  = mt.getParameters.asScala.toMap
+        val params = mt.getParameters.asScala.toMap
         val primary = mt.getType
-        val sub     = mt.getSubtype
+        val sub = mt.getSubtype
         normalize(MimeType(primary, sub, params))
       case None =>
         MimeType.octetStream

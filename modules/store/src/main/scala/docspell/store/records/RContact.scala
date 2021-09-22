@@ -30,11 +30,11 @@ object RContact {
     val tableName = "contact"
 
     val contactId = Column[Ident]("contactid", this)
-    val value     = Column[String]("value", this)
-    val kind      = Column[ContactKind]("kind", this)
-    val personId  = Column[Ident]("pid", this)
-    val orgId     = Column[Ident]("oid", this)
-    val created   = Column[Timestamp]("created", this)
+    val value = Column[String]("value", this)
+    val kind = Column[ContactKind]("kind", this)
+    val personId = Column[Ident]("pid", this)
+    val orgId = Column[Ident]("oid", this)
+    val created = Column[Timestamp]("created", this)
     val all = NonEmptyList.of[Column[_]](contactId, value, kind, personId, orgId, created)
   }
 

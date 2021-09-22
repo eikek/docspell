@@ -51,14 +51,14 @@ object TotpRoutes {
               InternalServerError(BasicResult(false, ex.getMessage))
             case s @ OTotp.InitResult.Success(_, key) =>
               val issuer = cfg.appName
-              val uri    = s.authenticatorUrl(issuer)
+              val uri = s.authenticatorUrl(issuer)
               Ok(OtpResult(uri, key.data.toBase32, "totp", issuer))
           }
         } yield resp
 
       case req @ POST -> Root / "confirm" =>
         for {
-          data   <- req.as[OtpConfirm]
+          data <- req.as[OtpConfirm]
           result <- backend.totp.confirmInit(user.account, OnetimePassword(data.otp.pass))
           resp <- result match {
             case OTotp.ConfirmResult.Success =>
@@ -71,7 +71,7 @@ object TotpRoutes {
       case POST -> Root / "disable" =>
         for {
           result <- backend.totp.disable(user.account)
-          resp   <- Ok(Conversions.basicResult(result, "TOTP setup disabled."))
+          resp <- Ok(Conversions.basicResult(result, "TOTP setup disabled."))
         } yield resp
     }
   }
@@ -82,9 +82,9 @@ object TotpRoutes {
 
     HttpRoutes.of { case req @ POST -> Root / "resetOTP" =>
       for {
-        data   <- req.as[ResetPassword]
+        data <- req.as[ResetPassword]
         result <- backend.totp.disable(data.account)
-        resp   <- Ok(Conversions.basicResult(result, "TOTP setup disabled."))
+        resp <- Ok(Conversions.basicResult(result, "TOTP setup disabled."))
       } yield resp
     }
   }

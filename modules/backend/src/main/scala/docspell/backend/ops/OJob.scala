@@ -31,13 +31,13 @@ object OJob {
 
   sealed trait JobCancelResult
   object JobCancelResult {
-    case object Removed         extends JobCancelResult
+    case object Removed extends JobCancelResult
     case object CancelRequested extends JobCancelResult
-    case object JobNotFound     extends JobCancelResult
+    case object JobNotFound extends JobCancelResult
 
-    def removed: JobCancelResult         = Removed
+    def removed: JobCancelResult = Removed
     def cancelRequested: JobCancelResult = CancelRequested
-    def jobNotFound: JobCancelResult     = JobNotFound
+    def jobNotFound: JobCancelResult = JobNotFound
   }
 
   case class JobDetail(job: RJob, logs: Vector[RJobLog])

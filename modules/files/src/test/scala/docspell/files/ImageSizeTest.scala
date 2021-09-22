@@ -22,11 +22,11 @@ class ImageSizeTest extends FunSuite {
     ExampleFiles.camera_letter_en_jpg -> Dimension(1695, 2378),
     ExampleFiles.camera_letter_en_png -> Dimension(1695, 2378),
 //    ExampleFiles.camera_letter_en_tiff -> Dimension(1695, 2378),
-    ExampleFiles.scanner_jfif_jpg    -> Dimension(2480, 3514),
+    ExampleFiles.scanner_jfif_jpg -> Dimension(2480, 3514),
     ExampleFiles.bombs_20K_gray_jpeg -> Dimension(20000, 20000),
-    ExampleFiles.bombs_20K_gray_png  -> Dimension(20000, 20000),
-    ExampleFiles.bombs_20K_rgb_jpeg  -> Dimension(20000, 20000),
-    ExampleFiles.bombs_20K_rgb_png   -> Dimension(20000, 20000)
+    ExampleFiles.bombs_20K_gray_png -> Dimension(20000, 20000),
+    ExampleFiles.bombs_20K_rgb_jpeg -> Dimension(20000, 20000),
+    ExampleFiles.bombs_20K_rgb_png -> Dimension(20000, 20000)
   )
 
   test("get sizes from input-stream") {
@@ -42,7 +42,7 @@ class ImageSizeTest extends FunSuite {
   test("get sizes from stream") {
     files.foreach { case (uri, expect) =>
       val stream = uri.readURL[IO](8192)
-      val dim    = ImageSize.get(stream).unsafeRunSync()
+      val dim = ImageSize.get(stream).unsafeRunSync()
       assertEquals(dim, expect.some)
     }
   }

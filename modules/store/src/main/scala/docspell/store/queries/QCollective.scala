@@ -18,12 +18,12 @@ import doobie.implicits._
 
 object QCollective {
   private val ti = RTagItem.as("ti")
-  private val t  = RTag.as("t")
+  private val t = RTag.as("t")
   private val ro = ROrganization.as("o")
   private val rp = RPerson.as("p")
   private val re = REquipment.as("e")
   private val rc = RContact.as("c")
-  private val i  = RItem.as("i")
+  private val i = RItem.as("i")
 
   case class Names(org: Vector[String], pers: Vector[String], equip: Vector[String])
   object Names {
@@ -114,9 +114,9 @@ object QCollective {
     for {
       incoming <- q0
       outgoing <- q1
-      size     <- fileSize
-      tags     <- tagCloud(coll)
-      deleted  <- q2
+      size <- fileSize
+      tags <- tagCloud(coll)
+      deleted <- q2
     } yield InsightData(incoming, outgoing, deleted, size.getOrElse(0L), tags)
   }
 
@@ -136,10 +136,10 @@ object QCollective {
       query: Option[String],
       kind: Option[ContactKind]
   ): Stream[ConnectionIO, RContact] = {
-    val orgCond     = Select(select(ro.oid), from(ro), ro.cid === coll)
-    val persCond    = Select(select(rp.pid), from(rp), rp.cid === coll)
+    val orgCond = Select(select(ro.oid), from(ro), ro.cid === coll)
+    val persCond = Select(select(rp.pid), from(rp), rp.cid === coll)
     val valueFilter = query.map(s => rc.value.like(s"%${s.toLowerCase}%"))
-    val kindFilter  = kind.map(k => rc.kind === k)
+    val kindFilter = kind.map(k => rc.kind === k)
 
     Select(
       select(rc.all),

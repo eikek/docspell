@@ -24,11 +24,11 @@ import doobie._
 object QAttachment {
   private[this] val logger = org.log4s.getLogger
 
-  private val a    = RAttachment.as("a")
+  private val a = RAttachment.as("a")
   private val item = RItem.as("i")
-  private val am   = RAttachmentMeta.as("am")
-  private val c    = RCollective.as("c")
-  private val im   = RItemProposal.as("im")
+  private val am = RAttachmentMeta.as("am")
+  private val c = RCollective.as("c")
+  private val im = RItemProposal.as("im")
 
   def deletePreview[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] = {
     val findPreview =
@@ -100,7 +100,7 @@ object QAttachment {
   def deleteArchive[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] =
     (for {
       aa <- OptionT(store.transact(RAttachmentArchive.findById(attachId)))
-      n  <- OptionT.liftF(store.transact(RAttachmentArchive.deleteAll(aa.fileId)))
+      n <- OptionT.liftF(store.transact(RAttachmentArchive.deleteAll(aa.fileId)))
       _ <- OptionT.liftF(
         Stream
           .emit(aa.fileId)
@@ -118,8 +118,8 @@ object QAttachment {
       _ <- logger.finfo[F](
         s"Have ${ras.size} attachments to delete. Must first delete archive entries"
       )
-      a  <- ras.traverse(a => deleteArchive(store)(a.id))
-      _  <- logger.fdebug[F](s"Deleted ${a.sum} archive entries")
+      a <- ras.traverse(a => deleteArchive(store)(a.id))
+      _ <- logger.fdebug[F](s"Deleted ${a.sum} archive entries")
       ns <- ras.traverse(deleteAttachment[F](store))
     } yield ns.sum
 

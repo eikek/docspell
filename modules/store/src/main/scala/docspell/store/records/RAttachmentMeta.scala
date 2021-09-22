@@ -40,12 +40,12 @@ object RAttachmentMeta {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "attachmentmeta"
 
-    val id        = Column[Ident]("attachid", this)
-    val content   = Column[String]("content", this)
+    val id = Column[Ident]("attachid", this)
+    val content = Column[String]("content", this)
     val nerlabels = Column[List[NerLabel]]("nerlabels", this)
     val proposals = Column[MetaProposalList]("itemproposals", this)
-    val pages     = Column[Int]("page_count", this)
-    val language  = Column[Language]("language", this)
+    val pages = Column[Int]("page_count", this)
+    val language = Column[Language]("language", this)
     val all =
       NonEmptyList.of[Column[_]](
         id,

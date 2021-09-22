@@ -33,7 +33,7 @@ final class StoreImpl[F[_]: Async](
 
   def add(insert: ConnectionIO[Int], exists: ConnectionIO[Boolean]): F[AddResult] =
     for {
-      save  <- transact(insert).attempt
+      save <- transact(insert).attempt
       exist <- save.swap.traverse(ex => transact(exists).map(b => (ex, b)))
     } yield exist.swap match {
       case Right(_) => AddResult.Success

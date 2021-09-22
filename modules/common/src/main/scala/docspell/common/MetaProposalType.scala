@@ -16,12 +16,12 @@ sealed trait MetaProposalType { self: Product =>
 
 object MetaProposalType {
 
-  case object CorrOrg    extends MetaProposalType
+  case object CorrOrg extends MetaProposalType
   case object CorrPerson extends MetaProposalType
   case object ConcPerson extends MetaProposalType
-  case object ConcEquip  extends MetaProposalType
-  case object DocDate    extends MetaProposalType
-  case object DueDate    extends MetaProposalType
+  case object ConcEquip extends MetaProposalType
+  case object DocDate extends MetaProposalType
+  case object DueDate extends MetaProposalType
 
   val all: List[MetaProposalType] =
     List(CorrOrg, CorrPerson, ConcPerson, ConcEquip, DocDate, DueDate)

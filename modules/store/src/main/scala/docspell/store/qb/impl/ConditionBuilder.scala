@@ -14,10 +14,10 @@ import _root_.doobie.implicits._
 import _root_.doobie.{Query => _, _}
 
 object ConditionBuilder {
-  val or         = fr" OR"
-  val and        = fr" AND"
-  val comma      = fr","
-  val parenOpen  = Fragment.const0("(")
+  val or = fr" OR"
+  val and = fr" AND"
+  val comma = fr","
+  val parenOpen = Fragment.const0("(")
   val parenClose = Fragment.const0(")")
 
   final def reduce(c: Condition): Condition =
@@ -70,7 +70,7 @@ object ConditionBuilder {
   final def build(expr: Condition): Fragment =
     reduce(expr) match {
       case c @ Condition.CompareVal(col, op, value) =>
-        val opFrag  = operator(op)
+        val opFrag = operator(op)
         val valFrag = buildValue(value)(c.P)
         val colFrag = op match {
           case Operator.LowerLike =>
@@ -83,7 +83,7 @@ object ConditionBuilder {
         colFrag ++ opFrag ++ valFrag
 
       case c @ Condition.CompareFVal(dbf, op, value) =>
-        val opFrag  = operator(op)
+        val opFrag = operator(op)
         val valFrag = buildValue(value)(c.P)
         val dbfFrag = op match {
           case Operator.LowerLike =>

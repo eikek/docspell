@@ -20,9 +20,9 @@ sealed trait SearchMode { self: Product =>
 
 object SearchMode {
 
-  final case object Normal  extends SearchMode
+  final case object Normal extends SearchMode
   final case object Trashed extends SearchMode
-  final case object All     extends SearchMode
+  final case object All extends SearchMode
 
   def fromString(str: String): Either[String, SearchMode] =
     str.toLowerCase match {

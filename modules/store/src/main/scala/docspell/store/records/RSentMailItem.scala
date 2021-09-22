@@ -32,17 +32,17 @@ object RSentMailItem {
       created: Option[Timestamp] = None
   ): F[RSentMailItem] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- created.map(_.pure[F]).getOrElse(Timestamp.current[F])
     } yield RSentMailItem(id, itemId, sentmailId, now)
 
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "sentmailitem"
 
-    val id         = Column[Ident]("id", this)
-    val itemId     = Column[Ident]("item_id", this)
+    val id = Column[Ident]("id", this)
+    val itemId = Column[Ident]("item_id", this)
     val sentMailId = Column[Ident]("sentmail_id", this)
-    val created    = Column[Timestamp]("created", this)
+    val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](
       id,

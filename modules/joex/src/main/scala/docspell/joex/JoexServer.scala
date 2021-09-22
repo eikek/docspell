@@ -31,7 +31,7 @@ object JoexServer {
   def stream[F[_]: Async](cfg: Config, pools: Pools): Stream[F, Nothing] = {
 
     val app = for {
-      signal   <- Resource.eval(SignallingRef[F, Boolean](false))
+      signal <- Resource.eval(SignallingRef[F, Boolean](false))
       exitCode <- Resource.eval(Ref[F].of(ExitCode.Success))
       joexApp <-
         JoexAppImpl
@@ -39,7 +39,7 @@ object JoexServer {
 
       httpApp = Router(
         "/api/info" -> InfoRoutes(cfg),
-        "/api/v1"   -> JoexRoutes(joexApp)
+        "/api/v1" -> JoexRoutes(joexApp)
       ).orNotFound
 
       // With Middlewares in place

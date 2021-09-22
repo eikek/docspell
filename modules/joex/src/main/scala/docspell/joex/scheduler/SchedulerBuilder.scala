@@ -45,10 +45,10 @@ case class SchedulerBuilder[F[_]: Async](
 
   def resource: Resource[F, Scheduler[F]] = {
     val scheduler: Resource[F, SchedulerImpl[F]] = for {
-      jq     <- queue
+      jq <- queue
       waiter <- Resource.eval(SignallingRef(true))
-      state  <- Resource.eval(SignallingRef(SchedulerImpl.emptyState[F]))
-      perms  <- Resource.eval(Semaphore(config.poolSize.toLong))
+      state <- Resource.eval(SignallingRef(SchedulerImpl.emptyState[F]))
+      perms <- Resource.eval(Semaphore(config.poolSize.toLong))
     } yield new SchedulerImpl[F](
       config,
       jq,

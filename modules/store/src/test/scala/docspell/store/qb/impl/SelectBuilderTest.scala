@@ -15,8 +15,8 @@ import munit._
 class SelectBuilderTest extends FunSuite {
 
   test("basic fragment") {
-    val c        = CourseRecord.as("c")
-    val owner    = PersonRecord.as("o")
+    val c = CourseRecord.as("c")
+    val owner = PersonRecord.as("o")
     val lecturer = PersonRecord.as("l")
 
     val proj = select(c.all)
@@ -28,7 +28,7 @@ class SelectBuilderTest extends FunSuite {
       owner.name === "Harald"
     )
 
-    val q    = Select(proj, table, cond)
+    val q = Select(proj, table, cond)
     val frag = SelectBuilder(q)
     assertEquals(
       frag.toString,

@@ -31,11 +31,11 @@ object RAttachmentArchive {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "attachment_archive"
 
-    val id        = Column[Ident]("id", this)
-    val fileId    = Column[Ident]("file_id", this)
-    val name      = Column[String]("filename", this)
+    val id = Column[Ident]("id", this)
+    val fileId = Column[Ident]("file_id", this)
+    val name = Column[String]("filename", this)
     val messageId = Column[String]("message_id", this)
-    val created   = Column[Timestamp]("created", this)
+    val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, fileId, name, messageId, created)
   }

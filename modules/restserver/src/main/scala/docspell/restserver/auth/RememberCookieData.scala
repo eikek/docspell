@@ -15,7 +15,7 @@ case class RememberCookieData(token: RememberToken) {
   def asString: String = token.asString
 
   def asCookie(config: Login.RememberMe, baseUrl: LenientUri): ResponseCookie = {
-    val sec  = baseUrl.scheme.exists(_.endsWith("s"))
+    val sec = baseUrl.scheme.exists(_.endsWith("s"))
     val path = baseUrl.path / "api" / "v1"
     ResponseCookie(
       name = RememberCookieData.cookieName,

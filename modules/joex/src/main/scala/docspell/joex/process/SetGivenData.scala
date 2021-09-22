@@ -38,8 +38,8 @@ object SetGivenData {
       ops: OItem[F]
   ): Task[F, Args, ItemData] =
     Task { ctx =>
-      val itemId     = data.item.id
-      val folderId   = ctx.args.meta.folderId
+      val itemId = data.item.id
+      val folderId = ctx.args.meta.folderId
       val collective = ctx.args.meta.collective
       for {
         _ <- ctx.logger.info("Starting setting given data")
@@ -62,7 +62,7 @@ object SetGivenData {
       ops: OItem[F]
   ): Task[F, Args, ItemData] =
     Task { ctx =>
-      val itemId     = data.item.id
+      val itemId = data.item.id
       val collective = ctx.args.meta.collective
       val tags =
         (ctx.args.meta.tags.getOrElse(Nil) ++ data.tags ++ data.classifyTags).distinct

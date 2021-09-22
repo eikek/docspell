@@ -30,7 +30,7 @@ object PdfboxExtract {
       .withDocumentStream(data) { doc =>
         (for {
           txt <- readText(doc)
-          md  <- readMetaData(doc)
+          md <- readMetaData(doc)
         } yield (txt, Some(md).filter(_.nonEmpty))).pure[F]
       }
       .attempt

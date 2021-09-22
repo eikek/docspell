@@ -33,8 +33,7 @@ import io.circe._
   */
 trait UserTaskStore[F[_]] {
 
-  /** Return all tasks of the given user.
-    */
+  /** Return all tasks of the given user. */
   def getAll(scope: UserTaskScope): Stream[F, UserTask[String]]
 
   /** Return all tasks of the given name and user. The task's arguments are returned as
@@ -61,8 +60,7 @@ trait UserTaskStore[F[_]] {
       implicit E: Encoder[A]
   ): F[Int]
 
-  /** Delete the task with the given id of the given user.
-    */
+  /** Delete the task with the given id of the given user. */
   def deleteTask(scope: UserTaskScope, id: Ident): F[Int]
 
   /** Return the task of the given user and name. If multiple exists, an error is
@@ -91,8 +89,7 @@ trait UserTaskStore[F[_]] {
       implicit E: Encoder[A]
   ): F[UserTask[String]]
 
-  /** Delete all tasks of the given user that have name `name'.
-    */
+  /** Delete all tasks of the given user that have name `name'. */
   def deleteAll(scope: UserTaskScope, name: Ident): F[Int]
 }
 

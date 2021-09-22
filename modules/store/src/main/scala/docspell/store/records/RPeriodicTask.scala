@@ -128,20 +128,20 @@ object RPeriodicTask {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "periodic_task"
 
-    val id        = Column[Ident]("id", this)
-    val enabled   = Column[Boolean]("enabled", this)
-    val task      = Column[Ident]("task", this)
-    val group     = Column[Ident]("group_", this)
-    val args      = Column[String]("args", this)
-    val subject   = Column[String]("subject", this)
+    val id = Column[Ident]("id", this)
+    val enabled = Column[Boolean]("enabled", this)
+    val task = Column[Ident]("task", this)
+    val group = Column[Ident]("group_", this)
+    val args = Column[String]("args", this)
+    val subject = Column[String]("subject", this)
     val submitter = Column[Ident]("submitter", this)
-    val priority  = Column[Priority]("priority", this)
-    val worker    = Column[Ident]("worker", this)
-    val marked    = Column[Timestamp]("marked", this)
-    val timer     = Column[CalEvent]("timer", this)
-    val nextrun   = Column[Timestamp]("nextrun", this)
-    val created   = Column[Timestamp]("created", this)
-    val summary   = Column[String]("summary", this)
+    val priority = Column[Priority]("priority", this)
+    val worker = Column[Ident]("worker", this)
+    val marked = Column[Timestamp]("marked", this)
+    val timer = Column[CalEvent]("timer", this)
+    val nextrun = Column[Timestamp]("nextrun", this)
+    val created = Column[Timestamp]("created", this)
+    val summary = Column[String]("summary", this)
     val all = NonEmptyList.of[Column[_]](
       id,
       enabled,

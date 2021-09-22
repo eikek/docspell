@@ -56,7 +56,7 @@ final class JoexAppImpl[F[_]: Async](
 ) extends JoexApp[F] {
 
   def init: F[Unit] = {
-    val run  = scheduler.start.compile.drain
+    val run = scheduler.start.compile.drain
     val prun = periodicScheduler.start.compile.drain
     for {
       _ <- scheduleBackgroundTasks
@@ -122,19 +122,19 @@ object JoexAppImpl {
     for {
       httpClient <- BlazeClientBuilder[F](clientEC).resource
       client = JoexClient(httpClient)
-      store         <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
-      queue         <- JobQueue(store)
-      pstore        <- PeriodicTaskStore.create(store)
-      nodeOps       <- ONode(store)
-      joex          <- OJoex(client, store)
-      upload        <- OUpload(store, queue, joex)
-      fts           <- createFtsClient(cfg)(httpClient)
-      createIndex   <- CreateIndex.resource(fts, store)
-      itemOps       <- OItem(store, fts, createIndex, queue, joex)
+      store <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
+      queue <- JobQueue(store)
+      pstore <- PeriodicTaskStore.create(store)
+      nodeOps <- ONode(store)
+      joex <- OJoex(client, store)
+      upload <- OUpload(store, queue, joex)
+      fts <- createFtsClient(cfg)(httpClient)
+      createIndex <- CreateIndex.resource(fts, store)
+      itemOps <- OItem(store, fts, createIndex, queue, joex)
       itemSearchOps <- OItemSearch(store)
-      analyser      <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
-      regexNer      <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
-      updateCheck   <- UpdateCheck.resource(httpClient)
+      analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
+      regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
+      updateCheck <- UpdateCheck.resource(httpClient)
       javaEmil =
         JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, store)

@@ -172,7 +172,7 @@ class ConversionTest extends FunSuite with FileChecks {
       .covary[IO]
       .zipWithIndex
       .evalMap { case (uri, index) =>
-        val load     = uri.readURL[IO](8192)
+        val load = uri.readURL[IO](8192)
         val dataType = DataType.filename(uri.path.segments.last)
         logger.info(s"Processing file ${uri.path.asString}") *>
           conv.toPDF(dataType, Language.German, handler(index))(load)

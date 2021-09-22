@@ -90,7 +90,7 @@ object UploadRoutes {
         cfg.backend.files.validMimeTypes
       )
       result <- backend.upload.submitEither(updata, accOrSrc, true, itemId)
-      res    <- Ok(basicResult(result))
+      res <- Ok(basicResult(result))
     } yield res
   }
 }

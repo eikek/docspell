@@ -30,13 +30,13 @@ object RAttachment {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "attachment"
 
-    val id       = Column[Ident]("attachid", this)
-    val itemId   = Column[Ident]("itemid", this)
-    val fileId   = Column[Ident]("filemetaid", this)
+    val id = Column[Ident]("attachid", this)
+    val itemId = Column[Ident]("itemid", this)
+    val fileId = Column[Ident]("filemetaid", this)
     val position = Column[Int]("position", this)
-    val created  = Column[Timestamp]("created", this)
-    val name     = Column[String]("name", this)
-    val all      = NonEmptyList.of[Column[_]](id, itemId, fileId, position, created, name)
+    val created = Column[Timestamp]("created", this)
+    val name = Column[String]("name", this)
+    val all = NonEmptyList.of[Column[_]](id, itemId, fileId, position, created, name)
   }
 
   val T = Table(None)
@@ -131,7 +131,7 @@ object RAttachment {
     val update = DML.update(T, T.id === attachId, DML.set(T.name.setTo(aname)))
     for {
       exists <- existsByIdAndCollective(attachId, collective)
-      n      <- if (exists) update else 0.pure[ConnectionIO]
+      n <- if (exists) update else 0.pure[ConnectionIO]
     } yield n
   }
 
@@ -227,8 +227,7 @@ object RAttachment {
     ).orderBy(a.position.asc).build.query[(RAttachment, RFileMeta)].to[Vector]
   }
 
-  /** Deletes the attachment and its related source and meta records.
-    */
+  /** Deletes the attachment and its related source and meta records. */
   def delete(attachId: Ident): ConnectionIO[Int] =
     for {
       n0 <- RAttachmentMeta.delete(attachId)
@@ -294,10 +293,10 @@ object RAttachment {
       chunkSize: Int
   ): Stream[ConnectionIO, RAttachment] = {
     val pdfType = "application/pdf%"
-    val a       = RAttachment.as("a")
-    val s       = RAttachmentSource.as("s")
-    val i       = RItem.as("i")
-    val m       = RFileMeta.as("m")
+    val a = RAttachment.as("a")
+    val s = RAttachmentSource.as("s")
+    val i = RItem.as("i")
+    val m = RFileMeta.as("m")
 
     Select(
       select(a.all),

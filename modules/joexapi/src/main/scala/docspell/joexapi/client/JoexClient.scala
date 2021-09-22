@@ -40,7 +40,7 @@ object JoexClient {
 
       def notifyJoex(base: LenientUri): F[BasicResult] = {
         val notifyUrl = base / "api" / "v1" / "notify"
-        val req       = Request[F](Method.POST, uri(notifyUrl))
+        val req = Request[F](Method.POST, uri(notifyUrl))
         logger.fdebug(s"Notify joex at ${notifyUrl.asString}") *>
           client.expect[BasicResult](req)
       }
@@ -61,7 +61,7 @@ object JoexClient {
 
       def cancelJob(base: LenientUri, job: Ident): F[BasicResult] = {
         val cancelUrl = base / "api" / "v1" / "job" / job.id / "cancel"
-        val req       = Request[F](Method.POST, uri(cancelUrl))
+        val req = Request[F](Method.POST, uri(cancelUrl))
         client.expect[BasicResult](req)
       }
 

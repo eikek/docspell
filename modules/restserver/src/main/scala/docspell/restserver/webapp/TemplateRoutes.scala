@@ -27,7 +27,7 @@ import yamusca.imports._
 object TemplateRoutes {
   private[this] val logger = getLogger
 
-  val `text/html`              = new MediaType("text", "html")
+  val `text/html` = new MediaType("text", "html")
   val `application/javascript` = new MediaType("application", "javascript")
 
   trait InnerRoutes[F[_]] {
@@ -41,7 +41,7 @@ object TemplateRoutes {
       loadResource("/index.html").flatMap(loadTemplate(_))
     )
     val docTemplate = memo(loadResource("/doc.html").flatMap(loadTemplate(_)))
-    val swTemplate  = memo(loadResource("/sw.js").flatMap(loadTemplate(_)))
+    val swTemplate = memo(loadResource("/sw.js").flatMap(loadTemplate(_)))
 
     val dsl = new Http4sDsl[F] {}
     import dsl._

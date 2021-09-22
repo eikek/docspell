@@ -19,8 +19,8 @@ object PersonRecord {
 
     val tableName = "person"
 
-    val id      = Column[Long]("id", this)
-    val name    = Column[String]("name", this)
+    val id = Column[Long]("id", this)
+    val name = Column[String]("name", this)
     val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, name, created)

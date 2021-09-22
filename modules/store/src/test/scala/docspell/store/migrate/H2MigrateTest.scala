@@ -16,7 +16,7 @@ import munit.FunSuite
 class H2MigrateTest extends FunSuite {
 
   test("h2 empty schema migration") {
-    val jdbc   = StoreFixture.memoryDB("h2test")
+    val jdbc = StoreFixture.memoryDB("h2test")
     val result = FlywayMigrate.run[IO](jdbc).unsafeRunSync()
     assert(result.migrationsExecuted > 0)
   }

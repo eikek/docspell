@@ -109,12 +109,12 @@ object Conversion {
     })
 
   object Office {
-    val odt      = MimeType.application("vnd.oasis.opendocument.text")
-    val ods      = MimeType.application("vnd.oasis.opendocument.spreadsheet")
+    val odt = MimeType.application("vnd.oasis.opendocument.text")
+    val ods = MimeType.application("vnd.oasis.opendocument.spreadsheet")
     val odtAlias = MimeType.application("x-vnd.oasis.opendocument.text")
     val odsAlias = MimeType.application("x-vnd.oasis.opendocument.spreadsheet")
     val msoffice = MimeType.application("x-tika-msoffice")
-    val ooxml    = MimeType.application("x-tika-ooxml")
+    val ooxml = MimeType.application("x-tika-ooxml")
     val docx =
       MimeType.application("vnd.openxmlformats-officedocument.wordprocessingml.document")
     val xlsx =

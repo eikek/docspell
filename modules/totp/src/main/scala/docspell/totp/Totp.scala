@@ -37,7 +37,7 @@ object Totp {
   def apply(setts: Settings): Totp =
     new Totp {
 
-      val settings          = setts
+      val settings = setts
       private val generator = makeGenerator(setts)
 
       def generate(key: Key, time: Instant): OnetimePassword =
