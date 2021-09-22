@@ -4,7 +4,7 @@ import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
 import de.heikoseeberger.sbtheader.CommentBlockCreator
 
-val toolsPackage   = taskKey[Seq[File]]("Package the scripts/extension tools")
+val toolsPackage = taskKey[Seq[File]]("Package the scripts/extension tools")
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 // --- Settings
@@ -13,20 +13,20 @@ def inTest(d0: Seq[ModuleID], ds: Seq[ModuleID]*) =
   ds.fold(d0)(_ ++ _).map(_ % Test)
 
 val scalafixSettings = Seq(
-  semanticdbEnabled := true,                        // enable SemanticDB
+  semanticdbEnabled := true, // enable SemanticDB
   semanticdbVersion := scalafixSemanticdb.revision, //"4.4.0"
   ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
 )
 
 val sharedSettings = Seq(
-  organization     := "com.github.eikek",
-  scalaVersion     := "2.13.6",
+  organization := "com.github.eikek",
+  scalaVersion := "2.13.6",
   organizationName := "Eike K. & Contributors",
   licenses += ("AGPL-3.0-or-later", url(
     "https://spdx.org/licenses/AGPL-3.0-or-later.html"
   )),
-  startYear                     := Some(2020),
-  headerLicenseStyle            := HeaderLicenseStyle.SpdxSyntax,
+  startYear := Some(2020),
+  headerLicenseStyle := HeaderLicenseStyle.SpdxSyntax,
   headerSources / excludeFilter := HiddenFileFilter || "*.java" || "StringUtil.scala",
   scalacOptions ++= Seq(
     "-deprecation",
@@ -45,9 +45,9 @@ val sharedSettings = Seq(
   ),
   javacOptions ++= Seq("-target", "1.8", "-source", "1.8"),
   LocalRootProject / toolsPackage := {
-    val v      = version.value
+    val v = version.value
     val logger = streams.value.log
-    val dir    = (LocalRootProject / baseDirectory).value / "tools"
+    val dir = (LocalRootProject / baseDirectory).value / "tools"
     packageTools(logger, dir, v)
   },
   Compile / console / scalacOptions :=
@@ -55,7 +55,7 @@ val sharedSettings = Seq(
   Test / console / scalacOptions :=
     (scalacOptions.value.filter(o => !o.contains("-Xlint") && !o.contains("-W"))),
   libraryDependencySchemes ++= Seq(
-    "com.github.eikek" %% "calev-core"  % VersionScheme.Always,
+    "com.github.eikek" %% "calev-core" % VersionScheme.Always,
     "com.github.eikek" %% "calev-circe" % VersionScheme.Always
   )
 ) ++ scalafixSettings
@@ -66,8 +66,8 @@ val testSettingsMUnit = Seq(
 )
 
 lazy val noPublish = Seq(
-  publish         := {},
-  publishLocal    := {},
+  publish := {},
+  publishLocal := {},
   publishArtifact := false
 )
 
@@ -113,7 +113,7 @@ def webjarSettings(queryJS: Project) = Seq(
   }.taskValue,
   Compile / resourceGenerators += Def.task {
     val logger = streams.value.log
-    val out    = (queryJS / Compile / fullOptJS).value
+    val out = (queryJS / Compile / fullOptJS).value
     logger.info(s"Produced query js file: ${out.data}")
     copyWebjarResources(
       Seq(out.data),
@@ -297,7 +297,7 @@ val files = project
       Dependencies.tika ++
         Dependencies.icu4j,
     Test / sourceGenerators += Def.task {
-      val base  = (Test / resourceDirectory).value
+      val base = (Test / resourceDirectory).value
       val files = (base ** (_.isFile)).pair(sbt.io.Path.relativeTo(base))
       val lines = files.toList.map(_._2).map { s =>
         val ident = s.replaceAll("[^a-zA-Z0-9_]+", "_")
@@ -466,9 +466,9 @@ val restapi = project
     libraryDependencies ++=
       Dependencies.circe,
     openapiTargetLanguage := Language.Scala,
-    openapiPackage        := Pkg("docspell.restapi.model"),
-    openapiSpec           := (Compile / resourceDirectory).value / "docspell-openapi.yml",
-    openapiStaticGen      := OpenApiDocGenerator.Redoc
+    openapiPackage := Pkg("docspell.restapi.model"),
+    openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
+    openapiStaticGen := OpenApiDocGenerator.Redoc
   )
   .dependsOn(common)
 
@@ -486,9 +486,9 @@ val joexapi = project
         Dependencies.http4sCirce ++
         Dependencies.http4sClient,
     openapiTargetLanguage := Language.Scala,
-    openapiPackage        := Pkg("docspell.joexapi.model"),
-    openapiSpec           := (Compile / resourceDirectory).value / "joex-openapi.yml",
-    openapiStaticGen      := OpenApiDocGenerator.Redoc
+    openapiPackage := Pkg("docspell.joexapi.model"),
+    openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml",
+    openapiStaticGen := OpenApiDocGenerator.Redoc
   )
   .dependsOn(common)
 
@@ -535,9 +535,9 @@ val webapp = project
   .settings(stylesSettings)
   .settings(webjarSettings(query.js))
   .settings(
-    name                  := "docspell-webapp",
+    name := "docspell-webapp",
     openapiTargetLanguage := Language.Elm,
-    openapiPackage        := Pkg("Api.Model"),
+    openapiPackage := Pkg("Api.Model"),
     openapiSpec := (restapi / Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
@@ -561,7 +561,7 @@ val joex = project
   .settings(
     name := "docspell-joex",
     description := "The joex component (job executor) for docspell which executes long-running tasks.",
-    packageSummary     := "Docspell Joex",
+    packageSummary := "Docspell Joex",
     packageDescription := description.value,
     libraryDependencies ++=
       Dependencies.fs2 ++
@@ -604,9 +604,9 @@ val restserver = project
   .settings(debianSettings("docspell-server"))
   .settings(buildInfoSettings)
   .settings(
-    name               := "docspell-restserver",
-    description        := "Docspell server providing the user interface and a REST Api.",
-    packageSummary     := "Docspell Rest server",
+    name := "docspell-restserver",
+    description := "Docspell server providing the user interface and a REST Api.",
+    packageSummary := "Docspell Rest server",
     packageDescription := description.value,
     libraryDependencies ++=
       Dependencies.http4sServer ++
@@ -661,15 +661,15 @@ val website = project
   .enablePlugins(ZolaPlugin, GitHubPagesPlugin)
   .settings(sharedSettings)
   .settings(
-    name                := "docspell-website",
-    publishArtifact     := false,
-    publish / skip      := true,
-    gitHubPagesOrgName  := "eikek",
+    name := "docspell-website",
+    publishArtifact := false,
+    publish / skip := true,
+    gitHubPagesOrgName := "eikek",
     gitHubPagesRepoName := "docspell",
-    gitHubPagesSiteDir  := zolaOutputDir.value,
+    gitHubPagesSiteDir := zolaOutputDir.value,
     Compile / resourceGenerators += Def.task {
       val templateOut = baseDirectory.value / "site" / "templates" / "shortcodes"
-      val staticOut   = baseDirectory.value / "site" / "static" / "openapi"
+      val staticOut = baseDirectory.value / "site" / "static" / "openapi"
       IO.createDirectories(Seq(templateOut, staticOut))
       val logger = streams.value.log
 
@@ -692,14 +692,14 @@ val website = project
       IO.write(
         target,
         """|+++
-                          |title = "Changelog"
-                          |description = "See what changed between releases."
-                          |weight = 10
-                          |insert_anchor_links = "right"
-                          |[extra]
-                          |maketoc = false
-                          |+++
-                          |""".stripMargin
+           |title = "Changelog"
+           |description = "See what changed between releases."
+           |weight = 10
+           |insert_anchor_links = "right"
+           |[extra]
+           |maketoc = false
+           |+++
+           |""".stripMargin
       )
       IO.append(target, IO.readBytes(changelog))
       Seq(target)
@@ -798,7 +798,7 @@ def compileElm(
 }
 
 def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
-  val target   = out / "Webjars.scala"
+  val target = out / "Webjars.scala"
   val badChars = "-.".toSet
   val fields = wj
     .map(m =>
@@ -808,10 +808,10 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
     )
     .mkString("\n\n")
   val content = s"""package docspell.restserver.webapp
-    |object Webjars {
-    |$fields
-    |}
-    |""".stripMargin
+                   |object Webjars {
+                   |$fields
+                   |}
+                   |""".stripMargin
 
   IO.write(target, content)
   Seq(target)
@@ -824,15 +824,15 @@ def packageTools(logger: Logger, dir: File, version: String): Seq[File] = {
   val archive = target / s"docspell-tools-$version.zip"
   logger.info(s"Packaging tools to $archive ...")
   val webext = target / "docspell-firefox-extension.xpi"
-  val wx     = dir / "webextension"
+  val wx = dir / "webextension"
   IO.zip(
     Seq(
       wx / "_locales/de/messages.json" -> "_locales/de/messages.json",
       wx / "_locales/en/messages.json" -> "_locales/en/messages.json",
-      wx / "docspell.js"               -> "docspell.js",
-      wx / "icons" / "logo-48.png"     -> "icons/logo-48.png",
-      wx / "icons" / "logo-96.png"     -> "icons/logo-96.png",
-      wx / "manifest.json"             -> "manifest.json"
+      wx / "docspell.js" -> "docspell.js",
+      wx / "icons" / "logo-48.png" -> "icons/logo-48.png",
+      wx / "icons" / "logo-96.png" -> "icons/logo-96.png",
+      wx / "manifest.json" -> "manifest.json"
     ),
     webext,
     None

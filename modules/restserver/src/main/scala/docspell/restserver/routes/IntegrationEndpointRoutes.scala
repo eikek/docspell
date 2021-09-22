@@ -50,7 +50,7 @@ object IntegrationEndpointRoutes {
 
       case req @ GET -> Root / "item" / Ident(collective) =>
         (for {
-          _   <- validate(req, collective)
+          _ <- validate(req, collective)
           res <- EitherT.liftF[F, Response[F], Response[F]](Ok(()))
         } yield res).fold(identity, identity)
 
@@ -112,7 +112,7 @@ object IntegrationEndpointRoutes {
       )
       account = AccountId(coll, DocspellSystem.user)
       result <- backend.upload.submit(updata, account, true, None)
-      res    <- Ok(basicResult(result))
+      res <- Ok(basicResult(result))
     } yield res
   }
 

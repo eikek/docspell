@@ -26,7 +26,7 @@ case class TagItemName(
 
 object TagItemName {
   private val ti = RTagItem.as("ti")
-  private val t  = RTag.as("t")
+  private val t = RTag.as("t")
 
   private val taggedItems =
     from(t).innerJoin(ti, t.tid === ti.tagId)

@@ -188,23 +188,20 @@ trait OItem[F[_]] {
       notifyJoex: Boolean
   ): F[UpdateResult]
 
-  /** Submits a task that (re)generates the preview image for an attachment.
-    */
+  /** Submits a task that (re)generates the preview image for an attachment. */
   def generatePreview(
       args: MakePreviewArgs,
       account: AccountId,
       notifyJoex: Boolean
   ): F[UpdateResult]
 
-  /** Submits a task that (re)generates the preview images for all attachments.
-    */
+  /** Submits a task that (re)generates the preview images for all attachments. */
   def generateAllPreviews(
       storeMode: MakePreviewArgs.StoreMode,
       notifyJoex: Boolean
   ): F[UpdateResult]
 
-  /** Merges a list of items into one item. The remaining items are deleted.
-    */
+  /** Merges a list of items into one item. The remaining items are deleted. */
   def merge(
       logger: Logger[F],
       items: NonEmptyList[Ident],
@@ -222,8 +219,8 @@ object OItem {
       joex: OJoex[F]
   ): Resource[F, OItem[F]] =
     for {
-      otag   <- OTag(store)
-      oorg   <- OOrganization(store)
+      otag <- OTag(store)
+      oorg <- OOrganization(store)
       oequip <- OEquipment(store)
       logger <- Resource.pure[F, Logger[F]](Logger.log4s(getLogger))
       oitem <- Resource.pure[F, OItem[F]](new OItem[F] {
@@ -312,11 +309,11 @@ object OItem {
             case kws =>
               val db =
                 (for {
-                  _     <- OptionT(RItem.checkByIdAndCollective(item, collective))
+                  _ <- OptionT(RItem.checkByIdAndCollective(item, collective))
                   given <- OptionT.liftF(RTag.findAllByNameOrId(kws, collective))
                   exist <- OptionT.liftF(RTagItem.findAllIn(item, given.map(_.tagId)))
                   remove = given.map(_.tagId).toSet.intersect(exist.map(_.tagId).toSet)
-                  toadd  = given.map(_.tagId).diff(exist.map(_.tagId))
+                  toadd = given.map(_.tagId).diff(exist.map(_.tagId))
                   _ <- OptionT.liftF(RTagItem.setAllTags(item, toadd))
                   _ <- OptionT.liftF(RTagItem.removeAllTags(item, remove.toSeq))
                 } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
@@ -337,9 +334,9 @@ object OItem {
             collective: Ident
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(store.transact(for {
-            k     <- RTagItem.deleteItemTags(items, collective)
+            k <- RTagItem.deleteItemTags(items, collective)
             rtags <- RTag.findAllByNameOrId(tags, collective)
-            res   <- items.traverse(i => RTagItem.setAllTags(i, rtags.map(_.tagId)))
+            res <- items.traverse(i => RTagItem.setAllTags(i, rtags.map(_.tagId)))
             n = res.fold
           } yield k + n))
 
@@ -733,8 +730,8 @@ object OItem {
         ): F[UpdateResult] =
           for {
             job <- JobFactory.convertAllPdfs[F](collective, submitter, Priority.Low)
-            _   <- queue.insertIfNew(job)
-            _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+            _ <- queue.insertIfNew(job)
+            _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
         def generatePreview(
@@ -744,8 +741,8 @@ object OItem {
         ): F[UpdateResult] =
           for {
             job <- JobFactory.makePreview[F](args, account.some)
-            _   <- queue.insertIfNew(job)
-            _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+            _ <- queue.insertIfNew(job)
+            _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
         def generateAllPreviews(
@@ -754,8 +751,8 @@ object OItem {
         ): F[UpdateResult] =
           for {
             job <- JobFactory.allPreviews[F](AllPreviewsArgs(None, storeMode), None)
-            _   <- queue.insertIfNew(job)
-            _   <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
+            _ <- queue.insertIfNew(job)
+            _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
         private def onSuccessIgnoreError(update: F[Unit])(ar: UpdateResult): F[Unit] =

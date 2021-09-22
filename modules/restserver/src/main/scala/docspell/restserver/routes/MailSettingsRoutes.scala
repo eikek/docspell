@@ -49,13 +49,13 @@ object MailSettingsRoutes {
 
       case GET -> Root / "smtp" / Ident(name) =>
         (for {
-          ems  <- backend.mail.findSmtpSettings(user.account, name)
+          ems <- backend.mail.findSmtpSettings(user.account, name)
           resp <- OptionT.liftF(Ok(convert(ems)))
         } yield resp).getOrElseF(NotFound())
 
       case GET -> Root / "imap" / Ident(name) =>
         (for {
-          ems  <- backend.mail.findImapSettings(user.account, name)
+          ems <- backend.mail.findImapSettings(user.account, name)
           resp <- OptionT.liftF(Ok(convert(ems)))
         } yield resp).getOrElseF(NotFound())
 

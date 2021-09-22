@@ -37,13 +37,13 @@ object JobQueueRoutes {
       case POST -> Root / Ident(id) / "cancel" =>
         for {
           result <- backend.job.cancelJob(id, user.account.collective)
-          resp   <- Ok(Conversions.basicResult(result))
+          resp <- Ok(Conversions.basicResult(result))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "priority" =>
         for {
           prio <- req.as[JobPriority]
-          res  <- backend.job.setPriority(id, user.account.collective, prio.priority)
+          res <- backend.job.setPriority(id, user.account.collective, prio.priority)
           resp <- Ok(Conversions.basicResult(res, "Job priority changed"))
         } yield resp
     }

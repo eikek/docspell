@@ -36,11 +36,11 @@ object RFolder {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "folder"
 
-    val id         = Column[Ident]("id", this)
-    val name       = Column[String]("name", this)
+    val id = Column[Ident]("id", this)
+    val name = Column[String]("name", this)
     val collective = Column[Ident]("cid", this)
-    val owner      = Column[Ident]("owner", this)
-    val created    = Column[Timestamp]("created", this)
+    val owner = Column[Ident]("owner", this)
+    val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, name, collective, owner, created)
   }

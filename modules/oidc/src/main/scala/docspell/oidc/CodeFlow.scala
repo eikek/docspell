@@ -40,8 +40,8 @@ object CodeFlow {
       code: String
   ): OptionT[F, Json] = {
     val logger = Logger.log4s[F](log4sLogger)
-    val dsl    = new Http4sClientDsl[F] {}
-    val c      = logRequests[F](logResponses[F](client))
+    val dsl = new Http4sClientDsl[F] {}
+    val c = logRequests[F](logResponses[F](client))
 
     for {
       _ <- OptionT.liftF(
@@ -97,11 +97,11 @@ object CodeFlow {
 
     val req = POST(
       UrlForm(
-        "client_id"     -> cfg.clientId,
+        "client_id" -> cfg.clientId,
         "client_secret" -> cfg.clientSecret,
-        "code"          -> code,
-        "grant_type"    -> "authorization_code",
-        "redirect_uri"  -> redirectUri
+        "code" -> code,
+        "grant_type" -> "authorization_code",
+        "redirect_uri" -> redirectUri
       ),
       Uri.unsafeFromString(cfg.tokenUrl.asString),
       Accept(MediaType.application.json)

@@ -57,24 +57,23 @@ object StringUtil {
     val escapedToken: P[Unit] = {
       val escapes = P.charIn(decodeTable.keys.toSeq)
 
-      val oct  = P.charIn('0' to '7')
+      val oct = P.charIn('0' to '7')
       val octP = P.char('o') ~ oct ~ oct
 
-      val hex  = P.charIn(('0' to '9') ++ ('a' to 'f') ++ ('A' to 'F'))
+      val hex = P.charIn(('0' to '9') ++ ('a' to 'f') ++ ('A' to 'F'))
       val hex2 = hex ~ hex
       val hexP = P.char('x') ~ hex2
 
       val hex4 = hex2 ~ hex2
-      val u4   = P.char('u') ~ hex4
+      val u4 = P.char('u') ~ hex4
       val hex8 = hex4 ~ hex4
-      val u8   = P.char('U') ~ hex8
+      val u8 = P.char('U') ~ hex8
 
       val after = P.oneOf[Any](escapes :: octP :: hexP :: u4 :: u8 :: Nil)
       (P.char('\\') ~ after).void
     }
 
-    /** String content without the delimiter
-      */
+    /** String content without the delimiter */
     def undelimitedString(endP: P[Unit]): P[String] =
       escapedToken.backtrack
         .orElse((!endP).with1 ~ P.anyChar)

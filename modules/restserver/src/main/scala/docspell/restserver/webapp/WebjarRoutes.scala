@@ -36,8 +36,8 @@ object WebjarRoutes {
   def appRoutes[F[_]: Async]: HttpRoutes[F] =
     Kleisli {
       case req if req.method == Method.GET =>
-        val p             = req.pathInfo.renderString
-        val last          = req.pathInfo.segments.lastOption.map(_.encoded).getOrElse("")
+        val p = req.pathInfo.renderString
+        val last = req.pathInfo.segments.lastOption.map(_.encoded).getOrElse("")
         val containsColon = req.pathInfo.segments.exists(_.encoded.contains(".."))
         if (containsColon || !suffixes.exists(last.endsWith(_)))
           OptionT.pure(Response.notFound[F])

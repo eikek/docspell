@@ -17,8 +17,8 @@ sealed trait LogLevel { self: Product =>
 object LogLevel {
 
   case object Debug extends LogLevel { val toInt = 0 }
-  case object Info  extends LogLevel { val toInt = 1 }
-  case object Warn  extends LogLevel { val toInt = 2 }
+  case object Info extends LogLevel { val toInt = 1 }
+  case object Warn extends LogLevel { val toInt = 2 }
   case object Error extends LogLevel { val toInt = 3 }
 
   def fromInt(n: Int): LogLevel =

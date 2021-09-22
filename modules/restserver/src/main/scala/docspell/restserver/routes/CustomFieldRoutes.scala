@@ -48,26 +48,26 @@ object CustomFieldRoutes {
       case req @ POST -> Root =>
         for {
           data <- req.as[NewCustomField]
-          res  <- backend.customFields.create(convertNewField(user, data))
+          res <- backend.customFields.create(convertNewField(user, data))
           resp <- Ok(convertResult(res))
         } yield resp
 
       case GET -> Root / Ident(id) =>
         (for {
           field <- OptionT(backend.customFields.findById(user.account.collective, id))
-          res   <- OptionT.liftF(Ok(convertField(field)))
+          res <- OptionT.liftF(Ok(convertField(field)))
         } yield res).getOrElseF(NotFound(BasicResult(false, "Not found")))
 
       case req @ PUT -> Root / Ident(id) =>
         for {
           data <- req.as[NewCustomField]
-          res  <- backend.customFields.change(convertChangeField(id, user, data))
+          res <- backend.customFields.change(convertChangeField(id, user, data))
           resp <- Ok(convertResult(res))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          res  <- backend.customFields.delete(user.account.collective, id)
+          res <- backend.customFields.delete(user.account.collective, id)
           resp <- Ok(convertResult(res))
         } yield resp
     }

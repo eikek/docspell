@@ -95,8 +95,8 @@ object ItemQueryGenerator {
         }
 
       case Expr.SimpleExpr(op, Property.DateProperty(attr, value)) =>
-        val dt       = dateToTimestamp(today)(value)
-        val col      = timestampColumn(tables)(attr)
+        val dt = dateToTimestamp(today)(value)
+        val col = timestampColumn(tables)(attr)
         val noLikeOp = if (op == Operator.Like) Operator.Eq else op
         Condition.CompareFVal(col, makeOp(noLikeOp), dt)
 
@@ -286,7 +286,7 @@ object ItemQueryGenerator {
   private def itemsWithCustomField(
       sel: RCustomField.Table => Condition
   )(coll: Ident, op: QOp, value: String): Select = {
-    val cf  = RCustomField.as("cf")
+    val cf = RCustomField.as("cf")
     val cfv = RCustomFieldValue.as("cfv")
 
     val baseSelect =

@@ -50,29 +50,29 @@ object OrganizationRoutes {
 
       case req @ POST -> Root =>
         for {
-          data   <- req.as[Organization]
+          data <- req.as[Organization]
           newOrg <- newOrg(data, user.account.collective)
-          added  <- backend.organization.addOrg(newOrg)
-          resp   <- Ok(basicResult(added, "New organization saved."))
+          added <- backend.organization.addOrg(newOrg)
+          resp <- Ok(basicResult(added, "New organization saved."))
         } yield resp
 
       case req @ PUT -> Root =>
         for {
-          data   <- req.as[Organization]
-          upOrg  <- changeOrg(data, user.account.collective)
+          data <- req.as[Organization]
+          upOrg <- changeOrg(data, user.account.collective)
           update <- backend.organization.updateOrg(upOrg)
-          resp   <- Ok(basicResult(update, "Organization updated."))
+          resp <- Ok(basicResult(update, "Organization updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
           delOrg <- backend.organization.deleteOrg(id, user.account.collective)
-          resp   <- Ok(basicResult(delOrg, "Organization deleted."))
+          resp <- Ok(basicResult(delOrg, "Organization deleted."))
         } yield resp
 
       case GET -> Root / Ident(id) =>
         (for {
-          org  <- OptionT(backend.organization.findOrg(user.account, id))
+          org <- OptionT(backend.organization.findOrg(user.account, id))
           resp <- OptionT.liftF(Ok(mkOrg(org)))
         } yield resp).getOrElseF(NotFound())
     }

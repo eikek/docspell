@@ -43,7 +43,7 @@ object Merge {
       def merge(givenIds: NonEmptyList[Ident], collective: Ident): F[Result[RItem]] =
         (for {
           items <- loadItems(givenIds, collective)
-          ids    = items.map(_.id)
+          ids = items.map(_.id)
           target = moveMainData(items)
           _ <- EitherT.right[Error](store.transact(RItem.updateAll(target)))
           _ <- EitherT.right[Error](moveTags(ids))
@@ -101,7 +101,7 @@ object Merge {
       def moveCustomFields(items: NonEmptyList[Ident]): F[Unit] =
         for {
           values <- store.transact(QCustomField.findAllValues(items))
-          byField   = values.groupBy(_.field.name)
+          byField = values.groupBy(_.field.name)
           newValues = mergeFields(items.head, byField)
           _ <- newValues.traverse(fv =>
             store.transact(RCustomField.setValue(fv.field, items.head, fv.value))

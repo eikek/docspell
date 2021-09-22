@@ -97,10 +97,10 @@ case class LenientUri(
 
   def asString: String = {
     val schemePart = scheme.toList.mkString(":")
-    val authPart   = authority.map(a => s"//$a").getOrElse("")
-    val pathPart   = path.asString
-    val queryPart  = query.map(q => s"?$q").getOrElse("")
-    val fragPart   = fragment.map(f => s"#$f").getOrElse("")
+    val authPart = authority.map(a => s"//$a").getOrElse("")
+    val pathPart = path.asString
+    val queryPart = query.map(q => s"?$q").getOrElse("")
+    val fragPart = fragment.map(f => s"#$f").getOrElse("")
     s"$schemePart:$authPart$pathPart$queryPart$fragPart"
   }
 }
@@ -116,24 +116,24 @@ object LenientUri {
   }
   case object RootPath extends Path {
     val segments = Nil
-    val isRoot   = true
-    val isEmpty  = false
+    val isRoot = true
+    val isEmpty = false
     def /(seg: String): Path =
       NonEmptyPath(NonEmptyList.of(seg))
     def asString = "/"
   }
   case object EmptyPath extends Path {
     val segments = Nil
-    val isRoot   = false
-    val isEmpty  = true
+    val isRoot = false
+    val isEmpty = true
     def /(seg: String): Path =
       NonEmptyPath(NonEmptyList.of(seg))
     def asString = ""
   }
   case class NonEmptyPath(segs: NonEmptyList[String]) extends Path {
     def segments = segs.toList
-    val isEmpty  = false
-    val isRoot   = false
+    val isEmpty = false
+    val isRoot = false
     def /(seg: String): Path =
       copy(segs = segs.append(seg))
     def asString =
@@ -215,7 +215,7 @@ object LenientUri {
           case -1 =>
             Left(s"No scheme found: $str")
           case n =>
-            val scheme              = makeScheme(p0.substring(0, n))
+            val scheme = makeScheme(p0.substring(0, n))
             val (path, query, frag) = splitPathQF(p0.substring(n + 1))
             scheme match {
               case None =>

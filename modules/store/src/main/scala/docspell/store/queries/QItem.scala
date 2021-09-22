@@ -31,17 +31,17 @@ object QItem {
   private[this] val logger = getLogger
 
   private val equip = REquipment.as("e")
-  private val org   = ROrganization.as("o")
+  private val org = ROrganization.as("o")
   private val pers0 = RPerson.as("pers0")
   private val pers1 = RPerson.as("pers1")
-  private val f     = RFolder.as("f")
-  private val i     = RItem.as("i")
-  private val cf    = RCustomField.as("cf")
-  private val cv    = RCustomFieldValue.as("cvf")
-  private val a     = RAttachment.as("a")
-  private val m     = RAttachmentMeta.as("m")
-  private val tag   = RTag.as("t")
-  private val ti    = RTagItem.as("ti")
+  private val f = RFolder.as("f")
+  private val i = RItem.as("i")
+  private val cf = RCustomField.as("cf")
+  private val cv = RCustomFieldValue.as("cvf")
+  private val a = RAttachment.as("a")
+  private val m = RAttachmentMeta.as("m")
+  private val tag = RTag.as("t")
+  private val ti = RTagItem.as("ti")
 
   def countAttachmentsAndItems(items: Nel[Ident]): ConnectionIO[Int] =
     Select(count(a.id).s, from(a), a.itemId.in(items)).build
@@ -82,19 +82,19 @@ object QItem {
       ]
       .option
     logger.trace(s"Find item query: $cq")
-    val attachs      = RAttachment.findByItemWithMeta(id)
-    val sources      = RAttachmentSource.findByItemWithMeta(id)
-    val archives     = RAttachmentArchive.findByItemWithMeta(id)
-    val tags         = RTag.findByItem(id)
+    val attachs = RAttachment.findByItemWithMeta(id)
+    val sources = RAttachmentSource.findByItemWithMeta(id)
+    val archives = RAttachmentArchive.findByItemWithMeta(id)
+    val tags = RTag.findByItem(id)
     val customfields = findCustomFieldValuesForItem(id)
 
     for {
       data <- q
-      att  <- attachs
+      att <- attachs
       srcs <- sources
       arch <- archives
-      ts   <- tags
-      cfs  <- customfields
+      ts <- tags
+      cfs <- customfields
     } yield data.map(d =>
       ItemData(d._1, d._2, d._3, d._4, d._5, d._6, d._7, ts, att, srcs, arch, cfs)
     )
@@ -187,10 +187,10 @@ object QItem {
 
   def searchStats(today: LocalDate)(q: Query): ConnectionIO[SearchSummary] =
     for {
-      count   <- searchCountSummary(today)(q)
-      tags    <- searchTagSummary(today)(q)
-      cats    <- searchTagCategorySummary(today)(q)
-      fields  <- searchFieldSummary(today)(q)
+      count <- searchCountSummary(today)(q)
+      tags <- searchTagSummary(today)(q)
+      cats <- searchTagCategorySummary(today)(q)
+      fields <- searchFieldSummary(today)(q)
       folders <- searchFolderSummary(today)(q)
     } yield SearchSummary(count, tags, cats, fields, folders)
 
@@ -214,7 +214,7 @@ object QItem {
 
     for {
       existing <- catCloud
-      allCats  <- RTag.listCategories(q.fix.account.collective)
+      allCats <- RTag.listCategories(q.fix.account.collective)
       other = allCats.diff(existing.flatMap(_.category))
     } yield existing ++ other.map(n => CategoryCount(n.some, 0))
   }
@@ -239,7 +239,7 @@ object QItem {
     // are not included they are fetched separately
     for {
       existing <- tagCloud
-      other    <- RTag.findOthers(q.fix.account.collective, existing.map(_.tag.tagId))
+      other <- RTag.findOthers(q.fix.account.collective, existing.map(_.tag.tagId))
     } yield existing ++ other.map(TagCount(_, 0))
   }
 
@@ -332,10 +332,10 @@ object QItem {
 
       object Tids extends TableDef {
         val tableName = "tids"
-        val alias     = Some("tw")
-        val itemId    = Column[Ident]("item_id", this)
-        val weight    = Column[Double]("weight", this)
-        val all       = Vector[Column[_]](itemId, weight)
+        val alias = Some("tw")
+        val itemId = Column[Ident]("item_id", this)
+        val weight = Column[Double]("weight", this)
+        val all = Vector[Column[_]](itemId, weight)
       }
 
       val cte =
@@ -389,10 +389,10 @@ object QItem {
 
     for {
       resolvedTags <- Stream.eval(Ref.of[ConnectionIO, Map[Ident, RTag]](Map.empty))
-      item         <- search
-      tagItems     <- Stream.eval(RTagItem.findByItem(item.id))
-      tags         <- Stream.eval(tagItems.traverse(ti => findTag(resolvedTags, ti)))
-      attachs      <- Stream.eval(findAttachmentLight(item.id))
+      item <- search
+      tagItems <- Stream.eval(RTagItem.findByItem(item.id))
+      tags <- Stream.eval(tagItems.traverse(ti => findTag(resolvedTags, ti)))
+      attachs <- Stream.eval(findAttachmentLight(item.id))
       ftags = tags.flatten.filter(t => t.collective == collective)
       cfields <- Stream.eval(findCustomFieldValuesForItem(item.id))
     } yield ListItemWithTags(
@@ -418,7 +418,7 @@ object QItem {
       mn <- store.transact(RSentMail.deleteByItem(itemId))
       cf <- store.transact(RCustomFieldValue.deleteByItem(itemId))
       im <- store.transact(RItemProposal.deleteByItem(itemId))
-      n  <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
+      n <- store.transact(RItem.deleteByIdAndCollective(itemId, collective))
     } yield tn + rn + n + mn + cf + im
 
   private def findByFileIdsQuery(
@@ -476,13 +476,13 @@ object QItem {
       collective: Ident,
       excludeFileMeta: Set[Ident]
   ): Select = {
-    val m1  = RFileMeta.as("m1")
-    val m2  = RFileMeta.as("m2")
-    val m3  = RFileMeta.as("m3")
-    val i   = RItem.as("i")
-    val a   = RAttachment.as("a")
-    val s   = RAttachmentSource.as("s")
-    val r   = RAttachmentArchive.as("r")
+    val m1 = RFileMeta.as("m1")
+    val m2 = RFileMeta.as("m2")
+    val m3 = RFileMeta.as("m3")
+    val i = RItem.as("i")
+    val a = RAttachment.as("a")
+    val s = RAttachmentSource.as("s")
+    val r = RAttachmentArchive.as("r")
     val fms = Nel.of(m1, m2, m3)
     Select(
       select(i.all),
@@ -551,9 +551,9 @@ object QItem {
       maxLen: Int,
       pageSep: String
   ): ConnectionIO[TextAndTag] = {
-    val tags     = TableDef("tags").as("tt")
+    val tags = TableDef("tags").as("tt")
     val tagsItem = Column[Ident]("itemid", tags)
-    val tagsTid  = Column[Ident]("tid", tags)
+    val tagsTid = Column[Ident]("tid", tags)
     val tagsName = Column[String]("tname", tags)
 
     readTextAndTag(collective, itemId, pageSep) {

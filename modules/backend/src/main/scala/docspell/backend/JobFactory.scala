@@ -19,7 +19,7 @@ object JobFactory {
       account: Option[AccountId]
   ): F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
       job = RJob.newJob(
         id,
@@ -39,7 +39,7 @@ object JobFactory {
       account: Option[AccountId]
   ): F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
       job = RJob.newJob(
         id,
@@ -59,7 +59,7 @@ object JobFactory {
       submitter: Option[Ident]
   ): F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
     } yield RJob.newJob(
       id,
@@ -79,7 +79,7 @@ object JobFactory {
       prio: Priority
   ): F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
       job = RJob.newJob(
         id,
@@ -102,7 +102,7 @@ object JobFactory {
       prio: Priority
   ): F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
       job = RJob.newJob(
         id,
@@ -124,7 +124,7 @@ object JobFactory {
       tracker: Option[Ident]
   ): F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
       job = RJob.newJob(
         id,
@@ -163,14 +163,14 @@ object JobFactory {
         )
 
     for {
-      now  <- Timestamp.current[F]
+      now <- Timestamp.current[F]
       jobs <- args.traverse(a => create(now, a))
     } yield jobs
   }
 
   def reIndexAll[F[_]: Sync]: F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
     } yield RJob.newJob(
       id,
@@ -186,7 +186,7 @@ object JobFactory {
 
   def reIndex[F[_]: Sync](account: AccountId): F[RJob] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
       args = ReIndexTaskArgs(Some(account.collective))
     } yield RJob.newJob(

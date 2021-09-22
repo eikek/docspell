@@ -79,7 +79,7 @@ object SolrUpdate {
         for {
           docIds <- client.expect[DocIdResult](searchReq)
           sets = docIds.toSetFolder(folder)
-          req  = Method.POST(sets.asJson, url)
+          req = Method.POST(sets.asJson, url)
           _ <- client.expect[Unit](req)
         } yield ()
       }

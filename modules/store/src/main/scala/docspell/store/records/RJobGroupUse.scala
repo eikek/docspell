@@ -22,9 +22,9 @@ object RJobGroupUse {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "jobgroupuse"
 
-    val group  = Column[Ident]("groupid", this)
+    val group = Column[Ident]("groupid", this)
     val worker = Column[Ident]("workerid", this)
-    val all    = NonEmptyList.of[Column[_]](group, worker)
+    val all = NonEmptyList.of[Column[_]](group, worker)
   }
 
   val T = Table(None)

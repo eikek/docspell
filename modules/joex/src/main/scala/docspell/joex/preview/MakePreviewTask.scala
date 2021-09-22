@@ -25,7 +25,7 @@ object MakePreviewTask {
   def apply[F[_]: Sync](pcfg: PreviewConfig): Task[F, Args, Unit] =
     Task { ctx =>
       for {
-        exists  <- previewExists(ctx)
+        exists <- previewExists(ctx)
         preview <- PdfboxPreview(pcfg)
         _ <-
           if (exists)

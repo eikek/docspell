@@ -65,9 +65,9 @@ object OFolder {
 
   sealed trait FolderOrder
   object FolderOrder {
-    final case object NameAsc   extends FolderOrder
-    final case object NameDesc  extends FolderOrder
-    final case object OwnerAsc  extends FolderOrder
+    final case object NameAsc extends FolderOrder
+    final case object NameDesc extends FolderOrder
+    final case object OwnerAsc extends FolderOrder
     final case object OwnerDesc extends FolderOrder
 
     def parse(str: String): Either[String, FolderOrder] =

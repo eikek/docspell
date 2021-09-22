@@ -15,31 +15,31 @@ import munit._
 class ItemQueryParserTest extends FunSuite {
 
   test("reduce ands") {
-    val q    = ItemQueryParser.parseUnsafe("(&(&(&(& name:hello))))")
+    val q = ItemQueryParser.parseUnsafe("(&(&(&(& name:hello))))")
     val expr = ExprUtil.reduce(q.expr)
     assertEquals(expr, ItemQueryParser.parseUnsafe("name:hello").expr)
   }
 
   test("reduce ors") {
-    val q    = ItemQueryParser.parseUnsafe("(|(|(|(| name:hello))))")
+    val q = ItemQueryParser.parseUnsafe("(|(|(|(| name:hello))))")
     val expr = ExprUtil.reduce(q.expr)
     assertEquals(expr, ItemQueryParser.parseUnsafe("name:hello").expr)
   }
 
   test("reduce and/or") {
-    val q    = ItemQueryParser.parseUnsafe("(|(&(&(| name:hello))))")
+    val q = ItemQueryParser.parseUnsafe("(|(&(&(| name:hello))))")
     val expr = ExprUtil.reduce(q.expr)
     assertEquals(expr, ItemQueryParser.parseUnsafe("name:hello").expr)
   }
 
   test("reduce inner and/or") {
-    val q    = ItemQueryParser.parseUnsafe("(& name:hello (| name:world))")
+    val q = ItemQueryParser.parseUnsafe("(& name:hello (| name:world))")
     val expr = ExprUtil.reduce(q.expr)
     assertEquals(expr, ItemQueryParser.parseUnsafe("(& name:hello name:world)").expr)
   }
 
   test("omit and-parens around root structure") {
-    val q      = ItemQueryParser.parseUnsafe("name:hello date>2020-02-02")
+    val q = ItemQueryParser.parseUnsafe("name:hello date>2020-02-02")
     val expect = ItemQueryParser.parseUnsafe("(& name:hello date>2020-02-02 )")
     assertEquals(expect, q)
   }
@@ -51,7 +51,7 @@ class ItemQueryParserTest extends FunSuite {
 
   test("splice inner and nodes") {
     val raw = "(& name:hello (& date:2021-02 name:world) (& name:hello) )"
-    val q   = ItemQueryParser.parseUnsafe(raw)
+    val q = ItemQueryParser.parseUnsafe(raw)
     val expect =
       ItemQueryParser.parseUnsafe("name:hello date:2021-02 name:world name:hello")
     assertEquals(expect.copy(raw = raw.some), q)
@@ -59,7 +59,7 @@ class ItemQueryParserTest extends FunSuite {
 
   test("splice inner or nodes") {
     val raw = "(| name:hello (| date:2021-02 name:world) (| name:hello) )"
-    val q   = ItemQueryParser.parseUnsafe(raw)
+    val q = ItemQueryParser.parseUnsafe(raw)
     val expect =
       ItemQueryParser.parseUnsafe("(| name:hello date:2021-02 name:world name:hello )")
     assertEquals(expect.copy(raw = raw.some), q)

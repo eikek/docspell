@@ -29,9 +29,9 @@ object RAttachmentPreview {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "attachment_preview"
 
-    val id      = Column[Ident]("id", this)
-    val fileId  = Column[Ident]("file_id", this)
-    val name    = Column[String]("filename", this)
+    val id = Column[Ident]("id", this)
+    val fileId = Column[Ident]("file_id", this)
+    val name = Column[String]("filename", this)
     val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, fileId, name, created)

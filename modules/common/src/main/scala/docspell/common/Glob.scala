@@ -43,12 +43,12 @@ object Glob {
   }
 
   private val separator = '/'
-  private val anyChar   = '|'
+  private val anyChar = '|'
 
   val all = new Glob {
     def matches(caseSensitive: Boolean)(in: String) = true
-    def matchFilenameOrPath(in: String)             = true
-    val asString                                    = "*"
+    def matchFilenameOrPath(in: String) = true
+    val asString = "*"
   }
 
   def pattern(pattern: Pattern): Glob =
@@ -142,7 +142,7 @@ object Glob {
       }
 
       def startsWith(prefix: String, caseSensitive: Boolean): Boolean = {
-        val vstr    = if (caseSensitive) str else str.toLowerCase
+        val vstr = if (caseSensitive) str else str.toLowerCase
         val vprefix = if (caseSensitive) prefix else prefix.toLowerCase
         vstr.startsWith(vprefix)
       }

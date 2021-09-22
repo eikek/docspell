@@ -22,8 +22,7 @@ import docspell.store.records.RPerson
 import io.circe.syntax._
 import org.log4s.getLogger
 
-/** Maintains a custom regex-ner file per collective for stanford's regexner annotator.
-  */
+/** Maintains a custom regex-ner file per collective for stanford's regexner annotator. */
 trait RegexNerFile[F[_]] {
 
   def makeFile(collective: Ident): F[Option[Path]]
@@ -40,7 +39,7 @@ object RegexNerFile {
       store: Store[F]
   ): Resource[F, RegexNerFile[F]] =
     for {
-      dir    <- File.withTempDir[F](cfg.directory, "regexner-")
+      dir <- File.withTempDir[F](cfg.directory, "regexner-")
       writer <- Resource.eval(Semaphore(1))
     } yield new Impl[F](cfg.copy(directory = dir), store, writer)
 
@@ -56,7 +55,7 @@ object RegexNerFile {
 
     def doMakeFile(collective: Ident): F[Option[Path]] =
       for {
-        now      <- Timestamp.current[F]
+        now <- Timestamp.current[F]
         existing <- NerFile.find[F](collective, cfg.directory)
         result <- existing match {
           case Some(nf) =>

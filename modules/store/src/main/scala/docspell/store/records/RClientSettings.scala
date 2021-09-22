@@ -31,18 +31,18 @@ object RClientSettings {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "client_settings"
 
-    val id           = Column[Ident]("id", this)
-    val clientId     = Column[Ident]("client_id", this)
-    val userId       = Column[Ident]("user_id", this)
+    val id = Column[Ident]("id", this)
+    val clientId = Column[Ident]("client_id", this)
+    val userId = Column[Ident]("user_id", this)
     val settingsData = Column[Json]("settings_data", this)
-    val updated      = Column[Timestamp]("updated", this)
-    val created      = Column[Timestamp]("created", this)
+    val updated = Column[Timestamp]("updated", this)
+    val created = Column[Timestamp]("created", this)
     val all =
       NonEmptyList.of[Column[_]](id, clientId, userId, settingsData, updated, created)
   }
 
   def as(alias: String): Table = Table(Some(alias))
-  val T                        = Table(None)
+  val T = Table(None)
 
   def insert(v: RClientSettings): ConnectionIO[Int] = {
     val t = Table(None)
@@ -67,7 +67,7 @@ object RClientSettings {
 
   def upsert(clientId: Ident, userId: Ident, data: Json): ConnectionIO[Int] =
     for {
-      id  <- Ident.randomId[ConnectionIO]
+      id <- Ident.randomId[ConnectionIO]
       now <- Timestamp.current[ConnectionIO]
       nup <- updateSettings(clientId, userId, data, now)
       nin <-

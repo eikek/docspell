@@ -28,12 +28,12 @@ object RTag {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "tag"
 
-    val tid      = Column[Ident]("tid", this)
-    val cid      = Column[Ident]("cid", this)
-    val name     = Column[String]("name", this)
+    val tid = Column[Ident]("tid", this)
+    val cid = Column[Ident]("cid", this)
+    val name = Column[String]("name", this)
     val category = Column[String]("category", this)
-    val created  = Column[Timestamp]("created", this)
-    val all      = NonEmptyList.of[Column[_]](tid, cid, name, category, created)
+    val created = Column[Timestamp]("created", this)
+    val all = NonEmptyList.of[Column[_]](tid, cid, name, category, created)
   }
   val T = Table(None)
   def as(alias: String): Table =
@@ -97,7 +97,7 @@ object RTag {
 
   def findByItem(itemId: Ident): ConnectionIO[Vector[RTag]] = {
     val ti = RTagItem.as("i")
-    val t  = RTag.as("t")
+    val t = RTag.as("t")
     val sql =
       Select(
         select(t.all),

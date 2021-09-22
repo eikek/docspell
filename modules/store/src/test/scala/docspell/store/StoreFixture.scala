@@ -26,7 +26,7 @@ trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
     for {
       ds <- StoreFixture.dataSource(cfg)
       xa <- StoreFixture.makeXA(ds)
-      _  <- Resource.eval(FlywayMigrate.run[IO](cfg))
+      _ <- Resource.eval(FlywayMigrate.run[IO](cfg))
     } yield xa
   }
 
@@ -34,7 +34,7 @@ trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
     val cfg = StoreFixture.memoryDB("test")
     for {
       store <- StoreFixture.store(cfg)
-      _     <- Resource.eval(store.migrate)
+      _ <- Resource.eval(store.migrate)
     } yield store
   }
 }

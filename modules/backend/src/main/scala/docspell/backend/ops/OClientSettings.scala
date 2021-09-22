@@ -77,7 +77,7 @@ object OClientSettings {
             )
           )
           userId <- getUserId(account)
-          data   <- OptionT(store.transact(RClientSettings.find(clientId, userId)))
+          data <- OptionT(store.transact(RClientSettings.find(clientId, userId)))
         } yield data).value
 
     })

@@ -17,12 +17,12 @@ sealed trait NerTag { self: Product =>
 object NerTag {
 
   case object Organization extends NerTag
-  case object Person       extends NerTag
-  case object Location     extends NerTag
-  case object Misc         extends NerTag
-  case object Email        extends NerTag
-  case object Website      extends NerTag
-  case object Date         extends NerTag
+  case object Person extends NerTag
+  case object Location extends NerTag
+  case object Misc extends NerTag
+  case object Email extends NerTag
+  case object Website extends NerTag
+  case object Date extends NerTag
 
   val all: List[NerTag] = List(Organization, Person, Location)
 

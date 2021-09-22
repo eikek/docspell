@@ -5,49 +5,49 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Dependencies {
 
-  val BcryptVersion           = "0.4"
+  val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BinnyVersion            = "0.1.0"
-  val CalevVersion            = "0.6.0"
-  val CatsParseVersion        = "0.3.4"
-  val CirceVersion            = "0.14.1"
-  val ClipboardJsVersion      = "2.0.6"
-  val DoobieVersion           = "1.0.0-RC1"
-  val EmilVersion             = "0.10.0-M3"
-  val FlexmarkVersion         = "0.62.2"
-  val FlywayVersion           = "7.15.0"
-  val Fs2Version              = "3.1.2"
-  val Fs2CronVersion          = "0.7.1"
-  val H2Version               = "1.4.200"
-  val Http4sVersion           = "0.23.4"
-  val Icu4jVersion            = "69.1"
-  val javaOtpVersion          = "0.3.0"
-  val JsoupVersion            = "1.14.2"
-  val JwtScalaVersion         = "9.0.1"
-  val KindProjectorVersion    = "0.10.3"
-  val KittensVersion          = "2.3.2"
-  val LevigoJbig2Version      = "2.0"
-  val Log4sVersion            = "1.10.0"
-  val LogbackVersion          = "1.2.6"
-  val MariaDbVersion          = "2.7.4"
-  val MUnitVersion            = "0.7.29"
-  val MUnitCatsEffectVersion  = "1.0.5"
-  val OrganizeImportsVersion  = "0.5.0"
-  val PdfboxVersion           = "2.0.24"
-  val PoiVersion              = "4.1.2"
-  val PostgresVersion         = "42.2.23"
-  val PureConfigVersion       = "0.16.0"
-  val ScalaJavaTimeVersion    = "2.3.0"
-  val ScodecBitsVersion       = "1.1.28"
-  val Slf4jVersion            = "1.7.32"
-  val StanfordNlpVersion      = "4.2.2"
-  val TikaVersion             = "2.1.0"
-  val YamuscaVersion          = "0.8.1"
-  val SwaggerUIVersion        = "3.52.1"
-  val TestContainerVersion    = "0.39.8"
-  val TwelveMonkeysVersion    = "3.7.0"
-  val JQueryVersion           = "3.5.1"
-  val ViewerJSVersion         = "0.5.9"
+  val BinnyVersion = "0.1.0"
+  val CalevVersion = "0.6.0"
+  val CatsParseVersion = "0.3.4"
+  val CirceVersion = "0.14.1"
+  val ClipboardJsVersion = "2.0.6"
+  val DoobieVersion = "1.0.0-RC1"
+  val EmilVersion = "0.10.0-M3"
+  val FlexmarkVersion = "0.62.2"
+  val FlywayVersion = "7.15.0"
+  val Fs2Version = "3.1.2"
+  val Fs2CronVersion = "0.7.1"
+  val H2Version = "1.4.200"
+  val Http4sVersion = "0.23.4"
+  val Icu4jVersion = "69.1"
+  val javaOtpVersion = "0.3.0"
+  val JsoupVersion = "1.14.2"
+  val JwtScalaVersion = "9.0.1"
+  val KindProjectorVersion = "0.10.3"
+  val KittensVersion = "2.3.2"
+  val LevigoJbig2Version = "2.0"
+  val Log4sVersion = "1.10.0"
+  val LogbackVersion = "1.2.6"
+  val MariaDbVersion = "2.7.4"
+  val MUnitVersion = "0.7.29"
+  val MUnitCatsEffectVersion = "1.0.5"
+  val OrganizeImportsVersion = "0.5.0"
+  val PdfboxVersion = "2.0.24"
+  val PoiVersion = "4.1.2"
+  val PostgresVersion = "42.2.23"
+  val PureConfigVersion = "0.16.0"
+  val ScalaJavaTimeVersion = "2.3.0"
+  val ScodecBitsVersion = "1.1.28"
+  val Slf4jVersion = "1.7.32"
+  val StanfordNlpVersion = "4.2.2"
+  val TikaVersion = "2.1.0"
+  val YamuscaVersion = "0.8.1"
+  val SwaggerUIVersion = "3.52.1"
+  val TestContainerVersion = "0.39.8"
+  val TwelveMonkeysVersion = "3.7.0"
+  val JQueryVersion = "3.5.1"
+  val ViewerJSVersion = "0.5.9"
 
   val jwtScala = Seq(
     "com.github.jwt-scala" %% "jwt-circe" % JwtScalaVersion
@@ -62,8 +62,8 @@ object Dependencies {
   )
 
   val testContainer = Seq(
-    "com.dimafeng" %% "testcontainers-scala-munit"      % TestContainerVersion,
-    "com.dimafeng" %% "testcontainers-scala-mariadb"    % TestContainerVersion,
+    "com.dimafeng" %% "testcontainers-scala-munit" % TestContainerVersion,
+    "com.dimafeng" %% "testcontainers-scala-mariadb" % TestContainerVersion,
     "com.dimafeng" %% "testcontainers-scala-postgresql" % TestContainerVersion
   )
 
@@ -103,8 +103,8 @@ object Dependencies {
   )
 
   val poi = Seq(
-    "org.apache.poi" % "poi"            % PoiVersion,
-    "org.apache.poi" % "poi-ooxml"      % PoiVersion,
+    "org.apache.poi" % "poi" % PoiVersion,
+    "org.apache.poi" % "poi-ooxml" % PoiVersion,
     "org.apache.poi" % "poi-scratchpad" % PoiVersion
   ).map(
     _.excludeAll(
@@ -115,8 +115,8 @@ object Dependencies {
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
   val flexmark = Seq(
-    "com.vladsch.flexmark" % "flexmark"                       % FlexmarkVersion,
-    "com.vladsch.flexmark" % "flexmark-ext-tables"            % FlexmarkVersion,
+    "com.vladsch.flexmark" % "flexmark" % FlexmarkVersion,
+    "com.vladsch.flexmark" % "flexmark-ext-tables" % FlexmarkVersion,
     "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % FlexmarkVersion
   ).map(
     _.excludeAll(
@@ -145,7 +145,7 @@ object Dependencies {
     "com.github.eikek" %% "emil-common" % EmilVersion
   )
   val emil = Seq(
-    "com.github.eikek" %% "emil-common"   % EmilVersion,
+    "com.github.eikek" %% "emil-common" % EmilVersion,
     "com.github.eikek" %% "emil-javamail" % EmilVersion
   )
   val emilDoobie = Seq(
@@ -214,7 +214,7 @@ object Dependencies {
 
   val fs2 = Seq(
     "co.fs2" %% "fs2-core" % Fs2Version,
-    "co.fs2" %% "fs2-io"   % Fs2Version
+    "co.fs2" %% "fs2-io" % Fs2Version
   )
 
   val http4sClient = Seq(
@@ -235,7 +235,7 @@ object Dependencies {
 
   val circe = Seq(
     "io.circe" %% "circe-generic" % CirceVersion,
-    "io.circe" %% "circe-parser"  % CirceVersion
+    "io.circe" %% "circe-parser" % CirceVersion
   )
 
   // https://github.com/Log4s/log4s;ASL 2.0
@@ -269,13 +269,13 @@ object Dependencies {
   // https://github.com/tpolecat/doobie
   // MIT
   val doobie = Seq(
-    "org.tpolecat" %% "doobie-core"   % DoobieVersion,
+    "org.tpolecat" %% "doobie-core" % DoobieVersion,
     "org.tpolecat" %% "doobie-hikari" % DoobieVersion
   )
 
   val binny = Seq(
-    "com.github.eikek" %% "binny-core"        % BinnyVersion,
-    "com.github.eikek" %% "binny-jdbc"        % BinnyVersion,
+    "com.github.eikek" %% "binny-core" % BinnyVersion,
+    "com.github.eikek" %% "binny-jdbc" % BinnyVersion,
     "com.github.eikek" %% "binny-tika-detect" % BinnyVersion
   )
 
@@ -290,8 +290,8 @@ object Dependencies {
   )
 
   val munit = Seq(
-    "org.scalameta" %% "munit"               % MUnitVersion,
-    "org.scalameta" %% "munit-scalacheck"    % MUnitVersion,
+    "org.scalameta" %% "munit" % MUnitVersion,
+    "org.scalameta" %% "munit-scalacheck" % MUnitVersion,
     "org.typelevel" %% "munit-cats-effect-3" % MUnitCatsEffectVersion
   )
 
@@ -299,8 +299,8 @@ object Dependencies {
   val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "org.webjars" % "swagger-ui"   % SwaggerUIVersion,
-    "org.webjars" % "viewerjs"     % ViewerJSVersion,
+    "org.webjars" % "swagger-ui" % SwaggerUIVersion,
+    "org.webjars" % "viewerjs" % ViewerJSVersion,
     "org.webjars" % "clipboard.js" % ClipboardJsVersion
   )
 

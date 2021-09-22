@@ -31,7 +31,7 @@ object CodeFlowConfig {
       provider: Ident => Option[ProviderConfig]
   ): CodeFlowConfig[F] =
     new CodeFlowConfig[F] {
-      def getEndpointUrl(req: Request[F]): LenientUri     = url(req)
+      def getEndpointUrl(req: Request[F]): LenientUri = url(req)
       def findProvider(id: Ident): Option[ProviderConfig] = provider(id)
     }
 

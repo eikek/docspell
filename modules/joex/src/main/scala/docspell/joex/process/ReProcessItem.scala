@@ -55,7 +55,7 @@ object ReProcessItem {
   def loadItem[F[_]: Sync]: Task[F, Args, ItemData] =
     Task { ctx =>
       (for {
-        item   <- OptionT(ctx.store.transact(RItem.findById(ctx.args.itemId)))
+        item <- OptionT(ctx.store.transact(RItem.findById(ctx.args.itemId)))
         attach <- OptionT.liftF(ctx.store.transact(RAttachment.findByItem(item.id)))
         asrc <-
           OptionT.liftF(ctx.store.transact(RAttachmentSource.findByItem(ctx.args.itemId)))
@@ -107,9 +107,9 @@ object ReProcessItem {
               data.item.cid,
               args.itemId.some,
               lang,
-              None,             //direction
+              None, //direction
               data.item.source, //source-id
-              None,             //folder
+              None, //folder
               Seq.empty,
               false,
               None,

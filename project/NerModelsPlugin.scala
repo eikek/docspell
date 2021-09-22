@@ -19,7 +19,7 @@ object NerModelsPlugin extends AutoPlugin {
   object autoImport {
     val NerModels = config("NerModels")
 
-    val nerModelsFilter    = settingKey[String => Boolean]("Which files to keep.")
+    val nerModelsFilter = settingKey[String => Boolean]("Which files to keep.")
     val nerModelsRunFilter = taskKey[Seq[File]]("Extract files from libraryDependencies")
 
   }

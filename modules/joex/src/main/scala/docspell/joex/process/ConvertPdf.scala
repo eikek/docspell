@@ -80,7 +80,7 @@ object ConvertPdf {
     Conversion.create[F](cfg, sanitizeHtml, ctx.logger).use { conv =>
       mime match {
         case mt =>
-          val data    = ctx.store.fileStore.getBytes(ra.fileId)
+          val data = ctx.store.fileStore.getBytes(ra.fileId)
           val handler = conversionHandler[F](ctx, cfg, ra, item)
           ctx.logger.info(s"Converting file ${ra.name} (${mime.asString}) into a PDF") *>
             conv.toPDF(DataType(mt), ctx.args.meta.language, handler)(

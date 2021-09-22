@@ -32,7 +32,7 @@ object NotifyDueItemsTask {
   def apply[F[_]: Sync](cfg: MailSendConfig, emil: Emil[F]): Task[F, Args, Unit] =
     Task { ctx =>
       for {
-        _       <- ctx.logger.info("Getting mail configuration")
+        _ <- ctx.logger.info("Getting mail configuration")
         mailCfg <- getMailSettings(ctx)
         _ <- ctx.logger.info(
           s"Searching for items due in ${ctx.args.remindDays} days…."
@@ -42,7 +42,7 @@ object NotifyDueItemsTask {
             for {
               _ <- ctx.logger.info(s"Sending notification mail to ${ctx.args.recipients}")
               res <- emil(mailCfg.toMailConfig).send(mail).map(_.head)
-              _   <- ctx.logger.info(s"Sent mail with id: $res")
+              _ <- ctx.logger.info(s"Sent mail with id: $res")
             } yield ()
           }
           .getOrElseF(ctx.logger.info("No items found"))
@@ -72,7 +72,7 @@ object NotifyDueItemsTask {
   ): OptionT[F, Mail[F]] =
     for {
       items <- OptionT.liftF(findItems(ctx)).filter(_.nonEmpty)
-      mail  <- OptionT.liftF(makeMail(sendCfg, cfg, ctx.args, items))
+      mail <- OptionT.liftF(makeMail(sendCfg, cfg, ctx.args, items))
     } yield mail
 
   def findItems[F[_]: Sync](ctx: Context[F, Args]): F[Vector[ListItem]] =

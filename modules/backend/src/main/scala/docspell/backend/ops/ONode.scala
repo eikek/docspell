@@ -32,8 +32,8 @@ object ONode {
       def register(appId: Ident, nodeType: NodeType, uri: LenientUri): F[Unit] =
         for {
           node <- RNode(appId, nodeType, uri)
-          _    <- logger.finfo(s"Registering node ${node.id.id}")
-          _    <- store.transact(RNode.set(node))
+          _ <- logger.finfo(s"Registering node ${node.id.id}")
+          _ <- store.transact(RNode.set(node))
         } yield ()
 
       def unregister(appId: Ident): F[Unit] =

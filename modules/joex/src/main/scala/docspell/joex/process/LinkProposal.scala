@@ -146,12 +146,12 @@ object LinkProposal {
   }
   object Result {
 
-    case class NoneFound(proposalType: MetaProposalType)      extends Result
-    case class SingleResult(proposalType: MetaProposalType)   extends Result
+    case class NoneFound(proposalType: MetaProposalType) extends Result
+    case class SingleResult(proposalType: MetaProposalType) extends Result
     case class MultipleResult(proposalType: MetaProposalType) extends Result
 
     def noneFound(proposalType: MetaProposalType): Result = NoneFound(proposalType)
-    def single(proposalType: MetaProposalType): Result    = SingleResult(proposalType)
-    def multiple(proposalType: MetaProposalType): Result  = MultipleResult(proposalType)
+    def single(proposalType: MetaProposalType): Result = SingleResult(proposalType)
+    def multiple(proposalType: MetaProposalType): Result = MultipleResult(proposalType)
   }
 }

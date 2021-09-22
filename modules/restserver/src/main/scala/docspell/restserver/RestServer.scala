@@ -39,7 +39,7 @@ object RestServer {
           .create[F](cfg, pools.connectEC, pools.httpClientEC)
       httpClient <- BlazeClientBuilder[F](pools.httpClientEC).resource
       httpApp = Router(
-        "/api/info"     -> routes.InfoRoutes(),
+        "/api/info" -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
           securedRoutes(cfg, restApp, token)
@@ -47,11 +47,11 @@ object RestServer {
         "/api/v1/admin" -> AdminRoutes(cfg.adminEndpoint) {
           adminRoutes(cfg, restApp)
         },
-        "/api/doc"    -> templates.doc,
+        "/api/doc" -> templates.doc,
         "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F]),
-        "/app"        -> EnvMiddleware(templates.app),
-        "/sw.js"      -> EnvMiddleware(templates.serviceWorker),
-        "/"           -> redirectTo("/app")
+        "/app" -> EnvMiddleware(templates.app),
+        "/sw.js" -> EnvMiddleware(templates.serviceWorker),
+        "/" -> redirectTo("/app")
       ).orNotFound
 
       finalHttpApp = Logger.httpApp(logHeaders = false, logBody = false)(httpApp)
@@ -75,31 +75,31 @@ object RestServer {
       token: AuthToken
   ): HttpRoutes[F] =
     Router(
-      "auth"                    -> LoginRoutes.session(restApp.backend.login, cfg, token),
-      "tag"                     -> TagRoutes(restApp.backend, token),
-      "equipment"               -> EquipmentRoutes(restApp.backend, token),
-      "organization"            -> OrganizationRoutes(restApp.backend, token),
-      "person"                  -> PersonRoutes(restApp.backend, token),
-      "source"                  -> SourceRoutes(restApp.backend, token),
-      "user/otp"                -> TotpRoutes(restApp.backend, cfg, token),
-      "user"                    -> UserRoutes(restApp.backend, token),
-      "collective"              -> CollectiveRoutes(restApp.backend, token),
-      "queue"                   -> JobQueueRoutes(restApp.backend, token),
-      "item"                    -> ItemRoutes(cfg, restApp.backend, token),
-      "items"                   -> ItemMultiRoutes(restApp.backend, token),
-      "attachment"              -> AttachmentRoutes(restApp.backend, token),
-      "attachments"             -> AttachmentMultiRoutes(restApp.backend, token),
-      "upload"                  -> UploadRoutes.secured(restApp.backend, cfg, token),
-      "checkfile"               -> CheckFileRoutes.secured(restApp.backend, token),
-      "email/send"              -> MailSendRoutes(restApp.backend, token),
-      "email/settings"          -> MailSettingsRoutes(restApp.backend, token),
-      "email/sent"              -> SentMailRoutes(restApp.backend, token),
+      "auth" -> LoginRoutes.session(restApp.backend.login, cfg, token),
+      "tag" -> TagRoutes(restApp.backend, token),
+      "equipment" -> EquipmentRoutes(restApp.backend, token),
+      "organization" -> OrganizationRoutes(restApp.backend, token),
+      "person" -> PersonRoutes(restApp.backend, token),
+      "source" -> SourceRoutes(restApp.backend, token),
+      "user/otp" -> TotpRoutes(restApp.backend, cfg, token),
+      "user" -> UserRoutes(restApp.backend, token),
+      "collective" -> CollectiveRoutes(restApp.backend, token),
+      "queue" -> JobQueueRoutes(restApp.backend, token),
+      "item" -> ItemRoutes(cfg, restApp.backend, token),
+      "items" -> ItemMultiRoutes(restApp.backend, token),
+      "attachment" -> AttachmentRoutes(restApp.backend, token),
+      "attachments" -> AttachmentMultiRoutes(restApp.backend, token),
+      "upload" -> UploadRoutes.secured(restApp.backend, cfg, token),
+      "checkfile" -> CheckFileRoutes.secured(restApp.backend, token),
+      "email/send" -> MailSendRoutes(restApp.backend, token),
+      "email/settings" -> MailSettingsRoutes(restApp.backend, token),
+      "email/sent" -> SentMailRoutes(restApp.backend, token),
       "usertask/notifydueitems" -> NotifyDueItemsRoutes(cfg, restApp.backend, token),
-      "usertask/scanmailbox"    -> ScanMailboxRoutes(restApp.backend, token),
-      "calevent/check"          -> CalEventCheckRoutes(),
-      "fts"            -> FullTextIndexRoutes.secured(cfg, restApp.backend, token),
-      "folder"         -> FolderRoutes(restApp.backend, token),
-      "customfield"    -> CustomFieldRoutes(restApp.backend, token),
+      "usertask/scanmailbox" -> ScanMailboxRoutes(restApp.backend, token),
+      "calevent/check" -> CalEventCheckRoutes(),
+      "fts" -> FullTextIndexRoutes.secured(cfg, restApp.backend, token),
+      "folder" -> FolderRoutes(restApp.backend, token),
+      "customfield" -> CustomFieldRoutes(restApp.backend, token),
       "clientSettings" -> ClientSettingsRoutes(restApp.backend, token)
     )
 
@@ -115,19 +115,19 @@ object RestServer {
         OpenId.codeFlowConfig(cfg),
         client
       ),
-      "auth"        -> LoginRoutes.login(restApp.backend.login, cfg),
-      "signup"      -> RegisterRoutes(restApp.backend, cfg),
-      "upload"      -> UploadRoutes.open(restApp.backend, cfg),
-      "checkfile"   -> CheckFileRoutes.open(restApp.backend),
+      "auth" -> LoginRoutes.login(restApp.backend.login, cfg),
+      "signup" -> RegisterRoutes(restApp.backend, cfg),
+      "upload" -> UploadRoutes.open(restApp.backend, cfg),
+      "checkfile" -> CheckFileRoutes.open(restApp.backend),
       "integration" -> IntegrationEndpointRoutes.open(restApp.backend, cfg)
     )
 
   def adminRoutes[F[_]: Async](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
     Router(
-      "fts"         -> FullTextIndexRoutes.admin(cfg, restApp.backend),
-      "user/otp"    -> TotpRoutes.admin(restApp.backend),
-      "user"        -> UserRoutes.admin(restApp.backend),
-      "info"        -> InfoRoutes.admin(cfg),
+      "fts" -> FullTextIndexRoutes.admin(cfg, restApp.backend),
+      "user/otp" -> TotpRoutes.admin(restApp.backend),
+      "user" -> UserRoutes.admin(restApp.backend),
+      "info" -> InfoRoutes.admin(cfg),
       "attachments" -> AttachmentRoutes.admin(restApp.backend)
     )
 

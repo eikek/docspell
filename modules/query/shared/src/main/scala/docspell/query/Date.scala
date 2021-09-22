@@ -30,7 +30,7 @@ object Date {
 
   sealed trait CalcDirection
   object CalcDirection {
-    case object Plus  extends CalcDirection
+    case object Plus extends CalcDirection
     case object Minus extends CalcDirection
   }
 

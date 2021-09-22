@@ -33,16 +33,13 @@ trait PeriodicTaskStore[F[_]] {
 
   def findNonFinalJob(pjobId: Ident): F[Option[RJob]]
 
-  /** Insert a task or update if it already exists.
-    */
+  /** Insert a task or update if it already exists. */
   def insert(task: RPeriodicTask): F[Unit]
 
-  /** Adds the task only if it not already exists.
-    */
+  /** Adds the task only if it not already exists. */
   def add(task: RPeriodicTask): F[AddResult]
 
-  /** Find all joex nodes as registered in the database.
-    */
+  /** Find all joex nodes as registered in the database. */
   def findJoexNodes: F[Vector[RNode]]
 }
 
@@ -109,9 +106,9 @@ object PeriodicTaskStore {
         }
 
         for {
-          n1  <- update
+          n1 <- update
           ins <- if (n1 == 0) insertAttempt else true.pure[F]
-          _   <- if (ins) 1.pure[F] else update
+          _ <- if (ins) 1.pure[F] else update
         } yield ()
       }
 

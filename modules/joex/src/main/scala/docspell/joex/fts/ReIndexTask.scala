@@ -19,7 +19,7 @@ object ReIndexTask {
   type Args = ReIndexTaskArgs
 
   val taskName = ReIndexTaskArgs.taskName
-  val tracker  = DocspellSystem.migrationTaskTracker
+  val tracker = DocspellSystem.migrationTaskTracker
 
   def apply[F[_]: Async](
       cfg: Config.FullTextSearch,

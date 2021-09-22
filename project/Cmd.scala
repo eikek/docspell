@@ -23,7 +23,7 @@ object Cmd {
 
   def exec(cmd: Seq[String], wd: Option[File]): Result = {
     val capt = new Capture
-    val rc   = Process(cmd, wd).!(capt.logger)
+    val rc = Process(cmd, wd).!(capt.logger)
     Result(rc, capt.out.get.mkString("\n"), capt.err.get.mkString("\n"))
   }
 

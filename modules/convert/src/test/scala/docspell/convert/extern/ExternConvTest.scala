@@ -20,7 +20,7 @@ import docspell.files.ExampleFiles
 import munit._
 
 class ExternConvTest extends FunSuite with FileChecks {
-  val utf8   = StandardCharsets.UTF_8
+  val utf8 = StandardCharsets.UTF_8
   val logger = Logger.log4s[IO](org.log4s.getLogger)
   val target = File.path(Paths.get("target"))
 

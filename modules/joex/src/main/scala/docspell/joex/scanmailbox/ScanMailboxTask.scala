@@ -40,10 +40,10 @@ object ScanMailboxTask {
         _ <- ctx.logger.info(
           s"=== Start importing mails for user ${ctx.args.account.user.id}"
         )
-        _       <- ctx.logger.debug(s"Settings: ${ctx.args.asJson.noSpaces}")
+        _ <- ctx.logger.debug(s"Settings: ${ctx.args.asJson.noSpaces}")
         mailCfg <- getMailSettings(ctx)
-        folders  = ctx.args.folders.mkString(", ")
-        userId   = ctx.args.account.user
+        folders = ctx.args.folders.mkString(", ")
+        userId = ctx.args.account.user
         imapConn = ctx.args.imapConnection
         _ <- ctx.logger.info(
           s"Reading mails for user ${userId.id} from ${imapConn.id}/$folders"
@@ -76,8 +76,8 @@ object ScanMailboxTask {
       joex: OJoex[F],
       ctx: Context[F, Args]
   ): F[Unit] = {
-    val mailer    = theEmil(mailCfg.toMailConfig)
-    val impl      = new Impl[F](cfg, ctx)
+    val mailer = theEmil(mailCfg.toMailConfig)
+    val impl = new Impl[F](cfg, ctx)
     val inFolders = ctx.args.folders.take(cfg.maxFolders)
 
     val getInitialInput =
@@ -150,7 +150,7 @@ object ScanMailboxTask {
         name: String
     ): MailOp[F, C, ScanResult] =
       for {
-        _      <- Kleisli.liftF(ctx.logger.info(s"Processing folder $name"))
+        _ <- Kleisli.liftF(ctx.logger.info(s"Processing folder $name"))
         folder <- requireFolder(a)(name)
         search <- searchMails(a)(folder)
         items = search.mails.map(MailHeaderItem(_))
@@ -290,7 +290,7 @@ object ScanMailboxTask {
         mail.toByteStream
       )
       for {
-        _   <- ctx.logger.debug(s"Submitting mail '${mail.header.subject}'")
+        _ <- ctx.logger.debug(s"Submitting mail '${mail.header.subject}'")
         dir <- getDirection(mail.header)
         meta = OUpload.UploadMeta(
           Some(dir),
@@ -340,7 +340,7 @@ object ScanMailboxTask {
   }
 
   case class MailHeaderItem(mh: MailHeader, process: Boolean = true) {
-    def skip       = copy(process = false)
+    def skip = copy(process = false)
     def notProcess = !process
   }
 }

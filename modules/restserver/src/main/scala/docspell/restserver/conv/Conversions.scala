@@ -236,7 +236,7 @@ trait Conversions {
     )
 
   def mkItemLight(i: OFulltext.FtsItem): ItemLight = {
-    val il        = mkItemLight(i.item)
+    val il = mkItemLight(i.item)
     val highlight = mkHighlight(i.ftsData)
     il.copy(highlighting = highlight)
   }
@@ -253,7 +253,7 @@ trait Conversions {
     AttachmentLight(qa.id, qa.position, qa.name, qa.pageCount)
 
   def mkItemLightWithTags(i: OFulltext.FtsItemWithTags): ItemLight = {
-    val il        = mkItemLightWithTags(i.item)
+    val il = mkItemLightWithTags(i.item)
     val highlight = mkHighlight(i.ftsData)
     il.copy(highlighting = highlight)
   }
@@ -374,8 +374,8 @@ trait Conversions {
       )
     for {
       metaData <- meta
-      _        <- Async[F].delay(logger.debug(s"Parsed upload meta data: $metaData"))
-      tracker  <- Ident.randomId[F]
+      _ <- Async[F].delay(logger.debug(s"Parsed upload meta data: $metaData"))
+      tracker <- Ident.randomId[F]
     } yield UploadData(metaData._1, metaData._2, files, prio, Some(tracker))
   }
 
@@ -398,8 +398,8 @@ trait Conversions {
     def contacts(oid: Ident) =
       v.contacts.traverse(c => newContact(c, oid.some, None))
     for {
-      now  <- Timestamp.current[F]
-      oid  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      oid <- Ident.randomId[F]
       cont <- contacts(oid)
       org = ROrganization(
         oid,
@@ -425,7 +425,7 @@ trait Conversions {
     def contacts(oid: Ident) =
       v.contacts.traverse(c => newContact(c, oid.some, None))
     for {
-      now  <- Timestamp.current[F]
+      now <- Timestamp.current[F]
       cont <- contacts(v.id)
       org = ROrganization(
         v.id,
@@ -462,8 +462,8 @@ trait Conversions {
     def contacts(pid: Ident) =
       v.contacts.traverse(c => newContact(c, None, pid.some))
     for {
-      now  <- Timestamp.current[F]
-      pid  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      pid <- Ident.randomId[F]
       cont <- contacts(pid)
       pers = RPerson(
         pid,
@@ -489,7 +489,7 @@ trait Conversions {
     def contacts(pid: Ident) =
       v.contacts.traverse(c => newContact(c, None, pid.some))
     for {
-      now  <- Timestamp.current[F]
+      now <- Timestamp.current[F]
       cont <- contacts(v.id)
       pers = RPerson(
         v.id,
@@ -738,7 +738,7 @@ object Conversions extends Conversions {
 
   private def timeId[F[_]: Sync]: F[(Ident, Timestamp)] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current
     } yield (id, now)
 }

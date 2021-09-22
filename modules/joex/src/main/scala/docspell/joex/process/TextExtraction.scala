@@ -47,7 +47,7 @@ object TextExtraction {
           item.item.name.some,
           None
         )
-        _   <- fts.indexData(ctx.logger, (idxItem +: txt.map(_.td)).toSeq: _*)
+        _ <- fts.indexData(ctx.logger, (idxItem +: txt.map(_.td)).toSeq: _*)
         dur <- start
         extractedTags = txt.flatMap(_.tags).distinct.toList
         _ <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}.")
@@ -104,9 +104,9 @@ object TextExtraction {
   )(ra: RAttachment): F[(RAttachmentMeta, List[String])] =
     for {
       _ <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
-      dst  <- Duration.stopTime[F]
+      dst <- Duration.stopTime[F]
       fids <- filesToExtract(ctx)(item, ra)
-      res  <- extractTextFallback(ctx, cfg, ra, lang)(fids)
+      res <- extractTextFallback(ctx, cfg, ra, lang)(fids)
       meta = item.changeMeta(
         ra.id,
         lang,

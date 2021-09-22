@@ -24,17 +24,17 @@ sealed trait ItemState { self: Product =>
 
 object ItemState {
 
-  case object Premature  extends ItemState
+  case object Premature extends ItemState
   case object Processing extends ItemState
-  case object Created    extends ItemState
-  case object Confirmed  extends ItemState
-  case object Deleted    extends ItemState
+  case object Created extends ItemState
+  case object Confirmed extends ItemState
+  case object Deleted extends ItemState
 
-  def premature: ItemState  = Premature
+  def premature: ItemState = Premature
   def processing: ItemState = Processing
-  def created: ItemState    = Created
-  def confirmed: ItemState  = Confirmed
-  def deleted: ItemState    = Deleted
+  def created: ItemState = Created
+  def confirmed: ItemState = Confirmed
+  def deleted: ItemState = Deleted
 
   def fromString(str: String): Either[String, ItemState] =
     str.toLowerCase match {

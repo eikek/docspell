@@ -52,7 +52,7 @@ trait FileChecks {
       case ConversionResult.SuccessPdfTxt(pdf, txt) =>
         for {
           pout <- pdf.through(storeFile(filePdf)).compile.lastOrError
-          str  <- txt
+          str <- txt
           tout <- IO(Files.write(fileTxt.toNioPath, str.getBytes(StandardCharsets.UTF_8)))
         } yield (pout, File.path(tout))
 

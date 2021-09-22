@@ -29,8 +29,7 @@ trait OTag[F[_]] {
 
   def delete(id: Ident, collective: Ident): F[AddResult]
 
-  /** Load all tags given their ids. Ids that are not available are ignored.
-    */
+  /** Load all tags given their ids. Ids that are not available are ignored. */
   def loadAll(ids: List[Ident]): F[Vector[RTag]]
 }
 
@@ -39,9 +38,9 @@ object OTag {
 
   sealed trait TagOrder
   object TagOrder {
-    final case object NameAsc      extends TagOrder
-    final case object NameDesc     extends TagOrder
-    final case object CategoryAsc  extends TagOrder
+    final case object NameAsc extends TagOrder
+    final case object NameDesc extends TagOrder
+    final case object CategoryAsc extends TagOrder
     final case object CategoryDesc extends TagOrder
 
     def parse(str: String): Either[String, TagOrder] =
@@ -92,9 +91,9 @@ object OTag {
       def delete(id: Ident, collective: Ident): F[AddResult] = {
         val io = for {
           optTag <- RTag.findByIdAndCollective(id, collective)
-          n0     <- optTag.traverse(t => RTagItem.deleteTag(t.tagId))
-          n1     <- optTag.traverse(t => RTagSource.deleteTag(t.tagId))
-          n2     <- optTag.traverse(t => RTag.delete(t.tagId, collective))
+          n0 <- optTag.traverse(t => RTagItem.deleteTag(t.tagId))
+          n1 <- optTag.traverse(t => RTagSource.deleteTag(t.tagId))
+          n2 <- optTag.traverse(t => RTag.delete(t.tagId, collective))
         } yield (n0 |+| n1 |+| n2).getOrElse(0)
         store.transact(io).attempt.map(AddResult.fromUpdate)
       }

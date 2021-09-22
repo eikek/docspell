@@ -33,17 +33,17 @@ object RClassifierModel {
       fileId: Ident
   ): F[RClassifierModel] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
     } yield RClassifierModel(id, cid, name, fileId, now)
 
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "classifier_model"
 
-    val id      = Column[Ident]("id", this)
-    val cid     = Column[Ident]("cid", this)
-    val name    = Column[String]("name", this)
-    val fileId  = Column[Ident]("file_id", this)
+    val id = Column[Ident]("id", this)
+    val cid = Column[Ident]("cid", this)
+    val name = Column[String]("name", this)
+    val fileId = Column[Ident]("file_id", this)
     val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, cid, name, fileId, created)

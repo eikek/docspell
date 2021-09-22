@@ -14,8 +14,7 @@ private[analysis] object Tld {
   def endsWithTld(str: String): Boolean =
     findTld(str).isDefined
 
-  /** Some selected TLDs.
-    */
+  /** Some selected TLDs. */
   private[this] val known = List(
     ".com",
     ".org",

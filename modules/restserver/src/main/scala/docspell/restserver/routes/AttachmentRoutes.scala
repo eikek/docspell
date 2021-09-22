@@ -56,7 +56,7 @@ object AttachmentRoutes {
       case req @ GET -> Root / Ident(id) =>
         for {
           fileData <- backend.itemSearch.findAttachment(id, user.account.collective)
-          inm     = req.headers.get[`If-None-Match`].flatMap(_.tags)
+          inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
           matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
           resp <-
             fileData
@@ -79,7 +79,7 @@ object AttachmentRoutes {
       case req @ GET -> Root / Ident(id) / "original" =>
         for {
           fileData <- backend.itemSearch.findAttachmentSource(id, user.account.collective)
-          inm     = req.headers.get[`If-None-Match`].flatMap(_.tags)
+          inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
           matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
           resp <-
             fileData
@@ -104,7 +104,7 @@ object AttachmentRoutes {
         for {
           fileData <-
             backend.itemSearch.findAttachmentArchive(id, user.account.collective)
-          inm     = req.headers.get[`If-None-Match`].flatMap(_.tags)
+          inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
           matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
           resp <-
             fileData
@@ -121,8 +121,8 @@ object AttachmentRoutes {
         for {
           fileData <-
             backend.itemSearch.findAttachmentPreview(id, user.account.collective)
-          inm      = req.headers.get[`If-None-Match`].flatMap(_.tags)
-          matches  = BinaryUtil.matchETag(fileData.map(_.meta), inm)
+          inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
+          matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
           fallback = flag.getOrElse(false)
           resp <-
             fileData
@@ -162,7 +162,7 @@ object AttachmentRoutes {
         // this route exists to provide a stable url
         // it redirects currently to viewerjs
         val attachUrl = s"/api/v1/sec/attachment/${id.id}"
-        val path      = s"/app/assets${Webjars.viewerjs}/index.html#$attachUrl"
+        val path = s"/app/assets${Webjars.viewerjs}/index.html#$attachUrl"
         SeeOther(Location(Uri(path = Uri.Path.unsafeFromString(path))))
 
       case GET -> Root / Ident(id) / "meta" =>
@@ -174,8 +174,8 @@ object AttachmentRoutes {
 
       case req @ POST -> Root / Ident(id) / "name" =>
         for {
-          nn   <- req.as[OptionalText]
-          res  <- backend.item.setAttachmentName(id, nn.text, user.account.collective)
+          nn <- req.as[OptionalText]
+          res <- backend.item.setAttachmentName(id, nn.text, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Name updated."))
         } yield resp
 

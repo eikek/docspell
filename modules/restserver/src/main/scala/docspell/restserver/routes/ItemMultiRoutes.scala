@@ -59,7 +59,7 @@ object ItemMultiRoutes extends MultiIdSupport {
 
       case req @ PUT -> Root / "tags" =>
         for {
-          json  <- req.as[ItemsAndRefs]
+          json <- req.as[ItemsAndRefs]
           items <- readIds[F](json.items)
           res <- backend.item.setTagsMultipleItems(
             items,
@@ -71,7 +71,7 @@ object ItemMultiRoutes extends MultiIdSupport {
 
       case req @ POST -> Root / "tags" =>
         for {
-          json  <- req.as[ItemsAndRefs]
+          json <- req.as[ItemsAndRefs]
           items <- readIds[F](json.items)
           res <- backend.item.linkTagsMultipleItems(
             items,
@@ -83,7 +83,7 @@ object ItemMultiRoutes extends MultiIdSupport {
 
       case req @ POST -> Root / "tagsremove" =>
         for {
-          json  <- req.as[ItemsAndRefs]
+          json <- req.as[ItemsAndRefs]
           items <- readIds[F](json.items)
           res <- backend.item.removeTagsMultipleItems(
             items,
@@ -95,7 +95,7 @@ object ItemMultiRoutes extends MultiIdSupport {
 
       case req @ PUT -> Root / "name" =>
         for {
-          json  <- req.as[ItemsAndName]
+          json <- req.as[ItemsAndName]
           items <- readIds[F](json.items)
           res <- backend.item.setNameMultiple(
             items,
@@ -107,15 +107,15 @@ object ItemMultiRoutes extends MultiIdSupport {
 
       case req @ PUT -> Root / "folder" =>
         for {
-          json  <- req.as[ItemsAndRef]
+          json <- req.as[ItemsAndRef]
           items <- readIds[F](json.items)
-          res  <- backend.item.setFolderMultiple(items, json.ref, user.account.collective)
+          res <- backend.item.setFolderMultiple(items, json.ref, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Folder updated"))
         } yield resp
 
       case req @ PUT -> Root / "direction" =>
         for {
-          json  <- req.as[ItemsAndDirection]
+          json <- req.as[ItemsAndDirection]
           items <- readIds[F](json.items)
           res <- backend.item.setDirection(items, json.direction, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Direction updated"))
@@ -123,65 +123,65 @@ object ItemMultiRoutes extends MultiIdSupport {
 
       case req @ PUT -> Root / "date" =>
         for {
-          json  <- req.as[ItemsAndDate]
+          json <- req.as[ItemsAndDate]
           items <- readIds[F](json.items)
-          res   <- backend.item.setItemDate(items, json.date, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Item date updated"))
+          res <- backend.item.setItemDate(items, json.date, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Item date updated"))
         } yield resp
 
       case req @ PUT -> Root / "duedate" =>
         for {
-          json  <- req.as[ItemsAndDate]
+          json <- req.as[ItemsAndDate]
           items <- readIds[F](json.items)
-          res   <- backend.item.setItemDueDate(items, json.date, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Item due date updated"))
+          res <- backend.item.setItemDueDate(items, json.date, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Item due date updated"))
         } yield resp
 
       case req @ PUT -> Root / "corrOrg" =>
         for {
-          json  <- req.as[ItemsAndRef]
+          json <- req.as[ItemsAndRef]
           items <- readIds[F](json.items)
-          res   <- backend.item.setCorrOrg(items, json.ref, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
+          res <- backend.item.setCorrOrg(items, json.ref, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
         } yield resp
 
       case req @ PUT -> Root / "corrPerson" =>
         for {
-          json  <- req.as[ItemsAndRef]
+          json <- req.as[ItemsAndRef]
           items <- readIds[F](json.items)
-          res   <- backend.item.setCorrPerson(items, json.ref, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
+          res <- backend.item.setCorrPerson(items, json.ref, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
         } yield resp
 
       case req @ PUT -> Root / "concPerson" =>
         for {
-          json  <- req.as[ItemsAndRef]
+          json <- req.as[ItemsAndRef]
           items <- readIds[F](json.items)
-          res   <- backend.item.setConcPerson(items, json.ref, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Concerned person updated"))
+          res <- backend.item.setConcPerson(items, json.ref, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
         } yield resp
 
       case req @ PUT -> Root / "concEquipment" =>
         for {
-          json  <- req.as[ItemsAndRef]
+          json <- req.as[ItemsAndRef]
           items <- readIds[F](json.items)
-          res   <- backend.item.setConcEquip(items, json.ref, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+          res <- backend.item.setConcEquip(items, json.ref, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
         } yield resp
 
       case req @ POST -> Root / "reprocess" =>
         for {
-          json  <- req.as[IdList]
+          json <- req.as[IdList]
           items <- readIds[F](json.ids)
-          res   <- backend.item.reprocessAll(items, user.account, true)
-          resp  <- Ok(Conversions.basicResult(res, "Re-process task(s) submitted."))
+          res <- backend.item.reprocessAll(items, user.account, true)
+          resp <- Ok(Conversions.basicResult(res, "Re-process task(s) submitted."))
         } yield resp
 
       case req @ POST -> Root / "deleteAll" =>
         for {
-          json  <- req.as[IdList]
+          json <- req.as[IdList]
           items <- readIds[F](json.ids)
-          n     <- backend.item.setDeletedState(items, user.account.collective)
+          n <- backend.item.setDeletedState(items, user.account.collective)
           res = BasicResult(
             n > 0,
             if (n > 0) "Item(s) deleted" else "Item deletion failed."
@@ -191,15 +191,15 @@ object ItemMultiRoutes extends MultiIdSupport {
 
       case req @ POST -> Root / "restoreAll" =>
         for {
-          json  <- req.as[IdList]
+          json <- req.as[IdList]
           items <- readIds[F](json.ids)
-          res   <- backend.item.restore(items, user.account.collective)
-          resp  <- Ok(Conversions.basicResult(res, "Item(s) deleted"))
+          res <- backend.item.restore(items, user.account.collective)
+          resp <- Ok(Conversions.basicResult(res, "Item(s) deleted"))
         } yield resp
 
       case req @ PUT -> Root / "customfield" =>
         for {
-          json  <- req.as[ItemsAndFieldValue]
+          json <- req.as[ItemsAndFieldValue]
           items <- readIds[F](json.items)
           res <- backend.customFields.setValueMultiple(
             items,
@@ -210,7 +210,7 @@ object ItemMultiRoutes extends MultiIdSupport {
 
       case req @ POST -> Root / "customfieldremove" =>
         for {
-          json  <- req.as[ItemsAndName]
+          json <- req.as[ItemsAndName]
           items <- readIds[F](json.items)
           field <- readId[F](json.name)
           res <- backend.customFields.deleteValue(
@@ -221,10 +221,10 @@ object ItemMultiRoutes extends MultiIdSupport {
 
       case req @ POST -> Root / "merge" =>
         for {
-          json  <- req.as[IdList]
+          json <- req.as[IdList]
           items <- readIds[F](json.ids)
           logger = Logger.log4s(log4sLogger)
-          res  <- backend.item.merge(logger, items, user.account.collective)
+          res <- backend.item.merge(logger, items, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Items merged"))
         } yield resp
     }

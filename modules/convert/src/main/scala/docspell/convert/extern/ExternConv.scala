@@ -29,7 +29,7 @@ private[extern] object ExternConv {
       .resource(File.withTempDir[F](wd, s"docspell-$name"))
       .flatMap { dir =>
         val inFile = dir.resolve("infile").absolute.normalize
-        val out    = dir.resolve("out.pdf").absolute.normalize
+        val out = dir.resolve("out.pdf").absolute.normalize
         val sysCfg =
           cmdCfg.replace(
             Map(

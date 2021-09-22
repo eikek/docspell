@@ -98,7 +98,7 @@ object TextAnalysis {
       names <- ctx.store.transact(
         ClassifierName.findTagClassifiers(ctx.args.meta.collective)
       )
-      _    <- ctx.logger.debug(s"Guessing tags for ${names.size} categories")
+      _ <- ctx.logger.debug(s"Guessing tags for ${names.size} categories")
       tags <- names.traverse(classifyWith)
     } yield tags.flatten
   }

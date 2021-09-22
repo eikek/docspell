@@ -49,8 +49,7 @@ trait OFulltext[F[_]] {
   def findIndexOnlySummary(account: AccountId, fts: OFulltext.FtsInput): F[SearchSummary]
   def findItemsSummary(q: Query, fts: OFulltext.FtsInput): F[SearchSummary]
 
-  /** Clears the full-text index completely and launches a task that indexes all data.
-    */
+  /** Clears the full-text index completely and launches a task that indexes all data. */
   def reindexAll: F[Unit]
 
   /** Clears the full-text index for the given collective and starts a task indexing all
@@ -92,9 +91,9 @@ object OFulltext {
     Resource.pure[F, OFulltext[F]](new OFulltext[F] {
       def reindexAll: F[Unit] =
         for {
-          _   <- logger.finfo(s"Re-index all.")
+          _ <- logger.finfo(s"Re-index all.")
           job <- JobFactory.reIndexAll[F]
-          _   <- queue.insertIfNew(job) *> joex.notifyAllNodes
+          _ <- queue.insertIfNew(job) *> joex.notifyAllNodes
         } yield ()
 
       def reindexCollective(account: AccountId): F[Unit] =
@@ -124,9 +123,9 @@ object OFulltext {
           FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
         )
         for {
-          _       <- logger.ftrace(s"Find index only: ${ftsQ.query}/$batch")
+          _ <- logger.ftrace(s"Find index only: ${ftsQ.query}/$batch")
           folders <- store.transact(QFolder.getMemberFolders(account))
-          ftsR    <- fts.search(fq.withFolders(folders))
+          ftsR <- fts.search(fq.withFolders(folders))
           ftsItems = ftsR.results.groupBy(_.itemId)
           select =
             ftsItems.values
@@ -173,7 +172,7 @@ object OFulltext {
 
         for {
           folder <- store.transact(QFolder.getMemberFolders(account))
-          now    <- Timestamp.current[F]
+          now <- Timestamp.current[F]
           itemIds <- fts
             .searchAll(fq.withFolders(folder))
             .flatMap(r => Stream.emits(r.results.map(_.itemId)))
@@ -290,7 +289,7 @@ object OFulltext {
         val qres =
           for {
             items <- sqlResult
-            ids    = items.map(a => ItemId[A].itemId(a))
+            ids = items.map(a => ItemId[A].itemId(a))
             idsNel = NonEmptyList.fromFoldable(ids)
             // must find all index results involving the items.
             // Currently there is one result per item + one result per
@@ -301,7 +300,7 @@ object OFulltext {
             ftsQ = fq.copy(items = ids.toSet, limit = limit)
             ftsR <- fts.search(ftsQ)
             ftsItems = ftsR.results.groupBy(_.itemId)
-            res      = items.collect(convert(ftsR, ftsItems))
+            res = items.collect(convert(ftsR, ftsItems))
           } yield (items.size, res)
 
         Stream.eval(qres) ++ findItemsFts0(q, ftsQ, batch.next, search, convert)

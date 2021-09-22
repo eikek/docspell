@@ -18,7 +18,7 @@ class ZipTest extends FunSuite {
 
   test("unzip") {
     val zipFile = ExampleFiles.letters_zip.readURL[IO](8192)
-    val uncomp  = zipFile.through(Zip.unzip(8192, Glob.all))
+    val uncomp = zipFile.through(Zip.unzip(8192, Glob.all))
 
     uncomp
       .evalMap { entry =>

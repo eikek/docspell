@@ -29,8 +29,8 @@ object MakeMail {
   ): Mail[F] = {
 
     val templateCtx = TemplateCtx(latestRelease, thisVersion)
-    val md          = templateCtx.render(cfg.body)
-    val subj        = templateCtx.render(cfg.subject)
+    val md = templateCtx.render(cfg.body)
+    val subj = templateCtx.render(cfg.subject)
 
     MailBuilder.build(
       From(smtpCfg.mailFrom),

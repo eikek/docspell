@@ -32,7 +32,7 @@ object ThreadFactories {
 
   def ofNameFJ(prefix: String): ForkJoinWorkerThreadFactory =
     new ForkJoinWorkerThreadFactory {
-      val tf      = ForkJoinPool.defaultForkJoinWorkerThreadFactory
+      val tf = ForkJoinPool.defaultForkJoinWorkerThreadFactory
       val counter = new AtomicLong(0)
 
       def newThread(pool: ForkJoinPool): ForkJoinWorkerThread = {

@@ -45,8 +45,8 @@ object DBFunction {
 
   sealed trait Operator
   object Operator {
-    case object Plus  extends Operator
+    case object Plus extends Operator
     case object Minus extends Operator
-    case object Mult  extends Operator
+    case object Mult extends Operator
   }
 }

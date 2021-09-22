@@ -27,12 +27,12 @@ object RJobLog {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "joblog"
 
-    val id      = Column[Ident]("id", this)
-    val jobId   = Column[Ident]("jid", this)
-    val level   = Column[LogLevel]("level", this)
+    val id = Column[Ident]("id", this)
+    val jobId = Column[Ident]("jid", this)
+    val level = Column[LogLevel]("level", this)
     val created = Column[Timestamp]("created", this)
     val message = Column[String]("message", this)
-    val all     = NonEmptyList.of[Column[_]](id, jobId, level, created, message)
+    val all = NonEmptyList.of[Column[_]](id, jobId, level, created, message)
 
     // separate column only for sorting, so not included in `all` and
     // the case class

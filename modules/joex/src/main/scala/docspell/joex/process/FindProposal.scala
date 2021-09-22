@@ -140,7 +140,7 @@ object FindProposal {
       val latestFirst = dates
         .filter(_.date.isBefore(maxFuture.toUtcDate))
         .sortWith((l1, l2) => l1.date.isAfter(l2.date))
-      val nowDate         = now.value.atZone(ZoneId.of("GMT")).toLocalDate
+      val nowDate = now.value.atZone(ZoneId.of("GMT")).toLocalDate
       val (after, before) = latestFirst.span(ndl => ndl.date.isAfter(nowDate))
 
       val dueDates = MetaProposalList.fromSeq1(

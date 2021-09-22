@@ -62,9 +62,9 @@ final class PeriodicSchedulerImpl[F[_]: Async](
   def mainLoop: Stream[F, Nothing] = {
     val body: F[Boolean] =
       for {
-        _   <- logger.fdebug(s"Going into main loop")
+        _ <- logger.fdebug(s"Going into main loop")
         now <- Timestamp.current[F]
-        _   <- logger.fdebug(s"Looking for next periodic task")
+        _ <- logger.fdebug(s"Looking for next periodic task")
         go <- logThrow("Error getting next task")(
           store
             .takeNext(config.name, None)

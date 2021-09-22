@@ -20,10 +20,10 @@ sealed trait OrgUse { self: Product =>
 object OrgUse {
 
   case object Correspondent extends OrgUse
-  case object Disabled      extends OrgUse
+  case object Disabled extends OrgUse
 
   def correspondent: OrgUse = Correspondent
-  def disabled: OrgUse      = Disabled
+  def disabled: OrgUse = Disabled
 
   val all: NonEmptyList[OrgUse] =
     NonEmptyList.of(correspondent, disabled)

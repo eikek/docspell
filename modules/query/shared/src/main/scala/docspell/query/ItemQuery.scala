@@ -24,13 +24,13 @@ object ItemQuery {
 
   sealed trait Operator
   object Operator {
-    case object Eq   extends Operator
-    case object Neq  extends Operator
+    case object Eq extends Operator
+    case object Neq extends Operator
     case object Like extends Operator
-    case object Gt   extends Operator
-    case object Lt   extends Operator
-    case object Gte  extends Operator
-    case object Lte  extends Operator
+    case object Gt extends Operator
+    case object Lt extends Operator
+    case object Gte extends Operator
+    case object Lte extends Operator
   }
 
   sealed trait TagOperator
@@ -42,34 +42,34 @@ object ItemQuery {
   sealed trait Attr
   object Attr {
     sealed trait StringAttr extends Attr
-    sealed trait DateAttr   extends Attr
-    sealed trait IntAttr    extends Attr
+    sealed trait DateAttr extends Attr
+    sealed trait IntAttr extends Attr
 
-    case object ItemName    extends StringAttr
-    case object ItemSource  extends StringAttr
-    case object ItemNotes   extends StringAttr
-    case object ItemId      extends StringAttr
-    case object Date        extends DateAttr
-    case object DueDate     extends DateAttr
+    case object ItemName extends StringAttr
+    case object ItemSource extends StringAttr
+    case object ItemNotes extends StringAttr
+    case object ItemId extends StringAttr
+    case object Date extends DateAttr
+    case object DueDate extends DateAttr
     case object CreatedDate extends DateAttr
     case object AttachCount extends IntAttr
 
     object Correspondent {
-      case object OrgId      extends StringAttr
-      case object OrgName    extends StringAttr
-      case object PersonId   extends StringAttr
+      case object OrgId extends StringAttr
+      case object OrgName extends StringAttr
+      case object PersonId extends StringAttr
       case object PersonName extends StringAttr
     }
 
     object Concerning {
-      case object PersonId   extends StringAttr
+      case object PersonId extends StringAttr
       case object PersonName extends StringAttr
-      case object EquipId    extends StringAttr
-      case object EquipName  extends StringAttr
+      case object EquipId extends StringAttr
+      case object EquipName extends StringAttr
     }
 
     object Folder {
-      case object FolderId   extends StringAttr
+      case object FolderId extends StringAttr
       case object FolderName extends StringAttr
     }
   }
@@ -77,8 +77,8 @@ object ItemQuery {
   sealed trait Property
   object Property {
     final case class StringProperty(attr: StringAttr, value: String) extends Property
-    final case class DateProperty(attr: DateAttr, value: Date)       extends Property
-    final case class IntProperty(attr: IntAttr, value: Int)          extends Property
+    final case class DateProperty(attr: DateAttr, value: Date) extends Property
+    final case class IntProperty(attr: IntAttr, value: Int) extends Property
 
     def apply(sa: StringAttr, value: String): Property =
       StringProperty(sa, value)
@@ -97,21 +97,21 @@ object ItemQuery {
 
   object Expr {
     final case class AndExpr(expr: Nel[Expr]) extends Expr
-    final case class OrExpr(expr: Nel[Expr])  extends Expr
+    final case class OrExpr(expr: Nel[Expr]) extends Expr
     final case class NotExpr(expr: Expr) extends Expr {
       override def negate: Expr =
         expr
     }
 
-    final case class SimpleExpr(op: Operator, prop: Property)      extends Expr
-    final case class Exists(field: Attr)                           extends Expr
+    final case class SimpleExpr(op: Operator, prop: Property) extends Expr
+    final case class Exists(field: Attr) extends Expr
     final case class InExpr(attr: StringAttr, values: Nel[String]) extends Expr
     final case class InDateExpr(attr: DateAttr, values: Nel[Date]) extends Expr
-    final case class InboxExpr(inbox: Boolean)                     extends Expr
-    final case class DirectionExpr(incoming: Boolean)              extends Expr
+    final case class InboxExpr(inbox: Boolean) extends Expr
+    final case class DirectionExpr(incoming: Boolean) extends Expr
 
-    final case class TagIdsMatch(op: TagOperator, tags: Nel[String])      extends Expr
-    final case class TagsMatch(op: TagOperator, tags: Nel[String])        extends Expr
+    final case class TagIdsMatch(op: TagOperator, tags: Nel[String]) extends Expr
+    final case class TagsMatch(op: TagOperator, tags: Nel[String]) extends Expr
     final case class TagCategoryMatch(op: TagOperator, cats: Nel[String]) extends Expr
 
     final case class CustomFieldMatch(name: String, op: Operator, value: String)
@@ -119,12 +119,12 @@ object ItemQuery {
     final case class CustomFieldIdMatch(id: String, op: Operator, value: String)
         extends Expr
 
-    final case class Fulltext(query: String)         extends Expr
+    final case class Fulltext(query: String) extends Expr
     final case class ChecksumMatch(checksum: String) extends Expr
-    final case class AttachId(id: String)            extends Expr
+    final case class AttachId(id: String) extends Expr
 
-    final case object ValidItemStates     extends Expr
-    final case object Trashed             extends Expr
+    final case object ValidItemStates extends Expr
+    final case object Trashed extends Expr
     final case object ValidItemsOrTrashed extends Expr
 
     // things that can be expressed with terms above

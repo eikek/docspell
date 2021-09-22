@@ -43,12 +43,12 @@ object RClassifierSetting {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "classifier_setting"
 
-    val cid        = Column[Ident]("cid", this)
-    val schedule   = Column[CalEvent]("schedule", this)
-    val itemCount  = Column[Int]("item_count", this)
-    val created    = Column[Timestamp]("created", this)
+    val cid = Column[Ident]("cid", this)
+    val schedule = Column[CalEvent]("schedule", this)
+    val itemCount = Column[Int]("item_count", this)
+    val created = Column[Timestamp]("created", this)
     val categories = Column[List[String]]("categories", this)
-    val listType   = Column[ListType]("category_list_type", this)
+    val listType = Column[ListType]("category_list_type", this)
     val all = NonEmptyList
       .of[Column[_]](cid, schedule, itemCount, created, categories, listType)
   }

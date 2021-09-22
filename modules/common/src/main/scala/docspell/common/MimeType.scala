@@ -15,8 +15,7 @@ import docspell.common.syntax.all._
 
 import io.circe.{Decoder, Encoder}
 
-/** A MIME Type impl with just enough features for the use here.
-  */
+/** A MIME Type impl with just enough features for the use here. */
 case class MimeType(primary: String, sub: String, params: Map[String, String]) {
   def withParam(name: String, value: String): MimeType =
     copy(params = params.updated(name, value))
@@ -99,13 +98,13 @@ object MimeType {
     parse(str).throwLeft
 
   val octetStream = application("octet-stream")
-  val pdf         = application("pdf")
-  val zip         = application("zip")
-  val png         = image("png")
-  val jpeg        = image("jpeg")
-  val tiff        = image("tiff")
-  val html        = text("html")
-  val plain       = text("plain")
+  val pdf = application("pdf")
+  val zip = application("zip")
+  val png = image("png")
+  val jpeg = image("jpeg")
+  val tiff = image("tiff")
+  val html = text("html")
+  val plain = text("plain")
   val emls = NonEmptyList.of(
     MimeType("message", "rfc822", Map.empty),
     application("mbox")

@@ -53,8 +53,8 @@ object AuthToken {
       case Array(ms, as, fa, salt, sig) =>
         for {
           millis <- TokenUtil.asInt(ms).toRight("Cannot read authenticator data")
-          acc    <- TokenUtil.b64dec(as).toRight("Cannot read authenticator data")
-          accId  <- AccountId.parse(acc)
+          acc <- TokenUtil.b64dec(as).toRight("Cannot read authenticator data")
+          accId <- AccountId.parse(acc)
           twofac <- Right[String, Boolean](java.lang.Boolean.parseBoolean(fa))
         } yield AuthToken(millis, accId, twofac, salt, sig)
 
@@ -70,15 +70,15 @@ object AuthToken {
     for {
       salt <- Common.genSaltString[F]
       millis = Instant.now.toEpochMilli
-      cd     = AuthToken(millis, accountId, requireSecondFactor, salt, "")
-      sig    = TokenUtil.sign(cd, key)
+      cd = AuthToken(millis, accountId, requireSecondFactor, salt, "")
+      sig = TokenUtil.sign(cd, key)
     } yield cd.copy(sig = sig)
 
   def update[F[_]: Sync](token: AuthToken, key: ByteVector): F[AuthToken] =
     for {
-      now  <- Timestamp.current[F]
+      now <- Timestamp.current[F]
       salt <- Common.genSaltString[F]
       data = AuthToken(now.toMillis, token.account, token.requireSecondFactor, salt, "")
-      sig  = TokenUtil.sign(data, key)
+      sig = TokenUtil.sign(data, key)
     } yield data.copy(sig = sig)
 }

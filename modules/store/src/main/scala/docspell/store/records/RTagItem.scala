@@ -23,9 +23,9 @@ object RTagItem {
     val tableName = "tagitem"
 
     val tagItemId = Column[Ident]("tagitemid", this)
-    val itemId    = Column[Ident]("itemid", this)
-    val tagId     = Column[Ident]("tid", this)
-    val all       = NonEmptyList.of[Column[_]](tagItemId, itemId, tagId)
+    val itemId = Column[Ident]("itemid", this)
+    val tagId = Column[Ident]("tid", this)
+    val all = NonEmptyList.of[Column[_]](tagItemId, itemId, tagId)
   }
   val T = Table(None)
   def as(alias: String): Table =

@@ -40,9 +40,9 @@ object OpenId {
     OnUserInfo { (req, provider, userInfo) =>
       val dsl = new Http4sDsl[F] {}
       import dsl._
-      val logger   = Logger.log4s(log)
-      val baseUrl  = ClientRequestInfo.getBaseUrl(config, req)
-      val uri      = baseUrl.withQuery("openid", "1") / "app" / "login"
+      val logger = Logger.log4s(log)
+      val baseUrl = ClientRequestInfo.getBaseUrl(config, req)
+      val uri = baseUrl.withQuery("openid", "1") / "app" / "login"
       val location = Location(Uri.unsafeFromString(uri.asString))
       val cfg = config.openid
         .find(_.provider.providerId == provider.providerId)
@@ -229,9 +229,9 @@ object OpenId {
 
     sealed trait ExtractResult
     object ExtractResult {
-      final case class Identifier(name: Ident)       extends ExtractResult
+      final case class Identifier(name: Ident) extends ExtractResult
       final case class Account(accountId: AccountId) extends ExtractResult
-      final case class Failure(message: String)      extends ExtractResult
+      final case class Failure(message: String) extends ExtractResult
     }
   }
 }

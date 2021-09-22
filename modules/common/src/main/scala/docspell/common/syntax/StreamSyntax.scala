@@ -27,7 +27,7 @@ trait StreamSyntax {
               optStr
                 .map(_.trim)
                 .toRight(new Exception("Empty string cannot be parsed into a value"))
-            json  <- parse(str).leftMap(_.underlying)
+            json <- parse(str).leftMap(_.underlying)
             value <- json.as[A]
           } yield value
         )

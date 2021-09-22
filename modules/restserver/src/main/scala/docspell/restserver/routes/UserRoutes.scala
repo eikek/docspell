@@ -47,10 +47,10 @@ object UserRoutes {
 
       case req @ POST -> Root =>
         for {
-          data  <- req.as[User]
+          data <- req.as[User]
           nuser <- newUser(data, user.account.collective)
           added <- backend.collective.add(nuser)
-          resp  <- Ok(basicResult(added, "User created."))
+          resp <- Ok(basicResult(added, "User created."))
         } yield resp
 
       case req @ PUT -> Root =>
@@ -58,12 +58,12 @@ object UserRoutes {
           data <- req.as[User]
           nuser = changeUser(data, user.account.collective)
           update <- backend.collective.update(nuser)
-          resp   <- Ok(basicResult(update, "User updated."))
+          resp <- Ok(basicResult(update, "User updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          ar   <- backend.collective.deleteUser(id, user.account.collective)
+          ar <- backend.collective.deleteUser(id, user.account.collective)
           resp <- Ok(basicResult(ar, "User deleted."))
         } yield resp
 
@@ -83,7 +83,7 @@ object UserRoutes {
 
     HttpRoutes.of { case req @ POST -> Root / "resetPassword" =>
       for {
-        input  <- req.as[ResetPassword]
+        input <- req.as[ResetPassword]
         result <- backend.collective.resetPassword(input.account)
         resp <- Ok(result match {
           case OCollective.PassResetResult.Success(np) =>

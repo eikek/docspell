@@ -27,7 +27,7 @@ object CalEventCheckRoutes {
     HttpRoutes.of { case req @ POST -> Root =>
       for {
         data <- req.as[CalEventCheck]
-        res  <- testEvent(data.event)
+        res <- testEvent(data.event)
         resp <- Ok(res)
       } yield resp
     }

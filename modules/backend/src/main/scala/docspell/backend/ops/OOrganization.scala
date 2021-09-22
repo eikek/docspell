@@ -72,7 +72,7 @@ object OOrganization {
 
   sealed trait OrganizationOrder
   object OrganizationOrder {
-    final case object NameAsc  extends OrganizationOrder
+    final case object NameAsc extends OrganizationOrder
     final case object NameDesc extends OrganizationOrder
 
     def parse(str: String): Either[String, OrganizationOrder] =
@@ -94,10 +94,10 @@ object OOrganization {
 
   sealed trait PersonOrder
   object PersonOrder {
-    final case object NameAsc  extends PersonOrder
+    final case object NameAsc extends PersonOrder
     final case object NameDesc extends PersonOrder
-    final case object OrgAsc   extends PersonOrder
-    final case object OrgDesc  extends PersonOrder
+    final case object OrgAsc extends PersonOrder
+    final case object OrgDesc extends PersonOrder
 
     def parse(str: String): Either[String, PersonOrder] =
       str.toLowerCase match {

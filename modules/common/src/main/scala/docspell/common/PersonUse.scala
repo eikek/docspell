@@ -20,13 +20,13 @@ sealed trait PersonUse { self: Product =>
 object PersonUse {
 
   case object Correspondent extends PersonUse
-  case object Concerning    extends PersonUse
-  case object Both          extends PersonUse
-  case object Disabled      extends PersonUse
+  case object Concerning extends PersonUse
+  case object Both extends PersonUse
+  case object Disabled extends PersonUse
 
-  def concerning: PersonUse    = Concerning
+  def concerning: PersonUse = Concerning
   def correspondent: PersonUse = Correspondent
-  def both: PersonUse          = Both
+  def both: PersonUse = Both
 
   val concerningAndBoth: NonEmptyList[PersonUse] =
     NonEmptyList.of(Concerning, Both)

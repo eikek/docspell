@@ -41,7 +41,7 @@ object Config {
       Decoder.decodeString.emap(fromString)
   }
 
-  def open: Mode   = Mode.Open
+  def open: Mode = Mode.Open
   def invite: Mode = Mode.Invite
   def closed: Mode = Mode.Closed
 

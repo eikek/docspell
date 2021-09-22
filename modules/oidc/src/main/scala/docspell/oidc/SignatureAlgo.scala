@@ -29,12 +29,12 @@ object SignatureAlgo {
   case object RS384 extends SignatureAlgo
   case object RS512 extends SignatureAlgo
 
-  case object ES256   extends SignatureAlgo
-  case object ES384   extends SignatureAlgo
-  case object ES512   extends SignatureAlgo
+  case object ES256 extends SignatureAlgo
+  case object ES384 extends SignatureAlgo
+  case object ES512 extends SignatureAlgo
   case object Ed25519 extends SignatureAlgo
 
-  case object HMD5  extends SignatureAlgo
+  case object HMD5 extends SignatureAlgo
   case object HS224 extends SignatureAlgo
   case object HS256 extends SignatureAlgo
   case object HS384 extends SignatureAlgo
@@ -137,31 +137,31 @@ object SignatureAlgo {
 
       case HMD5 =>
         for {
-          key     <- createSecretKey(sigKey, JwtAlgorithm.HMD5.fullName)
+          key <- createSecretKey(sigKey, JwtAlgorithm.HMD5.fullName)
           decoded <- JwtCirce.decodeJsonAll(token, key, Seq(JwtAlgorithm.HMD5)).toEither
         } yield Jwt.create(decoded)
 
       case HS224 =>
         for {
-          key     <- createSecretKey(sigKey, JwtAlgorithm.HS224.fullName)
+          key <- createSecretKey(sigKey, JwtAlgorithm.HS224.fullName)
           decoded <- JwtCirce.decodeJsonAll(token, key, Seq(JwtAlgorithm.HS224)).toEither
         } yield Jwt.create(decoded)
 
       case HS256 =>
         for {
-          key     <- createSecretKey(sigKey, JwtAlgorithm.HS256.fullName)
+          key <- createSecretKey(sigKey, JwtAlgorithm.HS256.fullName)
           decoded <- JwtCirce.decodeJsonAll(token, key, Seq(JwtAlgorithm.HS256)).toEither
         } yield Jwt.create(decoded)
 
       case HS384 =>
         for {
-          key     <- createSecretKey(sigKey, JwtAlgorithm.HS384.fullName)
+          key <- createSecretKey(sigKey, JwtAlgorithm.HS384.fullName)
           decoded <- JwtCirce.decodeJsonAll(token, key, Seq(JwtAlgorithm.HS384)).toEither
         } yield Jwt.create(decoded)
 
       case HS512 =>
         for {
-          key     <- createSecretKey(sigKey, JwtAlgorithm.HS512.fullName)
+          key <- createSecretKey(sigKey, JwtAlgorithm.HS512.fullName)
           decoded <- JwtCirce.decodeJsonAll(token, key, Seq(JwtAlgorithm.HS512)).toEither
         } yield Jwt.create(decoded)
     }

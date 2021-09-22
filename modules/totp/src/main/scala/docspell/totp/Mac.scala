@@ -17,15 +17,15 @@ sealed trait Mac {
 }
 object Mac {
   case object Sha1 extends Mac {
-    val identifier    = TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1
+    val identifier = TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA1
     val keyLengthBits = 160
   }
   case object Sha256 extends Mac {
-    val identifier    = TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA256
+    val identifier = TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA256
     val keyLengthBits = 256
   }
   case object Sha512 extends Mac {
-    val identifier    = TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA512
+    val identifier = TimeBasedOneTimePasswordGenerator.TOTP_ALGORITHM_HMAC_SHA512
     val keyLengthBits = 512
   }
 

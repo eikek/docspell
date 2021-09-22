@@ -22,7 +22,7 @@ class OdfExtractTest extends FunSuite {
 
   test("test extract from odt") {
     files.foreach { case (file, len) =>
-      val is   = file.toJavaUrl.map(_.openStream()).fold(sys.error, identity)
+      val is = file.toJavaUrl.map(_.openStream()).fold(sys.error, identity)
       val str1 = OdfExtract.get(is).fold(throw _, identity)
       assertEquals(str1.length, len)
 

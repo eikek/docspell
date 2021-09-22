@@ -24,9 +24,9 @@ object CrossCheckProposals {
   def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
       val proposals = data.finalProposals
-      val corrOrg   = proposals.find(MetaProposalType.CorrOrg)
+      val corrOrg = proposals.find(MetaProposalType.CorrOrg)
       (for {
-        orgRef   <- OptionT.fromOption[F](corrOrg)
+        orgRef <- OptionT.fromOption[F](corrOrg)
         persRefs <- OptionT.liftF(EvalProposals.findOrganizationRelation(data, ctx))
         clProps <- OptionT.liftF(
           personOrgCheck[F](ctx.logger, data.classifyProposals, persRefs)(orgRef)

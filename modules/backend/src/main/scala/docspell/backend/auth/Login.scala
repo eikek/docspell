@@ -85,8 +85,8 @@ object Login {
 
     def ok(session: AuthToken, remember: Option[RememberToken]): Result =
       Ok(session, remember)
-    def invalidAuth: Result   = InvalidAuth
-    def invalidTime: Result   = InvalidTime
+    def invalidAuth: Result = InvalidAuth
+    def invalidTime: Result = InvalidTime
     def invalidFactor: Result = InvalidFactor
   }
 
@@ -98,7 +98,7 @@ object Login {
       def loginExternal(config: Config)(accountId: AccountId): F[Result] =
         for {
           data <- store.transact(QLogin.findUser(accountId))
-          _    <- logF.trace(s"Account lookup: $data")
+          _ <- logF.trace(s"Account lookup: $data")
           res <-
             if (data.exists(checkNoPassword(_, Set(AccountSource.OpenId))))
               doLogin(config, accountId, false)
@@ -124,7 +124,7 @@ object Login {
           case Right(acc) =>
             for {
               data <- store.transact(QLogin.findUser(acc))
-              _    <- Sync[F].delay(logger.trace(s"Account lookup: $data"))
+              _ <- Sync[F].delay(logger.trace(s"Account lookup: $data"))
               res <-
                 if (data.exists(check(up.pass))) doLogin(config, acc, up.rememberMe)
                 else Result.invalidAuth.pure[F]
@@ -137,7 +137,7 @@ object Login {
       def loginSecondFactor(config: Config)(sf: SecondFactor): F[Result] = {
         val okResult: F[Result] =
           for {
-            _        <- store.transact(RUser.updateLogin(sf.token.account))
+            _ <- store.transact(RUser.updateLogin(sf.token.account))
             newToken <- AuthToken.user(sf.token.account, false, config.serverSecret)
             rem <- OptionT
               .whenF(sf.rememberMe && config.rememberMe.enabled)(
@@ -180,7 +180,7 @@ object Login {
       def loginRememberMe(config: Config)(token: String): F[Result] = {
         def okResult(acc: AccountId) =
           for {
-            _     <- store.transact(RUser.updateLogin(acc))
+            _ <- store.transact(RUser.updateLogin(acc))
             token <- AuthToken.user(acc, false, config.serverSecret)
           } yield Result.ok(token, None)
 
@@ -270,8 +270,8 @@ object Login {
           config: Config
       ): F[RememberToken] =
         for {
-          rme   <- RRememberMe.generate[F](acc)
-          _     <- store.transact(RRememberMe.insert(rme))
+          rme <- RRememberMe.generate[F](acc)
+          _ <- store.transact(RRememberMe.insert(rme))
           token <- RememberToken.user(rme.id, config.serverSecret)
         } yield token
 

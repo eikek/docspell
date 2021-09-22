@@ -30,8 +30,8 @@ object ClientSettingsRoutes {
       case req @ PUT -> Root / Ident(clientId) =>
         for {
           data <- req.as[Json]
-          _    <- backend.clientSettings.save(clientId, user.account, data)
-          res  <- Ok(BasicResult(true, "Settings stored"))
+          _ <- backend.clientSettings.save(clientId, user.account, data)
+          res <- Ok(BasicResult(true, "Settings stored"))
         } yield res
 
       case GET -> Root / Ident(clientId) =>

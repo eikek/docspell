@@ -22,15 +22,15 @@ object EnvMode {
   private val envName = "DOCSPELL_ENV"
 
   case object Dev extends EnvMode {
-    val isDev  = true
+    val isDev = true
     val isProd = false
   }
   case object Prod extends EnvMode {
-    val isDev  = false
+    val isDev = false
     val isProd = true
   }
 
-  def dev: EnvMode  = Dev
+  def dev: EnvMode = Dev
   def prod: EnvMode = Prod
 
   def fromString(s: String): Either[String, EnvMode] =

@@ -18,7 +18,7 @@ sealed trait AccountSource { self: Product =>
 
 object AccountSource {
 
-  case object Local  extends AccountSource
+  case object Local extends AccountSource
   case object OpenId extends AccountSource
 
   val all: NonEmptyList[AccountSource] =

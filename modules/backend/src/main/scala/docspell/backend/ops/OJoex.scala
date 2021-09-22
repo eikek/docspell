@@ -32,12 +32,12 @@ object OJoex {
       def notifyAllNodes: F[Unit] =
         for {
           nodes <- store.transact(RNode.findAll(NodeType.Joex))
-          _     <- nodes.toList.traverse(n => client.notifyJoexIgnoreErrors(n.url))
+          _ <- nodes.toList.traverse(n => client.notifyJoexIgnoreErrors(n.url))
         } yield ()
 
       def cancelJob(job: Ident, worker: Ident): F[Boolean] =
         (for {
-          node   <- OptionT(store.transact(RNode.findById(worker)))
+          node <- OptionT(store.transact(RNode.findById(worker)))
           cancel <- OptionT.liftF(client.cancelJob(node.url, job))
         } yield cancel.success).getOrElse(false)
     })

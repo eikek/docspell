@@ -136,7 +136,7 @@ object ExtractArchive {
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int): F[Extracted] = {
     val zipData = ctx.store.fileStore.getBytes(ra.fileId)
-    val glob    = ctx.args.meta.fileFilter.getOrElse(Glob.all)
+    val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
     ctx.logger.debug(s"Filtering zip entries with '${glob.asString}'") *>
       zipData
         .through(Zip.unzipP[F](8192, glob))
@@ -153,7 +153,7 @@ object ExtractArchive {
   )(ra: RAttachment, pos: Int): F[Extracted] = {
     val email: Stream[F, Byte] = ctx.store.fileStore.getBytes(ra.fileId)
 
-    val glob       = ctx.args.meta.fileFilter.getOrElse(Glob.all)
+    val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
     val attachOnly = ctx.args.meta.attachmentsOnly.getOrElse(false)
     ctx.logger.debug(s"Filtering email attachments with '${glob.asString}'") *>
       email
@@ -193,7 +193,7 @@ object ExtractArchive {
   ): Stream[F, Extracted] = {
     val (entry, subPos) = tentry
     val mimeHint = MimeTypeHint.filename(entry.name).withAdvertised(entry.mime.asString)
-    val fileId   = entry.data.through(ctx.store.fileStore.save(mimeHint))
+    val fileId = entry.data.through(ctx.store.fileStore.save(mimeHint))
 
     Stream.eval(ctx.logger.debug(s"Extracted ${entry.name}. Storing as attachment.")) >>
       fileId.evalMap { fid =>

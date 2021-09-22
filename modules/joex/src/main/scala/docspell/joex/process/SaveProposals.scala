@@ -14,8 +14,7 @@ import docspell.joex.scheduler.{Context, Task}
 import docspell.store.AddResult
 import docspell.store.records._
 
-/** Saves the proposals in the database
-  */
+/** Saves the proposals in the database */
 object SaveProposals {
   type Args = ProcessItemArgs
 

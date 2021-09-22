@@ -37,15 +37,15 @@ object FolderRoutes {
         val login =
           owning.filter(identity).map(_ => user.account.user)
         for {
-          all  <- backend.folder.findAll(user.account, login, q.map(_.q), order)
+          all <- backend.folder.findAll(user.account, login, q.map(_.q), order)
           resp <- Ok(FolderList(all.map(mkFolder).toList))
         } yield resp
 
       case req @ POST -> Root =>
         for {
-          data    <- req.as[NewFolder]
+          data <- req.as[NewFolder]
           nfolder <- newFolder(data, user.account)
-          res     <- backend.folder.add(nfolder, Some(user.account.user))
+          res <- backend.folder.add(nfolder, Some(user.account.user))
           resp <-
             Ok(Conversions.idResult(res, nfolder.id, "Folder successfully created."))
         } yield resp
@@ -53,31 +53,31 @@ object FolderRoutes {
       case GET -> Root / Ident(id) =>
         (for {
           folder <- OptionT(backend.folder.findById(id, user.account))
-          resp   <- OptionT.liftF(Ok(mkFolderDetail(folder)))
+          resp <- OptionT.liftF(Ok(mkFolderDetail(folder)))
         } yield resp).getOrElseF(NotFound())
 
       case req @ PUT -> Root / Ident(id) =>
         for {
           data <- req.as[NewFolder]
-          res  <- backend.folder.changeName(id, user.account, data.name)
+          res <- backend.folder.changeName(id, user.account, data.name)
           resp <- Ok(mkFolderChangeResult(res))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          res  <- backend.folder.delete(id, user.account)
+          res <- backend.folder.delete(id, user.account)
           resp <- Ok(mkFolderChangeResult(res))
         } yield resp
 
       case PUT -> Root / Ident(id) / "member" / Ident(userId) =>
         for {
-          res  <- backend.folder.addMember(id, user.account, userId)
+          res <- backend.folder.addMember(id, user.account, userId)
           resp <- Ok(mkFolderChangeResult(res))
         } yield resp
 
       case DELETE -> Root / Ident(id) / "member" / Ident(userId) =>
         for {
-          res  <- backend.folder.removeMember(id, user.account, userId)
+          res <- backend.folder.removeMember(id, user.account, userId)
           resp <- Ok(mkFolderChangeResult(res))
         } yield resp
     }

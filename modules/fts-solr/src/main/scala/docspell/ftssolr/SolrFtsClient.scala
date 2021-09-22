@@ -53,9 +53,9 @@ final class SolrFtsClient[F[_]: Async](
       f: List[TextData] => F[Unit]
   ): F[Unit] =
     (for {
-      _      <- Stream.eval(logger.debug("Updating SOLR index"))
+      _ <- Stream.eval(logger.debug("Updating SOLR index"))
       chunks <- data.chunks
-      res    <- Stream.eval(f(chunks.toList).attempt)
+      res <- Stream.eval(f(chunks.toList).attempt)
       _ <- res match {
         case Right(()) => Stream.emit(())
         case Left(ex) =>

@@ -80,22 +80,22 @@ object RJob {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "job"
 
-    val id            = Column[Ident]("jid", this)
-    val task          = Column[Ident]("task", this)
-    val group         = Column[Ident]("group_", this)
-    val args          = Column[String]("args", this)
-    val subject       = Column[String]("subject", this)
-    val submitted     = Column[Timestamp]("submitted", this)
-    val submitter     = Column[Ident]("submitter", this)
-    val priority      = Column[Priority]("priority", this)
-    val state         = Column[JobState]("state", this)
-    val retries       = Column[Int]("retries", this)
-    val progress      = Column[Int]("progress", this)
-    val tracker       = Column[Ident]("tracker", this)
-    val worker        = Column[Ident]("worker", this)
-    val started       = Column[Timestamp]("started", this)
+    val id = Column[Ident]("jid", this)
+    val task = Column[Ident]("task", this)
+    val group = Column[Ident]("group_", this)
+    val args = Column[String]("args", this)
+    val subject = Column[String]("subject", this)
+    val submitted = Column[Timestamp]("submitted", this)
+    val submitter = Column[Ident]("submitter", this)
+    val priority = Column[Priority]("priority", this)
+    val state = Column[JobState]("state", this)
+    val retries = Column[Int]("retries", this)
+    val progress = Column[Int]("progress", this)
+    val tracker = Column[Ident]("tracker", this)
+    val worker = Column[Ident]("worker", this)
+    val started = Column[Timestamp]("started", this)
     val startedmillis = Column[Long]("startedmillis", this)
-    val finished      = Column[Timestamp]("finished", this)
+    val finished = Column[Timestamp]("finished", this)
     val all = NonEmptyList.of[Column[_]](
       id,
       task,

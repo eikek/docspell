@@ -38,9 +38,9 @@ object PipelineCache {
       release: F[Unit]
   ): F[PipelineCache[F]] =
     for {
-      data       <- Ref.of(Map.empty[String, Entry[Annotator[F]]])
+      data <- Ref.of(Map.empty[String, Entry[Annotator[F]]])
       cacheClear <- CacheClearing.create(data, clearInterval, release)
-      _          <- Logger.log4s(logger).info("Creating nlp pipeline cache")
+      _ <- Logger.log4s(logger).info("Creating nlp pipeline cache")
     } yield new Impl[F](data, creator, cacheClear)
 
   final private class Impl[F[_]: Async](
@@ -51,7 +51,7 @@ object PipelineCache {
 
     def obtain(key: String, settings: NlpSettings): Resource[F, Annotator[F]] =
       for {
-        _  <- cacheClear.withCache
+        _ <- cacheClear.withCache
         id <- Resource.eval(makeSettingsId(settings))
         nlp <- Resource.eval(
           data.modify(cache => getOrCreate(key, id, cache, settings, creator))
@@ -73,13 +73,13 @@ object PipelineCache {
               s"StanfordNLP settings changed for key $key. Creating new classifier"
             )
             val nlp = creator(settings)
-            val e   = Entry(id, nlp)
+            val e = Entry(id, nlp)
             (cache.updated(key, e), nlp)
           }
 
         case None =>
           val nlp = creator(settings)
-          val e   = Entry(id, nlp)
+          val e = Entry(id, nlp)
           (cache.updated(key, e), nlp)
       }
 
@@ -114,7 +114,7 @@ object PipelineCache {
         release: F[Unit]
     ): F[CacheClearing[F]] =
       for {
-        counter  <- Ref.of(0L)
+        counter <- Ref.of(0L)
         cleaning <- Ref.of(None: Option[Fiber[F, Throwable, Unit]])
         log = Logger.log4s(logger)
         result <-

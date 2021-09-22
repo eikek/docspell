@@ -16,7 +16,7 @@ sealed trait NodeType { self: Product =>
 object NodeType {
 
   case object Restserver extends NodeType
-  case object Joex       extends NodeType
+  case object Joex extends NodeType
 
   def fromString(str: String): Either[String, NodeType] =
     str.toLowerCase match {

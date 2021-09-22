@@ -69,7 +69,7 @@ object LoginRoutes {
 
       case req @ POST -> Root / "logout" =>
         for {
-          _   <- RememberCookieData.fromCookie(req).traverse(S.removeRememberToken)
+          _ <- RememberCookieData.fromCookie(req).traverse(S.removeRememberToken)
           res <- Ok()
         } yield res
           .removeCookie(CookieData.deleteCookie(getBaseUrl(cfg, req)))
@@ -90,7 +90,7 @@ object LoginRoutes {
     import dsl._
     res match {
       case Login.Result.Ok(token, remember) =>
-        val cd  = CookieData(token)
+        val cd = CookieData(token)
         val rem = remember.map(RememberCookieData.apply)
         for {
           resp <- Ok(

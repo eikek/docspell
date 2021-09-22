@@ -26,10 +26,10 @@ object RItemProposal {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "item_proposal"
 
-    val itemId            = Column[Ident]("itemid", this)
+    val itemId = Column[Ident]("itemid", this)
     val classifyProposals = Column[MetaProposalList]("classifier_proposals", this)
-    val classifyTags      = Column[List[IdRef]]("classifier_tags", this)
-    val created           = Column[Timestamp]("created", this)
+    val classifyTags = Column[List[IdRef]]("classifier_tags", this)
+    val created = Column[Timestamp]("created", this)
     val all = NonEmptyList.of[Column[_]](itemId, classifyProposals, classifyTags, created)
   }
 

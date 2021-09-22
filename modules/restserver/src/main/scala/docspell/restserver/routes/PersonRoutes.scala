@@ -57,30 +57,30 @@ object PersonRoutes {
 
       case req @ POST -> Root =>
         for {
-          data   <- req.as[Person]
+          data <- req.as[Person]
           newPer <- newPerson(data, user.account.collective)
-          added  <- backend.organization.addPerson(newPer)
-          resp   <- Ok(basicResult(added, "New person saved."))
+          added <- backend.organization.addPerson(newPer)
+          resp <- Ok(basicResult(added, "New person saved."))
         } yield resp
 
       case req @ PUT -> Root =>
         for {
-          data   <- req.as[Person]
-          upPer  <- changePerson(data, user.account.collective)
+          data <- req.as[Person]
+          upPer <- changePerson(data, user.account.collective)
           update <- backend.organization.updatePerson(upPer)
-          resp   <- Ok(basicResult(update, "Person updated."))
+          resp <- Ok(basicResult(update, "Person updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          _      <- logger.fdebug(s"Deleting person ${id.id}")
+          _ <- logger.fdebug(s"Deleting person ${id.id}")
           delOrg <- backend.organization.deletePerson(id, user.account.collective)
-          resp   <- Ok(basicResult(delOrg, "Person deleted."))
+          resp <- Ok(basicResult(delOrg, "Person deleted."))
         } yield resp
 
       case GET -> Root / Ident(id) =>
         (for {
-          org  <- OptionT(backend.organization.findPerson(user.account, id))
+          org <- OptionT(backend.organization.findPerson(user.account, id))
           resp <- OptionT.liftF(Ok(mkPerson(org)))
         } yield resp).getOrElseF(NotFound())
     }

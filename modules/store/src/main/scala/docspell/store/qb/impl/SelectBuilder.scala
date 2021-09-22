@@ -14,11 +14,11 @@ import _root_.doobie.implicits._
 import _root_.doobie.{Query => _, _}
 
 object SelectBuilder {
-  val comma     = fr","
-  val asc       = fr" ASC"
-  val desc      = fr" DESC"
+  val comma = fr","
+  val asc = fr" ASC"
+  val desc = fr" DESC"
   val intersect = fr" INTERSECT"
-  val union     = fr" UNION ALL"
+  val union = fr" UNION ALL"
 
   def apply(q: Select): Fragment =
     build(q)

@@ -42,8 +42,8 @@ object FileStore {
       chunkSize: Int
   ): FileStore[F] = {
     val attrStore = new AttributeStore[F](xa)
-    val cfg       = JdbcStoreConfig("filechunk", chunkSize, TikaContentTypeDetect.default)
-    val binStore  = GenericJdbcStore[F](ds, Log4sLogger[F](logger), cfg, attrStore)
+    val cfg = JdbcStoreConfig("filechunk", chunkSize, TikaContentTypeDetect.default)
+    val binStore = GenericJdbcStore[F](ds, Log4sLogger[F](logger), cfg, attrStore)
     new Impl[F](binStore, attrStore)
   }
 

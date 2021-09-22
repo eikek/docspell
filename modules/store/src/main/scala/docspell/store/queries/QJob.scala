@@ -77,16 +77,16 @@ object QJob {
       _ <- logger.ftrace[F](
         s"About to take next job (worker ${worker.id}), try $currentTry"
       )
-      now   <- Timestamp.current[F]
+      now <- Timestamp.current[F]
       group <- store.transact(selectNextGroup(worker, now, retryPause))
-      _     <- logger.ftrace[F](s"Choose group ${group.map(_.id)}")
-      prio  <- group.map(priority).getOrElse((Priority.Low: Priority).pure[F])
-      _     <- logger.ftrace[F](s"Looking for job of prio $prio")
+      _ <- logger.ftrace[F](s"Choose group ${group.map(_.id)}")
+      prio <- group.map(priority).getOrElse((Priority.Low: Priority).pure[F])
+      _ <- logger.ftrace[F](s"Looking for job of prio $prio")
       job <-
         group
           .map(g => store.transact(selectNextJob(g, prio, retryPause, now)))
           .getOrElse((None: Option[RJob]).pure[F])
-      _   <- logger.ftrace[F](s"Found job: ${job.map(_.info)}")
+      _ <- logger.ftrace[F](s"Found job: ${job.map(_.info)}")
       res <- job.traverse(j => markJob(j))
     } yield res.map(_.map(_.some)).getOrElse {
       if (group.isDefined)
@@ -101,7 +101,7 @@ object QJob {
       initialPause: Duration
   ): ConnectionIO[Option[Ident]] = {
     val JC = RJob.as("a")
-    val G  = RJobGroupUse.as("b")
+    val G = RJobGroupUse.as("b")
 
     val stuckTrigger = stuckTriggerValue(JC, initialPause, now)
     val stateCond =
@@ -109,7 +109,7 @@ object QJob {
 
     object AllGroups extends TableDef {
       val tableName = "allgroups"
-      val alias     = Some("ag")
+      val alias = Some("ag")
 
       val group: Column[Ident] = JC.group.copy(table = this)
 
@@ -162,7 +162,7 @@ object QJob {
       if (prio == Priority.High) JC.priority.desc
       else JC.priority.asc
     val waiting = JobState.waiting
-    val stuck   = JobState.stuck
+    val stuck = JobState.stuck
 
     val stuckTrigger = stuckTriggerValue(JC, initialPause, now)
     val sql =
@@ -179,31 +179,31 @@ object QJob {
   def setCancelled[F[_]: Async](id: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
-      _   <- store.transact(RJob.setCancelled(id, now))
+      _ <- store.transact(RJob.setCancelled(id, now))
     } yield ()
 
   def setFailed[F[_]: Async](id: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
-      _   <- store.transact(RJob.setFailed(id, now))
+      _ <- store.transact(RJob.setFailed(id, now))
     } yield ()
 
   def setSuccess[F[_]: Async](id: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
-      _   <- store.transact(RJob.setSuccess(id, now))
+      _ <- store.transact(RJob.setSuccess(id, now))
     } yield ()
 
   def setStuck[F[_]: Async](id: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
-      _   <- store.transact(RJob.setStuck(id, now))
+      _ <- store.transact(RJob.setStuck(id, now))
     } yield ()
 
   def setRunning[F[_]: Async](id: Ident, workerId: Ident, store: Store[F]): F[Unit] =
     for {
       now <- Timestamp.current[F]
-      _   <- store.transact(RJob.setRunning(id, workerId, now))
+      _ <- store.transact(RJob.setRunning(id, workerId, now))
     } yield ()
 
   def setFinalState[F[_]: Async](id: Ident, state: JobState, store: Store[F]): F[Unit] =
@@ -233,7 +233,7 @@ object QJob {
       collective: Ident,
       max: Long
   ): Stream[ConnectionIO, (RJob, Vector[RJobLog])] = {
-    val JC      = RJob.T
+    val JC = RJob.T
     val waiting = NonEmptyList.of(JobState.Waiting, JobState.Stuck, JobState.Scheduled)
     val running = NonEmptyList.of(JobState.Running)
     //val done                   = JobState.all.filterNot(js => ).diff(waiting).diff(running)

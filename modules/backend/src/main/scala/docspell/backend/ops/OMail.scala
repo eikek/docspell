@@ -162,7 +162,7 @@ object OMail {
       def createSmtpSettings(accId: AccountId, s: SmtpSettings): F[AddResult] =
         (for {
           ru <- OptionT(store.transact(s.toRecord(accId).value))
-          ins    = RUserEmail.insert(ru)
+          ins = RUserEmail.insert(ru)
           exists = RUserEmail.exists(ru.uid, ru.name)
           res <- OptionT.liftF(store.add(ins, exists))
         } yield res).getOrElse(AddResult.Failure(new Exception("User not found")))
@@ -175,7 +175,7 @@ object OMail {
         val op = for {
           um <- OptionT(RUserEmail.getByName(accId, name))
           ru <- data.toRecord(accId)
-          n  <- OptionT.liftF(RUserEmail.update(um.id, ru))
+          n <- OptionT.liftF(RUserEmail.update(um.id, ru))
         } yield n
 
         store.transact(op.value).map(_.getOrElse(0))
@@ -193,7 +193,7 @@ object OMail {
       def createImapSettings(accId: AccountId, data: ImapSettings): F[AddResult] =
         (for {
           ru <- OptionT(store.transact(data.toRecord(accId).value))
-          ins    = RUserImap.insert(ru)
+          ins = RUserImap.insert(ru)
           exists = RUserImap.exists(ru.uid, ru.name)
           res <- OptionT.liftF(store.add(ins, exists))
         } yield res).getOrElse(AddResult.Failure(new Exception("User not found")))
@@ -206,7 +206,7 @@ object OMail {
         val op = for {
           um <- OptionT(RUserImap.getByName(accId, name))
           ru <- data.toRecord(accId)
-          n  <- OptionT.liftF(RUserImap.update(um.id, ru))
+          n <- OptionT.liftF(RUserImap.update(um.id, ru))
         } yield n
 
         store.transact(op.value).map(_.getOrElse(0))
@@ -284,9 +284,9 @@ object OMail {
 
         (for {
           mailCfg <- getSmtpSettings
-          mail    <- createMail(mailCfg)
-          mid     <- OptionT.liftF(sendMail(mailCfg.toMailConfig, mail))
-          res     <- mid.traverse(id => OptionT.liftF(storeMail(id, mailCfg)))
+          mail <- createMail(mailCfg)
+          mid <- OptionT.liftF(sendMail(mailCfg.toMailConfig, mail))
+          res <- mid.traverse(id => OptionT.liftF(storeMail(id, mailCfg)))
           conv = res.fold(identity, _.fold(identity, id => SendResult.Success(id)))
         } yield conv).getOrElse(SendResult.NotFound)
       }

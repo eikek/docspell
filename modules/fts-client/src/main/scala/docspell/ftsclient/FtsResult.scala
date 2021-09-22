@@ -24,7 +24,7 @@ object FtsResult {
 
   sealed trait MatchData
   case class AttachmentData(attachId: Ident, attachName: String) extends MatchData
-  case object ItemData                                           extends MatchData
+  case object ItemData extends MatchData
 
   case class ItemMatch(
       id: Ident,

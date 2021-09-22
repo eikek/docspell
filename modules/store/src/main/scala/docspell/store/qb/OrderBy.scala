@@ -20,7 +20,7 @@ object OrderBy {
 
   sealed trait OrderType
   object OrderType {
-    case object Asc  extends OrderType
+    case object Asc extends OrderType
     case object Desc extends OrderType
   }
 }

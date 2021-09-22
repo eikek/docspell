@@ -30,11 +30,11 @@ object REmptyTrashSetting {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "empty_trash_setting"
 
-    val cid      = Column[Ident]("cid", this)
+    val cid = Column[Ident]("cid", this)
     val schedule = Column[CalEvent]("schedule", this)
-    val minAge   = Column[Duration]("min_age", this)
-    val created  = Column[Timestamp]("created", this)
-    val all      = NonEmptyList.of[Column[_]](cid, schedule, minAge, created)
+    val minAge = Column[Duration]("min_age", this)
+    val created = Column[Timestamp]("created", this)
+    val all = NonEmptyList.of[Column[_]](cid, schedule, minAge, created)
   }
 
   val T = Table(None)

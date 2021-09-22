@@ -77,7 +77,7 @@ trait JsonCodec {
     new Decoder[VersionDoc] {
       final def apply(c: HCursor): Decoder.Result[VersionDoc] =
         for {
-          id      <- c.get[String](VersionDoc.Fields.id.name)
+          id <- c.get[String](VersionDoc.Fields.id.name)
           version <- c.get[Int](VersionDoc.Fields.currentVersion.name)
         } yield VersionDoc(id, version)
     }
@@ -106,10 +106,10 @@ trait JsonCodec {
     new Decoder[FtsResult] {
       final def apply(c: HCursor): Decoder.Result[FtsResult] =
         for {
-          qtime       <- c.downField("responseHeader").get[Duration]("QTime")
-          count       <- c.downField("response").get[Int]("numFound")
-          maxScore    <- c.downField("response").get[Double]("maxScore")
-          results     <- c.downField("response").get[List[FtsResult.ItemMatch]]("docs")
+          qtime <- c.downField("responseHeader").get[Duration]("QTime")
+          count <- c.downField("response").get[Int]("numFound")
+          maxScore <- c.downField("response").get[Double]("maxScore")
+          results <- c.downField("response").get[List[FtsResult.ItemMatch]]("docs")
           highlightng <- c.get[Map[Ident, Map[String, List[String]]]]("highlighting")
           highlight = highlightng.map(kv => kv._1 -> kv._2.values.flatten.toList)
         } yield FtsResult(qtime, count, maxScore, highlight, results)
@@ -120,10 +120,10 @@ trait JsonCodec {
       final def apply(c: HCursor): Decoder.Result[FtsResult.ItemMatch] =
         for {
           itemId <- c.get[Ident](Field.itemId.name)
-          id     <- c.get[Ident](Field.id.name)
-          coll   <- c.get[Ident](Field.collectiveId.name)
-          score  <- c.get[Double]("score")
-          md     <- decodeMatchData(c)
+          id <- c.get[Ident](Field.id.name)
+          coll <- c.get[Ident](Field.collectiveId.name)
+          score <- c.get[Double]("score")
+          md <- decodeMatchData(c)
         } yield FtsResult.ItemMatch(id, itemId, coll, score, md)
     }
 
@@ -135,7 +135,7 @@ trait JsonCodec {
           md <-
             if ("attachment" == disc)
               for {
-                aId   <- c.get[Ident](Field.attachmentId.name)
+                aId <- c.get[Ident](Field.attachmentId.name)
                 aName <- c.get[String](Field.attachmentName.name)
               } yield FtsResult.AttachmentData(aId, aName)
             else Right(FtsResult.ItemData)

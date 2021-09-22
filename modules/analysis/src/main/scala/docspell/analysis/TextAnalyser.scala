@@ -54,7 +54,7 @@ object TextAnalyser {
               tags0 <- stanfordNer(Nlp.Input(cacheKey, settings, logger, input))
               tags1 <- contactNer(input)
               dates <- dateNer(settings.lang, input)
-              list  = tags0 ++ tags1
+              list = tags0 ++ tags1
               spans = NerLabelSpan.build(list)
             } yield Result(spans ++ list, dates)
 

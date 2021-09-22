@@ -49,7 +49,7 @@ object RItem {
   ): F[RItem] =
     for {
       now <- Timestamp.current[F]
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
     } yield RItem(
       id,
       cid,
@@ -74,23 +74,23 @@ object RItem {
     import docspell.store.qb.Column
     val tableName = "item"
 
-    val id            = Column[Ident]("itemid", this)
-    val cid           = Column[Ident]("cid", this)
-    val name          = Column[String]("name", this)
-    val itemDate      = Column[Timestamp]("itemdate", this)
-    val source        = Column[String]("source", this)
-    val incoming      = Column[Direction]("incoming", this)
-    val state         = Column[ItemState]("state", this)
-    val corrOrg       = Column[Ident]("corrorg", this)
-    val corrPerson    = Column[Ident]("corrperson", this)
-    val concPerson    = Column[Ident]("concperson", this)
+    val id = Column[Ident]("itemid", this)
+    val cid = Column[Ident]("cid", this)
+    val name = Column[String]("name", this)
+    val itemDate = Column[Timestamp]("itemdate", this)
+    val source = Column[String]("source", this)
+    val incoming = Column[Direction]("incoming", this)
+    val state = Column[ItemState]("state", this)
+    val corrOrg = Column[Ident]("corrorg", this)
+    val corrPerson = Column[Ident]("corrperson", this)
+    val concPerson = Column[Ident]("concperson", this)
     val concEquipment = Column[Ident]("concequipment", this)
-    val inReplyTo     = Column[Ident]("inreplyto", this)
-    val dueDate       = Column[Timestamp]("duedate", this)
-    val created       = Column[Timestamp]("created", this)
-    val updated       = Column[Timestamp]("updated", this)
-    val notes         = Column[String]("notes", this)
-    val folder        = Column[Ident]("folder_id", this)
+    val inReplyTo = Column[Ident]("inreplyto", this)
+    val dueDate = Column[Timestamp]("duedate", this)
+    val created = Column[Timestamp]("created", this)
+    val updated = Column[Timestamp]("updated", this)
+    val notes = Column[String]("notes", this)
+    val folder = Column[Ident]("folder_id", this)
     val all = NonEmptyList.of[Column[_]](
       id,
       cid,

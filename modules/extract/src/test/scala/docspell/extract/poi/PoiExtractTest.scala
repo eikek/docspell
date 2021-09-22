@@ -17,10 +17,10 @@ import munit._
 class PoiExtractTest extends FunSuite {
 
   val officeFiles = List(
-    ExampleFiles.examples_sample_doc  -> 6241,
+    ExampleFiles.examples_sample_doc -> 6241,
     ExampleFiles.examples_sample_docx -> 6179,
     ExampleFiles.examples_sample_xlsx -> 660,
-    ExampleFiles.examples_sample_xls  -> 660
+    ExampleFiles.examples_sample_xls -> 660
   )
 
   test("extract text from ms office files") {

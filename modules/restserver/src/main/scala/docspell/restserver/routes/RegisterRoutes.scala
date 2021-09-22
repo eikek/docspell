@@ -32,14 +32,14 @@ object RegisterRoutes {
       case req @ POST -> Root / "register" =>
         for {
           data <- req.as[Registration]
-          res  <- backend.signup.register(cfg.backend.signup)(convert(data))
+          res <- backend.signup.register(cfg.backend.signup)(convert(data))
           resp <- Ok(convert(res))
         } yield resp
 
       case req @ POST -> Root / "newinvite" =>
         for {
           data <- req.as[GenInvite]
-          res  <- backend.signup.newInvite(cfg.backend.signup)(data.password)
+          res <- backend.signup.newInvite(cfg.backend.signup)(data.password)
           resp <- Ok(convert(res))
         } yield resp
     }

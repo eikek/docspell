@@ -12,17 +12,14 @@ import docspell.store.qb.impl.SelectBuilder
 
 import doobie._
 
-/** A sql select statement that allows to change certain parts of the query.
-  */
+/** A sql select statement that allows to change certain parts of the query. */
 sealed trait Select {
 
-  /** Builds the sql select statement into a doobie fragment.
-    */
+  /** Builds the sql select statement into a doobie fragment. */
   def build: Fragment =
     SelectBuilder(this)
 
-  /** When using this as a sub-select, an alias is required.
-    */
+  /** When using this as a sub-select, an alias is required. */
   def as(alias: String): SelectExpr.SelectQuery =
     SelectExpr.SelectQuery(this, Some(alias))
 

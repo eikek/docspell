@@ -56,8 +56,8 @@ object OTotp {
           s"otpauth://totp/$issuer:${accountId.asString}?secret=${key.data.toBase32}&issuer=$issuer"
         )
     }
-    case object AlreadyExists              extends InitResult
-    case object NotFound                   extends InitResult
+    case object AlreadyExists extends InitResult
+    case object NotFound extends InitResult
     final case class Failed(ex: Throwable) extends InitResult
 
     def success(accountId: AccountId, key: Key): InitResult =
@@ -71,7 +71,7 @@ object OTotp {
   sealed trait ConfirmResult
   object ConfirmResult {
     case object Success extends ConfirmResult
-    case object Failed  extends ConfirmResult
+    case object Failed extends ConfirmResult
   }
 
   def apply[F[_]: Async](store: Store[F], totp: Totp): Resource[F, OTotp[F]] =
@@ -80,13 +80,13 @@ object OTotp {
 
       def initialize(accountId: AccountId): F[InitResult] =
         for {
-          _      <- log.info(s"Initializing TOTP for account ${accountId.asString}")
+          _ <- log.info(s"Initializing TOTP for account ${accountId.asString}")
           userId <- store.transact(RUser.findIdByAccount(accountId))
           result <- userId match {
             case Some(uid) =>
               for {
                 record <- RTotp.generate[F](uid, totp.settings.mac)
-                un     <- store.transact(RTotp.updateDisabled(record))
+                un <- store.transact(RTotp.updateDisabled(record))
                 an <-
                   if (un != 0)
                     AddResult.entityExists("Entity exists, but update was ok").pure[F]
@@ -117,7 +117,7 @@ object OTotp {
 
       def confirmInit(accountId: AccountId, otp: OnetimePassword): F[ConfirmResult] =
         for {
-          _   <- log.info(s"Confirm TOTP setup for account ${accountId.asString}")
+          _ <- log.info(s"Confirm TOTP setup for account ${accountId.asString}")
           key <- store.transact(RTotp.findEnabledByLogin(accountId, false))
           now <- Timestamp.current[F]
           res <- key match {

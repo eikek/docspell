@@ -29,11 +29,11 @@ object RCustomField {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "custom_field"
 
-    val id      = Column[Ident]("id", this)
-    val name    = Column[Ident]("name", this)
-    val label   = Column[String]("label", this)
-    val cid     = Column[Ident]("cid", this)
-    val ftype   = Column[CustomFieldType]("ftype", this)
+    val id = Column[Ident]("id", this)
+    val name = Column[Ident]("name", this)
+    val label = Column[String]("label", this)
+    val cid = Column[Ident]("cid", this)
+    val ftype = Column[CustomFieldType]("ftype", this)
     val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, name, label, cid, ftype, created)

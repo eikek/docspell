@@ -14,8 +14,8 @@ import munit._
 class QueryBuilderTest extends FunSuite {
 
   test("simple") {
-    val c        = CourseRecord.as("c")
-    val owner    = PersonRecord.as("p1")
+    val c = CourseRecord.as("c")
+    val owner = PersonRecord.as("p1")
     val lecturer = PersonRecord.as("p2")
 
     val proj = select(c.all, owner.all, lecturer.all)

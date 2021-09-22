@@ -7,9 +7,9 @@ import scala.sys.process._
 object ZolaPlugin extends AutoPlugin {
 
   object autoImport {
-    val zolaRootDir   = settingKey[File]("The root directory of zola")
+    val zolaRootDir = settingKey[File]("The root directory of zola")
     val zolaOutputDir = settingKey[File]("The directory to put the final site")
-    val zolaCommand   = settingKey[String]("The zola executable")
+    val zolaCommand = settingKey[String]("The zola executable")
     val zolaTestBaseUrl =
       settingKey[String]("The base-url to use when building the test site.")
 
@@ -28,9 +28,9 @@ object ZolaPlugin extends AutoPlugin {
 
   def zolaSettings: Seq[Setting[_]] =
     Seq(
-      zolaRootDir     := baseDirectory.value / "site",
-      zolaOutputDir   := target.value / "zola-site",
-      zolaCommand     := "zola",
+      zolaRootDir := baseDirectory.value / "site",
+      zolaOutputDir := target.value / "zola-site",
+      zolaCommand := "zola",
       zolaTestBaseUrl := "http://localhost:1234",
       zolaBuild := {
         val logger = streams.value.log
@@ -40,7 +40,7 @@ object ZolaPlugin extends AutoPlugin {
         logger.info("Website built")
       },
       zolaBuildTest := {
-        val logger  = streams.value.log
+        val logger = streams.value.log
         val baseurl = zolaTestBaseUrl.value
         logger.info("Building web site (test) using zola ...")
         (Compile / resources).value

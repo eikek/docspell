@@ -51,13 +51,13 @@ object AccessToken {
   implicit val decoder: Decoder[AccessToken] =
     Decoder.instance { c =>
       for {
-        atoken  <- c.get[String]("access_token")
-        ttype   <- c.get[String]("token_type")
-        expire  <- c.get[Option[Long]]("expires_in")
-        rtoken  <- c.get[Option[String]]("refresh_token")
+        atoken <- c.get[String]("access_token")
+        ttype <- c.get[String]("token_type")
+        expire <- c.get[Option[Long]]("expires_in")
+        rtoken <- c.get[Option[String]]("refresh_token")
         rexpire <- c.get[Option[Long]]("refresh_expires_in")
-        sstate  <- c.get[Option[String]]("session_state")
-        scope   <- c.get[Option[String]]("scope")
+        sstate <- c.get[Option[String]]("session_state")
+        scope <- c.get[Option[String]]("scope")
       } yield AccessToken(atoken, ttype, expire, rtoken, rexpire, sstate, scope)
     }
 }

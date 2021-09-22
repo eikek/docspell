@@ -62,10 +62,10 @@ object Binary {
     private val utf8Bom: Chunk[Byte] = Chunk(0xef.toByte, 0xbb.toByte, 0xbf.toByte)
 
     def decode[F[_]](charset: Charset): Pipe[F, Byte, String] = {
-      val decoder         = charset.newDecoder
+      val decoder = charset.newDecoder
       val maxCharsPerByte = math.ceil(decoder.maxCharsPerByte().toDouble).toInt
       val avgBytesPerChar = math.ceil(1.0 / decoder.averageCharsPerByte().toDouble).toInt
-      val charBufferSize  = 128
+      val charBufferSize = 128
 
       _.repeatPull[String] {
         _.unconsN(charBufferSize * avgBytesPerChar, allowFewer = true).flatMap {
@@ -79,9 +79,9 @@ object Binary {
           case Some((chunk, stream)) =>
             if (chunk.nonEmpty) {
               val chunkWithoutBom = skipByteOrderMark(chunk)
-              val bytes           = chunkWithoutBom.toArray
-              val byteBuffer      = ByteBuffer.wrap(bytes)
-              val charBuffer      = CharBuffer.allocate(bytes.length * maxCharsPerByte)
+              val bytes = chunkWithoutBom.toArray
+              val byteBuffer = ByteBuffer.wrap(bytes)
+              val charBuffer = CharBuffer.allocate(bytes.length * maxCharsPerByte)
               decoder.decode(byteBuffer, charBuffer, false)
               val nextStream = stream.consChunk(Chunk.byteBuffer(byteBuffer.slice()))
               Pull.output1(charBuffer.flip().toString).as(Some(nextStream))

@@ -32,22 +32,22 @@ object NotifyDueItemsRoutes {
       user: AuthToken
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
-    val ut  = backend.userTask
+    val ut = backend.userTask
     import dsl._
 
     HttpRoutes.of {
       case GET -> Root / Ident(id) =>
         (for {
           task <- ut.findNotifyDueItems(id, UserTaskScope(user.account))
-          res  <- OptionT.liftF(taskToSettings(user.account, backend, task))
+          res <- OptionT.liftF(taskToSettings(user.account, backend, task))
           resp <- OptionT.liftF(Ok(res))
         } yield resp).getOrElseF(NotFound())
 
       case req @ POST -> Root / "startonce" =>
         for {
-          data  <- req.as[NotificationSettings]
+          data <- req.as[NotificationSettings]
           newId <- Ident.randomId[F]
-          task  <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
+          task <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
           res <-
             ut.executeNow(UserTaskScope(user.account), None, task)
               .attempt
@@ -83,9 +83,9 @@ object NotifyDueItemsRoutes {
 
       case req @ POST -> Root =>
         for {
-          data  <- req.as[NotificationSettings]
+          data <- req.as[NotificationSettings]
           newId <- Ident.randomId[F]
-          task  <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
+          task <- makeTask(newId, getBaseUrl(cfg, req), user.account, data)
           res <-
             ut.submitNotifyDueItems(UserTaskScope(user.account), None, task)
               .attempt

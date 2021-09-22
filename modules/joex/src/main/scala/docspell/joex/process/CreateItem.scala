@@ -17,8 +17,7 @@ import docspell.joex.scheduler.{Context, Task}
 import docspell.store.queries.QItem
 import docspell.store.records._
 
-/** Task that creates the item.
-  */
+/** Task that creates the item. */
 object CreateItem {
 
   def apply[F[_]: Sync]: Task[F, ProcessItemArgs, ItemData] =
@@ -96,14 +95,14 @@ object CreateItem {
 
       for {
         time <- Duration.stopTime[F]
-        it   <- loadItemOrInsertNew
-        _    <- if (it._1 != 1) storeItemError[F](ctx) else ().pure[F]
-        now  <- Timestamp.current[F]
-        fm   <- fileMetas(it._2.id, now)
-        k    <- fm.traverse(insertAttachment(ctx))
-        _    <- logDifferences(ctx, fm, k.sum)
-        dur  <- time
-        _    <- ctx.logger.info(s"Creating item finished in ${dur.formatExact}")
+        it <- loadItemOrInsertNew
+        _ <- if (it._1 != 1) storeItemError[F](ctx) else ().pure[F]
+        now <- Timestamp.current[F]
+        fm <- fileMetas(it._2.id, now)
+        k <- fm.traverse(insertAttachment(ctx))
+        _ <- logDifferences(ctx, fm, k.sum)
+        dur <- time
+        _ <- ctx.logger.info(s"Creating item finished in ${dur.formatExact}")
       } yield ItemData(
         it._2,
         fm,
@@ -127,7 +126,7 @@ object CreateItem {
 
   private def findExisting[F[_]: Sync]: Task[F, ProcessItemArgs, Option[ItemData]] =
     Task { ctx =>
-      val states      = ItemState.invalidStates
+      val states = ItemState.invalidStates
       val fileMetaIds = ctx.args.files.map(_.fileMetaId).toSet
       for {
         cand <- ctx.store.transact(QItem.findByFileIds(fileMetaIds.toSeq, states))

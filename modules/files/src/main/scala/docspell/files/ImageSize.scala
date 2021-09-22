@@ -56,7 +56,7 @@ object ImageSize {
   ): Either[Throwable, Dimension] =
     Try {
       reader.setInput(in)
-      val width  = reader.getWidth(reader.getMinIndex)
+      val width = reader.getWidth(reader.getMinIndex)
       val height = reader.getHeight(reader.getMinIndex)
       Dimension(width, height)
     }.toEither

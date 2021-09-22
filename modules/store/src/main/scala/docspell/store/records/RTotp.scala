@@ -29,9 +29,9 @@ object RTotp {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "totp"
 
-    val userId  = Column[Ident]("user_id", this)
+    val userId = Column[Ident]("user_id", this)
     val enabled = Column[Boolean]("enabled", this)
-    val secret  = Column[Key]("secret", this)
+    val secret = Column[Key]("secret", this)
     val created = Column[Timestamp]("created", this)
 
     val all = Nel.of(userId, enabled, secret, created)

@@ -102,8 +102,7 @@ object OUpload {
 
     def noSource: UploadResult = NoSource
 
-    /** When adding files to an item, no item was found using the given item-id.
-      */
+    /** When adding files to an item, no item was found using the given item-id. */
     case object NoItem extends UploadResult
 
     def noItem: UploadResult = NoItem
@@ -126,9 +125,9 @@ object OUpload {
           itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
         (for {
-          _     <- checkExistingItem(itemId, account.collective)
+          _ <- checkExistingItem(itemId, account.collective)
           files <- right(data.files.traverse(saveFile).map(_.flatten))
-          _     <- checkFileList(files)
+          _ <- checkFileList(files)
           lang <- data.meta.language match {
             case Some(lang) => right(lang.pure[F])
             case None =>
@@ -156,8 +155,8 @@ object OUpload {
             if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
             else Vector(ProcessItemArgs(meta, files.toList))
           jobs <- right(makeJobs(args, account, data.priority, data.tracker))
-          _    <- right(logger.fdebug(s"Storing jobs: $jobs"))
-          res  <- right(submitJobs(notifyJoex)(jobs))
+          _ <- right(logger.fdebug(s"Storing jobs: $jobs"))
+          res <- right(submitJobs(notifyJoex)(jobs))
           _ <- right(
             store.transact(
               RSource.incrementCounter(data.meta.sourceAbbrev, account.collective)

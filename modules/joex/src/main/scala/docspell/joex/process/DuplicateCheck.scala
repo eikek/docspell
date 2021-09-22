@@ -36,7 +36,7 @@ object DuplicateCheck {
   def removeDuplicates[F[_]: Sync](ctx: Context[F, Args]): F[ProcessItemArgs] =
     for {
       fileMetas <- findDuplicates(ctx)
-      _         <- fileMetas.traverse(deleteDuplicate(ctx))
+      _ <- fileMetas.traverse(deleteDuplicate(ctx))
       ids = fileMetas.filter(_.exists).map(_.fm.id).toSet
     } yield ctx.args.copy(files =
       ctx.args.files.filterNot(f => ids.contains(f.fileMetaId))
@@ -61,7 +61,7 @@ object DuplicateCheck {
   ): F[Vector[FileMetaDupes]] =
     ctx.store.transact(for {
       fileMetas <- RFileMeta.findByIds(ctx.args.files.map(_.fileMetaId))
-      dupes     <- fileMetas.traverse(checkDuplicate(ctx))
+      dupes <- fileMetas.traverse(checkDuplicate(ctx))
     } yield dupes)
 
   private def checkDuplicate[F[_]](

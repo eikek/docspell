@@ -101,27 +101,27 @@ object OCollective {
   sealed trait PassResetResult
   object PassResetResult {
     case class Success(newPw: Password) extends PassResetResult
-    case object NotFound                extends PassResetResult
-    case object UserNotLocal            extends PassResetResult
+    case object NotFound extends PassResetResult
+    case object UserNotLocal extends PassResetResult
 
     def success(np: Password): PassResetResult = Success(np)
-    def notFound: PassResetResult              = NotFound
-    def userNotLocal: PassResetResult          = UserNotLocal
+    def notFound: PassResetResult = NotFound
+    def userNotLocal: PassResetResult = UserNotLocal
   }
 
   sealed trait PassChangeResult
   object PassChangeResult {
-    case object UserNotFound     extends PassChangeResult
+    case object UserNotFound extends PassChangeResult
     case object PasswordMismatch extends PassChangeResult
-    case object UpdateFailed     extends PassChangeResult
-    case object UserNotLocal     extends PassChangeResult
-    case object Success          extends PassChangeResult
+    case object UpdateFailed extends PassChangeResult
+    case object UserNotLocal extends PassChangeResult
+    case object Success extends PassChangeResult
 
-    def userNotFound: PassChangeResult     = UserNotFound
+    def userNotFound: PassChangeResult = UserNotFound
     def passwordMismatch: PassChangeResult = PasswordMismatch
-    def success: PassChangeResult          = Success
-    def updateFailed: PassChangeResult     = UpdateFailed
-    def userNotLocal: PassChangeResult     = UserNotLocal
+    def success: PassChangeResult = Success
+    def updateFailed: PassChangeResult = UpdateFailed
+    def userNotLocal: PassChangeResult = UserNotLocal
   }
 
   def apply[F[_]: Async](
@@ -149,9 +149,9 @@ object OCollective {
       private def updateLearnClassifierTask(coll: Ident, sett: Settings): F[Unit] =
         for {
           id <- Ident.randomId[F]
-          on    = sett.classifier.map(_.enabled).getOrElse(false)
+          on = sett.classifier.map(_.enabled).getOrElse(false)
           timer = sett.classifier.map(_.schedule).getOrElse(CalEvent.unsafe(""))
-          args  = LearnClassifierArgs(coll)
+          args = LearnClassifierArgs(coll)
           ut = UserTask(
             id,
             LearnClassifierArgs.taskName,
@@ -168,7 +168,7 @@ object OCollective {
         for {
           id <- Ident.randomId[F]
           settings = sett.emptyTrash.getOrElse(EmptyTrash.default)
-          args     = EmptyTrashArgs(coll, settings.minAge)
+          args = EmptyTrashArgs(coll, settings.minAge)
           ut = UserTask(id, EmptyTrashArgs.taskName, true, settings.schedule, None, args)
           _ <- uts.updateOneTask(UserTaskScope(coll), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
@@ -187,8 +187,8 @@ object OCollective {
             args
           ).encode.toPeriodicTask(UserTaskScope(collective), args.makeSubject.some)
           job <- ut.toJob
-          _   <- queue.insert(job)
-          _   <- joex.notifyAllNodes
+          _ <- queue.insert(job)
+          _ <- joex.notifyAllNodes
         } yield ()
 
       def startEmptyTrash(args: EmptyTrashArgs): F[Unit] =
@@ -203,8 +203,8 @@ object OCollective {
             args
           ).encode.toPeriodicTask(UserTaskScope(args.collective), args.makeSubject.some)
           job <- ut.toJob
-          _   <- queue.insert(job)
-          _   <- joex.notifyAllNodes
+          _ <- queue.insert(job)
+          _ <- joex.notifyAllNodes
         } yield ()
 
       def findSettings(collective: Ident): F[Option[OCollective.Settings]] =

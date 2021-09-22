@@ -44,9 +44,9 @@ object MailSendRoutes {
 
   def convertIn(item: Ident, s: SimpleMail): Either[String, ItemMail] =
     for {
-      rec     <- s.recipients.traverse(MailAddress.parse)
-      cc      <- s.cc.traverse(MailAddress.parse)
-      bcc     <- s.bcc.traverse(MailAddress.parse)
+      rec <- s.recipients.traverse(MailAddress.parse)
+      cc <- s.cc.traverse(MailAddress.parse)
+      bcc <- s.bcc.traverse(MailAddress.parse)
       fileIds <- s.attachmentIds.traverse(Ident.fromString)
       sel =
         if (s.addAllAttachments) AttachSelection.All

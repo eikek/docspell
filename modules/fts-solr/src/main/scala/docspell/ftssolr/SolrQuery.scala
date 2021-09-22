@@ -69,7 +69,7 @@ object SolrQuery {
           Field("current_version_i")
         )
         val query = QueryData(s"id:$id", "", 1, 0, fields, Map.empty)
-        val req   = Method.POST(query.asJson, url)
+        val req = Method.POST(query.asJson, url)
         client.expect[Option[VersionDoc]](req)
       }
     }
