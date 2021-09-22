@@ -1442,11 +1442,18 @@ paths:
       summary: Disables two factor authentication.
       description: |
         Disables two factor authentication for the current user. If
-        the user has no two factor authentication enabled, this
-        returns success, too.
+        the user has no two factor authentication enabled, an error is
+        returned.
+
+        It requires to specify a valid otp.
 
         After this completes successfully, two factor auth can be
         enabled again by initializing it anew.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtpConfirm"
       responses:
         200:
           description: Ok

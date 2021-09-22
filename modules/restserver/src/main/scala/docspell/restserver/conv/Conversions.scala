@@ -695,7 +695,7 @@ trait Conversions {
       case UpdateResult.Success  => BasicResult(true, successMsg)
       case UpdateResult.NotFound => BasicResult(false, "Not found")
       case UpdateResult.Failure(ex) =>
-        BasicResult(false, s"Internal error: ${ex.getMessage}")
+        BasicResult(false, s"Error: ${ex.getMessage}")
     }
 
   def basicResult(ur: OUpload.UploadResult): BasicResult =

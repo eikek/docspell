@@ -2195,12 +2195,12 @@ confirmOtp flags confirm receive =
         }
 
 
-disableOtp : Flags -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-disableOtp flags receive =
+disableOtp : Flags -> OtpConfirm -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+disableOtp flags otp receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/user/otp/disable"
         , account = getAccount flags
-        , body = Http.emptyBody
+        , body = Http.jsonBody (Api.Model.OtpConfirm.encode otp)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
