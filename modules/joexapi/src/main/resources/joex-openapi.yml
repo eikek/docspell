@@ -11,8 +11,8 @@ info:
     The routes are not protected by the application. This api is meant
     to be used by the server component of Docspell.
   license:
-    name: GPLv3
-    url: https://spdx.org/licenses/GPL-3.0-or-later.html
+    name: AGPLv3
+    url: https://spdx.org/licenses/AGPL-3.0-or-later.html
 
 servers:
   - url: /api/v1

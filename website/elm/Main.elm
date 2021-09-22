@@ -155,10 +155,10 @@ footHero model =
                 [ text " • "
                 ]
             , a
-                [ href "https://spdx.org/licenses/GPL-3.0-or-later.html"
+                [ href "https://spdx.org/licenses/AGPL-3.0-or-later.html"
                 , target "_blank"
                 ]
-                [ text "GPLv3+"
+                [ text "AGPLv3+"
                 ]
             , span [ class "pr-1 pl-1" ]
                 [ text " • "

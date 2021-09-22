@@ -78,7 +78,7 @@ description = "A list of features and limitations."
     that delivers mails directly to docspell.
   - [Paperless Import](@/docs/tools/paperless-import.md) for importing
     your data from paperless
-- License: GPLv3
+- License: AGPLv3
 
 
 # Limitations

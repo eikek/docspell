@@ -16,8 +16,8 @@ info:
     from the config file. They are disabled by default, you need to
     specify a secret in order to enable admin routes.
   license:
-    name: GPLv3
-    url: https://spdx.org/licenses/GPL-3.0-or-later.html
+    name: AGPLv3
+    url: https://spdx.org/licenses/AGPL-3.0-or-later.html
 
 externalDocs:
   description: Docspell Homepage

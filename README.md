@@ -127,5 +127,5 @@ UI framework in use is [tailwind](https://tailwindcss.com).
 
 ## License
 
-Docspell is free software, distributed under the [GPLv3 or
-later](https://spdx.org/licenses/GPL-3.0-or-later.html).
+Docspell is free software, distributed under the [AGPLv3 or
+later](https://spdx.org/licenses/AGPL-3.0-or-later.html).
