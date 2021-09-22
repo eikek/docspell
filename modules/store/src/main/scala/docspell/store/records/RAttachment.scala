@@ -14,7 +14,6 @@ import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
-import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
 
@@ -113,9 +112,7 @@ object RAttachment {
   def findById(attachId: Ident): ConnectionIO[Option[RAttachment]] =
     run(select(T.all), from(T), T.id === attachId).query[RAttachment].option
 
-  def findMeta(attachId: Ident): ConnectionIO[Option[FileMeta]] = {
-    import bitpeace.sql._
-
+  def findMeta(attachId: Ident): ConnectionIO[Option[RFileMeta]] = {
     val m = RFileMeta.as("m")
     val a = RAttachment.as("a")
     Select(
@@ -123,7 +120,7 @@ object RAttachment {
       from(a)
         .innerJoin(m, a.fileId === m.id),
       a.id === attachId
-    ).build.query[FileMeta].option
+    ).build.query[RFileMeta].option
   }
 
   def updateName(
@@ -206,9 +203,7 @@ object RAttachment {
   def findByItemAndCollectiveWithMeta(
       id: Ident,
       coll: Ident
-  ): ConnectionIO[Vector[(RAttachment, FileMeta)]] = {
-    import bitpeace.sql._
-
+  ): ConnectionIO[Vector[(RAttachment, RFileMeta)]] = {
     val a = RAttachment.as("a")
     val m = RFileMeta.as("m")
     val i = RItem.as("i")
@@ -218,12 +213,10 @@ object RAttachment {
         .innerJoin(m, a.fileId === m.id)
         .innerJoin(i, a.itemId === i.id),
       a.itemId === id && i.cid === coll
-    ).build.query[(RAttachment, FileMeta)].to[Vector]
+    ).build.query[(RAttachment, RFileMeta)].to[Vector]
   }
 
-  def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachment, FileMeta)]] = {
-    import bitpeace.sql._
-
+  def findByItemWithMeta(id: Ident): ConnectionIO[Vector[(RAttachment, RFileMeta)]] = {
     val a = RAttachment.as("a")
     val m = RFileMeta.as("m")
     Select(
@@ -231,7 +224,7 @@ object RAttachment {
       from(a)
         .innerJoin(m, a.fileId === m.id),
       a.itemId === id
-    ).orderBy(a.position.asc).build.query[(RAttachment, FileMeta)].to[Vector]
+    ).orderBy(a.position.asc).build.query[(RAttachment, RFileMeta)].to[Vector]
   }
 
   /** Deletes the attachment and its related source and meta records.

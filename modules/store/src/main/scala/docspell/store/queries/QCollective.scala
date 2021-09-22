@@ -99,16 +99,16 @@ object QCollective {
              inner join item i on a.itemid = i.itemid
              where i.cid = $coll)
          select a.fid,m.length from attachs a
-         inner join filemeta m on m.id = a.fid
+         inner join filemeta m on m.file_id = a.fid
          union distinct
          select a.file_id,m.length from attachment_source a
-         inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs)
+         inner join filemeta m on m.file_id = a.file_id where a.id in (select aid from attachs)
          union distinct
          select p.file_id,m.length from attachment_preview p
-         inner join filemeta m on m.id = p.file_id where p.id in (select aid from attachs)
+         inner join filemeta m on m.file_id = p.file_id where p.id in (select aid from attachs)
          union distinct
          select a.file_id,m.length from attachment_archive a
-         inner join filemeta m on m.id = a.file_id where a.id in (select aid from attachs)
+         inner join filemeta m on m.file_id = a.file_id where a.id in (select aid from attachs)
       ) as t""".query[Option[Long]].unique
 
     for {

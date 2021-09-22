@@ -6,10 +6,14 @@
 
 package docspell.store
 
+import javax.sql.DataSource
+
 import cats.effect._
 
 import docspell.common.LenientUri
+import docspell.store.file.FileStore
 import docspell.store.impl.StoreImpl
+import docspell.store.migrate.FlywayMigrate
 
 import doobie._
 import munit._
@@ -20,18 +24,17 @@ trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
   val xa = ResourceFixture {
     val cfg = StoreFixture.memoryDB("test")
     for {
-      xa <- StoreFixture.makeXA(cfg)
-      store = new StoreImpl[IO](cfg, xa)
-      _ <- Resource.eval(store.migrate)
+      ds <- StoreFixture.dataSource(cfg)
+      xa <- StoreFixture.makeXA(ds)
+      _  <- Resource.eval(FlywayMigrate.run[IO](cfg))
     } yield xa
   }
 
   val store = ResourceFixture {
     val cfg = StoreFixture.memoryDB("test")
     for {
-      xa <- StoreFixture.makeXA(cfg)
-      store = new StoreImpl[IO](cfg, xa)
-      _ <- Resource.eval(store.migrate)
+      store <- StoreFixture.store(cfg)
+      _     <- Resource.eval(store.migrate)
     } yield store
   }
 }
@@ -47,31 +50,24 @@ object StoreFixture {
       ""
     )
 
-  def globalXA(jdbc: JdbcConfig): Transactor[IO] =
-    Transactor.fromDriverManager(
-      "org.h2.Driver",
-      jdbc.url.asString,
-      jdbc.user,
-      jdbc.password
-    )
-
-  def makeXA(jdbc: JdbcConfig): Resource[IO, Transactor[IO]] = {
+  def dataSource(jdbc: JdbcConfig): Resource[IO, JdbcConnectionPool] = {
     def jdbcConnPool =
       JdbcConnectionPool.create(jdbc.url.asString, jdbc.user, jdbc.password)
 
-    val makePool = Resource.make(IO(jdbcConnPool))(cp => IO(cp.dispose()))
-
-    for {
-      ec   <- ExecutionContexts.cachedThreadPool[IO]
-      pool <- makePool
-      xa = Transactor.fromDataSource[IO].apply(pool, ec)
-    } yield xa
+    Resource.make(IO(jdbcConnPool))(cp => IO(cp.dispose()))
   }
 
-  def store(jdbc: JdbcConfig): Resource[IO, Store[IO]] =
+  def makeXA(ds: DataSource): Resource[IO, Transactor[IO]] =
     for {
-      xa <- makeXA(jdbc)
-      store = new StoreImpl[IO](jdbc, xa)
+      ec <- ExecutionContexts.cachedThreadPool[IO]
+      xa = Transactor.fromDataSource[IO](ds, ec)
+    } yield xa
+
+  def store(jdbc: JdbcConfig): Resource[IO, StoreImpl[IO]] =
+    for {
+      ds <- dataSource(jdbc)
+      xa <- makeXA(ds)
+      store = new StoreImpl[IO](FileStore[IO](xa, ds, 64 * 1024), jdbc, xa)
       _ <- Resource.eval(store.migrate)
     } yield store
 }

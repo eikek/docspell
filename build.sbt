@@ -368,7 +368,7 @@ val store = project
     name := "docspell-store",
     libraryDependencies ++=
       Dependencies.doobie ++
-        Dependencies.bitpeace ++
+        Dependencies.binny ++
         Dependencies.tika ++
         Dependencies.fs2 ++
         Dependencies.databases ++

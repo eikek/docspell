@@ -12,7 +12,6 @@ import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
-import bitpeace.FileMeta
 import doobie._
 import doobie.implicits._
 
@@ -101,9 +100,7 @@ object RAttachmentPreview {
 
   def findByItemWithMeta(
       id: Ident
-  ): ConnectionIO[Vector[(RAttachmentPreview, FileMeta)]] = {
-    import bitpeace.sql._
-
+  ): ConnectionIO[Vector[(RAttachmentPreview, RFileMeta)]] = {
     val a = RAttachmentPreview.as("a")
     val b = RAttachment.as("b")
     val m = RFileMeta.as("m")
@@ -114,6 +111,6 @@ object RAttachmentPreview {
         .innerJoin(m, a.fileId === m.id)
         .innerJoin(b, b.id === a.id),
       b.itemId === id
-    ).orderBy(b.position.asc).build.query[(RAttachmentPreview, FileMeta)].to[Vector]
+    ).orderBy(b.position.asc).build.query[(RAttachmentPreview, RFileMeta)].to[Vector]
   }
 }

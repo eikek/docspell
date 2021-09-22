@@ -17,7 +17,6 @@ import docspell.store._
 import docspell.store.queries.{QAttachment, QItem}
 import docspell.store.records._
 
-import bitpeace.{FileMeta, RangeDef}
 import doobie.implicits._
 
 trait OItemSearch[F[_]] {
@@ -90,10 +89,10 @@ object OItemSearch {
   trait BinaryData[F[_]] {
     def data: Stream[F, Byte]
     def name: Option[String]
-    def meta: FileMeta
+    def meta: RFileMeta
     def fileId: Ident
   }
-  case class AttachmentData[F[_]](ra: RAttachment, meta: FileMeta, data: Stream[F, Byte])
+  case class AttachmentData[F[_]](ra: RAttachment, meta: RFileMeta, data: Stream[F, Byte])
       extends BinaryData[F] {
     val name   = ra.name
     val fileId = ra.fileId
@@ -101,7 +100,7 @@ object OItemSearch {
 
   case class AttachmentSourceData[F[_]](
       rs: RAttachmentSource,
-      meta: FileMeta,
+      meta: RFileMeta,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
     val name   = rs.name
@@ -110,7 +109,7 @@ object OItemSearch {
 
   case class AttachmentPreviewData[F[_]](
       rs: RAttachmentPreview,
-      meta: FileMeta,
+      meta: RFileMeta,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
     val name   = rs.name
@@ -119,7 +118,7 @@ object OItemSearch {
 
   case class AttachmentArchiveData[F[_]](
       rs: RAttachmentArchive,
-      meta: FileMeta,
+      meta: RFileMeta,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
     val name   = rs.name
@@ -189,7 +188,7 @@ object OItemSearch {
                 AttachmentData[F](
                   ra,
                   m,
-                  store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
+                  store.fileStore.getBytes(m.id)
                 )
               }
 
@@ -209,7 +208,7 @@ object OItemSearch {
                 AttachmentSourceData[F](
                   ra,
                   m,
-                  store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
+                  store.fileStore.getBytes(m.id)
                 )
               }
 
@@ -229,7 +228,7 @@ object OItemSearch {
                 AttachmentPreviewData[F](
                   ra,
                   m,
-                  store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
+                  store.fileStore.getBytes(m.id)
                 )
               }
 
@@ -249,7 +248,7 @@ object OItemSearch {
                 AttachmentPreviewData[F](
                   ra,
                   m,
-                  store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
+                  store.fileStore.getBytes(m.id)
                 )
               }
 
@@ -269,7 +268,7 @@ object OItemSearch {
                 AttachmentArchiveData[F](
                   ra,
                   m,
-                  store.bitpeace.fetchData2(RangeDef.all)(Stream.emit(m))
+                  store.fileStore.getBytes(m.id)
                 )
               }
 
@@ -277,15 +276,11 @@ object OItemSearch {
               (None: Option[AttachmentArchiveData[F]]).pure[F]
           }
 
-      private def makeBinaryData[A](fileId: Ident)(f: FileMeta => A): F[Option[A]] =
-        store.bitpeace
-          .get(fileId.id)
-          .unNoneTerminate
-          .compile
-          .last
-          .map(
-            _.map(m => f(m))
-          )
+      private def makeBinaryData[A](fileId: Ident)(f: RFileMeta => A): F[Option[A]] =
+        store.fileStore
+          .findMeta(fileId)
+          .map(fm => f(fm))
+          .value
 
       def findAttachmentMeta(id: Ident, collective: Ident): F[Option[RAttachmentMeta]] =
         store.transact(QAttachment.getAttachmentMeta(id, collective))

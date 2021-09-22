@@ -122,12 +122,12 @@ object JoexAppImpl {
     for {
       httpClient <- BlazeClientBuilder[F](clientEC).resource
       client = JoexClient(httpClient)
-      store         <- Store.create(cfg.jdbc, connectEC)
+      store         <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
       queue         <- JobQueue(store)
       pstore        <- PeriodicTaskStore.create(store)
       nodeOps       <- ONode(store)
       joex          <- OJoex(client, store)
-      upload        <- OUpload(store, queue, cfg.files, joex)
+      upload        <- OUpload(store, queue, joex)
       fts           <- createFtsClient(cfg)(httpClient)
       createIndex   <- CreateIndex.resource(fts, store)
       itemOps       <- OItem(store, fts, createIndex, queue, joex)
@@ -212,7 +212,7 @@ object JoexAppImpl {
         .withTask(
           JobTask.json(
             MakePreviewArgs.taskName,
-            MakePreviewTask[F](cfg.convert, cfg.extraction.preview),
+            MakePreviewTask[F](cfg.extraction.preview),
             MakePreviewTask.onCancel[F]
           )
         )

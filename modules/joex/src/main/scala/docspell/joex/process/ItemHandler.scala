@@ -132,8 +132,8 @@ object ItemHandler {
     Task(ctx =>
       ctx.logger.info("Deleting input files …") *>
         Stream
-          .emits(ctx.args.files.map(_.fileMetaId.id))
-          .flatMap(id => ctx.store.bitpeace.delete(id).attempt.drain)
+          .emits(ctx.args.files.map(_.fileMetaId))
+          .evalMap(id => ctx.store.fileStore.delete(id).attempt)
           .compile
           .drain
     )

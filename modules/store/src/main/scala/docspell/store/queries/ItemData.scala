@@ -9,8 +9,6 @@ package docspell.store.queries
 import docspell.common._
 import docspell.store.records._
 
-import bitpeace.FileMeta
-
 case class ItemData(
     item: RItem,
     corrOrg: Option[ROrganization],
@@ -20,9 +18,9 @@ case class ItemData(
     inReplyTo: Option[IdRef],
     folder: Option[IdRef],
     tags: Vector[RTag],
-    attachments: Vector[(RAttachment, FileMeta)],
-    sources: Vector[(RAttachmentSource, FileMeta)],
-    archives: Vector[(RAttachmentArchive, FileMeta)],
+    attachments: Vector[(RAttachment, RFileMeta)],
+    sources: Vector[(RAttachmentSource, RFileMeta)],
+    archives: Vector[(RAttachmentArchive, RFileMeta)],
     customFields: Vector[ItemFieldValue]
 ) {
 

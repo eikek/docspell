@@ -19,9 +19,6 @@ import docspell.convert._
 import docspell.joex.extract.JsoupSanitizer
 import docspell.joex.scheduler._
 import docspell.store.records._
-import docspell.store.syntax.MimeTypes._
-
-import bitpeace.{Mimetype, MimetypeHint, RangeDef}
 
 /** Goes through all attachments and creates a PDF version of it where supported.
   *
@@ -69,24 +66,21 @@ object ConvertPdf {
   ): F[Boolean] =
     ctx.store.transact(RAttachmentSource.isConverted(ra.id))
 
-  def findMime[F[_]: Functor](ctx: Context[F, _])(ra: RAttachment): F[Mimetype] =
+  def findMime[F[_]: Functor](ctx: Context[F, _])(ra: RAttachment): F[MimeType] =
     OptionT(ctx.store.transact(RFileMeta.findById(ra.fileId)))
       .map(_.mimetype)
-      .getOrElse(Mimetype.applicationOctetStream)
+      .getOrElse(MimeType.octetStream)
 
   def convertSafe[F[_]: Async](
       cfg: ConvertConfig,
       sanitizeHtml: SanitizeHtml,
       ctx: Context[F, ProcessItemArgs],
       item: ItemData
-  )(ra: RAttachment, mime: Mimetype): F[(RAttachment, Option[RAttachmentMeta])] =
+  )(ra: RAttachment, mime: MimeType): F[(RAttachment, Option[RAttachmentMeta])] =
     Conversion.create[F](cfg, sanitizeHtml, ctx.logger).use { conv =>
-      mime.toLocal match {
+      mime match {
         case mt =>
-          val data = ctx.store.bitpeace
-            .get(ra.fileId.id)
-            .unNoneTerminate
-            .through(ctx.store.bitpeace.fetchData2(RangeDef.all))
+          val data    = ctx.store.fileStore.getBytes(ra.fileId)
           val handler = conversionHandler[F](ctx, cfg, ra, item)
           ctx.logger.info(s"Converting file ${ra.name} (${mime.asString}) into a PDF") *>
             conv.toPDF(DataType(mt), ctx.args.meta.language, handler)(
@@ -154,11 +148,11 @@ object ConvertPdf {
         .map(FileName.apply)
         .map(_.withExtension("pdf").withPart(cfg.convertedFilenamePart, '.'))
         .map(_.fullName)
-    ctx.store.bitpeace
-      .saveNew(pdf, cfg.chunkSize, MimetypeHint(hint.filename, hint.advertised))
+
+    pdf
+      .through(ctx.store.fileStore.save(MimeTypeHint(hint.filename, hint.advertised)))
       .compile
       .lastOrError
-      .map(fm => Ident.unsafe(fm.id))
       .flatMap(fmId => updateAttachment[F](ctx, ra, fmId, newName).map(_ => fmId))
       .map(fmId => ra.copy(fileId = fmId, name = newName))
   }
@@ -184,10 +178,8 @@ object ConvertPdf {
               if (sameFile) ().pure[F]
               else
                 ctx.logger.info("Deleting previous attachment file") *>
-                  ctx.store.bitpeace
-                    .delete(raPrev.fileId.id)
-                    .compile
-                    .drain
+                  ctx.store.fileStore
+                    .delete(raPrev.fileId)
                     .attempt
                     .flatMap {
                       case Right(_) => ().pure[F]

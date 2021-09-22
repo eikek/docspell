@@ -12,14 +12,13 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
-import docspell.backend.{Config, JobFactory}
+import docspell.backend.JobFactory
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.records._
 
-import bitpeace.MimetypeHint
 import org.log4s._
 
 trait OUpload[F[_]] {
@@ -116,7 +115,6 @@ object OUpload {
   def apply[F[_]: Sync](
       store: Store[F],
       queue: JobQueue[F],
-      cfg: Config.Files,
       joex: OJoex[F]
   ): Resource[F, OUpload[F]] =
     Resource.pure[F, OUpload[F]](new OUpload[F] {
@@ -205,11 +203,10 @@ object OUpload {
       /** Saves the file into the database. */
       private def saveFile(file: File[F]): F[Option[ProcessItemArgs.File]] =
         logger.finfo(s"Receiving file $file") *>
-          store.bitpeace
-            .saveNew(file.data, cfg.chunkSize, MimetypeHint(file.name, None), None)
+          file.data
+            .through(store.fileStore.save(MimeTypeHint(file.name, None)))
             .compile
             .lastOrError
-            .map(fm => Ident.unsafe(fm.id))
             .attempt
             .map(
               _.fold(

@@ -20,6 +20,7 @@ import doobie.util.log.Success
 import emil.doobie.EmilDoobieMeta
 import io.circe.Json
 import io.circe.{Decoder, Encoder}
+import scodec.bits.ByteVector
 
 trait DoobieMeta extends EmilDoobieMeta {
 
@@ -132,6 +133,15 @@ trait DoobieMeta extends EmilDoobieMeta {
 
   implicit val metaKey: Meta[Key] =
     Meta[String].timap(Key.unsafeFromString)(_.asString)
+
+  implicit val metaMimeType: Meta[MimeType] =
+    Meta[String].timap(MimeType.unsafe)(_.asString)
+
+  implicit val metaByteVectorHex: Meta[ByteVector] =
+    Meta[String].timap(s => ByteVector.fromValidHex(s))(_.toHex)
+
+  implicit val metaByteSize: Meta[ByteSize] =
+    Meta[Long].timap(ByteSize.apply)(_.bytes)
 }
 
 object DoobieMeta extends DoobieMeta {

@@ -123,7 +123,10 @@ object MimeType {
 
   object HtmlMatch {
     def unapply(mt: MimeType): Option[MimeType] =
-      Some(mt).filter(_.matches(html))
+      if (
+        (mt.primary == "text" || mt.primary == "application") && mt.sub.contains("html")
+      ) Some(mt)
+      else None
   }
 
   object NonHtmlText {

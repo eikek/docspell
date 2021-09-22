@@ -70,7 +70,7 @@ object BackendApp {
       tagImpl        <- OTag[F](store)
       equipImpl      <- OEquipment[F](store)
       orgImpl        <- OOrganization(store)
-      uploadImpl     <- OUpload(store, queue, cfg.files, joexImpl)
+      uploadImpl     <- OUpload(store, queue, joexImpl)
       nodeImpl       <- ONode(store)
       jobImpl        <- OJob(store, joexImpl)
       createIndex    <- CreateIndex.resource(ftsClient, store)
@@ -115,7 +115,7 @@ object BackendApp {
       httpClientEc: ExecutionContext
   )(ftsFactory: Client[F] => Resource[F, FtsClient[F]]): Resource[F, BackendApp[F]] =
     for {
-      store      <- Store.create(cfg.jdbc, connectEC)
+      store      <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
       httpClient <- BlazeClientBuilder[F](httpClientEc).resource
       ftsClient  <- ftsFactory(httpClient)
       backend    <- create(cfg, store, httpClient, ftsClient)
