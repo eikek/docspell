@@ -84,7 +84,7 @@ gb =
             or to just leave it there. In the latter case you should
             adjust the schedule to avoid reading over the same mails
             again."""
-    , otpMenu = "Two Factor"
+    , otpMenu = "Two Factor Authentication"
     }
 
 

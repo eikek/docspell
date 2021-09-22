@@ -36,6 +36,8 @@ description = "A list of features and limitations."
 - [OpenID Connect](@/docs/configure/_index.md#openid-connect-oauth2)
   support allows Docspell to integrate into your SSO setup, for
   example with keycloak.
+- Two-Factor Authentication using [TOTP](@/docs/webapp/totp.md) built
+  in
 - mobile-friendly Web-UI with dark and light theme
 - [Create anonymous
   “upload-urls”](@/docs/webapp/uploading.md#anonymous-upload) to
@@ -76,8 +78,6 @@ description = "A list of features and limitations."
     link and send the file to docspell
   - [SMTP Gateway](@/docs/tools/smtpgateway.md): Setup a SMTP server
     that delivers mails directly to docspell.
-  - [Paperless Import](@/docs/tools/paperless-import.md) for importing
-    your data from paperless
 - License: AGPLv3
 
 

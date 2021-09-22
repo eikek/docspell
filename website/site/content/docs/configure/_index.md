@@ -342,7 +342,7 @@ The `session-valid` determines how long a token is valid. This can be
 just some minutes, the web application obtains new ones
 periodically. So a rather short time is recommended.
 
-### OpenID Connect / OAuth2
+## OpenID Connect / OAuth2
 
 You can integrate Docspell into your SSO solution via [OpenID
 Connect](https://openid.net/connect/) (OIDC). This requires to set up
