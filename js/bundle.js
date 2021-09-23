@@ -6694,12 +6694,12 @@ var $author$project$Main$footHero = function (model) {
 						$elm$html$Html$a,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$href('https://spdx.org/licenses/GPL-3.0-or-later.html'),
+								$elm$html$Html$Attributes$href('https://spdx.org/licenses/AGPL-3.0-or-later.html'),
 								$elm$html$Html$Attributes$target('_blank')
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('GPLv3+')
+								$elm$html$Html$text('AGPLv3+')
 							])),
 						A2(
 						$elm$html$Html$span,

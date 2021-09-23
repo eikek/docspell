@@ -169,6 +169,12 @@
                                     </li>
                                     
                                     <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#openid-connect-oauth2">
+                                            OpenID Connect &#x2F; OAuth2
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
                                         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;#file-processing">
                                             File Processing
                                         </a>
@@ -483,6 +489,79 @@ of the string are used.</p>
 <p>The <code>session-valid</code> determines how long a token is valid. This can be
 just some minutes, the web application obtains new ones
 periodically. So a rather short time is recommended.</p>
+<h2 id="openid-connect-oauth2">OpenID Connect / OAuth2<a class="zola-anchor" href="#openid-connect-oauth2" aria-label="Anchor link for: openid-connect-oauth2">🔗</a></h2>
+<p>You can integrate Docspell into your SSO solution via <a href="https://openid.net/connect/">OpenID
+Connect</a> (OIDC). This requires to set up
+an OpenID Provider (OP) somewhere and to configure Docspell
+accordingly to act as the relying party.</p>
+<p>You can define multiple OPs to use. For some examples, please see the
+default configuration file <a href="https://docspell.org/docs/configure/#rest-server">below</a>.</p>
+<p>The configuration of a provider highly depends on how it is setup.
+Here is an example for a setup using
+<a href="https://www.keycloak.org">keycloak</a>:</p>
+<pre style="background-color:#282828;">
+<code class="language-conf" data-lang="conf"><span style="color:#fdf4c1;">provider </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> {
+  </span><span style="color:#fdf4c1;">provider-id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;keycloak&quot;</span><span style="color:#fe8019;">,
+  </span><span style="color:#fdf4c1;">client-id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span style="color:#fe8019;">,
+  </span><span style="color:#fdf4c1;">client-secret </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;example-secret-439e-bf06-911e4cdd56a6&quot;</span><span style="color:#fe8019;">,
+  </span><span style="color:#fdf4c1;">scope </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;profile&quot;</span><span style="color:#fe8019;">,</span><span style="color:#fdf4c1aa;"> # scope is required for </span><span style="color:#fabd2f;">OIDC
+  </span><span style="color:#fdf4c1;">authorize-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:8080/auth/realms/home/protocol/openid-connect/auth&quot;</span><span style="color:#fe8019;">,
+  </span><span style="color:#fdf4c1;">token-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:8080/auth/realms/home/protocol/openid-connect/token&quot;</span><span style="color:#fe8019;">,
+</span><span style="color:#fdf4c1aa;">  #User </span><span style="color:#fabd2f;">URL</span><span style="color:#fdf4c1aa;"> is not used when signature key is set</span><span style="color:#fe8019;">.
+</span><span style="color:#fdf4c1aa;">  #user</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:8080/auth/realms/home/protocol/openid-connect/userinfo&quot;</span><span style="color:#fe8019;">,
+  </span><span style="color:#fdf4c1;">sign-key </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;b64:MII…ZYL09vAwLn8EAcSkCAwEAAQ==&quot;</span><span style="color:#fe8019;">,
+  </span><span style="color:#fdf4c1;">sig-algo </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;RS512&quot;
+</span><span style="color:#fdf4c1aa;">}
+</span></code></pre>
+<p>The <code>provider-id</code> is some identifier that is used in the URL to
+distinguish between possibly multiple providers. The <code>client-id</code> and
+<code>client-secret</code> define the two parameters required for a &quot;confidential
+client&quot;. The different URLs are best explained at the <a href="https://www.keycloak.org/docs/latest/server_admin/#_oidc-endpoints">keycloak
+docs</a>.
+They are available for all OPs in some way. The <code>user-url</code> is not
+required, if the access token is already containing the necessary
+data. If not, then docspell performs another request to the
+<code>user-url</code>, which must be the user-info endpoint, to obtain the
+required user data.</p>
+<p>If the data is taken from the token directly and not via a request to
+the user-info endpoint, then the token must be validated using the
+given <code>sign-key</code> and <code>sig-algo</code>. These two values are then required to
+specify! However, if the user-info endpoint should be used, then leave
+the <code>sign-key</code> empty and specify the correct url in <code>user-url</code>. When
+specifying the <code>sign-key</code> use a prefix of <code>b64:</code> if it is Base64
+encoded or <code>hex:</code> if it is hex encoded. Otherwise the unicode bytes
+are used, which is most probably not wanted for this setting.</p>
+<p>Once the user is authenticated, docspell tries to setup an account and
+does some checks. For this it must get to the username and collective
+name somehow. How it does this, can be specified by the <code>user-key</code> and
+<code>collective-key</code> settings:</p>
+<pre style="background-color:#282828;">
+<code class="language-conf" data-lang="conf"><span style="color:#fdf4c1aa;"># The collective of the user is given in the access token as
+# property `docspell_collective`</span><span style="color:#fe8019;">.
+</span><span style="color:#fdf4c1;">collective-key </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;lookup:docspell_collective&quot;</span><span style="color:#fe8019;">,
+</span><span style="color:#fdf4c1aa;"># The username to use for the docspell account
+</span><span style="color:#fdf4c1;">user-key </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;preferred_username&quot;
+</span></code></pre>
+<p>The <code>user-key</code> is some string that is used to search the JSON response
+from the OP for an object with that key. The search happens
+recursively, so the field can be in a nested object. The found value
+is used as the user name. Keycloak transmits the <code>preferred_username</code>
+when asking for the <code>profile</code> scope. This can be used as the user
+name.</p>
+<p>The collective name can be obtained by different ways. For example,
+you can instruct your OP (like keycloak) to provide a collective name
+in the token and/or user-info responses. If you do this, then use the
+<code>lookup:</code> prefix as in the example above. This instructs docspell to
+search for a value the same way as the <code>user-key</code>. You can also set a
+fixed collective, using <code>fixed:</code> prefix; in this case all users are in
+the same collective! A third option is to prefix it with <code>account:</code> -
+then the value that is looked up is interpreted as the full account
+name, like <code>collective/user</code> and the <code>user-key</code> setting is ignored. If
+you want to put each user in its own collective, you can just use the
+same value as in <code>user-key</code>, only prefixed with <code>lookup:</code>. In the
+example it would be <code>lookup:preferred_username</code>.</p>
+<p>If you find that these methods do not suffice for your case, please
+open an issue.</p>
 <h2 id="file-processing">File Processing<a class="zola-anchor" href="#file-processing" aria-label="Anchor link for: file-processing">🔗</a></h2>
 <p>Files are being processed by the joex component. So all the respective
 configuration is in this config only.</p>
@@ -595,7 +674,7 @@ you need to add an option to use G1GC (<code>-XX:+UseG1GC</code>), for java11
 this is not necessary (but doesn't hurt either). This could look like
 this:</p>
 <pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">./docspell-joex-&lt;pre data-shortcode&gt;0.26.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+<code><span style="color:#fdf4c1aa;">./docspell-joex-&lt;pre data-shortcode&gt;0.27.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
 </span></code></pre>
 <p>Using these options you can define how much memory the JVM process is
 able to use. This might be necessary to adopt depending on the usage
@@ -697,6 +776,131 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span><span style="color:#fdf4c1;">      valid = </span><span style="color:#b8bb26;">&quot;30 days&quot;
     </span><span style="color:#fdf4c1;">}
   }
+
+  </span><span style="font-style:italic;color:#928374;"># Configures OpenID Connect (OIDC) or OAuth2 authentication. Only
+  # the &quot;Authorization Code Flow&quot; is supported.
+  #
+  # Multiple authentication providers can be defined. Each is
+  # configured in the array below. The `provider` block gives all
+  # details necessary to authenticate against an external OIDC or
+  # OAuth provider. This requires at least two URLs for OIDC and three
+  # for OAuth2. When using OIDC, the `user-url` is only required if
+  # the account data is to be retrieved from the user-info endpoint
+  # and not from the JWT token. For the request to the `user-url`, the
+  # access token is then used to authenticate at the provider. Thus,
+  # it doesn&#39;t need to be validated here and therefore no `sign-key`
+  # setting is needed. However, if you want to extract the account
+  # information from the access token, it must be validated here and
+  # therefore the correct signature key and algorithm must be
+  # provided. If the `sign-key` is left empty, the `user-url` is used
+  # and must be specified. If the `sign-key` is _not_ empty, the
+  # response from the authentication provider is validated using this
+  # key.
+  #
+  # After successful authentication, docspell needs to create the
+  # account. For this a username and collective name is required. The
+  # account name is defined by the `user-key` and `collective-key`
+  # setting. The `user-key` is used to search the JSON structure, that
+  # is obtained from the JWT token or the user-info endpoint, for the
+  # login name to use. It traverses the JSON structure recursively,
+  # until it finds an object with that key. The first value is used.
+  #
+  # The `collective-key` can be used in multiple ways and both can
+  # work together to retrieve the full account id:
+  #
+  # - If it starts with `fixed:`, like &quot;fixed:collective&quot;, the name
+  #   after the `fixed:` prefix is used as collective as is. So all
+  #   users are in the same collective.
+  #
+  # - If it starts with `lookup:`, like &quot;lookup:collective_name&quot;, the
+  #   value after the prefix is used to search the JSON response for
+  #   an object with this key, just like it works with the `user-key`.
+  #
+  # - If it starts with `account:`, like &quot;account:demo&quot;, it works the
+  #   same as `lookup:` only that the value is interpreted as the full
+  #   account name of form `collective/login`. The `user-key` value is
+  #   ignored in this case.
+  #
+  # If these values cannot be obtained from the response, docspell
+  # fails the authentication. It is then assumed that the successfully
+  # authenticated user at the OP has not enough permissions to access
+  # docspell.
+  #
+  # Below are examples for OpenID Connect (keycloak) and OAuth2
+  # (github).
+</span><span style="color:#fdf4c1;">  openid =
+    [ { enabled = false,
+
+        </span><span style="font-style:italic;color:#928374;"># The name to render on the login link/button.
+</span><span style="color:#fdf4c1;">        display = </span><span style="color:#b8bb26;">&quot;Keycloak&quot;
+
+        </span><span style="font-style:italic;color:#928374;"># This illustrates to use a custom keycloak setup as the
+        # authentication provider. For details, please refer to the
+        # keycloak documentation. The settings here assume a certain
+        # configuration at keycloak.
+        #
+        # Keycloak can be configured to return the collective name for
+        # each user in the access token. It may also be configured to
+        # return it in the user info response. If it is already in the
+        # access token, an additional request can be omitted. Set the
+        # `sign-key` to an empty string then. Otherwise provide the
+        # algo and key from your realm settings. In this example, the
+        # realm is called &quot;home&quot;.
+</span><span style="color:#fdf4c1;">        provider = {
+          provider-id = </span><span style="color:#b8bb26;">&quot;keycloak&quot;</span><span style="color:#fdf4c1;">,
+          client-id = </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span style="color:#fdf4c1;">,
+          client-secret = </span><span style="color:#b8bb26;">&quot;example-secret-439e-bf06-911e4cdd56a6&quot;</span><span style="color:#fdf4c1;">,
+          scope = </span><span style="color:#b8bb26;">&quot;profile&quot;</span><span style="color:#fdf4c1;">, </span><span style="font-style:italic;color:#928374;"># scope is required for OIDC
+</span><span style="color:#fdf4c1;">          authorize-url = </span><span style="color:#b8bb26;">&quot;http://localhost:8080/auth/realms/home/protocol/openid-connect/auth&quot;</span><span style="color:#fdf4c1;">,
+          token-url = </span><span style="color:#b8bb26;">&quot;http://localhost:8080/auth/realms/home/protocol/openid-connect/token&quot;</span><span style="color:#fdf4c1;">,
+          </span><span style="font-style:italic;color:#928374;">#User URL is not used when signature key is set.
+          #user-url = &quot;http://localhost:8080/auth/realms/home/protocol/openid-connect/userinfo&quot;,
+</span><span style="color:#fdf4c1;">          sign-key = </span><span style="color:#b8bb26;">&quot;b64:anVzdC1hLXRlc3Q=&quot;</span><span style="color:#fdf4c1;">,
+          sig-algo = </span><span style="color:#b8bb26;">&quot;RS512&quot;
+        </span><span style="color:#fdf4c1;">},
+        </span><span style="font-style:italic;color:#928374;"># The collective of the user is given in the access token as
+        # property `docspell_collective`.
+</span><span style="color:#fdf4c1;">        collective-key = </span><span style="color:#b8bb26;">&quot;lookup:docspell_collective&quot;</span><span style="color:#fdf4c1;">,
+        </span><span style="font-style:italic;color:#928374;"># The username to use for the docspell account
+</span><span style="color:#fdf4c1;">        user-key = </span><span style="color:#b8bb26;">&quot;preferred_username&quot;
+      </span><span style="color:#fdf4c1;">},
+      { enabled = false,
+
+        </span><span style="font-style:italic;color:#928374;"># The name to render on the login link/button.
+</span><span style="color:#fdf4c1;">        display = </span><span style="color:#b8bb26;">&quot;Github&quot;
+
+        </span><span style="font-style:italic;color:#928374;"># Provider settings for using github as an authentication
+        # provider. Note that this is only an example to illustrate
+        # how it works. Usually you wouldn&#39;t want to let every user on
+        # github in ;-).
+        #
+        # Github doesn&#39;t have full OpenIdConnect, but supports the
+        # OAuth2 code flow (which is very similar). It mainly means,
+        # that there is no standardized token to validate and get
+        # information from. So the user-url must be used in this case.
+</span><span style="color:#fdf4c1;">        provider = {
+          provider-id = </span><span style="color:#b8bb26;">&quot;github&quot;</span><span style="color:#fdf4c1;">,
+          client-id = </span><span style="color:#b8bb26;">&quot;&lt;your github client id&gt;&quot;</span><span style="color:#fdf4c1;">,
+          client-secret = </span><span style="color:#b8bb26;">&quot;&lt;your github client secret&gt;&quot;</span><span style="color:#fdf4c1;">,
+          scope = </span><span style="color:#b8bb26;">&quot;&quot;</span><span style="color:#fdf4c1;">, </span><span style="font-style:italic;color:#928374;"># scope is not needed for github
+</span><span style="color:#fdf4c1;">          authorize-url = </span><span style="color:#b8bb26;">&quot;https://github.com/login/oauth/authorize&quot;</span><span style="color:#fdf4c1;">,
+          token-url = </span><span style="color:#b8bb26;">&quot;https://github.com/login/oauth/access_token&quot;</span><span style="color:#fdf4c1;">,
+          user-url = </span><span style="color:#b8bb26;">&quot;https://api.github.com/user&quot;</span><span style="color:#fdf4c1;">,
+          sign-key = </span><span style="color:#b8bb26;">&quot;&quot; </span><span style="font-style:italic;color:#928374;"># this must be set empty
+</span><span style="color:#fdf4c1;">          sig-algo = </span><span style="color:#b8bb26;">&quot;RS256&quot; </span><span style="font-style:italic;color:#928374;">#unused but must be set to something
+        </span><span style="color:#fdf4c1;">},
+
+        </span><span style="font-style:italic;color:#928374;"># If the authentication provider doesn&#39;t provide the
+        # collective name, simply use a fixed one. This means all
+        # users from this provider are in the same collective!
+</span><span style="color:#fdf4c1;">        collective-key = </span><span style="color:#b8bb26;">&quot;fixed:demo&quot;</span><span style="color:#fdf4c1;">,
+
+        </span><span style="font-style:italic;color:#928374;"># Github provides the login name via the `login` property as
+        # response from the user-url. This value is used to construct
+        # the account in docspell.
+</span><span style="color:#fdf4c1;">        user-key = </span><span style="color:#b8bb26;">&quot;login&quot;
+      </span><span style="color:#fdf4c1;">}
+    ]
 
   </span><span style="font-style:italic;color:#928374;"># This endpoint allows to upload files to any collective. The
   # intention is that local software integrates with docspell more
@@ -1323,7 +1527,7 @@ Docpell Update Check
 
     </span><span style="font-style:italic;color:#928374;"># The chunk size used when storing files. This should be the same
     # as used with the rest server.
-</span><span style="color:#fdf4c1;">    chunk-size = 524288
+</span><span style="color:#fdf4c1;">    chunk-size = ${docspell.joex.files.chunk</span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1;">size}
 
     </span><span style="font-style:italic;color:#928374;"># A string used to change the filename of the converted pdf file.
     # If empty, the original file name is used for the pdf file ( the
@@ -1514,10 +1718,10 @@ Docpell Update Check
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.26.0
+                Docspell 0.27.0
             </span>
             <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/GPL-3.0-or-later.html" target="_blank">GPLv3+</a>
+            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
             <span class="ml-1 mr-1">•</span>
             <a href="https://github.com/eikek/docspell" target="_blank">
                 Source Code
