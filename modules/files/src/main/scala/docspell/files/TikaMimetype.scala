@@ -24,6 +24,7 @@ import org.apache.tika.config.TikaConfig
 import org.apache.tika.metadata.{HttpHeaders, Metadata, TikaCoreProperties}
 import org.apache.tika.mime.MediaType
 import org.apache.tika.parser.txt.Icu4jEncodingDetector
+import scodec.bits.ByteVector
 
 object TikaMimetype {
   private val tika = new TikaConfig().getDetector
@@ -82,6 +83,9 @@ object TikaMimetype {
 
   def detect[F[_]: Sync](data: Stream[F, Byte], hint: MimeTypeHint): F[MimeType] =
     data.take(64).compile.toVector.map(bytes => fromBytes(bytes.toArray, hint))
+
+  def detect(data: ByteVector, hint: MimeTypeHint): MimeType =
+    fromBytes(data.toArray, hint)
 
   def resolve[F[_]: Sync](dt: DataType, data: Stream[F, Byte]): F[MimeType] =
     dt match {

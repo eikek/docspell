@@ -13,12 +13,13 @@ import cats.effect._
 import fs2.{Pipe, Stream}
 
 import docspell.common._
+import docspell.files.TikaMimetype
 import docspell.store.records.RFileMeta
 
 import binny._
 import binny.jdbc.{GenericJdbcStore, JdbcStoreConfig}
-import binny.tika.TikaContentTypeDetect
 import doobie._
+import scodec.bits.ByteVector
 
 trait FileStore[F[_]] {
 
@@ -42,8 +43,9 @@ object FileStore {
       chunkSize: Int
   ): FileStore[F] = {
     val attrStore = new AttributeStore[F](xa)
-    val cfg = JdbcStoreConfig("filechunk", chunkSize, TikaContentTypeDetect.default)
-    val binStore = GenericJdbcStore[F](ds, Log4sLogger[F](logger), cfg, attrStore)
+    val cfg = JdbcStoreConfig("filechunk", chunkSize, TikaContentTypeDetect)
+    val log = Logger.log4s[F](logger)
+    val binStore = GenericJdbcStore[F](ds, LoggerAdapter(log), cfg, attrStore)
     new Impl[F](binStore, attrStore)
   }
 
@@ -66,27 +68,24 @@ object FileStore {
         .andThen(_.map(bid => Ident.unsafe(bid.id)))
   }
 
-  private object Log4sLogger {
-
-    def apply[F[_]: Sync](log: org.log4s.Logger): binny.util.Logger[F] =
+  private object LoggerAdapter {
+    def apply[F[_]](log: Logger[F]): binny.util.Logger[F] =
       new binny.util.Logger[F] {
-        override def trace(msg: => String): F[Unit] =
-          Sync[F].delay(log.trace(msg))
-
-        override def debug(msg: => String): F[Unit] =
-          Sync[F].delay(log.debug(msg))
-
-        override def info(msg: => String): F[Unit] =
-          Sync[F].delay(log.info(msg))
-
-        override def warn(msg: => String): F[Unit] =
-          Sync[F].delay(log.warn(msg))
-
-        override def error(msg: => String): F[Unit] =
-          Sync[F].delay(log.error(msg))
-
-        override def error(ex: Throwable)(msg: => String): F[Unit] =
-          Sync[F].delay(log.error(ex)(msg))
+        override def trace(msg: => String): F[Unit] = log.trace(msg)
+        override def debug(msg: => String): F[Unit] = log.debug(msg)
+        override def info(msg: => String): F[Unit] = log.info(msg)
+        override def warn(msg: => String): F[Unit] = log.warn(msg)
+        override def error(msg: => String): F[Unit] = log.error(msg)
+        override def error(ex: Throwable)(msg: => String): F[Unit] = log.error(ex)(msg)
       }
+  }
+
+  private object TikaContentTypeDetect extends ContentTypeDetect {
+    override def detect(data: ByteVector, hint: Hint): SimpleContentType =
+      SimpleContentType(
+        TikaMimetype
+          .detect(data, MimeTypeHint(hint.filename, hint.advertisedType))
+          .asString
+      )
   }
 }

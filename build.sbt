@@ -381,7 +381,7 @@ val store = project
     libraryDependencies ++=
       Dependencies.testContainer.map(_ % Test)
   )
-  .dependsOn(common, query.jvm, totp)
+  .dependsOn(common, query.jvm, totp, files)
 
 val extract = project
   .in(file("modules/extract"))

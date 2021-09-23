@@ -275,8 +275,7 @@ object Dependencies {
 
   val binny = Seq(
     "com.github.eikek" %% "binny-core" % BinnyVersion,
-    "com.github.eikek" %% "binny-jdbc" % BinnyVersion,
-    "com.github.eikek" %% "binny-tika-detect" % BinnyVersion
+    "com.github.eikek" %% "binny-jdbc" % BinnyVersion
   )
 
   // https://github.com/flyway/flyway
