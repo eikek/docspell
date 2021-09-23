@@ -24,6 +24,7 @@ import org.apache.tika.config.TikaConfig
 import org.apache.tika.metadata.{HttpHeaders, Metadata, TikaCoreProperties}
 import org.apache.tika.mime.MediaType
 import org.apache.tika.parser.txt.Icu4jEncodingDetector
+import scodec.bits.ByteVector
 
 object TikaMimetype {
   private val tika = new TikaConfig().getDetector
@@ -31,10 +32,10 @@ object TikaMimetype {
   private def convert(mt: MediaType): MimeType =
     Option(mt) match {
       case Some(_) =>
-        val params = mt.getParameters.asScala.toMap
+        val cs = mt.getParameters.asScala.toMap.get("charset").getOrElse("unknown")
         val primary = mt.getType
         val sub = mt.getSubtype
-        normalize(MimeType(primary, sub, params))
+        normalize(MimeType(primary, sub, None).withCharsetName(cs))
       case None =>
         MimeType.octetStream
     }
@@ -48,8 +49,8 @@ object TikaMimetype {
 
   private def normalize(in: MimeType): MimeType =
     in match {
-      case MimeType(_, sub, p) if sub contains "xhtml" =>
-        MimeType.html.copy(params = p)
+      case MimeType(_, sub, cs) if sub contains "xhtml" =>
+        MimeType.html.copy(charset = cs)
       case _ => in
     }
 
@@ -83,10 +84,13 @@ object TikaMimetype {
   def detect[F[_]: Sync](data: Stream[F, Byte], hint: MimeTypeHint): F[MimeType] =
     data.take(64).compile.toVector.map(bytes => fromBytes(bytes.toArray, hint))
 
+  def detect(data: ByteVector, hint: MimeTypeHint): MimeType =
+    fromBytes(data.toArray, hint)
+
   def resolve[F[_]: Sync](dt: DataType, data: Stream[F, Byte]): F[MimeType] =
     dt match {
       case DataType.Exact(mt) =>
-        mt.resolveCharset match {
+        mt.charset match {
           case None if mt.primary == "text" =>
             detectCharset[F](data, MimeTypeHint.advertised(mt))
               .map {

@@ -58,8 +58,8 @@ initDisabledModel =
 type alias EnabledModel =
     { created : Int
     , loading : Bool
-    , confirmText : String
-    , confirmTextWrong : Bool
+    , confirmCode : String
+    , serverErrorMsg : String
     }
 
 
@@ -67,8 +67,8 @@ initEnabledModel : Int -> EnabledModel
 initEnabledModel created =
     { created = created
     , loading = False
-    , confirmText = ""
-    , confirmTextWrong = False
+    , confirmCode = ""
+    , serverErrorMsg = ""
     }
 
 
@@ -85,7 +85,7 @@ type Msg
     | SecretMsg Comp.PasswordInput.Msg
     | Confirm
     | ConfirmResp (Result Http.Error BasicResult)
-    | SetDisableConfirmText String
+    | SetDisableConfirmCode String
     | Disable
     | DisableResp (Result Http.Error BasicResult)
 
@@ -178,10 +178,10 @@ update flags msg model =
         ConfirmResp (Err err) ->
             ( ConfirmError err, Cmd.none )
 
-        SetDisableConfirmText str ->
+        SetDisableConfirmCode str ->
             case model of
                 StateEnabled m ->
-                    ( StateEnabled { m | confirmText = str }, Cmd.none )
+                    ( StateEnabled { m | confirmCode = str }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -189,13 +189,9 @@ update flags msg model =
         Disable ->
             case model of
                 StateEnabled m ->
-                    if String.toLower m.confirmText == "ok" then
-                        ( StateEnabled { m | confirmTextWrong = False, loading = True }
-                        , Api.disableOtp flags DisableResp
-                        )
-
-                    else
-                        ( StateEnabled { m | confirmTextWrong = True }, Cmd.none )
+                    ( StateEnabled { m | loading = True }
+                    , Api.disableOtp flags (OtpConfirm m.confirmCode) DisableResp
+                    )
 
                 _ ->
                     ( model, Cmd.none )
@@ -205,7 +201,12 @@ update flags msg model =
                 init flags
 
             else
-                ( model, Cmd.none )
+                case model of
+                    StateEnabled m ->
+                        ( StateEnabled { m | serverErrorMsg = result.message, loading = False }, Cmd.none )
+
+                    _ ->
+                        ( model, Cmd.none )
 
         DisableResp (Err err) ->
             ( DisableError err, Cmd.none )
@@ -253,14 +254,15 @@ viewEnabled texts model =
         , p []
             [ text texts.revert2FAText
             ]
-        , div [ class "flex flex-col items-center mt-6" ]
+        , div [ class "flex flex-col mt-6" ]
             [ div [ class "flex flex-row max-w-md" ]
                 [ input
                     [ type_ "text"
-                    , value model.confirmText
-                    , onInput SetDisableConfirmText
+                    , value model.confirmCode
+                    , onInput SetDisableConfirmCode
                     , class S.textInput
-                    , class "rounded-r-none"
+                    , class "rounded-r-none pl-2 pr-10 py-2 rounded-lg max-w-xs text-center font-mono"
+                    , placeholder "123456"
                     ]
                     []
                 , B.genericButton
@@ -281,9 +283,9 @@ viewEnabled texts model =
             , div
                 [ class S.errorMessage
                 , class "my-2"
-                , classList [ ( "hidden", not model.confirmTextWrong ) ]
+                , classList [ ( "hidden", model.serverErrorMsg == "" ) ]
                 ]
-                [ text texts.disableConfirmErrorMsg
+                [ text texts.codeInvalid
                 ]
             , Markdown.toHtml [ class "mt-2" ] texts.disableConfirmBoxInfo
             ]
@@ -367,7 +369,7 @@ viewDisabled texts model =
                             , class S.errorMessage
                             , class "mt-2"
                             ]
-                            [ text texts.setupCodeInvalid ]
+                            [ text texts.codeInvalid ]
                         , div [ class "mt-6" ]
                             [ p [] [ text texts.ifNotQRCode ]
                             , div [ class "max-w-md mx-auto mt-4" ]

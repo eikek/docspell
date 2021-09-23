@@ -18,13 +18,23 @@ import org.log4s.getLogger
 
 trait OTotp[F[_]] {
 
+  /** Return whether TOTP is enabled for this account or not. */
   def state(accountId: AccountId): F[OtpState]
 
+  /** Initializes TOTP by generating a secret and storing it in the database. TOTP is
+    * still disabled, it must be confirmed in order to be active.
+    */
   def initialize(accountId: AccountId): F[InitResult]
 
+  /** Confirms and finishes initialization. TOTP is active after this for the given
+    * account.
+    */
   def confirmInit(accountId: AccountId, otp: OnetimePassword): F[ConfirmResult]
 
-  def disable(accountId: AccountId): F[UpdateResult]
+  /** Disables TOTP and removes the shared secret. If a otp is specified, it must be
+    * valid.
+    */
+  def disable(accountId: AccountId, otp: Option[OnetimePassword]): F[UpdateResult]
 }
 
 object OTotp {
@@ -133,8 +143,31 @@ object OTotp {
           }
         } yield res
 
-      def disable(accountId: AccountId): F[UpdateResult] =
-        UpdateResult.fromUpdate(store.transact(RTotp.setEnabled(accountId, false)))
+      def disable(accountId: AccountId, otp: Option[OnetimePassword]): F[UpdateResult] =
+        otp match {
+          case Some(pw) =>
+            for {
+              _ <- log.info(s"Validating TOTP, because it is requested to disable it.")
+              key <- store.transact(RTotp.findEnabledByLogin(accountId, true))
+              now <- Timestamp.current[F]
+              res <- key match {
+                case None =>
+                  UpdateResult.failure(new Exception("TOTP not enabled.")).pure[F]
+                case Some(r) =>
+                  val check = totp.checkPassword(r.secret, pw, now.value)
+                  if (check)
+                    UpdateResult.fromUpdate(
+                      store.transact(RTotp.setEnabled(accountId, false))
+                    )
+                  else
+                    log.info(s"TOTP code was invalid. Not disabling it.") *> UpdateResult
+                      .failure(new Exception("Code invalid!"))
+                      .pure[F]
+              }
+            } yield res
+          case None =>
+            UpdateResult.fromUpdate(store.transact(RTotp.setEnabled(accountId, false)))
+        }
 
       def state(accountId: AccountId): F[OtpState] =
         for {

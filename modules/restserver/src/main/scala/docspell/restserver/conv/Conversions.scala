@@ -695,7 +695,7 @@ trait Conversions {
       case UpdateResult.Success  => BasicResult(true, successMsg)
       case UpdateResult.NotFound => BasicResult(false, "Not found")
       case UpdateResult.Failure(ex) =>
-        BasicResult(false, s"Internal error: ${ex.getMessage}")
+        BasicResult(false, s"Error: ${ex.getMessage}")
     }
 
   def basicResult(ur: OUpload.UploadResult): BasicResult =
@@ -730,8 +730,8 @@ trait Conversions {
     MimeType(
       header.mediaType.mainType,
       header.mediaType.subType,
-      header.mediaType.extensions
-    )
+      None
+    ).withCharsetName(header.mediaType.extensions.get("charset").getOrElse("unknown"))
 }
 
 object Conversions extends Conversions {

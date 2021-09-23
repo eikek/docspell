@@ -68,9 +68,13 @@ object TotpRoutes {
           }
         } yield resp
 
-      case POST -> Root / "disable" =>
+      case req @ POST -> Root / "disable" =>
         for {
-          result <- backend.totp.disable(user.account)
+          data <- req.as[OtpConfirm]
+          result <- backend.totp.disable(
+            user.account,
+            OnetimePassword(data.otp.pass).some
+          )
           resp <- Ok(Conversions.basicResult(result, "TOTP setup disabled."))
         } yield resp
     }
@@ -83,7 +87,7 @@ object TotpRoutes {
     HttpRoutes.of { case req @ POST -> Root / "resetOTP" =>
       for {
         data <- req.as[ResetPassword]
-        result <- backend.totp.disable(data.account)
+        result <- backend.totp.disable(data.account, None)
         resp <- Ok(Conversions.basicResult(result, "TOTP setup disabled."))
       } yield resp
     }
