@@ -589,7 +589,7 @@ Please open an issue if want more languages to be included.
   - The result summary is now also used to update the tag counts in
     the search menu according to the current results.
 - Feature: password reset (#376,
-  [docs](https://docspell.org/docs/tools/reset-password/))
+  [docs](https://docspell.org/docs/tools/cli/#admin-commands))
   - Adds a new route for admins to reset the password of a user
   - Admin users are those with access to the config file, the endpoint
     requires to supply a secret from the config file.
@@ -1106,9 +1106,8 @@ improvements for processing files.
   [OCRMyPdf](https://github.com/jbarlow83/OCRmyPDF) tool that can be
   used in docspell since the last release. This task converts all your
   existing PDFs into a PDF/A type pdf including the OCR-ed text layer.
-  There is no UI to trigger this task, but a
-  [script](https://docspell.org/docs/tools/convert-all-pdf/) is
-  provided to help with it. (#206)
+  There is no UI to trigger this task, but a script is provided to
+  help with it. (#206)
 - There is now an [Android Client
   App](https://github.com/docspell/android-client) to conveniently
   upload files from your android devices
