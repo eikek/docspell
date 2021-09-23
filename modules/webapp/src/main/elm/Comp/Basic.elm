@@ -224,6 +224,7 @@ contentDimmer active content =
             [ ( "hidden", not active )
             ]
         , class S.dimmer
+        , class "text-gray-200"
         ]
         [ content
         ]

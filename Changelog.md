@@ -1,5 +1,52 @@
 # Changelog
 
+## v0.27.0
+
+*Sep 23, 2021*
+
+- Allow external authentication providers via [OpenID
+  Connect](https://openid.net/connect). Now you can integrate Docspell
+  into your SSO solution. Using keycloak, for example (or other such
+  tools) users can be maintained elsewhere, like in an LDAP directory.
+  (#489)
+- Adds two-factor authentication using TOTPs. If you don't want to
+  setup an external authentication provider (which is another tool to
+  maintain), you can use the builtin TOTP support to have two-factor
+  authentication. (#762)
+- Improvements when querying documents (#1040)
+- Changed the underlying code for storing and loading files. This is a
+  preparation to allow different storage backends for files in the
+  future (maybe the filesystem or s3). (#1080)
+- The license has changed from GPLv3+ to AGPLv3+ (#1078)
+- Fixes a bug in the "check for updates" task that was added in the
+  last release (#1068)
+- Reduces the length of the startup command, which makes tools like
+  `ps` much more readable and allows now to start docspell on Windows
+  (untested, though ;-)) (#1062)
+- Fixes merging items, where sent mails were not copied to the target
+  item. (#1055)
+- Fixes and improves deleting users. Now all their data is also
+  removed and it is shown what that would be. (#1060)
+
+### Rest API Changes
+
+- The `login` routes now won't return a session token when 2FA is
+  enabled for an account. The returned token must be used to provide
+  the TOTP in order to finalize login.
+- Added `open/auth/two-factor` endpoint to provide the TOTP for login
+- Added `open/auth/openid/{providerId}[/resume]` endpoints to initiate
+  authentication via an external provider
+- Added `sec/user/{username}/deleteData` to retrieve a summary of data
+  that would be deleted with that user
+- Added `sec/user/otp/*` endpoints to manage the TOTP for an account
+- Added `admin/user/otp/reserOTP` to reset the 2FA setup for any user
+
+### Configuration Changes
+
+- Restserver: Added a section to configure external authentication
+  provider
+
+
 ## v0.26.0
 
 *Aug 28, 2021*

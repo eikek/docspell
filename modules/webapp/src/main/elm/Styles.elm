@@ -154,7 +154,7 @@ secondaryButton =
 
 secondaryButtonMain : String
 secondaryButtonMain =
-    " rounded my-auto whitespace-nowrap bg-gray-300 dark:bg-bluegray-400 text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 dark:text-gray-800 "
+    " rounded my-auto whitespace-nowrap bg-gray-300 dark:bg-bluegray-400 text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 dark:text-gray-800 text-gray-800"
 
 
 secondaryButtonHover : String
