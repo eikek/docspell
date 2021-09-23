@@ -31,10 +31,10 @@ object TikaMimetype {
   private def convert(mt: MediaType): MimeType =
     Option(mt) match {
       case Some(_) =>
-        val params = mt.getParameters.asScala.toMap
+        val cs = mt.getParameters.asScala.toMap.get("charset").getOrElse("unknown")
         val primary = mt.getType
         val sub = mt.getSubtype
-        normalize(MimeType(primary, sub, params))
+        normalize(MimeType(primary, sub, None).withCharsetName(cs))
       case None =>
         MimeType.octetStream
     }
@@ -48,8 +48,8 @@ object TikaMimetype {
 
   private def normalize(in: MimeType): MimeType =
     in match {
-      case MimeType(_, sub, p) if sub contains "xhtml" =>
-        MimeType.html.copy(params = p)
+      case MimeType(_, sub, cs) if sub contains "xhtml" =>
+        MimeType.html.copy(charset = cs)
       case _ => in
     }
 
@@ -86,7 +86,7 @@ object TikaMimetype {
   def resolve[F[_]: Sync](dt: DataType, data: Stream[F, Byte]): F[MimeType] =
     dt match {
       case DataType.Exact(mt) =>
-        mt.resolveCharset match {
+        mt.charset match {
           case None if mt.primary == "text" =>
             detectCharset[F](data, MimeTypeHint.advertised(mt))
               .map {

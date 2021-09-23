@@ -730,8 +730,8 @@ trait Conversions {
     MimeType(
       header.mediaType.mainType,
       header.mediaType.subType,
-      header.mediaType.extensions
-    )
+      None
+    ).withCharsetName(header.mediaType.extensions.get("charset").getOrElse("unknown"))
 }
 
 object Conversions extends Conversions {
