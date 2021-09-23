@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 import cats.effect._
 import cats.implicits._
-import fs2.{Stream, text}
+import fs2.text
 
 import docspell.restserver.{BuildInfo, Config}
 
@@ -20,6 +20,7 @@ import org.http4s.HttpRoutes
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
+import org.http4s.implicits._
 import org.log4s._
 import yamusca.implicits._
 import yamusca.imports._
@@ -27,8 +28,8 @@ import yamusca.imports._
 object TemplateRoutes {
   private[this] val logger = getLogger
 
-  val `text/html` = new MediaType("text", "html")
-  val `application/javascript` = new MediaType("application", "javascript")
+  private val textHtml = mediaType"text/html"
+  private val appJavascript = mediaType"application/javascript"
 
   trait InnerRoutes[F[_]] {
     def doc: HttpRoutes[F]
@@ -52,7 +53,7 @@ object TemplateRoutes {
             templ <- docTemplate
             resp <- Ok(
               DocData().render(templ),
-              `Content-Type`(`text/html`, Charset.`UTF-8`)
+              `Content-Type`(textHtml, Charset.`UTF-8`)
             )
           } yield resp
         }
@@ -62,7 +63,7 @@ object TemplateRoutes {
             templ <- indexTemplate
             resp <- Ok(
               IndexData(cfg).render(templ),
-              `Content-Type`(`text/html`, Charset.`UTF-8`)
+              `Content-Type`(textHtml, Charset.`UTF-8`)
             )
           } yield resp
         }
@@ -73,7 +74,7 @@ object TemplateRoutes {
             templ <- swTemplate
             resp <- Ok(
               IndexData(cfg).render(templ),
-              `Content-Type`(`application/javascript`, Charset.`UTF-8`)
+              `Content-Type`(appJavascript, Charset.`UTF-8`)
             )
           } yield resp
         }
@@ -89,23 +90,17 @@ object TemplateRoutes {
     }
 
   def loadUrl[F[_]: Sync](url: URL): F[String] =
-    Stream
-      .bracket(Sync[F].delay(url.openStream))(in => Sync[F].delay(in.close()))
-      .flatMap(in => fs2.io.readInputStream(in.pure[F], 64 * 1024, false))
+    fs2.io
+      .readInputStream(Sync[F].delay(url.openStream()), 64 * 1024)
       .through(text.utf8.decode)
       .compile
-      .fold("")(_ + _)
+      .string
 
   def parseTemplate[F[_]: Sync](str: String): F[Template] =
-    Sync[F].delay {
-      mustache.parse(str) match {
-        case Right(t)       => t
-        case Left((_, err)) => sys.error(err)
-      }
-    }
+    Sync[F].pure(mustache.parse(str).leftMap(err => new Exception(err._2))).rethrow
 
   def loadTemplate[F[_]: Sync](url: URL): F[Template] =
-    loadUrl[F](url).flatMap(s => parseTemplate(s)).map { t =>
+    loadUrl[F](url).flatMap(parseTemplate[F]).map { t =>
       logger.info(s"Compiled template $url")
       t
     }
