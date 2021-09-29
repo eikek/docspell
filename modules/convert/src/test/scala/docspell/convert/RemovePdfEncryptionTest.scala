@@ -1,0 +1,75 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+package docspell.convert
+
+import cats.effect.IO
+import fs2.Stream
+
+import docspell.common.Logger
+import docspell.files.ExampleFiles
+
+import munit.CatsEffectSuite
+
+class RemovePdfEncryptionTest extends CatsEffectSuite with FileChecks {
+  val logger: Logger[IO] = Logger.log4s(org.log4s.getLogger)
+
+  val protectedPdf = ExampleFiles.secured_protected_test123_pdf.readURL[IO](16 * 1024)
+  val encryptedPdf = ExampleFiles.secured_encrypted_test123_pdf.readURL[IO](16 * 1024)
+  val plainPdf = ExampleFiles.letter_en_pdf.readURL[IO](16 * 1024)
+
+  test("have encrypted pdfs") {
+    for {
+      _ <- assertIO(encryptedPdf.isEncryptedPDF, true)
+      _ <- assertIO(encryptedPdf.isEncryptedPDF, true)
+    } yield ()
+  }
+
+  test("decrypt pdf") {
+    encryptedPdf
+      .through(RemovePdfEncryption(logger, List("test123")))
+      .isUnencryptedPDF
+      .map(assert(_))
+  }
+
+  test("decrypt pdf with multiple passwords") {
+    encryptedPdf
+      .through(RemovePdfEncryption(logger, List("xy123", "123xy", "test123", "abc123")))
+      .isUnencryptedPDF
+      .map(assert(_))
+  }
+
+  test("remove protection") {
+    protectedPdf
+      .through(RemovePdfEncryption(logger, Nil))
+      .isUnencryptedPDF
+      .map(assert(_))
+  }
+
+  test("read unprotected pdf") {
+    plainPdf
+      .through(RemovePdfEncryption(logger, Nil))
+      .isUnencryptedPDF
+      .map(assert(_))
+  }
+
+  test("decrypt with multiple passwords, stop on first") {
+    val passwords: Stream[IO, String] =
+      Stream("test123") ++ Stream.raiseError[IO](new Exception("is not called"))
+    val decrypt = RemovePdfEncryption(logger, passwords)
+    encryptedPdf
+      .through(decrypt)
+      .isUnencryptedPDF
+      .map(assert(_))
+  }
+
+  test("return input stream if nothing helps") {
+    encryptedPdf
+      .through(RemovePdfEncryption(logger, List("a", "b")))
+      .isEncryptedPDF
+      .map(assert(_))
+  }
+}

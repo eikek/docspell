@@ -42,8 +42,12 @@ object Conversion {
       ): F[A] =
         TikaMimetype.resolve(dataType, in).flatMap {
           case MimeType.PdfMatch(_) =>
+            val pdfStream =
+              if (cfg.decryptPdf.enabled)
+                in.through(RemovePdfEncryption(logger, cfg.decryptPdf.passwords))
+              else in
             OcrMyPdf
-              .toPDF(cfg.ocrmypdf, lang, cfg.chunkSize, logger)(in, handler)
+              .toPDF(cfg.ocrmypdf, lang, cfg.chunkSize, logger)(pdfStream, handler)
 
           case MimeType.HtmlMatch(mt) =>
             val cs = mt.charsetOrUtf8

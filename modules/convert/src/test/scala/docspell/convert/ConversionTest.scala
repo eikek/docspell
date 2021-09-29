@@ -74,7 +74,8 @@ class ConversionTest extends FunSuite with FileChecks {
         Duration.seconds(20)
       ),
       target
-    )
+    ),
+    ConvertConfig.DecryptPdf(true, Nil)
   )
 
   val conversion =

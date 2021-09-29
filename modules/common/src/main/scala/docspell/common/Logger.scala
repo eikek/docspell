@@ -7,12 +7,13 @@
 package docspell.common
 
 import cats.effect.Sync
+import fs2.Stream
 
 import docspell.common.syntax.all._
 
 import org.log4s.{Logger => Log4sLogger}
 
-trait Logger[F[_]] {
+trait Logger[F[_]] { self =>
 
   def trace(msg: => String): F[Unit]
   def debug(msg: => String): F[Unit]
@@ -21,6 +22,25 @@ trait Logger[F[_]] {
   def error(ex: Throwable)(msg: => String): F[Unit]
   def error(msg: => String): F[Unit]
 
+  final def s: Logger[Stream[F, *]] = new Logger[Stream[F, *]] {
+    def trace(msg: => String): Stream[F, Unit] =
+      Stream.eval(self.trace(msg))
+
+    def debug(msg: => String): Stream[F, Unit] =
+      Stream.eval(self.debug(msg))
+
+    def info(msg: => String): Stream[F, Unit] =
+      Stream.eval(self.info(msg))
+
+    def warn(msg: => String): Stream[F, Unit] =
+      Stream.eval(self.warn(msg))
+
+    def error(msg: => String): Stream[F, Unit] =
+      Stream.eval(self.error(msg))
+
+    def error(ex: Throwable)(msg: => String): Stream[F, Unit] =
+      Stream.eval(self.error(ex)(msg))
+  }
 }
 
 object Logger {
