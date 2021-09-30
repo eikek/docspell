@@ -19,6 +19,7 @@ services:
     image: docspell/joex:latest
     container_name: docspell-joex
     command:
+      - -J-Xmx3G
       - /opt/docspell.conf
     restart: unless-stopped
     env_file: ./.env

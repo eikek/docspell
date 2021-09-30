@@ -89,7 +89,8 @@ object RCollective {
         case None =>
           REmptyTrashSetting.delete(cid)
       }
-    } yield n1 + n2 + n3
+      n4 <- RCollectivePassword.replaceAll(cid, settings.passwords)
+    } yield n1 + n2 + n3 + n4
 
   // this hides categories that have been deleted in the meantime
   // they are finally removed from the json array once the learn classifier task is run
@@ -99,10 +100,12 @@ object RCollective {
       prev <- OptionT.fromOption[ConnectionIO](sett.classifier)
       cats <- OptionT.liftF(RTag.listCategories(coll))
       next = prev.copy(categories = prev.categories.intersect(cats))
-    } yield sett.copy(classifier = Some(next))).value
+      pws <- OptionT.liftF(RCollectivePassword.findAll(coll))
+    } yield sett.copy(classifier = Some(next), passwords = pws.map(_.password))).value
 
   private def getRawSettings(coll: Ident): ConnectionIO[Option[Settings]] = {
     import RClassifierSetting.stringListMeta
+
     val c = RCollective.as("c")
     val cs = RClassifierSetting.as("cs")
     val es = REmptyTrashSetting.as("es")
@@ -116,7 +119,8 @@ object RCollective {
         cs.categories.s,
         cs.listType.s,
         es.schedule.s,
-        es.minAge.s
+        es.minAge.s,
+        const(0) //dummy value to load Nil as list of passwords
       ),
       from(c).leftJoin(cs, cs.cid === c.id).leftJoin(es, es.cid === c.id),
       c.id === coll
@@ -170,7 +174,11 @@ object RCollective {
       language: Language,
       integrationEnabled: Boolean,
       classifier: Option[RClassifierSetting.Classifier],
-      emptyTrash: Option[REmptyTrashSetting.EmptyTrash]
+      emptyTrash: Option[REmptyTrashSetting.EmptyTrash],
+      passwords: List[Password]
   )
+
+  implicit val passwordListMeta: Read[List[Password]] =
+    Read[Int].map(_ => Nil: List[Password])
 
 }
