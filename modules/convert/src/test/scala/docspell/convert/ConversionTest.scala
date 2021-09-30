@@ -79,7 +79,7 @@ class ConversionTest extends FunSuite with FileChecks {
   )
 
   val conversion =
-    Conversion.create[IO](convertConfig, SanitizeHtml.none, logger)
+    Conversion.create[IO](convertConfig, SanitizeHtml.none, Nil, logger)
 
   val bombs = List(
     ExampleFiles.bombs_20K_gray_jpeg,

@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream
 import cats.effect._
 import fs2.{Chunk, Pipe, Stream}
 
-import docspell.common.Logger
+import docspell.common._
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException
@@ -21,15 +21,15 @@ object RemovePdfEncryption {
 
   def apply[F[_]: Sync](
       logger: Logger[F],
-      passwords: List[String]
+      passwords: List[Password]
   ): Pipe[F, Byte, Byte] =
     apply(logger, Stream.emits(passwords))
 
   def apply[F[_]: Sync](
       logger: Logger[F],
-      passwords: Stream[F, String]
+      passwords: Stream[F, Password]
   ): Pipe[F, Byte, Byte] = {
-    val pws = passwords.cons1("")
+    val pws = passwords.cons1(Password.empty)
     in =>
       pws
         .flatMap(pw => in.through(openPdf[F](logger, pw)))
@@ -54,7 +54,7 @@ object RemovePdfEncryption {
 
   private def openPdf[F[_]: Sync](
       logger: Logger[F],
-      pw: String
+      pw: Password
   ): Pipe[F, Byte, PDDocument] = {
     def alloc(bytes: Array[Byte]): F[Option[PDDocument]] =
       Sync[F].delay(load(bytes, pw))
@@ -64,7 +64,7 @@ object RemovePdfEncryption {
 
     val log =
       if (pw.isEmpty) Stream.empty
-      else logger.s.debug(s"Try opening PDF with password: ${pw.take(2)}***").drain
+      else logger.s.debug(s"Try opening PDF with password: ${pw.pass.take(2)}***").drain
 
     in =>
       Stream
@@ -73,8 +73,8 @@ object RemovePdfEncryption {
         .flatMap(opt => opt.map(Stream.emit).getOrElse(Stream.empty))
   }
 
-  private def load(bytes: Array[Byte], pw: String): Option[PDDocument] =
-    try Option(PDDocument.load(bytes, pw))
+  private def load(bytes: Array[Byte], pw: Password): Option[PDDocument] =
+    try Option(PDDocument.load(bytes, pw.pass))
     catch {
       case _: InvalidPasswordException =>
         None

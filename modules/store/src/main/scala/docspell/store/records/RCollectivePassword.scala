@@ -1,13 +1,21 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.store.records
 
 import cats.data.NonEmptyList
-import docspell.common._
-import docspell.store.qb._
-import docspell.store.qb.DSL._
-import doobie._
-import doobie.implicits._
 import cats.effect._
 import cats.implicits._
+
+import docspell.common._
+import docspell.store.qb.DSL._
+import docspell.store.qb._
+
+import doobie._
+import doobie.implicits._
 
 final case class RCollectivePassword(
     id: Ident,

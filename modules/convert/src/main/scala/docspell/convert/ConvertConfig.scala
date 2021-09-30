@@ -6,6 +6,7 @@
 
 package docspell.convert
 
+import docspell.common.Password
 import docspell.convert.ConvertConfig.DecryptPdf
 import docspell.convert.extern.OcrMyPdfConfig
 import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}
@@ -25,5 +26,5 @@ final case class ConvertConfig(
 
 object ConvertConfig {
 
-  final case class DecryptPdf(enabled: Boolean, passwords: List[String])
+  final case class DecryptPdf(enabled: Boolean, passwords: List[Password])
 }
