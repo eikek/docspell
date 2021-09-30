@@ -33,6 +33,7 @@ object Conversion {
   def create[F[_]: Async](
       cfg: ConvertConfig,
       sanitizeHtml: SanitizeHtml,
+      additionalPasswords: List[Password],
       logger: Logger[F]
   ): Resource[F, Conversion[F]] =
     Resource.pure[F, Conversion[F]](new Conversion[F] {
@@ -42,8 +43,16 @@ object Conversion {
       ): F[A] =
         TikaMimetype.resolve(dataType, in).flatMap {
           case MimeType.PdfMatch(_) =>
+            val allPass = cfg.decryptPdf.passwords ++ additionalPasswords
+            val pdfStream =
+              if (cfg.decryptPdf.enabled) {
+                logger.s
+                  .debug(s"Trying to read the PDF using ${allPass.size} passwords")
+                  .drain ++
+                  in.through(RemovePdfEncryption(logger, allPass))
+              } else in
             OcrMyPdf
-              .toPDF(cfg.ocrmypdf, lang, cfg.chunkSize, logger)(in, handler)
+              .toPDF(cfg.ocrmypdf, lang, cfg.chunkSize, logger)(pdfStream, handler)
 
           case MimeType.HtmlMatch(mt) =>
             val cs = mt.charsetOrUtf8

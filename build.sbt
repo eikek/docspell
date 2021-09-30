@@ -275,6 +275,7 @@ val common = project
   .settings(testSettingsMUnit)
   .settings(
     name := "docspell-common",
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.circe ++
@@ -409,7 +410,8 @@ val convert = project
     name := "docspell-convert",
     libraryDependencies ++=
       Dependencies.flexmark ++
-        Dependencies.twelvemonkeys
+        Dependencies.twelvemonkeys ++
+        Dependencies.pdfbox
   )
   .dependsOn(common, files % "compile->compile;test->test")
 

@@ -12,8 +12,7 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCollective
-import docspell.common.EmptyTrashArgs
-import docspell.common.ListType
+import docspell.common._
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s._
@@ -62,7 +61,8 @@ object CollectiveRoutes {
                 settings.emptyTrash.schedule,
                 settings.emptyTrash.minAge
               )
-            )
+            ),
+            settings.passwords.map(Password.apply)
           )
           res <-
             backend.collective
@@ -89,7 +89,8 @@ object CollectiveRoutes {
               EmptyTrashSetting(
                 trash.schedule,
                 trash.minAge
-              )
+              ),
+              settDb.map(_.passwords).getOrElse(Nil).map(_.pass)
             )
           )
           resp <- sett.toResponse()

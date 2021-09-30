@@ -5635,6 +5635,7 @@ components:
         - integrationEnabled
         - classifier
         - emptyTrash
+        - passwords
       properties:
         language:
           type: string
@@ -5648,6 +5649,11 @@ components:
           $ref: "#/components/schemas/ClassifierSetting"
         emptyTrash:
           $ref: "#/components/schemas/EmptyTrashSetting"
+        passwords:
+          type: array
+          items:
+            type: string
+            format: password
 
     EmptyTrashSetting:
       description: |

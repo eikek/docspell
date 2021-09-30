@@ -22,6 +22,7 @@ import Comp.ClassifierSettingsForm
 import Comp.Dropdown
 import Comp.EmptyTrashForm
 import Comp.MenuBar as MB
+import Comp.StringListInput
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
@@ -30,6 +31,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http
+import Markdown
 import Messages.Comp.CollectiveSettingsForm exposing (Texts)
 import Styles as S
 
@@ -44,6 +46,8 @@ type alias Model =
     , startClassifierResult : ClassifierResult
     , emptyTrashModel : Comp.EmptyTrashForm.Model
     , startEmptyTrashResult : EmptyTrashResult
+    , passwordModel : Comp.StringListInput.Model
+    , passwords : List String
     }
 
 
@@ -96,6 +100,8 @@ init flags settings =
       , startClassifierResult = ClassifierResultInitial
       , emptyTrashModel = em
       , startEmptyTrashResult = EmptyTrashResultInitial
+      , passwordModel = Comp.StringListInput.init
+      , passwords = settings.passwords
       }
     , Cmd.batch [ Cmd.map ClassifierSettingMsg cc, Cmd.map EmptyTrashMsg ec ]
     )
@@ -114,6 +120,7 @@ getSettings model =
                 , integrationEnabled = model.intEnabled
                 , classifier = cls
                 , emptyTrash = trash
+                , passwords = model.passwords
                 }
         )
         (Comp.ClassifierSettingsForm.getSettings model.classifierModel)
@@ -133,6 +140,7 @@ type Msg
     | StartEmptyTrashTask
     | StartClassifierResp (Result Http.Error BasicResult)
     | StartEmptyTrashResp (Result Http.Error BasicResult)
+    | PasswordMsg Comp.StringListInput.Msg
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe CollectiveSettings )
@@ -281,6 +289,27 @@ update flags msg model =
 
         StartEmptyTrashResp (Err err) ->
             ( { model | startEmptyTrashResult = EmptyTrashResultHttpError err }
+            , Cmd.none
+            , Nothing
+            )
+
+        PasswordMsg lm ->
+            let
+                ( pm, action ) =
+                    Comp.StringListInput.update lm model.passwordModel
+
+                pws =
+                    case action of
+                        Comp.StringListInput.AddAction pw ->
+                            pw :: model.passwords
+
+                        Comp.StringListInput.RemoveAction pw ->
+                            List.filter (\e -> e /= pw) model.passwords
+
+                        Comp.StringListInput.NoAction ->
+                            model.passwords
+            in
+            ( { model | passwordModel = pm, passwords = pws }
             , Cmd.none
             , Nothing
             )
@@ -458,6 +487,18 @@ view2 flags texts settings model =
                         }
                     , renderEmptyTrashResultMessage texts model.startEmptyTrashResult
                     ]
+                ]
+            ]
+        , div []
+            [ h2 [ class S.header2 ]
+                [ text texts.passwords
+                ]
+            , div [ class "mb-4" ]
+                [ div [ class "opacity-50 text-sm" ]
+                    [ Markdown.toHtml [] texts.passwordsInfo
+                    ]
+                , Html.map PasswordMsg
+                    (Comp.StringListInput.view2 model.passwords model.passwordModel)
                 ]
             ]
         ]
