@@ -8,7 +8,7 @@ package docspell.query.internal
 
 import cats.implicits._
 
-import docspell.query.ItemQueryParser
+import docspell.query.{ItemQuery, ItemQueryParser}
 
 import munit._
 
@@ -63,5 +63,15 @@ class ItemQueryParserTest extends FunSuite {
     val expect =
       ItemQueryParser.parseUnsafe("(| name:hello date:2021-02 name:world name:hello )")
     assertEquals(expect.copy(raw = raw.some), q)
+  }
+
+  test("f.id:name=value") {
+    val raw = "f.id:QsuGW@=\"dAHBstXJd0\""
+    val q = ItemQueryParser.parseUnsafe(raw)
+    val expect =
+      ItemQuery.Expr.CustomFieldIdMatch("QsuGW@", ItemQuery.Operator.Eq, "dAHBstXJd0")
+
+    assertEquals(q.expr, expect)
+
   }
 }

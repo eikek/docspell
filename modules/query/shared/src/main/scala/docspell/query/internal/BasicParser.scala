@@ -24,7 +24,7 @@ object BasicParser {
     )
 
   private[this] val identChars: Set[Char] =
-    (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_.").toSet
+    (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_.@").toSet
 
   val parenAnd: P[Unit] =
     P.stringIn(List("(&", "(and")).void <* ws0
