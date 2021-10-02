@@ -102,7 +102,11 @@ object RShare {
     )
 
   def findAllByCollective(cid: Ident): ConnectionIO[List[RShare]] =
-    Select(select(T.all), from(T), T.cid === cid).build.query[RShare].to[List]
+    Select(select(T.all), from(T), T.cid === cid)
+      .orderBy(T.publishedAt.desc)
+      .build
+      .query[RShare]
+      .to[List]
 
   def deleteByIdAndCid(id: Ident, cid: Ident): ConnectionIO[Int] =
     DML.delete(T, T.id === id && T.cid === cid)

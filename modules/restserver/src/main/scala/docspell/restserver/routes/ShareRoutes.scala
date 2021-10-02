@@ -9,15 +9,13 @@ package docspell.restserver.routes
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OShare
-import docspell.common.Ident
+import docspell.common.{Ident, Timestamp}
 import docspell.restapi.model._
 import docspell.restserver.http4s.ResponseGenerator
 import docspell.store.records.RShare
-
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
@@ -33,7 +31,8 @@ object ShareRoutes {
       case GET -> Root =>
         for {
           all <- backend.share.findAll(user.account.collective)
-          res <- Ok(ShareList(all.map(mkShareDetail)))
+          now <- Timestamp.current[F]
+          res <- Ok(ShareList(all.map(mkShareDetail(now))))
         } yield res
 
       case req @ POST -> Root =>
@@ -47,7 +46,8 @@ object ShareRoutes {
       case GET -> Root / Ident(id) =>
         (for {
           share <- backend.share.findOne(id, user.account.collective)
-          resp <- OptionT.liftF(Ok(mkShareDetail(share)))
+          now <- OptionT.liftF(Timestamp.current[F])
+          resp <- OptionT.liftF(Ok(mkShareDetail(now)(share)))
         } yield resp).getOrElseF(NotFound())
 
       case req @ PUT -> Root / Ident(id) =>
@@ -90,7 +90,7 @@ object ShareRoutes {
         BasicResult(false, "Until date must not be in the past")
     }
 
-  def mkShareDetail(r: RShare): ShareDetail =
+  def mkShareDetail(now: Timestamp)(r: RShare): ShareDetail =
     ShareDetail(
       r.id,
       r.query,
@@ -98,8 +98,10 @@ object ShareRoutes {
       r.enabled,
       r.publishAt,
       r.publishUntil,
+      now > r.publishUntil,
       r.password.isDefined,
       r.views,
       r.lastAccess
     )
+
 }

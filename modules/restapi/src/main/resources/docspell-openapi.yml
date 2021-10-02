@@ -4226,6 +4226,7 @@ components:
         - publishUntil
         - password
         - views
+        - expired
       properties:
         id:
           type: string
@@ -4243,6 +4244,8 @@ components:
         publishUntil:
           type: integer
           format: date-time
+        expired:
+          type: boolean
         password:
           type: boolean
         views:
