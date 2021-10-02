@@ -51,6 +51,9 @@ case class Timestamp(value: Instant) {
 
   def <(other: Timestamp): Boolean =
     this.value.isBefore(other.value)
+
+  def >(other: Timestamp): Boolean =
+    this.value.isAfter(other.value)
 }
 
 object Timestamp {

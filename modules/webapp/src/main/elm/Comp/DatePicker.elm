@@ -37,7 +37,7 @@ init =
 
 emptyModel : DatePicker
 emptyModel =
-    DatePicker.initFromDate (Date.fromCalendarDate 2019 Aug 21)
+    DatePicker.initFromDate (Date.fromCalendarDate 2021 Oct 31)
 
 
 defaultSettings : Settings

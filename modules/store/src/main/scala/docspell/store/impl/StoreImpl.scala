@@ -6,8 +6,10 @@
 
 package docspell.store.impl
 
+import cats.arrow.FunctionK
 import cats.effect.Async
 import cats.implicits._
+import cats.~>
 
 import docspell.store.file.FileStore
 import docspell.store.migrate.FlywayMigrate
@@ -21,6 +23,9 @@ final class StoreImpl[F[_]: Async](
     jdbc: JdbcConfig,
     xa: Transactor[F]
 ) extends Store[F] {
+
+  def transform: ConnectionIO ~> F =
+    FunctionK.lift(transact)
 
   def migrate: F[Int] =
     FlywayMigrate.run[F](jdbc).map(_.migrationsExecuted)

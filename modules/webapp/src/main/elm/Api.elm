@@ -11,6 +11,7 @@ module Api exposing
     , addCorrOrg
     , addCorrPerson
     , addMember
+    , addShare
     , addTag
     , addTagsMultiple
     , attachmentPreviewURL
@@ -40,6 +41,7 @@ module Api exposing
     , deleteOrg
     , deletePerson
     , deleteScanMailbox
+    , deleteShare
     , deleteSource
     , deleteTag
     , deleteUser
@@ -72,6 +74,8 @@ module Api exposing
     , getPersonsLight
     , getScanMailbox
     , getSentMails
+    , getShare
+    , getShares
     , getSources
     , getTagCloud
     , getTags
@@ -147,6 +151,7 @@ module Api exposing
     , unconfirmMultiple
     , updateNotifyDueItems
     , updateScanMailbox
+    , updateShare
     , upload
     , uploadAmend
     , uploadSingle
@@ -215,6 +220,9 @@ import Api.Model.ScanMailboxSettingsList exposing (ScanMailboxSettingsList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Api.Model.SecondFactor exposing (SecondFactor)
 import Api.Model.SentMails exposing (SentMails)
+import Api.Model.ShareData exposing (ShareData)
+import Api.Model.ShareDetail exposing (ShareDetail)
+import Api.Model.ShareList exposing (ShareList)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.SourceList exposing (SourceList)
@@ -2201,6 +2209,57 @@ disableOtp flags otp receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/user/otp/disable"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OtpConfirm.encode otp)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+
+--- Share
+
+
+getShares : Flags -> (Result Http.Error ShareList -> msg) -> Cmd msg
+getShares flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ShareList.decoder
+        }
+
+
+getShare : Flags -> String -> (Result Http.Error ShareDetail -> msg) -> Cmd msg
+getShare flags id receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ShareDetail.decoder
+        }
+
+
+addShare : Flags -> ShareData -> (Result Http.Error IdResult -> msg) -> Cmd msg
+addShare flags share receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ShareData.encode share)
+        , expect = Http.expectJson receive Api.Model.IdResult.decoder
+        }
+
+
+updateShare : Flags -> String -> ShareData -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+updateShare flags id share receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share/" ++ id
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ShareData.encode share)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+deleteShare : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteShare flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share/" ++ id
+        , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

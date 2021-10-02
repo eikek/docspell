@@ -48,6 +48,7 @@ trait BackendApp[F[_]] {
   def simpleSearch: OSimpleSearch[F]
   def clientSettings: OClientSettings[F]
   def totp: OTotp[F]
+  def share: OShare[F]
 }
 
 object BackendApp {
@@ -85,6 +86,7 @@ object BackendApp {
       customFieldsImpl <- OCustomFields(store)
       simpleSearchImpl = OSimpleSearch(fulltextImpl, itemSearchImpl)
       clientSettingsImpl <- OClientSettings(store)
+      shareImpl <- Resource.pure(OShare(store))
     } yield new BackendApp[F] {
       val login = loginImpl
       val signup = signupImpl
@@ -107,6 +109,7 @@ object BackendApp {
       val simpleSearch = simpleSearchImpl
       val clientSettings = clientSettingsImpl
       val totp = totpImpl
+      val share = shareImpl
     }
 
   def apply[F[_]: Async](

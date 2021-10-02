@@ -9,6 +9,7 @@ module Page.CollectiveSettings.Update exposing (update)
 
 import Api
 import Comp.CollectiveSettingsForm
+import Comp.ShareManage
 import Comp.SourceManage
 import Comp.UserManage
 import Data.Flags exposing (Flags)
@@ -36,12 +37,22 @@ update flags msg model =
                 SettingsTab ->
                     update flags Init m
 
+                ShareTab ->
+                    update flags (ShareMsg Comp.ShareManage.loadShares) m
+
         SourceMsg m ->
             let
                 ( m2, c2 ) =
                     Comp.SourceManage.update flags m model.sourceModel
             in
             ( { model | sourceModel = m2 }, Cmd.map SourceMsg c2 )
+
+        ShareMsg lm ->
+            let
+                ( sm, sc ) =
+                    Comp.ShareManage.update flags lm model.shareModel
+            in
+            ( { model | shareModel = sm }, Cmd.map ShareMsg sc )
 
         UserMsg m ->
             let

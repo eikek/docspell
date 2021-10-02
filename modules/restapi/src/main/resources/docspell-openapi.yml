@@ -1711,6 +1711,96 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/share:
+    get:
+      operationId: "sec-share-get-all"
+      tags: [ Share ]
+      summary: Get a list of shares
+      description: |
+        Return a list of all shares for this collective.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareList"
+    post:
+      operationId: "sec-share-new"
+      tags: [ Share ]
+      summary: Create a new share.
+      description: |
+        Create a new share.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShareData"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResult"
+  /sec/share/{shareId}:
+    parameters:
+      - $ref: "#/components/parameters/shareId"
+    get:
+      operationId: "sec-share-get"
+      tags: [Share]
+      summary: Get details to a single share.
+      description: |
+        Given the id of a share, returns some details about it.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareDetail"
+    put:
+      operationId: "sec-share-update"
+      tags: [ Share ]
+      summary: Update an existing share.
+      description: |
+        Updates an existing share.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShareData"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      operationId: "sec-share-delete-by-id"
+      tags: [ Share ]
+      summary: Delete a share.
+      description: |
+        Deletes a share
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/item/search:
     get:
       operationId: "sec-item-search-by-get"
@@ -4096,6 +4186,83 @@ paths:
 
 components:
   schemas:
+    ShareData:
+      description: |
+        Editable data for a share.
+      required:
+        - query
+        - enabled
+        - publishUntil
+      properties:
+        name:
+          type: string
+        query:
+          type: string
+          format: itemquery
+        enabled:
+          type: boolean
+        password:
+          type: string
+          format: password
+        publishUntil:
+          type: integer
+          format: date-time
+        removePassword:
+          type: boolean
+          description: |
+            For an update request, this can control whether to delete
+            the password. Otherwise if the password is not set, it
+            will not be changed. When adding a new share, this has no
+            effect.
+
+    ShareDetail:
+      description: |
+        Details for an existing share.
+      required:
+        - id
+        - query
+        - enabled
+        - publishAt
+        - publishUntil
+        - password
+        - views
+      properties:
+        id:
+          type: string
+          format: ident
+        query:
+          type: string
+          format: itemquery
+        name:
+          type: string
+        enabled:
+          type: boolean
+        publishAt:
+          type: integer
+          format: date-time
+        publishUntil:
+          type: integer
+          format: date-time
+        password:
+          type: boolean
+        views:
+          type: integer
+          format: int32
+        lastAccess:
+          type: integer
+          format: date-time
+
+    ShareList:
+      description: |
+        A list of shares.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShareDetail"
+        
     DeleteUserData:
       description: |
         An excerpt of data that would be deleted when deleting the
@@ -6121,8 +6288,8 @@ components:
           type: string
     IdResult:
       description: |
-        Some basic result of an operation with an ID as payload. If
-        success if `false` the id is not usable.
+        Some basic result of an operation with an ID as payload, if
+        success is true. If success is `false` the id is not usable.
       required:
         - success
         - message
@@ -6254,6 +6421,13 @@ components:
       name: userId
       in: path
       description: An identifier
+      required: true
+      schema:
+        type: string
+    shareId:
+      name: shareId
+      in: path
+      description: An identifier for a share
       required: true
       schema:
         type: string
