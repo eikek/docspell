@@ -21,6 +21,7 @@ module Page exposing
     , pageName
     , pageToString
     , set
+    , shareId
     , uploadId
     )
 
@@ -59,6 +60,7 @@ type Page
     | UploadPage (Maybe String)
     | NewInvitePage
     | ItemDetailPage String
+    | SharePage String
 
 
 isSecured : Page -> Bool
@@ -94,6 +96,9 @@ isSecured page =
         ItemDetailPage _ ->
             True
 
+        SharePage _ ->
+            False
+
 
 {-| Currently, all secured pages have a sidebar, except UploadPage.
 -}
@@ -102,6 +107,9 @@ hasSidebar page =
     case page of
         UploadPage _ ->
             False
+
+        SharePage _ ->
+            True
 
         _ ->
             isSecured page
@@ -160,6 +168,9 @@ pageName page =
         ItemDetailPage _ ->
             "Item"
 
+        SharePage _ ->
+            "Share"
+
 
 loginPageReferrer : Page -> LoginData
 loginPageReferrer page =
@@ -169,6 +180,16 @@ loginPageReferrer page =
 
         _ ->
             emptyLoginData
+
+
+shareId : Page -> Maybe String
+shareId page =
+    case page of
+        SharePage id ->
+            Just id
+
+        _ ->
+            Nothing
 
 
 uploadId : Page -> Maybe String
@@ -223,6 +244,9 @@ pageToString page =
 
         ItemDetailPage id ->
             "/app/item/" ++ id
+
+        SharePage id ->
+            "/app/share/" ++ id
 
 
 pageFromString : String -> Maybe Page
@@ -280,6 +304,7 @@ parser =
         , Parser.map (UploadPage Nothing) (s pathPrefix </> s "upload")
         , Parser.map NewInvitePage (s pathPrefix </> s "newinvite")
         , Parser.map ItemDetailPage (s pathPrefix </> s "item" </> string)
+        , Parser.map SharePage (s pathPrefix </> s "share" </> string)
         ]
 
 

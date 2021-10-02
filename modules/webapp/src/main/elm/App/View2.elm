@@ -27,6 +27,7 @@ import Page.ManageData.View2 as ManageData
 import Page.NewInvite.View2 as NewInvite
 import Page.Queue.View2 as Queue
 import Page.Register.View2 as Register
+import Page.Share.View as Share
 import Page.Upload.View2 as Upload
 import Page.UserSettings.View2 as UserSettings
 import Styles as S
@@ -41,13 +42,9 @@ view model =
 
 topNavbar : Model -> Html Msg
 topNavbar model =
-    case model.flags.account of
+    case Data.Flags.getAccount model.flags of
         Just acc ->
-            if acc.success then
-                topNavUser acc model
-
-            else
-                topNavAnon model
+            topNavUser acc model
 
         Nothing ->
             topNavAnon model
@@ -86,7 +83,16 @@ topNavAnon model =
         [ id "top-nav"
         , class styleTopNav
         ]
-        [ headerNavItem model
+        [ B.genericButton
+            { label = ""
+            , icon = "fa fa-bars"
+            , handler = onClick ToggleSidebar
+            , disabled = not (Page.hasSidebar model.page)
+            , attrs = [ href "#" ]
+            , baseStyle = "font-bold inline-flex items-center px-4 py-2"
+            , activeStyle = "hover:bg-blue-200 dark:hover:bg-bluegray-800 w-12"
+            }
+        , headerNavItem model
         , div [ class "flex flex-grow justify-end" ]
             [ langMenu model
             , a
@@ -157,6 +163,9 @@ mainContent model =
 
             ItemDetailPage id ->
                 viewItemDetail texts id model
+
+            SharePage id ->
+                viewShare texts id model
         )
 
 
@@ -409,6 +418,24 @@ dropdownHeadItem =
 dropdownMenu : String
 dropdownMenu =
     " absolute right-0 bg-white dark:bg-bluegray-800 border dark:border-bluegray-700 dark:text-bluegray-300 shadow-lg opacity-1 transition duration-200 min-w-max "
+
+
+viewShare : Messages -> String -> Model -> List (Html Msg)
+viewShare texts shareId model =
+    [ Html.map ShareMsg
+        (Share.viewSidebar texts.share
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.shareModel
+        )
+    , Html.map ShareMsg
+        (Share.viewContent texts.share
+            model.flags
+            model.uiSettings
+            model.shareModel
+        )
+    ]
 
 
 viewHome : Messages -> Model -> List (Html Msg)

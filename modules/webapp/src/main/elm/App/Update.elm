@@ -34,6 +34,8 @@ import Page.Queue.Data
 import Page.Queue.Update
 import Page.Register.Data
 import Page.Register.Update
+import Page.Share.Data
+import Page.Share.Update
 import Page.Upload.Data
 import Page.Upload.Update
 import Page.UserSettings.Data
@@ -113,6 +115,9 @@ updateWithSub msg model =
 
         HomeMsg lm ->
             updateHome lm model
+
+        ShareMsg lm ->
+            updateShare lm model
 
         LoginMsg lm ->
             updateLogin lm model
@@ -311,6 +316,23 @@ applyClientSettings model settings =
         , updateItemDetail Page.ItemDetail.Data.UiSettingsUpdated
         ]
         { model | uiSettings = settings }
+
+
+updateShare : Page.Share.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateShare lmsg model =
+    case Page.shareId model.page of
+        Just id ->
+            let
+                result =
+                    Page.Share.Update.update model.flags id lmsg model.shareModel
+            in
+            ( { model | shareModel = result.model }
+            , Cmd.map ShareMsg result.cmd
+            , Sub.map ShareMsg result.sub
+            )
+
+        Nothing ->
+            ( model, Cmd.none, Sub.none )
 
 
 updateItemDetail : Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -568,3 +590,6 @@ initPage model_ page =
                 , updateQueue Page.Queue.Data.StopRefresh
                 ]
                 model
+
+        SharePage _ ->
+            ( model, Cmd.none, Sub.none )

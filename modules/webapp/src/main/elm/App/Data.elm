@@ -32,6 +32,7 @@ import Page.ManageData.Data
 import Page.NewInvite.Data
 import Page.Queue.Data
 import Page.Register.Data
+import Page.Share.Data
 import Page.Upload.Data
 import Page.UserSettings.Data
 import Url exposing (Url)
@@ -52,6 +53,7 @@ type alias Model =
     , uploadModel : Page.Upload.Data.Model
     , newInviteModel : Page.NewInvite.Data.Model
     , itemDetailModel : Page.ItemDetail.Data.Model
+    , shareModel : Page.Share.Data.Model
     , navMenuOpen : Bool
     , userMenuOpen : Bool
     , subs : Sub Msg
@@ -85,6 +87,9 @@ init key url flags_ settings =
         ( loginm, loginc ) =
             Page.Login.Data.init flags (Page.loginPageReferrer page)
 
+        ( shm, shc ) =
+            Page.Share.Data.init (Page.shareId page) flags
+
         homeViewMode =
             if settings.searchMenuVisible then
                 Page.Home.Data.SearchView
@@ -106,6 +111,7 @@ init key url flags_ settings =
       , uploadModel = Page.Upload.Data.emptyModel
       , newInviteModel = Page.NewInvite.Data.emptyModel
       , itemDetailModel = Page.ItemDetail.Data.emptyModel
+      , shareModel = shm
       , navMenuOpen = False
       , userMenuOpen = False
       , subs = Sub.none
@@ -120,6 +126,7 @@ init key url flags_ settings =
         , Cmd.map ManageDataMsg mdc
         , Cmd.map CollSettingsMsg csc
         , Cmd.map LoginMsg loginc
+        , Cmd.map ShareMsg shc
         ]
     )
 
@@ -162,6 +169,7 @@ type Msg
     | UploadMsg Page.Upload.Data.Msg
     | NewInviteMsg Page.NewInvite.Data.Msg
     | ItemDetailMsg Page.ItemDetail.Data.Msg
+    | ShareMsg Page.Share.Data.Msg
     | Logout
     | LogoutResp (Result Http.Error ())
     | SessionCheckResp (Result Http.Error AuthResult)
