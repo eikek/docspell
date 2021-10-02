@@ -13,9 +13,12 @@ import Comp.ItemCardList
 import Comp.ItemMerge
 import Comp.MenuBar as MB
 import Comp.PowerSearchInput
+import Comp.PublishItems
 import Comp.SearchMenu
 import Comp.SearchStatsView
 import Data.Flags exposing (Flags)
+import Data.Icons as Icons
+import Data.ItemQuery as Q
 import Data.ItemSelection
 import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
@@ -63,33 +66,63 @@ viewContent texts flags settings model =
 mainView : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
 mainView texts flags settings model =
     let
-        mergeView =
+        otherView =
             case model.viewMode of
                 SelectView svm ->
                     case svm.action of
                         MergeSelected ->
-                            Just svm
+                            Just
+                                [ div [ class "sm:relative mb-2" ]
+                                    (itemMergeView texts settings svm)
+                                ]
+
+                        PublishSelected ->
+                            Just
+                                [ div [ class "sm:relative mb-2" ]
+                                    (itemPublishView texts flags svm)
+                                ]
 
                         _ ->
                             Nothing
 
-                _ ->
+                PublishView pm ->
+                    Just
+                        [ div [ class "sm:relative mb-2" ]
+                            (publishResults texts flags model pm)
+                        ]
+
+                SimpleView ->
+                    Nothing
+
+                SearchView ->
                     Nothing
     in
-    case mergeView of
-        Just svm ->
-            [ div [ class "sm:relative mb-2" ]
-                (itemMergeView texts settings svm)
-            ]
+    case otherView of
+        Just body ->
+            body
 
         Nothing ->
             itemCardList texts flags settings model
+
+
+itemPublishView : Texts -> Flags -> SelectViewModel -> List (Html Msg)
+itemPublishView texts flags svm =
+    [ Html.map PublishItemsMsg
+        (Comp.PublishItems.view texts.publishItems flags svm.publishModel)
+    ]
 
 
 itemMergeView : Texts -> UiSettings -> SelectViewModel -> List (Html Msg)
 itemMergeView texts settings svm =
     [ Html.map MergeItemsMsg
         (Comp.ItemMerge.view texts.itemMerge settings svm.mergeModel)
+    ]
+
+
+publishResults : Texts -> Flags -> Model -> Comp.PublishItems.Model -> List (Html Msg)
+publishResults texts flags model pm =
+    [ Html.map PublishViewMsg
+        (Comp.PublishItems.view texts.publishItems flags pm)
     ]
 
 
@@ -147,6 +180,9 @@ itemsBar texts flags settings model =
 
         SelectView svm ->
             [ editMenuBar texts model svm ]
+
+        PublishView query ->
+            [ defaultMenuBar texts flags settings model ]
 
 
 defaultMenuBar : Texts -> Flags -> UiSettings -> Model -> Html Msg
@@ -215,6 +251,25 @@ defaultMenuBar texts flags settings model =
     MB.view
         { end =
             [ MB.CustomElement <|
+                B.secondaryBasicButton
+                    { label = ""
+                    , icon = Icons.share
+                    , disabled = createQuery model == Nothing
+                    , handler = onClick TogglePublishCurrentQueryView
+                    , attrs =
+                        [ title <|
+                            if createQuery model == Nothing then
+                                texts.nothingSelectedToShare
+
+                            else
+                                texts.publishCurrentQueryTitle
+                        , classList
+                            [ ( btnStyle, True )
+                            ]
+                        , href "#"
+                        ]
+                    }
+            , MB.CustomElement <|
                 B.secondaryBasicButton
                     { label = ""
                     , icon =
@@ -332,6 +387,17 @@ editMenuBar texts model svm =
                     , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
+            , MB.CustomButton
+                { tagger = PublishSelectedItems
+                , label = ""
+                , icon = Just Icons.share
+                , title = texts.publishItemsTitle selectCount
+                , inputClass =
+                    [ ( btnStyle, True )
+                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == PublishSelected )
+                    , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
+                    ]
+                }
             ]
         , end =
             [ MB.CustomButton
@@ -413,12 +479,12 @@ itemCardList texts _ settings model =
             settings
             model.itemListModel
         )
-    , loadMore settings model
+    , loadMore texts settings model
     ]
 
 
-loadMore : UiSettings -> Model -> Html Msg
-loadMore settings model =
+loadMore : Texts -> UiSettings -> Model -> Html Msg
+loadMore texts settings model =
     let
         inactive =
             not model.moreAvailable || model.moreInProgress || model.searchInProgress
@@ -430,10 +496,10 @@ loadMore settings model =
         [ B.secondaryBasicButton
             { label =
                 if model.moreAvailable then
-                    "Load more…"
+                    texts.loadMore
 
                 else
-                    "That's all"
+                    texts.thatsAll
             , icon =
                 if model.moreInProgress then
                     "fa fa-circle-notch animate-spin"

@@ -19,6 +19,7 @@ import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.ItemMerge
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
+import Comp.PublishItems
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
 import Data.ItemQuery as Q
@@ -237,6 +238,9 @@ update mId key flags settings msg model =
 
                         SelectView _ ->
                             SimpleView
+
+                        PublishView q ->
+                            PublishView q
             in
             withSub
                 ( { model | viewMode = nextView }
@@ -255,6 +259,9 @@ update mId key flags settings msg model =
 
                         SelectView _ ->
                             ( SearchView, Cmd.none )
+
+                        PublishView q ->
+                            ( PublishView q, Cmd.none )
             in
             withSub
                 ( { model
@@ -620,6 +627,85 @@ update mId key flags settings msg model =
                 _ ->
                     noSub ( model, Cmd.none )
 
+        PublishSelectedItems ->
+            case model.viewMode of
+                SelectView svm ->
+                    if svm.action == PublishSelected then
+                        let
+                            ( mm, mc ) =
+                                Comp.PublishItems.init
+                        in
+                        noSub
+                            ( { model
+                                | viewMode =
+                                    SelectView
+                                        { svm
+                                            | action = NoneAction
+                                            , publishModel = mm
+                                        }
+                              }
+                            , Cmd.map PublishItemsMsg mc
+                            )
+
+                    else if svm.ids == Set.empty then
+                        noSub ( model, Cmd.none )
+
+                    else
+                        let
+                            ( mm, mc ) =
+                                Comp.PublishItems.initQuery
+                                    (Q.ItemIdIn (Set.toList svm.ids))
+                        in
+                        noSub
+                            ( { model
+                                | viewMode =
+                                    SelectView
+                                        { svm
+                                            | action = PublishSelected
+                                            , publishModel = mm
+                                        }
+                              }
+                            , Cmd.map PublishItemsMsg mc
+                            )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        PublishItemsMsg lmsg ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        result =
+                            Comp.PublishItems.update flags lmsg svm.publishModel
+
+                        nextView =
+                            case result.outcome of
+                                Comp.PublishItems.OutcomeDone ->
+                                    SelectView { svm | action = NoneAction }
+
+                                Comp.PublishItems.OutcomeInProgress ->
+                                    SelectView { svm | publishModel = result.model }
+
+                        model_ =
+                            { model | viewMode = nextView }
+                    in
+                    if result.outcome == Comp.PublishItems.OutcomeDone then
+                        update mId
+                            key
+                            flags
+                            settings
+                            (DoSearch model.searchTypeDropdownValue)
+                            model_
+
+                    else
+                        noSub
+                            ( model_
+                            , Cmd.map PublishItemsMsg result.cmd
+                            )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
         EditMenuMsg lmsg ->
             case model.viewMode of
                 SelectView svm ->
@@ -785,6 +871,38 @@ update mId key flags settings msg model =
 
         RemoveItem id ->
             update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
+
+        TogglePublishCurrentQueryView ->
+            case createQuery model of
+                Just q ->
+                    let
+                        ( pm, pc ) =
+                            Comp.PublishItems.initQuery q
+                    in
+                    noSub ( { model | viewMode = PublishView pm }, Cmd.map PublishViewMsg pc )
+
+                Nothing ->
+                    noSub ( model, Cmd.none )
+
+        PublishViewMsg lmsg ->
+            case model.viewMode of
+                PublishView inPM ->
+                    let
+                        result =
+                            Comp.PublishItems.update flags lmsg inPM
+                    in
+                    case result.outcome of
+                        Comp.PublishItems.OutcomeInProgress ->
+                            noSub
+                                ( { model | viewMode = PublishView result.model }
+                                , Cmd.map PublishViewMsg result.cmd
+                                )
+
+                        Comp.PublishItems.OutcomeDone ->
+                            noSub ( { model | viewMode = SearchView }, Cmd.none )
+
+                _ ->
+                    noSub ( model, Cmd.none )
 
 
 

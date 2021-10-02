@@ -17,12 +17,14 @@ import Comp.ItemDetail.Model exposing (Msg(..))
 import Comp.MenuBar as MB
 import Comp.ShareForm
 import Comp.ShareTable
+import Comp.ShareView
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Messages.Comp.ShareManage exposing (Texts)
+import Ports
 import Styles as S
 
 
@@ -107,7 +109,7 @@ update flags msg model =
                 share =
                     Api.Model.ShareDetail.empty
             in
-            update flags (FormMsg (Comp.ShareForm.setShare share)) nm
+            update flags (FormMsg (Comp.ShareForm.setShare { share | enabled = True })) nm
 
         SetViewMode vm ->
             ( { model | viewMode = vm, formError = FormErrorNone }
@@ -129,13 +131,10 @@ update flags msg model =
             let
                 action =
                     Comp.ShareTable.update lm
-
-                nextModel =
-                    { model | viewMode = Form, formError = FormErrorNone }
             in
             case action of
                 Comp.ShareTable.Edit share ->
-                    update flags (FormMsg <| Comp.ShareForm.setShare share) nextModel
+                    setShare share flags model
 
         RequestDelete ->
             ( { model | deleteConfirm = DeleteConfirmOn }, Cmd.none )
@@ -190,11 +189,7 @@ update flags msg model =
             ( { model | loading = False, formError = FormErrorHttp err }, Cmd.none )
 
         GetShareResp (Ok share) ->
-            let
-                nextModel =
-                    { model | formError = FormErrorNone, loading = False }
-            in
-            update flags (FormMsg <| Comp.ShareForm.setShare share) nextModel
+            setShare share flags model
 
         GetShareResp (Err err) ->
             ( { model | formError = FormErrorHttp err }, Cmd.none )
@@ -210,17 +205,32 @@ update flags msg model =
             ( { model | formError = FormErrorHttp err, loading = False }, Cmd.none )
 
 
+setShare : ShareDetail -> Flags -> Model -> ( Model, Cmd Msg )
+setShare share flags model =
+    let
+        nextModel =
+            { model | formError = FormErrorNone, viewMode = Form, loading = False }
+
+        initClipboard =
+            Ports.initClipboard (Comp.ShareView.clipboardData share)
+
+        ( nm, nc ) =
+            update flags (FormMsg <| Comp.ShareForm.setShare share) nextModel
+    in
+    ( nm, Cmd.batch [ initClipboard, nc ] )
+
+
 
 --- view
 
 
 view : Texts -> Flags -> Model -> Html Msg
-view texts _ model =
+view texts flags model =
     if model.viewMode == Table then
         viewTable texts model
 
     else
-        viewForm texts model
+        viewForm texts flags model
 
 
 viewTable : Texts -> Model -> Html Msg
@@ -247,103 +257,119 @@ viewTable texts model =
         ]
 
 
-viewForm : Texts -> Model -> Html Msg
-viewForm texts model =
+viewForm : Texts -> Flags -> Model -> Html Msg
+viewForm texts flags model =
     let
         newShare =
             model.formModel.share.id == ""
     in
-    Html.form [ class "relative" ]
-        [ if newShare then
-            h1 [ class S.header2 ]
-                [ text texts.createNewShare
-                ]
-
-          else
-            h1 [ class S.header2 ]
-                [ text <| Maybe.withDefault texts.noName model.formModel.share.name
-                , div [ class "opacity-50 text-sm" ]
-                    [ text "Id: "
-                    , text model.formModel.share.id
+    div [ class "relative" ]
+        [ Html.form []
+            [ if newShare then
+                h1 [ class S.header2 ]
+                    [ text texts.createNewShare
                     ]
-                ]
-        , MB.view
-            { start =
-                [ MB.PrimaryButton
-                    { tagger = Submit
-                    , title = "Submit this form"
-                    , icon = Just "fa fa-save"
-                    , label = texts.basics.submit
-                    }
-                , MB.SecondaryButton
-                    { tagger = SetViewMode Table
-                    , title = texts.basics.backToList
-                    , icon = Just "fa fa-arrow-left"
-                    , label = texts.basics.cancel
-                    }
-                ]
-            , end =
-                if not newShare then
-                    [ MB.DeleteButton
-                        { tagger = RequestDelete
-                        , title = texts.deleteThisShare
-                        , icon = Just "fa fa-trash"
-                        , label = texts.basics.delete
+
+              else
+                h1 [ class S.header2 ]
+                    [ text <| Maybe.withDefault texts.noName model.formModel.share.name
+                    , div [ class "opacity-50 text-sm" ]
+                        [ text "Id: "
+                        , text model.formModel.share.id
+                        ]
+                    ]
+            , MB.view
+                { start =
+                    [ MB.PrimaryButton
+                        { tagger = Submit
+                        , title = "Submit this form"
+                        , icon = Just "fa fa-save"
+                        , label = texts.basics.submit
+                        }
+                    , MB.SecondaryButton
+                        { tagger = SetViewMode Table
+                        , title = texts.basics.backToList
+                        , icon = Just "fa fa-arrow-left"
+                        , label = texts.basics.cancel
                         }
                     ]
+                , end =
+                    if not newShare then
+                        [ MB.DeleteButton
+                            { tagger = RequestDelete
+                            , title = texts.deleteThisShare
+                            , icon = Just "fa fa-trash"
+                            , label = texts.basics.delete
+                            }
+                        ]
 
-                else
-                    []
-            , rootClasses = "mb-4"
-            }
-        , div
-            [ classList
-                [ ( "hidden", model.formError == FormErrorNone )
+                    else
+                        []
+                , rootClasses = "mb-4"
+                }
+            , div
+                [ classList
+                    [ ( "hidden", model.formError == FormErrorNone )
+                    ]
+                , class "my-2"
+                , class S.errorMessage
                 ]
-            , class "my-2"
-            , class S.errorMessage
+                [ case model.formError of
+                    FormErrorNone ->
+                        text ""
+
+                    FormErrorHttp err ->
+                        text (texts.httpError err)
+
+                    FormErrorInvalid ->
+                        text texts.correctFormErrors
+
+                    FormErrorSubmit m ->
+                        text m
+                ]
+            , Html.map FormMsg (Comp.ShareForm.view texts.shareForm model.formModel)
+            , B.loadingDimmer
+                { active = model.loading
+                , label = texts.basics.loading
+                }
+            , B.contentDimmer
+                (model.deleteConfirm == DeleteConfirmOn)
+                (div [ class "flex flex-col" ]
+                    [ div [ class "text-lg" ]
+                        [ i [ class "fa fa-info-circle mr-2" ] []
+                        , text texts.reallyDeleteShare
+                        ]
+                    , div [ class "mt-4 flex flex-row items-center" ]
+                        [ B.deleteButton
+                            { label = texts.basics.yes
+                            , icon = "fa fa-check"
+                            , disabled = False
+                            , handler = onClick (DeleteShareNow model.formModel.share.id)
+                            , attrs = [ href "#" ]
+                            }
+                        , B.secondaryButton
+                            { label = texts.basics.no
+                            , icon = "fa fa-times"
+                            , disabled = False
+                            , handler = onClick CancelDelete
+                            , attrs = [ href "#", class "ml-2" ]
+                            }
+                        ]
+                    ]
+                )
             ]
-            [ case model.formError of
-                FormErrorNone ->
-                    text ""
+        , shareInfo texts flags model.formModel.share
+        ]
 
-                FormErrorHttp err ->
-                    text (texts.httpError err)
 
-                FormErrorInvalid ->
-                    text texts.correctFormErrors
-
-                FormErrorSubmit m ->
-                    text m
+shareInfo : Texts -> Flags -> ShareDetail -> Html Msg
+shareInfo texts flags share =
+    div
+        [ class "mt-6"
+        , classList [ ( "hidden", share.id == "" ) ]
+        ]
+        [ h2 [ class S.header2 ]
+            [ text texts.shareInformation
             ]
-        , Html.map FormMsg (Comp.ShareForm.view texts.shareForm model.formModel)
-        , B.loadingDimmer
-            { active = model.loading
-            , label = texts.basics.loading
-            }
-        , B.contentDimmer
-            (model.deleteConfirm == DeleteConfirmOn)
-            (div [ class "flex flex-col" ]
-                [ div [ class "text-lg" ]
-                    [ i [ class "fa fa-info-circle mr-2" ] []
-                    , text texts.reallyDeleteShare
-                    ]
-                , div [ class "mt-4 flex flex-row items-center" ]
-                    [ B.deleteButton
-                        { label = texts.basics.yes
-                        , icon = "fa fa-check"
-                        , disabled = False
-                        , handler = onClick (DeleteShareNow model.formModel.share.id)
-                        , attrs = [ href "#" ]
-                        }
-                    , B.secondaryButton
-                        { label = texts.basics.no
-                        , icon = "fa fa-times"
-                        , disabled = False
-                        , handler = onClick CancelDelete
-                        , attrs = [ href "#", class "ml-2" ]
-                        }
-                    ]
-                ]
-            )
+        , Comp.ShareView.viewDefault texts.shareView flags share
         ]

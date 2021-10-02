@@ -48,6 +48,11 @@ errorMessage =
     " border border-red-600 bg-red-50 text-red-600 dark:border-orange-800 dark:bg-orange-300 dark:text-orange-800 px-2 py-2 rounded "
 
 
+errorText : String
+errorText =
+    " text-red-600 dark:text-orange-800 "
+
+
 warnMessage : String
 warnMessage =
     warnMessageColors ++ " border dark:bg-opacity-25 px-2 py-2 rounded "

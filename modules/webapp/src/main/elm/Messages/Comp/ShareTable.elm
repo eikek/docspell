@@ -19,7 +19,7 @@ import Messages.UiLanguage
 type alias Texts =
     { basics : Messages.Basics.Texts
     , formatDateTime : Int -> String
-    , enabled : String
+    , active : String
     , publishUntil : String
     }
 
@@ -28,7 +28,7 @@ gb : Texts
 gb =
     { basics = Messages.Basics.gb
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
-    , enabled = "Enabled"
+    , active = "Active"
     , publishUntil = "Publish Until"
     }
 
@@ -37,6 +37,6 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
-    , enabled = "Aktiv"
+    , active = "Aktiv"
     , publishUntil = "Publiziert bis"
     }

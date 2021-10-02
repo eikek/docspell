@@ -16,12 +16,14 @@ import Messages.Basics
 import Messages.Comp.HttpError
 import Messages.Comp.ShareForm
 import Messages.Comp.ShareTable
+import Messages.Comp.ShareView
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
     , shareTable : Messages.Comp.ShareTable.Texts
     , shareForm : Messages.Comp.ShareForm.Texts
+    , shareView : Messages.Comp.ShareView.Texts
     , httpError : Http.Error -> String
     , newShare : String
     , copyToClipboard : String
@@ -33,6 +35,7 @@ type alias Texts =
     , errorGeneratingQR : String
     , correctFormErrors : String
     , noName : String
+    , shareInformation : String
     }
 
 
@@ -42,6 +45,7 @@ gb =
     , httpError = Messages.Comp.HttpError.gb
     , shareTable = Messages.Comp.ShareTable.gb
     , shareForm = Messages.Comp.ShareForm.gb
+    , shareView = Messages.Comp.ShareView.gb
     , newShare = "New share"
     , copyToClipboard = "Copy to clipboard"
     , openInNewTab = "Open in new tab/window"
@@ -52,6 +56,7 @@ gb =
     , errorGeneratingQR = "Error generating QR Code"
     , correctFormErrors = "Please correct the errors in the form."
     , noName = "No Name"
+    , shareInformation = "Share Information"
     }
 
 
@@ -60,6 +65,7 @@ de =
     { basics = Messages.Basics.de
     , shareTable = Messages.Comp.ShareTable.de
     , shareForm = Messages.Comp.ShareForm.de
+    , shareView = Messages.Comp.ShareView.de
     , httpError = Messages.Comp.HttpError.de
     , newShare = "Neue Freigabe"
     , copyToClipboard = "In die Zwischenablage kopieren"
@@ -71,4 +77,5 @@ de =
     , errorGeneratingQR = "Fehler beim Generieren des QR-Code"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     , noName = "Ohne Name"
+    , shareInformation = "Informationen zur Freigabe"
     }

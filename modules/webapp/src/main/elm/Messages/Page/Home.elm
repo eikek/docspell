@@ -14,6 +14,7 @@ module Messages.Page.Home exposing
 import Messages.Basics
 import Messages.Comp.ItemCardList
 import Messages.Comp.ItemMerge
+import Messages.Comp.PublishItems
 import Messages.Comp.SearchStatsView
 import Messages.Page.HomeSideMenu
 
@@ -24,6 +25,7 @@ type alias Texts =
     , searchStatsView : Messages.Comp.SearchStatsView.Texts
     , sideMenu : Messages.Page.HomeSideMenu.Texts
     , itemMerge : Messages.Comp.ItemMerge.Texts
+    , publishItems : Messages.Comp.PublishItems.Texts
     , contentSearch : String
     , searchInNames : String
     , selectModeTitle : String
@@ -42,6 +44,11 @@ type alias Texts =
     , resetSearchForm : String
     , exitSelectMode : String
     , mergeItemsTitle : Int -> String
+    , publishItemsTitle : Int -> String
+    , publishCurrentQueryTitle : String
+    , nothingSelectedToShare : String
+    , loadMore : String
+    , thatsAll : String
     }
 
 
@@ -52,6 +59,7 @@ gb =
     , searchStatsView = Messages.Comp.SearchStatsView.gb
     , sideMenu = Messages.Page.HomeSideMenu.gb
     , itemMerge = Messages.Comp.ItemMerge.gb
+    , publishItems = Messages.Comp.PublishItems.gb
     , contentSearch = "Content search…"
     , searchInNames = "Search in names…"
     , selectModeTitle = "Select Mode"
@@ -70,6 +78,11 @@ gb =
     , resetSearchForm = "Reset search form"
     , exitSelectMode = "Exit Select Mode"
     , mergeItemsTitle = \n -> "Merge " ++ String.fromInt n ++ " selected items"
+    , publishItemsTitle = \n -> "Publish " ++ String.fromInt n ++ " selected items"
+    , publishCurrentQueryTitle = "Publish current results"
+    , nothingSelectedToShare = "Sharing everything doesn't work. You need to apply some criteria."
+    , loadMore = "Load more…"
+    , thatsAll = "That's all"
     }
 
 
@@ -80,6 +93,7 @@ de =
     , searchStatsView = Messages.Comp.SearchStatsView.de
     , sideMenu = Messages.Page.HomeSideMenu.de
     , itemMerge = Messages.Comp.ItemMerge.de
+    , publishItems = Messages.Comp.PublishItems.de
     , contentSearch = "Volltextsuche…"
     , searchInNames = "Suche in Namen…"
     , selectModeTitle = "Auswahlmodus"
@@ -98,4 +112,9 @@ de =
     , resetSearchForm = "Suchformular zurücksetzen"
     , exitSelectMode = "Auswahlmodus verlassen"
     , mergeItemsTitle = \n -> String.fromInt n ++ " gewählte Dokumente zusammenführen"
+    , publishItemsTitle = \n -> String.fromInt n ++ " gewählte Dokumente publizieren"
+    , publishCurrentQueryTitle = "Aktuelle Ansicht publizieren"
+    , nothingSelectedToShare = "Alles kann nicht geteilt werden; es muss etwas gesucht werden."
+    , loadMore = "Mehr laden…"
+    , thatsAll = "Mehr gibt es nicht"
     }

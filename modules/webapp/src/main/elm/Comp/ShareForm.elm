@@ -5,7 +5,7 @@
 -}
 
 
-module Comp.ShareForm exposing (Model, Msg, getShare, init, setShare, update, view)
+module Comp.ShareForm exposing (Model, Msg, getShare, init, initQuery, setShare, update, view)
 
 import Api.Model.ShareData exposing (ShareData)
 import Api.Model.ShareDetail exposing (ShareDetail)
@@ -36,16 +36,16 @@ type alias Model =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
+initQuery : String -> ( Model, Cmd Msg )
+initQuery q =
     let
         ( dp, dpc ) =
             Comp.DatePicker.init
     in
     ( { share = Api.Model.ShareDetail.empty
       , name = Nothing
-      , query = ""
-      , enabled = False
+      , query = q
+      , enabled = True
       , passwordModel = Comp.PasswordInput.init
       , password = Nothing
       , passwordSet = False
@@ -55,6 +55,11 @@ init =
       }
     , Cmd.map UntilDateMsg dpc
     )
+
+
+init : ( Model, Cmd Msg )
+init =
+    initQuery ""
 
 
 isValid : Model -> Bool
@@ -206,7 +211,7 @@ view texts model =
                 , class S.textInput
                 , classList
                     [ ( S.inputErrorBorder
-                      , not (isValid model)
+                      , model.query == ""
                       )
                     ]
                 ]
@@ -265,12 +270,16 @@ view texts model =
                     ]
                 ]
             ]
-        , div [ class "mb-2 max-w-sm" ]
+        , div
+            [ class "mb-2 max-w-sm"
+            ]
             [ label [ class S.inputLabel ]
                 [ text texts.publishUntil
                 , B.inputRequired
                 ]
-            , div [ class "relative" ]
+            , div
+                [ class "relative"
+                ]
                 [ Html.map UntilDateMsg
                     (Comp.DatePicker.viewTimeDefault
                         model.untilDate
@@ -278,5 +287,15 @@ view texts model =
                     )
                 , i [ class S.dateInputIcon, class "fa fa-calendar" ] []
                 ]
+            , div
+                [ classList
+                    [ ( "hidden"
+                      , model.untilDate /= Nothing
+                      )
+                    ]
+                , class "mt-1"
+                , class S.errorText
+                ]
+                [ text "This field is required." ]
             ]
         ]

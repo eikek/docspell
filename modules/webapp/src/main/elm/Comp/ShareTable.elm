@@ -54,7 +54,7 @@ view texts shares =
                     [ text texts.basics.name
                     ]
                 , th [ class "text-center" ]
-                    [ text texts.enabled
+                    [ text texts.active
                     ]
                 , th [ class "text-center" ]
                     [ text texts.publishUntil
@@ -79,7 +79,14 @@ renderShareLine texts share =
             [ text (Maybe.withDefault "-" share.name)
             ]
         , td [ class "w-px px-2 text-center" ]
-            [ Util.Html.checkbox2 share.enabled
+            [ if not share.enabled then
+                i [ class "fa fa-ban" ] []
+
+              else if share.expired then
+                i [ class "fa fa-bolt text-red-600 dark:text-orange-800" ] []
+
+              else
+                i [ class "fa fa-check" ] []
             ]
         , td [ class "hidden sm:table-cell text-center" ]
             [ texts.formatDateTime share.publishUntil |> text
