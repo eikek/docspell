@@ -101,6 +101,28 @@ object RShare {
         .option
     )
 
+  private def activeCondition(t: Table, id: Ident, current: Timestamp): Condition =
+    t.id === id && t.enabled === true && t.publishedUntil > current
+
+  def findActive(id: Ident, current: Timestamp): OptionT[ConnectionIO, RShare] =
+    OptionT(
+      Select(
+        select(T.all),
+        from(T),
+        activeCondition(T, id, current)
+      ).build.query[RShare].option
+    )
+
+  def findCurrentActive(id: Ident): OptionT[ConnectionIO, RShare] =
+    OptionT.liftF(Timestamp.current[ConnectionIO]).flatMap(now => findActive(id, now))
+
+  def findActivePassword(id: Ident): OptionT[ConnectionIO, Option[Password]] =
+    OptionT(Timestamp.current[ConnectionIO].flatMap { now =>
+      Select(select(T.password), from(T), activeCondition(T, id, now)).build
+        .query[Option[Password]]
+        .option
+    })
+
   def findAllByCollective(cid: Ident): ConnectionIO[List[RShare]] =
     Select(select(T.all), from(T), T.cid === cid)
       .orderBy(T.publishedAt.desc)

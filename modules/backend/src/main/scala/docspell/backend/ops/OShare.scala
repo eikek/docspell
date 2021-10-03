@@ -11,10 +11,14 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.PasswordCrypt
+import docspell.backend.auth.ShareToken
+import docspell.backend.ops.OShare.VerifyResult
 import docspell.common._
 import docspell.query.ItemQuery
 import docspell.store.Store
 import docspell.store.records.RShare
+
+import scodec.bits.ByteVector
 
 trait OShare[F[_]] {
 
@@ -31,9 +35,31 @@ trait OShare[F[_]] {
       share: OShare.NewShare,
       removePassword: Boolean
   ): F[OShare.ChangeResult]
+
+  def verify(key: ByteVector)(id: Ident, password: Option[Password]): F[VerifyResult]
+  def verifyToken(key: ByteVector)(token: String): F[VerifyResult]
 }
 
 object OShare {
+
+  sealed trait VerifyResult {
+    def toEither: Either[String, ShareToken] =
+      this match {
+        case VerifyResult.Success(token) => Right(token)
+        case _                           => Left("Authentication failed.")
+      }
+  }
+  object VerifyResult {
+    case class Success(token: ShareToken) extends VerifyResult
+    case object NotFound extends VerifyResult
+    case object PasswordMismatch extends VerifyResult
+    case object InvalidToken extends VerifyResult
+
+    def success(token: ShareToken): VerifyResult = Success(token)
+    def notFound: VerifyResult = NotFound
+    def passwordMismatch: VerifyResult = PasswordMismatch
+    def invalidToken: VerifyResult = InvalidToken
+  }
 
   final case class NewShare(
       cid: Ident,
@@ -55,6 +81,8 @@ object OShare {
 
   def apply[F[_]: Async](store: Store[F]): OShare[F] =
     new OShare[F] {
+      private[this] val logger = Logger.log4s[F](org.log4s.getLogger)
+
       def findAll(collective: Ident): F[List[RShare]] =
         store.transact(RShare.findAllByCollective(collective))
 
@@ -112,5 +140,51 @@ object OShare {
 
       def findOne(id: Ident, collective: Ident): OptionT[F, RShare] =
         RShare.findOne(id, collective).mapK(store.transform)
+
+      def verify(
+          key: ByteVector
+      )(id: Ident, password: Option[Password]): F[VerifyResult] =
+        RShare
+          .findCurrentActive(id)
+          .mapK(store.transform)
+          .semiflatMap { share =>
+            val pwCheck =
+              share.password.map(encPw => password.exists(PasswordCrypt.check(_, encPw)))
+
+            // add the password (if existing) to the server secret key; this way the token
+            // invalidates when the user changes the password
+            val shareKey =
+              share.password.map(pw => key ++ pw.asByteVector).getOrElse(key)
+
+            val token = ShareToken.create(id, shareKey)
+            pwCheck match {
+              case Some(true)  => token.map(VerifyResult.success)
+              case None        => token.map(VerifyResult.success)
+              case Some(false) => VerifyResult.passwordMismatch.pure[F]
+            }
+          }
+          .getOrElse(VerifyResult.notFound)
+
+      def verifyToken(key: ByteVector)(token: String): F[VerifyResult] =
+        ShareToken.fromString(token) match {
+          case Right(st) =>
+            RShare
+              .findActivePassword(st.id)
+              .mapK(store.transform)
+              .semiflatMap { password =>
+                val shareKey =
+                  password.map(pw => key ++ pw.asByteVector).getOrElse(key)
+                if (st.sigValid(shareKey)) VerifyResult.success(st).pure[F]
+                else
+                  logger.info(
+                    s"Signature failure for share: ${st.id.id}"
+                  ) *> VerifyResult.invalidToken.pure[F]
+              }
+              .getOrElse(VerifyResult.notFound)
+
+          case Left(err) =>
+            logger.debug(s"Invalid session token: $err") *>
+              VerifyResult.invalidToken.pure[F]
+        }
     }
 }

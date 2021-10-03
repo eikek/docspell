@@ -18,17 +18,24 @@ private[auth] object TokenUtil {
 
   def sign(cd: RememberToken, key: ByteVector): String = {
     val raw = cd.nowMillis.toString + cd.rememberId.id + cd.salt
-    val mac = Mac.getInstance("HmacSHA1")
-    mac.init(new SecretKeySpec(key.toArray, "HmacSHA1"))
-    ByteVector.view(mac.doFinal(raw.getBytes(utf8))).toBase64
+    signRaw(raw, key)
   }
 
   def sign(cd: AuthToken, key: ByteVector): String = {
     val raw =
       cd.nowMillis.toString + cd.account.asString + cd.requireSecondFactor + cd.salt
+    signRaw(raw, key)
+  }
+
+  def sign(sd: ShareToken, key: ByteVector): String = {
+    val raw = s"${sd.created.toMillis}${sd.id.id}${sd.salt}"
+    signRaw(raw, key)
+  }
+
+  private def signRaw(data: String, key: ByteVector): String = {
     val mac = Mac.getInstance("HmacSHA1")
     mac.init(new SecretKeySpec(key.toArray, "HmacSHA1"))
-    ByteVector.view(mac.doFinal(raw.getBytes(utf8))).toBase64
+    ByteVector.view(mac.doFinal(data.getBytes(utf8))).toBase64
   }
 
   def b64enc(s: String): String =

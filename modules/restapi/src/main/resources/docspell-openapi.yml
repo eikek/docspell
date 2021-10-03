@@ -538,6 +538,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/InviteResult"
+
+  /open/share/verify:
+    post:
+      operationId: "open-share-verify"
+      tags: [ Share ]
+      summary: Verify a secret for a share
+      description: |
+        Given the share id and optionally a password, it verifies the
+        correctness of the given data. As a result, a token is
+        returned that must be used with all `share/*` routes. If the
+        password is missing, but required, the response indicates
+        this. Then the requests needs to be replayed with the correct
+        password to retrieve the token.
+
+        The token is also added as a session cookie to the response.
+
+        The token is used to avoid passing the user define password
+        with every request.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShareSecret"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareVerifyResult"
+
   /sec/auth/session:
     post:
       operationId: "sec-auth-session"
@@ -4186,6 +4217,38 @@ paths:
 
 components:
   schemas:
+    ShareSecret:
+      description: |
+        The secret (the share id + optional password) to access a
+        share.
+      required:
+        - shareId
+      properties:
+        shareId:
+          type: string
+          format: ident
+        password:
+          type: string
+          format: password
+
+    ShareVerifyResult:
+      description: |
+        The data returned when verifying a `ShareSecret`.
+      required:
+        - success
+        - token
+        - passwordRequired
+        - message
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+        passwordRequired:
+          type: boolean
+        message:
+          type: string
+
     ShareData:
       description: |
         Editable data for a share.

@@ -9,13 +9,18 @@ package docspell.restserver.routes
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OShare
+import docspell.backend.ops.OShare.VerifyResult
 import docspell.common.{Ident, Timestamp}
 import docspell.restapi.model._
-import docspell.restserver.http4s.ResponseGenerator
+import docspell.restserver.Config
+import docspell.restserver.auth.ShareCookieData
+import docspell.restserver.http4s.{ClientRequestInfo, ResponseGenerator}
 import docspell.store.records.RShare
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
@@ -63,6 +68,31 @@ object ShareRoutes {
           del <- backend.share.delete(id, user.account.collective)
           resp <- Ok(BasicResult(del, if (del) "Share deleted." else "Deleting failed."))
         } yield resp
+    }
+  }
+
+  def verify[F[_]: Async](backend: BackendApp[F], cfg: Config): HttpRoutes[F] = {
+    val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
+    import dsl._
+
+    HttpRoutes.of { case req @ POST -> Root / "verify" =>
+      for {
+        secret <- req.as[ShareSecret]
+        res <- backend.share
+          .verify(cfg.auth.serverSecret)(secret.shareId, secret.password)
+        resp <- res match {
+          case VerifyResult.Success(token) =>
+            val cd = ShareCookieData(token)
+            Ok(ShareVerifyResult(true, token.asString, false, "Success"))
+              .map(cd.addCookie(ClientRequestInfo.getBaseUrl(cfg, req)))
+          case VerifyResult.PasswordMismatch =>
+            Ok(ShareVerifyResult(false, "", true, "Failed"))
+          case VerifyResult.NotFound =>
+            Ok(ShareVerifyResult(false, "", false, "Failed"))
+          case VerifyResult.InvalidToken =>
+            Ok(ShareVerifyResult(false, "", false, "Failed"))
+        }
+      } yield resp
     }
   }
 

@@ -70,6 +70,9 @@ object Timestamp {
   def atUtc(ldt: LocalDateTime): Timestamp =
     from(ldt.atZone(UTC))
 
+  def ofMillis(ms: Long): Timestamp =
+    Timestamp(Instant.ofEpochMilli(ms))
+
   def daysBetween(ts0: Timestamp, ts1: Timestamp): Long =
     ChronoUnit.DAYS.between(ts0.toUtcDate, ts1.toUtcDate)
 
