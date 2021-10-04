@@ -12,7 +12,7 @@ import cats.implicits._
 
 import docspell.backend.PasswordCrypt
 import docspell.backend.auth.ShareToken
-import docspell.backend.ops.OShare.VerifyResult
+import docspell.backend.ops.OShare.{ShareQuery, VerifyResult}
 import docspell.common._
 import docspell.query.ItemQuery
 import docspell.store.Store
@@ -36,26 +36,37 @@ trait OShare[F[_]] {
       removePassword: Boolean
   ): F[OShare.ChangeResult]
 
+  // ---
+
+  /** Verifies the given id and password and returns a authorization token on success. */
   def verify(key: ByteVector)(id: Ident, password: Option[Password]): F[VerifyResult]
+
+  /** Verifies the authorization token. */
   def verifyToken(key: ByteVector)(token: String): F[VerifyResult]
+
+  def findShareQuery(id: Ident): OptionT[F, ShareQuery]
 }
 
 object OShare {
+  final case class ShareQuery(id: Ident, cid: Ident, query: ItemQuery)
 
   sealed trait VerifyResult {
     def toEither: Either[String, ShareToken] =
       this match {
-        case VerifyResult.Success(token) => Right(token)
-        case _                           => Left("Authentication failed.")
+        case VerifyResult.Success(token, _) =>
+          Right(token)
+        case _ => Left("Authentication failed.")
       }
   }
   object VerifyResult {
-    case class Success(token: ShareToken) extends VerifyResult
+    case class Success(token: ShareToken, shareName: Option[String]) extends VerifyResult
     case object NotFound extends VerifyResult
     case object PasswordMismatch extends VerifyResult
     case object InvalidToken extends VerifyResult
 
-    def success(token: ShareToken): VerifyResult = Success(token)
+    def success(token: ShareToken): VerifyResult = Success(token, None)
+    def success(token: ShareToken, name: Option[String]): VerifyResult =
+      Success(token, name)
     def notFound: VerifyResult = NotFound
     def passwordMismatch: VerifyResult = PasswordMismatch
     def invalidToken: VerifyResult = InvalidToken
@@ -158,8 +169,8 @@ object OShare {
 
             val token = ShareToken.create(id, shareKey)
             pwCheck match {
-              case Some(true)  => token.map(VerifyResult.success)
-              case None        => token.map(VerifyResult.success)
+              case Some(true)  => token.map(t => VerifyResult.success(t, share.name))
+              case None        => token.map(t => VerifyResult.success(t, share.name))
               case Some(false) => VerifyResult.passwordMismatch.pure[F]
             }
           }
@@ -186,5 +197,11 @@ object OShare {
             logger.debug(s"Invalid session token: $err") *>
               VerifyResult.invalidToken.pure[F]
         }
+
+      def findShareQuery(id: Ident): OptionT[F, ShareQuery] =
+        RShare
+          .findCurrentActive(id)
+          .mapK(store.transform)
+          .map(share => ShareQuery(share.id, share.cid, share.query))
     }
 }

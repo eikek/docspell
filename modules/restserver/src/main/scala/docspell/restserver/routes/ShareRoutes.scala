@@ -81,16 +81,16 @@ object ShareRoutes {
         res <- backend.share
           .verify(cfg.auth.serverSecret)(secret.shareId, secret.password)
         resp <- res match {
-          case VerifyResult.Success(token) =>
+          case VerifyResult.Success(token, name) =>
             val cd = ShareCookieData(token)
-            Ok(ShareVerifyResult(true, token.asString, false, "Success"))
+            Ok(ShareVerifyResult(true, token.asString, false, "Success", name))
               .map(cd.addCookie(ClientRequestInfo.getBaseUrl(cfg, req)))
           case VerifyResult.PasswordMismatch =>
-            Ok(ShareVerifyResult(false, "", true, "Failed"))
+            Ok(ShareVerifyResult(false, "", true, "Failed", None))
           case VerifyResult.NotFound =>
-            Ok(ShareVerifyResult(false, "", false, "Failed"))
+            Ok(ShareVerifyResult(false, "", false, "Failed", None))
           case VerifyResult.InvalidToken =>
-            Ok(ShareVerifyResult(false, "", false, "Failed"))
+            Ok(ShareVerifyResult(false, "", false, "Failed", None))
         }
       } yield resp
     }

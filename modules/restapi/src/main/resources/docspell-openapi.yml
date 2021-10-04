@@ -1558,6 +1558,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /share/search:
+    post:
+      operationId: "share-search"
+      tags: [Share]
+      summary: Performs a search in a share.
+      description: |
+        Allows to run a search query in the shared documents. The
+        input data structure is the same as with a standard query. The
+        `searchMode` parameter is ignored here.
+      security:
+        - shareTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemQuery"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightList"
+
   /admin/user/resetPassword:
     post:
       operationId: "admin-user-reset-password"
@@ -4248,6 +4272,11 @@ components:
           type: boolean
         message:
           type: string
+        name:
+          type: string
+          description: |
+            The name of the share if it exists. Only valid to use when
+            `success` is `true`.
 
     ShareData:
       description: |
@@ -6475,6 +6504,10 @@ components:
       type: apiKey
       in: header
       name: Docspell-Admin-Secret
+    shareTokenHeader:
+      type: apiKey
+      in: header
+      name: Docspell-Share-Auth
   parameters:
     id:
       name: id
