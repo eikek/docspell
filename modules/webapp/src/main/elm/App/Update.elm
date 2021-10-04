@@ -324,7 +324,7 @@ updateShare lmsg model =
         Just id ->
             let
                 result =
-                    Page.Share.Update.update model.flags id lmsg model.shareModel
+                    Page.Share.Update.update model.flags model.uiSettings id lmsg model.shareModel
             in
             ( { model | shareModel = result.model }
             , Cmd.map ShareMsg result.cmd

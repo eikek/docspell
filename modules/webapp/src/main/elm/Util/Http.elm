@@ -14,6 +14,7 @@ module Util.Http exposing
     , authTask
     , executeIn
     , jsonResolver
+    , sharePost
     )
 
 import Api.Model.AuthResult exposing (AuthResult)
@@ -49,6 +50,28 @@ authReq req =
         }
 
 
+shareReq :
+    { url : String
+    , token : String
+    , method : String
+    , headers : List Http.Header
+    , body : Http.Body
+    , expect : Http.Expect msg
+    , tracker : Maybe String
+    }
+    -> Cmd msg
+shareReq req =
+    Http.request
+        { url = req.url
+        , method = req.method
+        , headers = Http.header "Docspell-Share-Auth" req.token :: req.headers
+        , expect = req.expect
+        , body = req.body
+        , timeout = Nothing
+        , tracker = req.tracker
+        }
+
+
 authPost :
     { url : String
     , account : AuthResult
@@ -60,6 +83,25 @@ authPost req =
     authReq
         { url = req.url
         , account = req.account
+        , body = req.body
+        , expect = req.expect
+        , method = "POST"
+        , headers = []
+        , tracker = Nothing
+        }
+
+
+sharePost :
+    { url : String
+    , token : String
+    , body : Http.Body
+    , expect : Http.Expect msg
+    }
+    -> Cmd msg
+sharePost req =
+    shareReq
+        { url = req.url
+        , token = req.token
         , body = req.body
         , expect = req.expect
         , method = "POST"

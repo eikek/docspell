@@ -432,6 +432,7 @@ viewShare texts shareId model =
     , Html.map ShareMsg
         (Share.viewContent texts.share
             model.flags
+            model.version
             model.uiSettings
             model.shareModel
         )

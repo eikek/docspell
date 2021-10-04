@@ -113,6 +113,7 @@ module Api exposing
     , restoreAllItems
     , restoreItem
     , saveClientSettings
+    , searchShare
     , sendMail
     , setAttachmentName
     , setCollectiveSettings
@@ -155,6 +156,7 @@ module Api exposing
     , upload
     , uploadAmend
     , uploadSingle
+    , verifyShare
     , versionInfo
     )
 
@@ -223,6 +225,8 @@ import Api.Model.SentMails exposing (SentMails)
 import Api.Model.ShareData exposing (ShareData)
 import Api.Model.ShareDetail exposing (ShareDetail)
 import Api.Model.ShareList exposing (ShareList)
+import Api.Model.ShareSecret exposing (ShareSecret)
+import Api.Model.ShareVerifyResult exposing (ShareVerifyResult)
 import Api.Model.SimpleMail exposing (SimpleMail)
 import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.SourceList exposing (SourceList)
@@ -2261,6 +2265,26 @@ deleteShare flags id receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/share/" ++ id
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+verifyShare : Flags -> ShareSecret -> (Result Http.Error ShareVerifyResult -> msg) -> Cmd msg
+verifyShare flags secret receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/open/share/verify"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ShareSecret.encode secret)
+        , expect = Http.expectJson receive Api.Model.ShareVerifyResult.decoder
+        }
+
+
+searchShare : Flags -> String -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
+searchShare flags token search receive =
+    Http2.sharePost
+        { url = flags.config.baseUrl ++ "/api/v1/share/search"
+        , token = token
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
+        , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
         }
 
 
