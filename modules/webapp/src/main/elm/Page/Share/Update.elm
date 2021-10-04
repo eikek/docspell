@@ -10,6 +10,7 @@ module Page.Share.Update exposing (UpdateResult, update)
 import Api
 import Api.Model.ItemQuery
 import Comp.ItemCardList
+import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
@@ -17,6 +18,7 @@ import Data.ItemQuery as Q
 import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
 import Page.Share.Data exposing (..)
+import Util.Update
 
 
 type alias UpdateResult =
@@ -155,10 +157,17 @@ update flags settings shareId msg model =
 
         ItemListMsg lm ->
             let
-                ( im, ic ) =
+                ( im, ic, linkTarget ) =
                     Comp.ItemCardList.update flags lm model.itemListModel
+
+                searchMsg =
+                    Maybe.map Util.Update.cmdUnit (linkTargetMsg linkTarget)
+                        |> Maybe.withDefault Cmd.none
             in
-            noSub ( { model | itemListModel = im }, Cmd.map ItemListMsg ic )
+            noSub
+                ( { model | itemListModel = im }
+                , Cmd.batch [ Cmd.map ItemListMsg ic, searchMsg ]
+                )
 
 
 noSub : ( Model, Cmd Msg ) -> UpdateResult
@@ -184,3 +193,8 @@ makeSearchCmd flags model =
             }
     in
     Api.searchShare flags model.verifyResult.token (request xq) SearchResp
+
+
+linkTargetMsg : LinkTarget -> Maybe Msg
+linkTargetMsg linkTarget =
+    Maybe.map SearchMenuMsg (Comp.SearchMenu.linkTargetMsg linkTarget)

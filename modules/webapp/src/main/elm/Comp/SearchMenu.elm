@@ -14,6 +14,7 @@ module Comp.SearchMenu exposing
     , init
     , isFulltextSearch
     , isNamesSearch
+    , linkTargetMsg
     , textSearchString
     , update
     , updateDrop
@@ -34,6 +35,7 @@ import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FolderSelect
+import Comp.LinkTarget exposing (LinkTarget)
 import Comp.MenuBar as MB
 import Comp.Tabs
 import Comp.TagSelect
@@ -375,6 +377,37 @@ type Msg
     | GetAllTagsResp (Result Http.Error SearchStats)
     | ToggleAkkordionTab String
     | ToggleOpenAllAkkordionTabs
+
+
+linkTargetMsg : LinkTarget -> Maybe Msg
+linkTargetMsg linkTarget =
+    case linkTarget of
+        Comp.LinkTarget.LinkNone ->
+            Nothing
+
+        Comp.LinkTarget.LinkCorrOrg id ->
+            Just <| SetCorrOrg id
+
+        Comp.LinkTarget.LinkCorrPerson id ->
+            Just <| SetCorrPerson id
+
+        Comp.LinkTarget.LinkConcPerson id ->
+            Just <| SetConcPerson id
+
+        Comp.LinkTarget.LinkConcEquip id ->
+            Just <| SetConcEquip id
+
+        Comp.LinkTarget.LinkFolder id ->
+            Just <| SetFolder id
+
+        Comp.LinkTarget.LinkTag id ->
+            Just <| SetTag id.id
+
+        Comp.LinkTarget.LinkCustomField id ->
+            Just <| SetCustomField id
+
+        Comp.LinkTarget.LinkSource str ->
+            Just <| ResetToSource str
 
 
 type alias NextState =

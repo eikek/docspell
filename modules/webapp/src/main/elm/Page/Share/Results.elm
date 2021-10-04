@@ -1,5 +1,13 @@
+{-
+   Copyright 2020 Eike K. & Contributors
+
+   SPDX-License-Identifier: AGPL-3.0-or-later
+-}
+
+
 module Page.Share.Results exposing (view)
 
+import Api
 import Comp.ItemCardList
 import Data.ItemSelection
 import Data.UiSettings exposing (UiSettings)
@@ -15,6 +23,8 @@ view texts settings model =
         viewCfg =
             { current = Nothing
             , selection = Data.ItemSelection.Inactive
+            , previewUrl = \attach -> Api.shareAttachmentPreviewURL attach.id
+            , previewUrlFallback = \item -> Api.shareItemBasePreviewURL item.id
             }
     in
     div []

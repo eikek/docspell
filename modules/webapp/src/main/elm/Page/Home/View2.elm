@@ -7,6 +7,7 @@
 
 module Page.Home.View2 exposing (viewContent, viewSidebar)
 
+import Api
 import Comp.Basic as B
 import Comp.ConfirmModal
 import Comp.ItemCardList
@@ -461,17 +462,27 @@ searchStats texts _ settings model =
 itemCardList : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
 itemCardList texts _ settings model =
     let
+        previewUrl attach =
+            Api.attachmentPreviewURL attach.id
+
+        previewUrlFallback item =
+            Api.itemBasePreviewURL item.id
+
         itemViewCfg =
             case model.viewMode of
                 SelectView svm ->
                     Comp.ItemCardList.ViewConfig
                         model.scrollToCard
                         (Data.ItemSelection.Active svm.ids)
+                        previewUrl
+                        previewUrlFallback
 
                 _ ->
                     Comp.ItemCardList.ViewConfig
                         model.scrollToCard
                         Data.ItemSelection.Inactive
+                        previewUrl
+                        previewUrlFallback
     in
     [ Html.map ItemCardListMsg
         (Comp.ItemCardList.view2 texts.itemCardList

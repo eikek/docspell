@@ -56,6 +56,8 @@ type Msg
 type alias ViewConfig =
     { selection : ItemSelection
     , extraClasses : String
+    , previewUrl : AttachmentLight -> String
+    , previewUrlFallback : ItemLight -> String
     }
 
 
@@ -160,7 +162,7 @@ view2 texts cfg settings model item =
                 "text-blue-500 dark:text-lightblue-500"
 
             else if isDeleted then
-                 "text-red-600 dark:text-orange-600"
+                "text-red-600 dark:text-orange-600"
 
             else
                 ""
@@ -210,7 +212,7 @@ view2 texts cfg settings model item =
             []
 
           else
-            [ previewImage2 settings cardAction model item
+            [ previewImage2 cfg settings cardAction model item
             ]
          )
             ++ [ mainContent2 texts cardAction cardColor isCreated isDeleted settings cfg item
@@ -443,16 +445,15 @@ mainTagsAndFields2 settings item =
         (renderFields ++ renderTags)
 
 
-previewImage2 : UiSettings -> List (Attribute Msg) -> Model -> ItemLight -> Html Msg
-previewImage2 settings cardAction model item =
+previewImage2 : ViewConfig -> UiSettings -> List (Attribute Msg) -> Model -> ItemLight -> Html Msg
+previewImage2 cfg settings cardAction model item =
     let
         mainAttach =
             currentAttachment model item
 
         previewUrl =
-            Maybe.map .id mainAttach
-                |> Maybe.map Api.attachmentPreviewURL
-                |> Maybe.withDefault (Api.itemBasePreviewURL item.id)
+            Maybe.map cfg.previewUrl mainAttach
+                |> Maybe.withDefault (cfg.previewUrlFallback item)
     in
     a
         ([ class "overflow-hidden block bg-gray-50 dark:bg-bluegray-700 dark:bg-opacity-40  border-gray-400 dark:hover:border-bluegray-500 rounded-t-lg"

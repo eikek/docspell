@@ -17,6 +17,7 @@ module Comp.ItemCardList exposing
     , view2
     )
 
+import Api.Model.AttachmentLight exposing (AttachmentLight)
 import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
@@ -72,13 +73,13 @@ prevItem model id =
 --- Update
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, LinkTarget )
 update flags msg model =
     let
         res =
             updateDrag DD.init flags msg model
     in
-    ( res.model, res.cmd )
+    ( res.model, res.cmd, res.linkTarget )
 
 
 type alias UpdateResult =
@@ -161,6 +162,8 @@ updateDrag dm _ msg model =
 type alias ViewConfig =
     { current : Maybe String
     , selection : ItemSelection
+    , previewUrl : AttachmentLight -> String
+    , previewUrlFallback : ItemLight -> String
     }
 
 
@@ -216,7 +219,7 @@ viewItem2 texts model cfg settings item =
                 ""
 
         vvcfg =
-            Comp.ItemCard.ViewConfig cfg.selection currentClass
+            Comp.ItemCard.ViewConfig cfg.selection currentClass cfg.previewUrl cfg.previewUrlFallback
 
         cardModel =
             Dict.get item.id model.itemCards

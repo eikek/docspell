@@ -141,6 +141,8 @@ module Api exposing
     , setTags
     , setTagsMultiple
     , setUnconfirmed
+    , shareAttachmentPreviewURL
+    , shareItemBasePreviewURL
     , startClassifier
     , startEmptyTrash
     , startOnceNotifyDueItems
@@ -2286,6 +2288,16 @@ searchShare flags token search receive =
         , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
         , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
         }
+
+
+shareAttachmentPreviewURL : String -> String
+shareAttachmentPreviewURL id =
+    "/api/v1/share/attachment/" ++ id ++ "/preview?withFallback=true"
+
+
+shareItemBasePreviewURL : String -> String
+shareItemBasePreviewURL itemId =
+    "/api/v1/share/item/" ++ itemId ++ "/preview?withFallback=true"
 
 
 

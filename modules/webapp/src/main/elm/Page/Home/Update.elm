@@ -1035,33 +1035,7 @@ doSearch param model =
 
 linkTargetMsg : LinkTarget -> Maybe Msg
 linkTargetMsg linkTarget =
-    case linkTarget of
-        Comp.LinkTarget.LinkNone ->
-            Nothing
-
-        Comp.LinkTarget.LinkCorrOrg id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetCorrOrg id)
-
-        Comp.LinkTarget.LinkCorrPerson id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetCorrPerson id)
-
-        Comp.LinkTarget.LinkConcPerson id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetConcPerson id)
-
-        Comp.LinkTarget.LinkConcEquip id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetConcEquip id)
-
-        Comp.LinkTarget.LinkFolder id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetFolder id)
-
-        Comp.LinkTarget.LinkTag id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetTag id.id)
-
-        Comp.LinkTarget.LinkCustomField id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetCustomField id)
-
-        Comp.LinkTarget.LinkSource str ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.ResetToSource str)
+    Maybe.map SearchMenuMsg (Comp.SearchMenu.linkTargetMsg linkTarget)
 
 
 doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
