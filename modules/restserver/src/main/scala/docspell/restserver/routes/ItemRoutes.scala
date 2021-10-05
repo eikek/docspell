@@ -452,7 +452,7 @@ object ItemRoutes {
       }
   }
 
-  private def searchItemStats[F[_]: Sync](
+  def searchItemStats[F[_]: Sync](
       backend: BackendApp[F],
       dsl: Http4sDsl[F]
   )(

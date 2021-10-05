@@ -86,7 +86,7 @@ object BackendApp {
       customFieldsImpl <- OCustomFields(store)
       simpleSearchImpl = OSimpleSearch(fulltextImpl, itemSearchImpl)
       clientSettingsImpl <- OClientSettings(store)
-      shareImpl <- Resource.pure(OShare(store))
+      shareImpl <- Resource.pure(OShare(store, itemSearchImpl))
     } yield new BackendApp[F] {
       val login = loginImpl
       val signup = signupImpl

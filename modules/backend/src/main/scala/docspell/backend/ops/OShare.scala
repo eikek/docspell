@@ -9,15 +9,15 @@ package docspell.backend.ops
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.PasswordCrypt
 import docspell.backend.auth.ShareToken
+import docspell.backend.ops.OItemSearch.{AttachmentPreviewData, Batch, Query}
 import docspell.backend.ops.OShare.{ShareQuery, VerifyResult}
 import docspell.common._
 import docspell.query.ItemQuery
+import docspell.query.ItemQuery.Expr.AttachId
 import docspell.store.Store
 import docspell.store.records.RShare
-
 import scodec.bits.ByteVector
 
 trait OShare[F[_]] {
@@ -45,10 +45,21 @@ trait OShare[F[_]] {
   def verifyToken(key: ByteVector)(token: String): F[VerifyResult]
 
   def findShareQuery(id: Ident): OptionT[F, ShareQuery]
+
+  def findAttachmentPreview(
+      attachId: Ident,
+      shareId: Ident
+  ): OptionT[F, AttachmentPreviewData[F]]
+
 }
 
 object OShare {
-  final case class ShareQuery(id: Ident, cid: Ident, query: ItemQuery)
+  final case class ShareQuery(id: Ident, cid: Ident, query: ItemQuery) {
+
+    //TODO
+    def asAccount: AccountId =
+      AccountId(cid, Ident.unsafe(""))
+  }
 
   sealed trait VerifyResult {
     def toEither: Either[String, ShareToken] =
@@ -90,7 +101,7 @@ object OShare {
     def publishUntilInPast: ChangeResult = PublishUntilInPast
   }
 
-  def apply[F[_]: Async](store: Store[F]): OShare[F] =
+  def apply[F[_]: Async](store: Store[F], itemSearch: OItemSearch[F]): OShare[F] =
     new OShare[F] {
       private[this] val logger = Logger.log4s[F](org.log4s.getLogger)
 
@@ -203,5 +214,29 @@ object OShare {
           .findCurrentActive(id)
           .mapK(store.transform)
           .map(share => ShareQuery(share.id, share.cid, share.query))
+
+      def findAttachmentPreview(
+          attachId: Ident,
+          shareId: Ident
+      ): OptionT[F, AttachmentPreviewData[F]] =
+        for {
+          sq <- findShareQuery(shareId)
+          account = sq.asAccount
+          checkQuery = Query(
+            Query.Fix(account, Some(sq.query.expr), None),
+            Query.QueryExpr(AttachId(attachId.id))
+          )
+          checkRes <- OptionT.liftF(itemSearch.findItems(0)(checkQuery, Batch.limit(1)))
+          res <-
+            if (checkRes.isEmpty)
+              OptionT
+                .liftF(
+                  logger.info(
+                    s"Attempt to load unshared attachment '${attachId.id}' for share: ${shareId.id}"
+                  )
+                )
+                .mapFilter(_ => None)
+            else OptionT(itemSearch.findAttachmentPreview(attachId, sq.cid))
+        } yield res
     }
 }

@@ -17,7 +17,6 @@ import docspell.common.MakePreviewArgs
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.BinaryUtil
-import docspell.restserver.http4s.{QueryParam => QP}
 import docspell.restserver.webapp.Webjars
 
 import org.http4s._
@@ -115,25 +114,11 @@ object AttachmentRoutes {
               .getOrElse(NotFound(BasicResult(false, "Not found")))
         } yield resp
 
-      case req @ GET -> Root / Ident(id) / "preview" :? QP.WithFallback(flag) =>
-        def notFound =
-          NotFound(BasicResult(false, "Not found"))
+      case req @ GET -> Root / Ident(id) / "preview" =>
         for {
           fileData <-
             backend.itemSearch.findAttachmentPreview(id, user.account.collective)
-          inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
-          matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
-          fallback = flag.getOrElse(false)
-          resp <-
-            fileData
-              .map { data =>
-                if (matches) withResponseHeaders(NotModified())(data)
-                else makeByteResp(data)
-              }
-              .getOrElse(
-                if (fallback) BinaryUtil.noPreview(req.some).getOrElseF(notFound)
-                else notFound
-              )
+          resp <- BinaryUtil.respond(dsl, req)(fileData)
         } yield resp
 
       case HEAD -> Root / Ident(id) / "preview" =>
