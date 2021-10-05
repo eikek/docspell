@@ -16,6 +16,7 @@ module Comp.CustomFieldMultiInput exposing
     , isEmpty
     , nonEmpty
     , reset
+    , setOptions
     , setValues
     , update
     , updateSearch
@@ -123,6 +124,11 @@ initCmd flags =
 setValues : List ItemFieldValue -> Msg
 setValues values =
     SetValues values
+
+
+setOptions : List CustomField -> Msg
+setOptions fields =
+    CustomFieldResp (Ok (CustomFieldList fields))
 
 
 reset : Model -> Model

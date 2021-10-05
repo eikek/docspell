@@ -5305,6 +5305,10 @@ components:
         - tagCategoryCloud
         - fieldStats
         - folderStats
+        - corrOrgStats
+        - corrPersStats
+        - concPersStats
+        - concEquipStats
       properties:
         count:
           type: integer
@@ -5321,6 +5325,23 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FolderStats"
+        corrOrgStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdRefStats"
+        corrPersStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdRefStats"
+        concPersStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdRefStats"
+        concEquipStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdRefStats"
+
     ItemInsights:
       description: |
         Information about the items in docspell.
@@ -5450,6 +5471,19 @@ components:
       properties:
         name:
           type: string
+        count:
+          type: integer
+          format: int32
+
+    IdRefStats:
+      description: |
+        Counting some objects that have an id and a name.
+      required:
+        - ref
+        - count
+      properties:
+        ref:
+          $ref: "#/components/schemas/IdName"
         count:
           type: integer
           format: int32

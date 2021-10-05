@@ -60,6 +60,7 @@ import Http
 import Messages.Comp.SearchMenu exposing (Texts)
 import Set exposing (Set)
 import Styles as S
+import Util.CustomField
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
 import Util.Maybe
@@ -564,6 +565,42 @@ updateDrop ddm flags settings msg model =
                 selectModel =
                     Comp.TagSelect.modifyCount model.tagSelectModel tagCount catCount
 
+                orgOpts =
+                    Comp.Dropdown.update (Comp.Dropdown.SetOptions (List.map .ref stats.corrOrgStats))
+                        model.orgModel
+                        |> Tuple.first
+
+                corrPersOpts =
+                    Comp.Dropdown.update (Comp.Dropdown.SetOptions (List.map .ref stats.corrPersStats))
+                        model.corrPersonModel
+                        |> Tuple.first
+
+                concPersOpts =
+                    Comp.Dropdown.update (Comp.Dropdown.SetOptions (List.map .ref stats.concPersStats))
+                        model.concPersonModel
+                        |> Tuple.first
+
+                concEquipOpts =
+                    let
+                        mkEquip ref =
+                            Equipment ref.id ref.name 0 Nothing ""
+                    in
+                    Comp.Dropdown.update
+                        (Comp.Dropdown.SetOptions
+                            (List.map (.ref >> mkEquip) stats.concEquipStats)
+                        )
+                        model.concEquipmentModel
+                        |> Tuple.first
+
+                fields =
+                    Util.CustomField.statsToFields stats
+
+                fieldOpts =
+                    Comp.CustomFieldMultiInput.update flags
+                        (Comp.CustomFieldMultiInput.setOptions fields)
+                        model.customFieldModel
+                        |> .model
+
                 model_ =
                     { model
                         | tagSelectModel = selectModel
@@ -571,6 +608,11 @@ updateDrop ddm flags settings msg model =
                             Comp.FolderSelect.modify model.selectedFolder
                                 model.folderList
                                 stats.folderStats
+                        , orgModel = orgOpts
+                        , corrPersonModel = corrPersOpts
+                        , concPersonModel = concPersOpts
+                        , concEquipmentModel = concEquipOpts
+                        , customFieldModel = fieldOpts
                     }
             in
             { model = model_

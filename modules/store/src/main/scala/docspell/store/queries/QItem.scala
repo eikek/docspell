@@ -192,7 +192,21 @@ object QItem {
       cats <- searchTagCategorySummary(today)(q)
       fields <- searchFieldSummary(today)(q)
       folders <- searchFolderSummary(today)(q)
-    } yield SearchSummary(count, tags, cats, fields, folders)
+      orgs <- searchCorrOrgSummary(today)(q)
+      corrPers <- searchCorrPersonSummary(today)(q)
+      concPers <- searchConcPersonSummary(today)(q)
+      concEquip <- searchConcEquipSummary(today)(q)
+    } yield SearchSummary(
+      count,
+      tags,
+      cats,
+      fields,
+      folders,
+      orgs,
+      corrPers,
+      concPers,
+      concEquip
+    )
 
   def searchTagCategorySummary(
       today: LocalDate
@@ -250,6 +264,40 @@ object QItem {
       .build
       .query[Int]
       .unique
+
+  def searchCorrOrgSummary(today: LocalDate)(q: Query): ConnectionIO[List[IdRefCount]] =
+    searchIdRefSummary(org.oid, org.name, i.corrOrg, today)(q)
+
+  def searchCorrPersonSummary(today: LocalDate)(
+      q: Query
+  ): ConnectionIO[List[IdRefCount]] =
+    searchIdRefSummary(pers0.pid, pers0.name, i.corrPerson, today)(q)
+
+  def searchConcPersonSummary(today: LocalDate)(
+      q: Query
+  ): ConnectionIO[List[IdRefCount]] =
+    searchIdRefSummary(pers1.pid, pers1.name, i.concPerson, today)(q)
+
+  def searchConcEquipSummary(today: LocalDate)(
+      q: Query
+  ): ConnectionIO[List[IdRefCount]] =
+    searchIdRefSummary(equip.eid, equip.name, i.concEquipment, today)(q)
+
+  private def searchIdRefSummary(
+      idCol: Column[Ident],
+      nameCol: Column[String],
+      fkCol: Column[Ident],
+      today: LocalDate
+  )(q: Query): ConnectionIO[List[IdRefCount]] =
+    findItemsBase(q.fix, today, 0).unwrap
+      .withSelect(select(idCol, nameCol).append(count(idCol).as("num")))
+      .changeWhere(c =>
+        c && fkCol.isNotNull && queryCondition(today, q.fix.account.collective, q.cond)
+      )
+      .groupBy(idCol, nameCol)
+      .build
+      .query[IdRefCount]
+      .to[List]
 
   def searchFolderSummary(today: LocalDate)(q: Query): ConnectionIO[List[FolderCount]] = {
     val fu = RUser.as("fu")
