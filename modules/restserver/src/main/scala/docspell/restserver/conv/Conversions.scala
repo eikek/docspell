@@ -7,9 +7,11 @@
 package docspell.restserver.conv
 
 import java.time.{LocalDate, ZoneId}
+
 import cats.effect.{Async, Sync}
 import cats.implicits._
 import fs2.Stream
+
 import docspell.backend.ops.OCollective.{InsightData, PassChangeResult}
 import docspell.backend.ops.OCustomFields.SetValueResult
 import docspell.backend.ops.OJob.JobCancelResult
@@ -23,6 +25,7 @@ import docspell.restserver.conv.Conversions._
 import docspell.store.queries.{AttachmentLight => QAttachmentLight, IdRefCount}
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
+
 import org.http4s.headers.`Content-Type`
 import org.http4s.multipart.Multipart
 import org.log4s.Logger

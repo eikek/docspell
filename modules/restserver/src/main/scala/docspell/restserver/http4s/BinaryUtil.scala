@@ -11,7 +11,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
-import docspell.backend.ops.OItemSearch.AttachmentPreviewData
+import docspell.backend.ops.OItemSearch.{AttachmentData, AttachmentPreviewData}
 import docspell.backend.ops._
 import docspell.restapi.model.BasicResult
 import docspell.restserver.http4s.{QueryParam => QP}
@@ -27,6 +27,31 @@ import org.typelevel.ci.CIString
 object BinaryUtil {
 
   def respond[F[_]: Async](dsl: Http4sDsl[F], req: Request[F])(
+      fileData: Option[AttachmentData[F]]
+  ): F[Response[F]] = {
+    import dsl._
+
+    val inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
+    val matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
+    fileData
+      .map { data =>
+        if (matches) withResponseHeaders(dsl, NotModified())(data)
+        else makeByteResp(dsl)(data)
+      }
+      .getOrElse(NotFound(BasicResult(false, "Not found")))
+  }
+
+  def respondHead[F[_]: Async](dsl: Http4sDsl[F])(
+      fileData: Option[AttachmentData[F]]
+  ): F[Response[F]] = {
+    import dsl._
+
+    fileData
+      .map(data => withResponseHeaders(dsl, Ok())(data))
+      .getOrElse(NotFound(BasicResult(false, "Not found")))
+  }
+
+  def respondPreview[F[_]: Async](dsl: Http4sDsl[F], req: Request[F])(
       fileData: Option[AttachmentPreviewData[F]]
   ): F[Response[F]] = {
     import dsl._
@@ -54,7 +79,7 @@ object BinaryUtil {
     }
   }
 
-  def respondHead[F[_]: Async](
+  def respondPreviewHead[F[_]: Async](
       dsl: Http4sDsl[F]
   )(fileData: Option[AttachmentPreviewData[F]]): F[Response[F]] = {
     import dsl._

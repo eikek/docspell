@@ -12,7 +12,7 @@ import cats.implicits._
 
 import docspell.backend.PasswordCrypt
 import docspell.backend.auth.ShareToken
-import docspell.backend.ops.OItemSearch.{AttachmentPreviewData, Batch, Query}
+import docspell.backend.ops.OItemSearch._
 import docspell.backend.ops.OShare.{ShareQuery, VerifyResult}
 import docspell.backend.ops.OSimpleSearch.StringSearchResult
 import docspell.common._
@@ -54,6 +54,8 @@ trait OShare[F[_]] {
       attachId: Ident,
       shareId: Ident
   ): OptionT[F, AttachmentPreviewData[F]]
+
+  def findAttachment(attachId: Ident, shareId: Ident): OptionT[F, AttachmentData[F]]
 
   def searchSummary(
       settings: OSimpleSearch.StatsSettings
@@ -232,23 +234,35 @@ object OShare {
       ): OptionT[F, AttachmentPreviewData[F]] =
         for {
           sq <- findShareQuery(shareId)
-          account = sq.asAccount
-          checkQuery = Query(
-            Query.Fix(account, Some(sq.query.expr), None),
-            Query.QueryExpr(AttachId(attachId.id))
-          )
-          checkRes <- OptionT.liftF(itemSearch.findItems(0)(checkQuery, Batch.limit(1)))
-          res <-
-            if (checkRes.isEmpty)
-              OptionT
-                .liftF(
-                  logger.info(
-                    s"Attempt to load unshared attachment '${attachId.id}' for share: ${shareId.id}"
-                  )
-                )
-                .mapFilter(_ => None)
-            else OptionT(itemSearch.findAttachmentPreview(attachId, sq.cid))
+          _ <- checkAttachment(sq, attachId)
+          res <- OptionT(itemSearch.findAttachmentPreview(attachId, sq.cid))
         } yield res
+
+      def findAttachment(attachId: Ident, shareId: Ident): OptionT[F, AttachmentData[F]] =
+        for {
+          sq <- findShareQuery(shareId)
+          _ <- checkAttachment(sq, attachId)
+          res <- OptionT(itemSearch.findAttachment(attachId, sq.cid))
+        } yield res
+
+      /** Check whether the attachment with the given id is in the results of the given
+        * share
+        */
+      private def checkAttachment(sq: ShareQuery, attachId: Ident): OptionT[F, Unit] = {
+        val checkQuery = Query(
+          Query.Fix(sq.asAccount, Some(sq.query.expr), None),
+          Query.QueryExpr(AttachId(attachId.id))
+        )
+        OptionT(
+          itemSearch
+            .findItems(0)(checkQuery, Batch.limit(1))
+            .map(_.headOption.map(_ => ()))
+        ).flatTapNone(
+          logger.info(
+            s"Attempt to load unshared attachment '${attachId.id}' via share: ${sq.id.id}"
+          )
+        )
+      }
 
       def searchSummary(
           settings: OSimpleSearch.StatsSettings

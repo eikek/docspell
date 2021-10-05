@@ -46,24 +46,13 @@ object AttachmentRoutes {
       case HEAD -> Root / Ident(id) =>
         for {
           fileData <- backend.itemSearch.findAttachment(id, user.account.collective)
-          resp <-
-            fileData
-              .map(data => withResponseHeaders(Ok())(data))
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <- BinaryUtil.respondHead(dsl)(fileData)
         } yield resp
 
       case req @ GET -> Root / Ident(id) =>
         for {
           fileData <- backend.itemSearch.findAttachment(id, user.account.collective)
-          inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
-          matches = BinaryUtil.matchETag(fileData.map(_.meta), inm)
-          resp <-
-            fileData
-              .map { data =>
-                if (matches) withResponseHeaders(NotModified())(data)
-                else makeByteResp(data)
-              }
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <- BinaryUtil.respond[F](dsl, req)(fileData)
         } yield resp
 
       case HEAD -> Root / Ident(id) / "original" =>
@@ -118,14 +107,14 @@ object AttachmentRoutes {
         for {
           fileData <-
             backend.itemSearch.findAttachmentPreview(id, user.account.collective)
-          resp <- BinaryUtil.respond(dsl, req)(fileData)
+          resp <- BinaryUtil.respondPreview(dsl, req)(fileData)
         } yield resp
 
       case HEAD -> Root / Ident(id) / "preview" =>
         for {
           fileData <-
             backend.itemSearch.findAttachmentPreview(id, user.account.collective)
-          resp <- BinaryUtil.respondHead(dsl)(fileData)
+          resp <- BinaryUtil.respondPreviewHead(dsl)(fileData)
         } yield resp
 
       case POST -> Root / Ident(id) / "preview" =>
