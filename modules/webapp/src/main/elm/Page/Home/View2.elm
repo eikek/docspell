@@ -476,6 +476,7 @@ itemCardList texts _ settings model =
                         (Data.ItemSelection.Active svm.ids)
                         previewUrl
                         previewUrlFallback
+                        (.id >> Api.fileURL)
 
                 _ ->
                     Comp.ItemCardList.ViewConfig
@@ -483,6 +484,7 @@ itemCardList texts _ settings model =
                         Data.ItemSelection.Inactive
                         previewUrl
                         previewUrlFallback
+                        (.id >> Api.fileURL)
     in
     [ Html.map ItemCardListMsg
         (Comp.ItemCardList.view2 texts.itemCardList

@@ -164,6 +164,7 @@ type alias ViewConfig =
     , selection : ItemSelection
     , previewUrl : AttachmentLight -> String
     , previewUrlFallback : ItemLight -> String
+    , attachUrl : AttachmentLight -> String
     }
 
 
@@ -219,7 +220,7 @@ viewItem2 texts model cfg settings item =
                 ""
 
         vvcfg =
-            Comp.ItemCard.ViewConfig cfg.selection currentClass cfg.previewUrl cfg.previewUrlFallback
+            Comp.ItemCard.ViewConfig cfg.selection currentClass cfg.previewUrl cfg.previewUrlFallback cfg.attachUrl
 
         cardModel =
             Dict.get item.id model.itemCards

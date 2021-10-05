@@ -58,6 +58,7 @@ type alias ViewConfig =
     , extraClasses : String
     , previewUrl : AttachmentLight -> String
     , previewUrlFallback : ItemLight -> String
+    , attachUrl : AttachmentLight -> String
     }
 
 
@@ -219,7 +220,7 @@ view2 texts cfg settings model item =
                , metaDataContent2 texts settings item
                , notesContent2 settings item
                , fulltextResultsContent2 item
-               , previewMenu2 texts settings model item (currentAttachment model item)
+               , previewMenu2 texts settings cfg model item (currentAttachment model item)
                , selectedDimmer
                ]
         )
@@ -473,8 +474,8 @@ previewImage2 cfg settings cardAction model item =
         ]
 
 
-previewMenu2 : Texts -> UiSettings -> Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
-previewMenu2 texts settings model item mainAttach =
+previewMenu2 : Texts -> UiSettings -> ViewConfig -> Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
+previewMenu2 texts settings cfg model item mainAttach =
     let
         pageCount =
             Maybe.andThen .pageCount mainAttach
@@ -486,16 +487,15 @@ previewMenu2 texts settings model item mainAttach =
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
 
-        mkAttachUrl id =
+        mkAttachUrl attach =
             if settings.nativePdfPreview then
-                Api.fileURL id
+                cfg.attachUrl attach
 
             else
-                Api.fileURL id ++ "/view"
+                cfg.attachUrl attach ++ "/view"
 
         attachUrl =
-            Maybe.map .id mainAttach
-                |> Maybe.map mkAttachUrl
+            Maybe.map mkAttachUrl mainAttach
                 |> Maybe.withDefault "/api/v1/sec/attachment/none"
 
         dueDate =

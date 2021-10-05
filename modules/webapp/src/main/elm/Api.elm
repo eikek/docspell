@@ -143,6 +143,7 @@ module Api exposing
     , setTagsMultiple
     , setUnconfirmed
     , shareAttachmentPreviewURL
+    , shareFileURL
     , shareItemBasePreviewURL
     , startClassifier
     , startEmptyTrash
@@ -2309,6 +2310,11 @@ shareAttachmentPreviewURL id =
 shareItemBasePreviewURL : String -> String
 shareItemBasePreviewURL itemId =
     "/api/v1/share/item/" ++ itemId ++ "/preview?withFallback=true"
+
+
+shareFileURL : String -> String
+shareFileURL attachId =
+    "/api/v1/share/attachment/" ++ attachId
 
 
 

@@ -25,6 +25,7 @@ view texts settings model =
             , selection = Data.ItemSelection.Inactive
             , previewUrl = \attach -> Api.shareAttachmentPreviewURL attach.id
             , previewUrlFallback = \item -> Api.shareItemBasePreviewURL item.id
+            , attachUrl = .id >> Api.shareFileURL
             }
     in
     div []
