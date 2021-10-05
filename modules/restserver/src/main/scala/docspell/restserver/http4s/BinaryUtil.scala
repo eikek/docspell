@@ -10,17 +10,18 @@ import cats.data.NonEmptyList
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.ops.OItemSearch.AttachmentPreviewData
 import docspell.backend.ops._
 import docspell.restapi.model.BasicResult
-import docspell.store.records.RFileMeta
 import docspell.restserver.http4s.{QueryParam => QP}
+import docspell.store.records.RFileMeta
 
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.headers._
 import org.http4s.headers.ETag.EntityTag
+import org.http4s.headers._
 import org.typelevel.ci.CIString
 
 object BinaryUtil {
@@ -51,6 +52,15 @@ object BinaryUtil {
       case None =>
         BadRequest(BasicResult(false, "Invalid query parameter 'withFallback'"))
     }
+  }
+
+  def respondHead[F[_]: Async](
+      dsl: Http4sDsl[F]
+  )(fileData: Option[AttachmentPreviewData[F]]): F[Response[F]] = {
+    import dsl._
+    fileData
+      .map(data => withResponseHeaders(dsl, Ok())(data))
+      .getOrElse(NotFound(BasicResult(false, "Not found")))
   }
 
   def withResponseHeaders[F[_]: Sync](dsl: Http4sDsl[F], resp: F[Response[F]])(

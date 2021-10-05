@@ -91,6 +91,16 @@ update flags settings shareId msg model =
         SearchResp (Err err) ->
             noSub ( { model | pageError = PageErrorHttp err, searchInProgress = False }, Cmd.none )
 
+        StatsResp (Ok stats) ->
+            update flags
+                settings
+                shareId
+                (SearchMenuMsg (Comp.SearchMenu.setFromStats stats))
+                model
+
+        StatsResp (Err err) ->
+            noSub ( { model | pageError = PageErrorHttp err }, Cmd.none )
+
         SetPassword pw ->
             let
                 pm =
@@ -191,8 +201,14 @@ makeSearchCmd flags model =
             , query = Q.renderMaybe mq
             , searchMode = Just (Data.SearchMode.asString Data.SearchMode.Normal)
             }
+
+        searchCmd =
+            Api.searchShare flags model.verifyResult.token (request xq) SearchResp
+
+        statsCmd =
+            Api.searchShareStats flags model.verifyResult.token (request xq) StatsResp
     in
-    Api.searchShare flags model.verifyResult.token (request xq) SearchResp
+    Cmd.batch [ searchCmd, statsCmd ]
 
 
 linkTargetMsg : LinkTarget -> Maybe Msg

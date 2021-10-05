@@ -1558,9 +1558,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
-  /share/search:
+  /share/search/query:
     post:
-      operationId: "share-search"
+      operationId: "share-search-query"
       tags: [Share]
       summary: Performs a search in a share.
       description: |
@@ -1581,6 +1581,72 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
+  /share/search/stats:
+    post:
+      operationId: "share-search-stats"
+      tags: [ Share ]
+      summary: Get basic statistics about search results.
+      description: |
+        Instead of returning the results of a query, uses it to return
+        a summary, constraint to the share.
+      security:
+        - shareTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemQuery"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchStats"
+  /share/attachment/{id}/preview:
+    head:
+      operationId: "share-attach-check-preview"
+      tags: [ Attachment ]
+      summary: Get the headers to a preview image of an attachment file.
+      description: |
+        Checks if an image file showing a preview of the attachment is
+        available. If not available, a 404 is returned.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+        404:
+          description: NotFound
+    get:
+      operationId: "share-attach-get-preview"
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Gets a image file showing a preview of the attachment. Usually
+        it is a small image of the first page of the document.If not
+        available, a 404 is returned. However, if the query parameter
+        `withFallback` is `true`, a fallback preview image is
+        returned. You can also use the `HEAD` method to check for
+        existence.
+
+        The attachment must be in the search results of the current
+        share.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/withFallback"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
 
   /admin/user/resetPassword:
     post:

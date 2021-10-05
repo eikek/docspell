@@ -114,6 +114,7 @@ module Api exposing
     , restoreItem
     , saveClientSettings
     , searchShare
+    , searchShareStats
     , sendMail
     , setAttachmentName
     , setCollectiveSettings
@@ -2283,10 +2284,20 @@ verifyShare flags secret receive =
 searchShare : Flags -> String -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
 searchShare flags token search receive =
     Http2.sharePost
-        { url = flags.config.baseUrl ++ "/api/v1/share/search"
+        { url = flags.config.baseUrl ++ "/api/v1/share/search/query"
         , token = token
         , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
         , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
+        }
+
+
+searchShareStats : Flags -> String -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+searchShareStats flags token search receive =
+    Http2.sharePost
+        { url = flags.config.baseUrl ++ "/api/v1/share/search/stats"
+        , token = token
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
+        , expect = Http.expectJson receive Api.Model.SearchStats.decoder
         }
 
 

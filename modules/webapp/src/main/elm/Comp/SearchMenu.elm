@@ -15,6 +15,7 @@ module Comp.SearchMenu exposing
     , isFulltextSearch
     , isNamesSearch
     , linkTargetMsg
+    , setFromStats
     , textSearchString
     , update
     , updateDrop
@@ -377,6 +378,11 @@ type Msg
     | GetAllTagsResp (Result Http.Error SearchStats)
     | ToggleAkkordionTab String
     | ToggleOpenAllAkkordionTabs
+
+
+setFromStats : SearchStats -> Msg
+setFromStats stats =
+    GetStatsResp (Ok stats)
 
 
 linkTargetMsg : LinkTarget -> Maybe Msg

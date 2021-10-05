@@ -9,15 +9,19 @@ package docspell.backend.ops
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.PasswordCrypt
 import docspell.backend.auth.ShareToken
 import docspell.backend.ops.OItemSearch.{AttachmentPreviewData, Batch, Query}
 import docspell.backend.ops.OShare.{ShareQuery, VerifyResult}
+import docspell.backend.ops.OSimpleSearch.StringSearchResult
 import docspell.common._
 import docspell.query.ItemQuery
 import docspell.query.ItemQuery.Expr.AttachId
 import docspell.store.Store
+import docspell.store.queries.SearchSummary
 import docspell.store.records.RShare
+
 import scodec.bits.ByteVector
 
 trait OShare[F[_]] {
@@ -51,6 +55,9 @@ trait OShare[F[_]] {
       shareId: Ident
   ): OptionT[F, AttachmentPreviewData[F]]
 
+  def searchSummary(
+      settings: OSimpleSearch.StatsSettings
+  )(shareId: Ident, q: ItemQueryString): OptionT[F, StringSearchResult[SearchSummary]]
 }
 
 object OShare {
@@ -101,7 +108,11 @@ object OShare {
     def publishUntilInPast: ChangeResult = PublishUntilInPast
   }
 
-  def apply[F[_]: Async](store: Store[F], itemSearch: OItemSearch[F]): OShare[F] =
+  def apply[F[_]: Async](
+      store: Store[F],
+      itemSearch: OItemSearch[F],
+      simpleSearch: OSimpleSearch[F]
+  ): OShare[F] =
     new OShare[F] {
       private[this] val logger = Logger.log4s[F](org.log4s.getLogger)
 
@@ -238,5 +249,23 @@ object OShare {
                 .mapFilter(_ => None)
             else OptionT(itemSearch.findAttachmentPreview(attachId, sq.cid))
         } yield res
+
+      def searchSummary(
+          settings: OSimpleSearch.StatsSettings
+      )(
+          shareId: Ident,
+          q: ItemQueryString
+      ): OptionT[F, StringSearchResult[SearchSummary]] =
+        findShareQuery(shareId)
+          .semiflatMap { share =>
+            val fix = Query.Fix(share.asAccount, Some(share.query.expr), None)
+            simpleSearch
+              .searchSummaryByString(settings)(fix, q)
+              .map {
+                case StringSearchResult.Success(summary) =>
+                  StringSearchResult.Success(summary.onlyExisting)
+                case other => other
+              }
+          }
     }
 }

@@ -12,4 +12,14 @@ case class SearchSummary(
     cats: List[CategoryCount],
     fields: List[FieldStats],
     folders: List[FolderCount]
-)
+) {
+
+  def onlyExisting: SearchSummary =
+    SearchSummary(
+      count,
+      tags.filter(_.count > 0),
+      cats.filter(_.count > 0),
+      fields.filter(_.count > 0),
+      folders.filter(_.count > 0)
+    )
+}

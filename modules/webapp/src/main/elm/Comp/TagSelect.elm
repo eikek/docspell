@@ -245,6 +245,12 @@ makeWorkModel sel model =
     }
 
 
+noEmptyTags : Model -> Bool
+noEmptyTags model =
+    Dict.filter (\k -> \v -> v.count == 0) model.availableTags
+        |> Dict.isEmpty
+
+
 type Msg
     = ToggleTag String
     | ToggleCat String
@@ -422,6 +428,7 @@ viewTagsDrop2 texts ddm wm settings model =
             [ a
                 [ class S.secondaryBasicButtonPlain
                 , class "border rounded flex-none px-1 py-1"
+                , classList [ ( "hidden", noEmptyTags model ) ]
                 , href "#"
                 , onClick ToggleShowEmpty
                 ]

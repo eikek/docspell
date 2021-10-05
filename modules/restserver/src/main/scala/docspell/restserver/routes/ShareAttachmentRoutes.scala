@@ -26,12 +26,20 @@ object ShareAttachmentRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    HttpRoutes.of { case req @ GET -> Root / Ident(id) / "preview" =>
-      for {
-        fileData <-
-          backend.share.findAttachmentPreview(id, token.id).value
-        resp <- BinaryUtil.respond(dsl, req)(fileData)
-      } yield resp
+    HttpRoutes.of {
+      case req @ GET -> Root / Ident(id) / "preview" =>
+        for {
+          fileData <-
+            backend.share.findAttachmentPreview(id, token.id).value
+          resp <- BinaryUtil.respond(dsl, req)(fileData)
+        } yield resp
+
+      case HEAD -> Root / Ident(id) / "preview" =>
+        for {
+          fileData <-
+            backend.share.findAttachmentPreview(id, token.id).value
+          resp <- BinaryUtil.respondHead(dsl)(fileData)
+        } yield resp
     }
   }
 }

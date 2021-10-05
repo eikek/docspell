@@ -125,10 +125,7 @@ object AttachmentRoutes {
         for {
           fileData <-
             backend.itemSearch.findAttachmentPreview(id, user.account.collective)
-          resp <-
-            fileData
-              .map(data => withResponseHeaders(Ok())(data))
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <- BinaryUtil.respondHead(dsl)(fileData)
         } yield resp
 
       case POST -> Root / Ident(id) / "preview" =>
