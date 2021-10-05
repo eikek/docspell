@@ -9,6 +9,7 @@ module Comp.SearchMenu exposing
     ( Model
     , Msg(..)
     , NextState
+    , SearchTab(..)
     , TextSearchModel
     , getItemQuery
     , init
@@ -563,7 +564,7 @@ updateDrop ddm flags settings msg model =
                     List.sortBy .count stats.tagCategoryCloud.items
 
                 selectModel =
-                    Comp.TagSelect.modifyCount model.tagSelectModel tagCount catCount
+                    Comp.TagSelect.modifyCountKeepExisting model.tagSelectModel tagCount catCount
 
                 orgOpts =
                     Comp.Dropdown.update (Comp.Dropdown.SetOptions (List.map .ref stats.corrOrgStats))
@@ -1044,15 +1045,20 @@ updateDrop ddm flags settings msg model =
 --- View2
 
 
-viewDrop2 : Texts -> DD.DragDropData -> Flags -> UiSettings -> Model -> Html Msg
-viewDrop2 texts ddd flags settings model =
+type alias ViewConfig =
+    { overrideTabLook : SearchTab -> Comp.Tabs.Look -> Comp.Tabs.Look
+    }
+
+
+viewDrop2 : Texts -> DD.DragDropData -> Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
+viewDrop2 texts ddd flags cfg settings model =
     let
         akkordionStyle =
             Comp.Tabs.searchMenuStyle
     in
     Comp.Tabs.akkordion
         akkordionStyle
-        (searchTabState settings model)
+        (searchTabState settings cfg model)
         (searchTabs texts ddd flags settings model)
 
 
@@ -1254,12 +1260,9 @@ tabLook settings model tab =
             Comp.Tabs.Normal
 
 
-searchTabState : UiSettings -> Model -> Comp.Tabs.Tab Msg -> ( Comp.Tabs.State, Msg )
-searchTabState settings model tab =
+searchTabState : UiSettings -> ViewConfig -> Model -> Comp.Tabs.Tab Msg -> ( Comp.Tabs.State, Msg )
+searchTabState settings cfg model tab =
     let
-        isHidden f =
-            Data.UiSettings.fieldHidden settings f
-
         searchTab =
             findTab tab
 
@@ -1273,7 +1276,7 @@ searchTabState settings model tab =
         state =
             { folded = folded
             , look =
-                Maybe.map (tabLook settings model) searchTab
+                Maybe.map (\t -> tabLook settings model t |> cfg.overrideTabLook t) searchTab
                     |> Maybe.withDefault Comp.Tabs.Normal
             }
     in

@@ -16,6 +16,7 @@ module Comp.TagSelect exposing
     , makeWorkModel
     , modifyAll
     , modifyCount
+    , modifyCountKeepExisting
     , reset
     , toggleTag
     , update
@@ -96,6 +97,40 @@ modifyCount model tags cats =
     { model
         | tagCounts = tags
         , categoryCounts = List.filterMap (\e -> Maybe.map (\k -> CategoryCount k e.count) e.name) cats
+    }
+
+
+modifyCountKeepExisting : Model -> List TagCount -> List NameCount -> Model
+modifyCountKeepExisting model tags cats =
+    let
+        tagZeros : Dict String TagCount
+        tagZeros =
+            Dict.map (\_ -> \tc -> TagCount tc.tag 0) model.availableTags
+
+        tagAvail =
+            List.foldl (\tc -> \dict -> Dict.insert tc.tag.id tc dict) tagZeros tags
+
+        tcs =
+            Dict.values tagAvail
+
+        catcs =
+            List.filterMap (\e -> Maybe.map (\k -> CategoryCount k e.count) e.name) cats
+
+        catZeros : Dict String CategoryCount
+        catZeros =
+            Dict.map (\_ -> \cc -> CategoryCount cc.name 0) model.availableCats
+
+        catAvail =
+            List.foldl (\cc -> \dict -> Dict.insert cc.name cc dict) catZeros catcs
+
+        ccs =
+            Dict.values catAvail
+    in
+    { model
+        | tagCounts = tcs
+        , availableTags = tagAvail
+        , categoryCounts = ccs
+        , availableCats = catAvail
     }
 
 

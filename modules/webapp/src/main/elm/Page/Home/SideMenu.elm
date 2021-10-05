@@ -82,10 +82,16 @@ viewSearch texts flags settings model =
         , end = []
         , rootClasses = "my-1 text-xs hidden sm:flex"
         }
-    , Html.map SearchMenuMsg
+    , let
+        searchMenuCfg =
+            { overrideTabLook = \_ -> identity
+            }
+      in
+      Html.map SearchMenuMsg
         (Comp.SearchMenu.viewDrop2 texts.searchMenu
             model.dragDropData
             flags
+            searchMenuCfg
             settings
             model.searchMenuModel
         )
