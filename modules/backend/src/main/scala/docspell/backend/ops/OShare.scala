@@ -17,6 +17,7 @@ import docspell.backend.ops.OShare.{ShareQuery, VerifyResult}
 import docspell.backend.ops.OSimpleSearch.StringSearchResult
 import docspell.common._
 import docspell.query.ItemQuery
+import docspell.query.ItemQuery.Expr
 import docspell.query.ItemQuery.Expr.AttachId
 import docspell.store.Store
 import docspell.store.queries.SearchSummary
@@ -56,6 +57,8 @@ trait OShare[F[_]] {
   ): OptionT[F, AttachmentPreviewData[F]]
 
   def findAttachment(attachId: Ident, shareId: Ident): OptionT[F, AttachmentData[F]]
+
+  def findItem(itemId: Ident, shareId: Ident): OptionT[F, ItemData]
 
   def searchSummary(
       settings: OSimpleSearch.StatsSettings
@@ -234,24 +237,31 @@ object OShare {
       ): OptionT[F, AttachmentPreviewData[F]] =
         for {
           sq <- findShareQuery(shareId)
-          _ <- checkAttachment(sq, attachId)
+          _ <- checkAttachment(sq, AttachId(attachId.id))
           res <- OptionT(itemSearch.findAttachmentPreview(attachId, sq.cid))
         } yield res
 
       def findAttachment(attachId: Ident, shareId: Ident): OptionT[F, AttachmentData[F]] =
         for {
           sq <- findShareQuery(shareId)
-          _ <- checkAttachment(sq, attachId)
+          _ <- checkAttachment(sq, AttachId(attachId.id))
           res <- OptionT(itemSearch.findAttachment(attachId, sq.cid))
+        } yield res
+
+      def findItem(itemId: Ident, shareId: Ident): OptionT[F, ItemData] =
+        for {
+          sq <- findShareQuery(shareId)
+          _ <- checkAttachment(sq, Expr.itemIdEq(itemId.id))
+          res <- OptionT(itemSearch.findItem(itemId, sq.cid))
         } yield res
 
       /** Check whether the attachment with the given id is in the results of the given
         * share
         */
-      private def checkAttachment(sq: ShareQuery, attachId: Ident): OptionT[F, Unit] = {
+      private def checkAttachment(sq: ShareQuery, idExpr: Expr): OptionT[F, Unit] = {
         val checkQuery = Query(
           Query.Fix(sq.asAccount, Some(sq.query.expr), None),
-          Query.QueryExpr(AttachId(attachId.id))
+          Query.QueryExpr(idExpr)
         )
         OptionT(
           itemSearch
@@ -259,7 +269,7 @@ object OShare {
             .map(_.headOption.map(_ => ()))
         ).flatTapNone(
           logger.info(
-            s"Attempt to load unshared attachment '${attachId.id}' via share: ${sq.id.id}"
+            s"Attempt to load unshared data '$idExpr' via share: ${sq.id.id}"
           )
         )
       }

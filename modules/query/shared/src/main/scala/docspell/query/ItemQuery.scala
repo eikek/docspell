@@ -188,6 +188,10 @@ object ItemQuery {
 
     def date(op: Operator, attr: DateAttr, value: Date): SimpleExpr =
       SimpleExpr(op, Property(attr, value))
+
+    def itemIdEq(itemId1: String, moreIds: String*): Expr =
+      if (moreIds.isEmpty) string(Operator.Eq, Attr.ItemId, itemId1)
+      else InExpr(Attr.ItemId, Nel(itemId1, moreIds.toList))
   }
 
 }

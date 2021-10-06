@@ -1603,6 +1603,97 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SearchStats"
+  /share/item/{id}:
+    get:
+      operationId: "share-item-get"
+      tags: [ Share ]
+      summary: Get details about an item.
+      description: |
+        Get detailed information about an item.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemDetail"      
+  /share/attachment/{id}:
+    head:
+      operationId: "share-attach-head"
+      tags: [ Share ]
+      summary: Get headers to an attachment file.
+      description: |
+        Get information about the binary file belonging to the
+        attachment with the given id.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          headers:
+            Content-Type:
+              schema:
+                type: string
+            Content-Length:
+              schema:
+                type: integer
+                format: int64
+            ETag:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+    get:
+      operationId: "share-attach-get"
+      tags: [ Share ]
+      summary: Get an attachment file.
+      description: |
+        Get the binary file belonging to the attachment with the given
+        id. The binary is a pdf file. If conversion failed, then the
+        original file is returned.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /share/attachment/{id}/view:
+    get:
+      operationId: "share-attach-show-viewerjs"
+      tags: [ Share ]
+      summary: A javascript rendered view of the pdf attachment
+      description: |
+        This provides a preview of the attachment rendered in a
+        browser.
+
+        It currently uses a third-party javascript library (viewerjs)
+        to display the preview. This works by redirecting to the
+        viewerjs url with the attachment url as parameter. Note that
+        the resulting url that is redirected to is not stable. It may
+        change from version to version. This route, however, is meant
+        to provide a stable url for the preview.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        303:
+          description: See Other
+        200:
+          description: Ok      
   /share/attachment/{id}/preview:
     head:
       operationId: "share-attach-check-preview"
