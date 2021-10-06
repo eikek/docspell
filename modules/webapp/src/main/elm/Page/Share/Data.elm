@@ -15,6 +15,7 @@ import Api.Model.ShareVerifyResult exposing (ShareVerifyResult)
 import Comp.ItemCardList
 import Comp.PowerSearchInput
 import Comp.SearchMenu
+import Comp.SharePasswordForm
 import Data.Flags exposing (Flags)
 import Http
 
@@ -31,16 +32,10 @@ type PageError
     | PageErrorAuthFail
 
 
-type alias PasswordModel =
-    { password : String
-    , passwordFailed : Bool
-    }
-
-
 type alias Model =
     { mode : Mode
     , verifyResult : ShareVerifyResult
-    , passwordModel : PasswordModel
+    , passwordModel : Comp.SharePasswordForm.Model
     , pageError : PageError
     , searchMenuModel : Comp.SearchMenu.Model
     , powerSearchInput : Comp.PowerSearchInput.Model
@@ -53,10 +48,7 @@ emptyModel : Flags -> Model
 emptyModel flags =
     { mode = ModeInitial
     , verifyResult = Api.Model.ShareVerifyResult.empty
-    , passwordModel =
-        { password = ""
-        , passwordFailed = False
-        }
+    , passwordModel = Comp.SharePasswordForm.init
     , pageError = PageErrorNone
     , searchMenuModel = Comp.SearchMenu.init flags
     , powerSearchInput = Comp.PowerSearchInput.init
@@ -79,8 +71,7 @@ type Msg
     = VerifyResp (Result Http.Error ShareVerifyResult)
     | SearchResp (Result Http.Error ItemLightList)
     | StatsResp (Result Http.Error SearchStats)
-    | SetPassword String
-    | SubmitPassword
+    | PasswordMsg Comp.SharePasswordForm.Msg
     | SearchMenuMsg Comp.SearchMenu.Msg
     | PowerSearchMsg Comp.PowerSearchInput.Msg
     | ResetSearch

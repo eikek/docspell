@@ -9,6 +9,7 @@ module Page.Share.View exposing (viewContent, viewSidebar)
 
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Comp.Basic as B
+import Comp.SharePasswordForm
 import Data.Flags exposing (Flags)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
@@ -35,8 +36,8 @@ viewSidebar texts visible flags settings model =
         ]
 
 
-viewContent : Texts -> Flags -> VersionInfo -> UiSettings -> Model -> Html Msg
-viewContent texts flags versionInfo uiSettings model =
+viewContent : Texts -> Flags -> VersionInfo -> UiSettings -> String -> Model -> Html Msg
+viewContent texts flags versionInfo uiSettings shareId model =
     case model.mode of
         ModeInitial ->
             div
@@ -54,15 +55,15 @@ viewContent texts flags versionInfo uiSettings model =
             passwordContent texts flags versionInfo model
 
         ModeShare ->
-            mainContent texts flags uiSettings model
+            mainContent texts flags uiSettings shareId model
 
 
 
 --- Helpers
 
 
-mainContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
-mainContent texts _ settings model =
+mainContent : Texts -> Flags -> UiSettings -> String -> Model -> Html Msg
+mainContent texts _ settings shareId model =
     div
         [ id "content"
         , class "h-full flex flex-col"
@@ -75,7 +76,7 @@ mainContent texts _ settings model =
             [ text <| Maybe.withDefault "" model.verifyResult.name
             ]
         , Menubar.view texts model
-        , Results.view texts settings model
+        , Results.view texts settings shareId model
         ]
 
 
@@ -86,76 +87,6 @@ passwordContent texts flags versionInfo model =
         , class "h-full flex flex-col items-center justify-center w-full"
         , class S.content
         ]
-        [ div [ class ("flex flex-col px-4 sm:px-6 md:px-8 lg:px-10 py-8 rounded-md " ++ S.box) ]
-            [ div [ class "self-center" ]
-                [ img
-                    [ class "w-16 py-2"
-                    , src (flags.config.docspellAssetPath ++ "/img/logo-96.png")
-                    ]
-                    []
-                ]
-            , div [ class "font-medium self-center text-xl sm:text-2xl" ]
-                [ text texts.passwordRequired
-                ]
-            , Html.form
-                [ action "#"
-                , onSubmit SubmitPassword
-                , autocomplete False
-                ]
-                [ div [ class "flex flex-col my-3" ]
-                    [ label
-                        [ for "password"
-                        , class S.inputLabel
-                        ]
-                        [ text texts.password
-                        ]
-                    , div [ class "relative" ]
-                        [ div [ class S.inputIcon ]
-                            [ i [ class "fa fa-lock" ] []
-                            ]
-                        , input
-                            [ type_ "password"
-                            , name "password"
-                            , autocomplete False
-                            , autofocus True
-                            , tabindex 1
-                            , onInput SetPassword
-                            , value model.passwordModel.password
-                            , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
-                            , placeholder texts.password
-                            ]
-                            []
-                        ]
-                    ]
-                , div [ class "flex flex-col my-3" ]
-                    [ button
-                        [ type_ "submit"
-                        , class S.primaryButton
-                        ]
-                        [ text texts.passwordSubmitButton
-                        ]
-                    ]
-                , div
-                    [ class S.errorMessage
-                    , classList [ ( "hidden", not model.passwordModel.passwordFailed ) ]
-                    ]
-                    [ text texts.passwordFailed
-                    ]
-                ]
-            ]
-        , a
-            [ class "inline-flex items-center mt-4 text-xs opacity-50 hover:opacity-90"
-            , href "https://docspell.org"
-            , target "_new"
-            ]
-            [ img
-                [ src (flags.config.docspellAssetPath ++ "/img/logo-mc-96.png")
-                , class "w-3 h-3 mr-1"
-                ]
-                []
-            , span []
-                [ text "Docspell "
-                , text versionInfo.version
-                ]
-            ]
+        [ Html.map PasswordMsg
+            (Comp.SharePasswordForm.view texts.passwordForm flags versionInfo model.passwordModel)
         ]

@@ -59,6 +59,7 @@ type alias ViewConfig =
     , previewUrl : AttachmentLight -> String
     , previewUrlFallback : ItemLight -> String
     , attachUrl : AttachmentLight -> String
+    , detailPage : ItemLight -> Page
     }
 
 
@@ -174,7 +175,7 @@ view2 texts cfg settings model item =
         cardAction =
             case cfg.selection of
                 Data.ItemSelection.Inactive ->
-                    [ Page.href (ItemDetailPage item.id)
+                    [ Page.href (cfg.detailPage item)
                     ]
 
                 Data.ItemSelection.Active ids ->
@@ -530,7 +531,7 @@ previewMenu2 texts settings cfg model item mainAttach =
         , a
             [ class S.secondaryBasicButtonPlain
             , class "px-2 py-1 border rounded ml-2"
-            , Page.href (ItemDetailPage item.id)
+            , Page.href (cfg.detailPage item)
             , title texts.gotoDetail
             ]
             [ i [ class "fa fa-edit" ] []

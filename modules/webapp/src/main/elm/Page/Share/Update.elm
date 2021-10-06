@@ -13,6 +13,7 @@ import Comp.ItemCardList
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
 import Comp.SearchMenu
+import Comp.SharePasswordForm
 import Data.Flags exposing (Flags)
 import Data.ItemQuery as Q
 import Data.SearchMode
@@ -51,26 +52,13 @@ update flags settings shareId msg model =
                     )
 
             else if res.passwordRequired then
-                if model.mode == ModePassword then
-                    noSub
-                        ( { model
-                            | pageError = PageErrorNone
-                            , passwordModel =
-                                { password = ""
-                                , passwordFailed = True
-                                }
-                          }
-                        , Cmd.none
-                        )
-
-                else
-                    noSub
-                        ( { model
-                            | pageError = PageErrorNone
-                            , mode = ModePassword
-                          }
-                        , Cmd.none
-                        )
+                noSub
+                    ( { model
+                        | pageError = PageErrorNone
+                        , mode = ModePassword
+                      }
+                    , Cmd.none
+                    )
 
             else
                 noSub
@@ -101,21 +89,21 @@ update flags settings shareId msg model =
         StatsResp (Err err) ->
             noSub ( { model | pageError = PageErrorHttp err }, Cmd.none )
 
-        SetPassword pw ->
+        PasswordMsg lmsg ->
             let
-                pm =
-                    model.passwordModel
+                ( m, c, res ) =
+                    Comp.SharePasswordForm.update shareId flags lmsg model.passwordModel
             in
-            noSub ( { model | passwordModel = { pm | password = pw } }, Cmd.none )
+            case res of
+                Just verifyResult ->
+                    update flags
+                        settings
+                        shareId
+                        (VerifyResp (Ok verifyResult))
+                        model
 
-        SubmitPassword ->
-            let
-                secret =
-                    { shareId = shareId
-                    , password = Just model.passwordModel.password
-                    }
-            in
-            noSub ( model, Api.verifyShare flags secret VerifyResp )
+                Nothing ->
+                    noSub ( { model | passwordModel = m }, Cmd.map PasswordMsg c )
 
         SearchMenuMsg lm ->
             let

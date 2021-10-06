@@ -19,9 +19,10 @@ module Page exposing
     , loginPageReferrer
     , pageFromString
     , pageName
+    , pageShareDetail
+    , pageShareId
     , pageToString
     , set
-    , shareId
     , uploadId
     )
 
@@ -61,6 +62,7 @@ type Page
     | NewInvitePage
     | ItemDetailPage String
     | SharePage String
+    | ShareDetailPage String String
 
 
 isSecured : Page -> Bool
@@ -97,6 +99,9 @@ isSecured page =
             True
 
         SharePage _ ->
+            False
+
+        ShareDetailPage _ _ ->
             False
 
 
@@ -171,6 +176,9 @@ pageName page =
         SharePage _ ->
             "Share"
 
+        ShareDetailPage _ _ ->
+            "Share Detail"
+
 
 loginPageReferrer : Page -> LoginData
 loginPageReferrer page =
@@ -182,11 +190,21 @@ loginPageReferrer page =
             emptyLoginData
 
 
-shareId : Page -> Maybe String
-shareId page =
+pageShareId : Page -> Maybe String
+pageShareId page =
     case page of
         SharePage id ->
             Just id
+
+        _ ->
+            Nothing
+
+
+pageShareDetail : Page -> Maybe ( String, String )
+pageShareDetail page =
+    case page of
+        ShareDetailPage shareId itemId ->
+            Just ( shareId, itemId )
 
         _ ->
             Nothing
@@ -248,6 +266,9 @@ pageToString page =
         SharePage id ->
             "/app/share/" ++ id
 
+        ShareDetailPage shareId itemId ->
+            "/app/share/" ++ shareId ++ "/" ++ itemId
+
 
 pageFromString : String -> Maybe Page
 pageFromString str =
@@ -304,6 +325,7 @@ parser =
         , Parser.map (UploadPage Nothing) (s pathPrefix </> s "upload")
         , Parser.map NewInvitePage (s pathPrefix </> s "newinvite")
         , Parser.map ItemDetailPage (s pathPrefix </> s "item" </> string)
+        , Parser.map ShareDetailPage (s pathPrefix </> s "share" </> string </> string)
         , Parser.map SharePage (s pathPrefix </> s "share" </> string)
         ]
 

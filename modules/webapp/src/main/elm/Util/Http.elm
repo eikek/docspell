@@ -14,6 +14,7 @@ module Util.Http exposing
     , authTask
     , executeIn
     , jsonResolver
+    , shareGet
     , sharePost
     )
 
@@ -159,6 +160,24 @@ authGet req =
     authReq
         { url = req.url
         , account = req.account
+        , body = Http.emptyBody
+        , expect = req.expect
+        , method = "GET"
+        , headers = []
+        , tracker = Nothing
+        }
+
+
+shareGet :
+    { url : String
+    , token : String
+    , expect : Http.Expect msg
+    }
+    -> Cmd msg
+shareGet req =
+    shareReq
+        { url = req.url
+        , token = req.token
         , body = Http.emptyBody
         , expect = req.expect
         , method = "GET"

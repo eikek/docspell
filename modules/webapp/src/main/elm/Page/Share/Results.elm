@@ -14,11 +14,12 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Page.Share exposing (Texts)
+import Page exposing (Page(..))
 import Page.Share.Data exposing (Model, Msg(..))
 
 
-view : Texts -> UiSettings -> Model -> Html Msg
-view texts settings model =
+view : Texts -> UiSettings -> String -> Model -> Html Msg
+view texts settings shareId model =
     let
         viewCfg =
             { current = Nothing
@@ -26,6 +27,7 @@ view texts settings model =
             , previewUrl = \attach -> Api.shareAttachmentPreviewURL attach.id
             , previewUrlFallback = \item -> Api.shareItemBasePreviewURL item.id
             , attachUrl = .id >> Api.shareFileURL
+            , detailPage = \item -> ShareDetailPage shareId item.id
             }
     in
     div []

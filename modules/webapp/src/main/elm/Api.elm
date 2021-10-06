@@ -83,6 +83,7 @@ module Api exposing
     , initOtp
     , itemBasePreviewURL
     , itemDetail
+    , itemDetailShare
     , itemIndexSearch
     , itemSearch
     , itemSearchStats
@@ -2299,6 +2300,15 @@ searchShareStats flags token search receive =
         , token = token
         , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
         , expect = Http.expectJson receive Api.Model.SearchStats.decoder
+        }
+
+
+itemDetailShare : Flags -> String -> String -> (Result Http.Error ItemDetail -> msg) -> Cmd msg
+itemDetailShare flags token itemId receive =
+    Http2.shareGet
+        { url = flags.config.baseUrl ++ "/api/v1/share/item/" ++ itemId
+        , token = token
+        , expect = Http.expectJson receive Api.Model.ItemDetail.decoder
         }
 
 

@@ -28,6 +28,7 @@ import Page.NewInvite.View2 as NewInvite
 import Page.Queue.View2 as Queue
 import Page.Register.View2 as Register
 import Page.Share.View as Share
+import Page.ShareDetail.View as ShareDetail
 import Page.Upload.View2 as Upload
 import Page.UserSettings.View2 as UserSettings
 import Styles as S
@@ -166,6 +167,9 @@ mainContent model =
 
             SharePage id ->
                 viewShare texts id model
+
+            ShareDetailPage shareId itemId ->
+                viewShareDetail texts shareId itemId model
         )
 
 
@@ -434,7 +438,29 @@ viewShare texts shareId model =
             model.flags
             model.version
             model.uiSettings
+            shareId
             model.shareModel
+        )
+    ]
+
+
+viewShareDetail : Messages -> String -> String -> Model -> List (Html Msg)
+viewShareDetail texts shareId itemId model =
+    [ Html.map ShareDetailMsg
+        (ShareDetail.viewSidebar texts.shareDetail
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.shareDetailModel
+        )
+    , Html.map ShareDetailMsg
+        (ShareDetail.viewContent texts.shareDetail
+            model.flags
+            model.uiSettings
+            model.version
+            shareId
+            itemId
+            model.shareDetailModel
         )
     ]
 

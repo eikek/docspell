@@ -468,23 +468,22 @@ itemCardList texts _ settings model =
         previewUrlFallback item =
             Api.itemBasePreviewURL item.id
 
+        viewCfg sel =
+            Comp.ItemCardList.ViewConfig
+                model.scrollToCard
+                sel
+                previewUrl
+                previewUrlFallback
+                (.id >> Api.fileURL)
+                (.id >> ItemDetailPage)
+
         itemViewCfg =
             case model.viewMode of
                 SelectView svm ->
-                    Comp.ItemCardList.ViewConfig
-                        model.scrollToCard
-                        (Data.ItemSelection.Active svm.ids)
-                        previewUrl
-                        previewUrlFallback
-                        (.id >> Api.fileURL)
+                    viewCfg (Data.ItemSelection.Active svm.ids)
 
                 _ ->
-                    Comp.ItemCardList.ViewConfig
-                        model.scrollToCard
-                        Data.ItemSelection.Inactive
-                        previewUrl
-                        previewUrlFallback
-                        (.id >> Api.fileURL)
+                    viewCfg Data.ItemSelection.Inactive
     in
     [ Html.map ItemCardListMsg
         (Comp.ItemCardList.view2 texts.itemCardList

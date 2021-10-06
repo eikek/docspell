@@ -36,6 +36,8 @@ import Page.Register.Data
 import Page.Register.Update
 import Page.Share.Data
 import Page.Share.Update
+import Page.ShareDetail.Data
+import Page.ShareDetail.Update
 import Page.Upload.Data
 import Page.Upload.Update
 import Page.UserSettings.Data
@@ -118,6 +120,9 @@ updateWithSub msg model =
 
         ShareMsg lm ->
             updateShare lm model
+
+        ShareDetailMsg lm ->
+            updateShareDetail lm model
 
         LoginMsg lm ->
             updateLogin lm model
@@ -318,9 +323,26 @@ applyClientSettings model settings =
         { model | uiSettings = settings }
 
 
+updateShareDetail : Page.ShareDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateShareDetail lmsg model =
+    case Page.pageShareDetail model.page of
+        Just ( shareId, itemId ) ->
+            let
+                ( m, c ) =
+                    Page.ShareDetail.Update.update shareId itemId model.flags lmsg model.shareDetailModel
+            in
+            ( { model | shareDetailModel = m }
+            , Cmd.map ShareDetailMsg c
+            , Sub.none
+            )
+
+        Nothing ->
+            ( model, Cmd.none, Sub.none )
+
+
 updateShare : Page.Share.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateShare lmsg model =
-    case Page.shareId model.page of
+    case Page.pageShareId model.page of
         Just id ->
             let
                 result =
@@ -593,3 +615,15 @@ initPage model_ page =
 
         SharePage _ ->
             ( model, Cmd.none, Sub.none )
+
+        ShareDetailPage _ _ ->
+            case model_.page of
+                SharePage _ ->
+                    let
+                        verifyResult =
+                            model.shareModel.verifyResult
+                    in
+                    updateShareDetail (Page.ShareDetail.Data.VerifyResp (Ok verifyResult)) model
+
+                _ ->
+                    ( model, Cmd.none, Sub.none )
