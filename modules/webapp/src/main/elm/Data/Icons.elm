@@ -68,9 +68,7 @@ module Data.Icons exposing
     , tag2
     , tagIcon
     , tagIcon2
-    , tags
     , tags2
-    , tagsIcon
     , tagsIcon2
     )
 
@@ -359,16 +357,6 @@ tagIcon classes =
 tagIcon2 : String -> Html msg
 tagIcon2 classes =
     i [ class (tag2 ++ " " ++ classes) ] []
-
-
-tags : String
-tags =
-    "tags icon"
-
-
-tagsIcon : String -> Html msg
-tagsIcon classes =
-    i [ class (tags ++ " " ++ classes) ] []
 
 
 tags2 : String

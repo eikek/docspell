@@ -325,7 +325,7 @@ border2 =
 
 header1 : String
 header1 =
-    " text-3xl mt-3 mb-5 font-semibold tracking-wide break-all"
+    " text-3xl mt-3 mb-3 sm:mb-5 font-semibold tracking-wide break-all"
 
 
 header2 : String
