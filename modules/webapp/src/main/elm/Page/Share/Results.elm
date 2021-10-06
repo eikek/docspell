@@ -9,6 +9,7 @@ module Page.Share.Results exposing (view)
 
 import Api
 import Comp.ItemCardList
+import Data.Flags exposing (Flags)
 import Data.ItemSelection
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -18,8 +19,8 @@ import Page exposing (Page(..))
 import Page.Share.Data exposing (Model, Msg(..))
 
 
-view : Texts -> UiSettings -> String -> Model -> Html Msg
-view texts settings shareId model =
+view : Texts -> UiSettings -> Flags -> String -> Model -> Html Msg
+view texts settings flags shareId model =
     let
         viewCfg =
             { current = Nothing
@@ -32,5 +33,5 @@ view texts settings shareId model =
     in
     div []
         [ Html.map ItemListMsg
-            (Comp.ItemCardList.view2 texts.itemCardList viewCfg settings model.itemListModel)
+            (Comp.ItemCardList.view2 texts.itemCardList viewCfg settings flags model.itemListModel)
         ]

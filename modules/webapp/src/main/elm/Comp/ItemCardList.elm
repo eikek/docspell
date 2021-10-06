@@ -169,19 +169,19 @@ type alias ViewConfig =
     }
 
 
-view2 : Texts -> ViewConfig -> UiSettings -> Model -> Html Msg
-view2 texts cfg settings model =
+view2 : Texts -> ViewConfig -> UiSettings -> Flags -> Model -> Html Msg
+view2 texts cfg settings flags model =
     div
         [ classList
             [ ( "ds-item-list", True )
             , ( "ds-multi-select-mode", isMultiSelectMode cfg )
             ]
         ]
-        (List.map (viewGroup2 texts model cfg settings) model.results.groups)
+        (List.map (viewGroup2 texts model cfg settings flags) model.results.groups)
 
 
-viewGroup2 : Texts -> Model -> ViewConfig -> UiSettings -> ItemLightGroup -> Html Msg
-viewGroup2 texts model cfg settings group =
+viewGroup2 : Texts -> Model -> ViewConfig -> UiSettings -> Flags -> ItemLightGroup -> Html Msg
+viewGroup2 texts model cfg settings flags group =
     div [ class "ds-item-group" ]
         [ div
             [ class "flex py-1 mt-2 mb-2 flex flex-row items-center"
@@ -206,12 +206,12 @@ viewGroup2 texts model cfg settings group =
                 []
             ]
         , div [ class "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2" ]
-            (List.map (viewItem2 texts model cfg settings) group.items)
+            (List.map (viewItem2 texts model cfg settings flags) group.items)
         ]
 
 
-viewItem2 : Texts -> Model -> ViewConfig -> UiSettings -> ItemLight -> Html Msg
-viewItem2 texts model cfg settings item =
+viewItem2 : Texts -> Model -> ViewConfig -> UiSettings -> Flags -> ItemLight -> Html Msg
+viewItem2 texts model cfg settings flags item =
     let
         currentClass =
             if cfg.current == Just item.id then
@@ -228,7 +228,7 @@ viewItem2 texts model cfg settings item =
                 |> Maybe.withDefault Comp.ItemCard.init
 
         cardHtml =
-            Comp.ItemCard.view2 texts.itemCard vvcfg settings cardModel item
+            Comp.ItemCard.view2 texts.itemCard vvcfg settings flags cardModel item
     in
     Html.map (ItemCardMsg item) cardHtml
 

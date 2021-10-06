@@ -28,6 +28,7 @@ import Data.DropdownStyle as DS
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
 import Data.ItemTemplate as IT exposing (ItemTemplate)
+import Data.Pdf exposing (PdfMode)
 import Data.TagOrder
 import Data.UiSettings exposing (ItemPattern, Pos(..), UiSettings)
 import Dict exposing (Dict)
@@ -50,7 +51,8 @@ type alias Model =
     , searchPageSizeModel : Comp.IntField.Model
     , tagColors : Dict String Color
     , tagColorModel : Comp.ColorTagger.Model
-    , nativePdfPreview : Bool
+    , pdfMode : PdfMode
+    , pdfModeModel : Comp.FixedDropdown.Model PdfMode
     , itemSearchNoteLength : Maybe Int
     , searchNoteLengthModel : Comp.IntField.Model
     , searchMenuFolderCount : Maybe Int
@@ -122,7 +124,8 @@ init flags settings =
             Comp.ColorTagger.init
                 []
                 Data.Color.all
-      , nativePdfPreview = settings.nativePdfPreview
+      , pdfMode = settings.pdfMode
+      , pdfModeModel = Comp.FixedDropdown.init Data.Pdf.allModes
       , itemSearchNoteLength = Just settings.itemSearchNoteLength
       , searchNoteLengthModel =
             Comp.IntField.init
@@ -169,7 +172,6 @@ type Msg
     = SearchPageSizeMsg Comp.IntField.Msg
     | TagColorMsg Comp.ColorTagger.Msg
     | GetTagsResp (Result Http.Error TagList)
-    | TogglePdfPreview
     | NoteLengthMsg Comp.IntField.Msg
     | SearchMenuFolderMsg Comp.IntField.Msg
     | SearchMenuTagMsg Comp.IntField.Msg
@@ -185,6 +187,7 @@ type Msg
     | ToggleSideMenuVisible
     | TogglePowerSearch
     | UiLangMsg (Comp.FixedDropdown.Msg UiLanguage)
+    | PdfModeMsg (Comp.FixedDropdown.Msg PdfMode)
 
 
 
@@ -289,15 +292,6 @@ update sett msg model =
                     }
             in
             ( model_, nextSettings )
-
-        TogglePdfPreview ->
-            let
-                flag =
-                    not model.nativePdfPreview
-            in
-            ( { model | nativePdfPreview = flag }
-            , Just { sett | nativePdfPreview = flag }
-            )
 
         GetTagsResp (Ok tl) ->
             let
@@ -463,6 +457,22 @@ update sett msg model =
                 Just { sett | uiLang = newLang }
             )
 
+        PdfModeMsg lm ->
+            let
+                ( m, sel ) =
+                    Comp.FixedDropdown.update lm model.pdfModeModel
+
+                newMode =
+                    Maybe.withDefault model.pdfMode sel
+            in
+            ( { model | pdfModeModel = m, pdfMode = newMode }
+            , if newMode == model.pdfMode then
+                Nothing
+
+              else
+                Just { sett | pdfMode = newMode }
+            )
+
 
 
 --- View2
@@ -513,6 +523,13 @@ settingFormTabs texts flags _ model =
         langCfg =
             { display = \lang -> Messages.get lang |> .label
             , icon = \lang -> Just (Messages.get lang |> .flagIcon)
+            , style = DS.mainStyle
+            , selectPlaceholder = texts.basics.selectPlaceholder
+            }
+
+        pdfModeCfg =
+            { display = texts.pdfMode
+            , icon = \_ -> Nothing
             , style = DS.mainStyle
             , selectPlaceholder = texts.basics.selectPlaceholder
             }
@@ -689,13 +706,14 @@ settingFormTabs texts flags _ model =
       , info = Nothing
       , body =
             [ div [ class "mb-4" ]
-                [ MB.viewItem <|
-                    MB.Checkbox
-                        { tagger = \_ -> TogglePdfPreview
-                        , label = texts.browserNativePdfView
-                        , value = model.nativePdfPreview
-                        , id = "uisetting-pdfpreview-toggle"
-                        }
+                [ label [ class S.inputLabel ] [ text texts.browserNativePdfView ]
+                , Html.map PdfModeMsg
+                    (Comp.FixedDropdown.viewStyled2
+                        pdfModeCfg
+                        False
+                        (Just model.pdfMode)
+                        model.pdfModeModel
+                    )
                 ]
             , div [ class "mb-4" ]
                 [ MB.viewItem <|

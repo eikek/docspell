@@ -22,6 +22,7 @@ import Api.Model.ItemLight exposing (ItemLight)
 import Comp.LinkTarget exposing (LinkTarget(..))
 import Data.Direction
 import Data.Fields
+import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.ItemSelection exposing (ItemSelection)
 import Data.ItemTemplate as IT
@@ -150,8 +151,8 @@ update ddm msg model =
 --- View2
 
 
-view2 : Texts -> ViewConfig -> UiSettings -> Model -> ItemLight -> Html Msg
-view2 texts cfg settings model item =
+view2 : Texts -> ViewConfig -> UiSettings -> Flags -> Model -> ItemLight -> Html Msg
+view2 texts cfg settings flags model item =
     let
         isCreated =
             item.state == "created"
@@ -221,7 +222,7 @@ view2 texts cfg settings model item =
                , metaDataContent2 texts settings item
                , notesContent2 settings item
                , fulltextResultsContent2 item
-               , previewMenu2 texts settings cfg model item (currentAttachment model item)
+               , previewMenu2 texts settings flags cfg model item (currentAttachment model item)
                , selectedDimmer
                ]
         )
@@ -475,8 +476,8 @@ previewImage2 cfg settings cardAction model item =
         ]
 
 
-previewMenu2 : Texts -> UiSettings -> ViewConfig -> Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
-previewMenu2 texts settings cfg model item mainAttach =
+previewMenu2 : Texts -> UiSettings -> Flags -> ViewConfig -> Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
+previewMenu2 texts settings flags cfg model item mainAttach =
     let
         pageCount =
             Maybe.andThen .pageCount mainAttach
@@ -489,11 +490,7 @@ previewMenu2 texts settings cfg model item mainAttach =
             Data.UiSettings.fieldHidden settings f
 
         mkAttachUrl attach =
-            if settings.nativePdfPreview then
-                cfg.attachUrl attach
-
-            else
-                cfg.attachUrl attach ++ "/view"
+            Data.UiSettings.pdfUrl settings flags (cfg.attachUrl attach)
 
         attachUrl =
             Maybe.map mkAttachUrl mainAttach

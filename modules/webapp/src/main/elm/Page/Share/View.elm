@@ -63,7 +63,7 @@ viewContent texts flags versionInfo uiSettings shareId model =
 
 
 mainContent : Texts -> Flags -> UiSettings -> String -> Model -> Html Msg
-mainContent texts _ settings shareId model =
+mainContent texts flags settings shareId model =
     div
         [ id "content"
         , class "h-full flex flex-col"
@@ -76,7 +76,7 @@ mainContent texts _ settings shareId model =
             [ text <| Maybe.withDefault "" model.verifyResult.name
             ]
         , Menubar.view texts model
-        , Results.view texts settings shareId model
+        , Results.view texts settings flags shareId model
         ]
 
 

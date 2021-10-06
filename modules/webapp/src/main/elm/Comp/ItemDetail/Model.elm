@@ -100,7 +100,6 @@ type alias Model =
     , sentMailsOpen : Bool
     , attachMeta : Dict String Comp.AttachmentMeta.Model
     , attachMetaOpen : Bool
-    , pdfNativeView : Maybe Bool
     , attachModal : Maybe ConfirmModalValue
     , addFilesOpen : Bool
     , addFilesModel : Comp.Dropzone.Model
@@ -236,7 +235,6 @@ emptyModel =
     , sentMailsOpen = False
     , attachMeta = Dict.empty
     , attachMetaOpen = False
-    , pdfNativeView = Nothing
     , attachModal = Nothing
     , addFilesOpen = False
     , addFilesModel = Comp.Dropzone.init []
@@ -316,7 +314,6 @@ type Msg
     | SentMailsResp (Result Http.Error SentMails)
     | AttachMetaClick String
     | AttachMetaMsg String Comp.AttachmentMeta.Msg
-    | TogglePdfNativeView Bool
     | RequestDeleteAttachment String
     | DeleteAttachConfirmed String
     | RequestDeleteSelected

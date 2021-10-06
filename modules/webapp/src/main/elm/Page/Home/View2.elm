@@ -460,7 +460,7 @@ searchStats texts _ settings model =
 
 
 itemCardList : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
-itemCardList texts _ settings model =
+itemCardList texts flags settings model =
     let
         previewUrl attach =
             Api.attachmentPreviewURL attach.id
@@ -489,6 +489,7 @@ itemCardList texts _ settings model =
         (Comp.ItemCardList.view2 texts.itemCardList
             itemViewCfg
             settings
+            flags
             model.itemListModel
         )
     , loadMore texts settings model
