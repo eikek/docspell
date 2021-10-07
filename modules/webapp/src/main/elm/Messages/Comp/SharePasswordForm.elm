@@ -19,7 +19,7 @@ gb =
     , passwordRequired = "Password required"
     , password = "Password"
     , passwordSubmitButton = "Submit"
-    , passwordFailed = "Das Passwort ist falsch"
+    , passwordFailed = "Password is wrong"
     }
 
 
@@ -29,5 +29,5 @@ de =
     , passwordRequired = "Passwort benötigt"
     , password = "Passwort"
     , passwordSubmitButton = "Submit"
-    , passwordFailed = "Password is wrong"
+    , passwordFailed = "Das Passwort ist falsch"
     }
