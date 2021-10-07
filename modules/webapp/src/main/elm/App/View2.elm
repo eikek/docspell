@@ -70,7 +70,7 @@ topNavUser auth model =
             , baseStyle = "font-bold inline-flex items-center px-4 py-2"
             , activeStyle = "hover:bg-blue-200 dark:hover:bg-bluegray-800 w-12"
             }
-        , headerNavItem model
+        , headerNavItem True model
         , div [ class "flex flex-grow justify-end" ]
             [ userMenu texts.app auth model
             , dataMenu texts.app auth model
@@ -93,7 +93,7 @@ topNavAnon model =
             , baseStyle = "font-bold inline-flex items-center px-4 py-2"
             , activeStyle = "hover:bg-blue-200 dark:hover:bg-bluegray-800 w-12"
             }
-        , headerNavItem model
+        , headerNavItem False model
         , div [ class "flex flex-grow justify-end" ]
             [ langMenu model
             , a
@@ -107,11 +107,24 @@ topNavAnon model =
         ]
 
 
-headerNavItem : Model -> Html Msg
-headerNavItem model =
-    a
-        [ class "inline-flex font-bold hover:bg-blue-200 dark:hover:bg-bluegray-800 items-center px-4"
-        , Page.href HomePage
+headerNavItem : Bool -> Model -> Html Msg
+headerNavItem authenticated model =
+    let
+        tag =
+            if authenticated then
+                a
+
+            else
+                div
+    in
+    tag
+        [ class "inline-flex font-bold items-center px-4"
+        , classList [ ( "hover:bg-blue-200 dark:hover:bg-bluegray-800", authenticated ) ]
+        , if authenticated then
+            Page.href HomePage
+
+          else
+            href "#"
         ]
         [ img
             [ src (model.flags.config.docspellAssetPath ++ "/img/logo-96.png")
