@@ -23,6 +23,7 @@ import Markdown
 import Messages.Comp.OtpSetup exposing (Texts)
 import QRCode
 import Styles as S
+import Svg.Attributes as SvgA
 
 
 type Model
@@ -389,8 +390,8 @@ viewDisabled texts model =
 
 qrCodeView : Texts -> String -> Html msg
 qrCodeView texts message =
-    QRCode.encode message
-        |> Result.map QRCode.toSvg
+    QRCode.fromString message
+        |> Result.map (QRCode.toSvg [ SvgA.class "w-64 h-64" ])
         |> Result.withDefault
             (Html.text texts.errorGeneratingQR)
 

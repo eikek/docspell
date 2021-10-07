@@ -2,7 +2,9 @@ module Page.ShareDetail.Update exposing (update)
 
 import Api
 import Comp.SharePasswordForm
+import Comp.UrlCopy
 import Data.Flags exposing (Flags)
+import Page exposing (Page(..))
 import Page.ShareDetail.Data exposing (..)
 
 
@@ -36,12 +38,16 @@ update shareId itemId flags msg model =
             ( { model | pageError = PageErrorHttp err }, Cmd.none )
 
         GetItemResp (Ok item) ->
+            let
+                url =
+                    Page.pageToString (ShareDetailPage shareId itemId)
+            in
             ( { model
                 | item = item
                 , viewMode = ViewNormal
                 , pageError = PageErrorNone
               }
-            , Cmd.none
+            , Comp.UrlCopy.initCopy url
             )
 
         GetItemResp (Err err) ->
@@ -62,3 +68,21 @@ update shareId itemId flags msg model =
 
                 Nothing ->
                     ( { model | passwordModel = m }, Cmd.map PasswordMsg c )
+
+        SelectActiveAttachment pos ->
+            ( { model
+                | visibleAttach = pos
+                , attachMenuOpen = False
+              }
+            , Cmd.none
+            )
+
+        ToggleSelectAttach ->
+            ( { model | attachMenuOpen = not model.attachMenuOpen }, Cmd.none )
+
+        UrlCopyMsg lm ->
+            let
+                cmd =
+                    Comp.UrlCopy.update lm
+            in
+            ( model, cmd )

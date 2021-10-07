@@ -5,7 +5,7 @@
 -}
 
 
-module Page.Share.Data exposing (Mode(..), Model, Msg(..), PageError(..), init)
+module Page.Share.Data exposing (Mode(..), Model, Msg(..), PageError(..), init, initCmd)
 
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
@@ -41,6 +41,7 @@ type alias Model =
     , powerSearchInput : Comp.PowerSearchInput.Model
     , searchInProgress : Bool
     , itemListModel : Comp.ItemCardList.Model
+    , initialized : Bool
     }
 
 
@@ -54,17 +55,27 @@ emptyModel flags =
     , powerSearchInput = Comp.PowerSearchInput.init
     , searchInProgress = False
     , itemListModel = Comp.ItemCardList.init
+    , initialized = False
     }
 
 
 init : Maybe String -> Flags -> ( Model, Cmd Msg )
 init shareId flags =
+    let
+        em =
+            emptyModel flags
+    in
     case shareId of
         Just id ->
-            ( emptyModel flags, Api.verifyShare flags (ShareSecret id Nothing) VerifyResp )
+            ( { em | initialized = True }, Api.verifyShare flags (ShareSecret id Nothing) VerifyResp )
 
         Nothing ->
-            ( emptyModel flags, Cmd.none )
+            ( em, Cmd.none )
+
+
+initCmd : String -> Flags -> Cmd Msg
+initCmd shareId flags =
+    Api.verifyShare flags (ShareSecret shareId Nothing) VerifyResp
 
 
 type Msg

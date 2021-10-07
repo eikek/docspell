@@ -10,7 +10,7 @@ module Styles exposing (..)
 
 sidebar : String
 sidebar =
-    " flex flex-col flex-none md:w-80 w-full min-h-max px-2 dark:text-gray-200 shadow overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
+    " flex flex-col flex-none md:w-80 w-full min-h-max px-2 dark:text-gray-200 overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
 
 
 sidebarBg : String
@@ -98,6 +98,11 @@ redBasicLabel =
 basicLabel : String
 basicLabel =
     " label border-gray-600 text-gray-600 dark:border-bluegray-300 dark:text-bluegray-300 "
+
+
+blueBasicLabel : String
+blueBasicLabel =
+    " label border-blue-500 text-blue-500 dark:border-lightblue-200 dark:text-lightblue-200 "
 
 
 

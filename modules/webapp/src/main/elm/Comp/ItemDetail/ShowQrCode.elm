@@ -17,6 +17,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import QRCode
 import Styles as S
+import Svg.Attributes as SvgA
 
 
 view : Flags -> String -> Model -> UrlId -> Html Msg
@@ -111,7 +112,7 @@ type UrlId
 
 qrCodeView : String -> Html msg
 qrCodeView message =
-    QRCode.encode message
-        |> Result.map QRCode.toSvg
+    QRCode.fromString message
+        |> Result.map (QRCode.toSvg [ SvgA.class "w-64 h-64" ])
         |> Result.withDefault
             (text "Error generating QR code")

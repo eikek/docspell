@@ -42,13 +42,18 @@ viewContent texts flags versionInfo uiSettings shareId model =
         ModeInitial ->
             div
                 [ id "content"
-                , class "h-full w-full flex flex-col text-5xl"
+                , class "h-full w-full flex flex-col"
                 , class S.content
                 ]
-                [ B.loadingDimmer
-                    { active = model.pageError == PageErrorNone
-                    , label = ""
-                    }
+                [ div [ class " text-5xl" ]
+                    [ B.loadingDimmer
+                        { active = model.pageError == PageErrorNone
+                        , label = ""
+                        }
+                    ]
+                , div [ class "my-4 text-lg" ]
+                    [ errorMessage texts model
+                    ]
                 ]
 
         ModePassword ->
@@ -76,8 +81,26 @@ mainContent texts flags settings shareId model =
             [ text <| Maybe.withDefault "" model.verifyResult.name
             ]
         , Menubar.view texts model
+        , errorMessage texts model
         , Results.view texts settings flags shareId model
         ]
+
+
+errorMessage : Texts -> Model -> Html Msg
+errorMessage texts model =
+    case model.pageError of
+        PageErrorNone ->
+            span [ class "hidden" ] []
+
+        PageErrorAuthFail ->
+            div [ class S.errorMessage ]
+                [ text texts.authFailed
+                ]
+
+        PageErrorHttp err ->
+            div [ class S.errorMessage ]
+                [ text (texts.httpError err)
+                ]
 
 
 passwordContent : Texts -> Flags -> VersionInfo -> Model -> Html Msg

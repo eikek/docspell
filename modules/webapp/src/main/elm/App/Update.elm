@@ -613,8 +613,19 @@ initPage model_ page =
                 ]
                 model
 
-        SharePage _ ->
-            ( model, Cmd.none, Sub.none )
+        SharePage id ->
+            let
+                cmd =
+                    Cmd.map ShareMsg (Page.Share.Data.initCmd id model.flags)
+
+                shareModel =
+                    model.shareModel
+            in
+            if shareModel.initialized then
+                ( model, Cmd.none, Sub.none )
+
+            else
+                ( { model | shareModel = { shareModel | initialized = True } }, cmd, Sub.none )
 
         ShareDetailPage _ _ ->
             case model_.page of

@@ -5,6 +5,7 @@ import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ShareSecret exposing (ShareSecret)
 import Api.Model.ShareVerifyResult exposing (ShareVerifyResult)
 import Comp.SharePasswordForm
+import Comp.UrlCopy
 import Data.Flags exposing (Flags)
 import Http
 
@@ -27,6 +28,8 @@ type alias Model =
     , passwordModel : Comp.SharePasswordForm.Model
     , viewMode : ViewMode
     , pageError : PageError
+    , attachMenuOpen : Bool
+    , visibleAttach : Int
     }
 
 
@@ -34,6 +37,9 @@ type Msg
     = VerifyResp (Result Http.Error ShareVerifyResult)
     | GetItemResp (Result Http.Error ItemDetail)
     | PasswordMsg Comp.SharePasswordForm.Msg
+    | SelectActiveAttachment Int
+    | ToggleSelectAttach
+    | UrlCopyMsg Comp.UrlCopy.Msg
 
 
 emptyModel : ViewMode -> Model
@@ -43,14 +49,18 @@ emptyModel vm =
     , passwordModel = Comp.SharePasswordForm.init
     , viewMode = vm
     , pageError = PageErrorNone
+    , attachMenuOpen = False
+    , visibleAttach = 0
     }
 
 
 init : Maybe ( String, String ) -> Flags -> ( Model, Cmd Msg )
 init mids flags =
     case mids of
-        Just ( shareId, _ ) ->
-            ( emptyModel ViewLoading, Api.verifyShare flags (ShareSecret shareId Nothing) VerifyResp )
+        Just ( shareId, itemId ) ->
+            ( emptyModel ViewLoading
+            , Api.verifyShare flags (ShareSecret shareId Nothing) VerifyResp
+            )
 
         Nothing ->
             ( emptyModel ViewLoading, Cmd.none )

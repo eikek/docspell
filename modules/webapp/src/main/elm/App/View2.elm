@@ -451,6 +451,8 @@ viewShareDetail texts shareId itemId model =
             model.sidebarVisible
             model.flags
             model.uiSettings
+            shareId
+            itemId
             model.shareDetailModel
         )
     , Html.map ShareDetailMsg

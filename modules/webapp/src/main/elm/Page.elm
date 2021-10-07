@@ -116,6 +116,9 @@ hasSidebar page =
         SharePage _ ->
             True
 
+        ShareDetailPage _ _ ->
+            True
+
         _ ->
             isSecured page
 
