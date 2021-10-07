@@ -12,6 +12,7 @@ import Api.Model.ShareDetail exposing (ShareDetail)
 import Comp.Basic as B
 import Comp.DatePicker
 import Comp.PasswordInput
+import Comp.PowerSearchInput
 import Data.Flags exposing (Flags)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
@@ -25,7 +26,7 @@ import Util.Maybe
 type alias Model =
     { share : ShareDetail
     , name : Maybe String
-    , query : String
+    , queryModel : Comp.PowerSearchInput.Model
     , enabled : Bool
     , passwordModel : Comp.PasswordInput.Model
     , password : Maybe String
@@ -41,10 +42,15 @@ initQuery q =
     let
         ( dp, dpc ) =
             Comp.DatePicker.init
+
+        res =
+            Comp.PowerSearchInput.update
+                (Comp.PowerSearchInput.setSearchString q)
+                Comp.PowerSearchInput.init
     in
     ( { share = Api.Model.ShareDetail.empty
       , name = Nothing
-      , query = q
+      , queryModel = res.model
       , enabled = True
       , passwordModel = Comp.PasswordInput.init
       , password = Nothing
@@ -53,7 +59,10 @@ initQuery q =
       , untilModel = dp
       , untilDate = Nothing
       }
-    , Cmd.map UntilDateMsg dpc
+    , Cmd.batch
+        [ Cmd.map UntilDateMsg dpc
+        , Cmd.map QueryMsg res.cmd
+        ]
     )
 
 
@@ -64,17 +73,19 @@ init =
 
 isValid : Model -> Bool
 isValid model =
-    model.query /= "" && model.untilDate /= Nothing
+    Comp.PowerSearchInput.isValid model.queryModel
+        && model.untilDate
+        /= Nothing
 
 
 type Msg
     = SetName String
-    | SetQuery String
     | SetShare ShareDetail
     | ToggleEnabled
     | ToggleClearPassword
     | PasswordMsg Comp.PasswordInput.Msg
     | UntilDateMsg Comp.DatePicker.Msg
+    | QueryMsg Comp.PowerSearchInput.Msg
 
 
 setShare : ShareDetail -> Msg
@@ -88,7 +99,9 @@ getShare model =
         Just
             ( model.share.id
             , { name = model.name
-              , query = model.query
+              , query =
+                    model.queryModel.input
+                        |> Maybe.withDefault ""
               , enabled = model.enabled
               , password = model.password
               , removePassword =
@@ -105,14 +118,20 @@ getShare model =
         Nothing
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 update _ msg model =
     case msg of
         SetShare s ->
+            let
+                res =
+                    Comp.PowerSearchInput.update
+                        (Comp.PowerSearchInput.setSearchString s.query)
+                        model.queryModel
+            in
             ( { model
                 | share = s
                 , name = s.name
-                , query = s.query
+                , queryModel = res.model
                 , enabled = s.enabled
                 , password = Nothing
                 , passwordSet = s.password
@@ -124,20 +143,18 @@ update _ msg model =
                     else
                         Nothing
               }
-            , Cmd.none
+            , Cmd.map QueryMsg res.cmd
+            , Sub.map QueryMsg res.subs
             )
 
         SetName n ->
-            ( { model | name = Util.Maybe.fromString n }, Cmd.none )
-
-        SetQuery n ->
-            ( { model | query = n }, Cmd.none )
+            ( { model | name = Util.Maybe.fromString n }, Cmd.none, Sub.none )
 
         ToggleEnabled ->
-            ( { model | enabled = not model.enabled }, Cmd.none )
+            ( { model | enabled = not model.enabled }, Cmd.none, Sub.none )
 
         ToggleClearPassword ->
-            ( { model | clearPassword = not model.clearPassword }, Cmd.none )
+            ( { model | clearPassword = not model.clearPassword }, Cmd.none, Sub.none )
 
         PasswordMsg lm ->
             let
@@ -149,6 +166,7 @@ update _ msg model =
                 , password = pw
               }
             , Cmd.none
+            , Sub.none
             )
 
         UntilDateMsg lm ->
@@ -166,6 +184,17 @@ update _ msg model =
             in
             ( { model | untilModel = dp, untilDate = nextDate }
             , Cmd.none
+            , Sub.none
+            )
+
+        QueryMsg lm ->
+            let
+                res =
+                    Comp.PowerSearchInput.update lm model.queryModel
+            in
+            ( { model | queryModel = res.model }
+            , Cmd.map QueryMsg res.cmd
+            , Sub.map QueryMsg res.subs
             )
 
 
@@ -175,6 +204,21 @@ update _ msg model =
 
 view : Texts -> Model -> Html Msg
 view texts model =
+    let
+        queryInput =
+            div
+                [ class "relative flex flex-grow flex-row" ]
+                [ Html.map QueryMsg
+                    (Comp.PowerSearchInput.viewInput
+                        { placeholder = texts.queryLabel
+                        , extraAttrs = []
+                        }
+                        model.queryModel
+                    )
+                , Html.map QueryMsg
+                    (Comp.PowerSearchInput.viewResult [] model.queryModel)
+                ]
+    in
     div
         [ class "flex flex-col" ]
         [ div [ class "mb-4" ]
@@ -202,20 +246,7 @@ view texts model =
                 [ text texts.queryLabel
                 , B.inputRequired
                 ]
-            , input
-                [ type_ "text"
-                , onInput SetQuery
-                , placeholder texts.queryLabel
-                , value model.query
-                , id "sharequery"
-                , class S.textInput
-                , classList
-                    [ ( S.inputErrorBorder
-                      , model.query == ""
-                      )
-                    ]
-                ]
-                []
+            , queryInput
             ]
         , div [ class "mb-4" ]
             [ label

@@ -108,6 +108,7 @@ type Outcome
 type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
+    , sub : Sub Msg
     , outcome : Outcome
     }
 
@@ -118,16 +119,18 @@ update flags msg model =
         CancelPublish ->
             { model = model
             , cmd = Cmd.none
+            , sub = Sub.none
             , outcome = OutcomeDone
             }
 
         FormMsg lm ->
             let
-                ( fm, fc ) =
+                ( fm, fc, fs ) =
                     Comp.ShareForm.update flags lm model.formModel
             in
             { model = { model | formModel = fm }
             , cmd = Cmd.map FormMsg fc
+            , sub = Sub.map FormMsg fs
             , outcome = OutcomeInProgress
             }
 
@@ -136,12 +139,14 @@ update flags msg model =
                 Just ( _, data ) ->
                     { model = { model | loading = True }
                     , cmd = Api.addShare flags data PublishResp
+                    , sub = Sub.none
                     , outcome = OutcomeInProgress
                     }
 
                 Nothing ->
                     { model = { model | formError = FormErrorInvalid }
                     , cmd = Cmd.none
+                    , sub = Sub.none
                     , outcome = OutcomeInProgress
                     }
 
@@ -149,18 +154,21 @@ update flags msg model =
             if res.success then
                 { model = model
                 , cmd = Api.getShare flags res.id GetShareResp
+                , sub = Sub.none
                 , outcome = OutcomeInProgress
                 }
 
             else
                 { model = { model | formError = FormErrorSubmit res.message, loading = False }
                 , cmd = Cmd.none
+                , sub = Sub.none
                 , outcome = OutcomeInProgress
                 }
 
         PublishResp (Err err) ->
             { model = { model | formError = FormErrorHttp err, loading = False }
             , cmd = Cmd.none
+            , sub = Sub.none
             , outcome = OutcomeInProgress
             }
 
@@ -172,12 +180,14 @@ update flags msg model =
                     , viewMode = ViewModeInfo share
                 }
             , cmd = Ports.initClipboard (Comp.ShareView.clipboardData share)
+            , sub = Sub.none
             , outcome = OutcomeInProgress
             }
 
         GetShareResp (Err err) ->
             { model = { model | formError = FormErrorHttp err, loading = False }
             , cmd = Cmd.none
+            , sub = Sub.none
             , outcome = OutcomeInProgress
             }
 

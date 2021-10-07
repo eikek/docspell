@@ -11,6 +11,8 @@ module Comp.PowerSearchInput exposing
     , Msg
     , ViewSettings
     , init
+    , isValid
+    , setSearchString
     , update
     , viewInput
     , viewResult
@@ -43,6 +45,11 @@ init =
     }
 
 
+isValid : Model -> Bool
+isValid model =
+    model.input /= Nothing && model.result.success
+
+
 type Msg
     = SetSearch String
     | KeyUpMsg (Maybe KeyCode)
@@ -61,6 +68,11 @@ type alias Result =
     , action : Action
     , subs : Sub Msg
     }
+
+
+setSearchString : String -> Msg
+setSearchString q =
+    SetSearch q
 
 
 

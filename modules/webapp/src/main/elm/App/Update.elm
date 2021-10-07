@@ -478,14 +478,14 @@ updateUserSettings lmsg model =
 updateCollSettings : Page.CollectiveSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateCollSettings lmsg model =
     let
-        ( lm, lc ) =
+        ( lm, lc, ls ) =
             Page.CollectiveSettings.Update.update model.flags
                 lmsg
                 model.collSettingsModel
     in
     ( { model | collSettingsModel = lm }
     , Cmd.map CollSettingsMsg lc
-    , Sub.none
+    , Sub.map CollSettingsMsg ls
     )
 
 

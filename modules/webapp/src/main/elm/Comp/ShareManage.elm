@@ -98,7 +98,7 @@ loadShares =
 --- update
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 update flags msg model =
     case msg of
         InitNewShare ->
@@ -118,14 +118,18 @@ update flags msg model =
 
               else
                 Cmd.none
+            , Sub.none
             )
 
         FormMsg lm ->
             let
-                ( fm, fc ) =
+                ( fm, fc, fs ) =
                     Comp.ShareForm.update flags lm model.formModel
             in
-            ( { model | formModel = fm }, Cmd.map FormMsg fc )
+            ( { model | formModel = fm, formError = FormErrorNone }
+            , Cmd.map FormMsg fc
+            , Sub.map FormMsg fs
+            )
 
         TableMsg lm ->
             let
@@ -137,75 +141,79 @@ update flags msg model =
                     setShare share flags model
 
         RequestDelete ->
-            ( { model | deleteConfirm = DeleteConfirmOn }, Cmd.none )
+            ( { model | deleteConfirm = DeleteConfirmOn }, Cmd.none, Sub.none )
 
         CancelDelete ->
-            ( { model | deleteConfirm = DeleteConfirmOff }, Cmd.none )
+            ( { model | deleteConfirm = DeleteConfirmOff }, Cmd.none, Sub.none )
 
         DeleteShareNow id ->
             ( { model | deleteConfirm = DeleteConfirmOff, loading = True }
             , Api.deleteShare flags id DeleteShareResp
+            , Sub.none
             )
 
         LoadShares ->
-            ( { model | loading = True }, Api.getShares flags LoadSharesResp )
+            ( { model | loading = True }, Api.getShares flags LoadSharesResp, Sub.none )
 
         LoadSharesResp (Ok list) ->
-            ( { model | loading = False, shares = list.items, formError = FormErrorNone }, Cmd.none )
+            ( { model | loading = False, shares = list.items, formError = FormErrorNone }
+            , Cmd.none
+            , Sub.none
+            )
 
         LoadSharesResp (Err err) ->
-            ( { model | loading = False, formError = FormErrorHttp err }, Cmd.none )
+            ( { model | loading = False, formError = FormErrorHttp err }, Cmd.none, Sub.none )
 
         Submit ->
             case Comp.ShareForm.getShare model.formModel of
                 Just ( id, data ) ->
                     if id == "" then
-                        ( { model | loading = True }, Api.addShare flags data AddShareResp )
+                        ( { model | loading = True }, Api.addShare flags data AddShareResp, Sub.none )
 
                     else
-                        ( { model | loading = True }, Api.updateShare flags id data UpdateShareResp )
+                        ( { model | loading = True }, Api.updateShare flags id data UpdateShareResp, Sub.none )
 
                 Nothing ->
-                    ( { model | formError = FormErrorInvalid }, Cmd.none )
+                    ( { model | formError = FormErrorInvalid }, Cmd.none, Sub.none )
 
         AddShareResp (Ok res) ->
             if res.success then
-                ( model, Api.getShare flags res.id GetShareResp )
+                ( model, Api.getShare flags res.id GetShareResp, Sub.none )
 
             else
-                ( { model | loading = False, formError = FormErrorSubmit res.message }, Cmd.none )
+                ( { model | loading = False, formError = FormErrorSubmit res.message }, Cmd.none, Sub.none )
 
         AddShareResp (Err err) ->
-            ( { model | loading = False, formError = FormErrorHttp err }, Cmd.none )
+            ( { model | loading = False, formError = FormErrorHttp err }, Cmd.none, Sub.none )
 
         UpdateShareResp (Ok res) ->
             if res.success then
-                ( model, Api.getShare flags model.formModel.share.id GetShareResp )
+                ( model, Api.getShare flags model.formModel.share.id GetShareResp, Sub.none )
 
             else
-                ( { model | loading = False, formError = FormErrorSubmit res.message }, Cmd.none )
+                ( { model | loading = False, formError = FormErrorSubmit res.message }, Cmd.none, Sub.none )
 
         UpdateShareResp (Err err) ->
-            ( { model | loading = False, formError = FormErrorHttp err }, Cmd.none )
+            ( { model | loading = False, formError = FormErrorHttp err }, Cmd.none, Sub.none )
 
         GetShareResp (Ok share) ->
             setShare share flags model
 
         GetShareResp (Err err) ->
-            ( { model | formError = FormErrorHttp err }, Cmd.none )
+            ( { model | formError = FormErrorHttp err }, Cmd.none, Sub.none )
 
         DeleteShareResp (Ok res) ->
             if res.success then
                 update flags (SetViewMode Table) { model | loading = False }
 
             else
-                ( { model | formError = FormErrorSubmit res.message, loading = False }, Cmd.none )
+                ( { model | formError = FormErrorSubmit res.message, loading = False }, Cmd.none, Sub.none )
 
         DeleteShareResp (Err err) ->
-            ( { model | formError = FormErrorHttp err, loading = False }, Cmd.none )
+            ( { model | formError = FormErrorHttp err, loading = False }, Cmd.none, Sub.none )
 
 
-setShare : ShareDetail -> Flags -> Model -> ( Model, Cmd Msg )
+setShare : ShareDetail -> Flags -> Model -> ( Model, Cmd Msg, Sub Msg )
 setShare share flags model =
     let
         nextModel =
@@ -214,10 +222,10 @@ setShare share flags model =
         initClipboard =
             Ports.initClipboard (Comp.ShareView.clipboardData share)
 
-        ( nm, nc ) =
+        ( nm, nc, ns ) =
             update flags (FormMsg <| Comp.ShareForm.setShare share) nextModel
     in
-    ( nm, Cmd.batch [ initClipboard, nc ] )
+    ( nm, Cmd.batch [ initClipboard, nc ], ns )
 
 
 
