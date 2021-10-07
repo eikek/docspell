@@ -194,7 +194,9 @@ object OShare {
             val shareKey =
               share.password.map(pw => key ++ pw.asByteVector).getOrElse(key)
 
-            val token = ShareToken.create(id, shareKey)
+            val token = ShareToken
+              .create(id, shareKey)
+              .flatTap(_ => store.transact(RShare.incAccess(share.id)))
             pwCheck match {
               case Some(true)  => token.map(t => VerifyResult.success(t, share.name))
               case None        => token.map(t => VerifyResult.success(t, share.name))
