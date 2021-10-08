@@ -146,6 +146,7 @@ module Api exposing
     , shareAttachmentPreviewURL
     , shareFileURL
     , shareItemBasePreviewURL
+    , shareSendMail
     , startClassifier
     , startEmptyTrash
     , startOnceNotifyDueItems
@@ -233,6 +234,7 @@ import Api.Model.ShareList exposing (ShareList)
 import Api.Model.ShareSecret exposing (ShareSecret)
 import Api.Model.ShareVerifyResult exposing (ShareVerifyResult)
 import Api.Model.SimpleMail exposing (SimpleMail)
+import Api.Model.SimpleShareMail exposing (SimpleShareMail)
 import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.SourceList exposing (SourceList)
 import Api.Model.SourceTagIn
@@ -2309,6 +2311,20 @@ itemDetailShare flags token itemId receive =
         { url = flags.config.baseUrl ++ "/api/v1/share/item/" ++ itemId
         , token = token
         , expect = Http.expectJson receive Api.Model.ItemDetail.decoder
+        }
+
+
+shareSendMail :
+    Flags
+    -> { conn : String, mail : SimpleShareMail }
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+shareSendMail flags opts receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share/email/send/" ++ opts.conn
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.SimpleShareMail.encode opts.mail)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 

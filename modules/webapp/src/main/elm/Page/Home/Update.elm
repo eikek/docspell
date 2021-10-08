@@ -252,10 +252,10 @@ update mId key flags settings msg model =
                 ( nextView, cmd ) =
                     case model.viewMode of
                         SimpleView ->
-                            ( SelectView initSelectViewModel, loadEditModel flags )
+                            ( SelectView <| initSelectViewModel flags, loadEditModel flags )
 
                         SearchView ->
-                            ( SelectView initSelectViewModel, loadEditModel flags )
+                            ( SelectView <| initSelectViewModel flags, loadEditModel flags )
 
                         SelectView _ ->
                             ( SearchView, Cmd.none )
@@ -633,7 +633,7 @@ update mId key flags settings msg model =
                     if svm.action == PublishSelected then
                         let
                             ( mm, mc ) =
-                                Comp.PublishItems.init
+                                Comp.PublishItems.init flags
                         in
                         noSub
                             ( { model
@@ -653,7 +653,7 @@ update mId key flags settings msg model =
                     else
                         let
                             ( mm, mc ) =
-                                Comp.PublishItems.initQuery
+                                Comp.PublishItems.initQuery flags
                                     (Q.ItemIdIn (Set.toList svm.ids))
                         in
                         noSub
@@ -877,7 +877,7 @@ update mId key flags settings msg model =
                 Just q ->
                     let
                         ( pm, pc ) =
-                            Comp.PublishItems.initQuery q
+                            Comp.PublishItems.initQuery flags q
                     in
                     noSub ( { model | viewMode = PublishView pm }, Cmd.map PublishViewMsg pc )
 

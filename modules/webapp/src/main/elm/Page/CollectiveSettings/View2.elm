@@ -118,7 +118,7 @@ viewContent texts flags settings model =
                 viewSources texts flags settings model
 
             Just ShareTab ->
-                viewShares texts flags model
+                viewShares texts settings flags model
 
             Nothing ->
                 []
@@ -245,8 +245,8 @@ viewSources texts flags settings model =
     ]
 
 
-viewShares : Texts -> Flags -> Model -> List (Html Msg)
-viewShares texts flags model =
+viewShares : Texts -> UiSettings -> Flags -> Model -> List (Html Msg)
+viewShares texts settings flags model =
     [ h1
         [ class S.header1
         , class "inline-flex items-center"
@@ -256,7 +256,7 @@ viewShares texts flags model =
             [ text texts.shares
             ]
         ]
-    , Html.map ShareMsg (Comp.ShareManage.view texts.shareManage flags model.shareModel)
+    , Html.map ShareMsg (Comp.ShareManage.view texts.shareManage settings flags model.shareModel)
     ]
 
 

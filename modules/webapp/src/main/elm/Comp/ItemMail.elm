@@ -12,7 +12,9 @@ module Comp.ItemMail exposing
     , clear
     , emptyModel
     , init
+    , setMailInfo
     , update
+    , view
     , view2
     )
 
@@ -28,7 +30,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onFocus, onInput)
 import Http
 import Messages.Comp.ItemMail exposing (Texts)
 import Styles as S
@@ -61,6 +63,7 @@ type Msg
     | CCRecipientMsg Comp.EmailInput.Msg
     | BCCRecipientMsg Comp.EmailInput.Msg
     | SetBody String
+    | SetSubjectBody String String
     | ConnMsg (Comp.Dropdown.Msg String)
     | ConnResp (Result Http.Error EmailSettingsList)
     | ToggleAttachAll
@@ -112,11 +115,19 @@ clear model =
     }
 
 
+setMailInfo : String -> String -> Msg
+setMailInfo subject body =
+    SetSubjectBody subject body
+
+
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, FormAction )
 update flags msg model =
     case msg of
         SetSubject str ->
             ( { model | subject = str }, Cmd.none, FormNone )
+
+        SetSubjectBody subj body ->
+            ( { model | subject = subj, body = body }, Cmd.none, FormNone )
 
         RecipientMsg m ->
             let
@@ -239,8 +250,31 @@ isValid model =
 --- View2
 
 
+type alias ViewConfig =
+    { withAttachments : Bool
+    , subjectTemplate : Maybe String
+    , bodyTemplate : Maybe String
+    , textAreaClass : String
+    , showCancel : Bool
+    }
+
+
 view2 : Texts -> UiSettings -> Model -> Html Msg
 view2 texts settings model =
+    let
+        cfg =
+            { withAttachments = True
+            , subjectTemplate = Nothing
+            , bodyTemplate = Nothing
+            , textAreaClass = ""
+            , showCancel = True
+            }
+    in
+    view texts settings cfg model
+
+
+view : Texts -> UiSettings -> ViewConfig -> Model -> Html Msg
+view texts settings cfg model =
     let
         dds =
             Data.DropdownStyle.mainStyle
@@ -323,6 +357,11 @@ view2 texts settings model =
                 [ type_ "text"
                 , class S.textInput
                 , onInput SetSubject
+                , if model.subject == "" then
+                    onFocus (SetSubject <| Maybe.withDefault "" cfg.subjectTemplate)
+
+                  else
+                    class ""
                 , value model.subject
                 ]
                 []
@@ -334,18 +373,27 @@ view2 texts settings model =
                 ]
             , textarea
                 [ onInput SetBody
-                , value model.body
+                , if model.body == "" then
+                    value <| Maybe.withDefault "" cfg.bodyTemplate
+
+                  else
+                    value model.body
                 , class S.textAreaInput
+                , class cfg.textAreaClass
                 ]
                 []
             ]
-        , MB.viewItem <|
-            MB.Checkbox
-                { tagger = \_ -> ToggleAttachAll
-                , label = texts.includeAllAttachments
-                , value = model.attachAll
-                , id = "item-send-mail-attach-all"
-                }
+        , if cfg.withAttachments then
+            MB.viewItem <|
+                MB.Checkbox
+                    { tagger = \_ -> ToggleAttachAll
+                    , label = texts.includeAllAttachments
+                    , value = model.attachAll
+                    , id = "item-send-mail-attach-all"
+                    }
+
+          else
+            span [ class "hidden" ] []
         , div [ class "flex flex-row space-x-2" ]
             [ B.primaryButton
                 { label = texts.sendLabel
@@ -358,7 +406,10 @@ view2 texts settings model =
                 { label = texts.basics.cancel
                 , icon = "fa fa-times"
                 , handler = onClick Cancel
-                , attrs = [ href "#" ]
+                , attrs =
+                    [ href "#"
+                    , classList [ ( "hidden", not cfg.showCancel ) ]
+                    ]
                 , disabled = False
                 }
             ]

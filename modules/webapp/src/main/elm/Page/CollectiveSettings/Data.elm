@@ -52,7 +52,7 @@ init flags =
             Comp.CollectiveSettingsForm.init flags Api.Model.CollectiveSettings.empty
 
         ( shm, shc ) =
-            Comp.ShareManage.init
+            Comp.ShareManage.init flags
     in
     ( { currentTab = Just InsightsTab
       , sourceModel = sm

@@ -16,14 +16,17 @@ import Comp.Basic as B
 import Comp.ItemDetail.Model exposing (Msg(..))
 import Comp.MenuBar as MB
 import Comp.ShareForm
+import Comp.ShareMail
 import Comp.ShareTable
 import Comp.ShareView
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Messages.Comp.ShareManage exposing (Texts)
+import Page exposing (Page(..))
 import Ports
 import Styles as S
 
@@ -49,26 +52,34 @@ type alias Model =
     { viewMode : ViewMode
     , shares : List ShareDetail
     , formModel : Comp.ShareForm.Model
+    , mailModel : Comp.ShareMail.Model
     , loading : Bool
     , formError : FormError
     , deleteConfirm : DeleteConfirm
     }
 
 
-init : ( Model, Cmd Msg )
-init =
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     let
         ( fm, fc ) =
             Comp.ShareForm.init
+
+        ( mm, mc ) =
+            Comp.ShareMail.init flags
     in
     ( { viewMode = Table
       , shares = []
       , formModel = fm
+      , mailModel = mm
       , loading = False
       , formError = FormErrorNone
       , deleteConfirm = DeleteConfirmOff
       }
-    , Cmd.map FormMsg fc
+    , Cmd.batch
+        [ Cmd.map FormMsg fc
+        , Cmd.map MailMsg mc
+        ]
     )
 
 
@@ -76,6 +87,7 @@ type Msg
     = LoadShares
     | TableMsg Comp.ShareTable.Msg
     | FormMsg Comp.ShareForm.Msg
+    | MailMsg Comp.ShareMail.Msg
     | InitNewShare
     | SetViewMode ViewMode
     | Submit
@@ -212,10 +224,20 @@ update flags msg model =
         DeleteShareResp (Err err) ->
             ( { model | formError = FormErrorHttp err, loading = False }, Cmd.none, Sub.none )
 
+        MailMsg lm ->
+            let
+                ( mm, mc ) =
+                    Comp.ShareMail.update flags lm model.mailModel
+            in
+            ( { model | mailModel = mm }, Cmd.map MailMsg mc, Sub.none )
+
 
 setShare : ShareDetail -> Flags -> Model -> ( Model, Cmd Msg, Sub Msg )
 setShare share flags model =
     let
+        shareUrl =
+            flags.config.baseUrl ++ Page.pageToString (SharePage share.id)
+
         nextModel =
             { model | formError = FormErrorNone, viewMode = Form, loading = False }
 
@@ -224,21 +246,24 @@ setShare share flags model =
 
         ( nm, nc, ns ) =
             update flags (FormMsg <| Comp.ShareForm.setShare share) nextModel
+
+        ( nm2, nc2, ns2 ) =
+            update flags (MailMsg <| Comp.ShareMail.setMailInfo share) nm
     in
-    ( nm, Cmd.batch [ initClipboard, nc ], ns )
+    ( nm2, Cmd.batch [ initClipboard, nc, nc2 ], Sub.batch [ ns, ns2 ] )
 
 
 
 --- view
 
 
-view : Texts -> Flags -> Model -> Html Msg
-view texts flags model =
+view : Texts -> UiSettings -> Flags -> Model -> Html Msg
+view texts settings flags model =
     if model.viewMode == Table then
         viewTable texts model
 
     else
-        viewForm texts flags model
+        viewForm texts settings flags model
 
 
 viewTable : Texts -> Model -> Html Msg
@@ -265,13 +290,13 @@ viewTable texts model =
         ]
 
 
-viewForm : Texts -> Flags -> Model -> Html Msg
-viewForm texts flags model =
+viewForm : Texts -> UiSettings -> Flags -> Model -> Html Msg
+viewForm texts settings flags model =
     let
         newShare =
             model.formModel.share.id == ""
     in
-    div [ class "relative" ]
+    div []
         [ Html.form []
             [ if newShare then
                 h1 [ class S.header2 ]
@@ -367,6 +392,7 @@ viewForm texts flags model =
                 )
             ]
         , shareInfo texts flags model.formModel.share
+        , shareSendMail texts flags settings model
         ]
 
 
@@ -376,8 +402,34 @@ shareInfo texts flags share =
         [ class "mt-6"
         , classList [ ( "hidden", share.id == "" ) ]
         ]
-        [ h2 [ class S.header2 ]
+        [ h2
+            [ class S.header2
+            , class "border-b-2 dark:border-bluegray-600"
+            ]
             [ text texts.shareInformation
             ]
         , Comp.ShareView.viewDefault texts.shareView flags share
+        ]
+
+
+shareSendMail : Texts -> Flags -> UiSettings -> Model -> Html Msg
+shareSendMail texts flags settings model =
+    let
+        share =
+            model.formModel.share
+    in
+    div
+        [ class "mt-8 mb-2"
+        , classList [ ( "hidden", share.id == "" || not share.enabled || share.expired ) ]
+        ]
+        [ h2
+            [ class S.header2
+            , class "border-b-2 dark:border-bluegray-600"
+            ]
+            [ text "Send via E-Mail"
+            ]
+        , div [ class "px-2 py-2 dark:border-bluegray-600" ]
+            [ Html.map MailMsg
+                (Comp.ShareMail.view texts.shareMail flags settings model.mailModel)
+            ]
         ]

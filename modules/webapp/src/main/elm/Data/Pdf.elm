@@ -1,3 +1,10 @@
+{-
+   Copyright 2020 Eike K. & Contributors
+
+   SPDX-License-Identifier: AGPL-3.0-or-later
+-}
+
+
 module Data.Pdf exposing (PdfMode(..), allModes, asString, detectUrl, fromString, serverUrl)
 
 {-| Makes use of the fact, that docspell uses a `/view` suffix on the

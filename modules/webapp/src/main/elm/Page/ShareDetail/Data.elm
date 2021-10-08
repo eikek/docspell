@@ -1,3 +1,10 @@
+{-
+   Copyright 2020 Eike K. & Contributors
+
+   SPDX-License-Identifier: AGPL-3.0-or-later
+-}
+
+
 module Page.ShareDetail.Data exposing (Model, Msg(..), PageError(..), ViewMode(..), init)
 
 import Api

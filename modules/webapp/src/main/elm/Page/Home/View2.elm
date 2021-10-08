@@ -80,7 +80,7 @@ mainView texts flags settings model =
                         PublishSelected ->
                             Just
                                 [ div [ class "sm:relative mb-2" ]
-                                    (itemPublishView texts flags svm)
+                                    (itemPublishView texts settings flags svm)
                                 ]
 
                         _ ->
@@ -89,7 +89,7 @@ mainView texts flags settings model =
                 PublishView pm ->
                     Just
                         [ div [ class "sm:relative mb-2" ]
-                            (publishResults texts flags model pm)
+                            (publishResults texts settings flags model pm)
                         ]
 
                 SimpleView ->
@@ -106,10 +106,10 @@ mainView texts flags settings model =
             itemCardList texts flags settings model
 
 
-itemPublishView : Texts -> Flags -> SelectViewModel -> List (Html Msg)
-itemPublishView texts flags svm =
+itemPublishView : Texts -> UiSettings -> Flags -> SelectViewModel -> List (Html Msg)
+itemPublishView texts settings flags svm =
     [ Html.map PublishItemsMsg
-        (Comp.PublishItems.view texts.publishItems flags svm.publishModel)
+        (Comp.PublishItems.view texts.publishItems settings flags svm.publishModel)
     ]
 
 
@@ -120,10 +120,10 @@ itemMergeView texts settings svm =
     ]
 
 
-publishResults : Texts -> Flags -> Model -> Comp.PublishItems.Model -> List (Html Msg)
-publishResults texts flags model pm =
+publishResults : Texts -> UiSettings -> Flags -> Model -> Comp.PublishItems.Model -> List (Html Msg)
+publishResults texts settings flags model pm =
     [ Html.map PublishViewMsg
-        (Comp.PublishItems.view texts.publishItems flags pm)
+        (Comp.PublishItems.view texts.publishItems settings flags pm)
     ]
 
 

@@ -21,11 +21,13 @@ import Api.Model.ShareDetail exposing (ShareDetail)
 import Comp.Basic as B
 import Comp.MenuBar as MB
 import Comp.ShareForm
+import Comp.ShareMail
 import Comp.ShareView
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.ItemQuery exposing (ItemQuery)
 import Data.SearchMode exposing (SearchMode)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
@@ -52,39 +54,54 @@ type FormError
 
 type alias Model =
     { formModel : Comp.ShareForm.Model
+    , mailModel : Comp.ShareMail.Model
     , viewMode : ViewMode
     , formError : FormError
     , loading : Bool
     }
 
 
-init : ( Model, Cmd Msg )
-init =
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     let
         ( fm, fc ) =
             Comp.ShareForm.init
+
+        ( mm, mc ) =
+            Comp.ShareMail.init flags
     in
     ( { formModel = fm
+      , mailModel = mm
       , viewMode = ViewModeEdit
       , formError = FormErrorNone
       , loading = False
       }
-    , Cmd.map FormMsg fc
+    , Cmd.batch
+        [ Cmd.map FormMsg fc
+        , Cmd.map MailMsg mc
+        ]
     )
 
 
-initQuery : ItemQuery -> ( Model, Cmd Msg )
-initQuery query =
+initQuery : Flags -> ItemQuery -> ( Model, Cmd Msg )
+initQuery flags query =
     let
         ( fm, fc ) =
             Comp.ShareForm.initQuery (Data.ItemQuery.render query)
+
+        ( mm, mc ) =
+            Comp.ShareMail.init flags
     in
     ( { formModel = fm
+      , mailModel = mm
       , viewMode = ViewModeEdit
       , formError = FormErrorNone
       , loading = False
       }
-    , Cmd.map FormMsg fc
+    , Cmd.batch
+        [ Cmd.map FormMsg fc
+        , Cmd.map MailMsg mc
+        ]
     )
 
 
@@ -94,6 +111,7 @@ initQuery query =
 
 type Msg
     = FormMsg Comp.ShareForm.Msg
+    | MailMsg Comp.ShareMail.Msg
     | CancelPublish
     | SubmitPublish
     | PublishResp (Result Http.Error IdResult)
@@ -131,6 +149,17 @@ update flags msg model =
             { model = { model | formModel = fm }
             , cmd = Cmd.map FormMsg fc
             , sub = Sub.map FormMsg fs
+            , outcome = OutcomeInProgress
+            }
+
+        MailMsg lm ->
+            let
+                ( mm, mc ) =
+                    Comp.ShareMail.update flags lm model.mailModel
+            in
+            { model = { model | mailModel = mm }
+            , cmd = Cmd.map MailMsg mc
+            , sub = Sub.none
             , outcome = OutcomeInProgress
             }
 
@@ -173,13 +202,22 @@ update flags msg model =
             }
 
         GetShareResp (Ok share) ->
+            let
+                ( mm, mc ) =
+                    Comp.ShareMail.update flags (Comp.ShareMail.setMailInfo share) model.mailModel
+            in
             { model =
                 { model
                     | formError = FormErrorNone
                     , loading = False
                     , viewMode = ViewModeInfo share
+                    , mailModel = mm
                 }
-            , cmd = Ports.initClipboard (Comp.ShareView.clipboardData share)
+            , cmd =
+                Cmd.batch
+                    [ Ports.initClipboard (Comp.ShareView.clipboardData share)
+                    , Cmd.map MailMsg mc
+                    ]
             , sub = Sub.none
             , outcome = OutcomeInProgress
             }
@@ -196,8 +234,8 @@ update flags msg model =
 --- View
 
 
-view : Texts -> Flags -> Model -> Html Msg
-view texts flags model =
+view : Texts -> UiSettings -> Flags -> Model -> Html Msg
+view texts settings flags model =
     div []
         [ B.loadingDimmer
             { active = model.loading
@@ -208,12 +246,12 @@ view texts flags model =
                 viewForm texts model
 
             ViewModeInfo share ->
-                viewInfo texts flags model share
+                viewInfo texts settings flags model share
         ]
 
 
-viewInfo : Texts -> Flags -> Model -> ShareDetail -> Html Msg
-viewInfo texts flags model share =
+viewInfo : Texts -> UiSettings -> Flags -> Model -> ShareDetail -> Html Msg
+viewInfo texts settings flags model share =
     let
         cfg =
             { mainClasses = ""
@@ -243,6 +281,15 @@ viewInfo texts flags model share =
             }
         , div []
             [ Comp.ShareView.view cfg texts.shareView flags share
+            ]
+        , div [ class "flex flex-col mt-6" ]
+            [ div
+                [ class S.header2
+                ]
+                [ text texts.sendViaMail
+                ]
+            , Html.map MailMsg
+                (Comp.ShareMail.view texts.shareMail flags settings model.mailModel)
             ]
         ]
 

@@ -15,6 +15,7 @@ import Http
 import Messages.Basics
 import Messages.Comp.HttpError
 import Messages.Comp.ShareForm
+import Messages.Comp.ShareMail
 import Messages.Comp.ShareTable
 import Messages.Comp.ShareView
 
@@ -24,6 +25,7 @@ type alias Texts =
     , shareTable : Messages.Comp.ShareTable.Texts
     , shareForm : Messages.Comp.ShareForm.Texts
     , shareView : Messages.Comp.ShareView.Texts
+    , shareMail : Messages.Comp.ShareMail.Texts
     , httpError : Http.Error -> String
     , newShare : String
     , copyToClipboard : String
@@ -36,6 +38,7 @@ type alias Texts =
     , correctFormErrors : String
     , noName : String
     , shareInformation : String
+    , sendMail : String
     }
 
 
@@ -46,6 +49,7 @@ gb =
     , shareTable = Messages.Comp.ShareTable.gb
     , shareForm = Messages.Comp.ShareForm.gb
     , shareView = Messages.Comp.ShareView.gb
+    , shareMail = Messages.Comp.ShareMail.gb
     , newShare = "New share"
     , copyToClipboard = "Copy to clipboard"
     , openInNewTab = "Open in new tab/window"
@@ -57,6 +61,7 @@ gb =
     , correctFormErrors = "Please correct the errors in the form."
     , noName = "No Name"
     , shareInformation = "Share Information"
+    , sendMail = "Send via E-Mail"
     }
 
 
@@ -67,6 +72,7 @@ de =
     , shareForm = Messages.Comp.ShareForm.de
     , shareView = Messages.Comp.ShareView.de
     , httpError = Messages.Comp.HttpError.de
+    , shareMail = Messages.Comp.ShareMail.de
     , newShare = "Neue Freigabe"
     , copyToClipboard = "In die Zwischenablage kopieren"
     , openInNewTab = "Im neuen Tab/Fenster öffnen"
@@ -78,4 +84,5 @@ de =
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     , noName = "Ohne Name"
     , shareInformation = "Informationen zur Freigabe"
+    , sendMail = "Per E-Mail versenden"
     }

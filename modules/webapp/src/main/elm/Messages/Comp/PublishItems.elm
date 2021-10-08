@@ -15,6 +15,7 @@ import Http
 import Messages.Basics
 import Messages.Comp.HttpError
 import Messages.Comp.ShareForm
+import Messages.Comp.ShareMail
 import Messages.Comp.ShareView
 import Messages.DateFormat
 import Messages.UiLanguage
@@ -25,6 +26,7 @@ type alias Texts =
     , httpError : Http.Error -> String
     , shareForm : Messages.Comp.ShareForm.Texts
     , shareView : Messages.Comp.ShareView.Texts
+    , shareMail : Messages.Comp.ShareMail.Texts
     , title : String
     , infoText : String
     , formatDateLong : Int -> String
@@ -37,6 +39,7 @@ type alias Texts =
     , publishInProcess : String
     , correctFormErrors : String
     , doneLabel : String
+    , sendViaMail : String
     }
 
 
@@ -46,6 +49,7 @@ gb =
     , httpError = Messages.Comp.HttpError.gb
     , shareForm = Messages.Comp.ShareForm.gb
     , shareView = Messages.Comp.ShareView.gb
+    , shareMail = Messages.Comp.ShareMail.gb
     , title = "Publish Items"
     , infoText = "Publishing items creates a cryptic link, which can be used by everyone to see the selected documents. This link cannot be guessed, but is public! It exists for a certain amount of time and can be further protected using a password."
     , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.English
@@ -58,6 +62,7 @@ gb =
     , publishInProcess = "Items are published …"
     , correctFormErrors = "Please correct the errors in the form."
     , doneLabel = "Done"
+    , sendViaMail = "Send via E-Mail"
     }
 
 
@@ -67,6 +72,7 @@ de =
     , httpError = Messages.Comp.HttpError.de
     , shareForm = Messages.Comp.ShareForm.de
     , shareView = Messages.Comp.ShareView.de
+    , shareMail = Messages.Comp.ShareMail.de
     , title = "Dokumente publizieren"
     , infoText = "Beim Publizieren der Dokumente wird ein kryptischer Link erzeugt, mit welchem jeder die dahinter publizierten Dokumente einsehen kann. Dieser Link kann nicht erraten werden, ist aber öffentlich. Er ist zeitlich begrenzt und kann zusätzlich mit einem Passwort geschützt werden."
     , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.German
@@ -79,4 +85,5 @@ de =
     , publishInProcess = "Dokumente werden publiziert…"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     , doneLabel = "Fertig"
+    , sendViaMail = "Per E-Mail versenden"
     }

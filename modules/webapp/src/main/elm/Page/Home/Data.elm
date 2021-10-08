@@ -87,14 +87,14 @@ type alias SelectViewModel =
     }
 
 
-initSelectViewModel : SelectViewModel
-initSelectViewModel =
+initSelectViewModel : Flags -> SelectViewModel
+initSelectViewModel flags =
     { ids = Set.empty
     , action = NoneAction
     , confirmModal = Nothing
     , editModel = Comp.ItemDetail.MultiEditMenu.init
     , mergeModel = Comp.ItemMerge.init []
-    , publishModel = Tuple.first Comp.PublishItems.init
+    , publishModel = Tuple.first (Comp.PublishItems.init flags)
     , saveNameState = SaveSuccess
     , saveCustomFieldState = Set.empty
     }
