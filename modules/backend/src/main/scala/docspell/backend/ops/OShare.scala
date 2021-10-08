@@ -13,7 +13,7 @@ import cats.implicits._
 import docspell.backend.PasswordCrypt
 import docspell.backend.auth.ShareToken
 import docspell.backend.ops.OItemSearch._
-import docspell.backend.ops.OShare.{ShareQuery, VerifyResult}
+import docspell.backend.ops.OShare._
 import docspell.backend.ops.OSimpleSearch.StringSearchResult
 import docspell.common._
 import docspell.query.ItemQuery
@@ -21,8 +21,9 @@ import docspell.query.ItemQuery.Expr
 import docspell.query.ItemQuery.Expr.AttachId
 import docspell.store.Store
 import docspell.store.queries.SearchSummary
-import docspell.store.records.RShare
+import docspell.store.records.{RShare, RUserEmail}
 
+import emil._
 import scodec.bits.ByteVector
 
 trait OShare[F[_]] {
@@ -63,9 +64,33 @@ trait OShare[F[_]] {
   def searchSummary(
       settings: OSimpleSearch.StatsSettings
   )(shareId: Ident, q: ItemQueryString): OptionT[F, StringSearchResult[SearchSummary]]
+
+  def sendMail(account: AccountId, connection: Ident, mail: ShareMail): F[SendResult]
 }
 
 object OShare {
+  final case class ShareMail(
+      shareId: Ident,
+      subject: String,
+      recipients: List[MailAddress],
+      cc: List[MailAddress],
+      bcc: List[MailAddress],
+      body: String
+  )
+
+  sealed trait SendResult
+  object SendResult {
+
+    /** Mail was successfully sent and stored to db. */
+    case class Success(msgId: String) extends SendResult
+
+    /** There was a failure sending the mail. The mail is then not saved to db. */
+    case class SendFailure(ex: Throwable) extends SendResult
+
+    /** Something could not be found required for sending (mail configs, items etc). */
+    case object NotFound extends SendResult
+  }
+
   final case class ShareQuery(id: Ident, cid: Ident, query: ItemQuery) {
 
     //TODO
@@ -116,7 +141,8 @@ object OShare {
   def apply[F[_]: Async](
       store: Store[F],
       itemSearch: OItemSearch[F],
-      simpleSearch: OSimpleSearch[F]
+      simpleSearch: OSimpleSearch[F],
+      emil: Emil[F]
   ): OShare[F] =
     new OShare[F] {
       private[this] val logger = Logger.log4s[F](org.log4s.getLogger)
@@ -293,5 +319,45 @@ object OShare {
                 case other => other
               }
           }
+
+      def sendMail(
+          account: AccountId,
+          connection: Ident,
+          mail: ShareMail
+      ): F[SendResult] = {
+        val getSmtpSettings: OptionT[F, RUserEmail] =
+          OptionT(store.transact(RUserEmail.getByName(account, connection)))
+
+        def createMail(sett: RUserEmail): OptionT[F, Mail[F]] = {
+          import _root_.emil.builder._
+
+          OptionT.pure(
+            MailBuilder.build(
+              From(sett.mailFrom),
+              Tos(mail.recipients),
+              Ccs(mail.cc),
+              Bccs(mail.bcc),
+              XMailer.emil,
+              Subject(mail.subject),
+              TextBody[F](mail.body)
+            )
+          )
+        }
+
+        def sendMail(cfg: MailConfig, mail: Mail[F]): F[Either[SendResult, String]] =
+          emil(cfg).send(mail).map(_.head).attempt.map(_.left.map(SendResult.SendFailure))
+
+        (for {
+          _ <- RShare
+            .findCurrentActive(mail.shareId)
+            .filter(_.cid == account.collective)
+            .mapK(store.transform)
+          mailCfg <- getSmtpSettings
+          mail <- createMail(mailCfg)
+          mid <- OptionT.liftF(sendMail(mailCfg.toMailConfig, mail))
+          conv = mid.fold(identity, id => SendResult.Success(id))
+        } yield conv).getOrElse(SendResult.NotFound)
+      }
+
     }
 }

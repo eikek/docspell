@@ -13,7 +13,7 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OShare
-import docspell.backend.ops.OShare.VerifyResult
+import docspell.backend.ops.OShare.{SendResult, ShareMail, VerifyResult}
 import docspell.common.{Ident, Timestamp}
 import docspell.restapi.model._
 import docspell.restserver.Config
@@ -21,6 +21,8 @@ import docspell.restserver.auth.ShareCookieData
 import docspell.restserver.http4s.{ClientRequestInfo, ResponseGenerator}
 import docspell.store.records.RShare
 
+import emil.MailAddress
+import emil.javamail.syntax._
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
@@ -67,6 +69,17 @@ object ShareRoutes {
         for {
           del <- backend.share.delete(id, user.account.collective)
           resp <- Ok(BasicResult(del, if (del) "Share deleted." else "Deleting failed."))
+        } yield resp
+
+      case req @ POST -> Root / "email" / "send" / Ident(name) =>
+        for {
+          in <- req.as[SimpleShareMail]
+          mail = convertIn(in)
+          res <- mail.traverse(m => backend.share.sendMail(user.account, name, m))
+          resp <- res.fold(
+            err => Ok(BasicResult(false, s"Invalid mail data: $err")),
+            res => Ok(convertOut(res))
+          )
         } yield resp
     }
   }
@@ -134,4 +147,20 @@ object ShareRoutes {
       r.lastAccess
     )
 
+  def convertIn(s: SimpleShareMail): Either[String, ShareMail] =
+    for {
+      rec <- s.recipients.traverse(MailAddress.parse)
+      cc <- s.cc.traverse(MailAddress.parse)
+      bcc <- s.bcc.traverse(MailAddress.parse)
+    } yield ShareMail(s.shareId, s.subject, rec, cc, bcc, s.body)
+
+  def convertOut(res: SendResult): BasicResult =
+    res match {
+      case SendResult.Success(_) =>
+        BasicResult(true, "Mail sent.")
+      case SendResult.SendFailure(ex) =>
+        BasicResult(false, s"Mail sending failed: ${ex.getMessage}")
+      case SendResult.NotFound =>
+        BasicResult(false, s"There was no mail-connection or item found.")
+    }
 }

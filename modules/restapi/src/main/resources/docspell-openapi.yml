@@ -1959,6 +1959,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/IdResult"
+  /sec/share/email/send/{name}:
+    post:
+      operationId: "sec-share-email-send"
+      tags: [ Share, E-Mail ]
+      summary: Send an email.
+      description: |
+        Sends an email as specified in the body of the request.
+
+        An existing shareId must be given with the request, no matter
+        the content of the mail.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/name"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimpleShareMail"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
   /sec/share/{shareId}:
     parameters:
       - $ref: "#/components/parameters/shareId"
@@ -5283,6 +5309,36 @@ components:
           items:
             type: string
             format: ident
+    SimpleShareMail:
+      description: |
+        A simple e-mail related to a share.
+      required:
+        - shareId
+        - recipients
+        - cc
+        - bcc
+        - subject
+        - body
+      properties:
+        shareId:
+          type: string
+          format: ident
+        recipients:
+          type: array
+          items:
+            type: string
+        cc:
+          type: array
+          items:
+            type: string
+        bcc:
+          type: array
+          items:
+            type: string
+        subject:
+          type: string
+        body:
+          type: string
     EmailSettingsList:
       description: |
         A list of user email settings.
