@@ -252,8 +252,6 @@ isValid model =
 
 type alias ViewConfig =
     { withAttachments : Bool
-    , subjectTemplate : Maybe String
-    , bodyTemplate : Maybe String
     , textAreaClass : String
     , showCancel : Bool
     }
@@ -264,8 +262,6 @@ view2 texts settings model =
     let
         cfg =
             { withAttachments = True
-            , subjectTemplate = Nothing
-            , bodyTemplate = Nothing
             , textAreaClass = ""
             , showCancel = True
             }
@@ -357,11 +353,6 @@ view texts settings cfg model =
                 [ type_ "text"
                 , class S.textInput
                 , onInput SetSubject
-                , if model.subject == "" then
-                    onFocus (SetSubject <| Maybe.withDefault "" cfg.subjectTemplate)
-
-                  else
-                    class ""
                 , value model.subject
                 ]
                 []
@@ -373,11 +364,7 @@ view texts settings cfg model =
                 ]
             , textarea
                 [ onInput SetBody
-                , if model.body == "" then
-                    value <| Maybe.withDefault "" cfg.bodyTemplate
-
-                  else
-                    value model.body
+                , value model.body
                 , class S.textAreaInput
                 , class cfg.textAreaClass
                 ]

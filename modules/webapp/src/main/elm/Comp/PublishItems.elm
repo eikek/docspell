@@ -26,7 +26,6 @@ import Comp.ShareView
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.ItemQuery exposing (ItemQuery)
-import Data.SearchMode exposing (SearchMode)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -131,8 +130,8 @@ type alias UpdateResult =
     }
 
 
-update : Flags -> Msg -> Model -> UpdateResult
-update flags msg model =
+update : Texts -> Flags -> Msg -> Model -> UpdateResult
+update texts flags msg model =
     case msg of
         CancelPublish ->
             { model = model
@@ -155,7 +154,7 @@ update flags msg model =
         MailMsg lm ->
             let
                 ( mm, mc ) =
-                    Comp.ShareMail.update flags lm model.mailModel
+                    Comp.ShareMail.update texts.shareMail flags lm model.mailModel
             in
             { model = { model | mailModel = mm }
             , cmd = Cmd.map MailMsg mc
@@ -204,7 +203,7 @@ update flags msg model =
         GetShareResp (Ok share) ->
             let
                 ( mm, mc ) =
-                    Comp.ShareMail.update flags (Comp.ShareMail.setMailInfo share) model.mailModel
+                    Comp.ShareMail.update texts.shareMail flags (Comp.ShareMail.setMailInfo share) model.mailModel
             in
             { model =
                 { model

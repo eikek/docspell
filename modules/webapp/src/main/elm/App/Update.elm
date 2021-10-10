@@ -17,6 +17,7 @@ import Browser.Navigation as Nav
 import Data.Flags
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme
+import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.CollectiveSettings.Update
@@ -59,6 +60,10 @@ update msg model =
 
 updateWithSub : Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateWithSub msg model =
+    let
+        texts =
+            Messages.get <| App.Data.getUiLanguage model
+    in
     case msg of
         ToggleSidebar ->
             ( { model | sidebarVisible = not model.sidebarVisible }, Cmd.none, Sub.none )
@@ -98,7 +103,7 @@ updateWithSub msg model =
 
         ClientSettingsSaveResp settings (Ok res) ->
             if res.success then
-                applyClientSettings model settings
+                applyClientSettings texts model settings
 
             else
                 ( model, Cmd.none, Sub.none )
@@ -116,7 +121,7 @@ updateWithSub msg model =
             ( { model | anonymousUiLang = lang, langMenuOpen = False }, Cmd.none, Sub.none )
 
         HomeMsg lm ->
-            updateHome lm model
+            updateHome texts lm model
 
         ShareMsg lm ->
             updateShare lm model
@@ -131,10 +136,10 @@ updateWithSub msg model =
             updateManageData lm model
 
         CollSettingsMsg m ->
-            updateCollSettings m model
+            updateCollSettings texts m model
 
         UserSettingsMsg m ->
-            updateUserSettings m model
+            updateUserSettings texts m model
 
         QueueMsg m ->
             updateQueue m model
@@ -149,7 +154,7 @@ updateWithSub msg model =
             updateNewInvite m model
 
         ItemDetailMsg m ->
-            updateItemDetail m model
+            updateItemDetail texts m model
 
         VersionResp (Ok info) ->
             ( { model | version = info }, Cmd.none, Sub.none )
@@ -291,7 +296,7 @@ updateWithSub msg model =
             )
 
         GetUiSettings (Ok settings) ->
-            applyClientSettings model settings
+            applyClientSettings texts model settings
 
         GetUiSettings (Err _) ->
             ( model, Cmd.none, Sub.none )
@@ -301,11 +306,11 @@ updateWithSub msg model =
                 lm =
                     Page.UserSettings.Data.ReceiveBrowserSettings sett
             in
-            updateUserSettings lm model
+            updateUserSettings texts lm model
 
 
-applyClientSettings : Model -> UiSettings -> ( Model, Cmd Msg, Sub Msg )
-applyClientSettings model settings =
+applyClientSettings : Messages -> Model -> UiSettings -> ( Model, Cmd Msg, Sub Msg )
+applyClientSettings texts model settings =
     let
         setTheme =
             Ports.setUiTheme settings.uiTheme
@@ -316,9 +321,9 @@ applyClientSettings model settings =
             , setTheme
             , Sub.none
             )
-        , updateUserSettings Page.UserSettings.Data.UpdateSettings
-        , updateHome Page.Home.Data.UiSettingsUpdated
-        , updateItemDetail Page.ItemDetail.Data.UiSettingsUpdated
+        , updateUserSettings texts Page.UserSettings.Data.UpdateSettings
+        , updateHome texts Page.Home.Data.UiSettingsUpdated
+        , updateItemDetail texts Page.ItemDetail.Data.UiSettingsUpdated
         ]
         { model | uiSettings = settings }
 
@@ -357,8 +362,8 @@ updateShare lmsg model =
             ( model, Cmd.none, Sub.none )
 
 
-updateItemDetail : Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-updateItemDetail lmsg model =
+updateItemDetail : Messages -> Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateItemDetail texts lmsg model =
     let
         inav =
             Page.Home.Data.itemNav model.itemDetailModel.detail.item.id model.homeModel
@@ -378,12 +383,12 @@ updateItemDetail lmsg model =
             }
 
         ( hm, hc, hs ) =
-            updateHome (Page.Home.Data.SetLinkTarget result.linkTarget) model_
+            updateHome texts (Page.Home.Data.SetLinkTarget result.linkTarget) model_
 
         ( hm1, hc1, hs1 ) =
             case result.removedItem of
                 Just removedId ->
-                    updateHome (Page.Home.Data.RemoveItem removedId) hm
+                    updateHome texts (Page.Home.Data.RemoveItem removedId) hm
 
                 Nothing ->
                     ( hm, hc, hs )
@@ -446,8 +451,8 @@ updateQueue lmsg model =
     )
 
 
-updateUserSettings : Page.UserSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-updateUserSettings lmsg model =
+updateUserSettings : Messages -> Page.UserSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateUserSettings texts lmsg model =
     let
         result =
             Page.UserSettings.Update.update model.flags model.uiSettings lmsg model.userSettingsModel
@@ -458,7 +463,7 @@ updateUserSettings lmsg model =
         ( lm2, lc2, s2 ) =
             case result.newSettings of
                 Just sett ->
-                    applyClientSettings model_ sett
+                    applyClientSettings texts model_ sett
 
                 Nothing ->
                     ( model_, Cmd.none, Sub.none )
@@ -475,11 +480,12 @@ updateUserSettings lmsg model =
     )
 
 
-updateCollSettings : Page.CollectiveSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-updateCollSettings lmsg model =
+updateCollSettings : Messages -> Page.CollectiveSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateCollSettings texts lmsg model =
     let
         ( lm, lc, ls ) =
-            Page.CollectiveSettings.Update.update model.flags
+            Page.CollectiveSettings.Update.update texts.collectiveSettings
+                model.flags
                 lmsg
                 model.collSettingsModel
     in
@@ -508,8 +514,8 @@ updateLogin lmsg model =
     )
 
 
-updateHome : Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-updateHome lmsg model =
+updateHome : Messages -> Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateHome texts lmsg model =
     let
         mid =
             case model.page of
@@ -520,7 +526,7 @@ updateHome lmsg model =
                     Nothing
 
         result =
-            Page.Home.Update.update mid model.key model.flags model.uiSettings lmsg model.homeModel
+            Page.Home.Update.update mid model.key model.flags texts.home model.uiSettings lmsg model.homeModel
 
         model_ =
             { model | homeModel = result.model }
@@ -528,7 +534,7 @@ updateHome lmsg model =
         ( lm, lc, ls ) =
             case result.newSettings of
                 Just sett ->
-                    applyClientSettings model_ sett
+                    applyClientSettings texts model_ sett
 
                 Nothing ->
                     ( model_, Cmd.none, Sub.none )
@@ -562,11 +568,14 @@ initPage model_ page =
     let
         model =
             { model_ | page = page }
+
+        texts =
+            Messages.get <| App.Data.getUiLanguage model
     in
     case page of
         HomePage ->
             Util.Update.andThen2
-                [ updateHome Page.Home.Data.Init
+                [ updateHome texts Page.Home.Data.Init
                 , updateQueue Page.Queue.Data.StopRefresh
                 ]
                 model
@@ -580,7 +589,7 @@ initPage model_ page =
         CollectiveSettingPage ->
             Util.Update.andThen2
                 [ updateQueue Page.Queue.Data.StopRefresh
-                , updateCollSettings Page.CollectiveSettings.Data.Init
+                , updateCollSettings texts Page.CollectiveSettings.Data.Init
                 ]
                 model
 
@@ -608,7 +617,7 @@ initPage model_ page =
 
         ItemDetailPage id ->
             Util.Update.andThen2
-                [ updateItemDetail (Page.ItemDetail.Data.Init id)
+                [ updateItemDetail texts (Page.ItemDetail.Data.Init id)
                 , updateQueue Page.Queue.Data.StopRefresh
                 ]
                 model

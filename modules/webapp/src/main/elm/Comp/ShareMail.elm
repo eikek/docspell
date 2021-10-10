@@ -67,8 +67,8 @@ setMailInfo share =
     SetMailInfo share
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update flags msg model =
+update : Texts -> Flags -> Msg -> Model -> ( Model, Cmd Msg )
+update texts flags msg model =
     case msg of
         MailMsg lm ->
             let
@@ -107,7 +107,22 @@ update flags msg model =
                     defaultResult
 
         SetMailInfo share ->
-            ( { model | share = share }, Cmd.none )
+            let
+                url =
+                    flags.config.baseUrl ++ Page.pageToString (SharePage share.id)
+
+                name =
+                    share.name
+
+                lm =
+                    Comp.ItemMail.setMailInfo
+                        (texts.subjectTemplate name)
+                        (texts.bodyTemplate url)
+
+                nm =
+                    { model | share = share }
+            in
+            update texts flags (MailMsg lm) nm
 
         SendMailResp (Ok res) ->
             if res.success then
@@ -138,19 +153,8 @@ update flags msg model =
 view : Texts -> Flags -> UiSettings -> Model -> Html Msg
 view texts flags settings model =
     let
-        url =
-            flags.config.baseUrl ++ (Page.pageToString <| SharePage model.share.id)
-
-        subject =
-            texts.subjectTemplate model.share.name
-
-        body =
-            texts.bodyTemplate url
-
         cfg =
             { withAttachments = False
-            , subjectTemplate = Just subject
-            , bodyTemplate = Just body
             , textAreaClass = "h-52"
             , showCancel = False
             }

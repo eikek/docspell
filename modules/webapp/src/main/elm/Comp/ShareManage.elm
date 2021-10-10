@@ -110,8 +110,8 @@ loadShares =
 --- update
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update flags msg model =
+update : Texts -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update texts flags msg model =
     case msg of
         InitNewShare ->
             let
@@ -121,7 +121,7 @@ update flags msg model =
                 share =
                     Api.Model.ShareDetail.empty
             in
-            update flags (FormMsg (Comp.ShareForm.setShare { share | enabled = True })) nm
+            update texts flags (FormMsg (Comp.ShareForm.setShare { share | enabled = True })) nm
 
         SetViewMode vm ->
             ( { model | viewMode = vm, formError = FormErrorNone }
@@ -150,7 +150,7 @@ update flags msg model =
             in
             case action of
                 Comp.ShareTable.Edit share ->
-                    setShare share flags model
+                    setShare texts share flags model
 
         RequestDelete ->
             ( { model | deleteConfirm = DeleteConfirmOn }, Cmd.none, Sub.none )
@@ -209,14 +209,14 @@ update flags msg model =
             ( { model | loading = False, formError = FormErrorHttp err }, Cmd.none, Sub.none )
 
         GetShareResp (Ok share) ->
-            setShare share flags model
+            setShare texts share flags model
 
         GetShareResp (Err err) ->
             ( { model | formError = FormErrorHttp err }, Cmd.none, Sub.none )
 
         DeleteShareResp (Ok res) ->
             if res.success then
-                update flags (SetViewMode Table) { model | loading = False }
+                update texts flags (SetViewMode Table) { model | loading = False }
 
             else
                 ( { model | formError = FormErrorSubmit res.message, loading = False }, Cmd.none, Sub.none )
@@ -227,13 +227,13 @@ update flags msg model =
         MailMsg lm ->
             let
                 ( mm, mc ) =
-                    Comp.ShareMail.update flags lm model.mailModel
+                    Comp.ShareMail.update texts.shareMail flags lm model.mailModel
             in
             ( { model | mailModel = mm }, Cmd.map MailMsg mc, Sub.none )
 
 
-setShare : ShareDetail -> Flags -> Model -> ( Model, Cmd Msg, Sub Msg )
-setShare share flags model =
+setShare : Texts -> ShareDetail -> Flags -> Model -> ( Model, Cmd Msg, Sub Msg )
+setShare texts share flags model =
     let
         shareUrl =
             flags.config.baseUrl ++ Page.pageToString (SharePage share.id)
@@ -245,10 +245,10 @@ setShare share flags model =
             Ports.initClipboard (Comp.ShareView.clipboardData share)
 
         ( nm, nc, ns ) =
-            update flags (FormMsg <| Comp.ShareForm.setShare share) nextModel
+            update texts flags (FormMsg <| Comp.ShareForm.setShare share) nextModel
 
         ( nm2, nc2, ns2 ) =
-            update flags (MailMsg <| Comp.ShareMail.setMailInfo share) nm
+            update texts flags (MailMsg <| Comp.ShareMail.setMailInfo share) nm
     in
     ( nm2, Cmd.batch [ initClipboard, nc, nc2 ], Sub.batch [ ns, ns2 ] )
 

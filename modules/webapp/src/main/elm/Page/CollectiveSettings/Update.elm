@@ -13,11 +13,12 @@ import Comp.ShareManage
 import Comp.SourceManage
 import Comp.UserManage
 import Data.Flags exposing (Flags)
+import Messages.Page.CollectiveSettings exposing (Texts)
 import Page.CollectiveSettings.Data exposing (..)
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update flags msg model =
+update : Texts -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update texts flags msg model =
     case msg of
         SetTab t ->
             let
@@ -26,19 +27,19 @@ update flags msg model =
             in
             case t of
                 SourceTab ->
-                    update flags (SourceMsg Comp.SourceManage.LoadSources) m
+                    update texts flags (SourceMsg Comp.SourceManage.LoadSources) m
 
                 UserTab ->
-                    update flags (UserMsg Comp.UserManage.LoadUsers) m
+                    update texts flags (UserMsg Comp.UserManage.LoadUsers) m
 
                 InsightsTab ->
-                    update flags Init m
+                    update texts flags Init m
 
                 SettingsTab ->
-                    update flags Init m
+                    update texts flags Init m
 
                 ShareTab ->
-                    update flags (ShareMsg Comp.ShareManage.loadShares) m
+                    update texts flags (ShareMsg Comp.ShareManage.loadShares) m
 
         SourceMsg m ->
             let
@@ -50,7 +51,7 @@ update flags msg model =
         ShareMsg lm ->
             let
                 ( sm, sc, ss ) =
-                    Comp.ShareManage.update flags lm model.shareModel
+                    Comp.ShareManage.update texts.shareManage flags lm model.shareModel
             in
             ( { model | shareModel = sm }, Cmd.map ShareMsg sc, Sub.map ShareMsg ss )
 
