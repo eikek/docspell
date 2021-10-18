@@ -35,7 +35,7 @@ object Dependencies {
   val OrganizeImportsVersion = "0.5.0"
   val PdfboxVersion = "2.0.24"
   val PoiVersion = "4.1.2"
-  val PostgresVersion = "42.2.24"
+  val PostgresVersion = "42.3.0"
   val PureConfigVersion = "0.17.0"
   val ScalaJavaTimeVersion = "2.3.0"
   val ScodecBitsVersion = "1.1.29"
