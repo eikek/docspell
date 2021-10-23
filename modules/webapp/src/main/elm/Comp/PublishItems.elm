@@ -29,6 +29,7 @@ import Data.ItemQuery exposing (ItemQuery)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Http
 import Messages.Comp.PublishItems exposing (Texts)
 import Ports
@@ -57,6 +58,7 @@ type alias Model =
     , viewMode : ViewMode
     , formError : FormError
     , loading : Bool
+    , mailVisible : Bool
     }
 
 
@@ -74,6 +76,7 @@ init flags =
       , viewMode = ViewModeEdit
       , formError = FormErrorNone
       , loading = False
+      , mailVisible = False
       }
     , Cmd.batch
         [ Cmd.map FormMsg fc
@@ -96,6 +99,7 @@ initQuery flags query =
       , viewMode = ViewModeEdit
       , formError = FormErrorNone
       , loading = False
+      , mailVisible = False
       }
     , Cmd.batch
         [ Cmd.map FormMsg fc
@@ -115,6 +119,7 @@ type Msg
     | SubmitPublish
     | PublishResp (Result Http.Error IdResult)
     | GetShareResp (Result Http.Error ShareDetail)
+    | ToggleMailVisible
 
 
 type Outcome
@@ -210,6 +215,7 @@ update texts flags msg model =
                     | formError = FormErrorNone
                     , loading = False
                     , viewMode = ViewModeInfo share
+                    , mailVisible = False
                     , mailModel = mm
                 }
             , cmd =
@@ -223,6 +229,13 @@ update texts flags msg model =
 
         GetShareResp (Err err) ->
             { model = { model | formError = FormErrorHttp err, loading = False }
+            , cmd = Cmd.none
+            , sub = Sub.none
+            , outcome = OutcomeInProgress
+            }
+
+        ToggleMailVisible ->
+            { model = { model | mailVisible = not model.mailVisible }
             , cmd = Cmd.none
             , sub = Sub.none
             , outcome = OutcomeInProgress
@@ -281,14 +294,26 @@ viewInfo texts settings flags model share =
         , div []
             [ Comp.ShareView.view cfg texts.shareView flags share
             ]
-        , div [ class "flex flex-col mt-6" ]
-            [ div
+        , div
+            [ class "flex flex-col mt-6"
+            ]
+            [ a
                 [ class S.header2
+                , class "inline-block w-full"
+                , href "#"
+                , onClick ToggleMailVisible
                 ]
-                [ text texts.sendViaMail
+                [ if model.mailVisible then
+                    i [ class "fa fa-caret-down mr-2" ] []
+
+                  else
+                    i [ class "fa fa-caret-right mr-2" ] []
+                , text texts.sendViaMail
                 ]
-            , Html.map MailMsg
-                (Comp.ShareMail.view texts.shareMail flags settings model.mailModel)
+            , div [ classList [ ( "hidden", not model.mailVisible ) ] ]
+                [ Html.map MailMsg
+                    (Comp.ShareMail.view texts.shareMail flags settings model.mailModel)
+                ]
             ]
         ]
 

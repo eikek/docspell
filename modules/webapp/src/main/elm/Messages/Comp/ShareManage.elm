@@ -38,7 +38,7 @@ type alias Texts =
     , correctFormErrors : String
     , noName : String
     , shareInformation : String
-    , sendMail : String
+    , sendViaMail : String
     , notOwnerInfo : String
     , showOwningSharesOnly : String
     }
@@ -63,7 +63,7 @@ gb =
     , correctFormErrors = "Please correct the errors in the form."
     , noName = "No Name"
     , shareInformation = "Share Information"
-    , sendMail = "Send via E-Mail"
+    , sendViaMail = "Send via E-Mail"
     , notOwnerInfo = "Only the user who created this share can edit its properties."
     , showOwningSharesOnly = "Show my shares only"
     }
@@ -88,7 +88,7 @@ de =
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     , noName = "Ohne Name"
     , shareInformation = "Informationen zur Freigabe"
-    , sendMail = "Per E-Mail versenden"
+    , sendViaMail = "Per E-Mail versenden"
     , notOwnerInfo = "Nur der Benutzer, der diese Freigabe erstellt hat, kann diese auch ändern."
     , showOwningSharesOnly = "Nur meine Freigaben anzeigen"
     }

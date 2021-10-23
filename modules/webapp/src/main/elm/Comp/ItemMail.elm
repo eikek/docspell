@@ -10,6 +10,7 @@ module Comp.ItemMail exposing
     , Model
     , Msg
     , clear
+    , clearRecipients
     , emptyModel
     , init
     , setMailInfo
@@ -112,6 +113,15 @@ clear model =
         , ccRecipients = []
         , bccRecipients = []
         , body = ""
+    }
+
+
+clearRecipients : Model -> Model
+clearRecipients model =
+    { model
+        | recipients = []
+        , ccRecipients = []
+        , bccRecipients = []
     }
 
 

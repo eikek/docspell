@@ -23,6 +23,7 @@ type alias Texts =
     , httpError : Http.Error -> String
     , subjectTemplate : Maybe String -> String
     , bodyTemplate : String -> String
+    , mailSent : String
     }
 
 
@@ -40,6 +41,7 @@ you can find the documents here:
 
 Kind regards
 """
+    , mailSent = "Mail sent."
     }
 
 
@@ -57,4 +59,5 @@ die freigegebenen Dokumente befinden sich hier:
 
 Freundliche Grüße
 """
+    , mailSent = "E-Mail gesendet."
     }

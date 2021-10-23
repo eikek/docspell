@@ -58,6 +58,7 @@ type alias Model =
     , deleteConfirm : DeleteConfirm
     , query : String
     , owningOnly : Bool
+    , sendMailVisible : Bool
     }
 
 
@@ -79,6 +80,7 @@ init flags =
       , deleteConfirm = DeleteConfirmOff
       , query = ""
       , owningOnly = True
+      , sendMailVisible = False
       }
     , Cmd.batch
         [ Cmd.map FormMsg fc
@@ -96,6 +98,7 @@ type Msg
     | SetViewMode ViewMode
     | SetQuery String
     | ToggleOwningOnly
+    | ToggleSendMailVisible
     | Submit
     | RequestDelete
     | CancelDelete
@@ -260,6 +263,9 @@ update texts flags msg model =
             , Sub.none
             )
 
+        ToggleSendMailVisible ->
+            ( { model | sendMailVisible = not model.sendMailVisible }, Cmd.none, Sub.none )
+
 
 setShare : Texts -> ShareDetail -> Flags -> Model -> ( Model, Cmd Msg, Sub Msg )
 setShare texts share flags model =
@@ -268,7 +274,7 @@ setShare texts share flags model =
             flags.config.baseUrl ++ Page.pageToString (SharePage share.id)
 
         nextModel =
-            { model | formError = FormErrorNone, viewMode = Form, loading = False }
+            { model | formError = FormErrorNone, viewMode = Form, loading = False, sendMailVisible = False }
 
         initClipboard =
             Ports.initClipboard (Comp.ShareView.clipboardData share)
@@ -490,13 +496,23 @@ shareSendMail texts flags settings model =
         [ class "mt-8 mb-2"
         , classList [ ( "hidden", share.id == "" || not share.enabled || share.expired ) ]
         ]
-        [ h2
+        [ a
             [ class S.header2
-            , class "border-b-2 dark:border-bluegray-600"
+            , class "border-b-2 dark:border-bluegray-600 w-full inline-block"
+            , href "#"
+            , onClick ToggleSendMailVisible
             ]
-            [ text "Send via E-Mail"
+            [ if model.sendMailVisible then
+                i [ class "fa fa-caret-down mr-2" ] []
+
+              else
+                i [ class "fa fa-caret-right mr-2" ] []
+            , text texts.sendViaMail
             ]
-        , div [ class "px-2 py-2 dark:border-bluegray-600" ]
+        , div
+            [ class "px-2 py-2 dark:border-bluegray-600"
+            , classList [ ( "hidden", not model.sendMailVisible ) ]
+            ]
             [ Html.map MailMsg
                 (Comp.ShareMail.view texts.shareMail flags settings model.mailModel)
             ]

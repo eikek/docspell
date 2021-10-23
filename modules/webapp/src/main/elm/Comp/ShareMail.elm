@@ -120,7 +120,11 @@ update texts flags msg model =
                         (texts.bodyTemplate url)
 
                 nm =
-                    { model | share = share }
+                    { model
+                        | share = share
+                        , mailModel = Comp.ItemMail.clearRecipients model.mailModel
+                        , formState = FormStateNone
+                    }
             in
             update texts flags (MailMsg lm) nm
 
@@ -128,7 +132,7 @@ update texts flags msg model =
             if res.success then
                 ( { model
                     | formState = FormStateSent
-                    , mailModel = Comp.ItemMail.clear model.mailModel
+                    , mailModel = Comp.ItemMail.clearRecipients model.mailModel
                     , sending = False
                   }
                 , Cmd.none
@@ -176,7 +180,7 @@ view texts flags settings model =
 
             FormStateSent ->
                 div [ class S.successMessage ]
-                    [ text "Mail sent."
+                    [ text texts.mailSent
                     ]
         , Html.map MailMsg
             (Comp.ItemMail.view texts.itemMail settings cfg model.mailModel)
