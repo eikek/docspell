@@ -31,6 +31,10 @@ type alias Texts =
     , deleteThisUser : String
     , pleaseCorrectErrors : String
     , notDeleteCurrentUser : String
+    , folders : String
+    , sentMails : String
+    , shares : String
+    , deleteFollowingData : String
     }
 
 
@@ -48,6 +52,10 @@ gb =
     , deleteThisUser = "Delete this user"
     , pleaseCorrectErrors = "Please correct the errors in the form."
     , notDeleteCurrentUser = "You can't delete the user you are currently logged in with."
+    , folders = "Folders"
+    , sentMails = "sent mails"
+    , shares = "shares"
+    , deleteFollowingData = "The following data will be deleted"
     }
 
 
@@ -65,4 +73,8 @@ de =
     , deleteThisUser = "Benutzer löschen"
     , pleaseCorrectErrors = "Bitte korrigiere die Fehler im Formular."
     , notDeleteCurrentUser = "Der aktuelle Benutzer kann nicht gelöscht werden."
+    , folders = "Ordner"
+    , sentMails = "gesendete E-Mails"
+    , shares = "Freigaben"
+    , deleteFollowingData = "Die folgenden Daten werden auch gelöscht"
     }

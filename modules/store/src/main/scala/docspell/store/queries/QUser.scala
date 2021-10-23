@@ -20,7 +20,8 @@ object QUser {
 
   final case class UserData(
       ownedFolders: List[Ident],
-      sentMails: Int
+      sentMails: Int,
+      shares: Int
   )
 
   def getUserData(accountId: AccountId): ConnectionIO[UserData] = {
@@ -28,6 +29,7 @@ object QUser {
     val mail = RSentMail.as("m")
     val mitem = RSentMailItem.as("mi")
     val user = RUser.as("u")
+    val share = RShare.as("s")
 
     for {
       uid <- loadUserId(accountId).map(_.getOrElse(Ident.unsafe("")))
@@ -43,7 +45,13 @@ object QUser {
           .innerJoin(user, user.uid === mail.uid),
         user.login === accountId.user && user.cid === accountId.collective
       ).query[Int].unique
-    } yield UserData(folders, mails)
+      shares <- run(
+        select(count(share.id)),
+        from(share)
+          .innerJoin(user, user.uid === share.userId),
+        user.login === accountId.user && user.cid === accountId.collective
+      ).query[Int].unique
+    } yield UserData(folders, mails, shares)
   }
 
   def deleteUserAndData(accountId: AccountId): ConnectionIO[Int] =
