@@ -49,6 +49,7 @@ type alias Model =
     , body : String
     , attachAll : Bool
     , formError : FormError
+    , showCC : Bool
     }
 
 
@@ -65,6 +66,7 @@ type Msg
     | BCCRecipientMsg Comp.EmailInput.Msg
     | SetBody String
     | SetSubjectBody String String
+    | ToggleShowCC
     | ConnMsg (Comp.Dropdown.Msg String)
     | ConnResp (Result Http.Error EmailSettingsList)
     | ToggleAttachAll
@@ -97,6 +99,7 @@ emptyModel =
     , body = ""
     , attachAll = True
     , formError = FormErrorNone
+    , showCC = False
     }
 
 
@@ -188,6 +191,9 @@ update flags msg model =
 
         ToggleAttachAll ->
             ( { model | attachAll = not model.attachAll }, Cmd.none, FormNone )
+
+        ToggleShowCC ->
+            ( { model | showCC = not model.showCC }, Cmd.none, FormNone )
 
         ConnResp (Ok list) ->
             let
@@ -324,9 +330,22 @@ view texts settings cfg model =
         , div [ class "mb-4" ]
             [ label
                 [ class S.inputLabel
+                , class "flex flex-row"
                 ]
                 [ text texts.recipients
                 , B.inputRequired
+                , a
+                    [ class S.link
+                    , class "justify-end flex flex-grow"
+                    , onClick ToggleShowCC
+                    , href "#"
+                    ]
+                    [ if model.showCC then
+                        text texts.lessRecipients
+
+                      else
+                        text texts.moreRecipients
+                    ]
                 ]
             , Html.map RecipientMsg
                 (Comp.EmailInput.view2 { style = dds, placeholder = appendDots texts.recipients }
@@ -334,7 +353,10 @@ view texts settings cfg model =
                     model.recipientsModel
                 )
             ]
-        , div [ class "mb-4" ]
+        , div
+            [ class "mb-4"
+            , classList [ ( "hidden", not model.showCC ) ]
+            ]
             [ label [ class S.inputLabel ]
                 [ text texts.ccRecipients
                 ]
@@ -344,7 +366,10 @@ view texts settings cfg model =
                     model.ccRecipientsModel
                 )
             ]
-        , div [ class "mb-4" ]
+        , div
+            [ class "mb-4"
+            , classList [ ( "hidden", not model.showCC ) ]
+            ]
             [ label [ class S.inputLabel ]
                 [ text texts.bccRecipients
                 ]
