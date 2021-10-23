@@ -19,6 +19,8 @@ import Data.ItemQuery as Q
 import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
 import Page.Share.Data exposing (..)
+import Util.Html
+import Util.Maybe
 import Util.Update
 
 
@@ -74,7 +76,7 @@ update flags settings shareId msg model =
                 settings
                 shareId
                 (ItemListMsg (Comp.ItemCardList.SetResults list))
-                { model | searchInProgress = False }
+                { model | searchInProgress = False, pageError = PageErrorNone }
 
         SearchResp (Err err) ->
             noSub ( { model | pageError = PageErrorHttp err, searchInProgress = False }, Cmd.none )
@@ -149,7 +151,11 @@ update flags settings shareId msg model =
         ResetSearch ->
             let
                 nm =
-                    { model | powerSearchInput = Comp.PowerSearchInput.init }
+                    { model
+                        | powerSearchInput = Comp.PowerSearchInput.init
+                        , contentSearch = Nothing
+                        , pageError = PageErrorNone
+                    }
             in
             update flags settings shareId (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
@@ -167,6 +173,29 @@ update flags settings shareId msg model =
                 , Cmd.batch [ Cmd.map ItemListMsg ic, searchMsg ]
                 )
 
+        ToggleSearchBar ->
+            noSub
+                ( { model
+                    | searchMode =
+                        case model.searchMode of
+                            SearchBarContent ->
+                                SearchBarNormal
+
+                            SearchBarNormal ->
+                                SearchBarContent
+                  }
+                , Cmd.none
+                )
+
+        SetContentSearch q ->
+            noSub ( { model | contentSearch = Util.Maybe.fromString q }, Cmd.none )
+
+        ContentSearchKey (Just Util.Html.Enter) ->
+            noSub ( model, makeSearchCmd flags model )
+
+        ContentSearchKey _ ->
+            noSub ( model, Cmd.none )
+
 
 noSub : ( Model, Cmd Msg ) -> UpdateResult
 noSub ( m, c ) =
@@ -179,7 +208,13 @@ makeSearchCmd flags model =
         xq =
             Q.and
                 [ Comp.SearchMenu.getItemQuery model.searchMenuModel
-                , Maybe.map Q.Fragment model.powerSearchInput.input
+                , Maybe.map Q.Fragment <|
+                    case model.searchMode of
+                        SearchBarNormal ->
+                            model.powerSearchInput.input
+
+                        SearchBarContent ->
+                            Maybe.map (Q.Contents >> Q.render) model.contentSearch
                 ]
 
         request mq =

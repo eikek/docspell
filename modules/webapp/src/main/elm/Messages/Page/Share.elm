@@ -22,6 +22,9 @@ type alias Texts =
     , passwordForm : Messages.Comp.SharePasswordForm.Texts
     , httpError : Http.Error -> String
     , authFailed : String
+    , fulltextPlaceholder : String
+    , powerSearchPlaceholder : String
+    , extendedSearch : String
     }
 
 
@@ -33,6 +36,9 @@ gb =
     , passwordForm = Messages.Comp.SharePasswordForm.gb
     , authFailed = "This share does not exist."
     , httpError = Messages.Comp.HttpError.gb
+    , fulltextPlaceholder = "Fulltext search…"
+    , powerSearchPlaceholder = "Extended search…"
+    , extendedSearch = "Extended search query"
     }
 
 
@@ -44,4 +50,7 @@ de =
     , passwordForm = Messages.Comp.SharePasswordForm.de
     , authFailed = "Diese Freigabe existiert nicht."
     , httpError = Messages.Comp.HttpError.de
+    , fulltextPlaceholder = "Volltextsuche…"
+    , powerSearchPlaceholder = "Erweiterte Suche…"
+    , extendedSearch = "Erweiterte Suchanfrage"
     }

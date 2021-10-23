@@ -5,7 +5,7 @@
 -}
 
 
-module Page.Share.Data exposing (Mode(..), Model, Msg(..), PageError(..), init, initCmd)
+module Page.Share.Data exposing (Mode(..), Model, Msg(..), PageError(..), SearchBarMode(..), init, initCmd)
 
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
@@ -18,6 +18,7 @@ import Comp.SearchMenu
 import Comp.SharePasswordForm
 import Data.Flags exposing (Flags)
 import Http
+import Util.Html exposing (KeyCode)
 
 
 type Mode
@@ -32,6 +33,11 @@ type PageError
     | PageErrorAuthFail
 
 
+type SearchBarMode
+    = SearchBarNormal
+    | SearchBarContent
+
+
 type alias Model =
     { mode : Mode
     , verifyResult : ShareVerifyResult
@@ -42,6 +48,8 @@ type alias Model =
     , searchInProgress : Bool
     , itemListModel : Comp.ItemCardList.Model
     , initialized : Bool
+    , contentSearch : Maybe String
+    , searchMode : SearchBarMode
     }
 
 
@@ -56,6 +64,8 @@ emptyModel flags =
     , searchInProgress = False
     , itemListModel = Comp.ItemCardList.init
     , initialized = False
+    , contentSearch = Nothing
+    , searchMode = SearchBarContent
     }
 
 
@@ -87,3 +97,6 @@ type Msg
     | PowerSearchMsg Comp.PowerSearchInput.Msg
     | ResetSearch
     | ItemListMsg Comp.ItemCardList.Msg
+    | ToggleSearchBar
+    | SetContentSearch String
+    | ContentSearchKey (Maybe KeyCode)
