@@ -56,6 +56,8 @@ type alias Model =
     , loading : Bool
     , formError : FormError
     , deleteConfirm : DeleteConfirm
+    , query : String
+    , owningOnly : Bool
     }
 
 
@@ -75,6 +77,8 @@ init flags =
       , loading = False
       , formError = FormErrorNone
       , deleteConfirm = DeleteConfirmOff
+      , query = ""
+      , owningOnly = True
       }
     , Cmd.batch
         [ Cmd.map FormMsg fc
@@ -90,6 +94,8 @@ type Msg
     | MailMsg Comp.ShareMail.Msg
     | InitNewShare
     | SetViewMode ViewMode
+    | SetQuery String
+    | ToggleOwningOnly
     | Submit
     | RequestDelete
     | CancelDelete
@@ -126,7 +132,7 @@ update texts flags msg model =
         SetViewMode vm ->
             ( { model | viewMode = vm, formError = FormErrorNone }
             , if vm == Table then
-                Api.getShares flags LoadSharesResp
+                Api.getShares flags model.query model.owningOnly LoadSharesResp
 
               else
                 Cmd.none
@@ -165,7 +171,10 @@ update texts flags msg model =
             )
 
         LoadShares ->
-            ( { model | loading = True }, Api.getShares flags LoadSharesResp, Sub.none )
+            ( { model | loading = True }
+            , Api.getShares flags model.query model.owningOnly LoadSharesResp
+            , Sub.none
+            )
 
         LoadSharesResp (Ok list) ->
             ( { model | loading = False, shares = list.items, formError = FormErrorNone }
@@ -231,6 +240,26 @@ update texts flags msg model =
             in
             ( { model | mailModel = mm }, Cmd.map MailMsg mc, Sub.none )
 
+        SetQuery q ->
+            let
+                nm =
+                    { model | query = q }
+            in
+            ( nm
+            , Api.getShares flags nm.query nm.owningOnly LoadSharesResp
+            , Sub.none
+            )
+
+        ToggleOwningOnly ->
+            let
+                nm =
+                    { model | owningOnly = not model.owningOnly }
+            in
+            ( nm
+            , Api.getShares flags nm.query nm.owningOnly LoadSharesResp
+            , Sub.none
+            )
+
 
 setShare : Texts -> ShareDetail -> Flags -> Model -> ( Model, Cmd Msg, Sub Msg )
 setShare texts share flags model =
@@ -271,7 +300,19 @@ viewTable texts model =
     div [ class "flex flex-col" ]
         [ MB.view
             { start =
-                []
+                [ MB.TextInput
+                    { tagger = SetQuery
+                    , value = model.query
+                    , placeholder = texts.basics.searchPlaceholder
+                    , icon = Just "fa fa-search"
+                    }
+                , MB.Checkbox
+                    { tagger = \_ -> ToggleOwningOnly
+                    , label = texts.showOwningSharesOnly
+                    , value = model.owningOnly
+                    , id = "share-toggle-owner"
+                    }
+                ]
             , end =
                 [ MB.PrimaryButton
                     { tagger = InitNewShare
@@ -295,6 +336,11 @@ viewForm texts settings flags model =
     let
         newShare =
             model.formModel.share.id == ""
+
+        isOwner =
+            Maybe.map .user flags.account
+                |> Maybe.map ((==) model.formModel.share.owner.name)
+                |> Maybe.withDefault False
     in
     div []
         [ Html.form []
@@ -305,20 +351,34 @@ viewForm texts settings flags model =
 
               else
                 h1 [ class S.header2 ]
-                    [ text <| Maybe.withDefault texts.noName model.formModel.share.name
-                    , div [ class "opacity-50 text-sm" ]
-                        [ text "Id: "
-                        , text model.formModel.share.id
+                    [ div [ class "flex flex-row items-center" ]
+                        [ div
+                            [ class "flex text-sm opacity-75 label mr-3"
+                            , classList [ ( "hidden", isOwner ) ]
+                            ]
+                            [ i [ class "fa fa-user mr-2" ] []
+                            , text model.formModel.share.owner.name
+                            ]
+                        , text <| Maybe.withDefault texts.noName model.formModel.share.name
+                        ]
+                    , div [ class "flex flex-row items-center" ]
+                        [ div [ class "opacity-50 text-sm flex-grow" ]
+                            [ text "Id: "
+                            , text model.formModel.share.id
+                            ]
                         ]
                     ]
             , MB.view
                 { start =
-                    [ MB.PrimaryButton
-                        { tagger = Submit
-                        , title = "Submit this form"
-                        , icon = Just "fa fa-save"
-                        , label = texts.basics.submit
-                        }
+                    [ MB.CustomElement <|
+                        B.primaryButton
+                            { handler = onClick Submit
+                            , title = "Submit this form"
+                            , icon = "fa fa-save"
+                            , label = texts.basics.submit
+                            , disabled = not isOwner
+                            , attrs = [ href "#" ]
+                            }
                     , MB.SecondaryButton
                         { tagger = SetViewMode Table
                         , title = texts.basics.backToList
@@ -360,7 +420,15 @@ viewForm texts settings flags model =
                     FormErrorSubmit m ->
                         text m
                 ]
-            , Html.map FormMsg (Comp.ShareForm.view texts.shareForm model.formModel)
+            , div
+                [ classList [ ( "hidden", isOwner ) ]
+                , class S.infoMessage
+                ]
+                [ text texts.notOwnerInfo
+                ]
+            , div [ classList [ ( "hidden", not isOwner ) ] ]
+                [ Html.map FormMsg (Comp.ShareForm.view texts.shareForm model.formModel)
+                ]
             , B.loadingDimmer
                 { active = model.loading
                 , label = texts.basics.loading

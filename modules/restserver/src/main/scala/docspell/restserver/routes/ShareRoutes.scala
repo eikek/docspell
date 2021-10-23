@@ -18,8 +18,7 @@ import docspell.common.{Ident, Timestamp}
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.auth.ShareCookieData
-import docspell.restserver.http4s.{ClientRequestInfo, ResponseGenerator}
-import docspell.store.records.RShare
+import docspell.restserver.http4s.{ClientRequestInfo, QueryParam => QP, ResponseGenerator}
 
 import emil.MailAddress
 import emil.javamail.syntax._
@@ -35,9 +34,10 @@ object ShareRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root =>
+      case GET -> Root :? QP.Query(q) :? QP.OwningFlag(owning) =>
+        val login = if (owning) Some(user.account.user) else None
         for {
-          all <- backend.share.findAll(user.account.collective)
+          all <- backend.share.findAll(user.account.collective, login, q)
           now <- Timestamp.current[F]
           res <- Ok(ShareList(all.map(mkShareDetail(now))))
         } yield res
@@ -111,7 +111,7 @@ object ShareRoutes {
 
   def mkNewShare(data: ShareData, user: AuthToken): OShare.NewShare =
     OShare.NewShare(
-      user.account.collective,
+      user.account,
       data.name,
       data.query,
       data.enabled,
@@ -124,6 +124,12 @@ object ShareRoutes {
       case OShare.ChangeResult.Success(id) => IdResult(true, msg, id)
       case OShare.ChangeResult.PublishUntilInPast =>
         IdResult(false, "Until date must not be in the past", Ident.unsafe(""))
+      case OShare.ChangeResult.NotFound =>
+        IdResult(
+          false,
+          "Share not found or not owner. Only the owner can update a share.",
+          Ident.unsafe("")
+        )
     }
 
   def mkBasicResult(r: OShare.ChangeResult, msg: => String): BasicResult =
@@ -131,20 +137,26 @@ object ShareRoutes {
       case OShare.ChangeResult.Success(_) => BasicResult(true, msg)
       case OShare.ChangeResult.PublishUntilInPast =>
         BasicResult(false, "Until date must not be in the past")
+      case OShare.ChangeResult.NotFound =>
+        BasicResult(
+          false,
+          "Share not found or not owner. Only the owner can update a share."
+        )
     }
 
-  def mkShareDetail(now: Timestamp)(r: RShare): ShareDetail =
+  def mkShareDetail(now: Timestamp)(r: OShare.ShareData): ShareDetail =
     ShareDetail(
-      r.id,
-      r.query,
-      r.name,
-      r.enabled,
-      r.publishAt,
-      r.publishUntil,
-      now > r.publishUntil,
-      r.password.isDefined,
-      r.views,
-      r.lastAccess
+      r.share.id,
+      r.share.query,
+      IdName(r.user.uid, r.user.login.id),
+      r.share.name,
+      r.share.enabled,
+      r.share.publishAt,
+      r.share.publishUntil,
+      now > r.share.publishUntil,
+      r.share.password.isDefined,
+      r.share.views,
+      r.share.lastAccess
     )
 
   def convertIn(s: SimpleShareMail): Either[String, ShareMail] =

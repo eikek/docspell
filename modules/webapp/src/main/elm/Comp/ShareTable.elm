@@ -56,7 +56,10 @@ view texts shares =
                 , th [ class "text-center" ]
                     [ text texts.active
                     ]
-                , th [ class "text-center" ]
+                , th [ class "hidden sm:table-cell text-center" ]
+                    [ text texts.user
+                    ]
+                , th [ class "hidden sm:table-cell text-center" ]
                     [ text texts.publishUntil
                     ]
                 ]
@@ -87,6 +90,9 @@ renderShareLine texts share =
 
               else
                 i [ class "fa fa-check" ] []
+            ]
+        , td [ class "hidden sm:table-cell text-center" ]
+            [ text share.owner.name
             ]
         , td [ class "hidden sm:table-cell text-center" ]
             [ texts.formatDateTime share.publishUntil |> text

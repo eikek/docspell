@@ -21,6 +21,7 @@ type alias Texts =
     , formatDateTime : Int -> String
     , active : String
     , publishUntil : String
+    , user : String
     }
 
 
@@ -30,6 +31,7 @@ gb =
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     , active = "Active"
     , publishUntil = "Publish Until"
+    , user = "User"
     }
 
 
@@ -39,4 +41,5 @@ de =
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
     , active = "Aktiv"
     , publishUntil = "Publiziert bis"
+    , user = "Benutzer"
     }

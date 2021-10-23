@@ -2228,10 +2228,19 @@ disableOtp flags otp receive =
 --- Share
 
 
-getShares : Flags -> (Result Http.Error ShareList -> msg) -> Cmd msg
-getShares flags receive =
+getShares : Flags -> String -> Bool -> (Result Http.Error ShareList -> msg) -> Cmd msg
+getShares flags query owning receive =
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/share"
+        { url =
+            flags.config.baseUrl
+                ++ "/api/v1/sec/share?q="
+                ++ Url.percentEncode query
+                ++ (if owning then
+                        "&owning"
+
+                    else
+                        ""
+                   )
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.ShareList.decoder
         }

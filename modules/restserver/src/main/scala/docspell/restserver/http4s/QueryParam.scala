@@ -16,7 +16,7 @@ import docspell.common.SearchMode
 
 import org.http4s.ParseFailure
 import org.http4s.QueryParamDecoder
-import org.http4s.dsl.impl.OptionalQueryParamDecoderMatcher
+import org.http4s.dsl.impl.{FlagQueryParamMatcher, OptionalQueryParamDecoderMatcher}
 
 object QueryParam {
   case class QueryString(q: String)
@@ -67,6 +67,7 @@ object QueryParam {
   object FullOpt extends OptionalQueryParamDecoderMatcher[Boolean]("full")
 
   object OwningOpt extends OptionalQueryParamDecoderMatcher[Boolean]("owning")
+  object OwningFlag extends FlagQueryParamMatcher("owning")
 
   object ContactKindOpt extends OptionalQueryParamDecoderMatcher[ContactKind]("kind")
 

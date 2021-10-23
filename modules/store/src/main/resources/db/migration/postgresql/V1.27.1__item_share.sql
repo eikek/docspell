@@ -1,6 +1,6 @@
 CREATE TABLE "item_share" (
   "id" varchar(254) not null primary key,
-  "cid" varchar(254) not null,
+  "user_id" varchar(254) not null,
   "name" varchar(254),
   "query" varchar(2000) not null,
   "enabled" boolean not null,
@@ -9,5 +9,5 @@ CREATE TABLE "item_share" (
   "publish_until" timestamp not null,
   "views" int not null,
   "last_access" timestamp,
-  foreign key ("cid") references "collective"("cid") on delete cascade
+  foreign key ("user_id") references "user_"("uid") on delete cascade
 )

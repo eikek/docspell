@@ -21,20 +21,24 @@ import docspell.query.ItemQuery.Expr
 import docspell.query.ItemQuery.Expr.AttachId
 import docspell.store.Store
 import docspell.store.queries.SearchSummary
-import docspell.store.records.{RShare, RUserEmail}
+import docspell.store.records._
 
 import emil._
 import scodec.bits.ByteVector
 
 trait OShare[F[_]] {
 
-  def findAll(collective: Ident): F[List[RShare]]
+  def findAll(
+      collective: Ident,
+      ownerLogin: Option[Ident],
+      query: Option[String]
+  ): F[List[ShareData]]
 
   def delete(id: Ident, collective: Ident): F[Boolean]
 
   def addNew(share: OShare.NewShare): F[OShare.ChangeResult]
 
-  def findOne(id: Ident, collective: Ident): OptionT[F, RShare]
+  def findOne(id: Ident, collective: Ident): OptionT[F, ShareData]
 
   def update(
       id: Ident,
@@ -91,12 +95,7 @@ object OShare {
     case object NotFound extends SendResult
   }
 
-  final case class ShareQuery(id: Ident, cid: Ident, query: ItemQuery) {
-
-    //TODO
-    def asAccount: AccountId =
-      AccountId(cid, Ident.unsafe(""))
-  }
+  final case class ShareQuery(id: Ident, account: AccountId, query: ItemQuery)
 
   sealed trait VerifyResult {
     def toEither: Either[String, ShareToken] =
@@ -121,7 +120,7 @@ object OShare {
   }
 
   final case class NewShare(
-      cid: Ident,
+      account: AccountId,
       name: Option[String],
       query: ItemQuery,
       enabled: Boolean,
@@ -133,10 +132,14 @@ object OShare {
   object ChangeResult {
     final case class Success(id: Ident) extends ChangeResult
     case object PublishUntilInPast extends ChangeResult
+    case object NotFound extends ChangeResult
 
     def success(id: Ident): ChangeResult = Success(id)
     def publishUntilInPast: ChangeResult = PublishUntilInPast
+    def notFound: ChangeResult = NotFound
   }
+
+  final case class ShareData(share: RShare, user: RUser)
 
   def apply[F[_]: Async](
       store: Store[F],
@@ -147,8 +150,14 @@ object OShare {
     new OShare[F] {
       private[this] val logger = Logger.log4s[F](org.log4s.getLogger)
 
-      def findAll(collective: Ident): F[List[RShare]] =
-        store.transact(RShare.findAllByCollective(collective))
+      def findAll(
+          collective: Ident,
+          ownerLogin: Option[Ident],
+          query: Option[String]
+      ): F[List[ShareData]] =
+        store
+          .transact(RShare.findAllByCollective(collective, ownerLogin, query))
+          .map(_.map(ShareData.tupled))
 
       def delete(id: Ident, collective: Ident): F[Boolean] =
         store.transact(RShare.deleteByIdAndCid(id, collective)).map(_ > 0)
@@ -157,10 +166,11 @@ object OShare {
         for {
           curTime <- Timestamp.current[F]
           id <- Ident.randomId[F]
+          user <- store.transact(RUser.findByAccount(share.account))
           pass = share.password.map(PasswordCrypt.crypt)
           record = RShare(
             id,
-            share.cid,
+            user.map(_.uid).getOrElse(Ident.unsafe("-error-no-user-")),
             share.name,
             share.query,
             share.enabled,
@@ -182,9 +192,10 @@ object OShare {
       ): F[ChangeResult] =
         for {
           curTime <- Timestamp.current[F]
+          user <- store.transact(RUser.findByAccount(share.account))
           record = RShare(
             id,
-            share.cid,
+            user.map(_.uid).getOrElse(Ident.unsafe("-error-no-user-")),
             share.name,
             share.query,
             share.enabled,
@@ -199,11 +210,14 @@ object OShare {
             else
               store
                 .transact(RShare.updateData(record, removePassword))
-                .map(_ => ChangeResult.success(id))
+                .map(n => if (n > 0) ChangeResult.success(id) else ChangeResult.notFound)
         } yield res
 
-      def findOne(id: Ident, collective: Ident): OptionT[F, RShare] =
-        RShare.findOne(id, collective).mapK(store.transform)
+      def findOne(id: Ident, collective: Ident): OptionT[F, ShareData] =
+        RShare
+          .findOne(id, collective)
+          .mapK(store.transform)
+          .map(ShareData.tupled)
 
       def verify(
           key: ByteVector
@@ -211,7 +225,7 @@ object OShare {
         RShare
           .findCurrentActive(id)
           .mapK(store.transform)
-          .semiflatMap { share =>
+          .semiflatMap { case (share, _) =>
             val pwCheck =
               share.password.map(encPw => password.exists(PasswordCrypt.check(_, encPw)))
 
@@ -257,7 +271,9 @@ object OShare {
         RShare
           .findCurrentActive(id)
           .mapK(store.transform)
-          .map(share => ShareQuery(share.id, share.cid, share.query))
+          .map { case (share, user) =>
+            ShareQuery(share.id, user.accountId, share.query)
+          }
 
       def findAttachmentPreview(
           attachId: Ident,
@@ -266,21 +282,23 @@ object OShare {
         for {
           sq <- findShareQuery(shareId)
           _ <- checkAttachment(sq, AttachId(attachId.id))
-          res <- OptionT(itemSearch.findAttachmentPreview(attachId, sq.cid))
+          res <- OptionT(
+            itemSearch.findAttachmentPreview(attachId, sq.account.collective)
+          )
         } yield res
 
       def findAttachment(attachId: Ident, shareId: Ident): OptionT[F, AttachmentData[F]] =
         for {
           sq <- findShareQuery(shareId)
           _ <- checkAttachment(sq, AttachId(attachId.id))
-          res <- OptionT(itemSearch.findAttachment(attachId, sq.cid))
+          res <- OptionT(itemSearch.findAttachment(attachId, sq.account.collective))
         } yield res
 
       def findItem(itemId: Ident, shareId: Ident): OptionT[F, ItemData] =
         for {
           sq <- findShareQuery(shareId)
           _ <- checkAttachment(sq, Expr.itemIdEq(itemId.id))
-          res <- OptionT(itemSearch.findItem(itemId, sq.cid))
+          res <- OptionT(itemSearch.findItem(itemId, sq.account.collective))
         } yield res
 
       /** Check whether the attachment with the given id is in the results of the given
@@ -288,7 +306,7 @@ object OShare {
         */
       private def checkAttachment(sq: ShareQuery, idExpr: Expr): OptionT[F, Unit] = {
         val checkQuery = Query(
-          Query.Fix(sq.asAccount, Some(sq.query.expr), None),
+          Query.Fix(sq.account, Some(sq.query.expr), None),
           Query.QueryExpr(idExpr)
         )
         OptionT(
@@ -310,7 +328,7 @@ object OShare {
       ): OptionT[F, StringSearchResult[SearchSummary]] =
         findShareQuery(shareId)
           .semiflatMap { share =>
-            val fix = Query.Fix(share.asAccount, Some(share.query.expr), None)
+            val fix = Query.Fix(share.account, Some(share.query.expr), None)
             simpleSearch
               .searchSummaryByString(settings)(fix, q)
               .map {
@@ -350,7 +368,7 @@ object OShare {
         (for {
           _ <- RShare
             .findCurrentActive(mail.shareId)
-            .filter(_.cid == account.collective)
+            .filter(_._2.cid == account.collective)
             .mapK(store.transform)
           mailCfg <- getSmtpSettings
           mail <- createMail(mailCfg)

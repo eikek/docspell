@@ -1932,6 +1932,9 @@ paths:
         Return a list of all shares for this collective.
       security:
         - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/owningShare"
       responses:
         200:
           description: Ok
@@ -4496,6 +4499,7 @@ components:
       required:
         - id
         - query
+        - owner
         - enabled
         - publishAt
         - publishUntil
@@ -4509,6 +4513,8 @@ components:
         query:
           type: string
           format: itemquery
+        owner:
+          $ref: "#/components/schemas/IdName"          
         name:
           type: string
         enabled:
@@ -6802,6 +6808,13 @@ components:
       name: full
       in: query
       description: Whether to get owning folders
+      required: false
+      schema:
+        type: boolean
+    owningShare:
+      name: owning
+      in: query
+      description: Return my own shares only
       required: false
       schema:
         type: boolean

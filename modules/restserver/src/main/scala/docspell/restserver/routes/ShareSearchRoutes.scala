@@ -59,7 +59,7 @@ object ShareSearchRoutes {
                 cfg.maxNoteLength,
                 searchMode = SearchMode.Normal
               )
-              account = share.asAccount
+              account = share.account
               fixQuery = Query.Fix(account, Some(share.query.expr), None)
               _ <- logger.debug(s"Searching in share ${share.id.id}: ${userQuery.query}")
               resp <- ItemRoutes.searchItems(backend, dsl)(settings, fixQuery, itemQuery)
