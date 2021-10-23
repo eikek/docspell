@@ -18,7 +18,14 @@
   }
 
   .elm-datepicker--input {
-      @apply pl-10 placeholder-gray-400 bg-blue-50 dark:text-bluegray-200 dark:bg-bluegray-700 dark:border-bluegray-500 border-gray-500 rounded w-full;
+      @apply pl-10 rounded w-full placeholder-gray-400 dark:text-bluegray-200 dark:border-bluegray-500;
+  }
+  #sidebar .elm-datepicker--input {
+      @apply dark:bg-bluegray-700 border-gray-500 bg-blue-50;
+  }
+
+  #content .elm-datepicker--input {
+      @apply dark:bg-bluegray-800 border-gray-400;
   }
 
   .elm-datepicker--container {
