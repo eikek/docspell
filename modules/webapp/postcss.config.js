@@ -13,7 +13,7 @@ const prodPlugins =
           require('postcss-import'),
           tailwindcss("./tailwind.config.js"),
           require("autoprefixer"),
-          require("@fullhuman/postcss-purgecss")({
+          require("postcss-purgecss")({
               content: [
                   "./src/main/elm/**/*.elm",
                   "./src/main/styles/keep.txt",
