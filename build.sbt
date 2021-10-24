@@ -293,9 +293,22 @@ val common = project
         Dependencies.circe ++
         Dependencies.loggingApi ++
         Dependencies.calevCore ++
-        Dependencies.calevCirce ++
-        Dependencies.pureconfig.map(_ % "optional")
+        Dependencies.calevCirce
   )
+
+val config = project
+  .in(file("modules/config"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "docspell-config",
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+        Dependencies.pureconfig
+  )
+  .dependsOn(common)
 
 // Some example files for testing
 // https://file-examples.com/index.php/sample-documents-download/sample-doc-download/
@@ -603,7 +616,17 @@ val joex = project
     ),
     Revolver.enableDebugging(port = 5051, suspend = false)
   )
-  .dependsOn(store, backend, extract, convert, analysis, joexapi, restapi, ftssolr)
+  .dependsOn(
+    config,
+    store,
+    backend,
+    extract,
+    convert,
+    analysis,
+    joexapi,
+    restapi,
+    ftssolr
+  )
 
 val restserver = project
   .in(file("modules/restserver"))
@@ -666,7 +689,7 @@ val restserver = project
       }
     }
   )
-  .dependsOn(restapi, joexapi, backend, webapp, ftssolr, oidc)
+  .dependsOn(config, restapi, joexapi, backend, webapp, ftssolr, oidc)
 
 // --- Website Documentation
 
@@ -731,6 +754,7 @@ val root = project
   )
   .aggregate(
     common,
+    config,
     extract,
     convert,
     analysis,

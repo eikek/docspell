@@ -8,10 +8,13 @@ package docspell.restserver
 
 import cats.Semigroup
 import cats.data.{Validated, ValidatedNec}
+import cats.effect.Async
 import cats.implicits._
 
 import docspell.backend.signup.{Config => SignupConfig}
-import docspell.common.config.Implicits._
+import docspell.common.Logger
+import docspell.config.ConfigFactory
+import docspell.config.Implicits._
 import docspell.oidc.{ProviderConfig, SignatureAlgo}
 import docspell.restserver.auth.OpenId
 
@@ -21,8 +24,12 @@ import pureconfig.generic.auto._
 object ConfigFile {
   import Implicits._
 
-  def loadConfig: Config =
-    Validate(ConfigSource.default.at("docspell.server").loadOrThrow[Config])
+  def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
+    val logger = Logger.log4s(org.log4s.getLogger)
+    ConfigFactory
+      .default[F, Config](logger, "docspell.server")(args)
+      .map(cfg => Validate(cfg))
+  }
 
   object Implicits {
     implicit val signupModeReader: ConfigReader[SignupConfig.Mode] =
