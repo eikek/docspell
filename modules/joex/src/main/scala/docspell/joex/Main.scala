@@ -60,11 +60,7 @@ object Main extends IOApp {
       logger.warn(">>>>>   Docspell is running in DEV mode!   <<<<<")
     }
 
-    val pools = for {
-      cec <- connectEC
-      bec <- blockingEC
-      rec <- restserverEC
-    } yield Pools(cec, bec, rec)
+    val pools = connectEC.map(Pools.apply)
     pools.use(p =>
       JoexServer
         .stream[IO](cfg, p)
