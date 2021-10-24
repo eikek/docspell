@@ -116,11 +116,10 @@ object JoexAppImpl {
   def create[F[_]: Async](
       cfg: Config,
       termSignal: SignallingRef[F, Boolean],
-      connectEC: ExecutionContext,
-      clientEC: ExecutionContext
+      connectEC: ExecutionContext
   ): Resource[F, JoexApp[F]] =
     for {
-      httpClient <- BlazeClientBuilder[F](clientEC).resource
+      httpClient <- BlazeClientBuilder[F].resource
       client = JoexClient(httpClient)
       store <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
       queue <- JobQueue(store)

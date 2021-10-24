@@ -116,12 +116,11 @@ object BackendApp {
 
   def apply[F[_]: Async](
       cfg: Config,
-      connectEC: ExecutionContext,
-      httpClientEc: ExecutionContext
+      connectEC: ExecutionContext
   )(ftsFactory: Client[F] => Resource[F, FtsClient[F]]): Resource[F, BackendApp[F]] =
     for {
       store <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
-      httpClient <- BlazeClientBuilder[F](httpClientEc).resource
+      httpClient <- BlazeClientBuilder[F].resource
       ftsClient <- ftsFactory(httpClient)
       backend <- create(cfg, store, httpClient, ftsClient)
     } yield backend

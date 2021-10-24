@@ -6,8 +6,6 @@
 
 package docspell.joexapi.client
 
-import scala.concurrent.ExecutionContext
-
 import cats.effect._
 import cats.implicits._
 
@@ -69,6 +67,6 @@ object JoexClient {
         Uri.unsafeFromString(u.asString)
     }
 
-  def resource[F[_]: Async](ec: ExecutionContext): Resource[F, JoexClient[F]] =
-    BlazeClientBuilder[F](ec).resource.map(apply[F])
+  def resource[F[_]: Async]: Resource[F, JoexClient[F]] =
+    BlazeClientBuilder[F].resource.map(apply[F])
 }

@@ -34,10 +34,8 @@ object RestServer {
 
     val templates = TemplateRoutes[F](cfg)
     val app = for {
-      restApp <-
-        RestAppImpl
-          .create[F](cfg, pools.connectEC, pools.httpClientEC)
-      httpClient <- BlazeClientBuilder[F](pools.httpClientEC).resource
+      restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
+      httpClient <- BlazeClientBuilder[F].resource
       httpApp = Router(
         "/api/info" -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
@@ -64,7 +62,7 @@ object RestServer {
     Stream
       .resource(app)
       .flatMap(httpApp =>
-        BlazeServerBuilder[F](pools.restEC)
+        BlazeServerBuilder[F]
           .bindHttp(cfg.bind.port, cfg.bind.address)
           .withHttpApp(httpApp)
           .withoutBanner

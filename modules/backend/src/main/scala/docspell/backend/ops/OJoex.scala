@@ -6,8 +6,6 @@
 
 package docspell.backend.ops
 
-import scala.concurrent.ExecutionContext
-
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
@@ -42,10 +40,7 @@ object OJoex {
         } yield cancel.success).getOrElse(false)
     })
 
-  def create[F[_]: Async](
-      ec: ExecutionContext,
-      store: Store[F]
-  ): Resource[F, OJoex[F]] =
-    JoexClient.resource(ec).flatMap(client => apply(client, store))
+  def create[F[_]: Async](store: Store[F]): Resource[F, OJoex[F]] =
+    JoexClient.resource.flatMap(client => apply(client, store))
 
 }

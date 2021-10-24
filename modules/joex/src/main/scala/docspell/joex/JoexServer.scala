@@ -33,9 +33,7 @@ object JoexServer {
     val app = for {
       signal <- Resource.eval(SignallingRef[F, Boolean](false))
       exitCode <- Resource.eval(Ref[F].of(ExitCode.Success))
-      joexApp <-
-        JoexAppImpl
-          .create[F](cfg, signal, pools.connectEC, pools.httpClientEC)
+      joexApp <- JoexAppImpl.create[F](cfg, signal, pools.connectEC)
 
       httpApp = Router(
         "/api/info" -> InfoRoutes(cfg),
@@ -50,7 +48,7 @@ object JoexServer {
     Stream
       .resource(app)
       .flatMap(app =>
-        BlazeServerBuilder[F](pools.restEC)
+        BlazeServerBuilder[F]
           .bindHttp(cfg.bind.port, cfg.bind.address)
           .withHttpApp(app.httpApp)
           .withoutBanner

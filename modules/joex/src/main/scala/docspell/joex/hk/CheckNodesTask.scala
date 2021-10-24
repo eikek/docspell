@@ -26,7 +26,7 @@ object CheckNodesTask {
         for {
           _ <- ctx.logger.info("Check nodes reachability")
           ec = scala.concurrent.ExecutionContext.global
-          _ <- BlazeClientBuilder[F](ec).resource.use { client =>
+          _ <- BlazeClientBuilder[F].withExecutionContext(ec).resource.use { client =>
             checkNodes(ctx, client)
           }
           _ <- ctx.logger.info(

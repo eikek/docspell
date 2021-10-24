@@ -55,12 +55,7 @@ object Main extends IOApp {
       cfg.baseUrl,
       Some(cfg.fullTextSearch.solr.url).filter(_ => cfg.fullTextSearch.enabled)
     )
-    val pools = for {
-      cec <- connectEC
-      bec <- blockingEC
-      rec <- restserverEC
-    } yield Pools(cec, bec, rec)
-
+    val pools = connectEC.map(Pools.apply)
     logger.info(s"\n${banner.render("***>")}")
     if (EnvMode.current.isDev) {
       logger.warn(">>>>>   Docspell is running in DEV mode!   <<<<<")
