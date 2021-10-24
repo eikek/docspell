@@ -8,10 +8,11 @@ mktoc = true
 +++
 
 Docspell's executables (restserver and joex) can take one argument – a
-configuration file. If that is not given, the defaults are used. The
-config file overrides default values, so only values that differ from
-the defaults are necessary. The complete default options and their
-documentation is at the end of this page.
+configuration file. If that is not given, the defaults are used,
+overriden by environment variables. A config file overrides default
+values, so only values that differ from the defaults are necessary.
+The complete default options and their documentation is at the end of
+this page.
 
 Besides the config file, another way is to provide individual settings
 via key-value pairs to the executable by the `-D` option. For example
@@ -22,6 +23,21 @@ the recommended way is to maintain a config file. If these options
 *and* a file is provded, then any setting given via the `-D…` option
 overrides the same setting from the config file.
 
+At last, it is possible to configure docspell via environment
+variables if there is no config file supplied (if a config file *is*
+supplied, it is always preferred). Note that this approach is limited,
+as arrays are not supported. A list of environment variables can be
+found at the [end of this page](#environment-variables). The
+environment variable name follows the corresponding config key - where
+dots are replaced by underscores and dashes are replaced by two
+underscores. For example, the config key `docspell.server.app-name`
+can be defined as env variable `DOCSPELL_SERVER_APP__NAME`.
+
+It is also possible to specify environment variables inside a config
+file (to get a mix of both) - please see the [documentation of the
+config library](https://github.com/lightbend/config#standard-behavior)
+for more on this.
+
 # File Format
 
 The format of the configuration files can be
@@ -31,9 +47,9 @@ library](https://github.com/lightbend/config) understands. The default
 values below are in HOCON format, which is recommended, since it
 allows comments and has some [advanced
 features](https://github.com/lightbend/config#features-of-hocon).
-Please refer to their documentation for more on this.
+Please also see their documentation for more details.
 
-A short description (please see the links for better understanding):
+A short description (please check the links for better understanding):
 The config consists of key-value pairs and can be written in a
 JSON-like format (called HOCON). Keys are organized in trees, and a
 key defines a full path into the tree. There are two ways:
@@ -633,3 +649,11 @@ statements with level "DEBUG" will be printed, too.
 
 
 {{ incl_conf(path="templates/shortcodes/joex.conf") }}
+
+## Environment Variables
+
+Environment variables can be used when there is no config file
+supplied. The listing below shows all possible variables and their
+default values.
+
+{{ incl_conf(path="templates/shortcodes/config.env.txt") }}

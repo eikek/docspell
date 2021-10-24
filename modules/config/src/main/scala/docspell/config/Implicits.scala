@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.common.config
+package docspell.config
 
 import java.nio.file.{Path => JPath}
 
@@ -15,12 +15,11 @@ import fs2.io.file.Path
 import docspell.common._
 
 import com.github.eikek.calev.CalEvent
-import pureconfig._
+import pureconfig.ConfigReader
 import pureconfig.error.{CannotConvert, FailureReason}
 import scodec.bits.ByteVector
 
 object Implicits {
-
   implicit val accountIdReader: ConfigReader[AccountId] =
     ConfigReader[String].emap(reason(AccountId.parse))
 

@@ -8,9 +8,12 @@ package docspell.joex
 
 import cats.data.Validated
 import cats.data.ValidatedNec
+import cats.effect.Async
 import cats.implicits._
 
-import docspell.common.config.Implicits._
+import docspell.common.Logger
+import docspell.config.ConfigFactory
+import docspell.config.Implicits._
 import docspell.joex.scheduler.CountingScheme
 
 import emil.MailAddress
@@ -22,8 +25,12 @@ import yamusca.imports._
 object ConfigFile {
   import Implicits._
 
-  def loadConfig: Config =
-    validOrThrow(ConfigSource.default.at("docspell.joex").loadOrThrow[Config])
+  def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
+    val logger = Logger.log4s[F](org.log4s.getLogger)
+    ConfigFactory
+      .default[F, Config](logger, "docspell.joex")(args)
+      .map(cfg => validOrThrow(cfg))
+  }
 
   private def validOrThrow(cfg: Config): Config =
     validate(cfg).fold(err => sys.error(err.toList.mkString("- ", "\n", "")), identity)
