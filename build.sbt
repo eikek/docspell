@@ -709,7 +709,6 @@ val website = project
       val templateOut = baseDirectory.value / "site" / "templates" / "shortcodes"
       val staticOut = baseDirectory.value / "site" / "static" / "openapi"
       IO.createDirectories(Seq(templateOut, staticOut))
-      val logger = streams.value.log
 
       val files = Seq(
         (restserver / Compile / resourceDirectory).value / "reference.conf" -> templateOut / "server.conf",
@@ -720,6 +719,17 @@ val website = project
       )
       IO.copy(files)
       files.map(_._2)
+    }.taskValue,
+    Compile / resourceGenerators += Def.task {
+      val templateOut =
+        baseDirectory.value / "site" / "templates" / "shortcodes" / "config.env.txt"
+      val files = List(
+        (restserver / Compile / resourceDirectory).value / "reference.conf",
+        (joex / Compile / resourceDirectory).value / "reference.conf"
+      )
+      val cfg = EnvConfig.makeConfig(files)
+      EnvConfig.serializeTo(cfg, templateOut)
+      Seq(templateOut)
     }.taskValue,
     Compile / resourceGenerators += Def.task {
       val changelog = (LocalRootProject / baseDirectory).value / "Changelog.md"
