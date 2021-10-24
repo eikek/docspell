@@ -123,9 +123,11 @@ object ItemQuery {
     final case class ChecksumMatch(checksum: String) extends Expr
     final case class AttachId(id: String) extends Expr
 
-    final case object ValidItemStates extends Expr
-    final case object Trashed extends Expr
-    final case object ValidItemsOrTrashed extends Expr
+    /** A "private" expression is only visible in code, but cannot be parsed. */
+    sealed trait PrivateExpr extends Expr
+    final case object ValidItemStates extends PrivateExpr
+    final case object Trashed extends PrivateExpr
+    final case object ValidItemsOrTrashed extends PrivateExpr
 
     // things that can be expressed with terms above
     sealed trait MacroExpr extends Expr {
@@ -186,6 +188,10 @@ object ItemQuery {
 
     def date(op: Operator, attr: DateAttr, value: Date): SimpleExpr =
       SimpleExpr(op, Property(attr, value))
+
+    def itemIdEq(itemId1: String, moreIds: String*): Expr =
+      if (moreIds.isEmpty) string(Operator.Eq, Attr.ItemId, itemId1)
+      else InExpr(Attr.ItemId, Nel(itemId1, moreIds.toList))
   }
 
 }

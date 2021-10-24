@@ -9,11 +9,14 @@ module Comp.SearchMenu exposing
     ( Model
     , Msg(..)
     , NextState
+    , SearchTab(..)
     , TextSearchModel
     , getItemQuery
     , init
     , isFulltextSearch
     , isNamesSearch
+    , linkTargetMsg
+    , setFromStats
     , textSearchString
     , update
     , updateDrop
@@ -34,6 +37,7 @@ import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FolderSelect
+import Comp.LinkTarget exposing (LinkTarget)
 import Comp.MenuBar as MB
 import Comp.Tabs
 import Comp.TagSelect
@@ -57,6 +61,7 @@ import Http
 import Messages.Comp.SearchMenu exposing (Texts)
 import Set exposing (Set)
 import Styles as S
+import Util.CustomField
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
 import Util.Maybe
@@ -377,6 +382,42 @@ type Msg
     | ToggleOpenAllAkkordionTabs
 
 
+setFromStats : SearchStats -> Msg
+setFromStats stats =
+    GetStatsResp (Ok stats)
+
+
+linkTargetMsg : LinkTarget -> Maybe Msg
+linkTargetMsg linkTarget =
+    case linkTarget of
+        Comp.LinkTarget.LinkNone ->
+            Nothing
+
+        Comp.LinkTarget.LinkCorrOrg id ->
+            Just <| SetCorrOrg id
+
+        Comp.LinkTarget.LinkCorrPerson id ->
+            Just <| SetCorrPerson id
+
+        Comp.LinkTarget.LinkConcPerson id ->
+            Just <| SetConcPerson id
+
+        Comp.LinkTarget.LinkConcEquip id ->
+            Just <| SetConcEquip id
+
+        Comp.LinkTarget.LinkFolder id ->
+            Just <| SetFolder id
+
+        Comp.LinkTarget.LinkTag id ->
+            Just <| SetTag id.id
+
+        Comp.LinkTarget.LinkCustomField id ->
+            Just <| SetCustomField id
+
+        Comp.LinkTarget.LinkSource str ->
+            Just <| ResetToSource str
+
+
 type alias NextState =
     { model : Model
     , cmd : Cmd Msg
@@ -523,7 +564,43 @@ updateDrop ddm flags settings msg model =
                     List.sortBy .count stats.tagCategoryCloud.items
 
                 selectModel =
-                    Comp.TagSelect.modifyCount model.tagSelectModel tagCount catCount
+                    Comp.TagSelect.modifyCountKeepExisting model.tagSelectModel tagCount catCount
+
+                orgOpts =
+                    Comp.Dropdown.update (Comp.Dropdown.SetOptions (List.map .ref stats.corrOrgStats))
+                        model.orgModel
+                        |> Tuple.first
+
+                corrPersOpts =
+                    Comp.Dropdown.update (Comp.Dropdown.SetOptions (List.map .ref stats.corrPersStats))
+                        model.corrPersonModel
+                        |> Tuple.first
+
+                concPersOpts =
+                    Comp.Dropdown.update (Comp.Dropdown.SetOptions (List.map .ref stats.concPersStats))
+                        model.concPersonModel
+                        |> Tuple.first
+
+                concEquipOpts =
+                    let
+                        mkEquip ref =
+                            Equipment ref.id ref.name 0 Nothing ""
+                    in
+                    Comp.Dropdown.update
+                        (Comp.Dropdown.SetOptions
+                            (List.map (.ref >> mkEquip) stats.concEquipStats)
+                        )
+                        model.concEquipmentModel
+                        |> Tuple.first
+
+                fields =
+                    Util.CustomField.statsToFields stats
+
+                fieldOpts =
+                    Comp.CustomFieldMultiInput.update flags
+                        (Comp.CustomFieldMultiInput.setOptions fields)
+                        model.customFieldModel
+                        |> .model
 
                 model_ =
                     { model
@@ -532,6 +609,11 @@ updateDrop ddm flags settings msg model =
                             Comp.FolderSelect.modify model.selectedFolder
                                 model.folderList
                                 stats.folderStats
+                        , orgModel = orgOpts
+                        , corrPersonModel = corrPersOpts
+                        , concPersonModel = concPersOpts
+                        , concEquipmentModel = concEquipOpts
+                        , customFieldModel = fieldOpts
                     }
             in
             { model = model_
@@ -963,15 +1045,20 @@ updateDrop ddm flags settings msg model =
 --- View2
 
 
-viewDrop2 : Texts -> DD.DragDropData -> Flags -> UiSettings -> Model -> Html Msg
-viewDrop2 texts ddd flags settings model =
+type alias ViewConfig =
+    { overrideTabLook : SearchTab -> Comp.Tabs.Look -> Comp.Tabs.Look
+    }
+
+
+viewDrop2 : Texts -> DD.DragDropData -> Flags -> ViewConfig -> UiSettings -> Model -> Html Msg
+viewDrop2 texts ddd flags cfg settings model =
     let
         akkordionStyle =
             Comp.Tabs.searchMenuStyle
     in
     Comp.Tabs.akkordion
         akkordionStyle
-        (searchTabState settings model)
+        (searchTabState settings cfg model)
         (searchTabs texts ddd flags settings model)
 
 
@@ -1173,12 +1260,9 @@ tabLook settings model tab =
             Comp.Tabs.Normal
 
 
-searchTabState : UiSettings -> Model -> Comp.Tabs.Tab Msg -> ( Comp.Tabs.State, Msg )
-searchTabState settings model tab =
+searchTabState : UiSettings -> ViewConfig -> Model -> Comp.Tabs.Tab Msg -> ( Comp.Tabs.State, Msg )
+searchTabState settings cfg model tab =
     let
-        isHidden f =
-            Data.UiSettings.fieldHidden settings f
-
         searchTab =
             findTab tab
 
@@ -1192,7 +1276,7 @@ searchTabState settings model tab =
         state =
             { folded = folded
             , look =
-                Maybe.map (tabLook settings model) searchTab
+                Maybe.map (\t -> tabLook settings model t |> cfg.overrideTabLook t) searchTab
                     |> Maybe.withDefault Comp.Tabs.Normal
             }
     in

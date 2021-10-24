@@ -538,6 +538,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/InviteResult"
+
+  /open/share/verify:
+    post:
+      operationId: "open-share-verify"
+      tags: [ Share ]
+      summary: Verify a secret for a share
+      description: |
+        Given the share id and optionally a password, it verifies the
+        correctness of the given data. As a result, a token is
+        returned that must be used with all `share/*` routes. If the
+        password is missing, but required, the response indicates
+        this. Then the requests needs to be replayed with the correct
+        password to retrieve the token.
+
+        The token is also added as a session cookie to the response.
+
+        The token is used to avoid passing the user define password
+        with every request.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShareSecret"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareVerifyResult"
+
   /sec/auth/session:
     post:
       operationId: "sec-auth-session"
@@ -1527,6 +1558,187 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /share/search/query:
+    post:
+      operationId: "share-search-query"
+      tags: [Share]
+      summary: Performs a search in a share.
+      description: |
+        Allows to run a search query in the shared documents. The
+        input data structure is the same as with a standard query. The
+        `searchMode` parameter is ignored here.
+      security:
+        - shareTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemQuery"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightList"
+  /share/search/stats:
+    post:
+      operationId: "share-search-stats"
+      tags: [ Share ]
+      summary: Get basic statistics about search results.
+      description: |
+        Instead of returning the results of a query, uses it to return
+        a summary, constraint to the share.
+      security:
+        - shareTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemQuery"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchStats"
+  /share/item/{id}:
+    get:
+      operationId: "share-item-get"
+      tags: [ Share ]
+      summary: Get details about an item.
+      description: |
+        Get detailed information about an item.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemDetail"      
+  /share/attachment/{id}:
+    head:
+      operationId: "share-attach-head"
+      tags: [ Share ]
+      summary: Get headers to an attachment file.
+      description: |
+        Get information about the binary file belonging to the
+        attachment with the given id.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          headers:
+            Content-Type:
+              schema:
+                type: string
+            Content-Length:
+              schema:
+                type: integer
+                format: int64
+            ETag:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+    get:
+      operationId: "share-attach-get"
+      tags: [ Share ]
+      summary: Get an attachment file.
+      description: |
+        Get the binary file belonging to the attachment with the given
+        id. The binary is a pdf file. If conversion failed, then the
+        original file is returned.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /share/attachment/{id}/view:
+    get:
+      operationId: "share-attach-show-viewerjs"
+      tags: [ Share ]
+      summary: A javascript rendered view of the pdf attachment
+      description: |
+        This provides a preview of the attachment rendered in a
+        browser.
+
+        It currently uses a third-party javascript library (viewerjs)
+        to display the preview. This works by redirecting to the
+        viewerjs url with the attachment url as parameter. Note that
+        the resulting url that is redirected to is not stable. It may
+        change from version to version. This route, however, is meant
+        to provide a stable url for the preview.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        303:
+          description: See Other
+        200:
+          description: Ok      
+  /share/attachment/{id}/preview:
+    head:
+      operationId: "share-attach-check-preview"
+      tags: [ Attachment ]
+      summary: Get the headers to a preview image of an attachment file.
+      description: |
+        Checks if an image file showing a preview of the attachment is
+        available. If not available, a 404 is returned.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+        404:
+          description: NotFound
+    get:
+      operationId: "share-attach-get-preview"
+      tags: [ Attachment ]
+      summary: Get a preview image of an attachment file.
+      description: |
+        Gets a image file showing a preview of the attachment. Usually
+        it is a small image of the first page of the document.If not
+        available, a 404 is returned. However, if the query parameter
+        `withFallback` is `true`, a fallback preview image is
+        returned. You can also use the `HEAD` method to check for
+        existence.
+
+        The attachment must be in the search results of the current
+        share.
+      security:
+        - shareTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/withFallback"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
   /admin/user/resetPassword:
     post:
       operationId: "admin-user-reset-password"
@@ -1703,6 +1915,125 @@ paths:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/share:
+    get:
+      operationId: "sec-share-get-all"
+      tags: [ Share ]
+      summary: Get a list of shares
+      description: |
+        Return a list of all shares for this collective.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/owningShare"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareList"
+    post:
+      operationId: "sec-share-new"
+      tags: [ Share ]
+      summary: Create a new share.
+      description: |
+        Create a new share.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShareData"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResult"
+  /sec/share/email/send/{name}:
+    post:
+      operationId: "sec-share-email-send"
+      tags: [ Share, E-Mail ]
+      summary: Send an email.
+      description: |
+        Sends an email as specified in the body of the request.
+
+        An existing shareId must be given with the request, no matter
+        the content of the mail.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/name"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimpleShareMail"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/share/{shareId}:
+    parameters:
+      - $ref: "#/components/parameters/shareId"
+    get:
+      operationId: "sec-share-get"
+      tags: [Share]
+      summary: Get details to a single share.
+      description: |
+        Given the id of a share, returns some details about it.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareDetail"
+    put:
+      operationId: "sec-share-update"
+      tags: [ Share ]
+      summary: Update an existing share.
+      description: |
+        Updates an existing share.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShareData"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      operationId: "sec-share-delete-by-id"
+      tags: [ Share ]
+      summary: Delete a share.
+      description: |
+        Deletes a share
+      security:
+        - authTokenHeader: []
       responses:
         200:
           description: Ok
@@ -4096,6 +4427,126 @@ paths:
 
 components:
   schemas:
+    ShareSecret:
+      description: |
+        The secret (the share id + optional password) to access a
+        share.
+      required:
+        - shareId
+      properties:
+        shareId:
+          type: string
+          format: ident
+        password:
+          type: string
+          format: password
+
+    ShareVerifyResult:
+      description: |
+        The data returned when verifying a `ShareSecret`.
+      required:
+        - success
+        - token
+        - passwordRequired
+        - message
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+        passwordRequired:
+          type: boolean
+        message:
+          type: string
+        name:
+          type: string
+          description: |
+            The name of the share if it exists. Only valid to use when
+            `success` is `true`.
+
+    ShareData:
+      description: |
+        Editable data for a share.
+      required:
+        - query
+        - enabled
+        - publishUntil
+      properties:
+        name:
+          type: string
+        query:
+          type: string
+          format: itemquery
+        enabled:
+          type: boolean
+        password:
+          type: string
+          format: password
+        publishUntil:
+          type: integer
+          format: date-time
+        removePassword:
+          type: boolean
+          description: |
+            For an update request, this can control whether to delete
+            the password. Otherwise if the password is not set, it
+            will not be changed. When adding a new share, this has no
+            effect.
+
+    ShareDetail:
+      description: |
+        Details for an existing share.
+      required:
+        - id
+        - query
+        - owner
+        - enabled
+        - publishAt
+        - publishUntil
+        - password
+        - views
+        - expired
+      properties:
+        id:
+          type: string
+          format: ident
+        query:
+          type: string
+          format: itemquery
+        owner:
+          $ref: "#/components/schemas/IdName"          
+        name:
+          type: string
+        enabled:
+          type: boolean
+        publishAt:
+          type: integer
+          format: date-time
+        publishUntil:
+          type: integer
+          format: date-time
+        expired:
+          type: boolean
+        password:
+          type: boolean
+        views:
+          type: integer
+          format: int32
+        lastAccess:
+          type: integer
+          format: date-time
+
+    ShareList:
+      description: |
+        A list of shares.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShareDetail"
+        
     DeleteUserData:
       description: |
         An excerpt of data that would be deleted when deleting the
@@ -4103,6 +4554,7 @@ components:
       required:
         - folders
         - sentMails
+        - shares
       properties:
         folders:
           type: array
@@ -4110,6 +4562,9 @@ components:
             type: string
             format: ident
         sentMails:
+          type: integer
+          format: int32
+        shares:
           type: integer
           format: int32
 
@@ -4864,6 +5319,36 @@ components:
           items:
             type: string
             format: ident
+    SimpleShareMail:
+      description: |
+        A simple e-mail related to a share.
+      required:
+        - shareId
+        - recipients
+        - cc
+        - bcc
+        - subject
+        - body
+      properties:
+        shareId:
+          type: string
+          format: ident
+        recipients:
+          type: array
+          items:
+            type: string
+        cc:
+          type: array
+          items:
+            type: string
+        bcc:
+          type: array
+          items:
+            type: string
+        subject:
+          type: string
+        body:
+          type: string
     EmailSettingsList:
       description: |
         A list of user email settings.
@@ -4977,6 +5462,10 @@ components:
         - tagCategoryCloud
         - fieldStats
         - folderStats
+        - corrOrgStats
+        - corrPersStats
+        - concPersStats
+        - concEquipStats
       properties:
         count:
           type: integer
@@ -4993,6 +5482,23 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FolderStats"
+        corrOrgStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdRefStats"
+        corrPersStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdRefStats"
+        concPersStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdRefStats"
+        concEquipStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/IdRefStats"
+
     ItemInsights:
       description: |
         Information about the items in docspell.
@@ -5122,6 +5628,19 @@ components:
       properties:
         name:
           type: string
+        count:
+          type: integer
+          format: int32
+
+    IdRefStats:
+      description: |
+        Counting some objects that have an id and a name.
+      required:
+        - ref
+        - count
+      properties:
+        ref:
+          $ref: "#/components/schemas/IdName"
         count:
           type: integer
           format: int32
@@ -6121,8 +6640,8 @@ components:
           type: string
     IdResult:
       description: |
-        Some basic result of an operation with an ID as payload. If
-        success if `false` the id is not usable.
+        Some basic result of an operation with an ID as payload, if
+        success is true. If success is `false` the id is not usable.
       required:
         - success
         - message
@@ -6242,6 +6761,10 @@ components:
       type: apiKey
       in: header
       name: Docspell-Admin-Secret
+    shareTokenHeader:
+      type: apiKey
+      in: header
+      name: Docspell-Share-Auth
   parameters:
     id:
       name: id
@@ -6254,6 +6777,13 @@ components:
       name: userId
       in: path
       description: An identifier
+      required: true
+      schema:
+        type: string
+    shareId:
+      name: shareId
+      in: path
+      description: An identifier for a share
       required: true
       schema:
         type: string
@@ -6282,6 +6812,13 @@ components:
       name: full
       in: query
       description: Whether to get owning folders
+      required: false
+      schema:
+        type: boolean
+    owningShare:
+      name: owning
+      in: query
+      description: Return my own shares only
       required: false
       schema:
         type: boolean

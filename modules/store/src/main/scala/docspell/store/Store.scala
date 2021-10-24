@@ -9,6 +9,7 @@ package docspell.store
 import scala.concurrent.ExecutionContext
 
 import cats.effect._
+import cats.~>
 import fs2._
 
 import docspell.store.file.FileStore
@@ -19,6 +20,7 @@ import doobie._
 import doobie.hikari.HikariTransactor
 
 trait Store[F[_]] {
+  def transform: ConnectionIO ~> F
 
   def transact[A](prg: ConnectionIO[A]): F[A]
 

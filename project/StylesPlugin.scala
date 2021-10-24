@@ -55,7 +55,7 @@ object StylesPlugin extends AutoPlugin {
         val files = postCss(npx, inDir, outDir, wd, mode, logger) ++
           copyWebfonts(wd, outDir, logger) ++
           copyFlags(wd, outDir, logger)
-        logger.info("Styles built")
+        logger.info(s"Styles built at $outDir")
         files
       },
       stylesInstall := {
@@ -63,7 +63,6 @@ object StylesPlugin extends AutoPlugin {
         val npm = stylesNpmCommand.value
         val wd = (LocalRootProject / baseDirectory).value
         npmInstall(npm, wd, logger)
-
       }
     )
 

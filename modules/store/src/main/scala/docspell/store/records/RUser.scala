@@ -26,7 +26,13 @@ case class RUser(
     loginCount: Int,
     lastLogin: Option[Timestamp],
     created: Timestamp
-) {}
+) {
+  def accountId: AccountId =
+    AccountId(cid, login)
+
+  def idRef: IdRef =
+    IdRef(uid, login.id)
+}
 
 object RUser {
 

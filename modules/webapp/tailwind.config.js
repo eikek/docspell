@@ -19,7 +19,7 @@ module.exports = {
                 orange: colors.orange,
                 teal: colors.teal,
                 lime: colors.lime,
-                lightblue: colors.lightBlue
+                lightblue: colors.sky
             }
         }
     },

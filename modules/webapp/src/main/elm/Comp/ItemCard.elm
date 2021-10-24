@@ -22,6 +22,7 @@ import Api.Model.ItemLight exposing (ItemLight)
 import Comp.LinkTarget exposing (LinkTarget(..))
 import Data.Direction
 import Data.Fields
+import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.ItemSelection exposing (ItemSelection)
 import Data.ItemTemplate as IT
@@ -56,6 +57,10 @@ type Msg
 type alias ViewConfig =
     { selection : ItemSelection
     , extraClasses : String
+    , previewUrl : AttachmentLight -> String
+    , previewUrlFallback : ItemLight -> String
+    , attachUrl : AttachmentLight -> String
+    , detailPage : ItemLight -> Page
     }
 
 
@@ -146,8 +151,8 @@ update ddm msg model =
 --- View2
 
 
-view2 : Texts -> ViewConfig -> UiSettings -> Model -> ItemLight -> Html Msg
-view2 texts cfg settings model item =
+view2 : Texts -> ViewConfig -> UiSettings -> Flags -> Model -> ItemLight -> Html Msg
+view2 texts cfg settings flags model item =
     let
         isCreated =
             item.state == "created"
@@ -160,7 +165,7 @@ view2 texts cfg settings model item =
                 "text-blue-500 dark:text-lightblue-500"
 
             else if isDeleted then
-                 "text-red-600 dark:text-orange-600"
+                "text-red-600 dark:text-orange-600"
 
             else
                 ""
@@ -171,7 +176,7 @@ view2 texts cfg settings model item =
         cardAction =
             case cfg.selection of
                 Data.ItemSelection.Inactive ->
-                    [ Page.href (ItemDetailPage item.id)
+                    [ Page.href (cfg.detailPage item)
                     ]
 
                 Data.ItemSelection.Active ids ->
@@ -210,14 +215,14 @@ view2 texts cfg settings model item =
             []
 
           else
-            [ previewImage2 settings cardAction model item
+            [ previewImage2 cfg settings cardAction model item
             ]
          )
             ++ [ mainContent2 texts cardAction cardColor isCreated isDeleted settings cfg item
                , metaDataContent2 texts settings item
                , notesContent2 settings item
                , fulltextResultsContent2 item
-               , previewMenu2 texts settings model item (currentAttachment model item)
+               , previewMenu2 texts settings flags cfg model item (currentAttachment model item)
                , selectedDimmer
                ]
         )
@@ -443,16 +448,15 @@ mainTagsAndFields2 settings item =
         (renderFields ++ renderTags)
 
 
-previewImage2 : UiSettings -> List (Attribute Msg) -> Model -> ItemLight -> Html Msg
-previewImage2 settings cardAction model item =
+previewImage2 : ViewConfig -> UiSettings -> List (Attribute Msg) -> Model -> ItemLight -> Html Msg
+previewImage2 cfg settings cardAction model item =
     let
         mainAttach =
             currentAttachment model item
 
         previewUrl =
-            Maybe.map .id mainAttach
-                |> Maybe.map Api.attachmentPreviewURL
-                |> Maybe.withDefault (Api.itemBasePreviewURL item.id)
+            Maybe.map cfg.previewUrl mainAttach
+                |> Maybe.withDefault (cfg.previewUrlFallback item)
     in
     a
         ([ class "overflow-hidden block bg-gray-50 dark:bg-bluegray-700 dark:bg-opacity-40  border-gray-400 dark:hover:border-bluegray-500 rounded-t-lg"
@@ -472,8 +476,8 @@ previewImage2 settings cardAction model item =
         ]
 
 
-previewMenu2 : Texts -> UiSettings -> Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
-previewMenu2 texts settings model item mainAttach =
+previewMenu2 : Texts -> UiSettings -> Flags -> ViewConfig -> Model -> ItemLight -> Maybe AttachmentLight -> Html Msg
+previewMenu2 texts settings flags cfg model item mainAttach =
     let
         pageCount =
             Maybe.andThen .pageCount mainAttach
@@ -485,16 +489,11 @@ previewMenu2 texts settings model item mainAttach =
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
 
-        mkAttachUrl id =
-            if settings.nativePdfPreview then
-                Api.fileURL id
-
-            else
-                Api.fileURL id ++ "/view"
+        mkAttachUrl attach =
+            Data.UiSettings.pdfUrl settings flags (cfg.attachUrl attach)
 
         attachUrl =
-            Maybe.map .id mainAttach
-                |> Maybe.map mkAttachUrl
+            Maybe.map mkAttachUrl mainAttach
                 |> Maybe.withDefault "/api/v1/sec/attachment/none"
 
         dueDate =
@@ -529,7 +528,7 @@ previewMenu2 texts settings model item mainAttach =
         , a
             [ class S.secondaryBasicButtonPlain
             , class "px-2 py-1 border rounded ml-2"
-            , Page.href (ItemDetailPage item.id)
+            , Page.href (cfg.detailPage item)
             , title texts.gotoDetail
             ]
             [ i [ class "fa fa-edit" ] []

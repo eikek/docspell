@@ -295,7 +295,7 @@ renderDeleteConfirm texts settings model =
         DimmerUserData data ->
             let
                 empty =
-                    List.isEmpty data.folders && data.sentMails == 0
+                    List.isEmpty data.folders && data.sentMails == 0 && data.shares == 0
 
                 folderNames =
                     String.join ", " data.folders
@@ -312,16 +312,20 @@ renderDeleteConfirm texts settings model =
                         [ div []
                             [ text texts.reallyDeleteUser
                             , text " "
-                            , text "The following data will be deleted:"
+                            , text (texts.deleteFollowingData ++ ":")
                             ]
                         , ul [ class "list-inside list-disc" ]
                             [ li [ classList [ ( "hidden", List.isEmpty data.folders ) ] ]
-                                [ text "Folders: "
+                                [ text (texts.folders ++ ": ")
                                 , text folderNames
                                 ]
                             , li [ classList [ ( "hidden", data.sentMails == 0 ) ] ]
                                 [ text (String.fromInt data.sentMails)
-                                , text " sent mails"
+                                , text (" " ++ texts.sentMails)
+                                ]
+                            , li [ classList [ ( "hidden", data.shares == 0 ) ] ]
+                                [ text (String.fromInt data.shares)
+                                , text (" " ++ texts.shares)
                                 ]
                             ]
                         ]

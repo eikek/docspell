@@ -10,14 +10,26 @@ module Util.CustomField exposing
     , nameOrLabel
     , renderValue
     , renderValue2
+    , statsToFields
     )
 
+import Api.Model.CustomField exposing (CustomField)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
+import Api.Model.SearchStats exposing (SearchStats)
 import Data.CustomFieldType
 import Data.Icons as Icons
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+
+
+statsToFields : SearchStats -> List CustomField
+statsToFields stats =
+    let
+        mkField fs =
+            CustomField fs.id fs.name fs.label fs.ftype fs.count 0
+    in
+    List.map mkField stats.fieldStats
 
 
 {-| This is how the server wants the value to a bool custom field

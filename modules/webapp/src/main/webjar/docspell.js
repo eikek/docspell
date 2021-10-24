@@ -127,8 +127,10 @@ elmApp.ports.printElement.subscribe(function(id) {
                 w.document.write('</head>');
             }
             w.document.write('<body>');
+            w.document.write('<div id="print-qr" style="width: 300px; height: 300px; padding: 5px; border: 1px solid black;">');
             w.document.write(el.outerHTML);
-            w.document.write('<script type="application/javascript">window.print(); window.close();</script>');
+            w.document.write('</div>');
+            w.document.write('<script type="application/javascript">window.print();</script>');
             w.document.write('</body></html>');
         }
     }

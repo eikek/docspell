@@ -260,6 +260,18 @@ val openapiScalaSettings = Seq(
             .copy(typeDef =
               TypeDef("AccountSource", Imports("docspell.common.AccountSource"))
             )
+      case "itemquery" =>
+        field =>
+          field
+            .copy(typeDef =
+              TypeDef(
+                "ItemQuery",
+                Imports(
+                  "docspell.query.ItemQuery",
+                  "docspell.restapi.codec.ItemQueryJson._"
+                )
+              )
+            )
     })
 )
 
@@ -367,6 +379,7 @@ val store = project
   .settings(testSettingsMUnit)
   .settings(
     name := "docspell-store",
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.doobie ++
         Dependencies.binny ++
@@ -472,7 +485,7 @@ val restapi = project
     openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc
   )
-  .dependsOn(common)
+  .dependsOn(common, query.jvm)
 
 val joexapi = project
   .in(file("modules/joexapi"))

@@ -13,35 +13,42 @@ import docspell.query.ItemQuery._
 
 object ExprUtil {
 
+  def reduce(expr: Expr): Expr =
+    reduce(expandMacros = true)(expr)
+
   /** Does some basic transformation, like unfolding nested and trees containing one value
     * etc.
     */
-  def reduce(expr: Expr): Expr =
+  def reduce(expandMacros: Boolean)(expr: Expr): Expr =
     expr match {
       case AndExpr(inner) =>
         val nodes = spliceAnd(inner)
-        if (nodes.tail.isEmpty) reduce(nodes.head)
-        else AndExpr(nodes.map(reduce))
+        if (nodes.tail.isEmpty) reduce(expandMacros)(nodes.head)
+        else AndExpr(nodes.map(reduce(expandMacros)))
 
       case OrExpr(inner) =>
         val nodes = spliceOr(inner)
-        if (nodes.tail.isEmpty) reduce(nodes.head)
-        else OrExpr(nodes.map(reduce))
+        if (nodes.tail.isEmpty) reduce(expandMacros)(nodes.head)
+        else OrExpr(nodes.map(reduce(expandMacros)))
 
       case NotExpr(inner) =>
         inner match {
           case NotExpr(inner2) =>
-            reduce(inner2)
+            reduce(expandMacros)(inner2)
           case InboxExpr(flag) =>
             InboxExpr(!flag)
           case DirectionExpr(flag) =>
             DirectionExpr(!flag)
           case _ =>
-            NotExpr(reduce(inner))
+            NotExpr(reduce(expandMacros)(inner))
         }
 
       case m: MacroExpr =>
-        reduce(m.body)
+        if (expandMacros) {
+          reduce(expandMacros)(m.body)
+        } else {
+          m
+        }
 
       case DirectionExpr(_) =>
         expr

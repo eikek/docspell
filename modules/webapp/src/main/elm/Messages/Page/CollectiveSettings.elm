@@ -15,6 +15,7 @@ import Http
 import Messages.Basics
 import Messages.Comp.CollectiveSettingsForm
 import Messages.Comp.HttpError
+import Messages.Comp.ShareManage
 import Messages.Comp.SourceManage
 import Messages.Comp.UserManage
 
@@ -24,12 +25,14 @@ type alias Texts =
     , userManage : Messages.Comp.UserManage.Texts
     , collectiveSettingsForm : Messages.Comp.CollectiveSettingsForm.Texts
     , sourceManage : Messages.Comp.SourceManage.Texts
+    , shareManage : Messages.Comp.ShareManage.Texts
     , httpError : Http.Error -> String
     , collectiveSettings : String
     , insights : String
     , sources : String
     , settings : String
     , users : String
+    , shares : String
     , user : String
     , collective : String
     , size : String
@@ -44,12 +47,14 @@ gb =
     , userManage = Messages.Comp.UserManage.gb
     , collectiveSettingsForm = Messages.Comp.CollectiveSettingsForm.gb
     , sourceManage = Messages.Comp.SourceManage.gb
+    , shareManage = Messages.Comp.ShareManage.gb
     , httpError = Messages.Comp.HttpError.gb
     , collectiveSettings = "Collective Settings"
     , insights = "Insights"
     , sources = "Sources"
     , settings = "Settings"
     , users = "Users"
+    , shares = "Shares"
     , user = "User"
     , collective = "Collective"
     , size = "Size"
@@ -64,12 +69,14 @@ de =
     , userManage = Messages.Comp.UserManage.de
     , collectiveSettingsForm = Messages.Comp.CollectiveSettingsForm.de
     , sourceManage = Messages.Comp.SourceManage.de
+    , shareManage = Messages.Comp.ShareManage.de
     , httpError = Messages.Comp.HttpError.de
     , collectiveSettings = "Kollektiveinstellungen"
     , insights = "Statistiken"
     , sources = "Quellen"
     , settings = "Einstellungen"
     , users = "Benutzer"
+    , shares = "Freigaben"
     , user = "Benutzer"
     , collective = "Kollektiv"
     , size = "Größe"

@@ -913,19 +913,6 @@ update key flags inav settings msg model =
                 Nothing ->
                     resultModel model
 
-        TogglePdfNativeView default ->
-            resultModel
-                { model
-                    | pdfNativeView =
-                        case model.pdfNativeView of
-                            Just flag ->
-                                Just (not flag)
-
-                            Nothing ->
-                                Just (not default)
-                    , attachmentDropdownOpen = False
-                }
-
         DeleteAttachConfirmed attachId ->
             let
                 cmd =

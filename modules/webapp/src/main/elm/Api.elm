@@ -11,6 +11,7 @@ module Api exposing
     , addCorrOrg
     , addCorrPerson
     , addMember
+    , addShare
     , addTag
     , addTagsMultiple
     , attachmentPreviewURL
@@ -40,6 +41,7 @@ module Api exposing
     , deleteOrg
     , deletePerson
     , deleteScanMailbox
+    , deleteShare
     , deleteSource
     , deleteTag
     , deleteUser
@@ -72,6 +74,8 @@ module Api exposing
     , getPersonsLight
     , getScanMailbox
     , getSentMails
+    , getShare
+    , getShares
     , getSources
     , getTagCloud
     , getTags
@@ -79,6 +83,7 @@ module Api exposing
     , initOtp
     , itemBasePreviewURL
     , itemDetail
+    , itemDetailShare
     , itemIndexSearch
     , itemSearch
     , itemSearchStats
@@ -109,6 +114,8 @@ module Api exposing
     , restoreAllItems
     , restoreItem
     , saveClientSettings
+    , searchShare
+    , searchShareStats
     , sendMail
     , setAttachmentName
     , setCollectiveSettings
@@ -136,6 +143,10 @@ module Api exposing
     , setTags
     , setTagsMultiple
     , setUnconfirmed
+    , shareAttachmentPreviewURL
+    , shareFileURL
+    , shareItemBasePreviewURL
+    , shareSendMail
     , startClassifier
     , startEmptyTrash
     , startOnceNotifyDueItems
@@ -147,9 +158,11 @@ module Api exposing
     , unconfirmMultiple
     , updateNotifyDueItems
     , updateScanMailbox
+    , updateShare
     , upload
     , uploadAmend
     , uploadSingle
+    , verifyShare
     , versionInfo
     )
 
@@ -215,7 +228,13 @@ import Api.Model.ScanMailboxSettingsList exposing (ScanMailboxSettingsList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Api.Model.SecondFactor exposing (SecondFactor)
 import Api.Model.SentMails exposing (SentMails)
+import Api.Model.ShareData exposing (ShareData)
+import Api.Model.ShareDetail exposing (ShareDetail)
+import Api.Model.ShareList exposing (ShareList)
+import Api.Model.ShareSecret exposing (ShareSecret)
+import Api.Model.ShareVerifyResult exposing (ShareVerifyResult)
 import Api.Model.SimpleMail exposing (SimpleMail)
+import Api.Model.SimpleShareMail exposing (SimpleShareMail)
 import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.SourceList exposing (SourceList)
 import Api.Model.SourceTagIn
@@ -2203,6 +2222,134 @@ disableOtp flags otp receive =
         , body = Http.jsonBody (Api.Model.OtpConfirm.encode otp)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
+
+
+
+--- Share
+
+
+getShares : Flags -> String -> Bool -> (Result Http.Error ShareList -> msg) -> Cmd msg
+getShares flags query owning receive =
+    Http2.authGet
+        { url =
+            flags.config.baseUrl
+                ++ "/api/v1/sec/share?q="
+                ++ Url.percentEncode query
+                ++ (if owning then
+                        "&owning"
+
+                    else
+                        ""
+                   )
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ShareList.decoder
+        }
+
+
+getShare : Flags -> String -> (Result Http.Error ShareDetail -> msg) -> Cmd msg
+getShare flags id receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ShareDetail.decoder
+        }
+
+
+addShare : Flags -> ShareData -> (Result Http.Error IdResult -> msg) -> Cmd msg
+addShare flags share receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ShareData.encode share)
+        , expect = Http.expectJson receive Api.Model.IdResult.decoder
+        }
+
+
+updateShare : Flags -> String -> ShareData -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+updateShare flags id share receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share/" ++ id
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ShareData.encode share)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+deleteShare : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteShare flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+verifyShare : Flags -> ShareSecret -> (Result Http.Error ShareVerifyResult -> msg) -> Cmd msg
+verifyShare flags secret receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/open/share/verify"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ShareSecret.encode secret)
+        , expect = Http.expectJson receive Api.Model.ShareVerifyResult.decoder
+        }
+
+
+searchShare : Flags -> String -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
+searchShare flags token search receive =
+    Http2.sharePost
+        { url = flags.config.baseUrl ++ "/api/v1/share/search/query"
+        , token = token
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
+        , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
+        }
+
+
+searchShareStats : Flags -> String -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+searchShareStats flags token search receive =
+    Http2.sharePost
+        { url = flags.config.baseUrl ++ "/api/v1/share/search/stats"
+        , token = token
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
+        , expect = Http.expectJson receive Api.Model.SearchStats.decoder
+        }
+
+
+itemDetailShare : Flags -> String -> String -> (Result Http.Error ItemDetail -> msg) -> Cmd msg
+itemDetailShare flags token itemId receive =
+    Http2.shareGet
+        { url = flags.config.baseUrl ++ "/api/v1/share/item/" ++ itemId
+        , token = token
+        , expect = Http.expectJson receive Api.Model.ItemDetail.decoder
+        }
+
+
+shareSendMail :
+    Flags
+    -> { conn : String, mail : SimpleShareMail }
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+shareSendMail flags opts receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/share/email/send/" ++ opts.conn
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.SimpleShareMail.encode opts.mail)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+shareAttachmentPreviewURL : String -> String
+shareAttachmentPreviewURL id =
+    "/api/v1/share/attachment/" ++ id ++ "/preview?withFallback=true"
+
+
+shareItemBasePreviewURL : String -> String
+shareItemBasePreviewURL itemId =
+    "/api/v1/share/item/" ++ itemId ++ "/preview?withFallback=true"
+
+
+shareFileURL : String -> String
+shareFileURL attachId =
+    "/api/v1/share/attachment/" ++ attachId
 
 
 

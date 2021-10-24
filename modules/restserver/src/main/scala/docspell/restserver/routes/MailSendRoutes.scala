@@ -11,8 +11,7 @@ import cats.implicits._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
-import docspell.backend.ops.OMail.{AttachSelection, ItemMail}
-import docspell.backend.ops.SendResult
+import docspell.backend.ops.OMail.{AttachSelection, ItemMail, SendResult}
 import docspell.common._
 import docspell.restapi.model._
 

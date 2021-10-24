@@ -10,6 +10,7 @@ import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.implicits._
 
+import docspell.common.Password
 import docspell.restserver.Config
 import docspell.restserver.http4s.Responses
 
@@ -19,7 +20,7 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.server._
 import org.typelevel.ci.CIString
 
-object AdminRoutes {
+object AdminAuth {
   private val adminHeader = CIString("Docspell-Admin-Secret")
 
   def apply[F[_]: Async](cfg: Config.AdminEndpoint)(
@@ -55,6 +56,5 @@ object AdminRoutes {
     req.headers.get(adminHeader).map(_.head.value)
 
   private def compareSecret(s1: String)(s2: String): Boolean =
-    s1.length > 0 && s1.length == s2.length &&
-      s1.zip(s2).forall { case (a, b) => a == b }
+    Password(s1).compare(Password(s2))
 }
