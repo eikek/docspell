@@ -112,7 +112,7 @@ command doesn't require to be logged in, it can also upload via a
 A source id can be given in the config file, then there are no
 additional options required. The simplest form is this:
 
-``` shell
+```
 ❯ dsc upload *.pdf
 File already in Docspell: article-velo.pdf
 Adding to request: test-ocr.pdf
@@ -142,7 +142,7 @@ in a separate request, so the `--single-item` option cannot be used.
 There are options to exclude/include files based on a [glob
 pattern](https://docs.rs/glob/0.3.0/glob/struct.Pattern.html).
 
-``` shell
+```
 ❯ dsc upload --traverse .
 File already in Docspell: article-velo.pdf
 File already in Docspell: demo/dirc/scan.21-03-12.15-50-54.pdf
@@ -175,7 +175,7 @@ It detects file creations and skips a rename within a watched folder.
 The flag `-r` or `--recursive` is required to recursively watch a
 directory.
 
-``` shell
+```
 ❯ dsc watch -r .
 Watching directory (Recursive): .
 Press Ctrl-C to quit.
@@ -204,7 +204,7 @@ query. It is possible to download them all flat into some directory or
 directly into a zip file. For example, download all files that are
 tagged with `todo` into a zip file:
 
-``` shell
+```
 ❯ dsc download --zip 'tag:todo'
 Zipping 2 attachments into docspell-files.zip
 Downloading DOC-20191223-155707.jpg.pdf …
@@ -214,7 +214,7 @@ Downloading DOC-20200803-174448.jpg.pdf …
 It downloads the converted PDF files by default, which can be changed
 via some options.
 
-``` shell
+```
 ❯ dsc download --zip --original 'tag:todo'
 Zipping original files of 2 attachments into docspell-files.zip
 Downloading DOC-20191223-155707.jpg …
@@ -296,7 +296,7 @@ into recursive paths (as shown in the example output above) using the
 resulting in `Finance-Institute`.
 
 Example run (producing output shown above):
-``` shell
+```
 ❯ dsc export --all --date-links --folder-links --folder-delimiter "/" --tag-links --target exports
 Exported item: test3.zip
 Exported item: README.md
@@ -329,7 +329,7 @@ config file or as an argument.
 
 ### Reset user password
 
-``` shell
+```
 ❯ dsc admin reset-password --account demo
 ┌─────────┬──────────────┬──────────────────┐
 │ success │ new password │ message          │
@@ -340,7 +340,7 @@ config file or as an argument.
 
 ### Recreate fulltext index
 
-``` shell
+```
 ❯ dsc admin --admin-secret admin123 recreate-index
 ┌─────────┬─────────────────────────────────────┐
 │ success │ message                             │
@@ -350,7 +350,7 @@ config file or as an argument.
 ```
 
 ### Convert all files to PDF
-``` shell
+```
 ❯ dsc admin --admin-secret admin123 convert-all-pdf
 ┌─────────┬─────────────────────────────────┐
 │ success │ message                         │
@@ -364,7 +364,7 @@ enabling it now.
 
 ### Regenerate preview images
 
-``` shell
+```
 ❯ dsc admin --admin-secret admin123 convert-all-pdf
 ┌─────────┬───────────────────────────────────────┐
 │ success │ message                               │
@@ -382,7 +382,7 @@ config.
 The `search` command takes a [query](@/docs/query/_index.md) and
 prints the results.
 
-``` shell
+```
 ❯ dsc search 'corr:*'
 ┌──────────┬────────────────────────────┬───────────┬────────────┬─────┬───────────────────────────┬───────────────┬────────┬─────────────┬────────────┬───────┐
 │ id       │ name                       │ state     │ date       │ due │ correspondent             │ concerning    │ folder │ tags        │ fields     │ files │
@@ -399,7 +399,7 @@ prints the results.
 ```
 
 The same can be formatted as json and, for example, only print the ids:
-``` shell
+```
 ❯ dsc -f json search 'corr:*' | jq '.groups[].items[].id'
 "HVK7JuCFt4W-qxkcwq1cWCV-dvpGo4DpZzU-Q16Xoujojas"
 "3odNawKE1Ek-YJrWfPzekAq-47cjt14sexd-GK35JAEAanx"
