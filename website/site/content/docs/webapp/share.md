@@ -61,6 +61,11 @@ needs access to it, for example if you want to share all your tax
 documents with the company/person who helps you with doing you tax
 submission.
 
+## Limitations
+
+Currently, shares that contain fulltext search queries are not
+supported. The query for a share must not use any fulltext search.
+
 # Creating shares
 
 There are the following ways to create a share:

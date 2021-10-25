@@ -16,9 +16,9 @@ import docspell.backend.ops.OItemSearch._
 import docspell.backend.ops.OShare._
 import docspell.backend.ops.OSimpleSearch.StringSearchResult
 import docspell.common._
-import docspell.query.ItemQuery
 import docspell.query.ItemQuery.Expr
 import docspell.query.ItemQuery.Expr.AttachId
+import docspell.query.{FulltextExtract, ItemQuery}
 import docspell.store.Store
 import docspell.store.queries.SearchSummary
 import docspell.store.records._
@@ -133,10 +133,12 @@ object OShare {
     final case class Success(id: Ident) extends ChangeResult
     case object PublishUntilInPast extends ChangeResult
     case object NotFound extends ChangeResult
+    case object QueryWithFulltext extends ChangeResult
 
     def success(id: Ident): ChangeResult = Success(id)
     def publishUntilInPast: ChangeResult = PublishUntilInPast
     def notFound: ChangeResult = NotFound
+    def queryWithFulltext: ChangeResult = QueryWithFulltext
   }
 
   final case class ShareData(share: RShare, user: RUser)
@@ -182,12 +184,13 @@ object OShare {
           )
           res <-
             if (share.publishUntil < curTime) ChangeResult.publishUntilInPast.pure[F]
+            else if (hasFulltext(share.query)) ChangeResult.queryWithFulltext.pure[F]
             else store.transact(RShare.insert(record)).map(_ => ChangeResult.success(id))
         } yield res
 
       def update(
           id: Ident,
-          share: OShare.NewShare,
+          share: NewShare,
           removePassword: Boolean
       ): F[ChangeResult] =
         for {
@@ -207,11 +210,18 @@ object OShare {
           )
           res <-
             if (share.publishUntil < curTime) ChangeResult.publishUntilInPast.pure[F]
+            else if (hasFulltext(share.query)) ChangeResult.queryWithFulltext.pure[F]
             else
               store
                 .transact(RShare.updateData(record, removePassword))
                 .map(n => if (n > 0) ChangeResult.success(id) else ChangeResult.notFound)
         } yield res
+
+      private def hasFulltext(iq: ItemQuery): Boolean =
+        iq.findFulltext match {
+          case FulltextExtract.Result.SuccessNoFulltext(_) => false
+          case _                                           => true
+        }
 
       def findOne(id: Ident, collective: Ident): OptionT[F, ShareData] =
         RShare

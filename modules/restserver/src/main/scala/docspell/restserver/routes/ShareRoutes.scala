@@ -130,6 +130,12 @@ object ShareRoutes {
           "Share not found or not owner. Only the owner can update a share.",
           Ident.unsafe("")
         )
+      case OShare.ChangeResult.QueryWithFulltext =>
+        IdResult(
+          false,
+          "Sorry, shares with fulltext queries are currently not supported.",
+          Ident.unsafe("")
+        )
     }
 
   def mkBasicResult(r: OShare.ChangeResult, msg: => String): BasicResult =
@@ -141,6 +147,11 @@ object ShareRoutes {
         BasicResult(
           false,
           "Share not found or not owner. Only the owner can update a share."
+        )
+      case OShare.ChangeResult.QueryWithFulltext =>
+        BasicResult(
+          false,
+          "Sorry, shares with fulltext queries are currently not supported."
         )
     }
 
