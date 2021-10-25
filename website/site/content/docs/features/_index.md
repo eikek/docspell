@@ -44,6 +44,8 @@ description = "A list of features and limitations."
   upload files; these urls allow to be configured with metadata like
   tags, folder etc that are applied to all files uploaded through this
   url
+- [Share](@/docs/webapp/share.md) documents via cryptic public links
+  (optionally protected by a password)
 - [Send documents via e-mail](@/docs/webapp/mailitem.md)
 - [E-Mail notification](@/docs/webapp/notifydueitems.md) for documents
   with due dates
