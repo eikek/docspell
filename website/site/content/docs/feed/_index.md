@@ -54,7 +54,7 @@ your scanner is connected to your computer. This can create nice pdf
 files from scanners with ADF, applying corrections and sending them to
 docspell.
 
-{{ buttonright(classes="is-primary ", href="/docs/tools/cli", text="More") }}
+{{ buttonright(classes="is-primary ", href="/docs/tools/cli#watch-a-directory", text="More") }}
 
 
 # Android
