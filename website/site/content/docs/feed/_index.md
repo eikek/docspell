@@ -36,11 +36,12 @@ use with the following options.
 
 If you have a (document) scanner (or think about getting one), it can
 usually be configured to place scanned documents as image or PDF files
-on your NAS. On your NAS, run the provided `consumedir.sh` script as a
-service (there is a docker container to get started) that watches this
-directory and uploads all incoming files to Docspell. The script can
-watch directories recursively and can skip files already uploaded, so
-you can organize the files as you want in there (rename, move etc).
+on your NAS. On your NAS, run `dsc watch` as a service (there is a
+docker container to get started) that watches this directory and
+uploads all incoming files to Docspell. The [dsc
+tool](@/docs/tools/cli.md) can watch directories recursively and can
+skip files already uploaded, so you can organize the files as you want
+in there (rename, move etc).
 
 This can be used multiple times on different machines, if desired.
 
@@ -53,7 +54,7 @@ your scanner is connected to your computer. This can create nice pdf
 files from scanners with ADF, applying corrections and sending them to
 docspell.
 
-{{ buttonright(classes="is-primary ", href="/docs/tools/consumedir", text="More") }}
+{{ buttonright(classes="is-primary ", href="/docs/tools/cli", text="More") }}
 
 
 # Android
