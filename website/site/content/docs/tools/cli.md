@@ -429,8 +429,7 @@ defining an environment variable which gets picked up by the
 containers defined in `docker-compose.yml`:
 
 ``` bash
-export DOCSPELL_HEADER_VALUE="my-secret"
-docker-compose up
+docker-compose up -d
 ```
 
 

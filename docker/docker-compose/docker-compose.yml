@@ -1,17 +1,35 @@
 version: '3.8'
 services:
 
+  # The restserver and joex containers defined here are configured
+  # using env variables. Both must connect to the same database and
+  # solr instance. More information on configuring can be found here:
+  # https://docspell.org/docs/configure
+  #
+  # Please replace the values of the following with a custom secret
+  # string:
+  #
+  # - DOCSPELL_SERVER_ADMIN__ENDPOINT_SECRET
+  # - DOCSPELL_SERVER_AUTH_SERVER__SECRET
+  # - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE
   restserver:
     image: docspell/restserver:latest
     container_name: docspell-restserver
-    command:
-      - /opt/docspell.conf
     restart: unless-stopped
     ports:
       - "7880:7880"
-    volumes:
-      - ./docspell.conf:/opt/docspell.conf
-    env_file: ./.env
+    environment:
+      - DOCSPELL_SERVER_ADMIN__ENDPOINT_SECRET=admin123
+      - DOCSPELL_SERVER_AUTH_SERVER__SECRET=
+      - DOCSPELL_SERVER_BACKEND_JDBC_PASSWORD=dbpass
+      - DOCSPELL_SERVER_BACKEND_JDBC_URL=jdbc:postgresql://db:5432/dbname
+      - DOCSPELL_SERVER_BACKEND_JDBC_USER=dbuser
+      - DOCSPELL_SERVER_BIND_ADDRESS=0.0.0.0
+      - DOCSPELL_SERVER_FULL__TEXT__SEARCH_ENABLED=true
+      - DOCSPELL_SERVER_FULL__TEXT__SEARCH_SOLR_URL=http://docspell-solr:8983/solr/docspell
+      - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_ENABLED=true
+      - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_ENABLED=true
+      - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE=integration-password123
     depends_on:
       - solr
 
@@ -20,16 +38,29 @@ services:
     container_name: docspell-joex
     command:
       - -J-Xmx3G
-      - /opt/docspell.conf
     restart: unless-stopped
-    env_file: ./.env
+    environment:
+      - TZ=Europe/Berlin
+      - DOCSPELL_JOEX_BASE__URL=http://docspell-joex:7878
+      - DOCSPELL_JOEX_BIND_ADDRESS=0.0.0.0
+      - DOCSPELL_JOEX_FULL__TEXT__SEARCH_ENABLED=true
+      - DOCSPELL_JOEX_FULL__TEXT__SEARCH_SOLR_URL=http://docspell-solr:8983/solr/docspell
+      - DOCSPELL_JOEX_JDBC_PASSWORD=dbpass
+      - DOCSPELL_JOEX_JDBC_URL=jdbc:postgresql://db:5432/dbname
+      - DOCSPELL_JOEX_JDBC_USER=dbuser
     ports:
       - "7878:7878"
-    volumes:
-      - ./docspell.conf:/opt/docspell.conf
     depends_on:
       - solr
 
+  # The consumedir container watches a directory for files to upload
+  # to docspell restserver. This uses the `dsc` tool. For information
+  # on the available options, see `dsc --help`.
+  # https://github.com/docspell/dsc
+  #
+  # The value after `Docspell-Integration` must match the secret
+  # specified at the restserver via
+  # DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE.
   consumedir:
     image: docspell/dsc:latest
     container_name: docspell-consumedir
@@ -41,10 +72,9 @@ services:
       - "--delete"
       - "-ir"
       - "--header"
-      - "Docspell-Integration:$DOCSPELL_HEADER_VALUE"
+      - "Docspell-Integration:integration-password123"
       - "/opt/docs"
     restart: unless-stopped
-    env_file: ./.env
     volumes:
       - ./docs:/opt/docs
     depends_on:
