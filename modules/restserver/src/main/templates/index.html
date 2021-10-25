@@ -43,8 +43,21 @@
              // this is required for transitioning; elm fails to parse the account
              account["requireSecondFactor"] = false;
          }
+
+         // hack to guess if the browser can display PDFs natively. It
+         // seems that almost all browsers allow to query the
+         // navigator.mimeTypes array, except firefox.
+         var ua = navigator.userAgent.toLowerCase();
+         var pdfSupported = false;
+         if (ua.indexOf("firefox") > -1) {
+             pdfSupported = ua.indexOf("mobile") == -1;
+         } else {
+             pdfSupported = "application/pdf" in navigator.mimeTypes;
+         }
+
          var elmFlags = {
              "account": account,
+             "pdfSupported": pdfSupported,
              "config": {{{flagsJson}}}
          };
         </script>

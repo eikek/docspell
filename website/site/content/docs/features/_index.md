@@ -56,6 +56,7 @@ description = "A list of features and limitations."
 - Everything stored in a SQL database: PostgreSQL, MariaDB or H2
   - H2 is embedded, a "one-file-only" database, avoids installing db
     servers
+- Support for encrypted PDFs
 - Files supported:
   - Documents:
     - PDF

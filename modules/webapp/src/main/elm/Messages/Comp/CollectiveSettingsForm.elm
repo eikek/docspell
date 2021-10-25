@@ -44,6 +44,8 @@ type alias Texts =
     , fulltextReindexSubmitted : String
     , fulltextReindexOkMissing : String
     , emptyTrash : String
+    , passwords : String
+    , passwordsInfo : String
     }
 
 
@@ -77,6 +79,8 @@ gb =
     , fulltextReindexOkMissing =
         "Please type OK in the field if you really want to start re-indexing your data."
     , emptyTrash = "Empty Trash"
+    , passwords = "Passwords"
+    , passwordsInfo = "These passwords are used when encrypted PDFs are being processed. Please note, that they are stored in the database as **plain text**!"
     }
 
 
@@ -110,4 +114,6 @@ de =
     , fulltextReindexOkMissing =
         "Bitte tippe OK in das Feld ein, wenn Du wirklich den Index neu erzeugen möchtest."
     , emptyTrash = "Papierkorb löschen"
+    , passwords = "Passwörter"
+    , passwordsInfo = "Diese Passwörter werden zum Lesen von verschlüsselten PDFs verwendet. Diese Passwörter werden in der Datanbank **in Klartext** gespeichert!"
     }

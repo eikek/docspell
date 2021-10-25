@@ -6,23 +6,34 @@
 
 package docspell.restserver
 
+import java.security.SecureRandom
+
 import cats.Semigroup
 import cats.data.{Validated, ValidatedNec}
+import cats.effect.Async
 import cats.implicits._
 
 import docspell.backend.signup.{Config => SignupConfig}
-import docspell.common.config.Implicits._
+import docspell.common.Logger
+import docspell.config.ConfigFactory
+import docspell.config.Implicits._
 import docspell.oidc.{ProviderConfig, SignatureAlgo}
 import docspell.restserver.auth.OpenId
 
 import pureconfig._
 import pureconfig.generic.auto._
+import scodec.bits.ByteVector
 
 object ConfigFile {
+  private[this] val unsafeLogger = org.log4s.getLogger
   import Implicits._
 
-  def loadConfig: Config =
-    Validate(ConfigSource.default.at("docspell.server").loadOrThrow[Config])
+  def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
+    val logger = Logger.log4s(unsafeLogger)
+    ConfigFactory
+      .default[F, Config](logger, "docspell.server")(args)
+      .map(cfg => Validate(cfg))
+  }
 
   object Implicits {
     implicit val signupModeReader: ConfigReader[SignupConfig.Mode] =
@@ -50,11 +61,24 @@ object ConfigFile {
 
     def all(cfg: Config) = List(
       duplicateOpenIdProvider(cfg),
-      signKeyVsUserUrl(cfg)
+      signKeyVsUserUrl(cfg),
+      generateSecretIfEmpty(cfg)
     )
 
     private def valid(cfg: Config): ValidatedNec[String, Config] =
       Validated.validNec(cfg)
+
+    def generateSecretIfEmpty(cfg: Config): ValidatedNec[String, Config] =
+      if (cfg.auth.serverSecret.isEmpty) {
+        unsafeLogger.warn(
+          "No serverSecret specified. Generating a random one. It is recommended to add a server-secret in the config file."
+        )
+        val random = new SecureRandom()
+        val buffer = new Array[Byte](32)
+        random.nextBytes(buffer)
+        val secret = ByteVector.view(buffer)
+        valid(cfg.copy(auth = cfg.auth.copy(serverSecret = secret)))
+      } else valid(cfg)
 
     def duplicateOpenIdProvider(cfg: Config): ValidatedNec[String, Config] = {
       val dupes =

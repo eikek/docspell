@@ -8,6 +8,7 @@ package docspell.common
 
 import io.circe._
 
+/** The collective and user name. */
 case class AccountId(collective: Ident, user: Ident) {
   def asString =
     if (collective == user) user.id

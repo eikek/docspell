@@ -58,19 +58,17 @@ module Data.Icons exposing
     , personIcon2
     , search
     , searchIcon
+    , share
+    , shareIcon
     , showQr
     , showQrIcon
-    , source
     , source2
-    , sourceIcon
     , sourceIcon2
     , tag
     , tag2
     , tagIcon
     , tagIcon2
-    , tags
     , tags2
-    , tagsIcon
     , tagsIcon2
     )
 
@@ -79,19 +77,19 @@ import Html exposing (Html, i)
 import Html.Attributes exposing (class)
 
 
-source : String
-source =
-    "upload icon"
+share : String
+share =
+    "fa fa-share-alt"
+
+
+shareIcon : String -> Html msg
+shareIcon classes =
+    i [ class (classes ++ " " ++ share) ] []
 
 
 source2 : String
 source2 =
     "fa fa-upload"
-
-
-sourceIcon : String -> Html msg
-sourceIcon classes =
-    i [ class (source ++ " " ++ classes) ] []
 
 
 sourceIcon2 : String -> Html msg
@@ -359,16 +357,6 @@ tagIcon classes =
 tagIcon2 : String -> Html msg
 tagIcon2 classes =
     i [ class (tag2 ++ " " ++ classes) ] []
-
-
-tags : String
-tags =
-    "tags icon"
-
-
-tagsIcon : String -> Html msg
-tagsIcon classes =
-    i [ class (tags ++ " " ++ classes) ] []
 
 
 tags2 : String

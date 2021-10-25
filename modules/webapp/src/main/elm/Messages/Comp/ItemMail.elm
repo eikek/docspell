@@ -29,6 +29,8 @@ type alias Texts =
     , includeAllAttachments : String
     , connectionMissing : String
     , sendLabel : String
+    , moreRecipients : String
+    , lessRecipients : String
     }
 
 
@@ -39,13 +41,15 @@ gb =
     , selectConnection = "Select connection..."
     , sendVia = "Send via"
     , recipients = "Recipient(s)"
-    , ccRecipients = "CC recipient(s)"
-    , bccRecipients = "BCC recipient(s)..."
+    , ccRecipients = "CC"
+    , bccRecipients = "BCC"
     , subject = "Subject"
     , body = "Body"
     , includeAllAttachments = "Include all item attachments"
     , connectionMissing = "No E-Mail connections configured. Goto user settings to add one."
     , sendLabel = "Send"
+    , moreRecipients = "More…"
+    , lessRecipients = "Less…"
     }
 
 
@@ -63,4 +67,6 @@ de =
     , includeAllAttachments = "Alle Anhänge mit einfügen"
     , connectionMissing = "Keine E-Mail-Verbindung definiert. Gehe zu den Benutzereinstellungen und füge eine hinzu."
     , sendLabel = "Senden"
+    , moreRecipients = "Weitere…"
+    , lessRecipients = "Weniger…"
     }

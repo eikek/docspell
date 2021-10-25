@@ -9,7 +9,9 @@ module Data.Flags exposing
     ( Config
     , Flags
     , accountString
+    , getAccount
     , getToken
+    , isAuthenticated
     , withAccount
     , withoutAccount
     )
@@ -39,8 +41,27 @@ type alias Config =
 
 type alias Flags =
     { account : Maybe AuthResult
+    , pdfSupported : Bool
     , config : Config
     }
+
+
+isAuthenticated : Flags -> Bool
+isAuthenticated flags =
+    getAccount flags /= Nothing
+
+
+getAccount : Flags -> Maybe AuthResult
+getAccount flags =
+    Maybe.andThen
+        (\ar ->
+            if ar.success then
+                Just ar
+
+            else
+                Nothing
+        )
+        flags.account
 
 
 getToken : Flags -> Maybe String

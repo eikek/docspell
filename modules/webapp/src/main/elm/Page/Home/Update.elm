@@ -19,6 +19,7 @@ import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.ItemMerge
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
+import Comp.PublishItems
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
 import Data.ItemQuery as Q
@@ -26,6 +27,7 @@ import Data.ItemSelection
 import Data.Items
 import Data.SearchMode exposing (SearchMode)
 import Data.UiSettings exposing (UiSettings)
+import Messages.Page.Home exposing (Texts)
 import Page exposing (Page(..))
 import Page.Home.Data exposing (..)
 import Process
@@ -47,8 +49,8 @@ type alias UpdateResult =
     }
 
 
-update : Maybe String -> Nav.Key -> Flags -> UiSettings -> Msg -> Model -> UpdateResult
-update mId key flags settings msg model =
+update : Maybe String -> Nav.Key -> Flags -> Texts -> UiSettings -> Msg -> Model -> UpdateResult
+update mId key flags texts settings msg model =
     case msg of
         Init ->
             let
@@ -62,7 +64,7 @@ update mId key flags settings msg model =
             in
             makeResult <|
                 Util.Update.andThen3
-                    [ update mId key flags settings (SearchMenuMsg Comp.SearchMenu.Init)
+                    [ update mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.Init)
                     , doSearch searchParam
                     ]
                     model
@@ -72,7 +74,7 @@ update mId key flags settings msg model =
                 nm =
                     { model | searchOffset = 0, powerSearchInput = Comp.PowerSearchInput.init }
             in
-            update mId key flags settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
+            update mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
         SearchMenuMsg m ->
             let
@@ -118,7 +120,7 @@ update mId key flags settings msg model =
         SetLinkTarget lt ->
             case linkTargetMsg lt of
                 Just m ->
-                    update mId key flags settings m model
+                    update mId key flags texts settings m model
 
                 Nothing ->
                     makeResult ( model, Cmd.none, Sub.none )
@@ -166,7 +168,7 @@ update mId key flags settings msg model =
             in
             makeResult <|
                 Util.Update.andThen3
-                    [ update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.SetResults list))
+                    [ update mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.SetResults list))
                     , if scroll then
                         scrollToCard mId
 
@@ -188,7 +190,7 @@ update mId key flags settings msg model =
                         , moreAvailable = list.groups /= []
                     }
             in
-            update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
+            update mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
 
         ItemSearchAddResp (Err _) ->
             withSub
@@ -237,6 +239,9 @@ update mId key flags settings msg model =
 
                         SelectView _ ->
                             SimpleView
+
+                        PublishView q ->
+                            PublishView q
             in
             withSub
                 ( { model | viewMode = nextView }
@@ -248,13 +253,16 @@ update mId key flags settings msg model =
                 ( nextView, cmd ) =
                     case model.viewMode of
                         SimpleView ->
-                            ( SelectView initSelectViewModel, loadEditModel flags )
+                            ( SelectView <| initSelectViewModel flags, loadEditModel flags )
 
                         SearchView ->
-                            ( SelectView initSelectViewModel, loadEditModel flags )
+                            ( SelectView <| initSelectViewModel flags, loadEditModel flags )
 
                         SelectView _ ->
                             ( SearchView, Cmd.none )
+
+                        PublishView q ->
+                            ( PublishView q, Cmd.none )
             in
             withSub
                 ( { model
@@ -282,18 +290,18 @@ update mId key flags settings msg model =
                 smMsg =
                     SearchMenuMsg (Comp.SearchMenu.SetTextSearch str)
             in
-            update mId key flags settings smMsg model
+            update mId key flags texts settings smMsg model
 
         ToggleSearchType ->
             case model.searchTypeDropdownValue of
                 BasicSearch ->
-                    update mId key flags settings (SearchMenuMsg Comp.SearchMenu.SetFulltextSearch) model
+                    update mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.SetFulltextSearch) model
 
                 ContentOnlySearch ->
-                    update mId key flags settings (SearchMenuMsg Comp.SearchMenu.SetNamesSearch) model
+                    update mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.SetNamesSearch) model
 
         KeyUpSearchbarMsg (Just Enter) ->
-            update mId key flags settings (DoSearch model.searchTypeDropdownValue) model
+            update mId key flags texts settings (DoSearch model.searchTypeDropdownValue) model
 
         KeyUpSearchbarMsg _ ->
             withSub ( model, Cmd.none )
@@ -607,6 +615,7 @@ update mId key flags settings msg model =
                         update mId
                             key
                             flags
+                            texts
                             settings
                             (DoSearch model.searchTypeDropdownValue)
                             model_
@@ -615,6 +624,86 @@ update mId key flags settings msg model =
                         noSub
                             ( model_
                             , Cmd.map MergeItemsMsg result.cmd
+                            )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        PublishSelectedItems ->
+            case model.viewMode of
+                SelectView svm ->
+                    if svm.action == PublishSelected then
+                        let
+                            ( mm, mc ) =
+                                Comp.PublishItems.init flags
+                        in
+                        noSub
+                            ( { model
+                                | viewMode =
+                                    SelectView
+                                        { svm
+                                            | action = NoneAction
+                                            , publishModel = mm
+                                        }
+                              }
+                            , Cmd.map PublishItemsMsg mc
+                            )
+
+                    else if svm.ids == Set.empty then
+                        noSub ( model, Cmd.none )
+
+                    else
+                        let
+                            ( mm, mc ) =
+                                Comp.PublishItems.initQuery flags
+                                    (Q.ItemIdIn (Set.toList svm.ids))
+                        in
+                        noSub
+                            ( { model
+                                | viewMode =
+                                    SelectView
+                                        { svm
+                                            | action = PublishSelected
+                                            , publishModel = mm
+                                        }
+                              }
+                            , Cmd.map PublishItemsMsg mc
+                            )
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        PublishItemsMsg lmsg ->
+            case model.viewMode of
+                SelectView svm ->
+                    let
+                        result =
+                            Comp.PublishItems.update texts.publishItems flags lmsg svm.publishModel
+
+                        nextView =
+                            case result.outcome of
+                                Comp.PublishItems.OutcomeDone ->
+                                    SelectView { svm | action = NoneAction }
+
+                                Comp.PublishItems.OutcomeInProgress ->
+                                    SelectView { svm | publishModel = result.model }
+
+                        model_ =
+                            { model | viewMode = nextView }
+                    in
+                    if result.outcome == Comp.PublishItems.OutcomeDone then
+                        update mId
+                            key
+                            flags
+                            texts
+                            settings
+                            (DoSearch model.searchTypeDropdownValue)
+                            model_
+
+                    else
+                        noSub
+                            ( model_
+                            , Cmd.map PublishItemsMsg result.cmd
                             )
 
                 _ ->
@@ -723,7 +812,7 @@ update mId key flags settings msg model =
                 model_ =
                     { model | viewMode = viewMode }
             in
-            update mId key flags settings (DoSearch model.lastSearchType) model_
+            update mId key flags texts settings (DoSearch model.lastSearchType) model_
 
         SearchStatsResp result ->
             let
@@ -733,7 +822,7 @@ update mId key flags settings msg model =
                 stats =
                     Result.withDefault model.searchStats result
             in
-            update mId key flags settings lm { model | searchStats = stats }
+            update mId key flags texts settings lm { model | searchStats = stats }
 
         TogglePreviewFullWidth ->
             let
@@ -775,16 +864,48 @@ update mId key flags settings msg model =
                     makeResult ( model_, cmd_, Sub.map PowerSearchMsg result.subs )
 
                 Comp.PowerSearchInput.SubmitSearch ->
-                    update mId key flags settings (DoSearch model_.searchTypeDropdownValue) model_
+                    update mId key flags texts settings (DoSearch model_.searchTypeDropdownValue) model_
 
         KeyUpPowerSearchbarMsg (Just Enter) ->
-            update mId key flags settings (DoSearch model.searchTypeDropdownValue) model
+            update mId key flags texts settings (DoSearch model.searchTypeDropdownValue) model
 
         KeyUpPowerSearchbarMsg _ ->
             withSub ( model, Cmd.none )
 
         RemoveItem id ->
-            update mId key flags settings (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
+            update mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
+
+        TogglePublishCurrentQueryView ->
+            case createQuery model of
+                Just q ->
+                    let
+                        ( pm, pc ) =
+                            Comp.PublishItems.initQuery flags q
+                    in
+                    noSub ( { model | viewMode = PublishView pm }, Cmd.map PublishViewMsg pc )
+
+                Nothing ->
+                    noSub ( model, Cmd.none )
+
+        PublishViewMsg lmsg ->
+            case model.viewMode of
+                PublishView inPM ->
+                    let
+                        result =
+                            Comp.PublishItems.update texts.publishItems flags lmsg inPM
+                    in
+                    case result.outcome of
+                        Comp.PublishItems.OutcomeInProgress ->
+                            noSub
+                                ( { model | viewMode = PublishView result.model }
+                                , Cmd.map PublishViewMsg result.cmd
+                                )
+
+                        Comp.PublishItems.OutcomeDone ->
+                            noSub ( { model | viewMode = SearchView }, Cmd.none )
+
+                _ ->
+                    noSub ( model, Cmd.none )
 
 
 
@@ -917,33 +1038,7 @@ doSearch param model =
 
 linkTargetMsg : LinkTarget -> Maybe Msg
 linkTargetMsg linkTarget =
-    case linkTarget of
-        Comp.LinkTarget.LinkNone ->
-            Nothing
-
-        Comp.LinkTarget.LinkCorrOrg id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetCorrOrg id)
-
-        Comp.LinkTarget.LinkCorrPerson id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetCorrPerson id)
-
-        Comp.LinkTarget.LinkConcPerson id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetConcPerson id)
-
-        Comp.LinkTarget.LinkConcEquip id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetConcEquip id)
-
-        Comp.LinkTarget.LinkFolder id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetFolder id)
-
-        Comp.LinkTarget.LinkTag id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetTag id.id)
-
-        Comp.LinkTarget.LinkCustomField id ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.SetCustomField id)
-
-        Comp.LinkTarget.LinkSource str ->
-            Just <| SearchMenuMsg (Comp.SearchMenu.ResetToSource str)
+    Maybe.map SearchMenuMsg (Comp.SearchMenu.linkTargetMsg linkTarget)
 
 
 doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )

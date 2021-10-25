@@ -20,6 +20,7 @@ module Data.UiSettings exposing
     , fieldVisible
     , merge
     , mergeDefaults
+    , pdfUrl
     , posFromString
     , posToString
     , storedUiSettingsDecoder
@@ -34,7 +35,9 @@ import Api.Model.Tag exposing (Tag)
 import Data.BasicSize exposing (BasicSize)
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
+import Data.Flags exposing (Flags)
 import Data.ItemTemplate exposing (ItemTemplate)
+import Data.Pdf exposing (PdfMode)
 import Data.UiTheme exposing (UiTheme)
 import Dict exposing (Dict)
 import Html exposing (Attribute)
@@ -57,7 +60,7 @@ force default settings.
 type alias StoredUiSettings =
     { itemSearchPageSize : Maybe Int
     , tagCategoryColors : List ( String, String )
-    , nativePdfPreview : Bool
+    , pdfMode : Maybe String
     , itemSearchNoteLength : Maybe Int
     , itemDetailNotesPosition : Maybe String
     , searchMenuFolderCount : Maybe Int
@@ -91,7 +94,7 @@ storedUiSettingsDecoder =
     Decode.succeed StoredUiSettings
         |> P.optional "itemSearchPageSize" maybeInt Nothing
         |> P.optional "tagCategoryColors" (Decode.keyValuePairs Decode.string) []
-        |> P.optional "nativePdfPreview" Decode.bool False
+        |> P.optional "pdfMode" maybeString Nothing
         |> P.optional "itemSearchNoteLength" maybeInt Nothing
         |> P.optional "itemDetailNotesPosition" maybeString Nothing
         |> P.optional "searchMenuFolderCount" maybeInt Nothing
@@ -121,7 +124,7 @@ storedUiSettingsEncode value =
     Encode.object
         [ ( "itemSearchPageSize", maybeEnc Encode.int value.itemSearchPageSize )
         , ( "tagCategoryColors", Encode.dict identity Encode.string (Dict.fromList value.tagCategoryColors) )
-        , ( "nativePdfPreview", Encode.bool value.nativePdfPreview )
+        , ( "pdfMode", maybeEnc Encode.string value.pdfMode )
         , ( "itemSearchNoteLength", maybeEnc Encode.int value.itemSearchNoteLength )
         , ( "itemDetailNotesPosition", maybeEnc Encode.string value.itemDetailNotesPosition )
         , ( "searchMenuFolderCount", maybeEnc Encode.int value.searchMenuFolderCount )
@@ -146,14 +149,15 @@ storedUiSettingsEncode value =
 {-| Settings for the web ui. These fields are all mandatory, since
 there is always a default value.
 
-When loaded from local storage, all optional fields can fallback to a
-default value, converting the StoredUiSettings into a UiSettings.
+When loaded from local storage or the server, all optional fields can
+fallback to a default value, converting the StoredUiSettings into a
+UiSettings.
 
 -}
 type alias UiSettings =
     { itemSearchPageSize : Int
     , tagCategoryColors : Dict String Color
-    , nativePdfPreview : Bool
+    , pdfMode : PdfMode
     , itemSearchNoteLength : Int
     , itemDetailNotesPosition : Pos
     , searchMenuFolderCount : Int
@@ -219,7 +223,7 @@ defaults : UiSettings
 defaults =
     { itemSearchPageSize = 60
     , tagCategoryColors = Dict.empty
-    , nativePdfPreview = False
+    , pdfMode = Data.Pdf.Detect
     , itemSearchNoteLength = 0
     , itemDetailNotesPosition = Bottom
     , searchMenuFolderCount = 3
@@ -259,7 +263,10 @@ merge given fallback =
                 |> Dict.map (\_ -> Maybe.withDefault Data.Color.Grey)
             )
             fallback.tagCategoryColors
-    , nativePdfPreview = given.nativePdfPreview
+    , pdfMode =
+        given.pdfMode
+            |> Maybe.andThen Data.Pdf.fromString
+            |> Maybe.withDefault fallback.pdfMode
     , itemSearchNoteLength =
         choose given.itemSearchNoteLength fallback.itemSearchNoteLength
     , itemDetailNotesPosition =
@@ -313,7 +320,7 @@ toStoredUiSettings settings =
     , tagCategoryColors =
         Dict.map (\_ -> Data.Color.toString) settings.tagCategoryColors
             |> Dict.toList
-    , nativePdfPreview = settings.nativePdfPreview
+    , pdfMode = Just (Data.Pdf.asString settings.pdfMode)
     , itemSearchNoteLength = Just settings.itemSearchNoteLength
     , itemDetailNotesPosition = Just (posToString settings.itemDetailNotesPosition)
     , searchMenuFolderCount = Just settings.searchMenuFolderCount
@@ -405,6 +412,19 @@ cardPreviewSize2 settings =
 
         Data.BasicSize.Large ->
             "max-h-80"
+
+
+pdfUrl : UiSettings -> Flags -> String -> String
+pdfUrl settings flags originalUrl =
+    case settings.pdfMode of
+        Data.Pdf.Detect ->
+            Data.Pdf.detectUrl flags originalUrl
+
+        Data.Pdf.Native ->
+            originalUrl
+
+        Data.Pdf.Server ->
+            Data.Pdf.serverUrl originalUrl
 
 
 

@@ -17,6 +17,7 @@ module Comp.ItemCardList exposing
     , view2
     )
 
+import Api.Model.AttachmentLight exposing (AttachmentLight)
 import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
@@ -72,13 +73,13 @@ prevItem model id =
 --- Update
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, LinkTarget )
 update flags msg model =
     let
         res =
             updateDrag DD.init flags msg model
     in
-    ( res.model, res.cmd )
+    ( res.model, res.cmd, res.linkTarget )
 
 
 type alias UpdateResult =
@@ -161,22 +162,26 @@ updateDrag dm _ msg model =
 type alias ViewConfig =
     { current : Maybe String
     , selection : ItemSelection
+    , previewUrl : AttachmentLight -> String
+    , previewUrlFallback : ItemLight -> String
+    , attachUrl : AttachmentLight -> String
+    , detailPage : ItemLight -> Page
     }
 
 
-view2 : Texts -> ViewConfig -> UiSettings -> Model -> Html Msg
-view2 texts cfg settings model =
+view2 : Texts -> ViewConfig -> UiSettings -> Flags -> Model -> Html Msg
+view2 texts cfg settings flags model =
     div
         [ classList
             [ ( "ds-item-list", True )
             , ( "ds-multi-select-mode", isMultiSelectMode cfg )
             ]
         ]
-        (List.map (viewGroup2 texts model cfg settings) model.results.groups)
+        (List.map (viewGroup2 texts model cfg settings flags) model.results.groups)
 
 
-viewGroup2 : Texts -> Model -> ViewConfig -> UiSettings -> ItemLightGroup -> Html Msg
-viewGroup2 texts model cfg settings group =
+viewGroup2 : Texts -> Model -> ViewConfig -> UiSettings -> Flags -> ItemLightGroup -> Html Msg
+viewGroup2 texts model cfg settings flags group =
     div [ class "ds-item-group" ]
         [ div
             [ class "flex py-1 mt-2 mb-2 flex flex-row items-center"
@@ -201,12 +206,12 @@ viewGroup2 texts model cfg settings group =
                 []
             ]
         , div [ class "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2" ]
-            (List.map (viewItem2 texts model cfg settings) group.items)
+            (List.map (viewItem2 texts model cfg settings flags) group.items)
         ]
 
 
-viewItem2 : Texts -> Model -> ViewConfig -> UiSettings -> ItemLight -> Html Msg
-viewItem2 texts model cfg settings item =
+viewItem2 : Texts -> Model -> ViewConfig -> UiSettings -> Flags -> ItemLight -> Html Msg
+viewItem2 texts model cfg settings flags item =
     let
         currentClass =
             if cfg.current == Just item.id then
@@ -216,14 +221,14 @@ viewItem2 texts model cfg settings item =
                 ""
 
         vvcfg =
-            Comp.ItemCard.ViewConfig cfg.selection currentClass
+            Comp.ItemCard.ViewConfig cfg.selection currentClass cfg.previewUrl cfg.previewUrlFallback cfg.attachUrl cfg.detailPage
 
         cardModel =
             Dict.get item.id model.itemCards
                 |> Maybe.withDefault Comp.ItemCard.init
 
         cardHtml =
-            Comp.ItemCard.view2 texts.itemCard vvcfg settings cardModel item
+            Comp.ItemCard.view2 texts.itemCard vvcfg settings flags cardModel item
     in
     Html.map (ItemCardMsg item) cardHtml
 

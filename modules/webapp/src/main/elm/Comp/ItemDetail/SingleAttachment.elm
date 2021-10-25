@@ -85,12 +85,8 @@ view texts flags settings model pos attach =
                 , style "max-height" "calc(100vh - 140px)"
                 , style "min-height" "500px"
                 ]
-                [ iframe
-                    [ if Maybe.withDefault settings.nativePdfPreview model.pdfNativeView then
-                        src fileUrl
-
-                      else
-                        src (fileUrl ++ "/view")
+                [ embed
+                    [ src <| Data.UiSettings.pdfUrl settings flags fileUrl
                     , class "absolute h-full w-full top-0 left-0 mx-0 py-0"
                     , id "ds-pdf-view-iframe"
                     ]
@@ -157,6 +153,7 @@ attachHeader texts settings model _ attach =
                 [ href "#"
                 , onClick ToggleAttachMenu
                 , class S.secondaryBasicButton
+                , class "mr-2"
                 , classList
                     [ ( "bg-gray-200 dark:bg-bluegray-600 ", model.attachMenuOpen )
                     , ( "hidden", not multiAttach )
@@ -164,12 +161,16 @@ attachHeader texts settings model _ attach =
                     , ( "hidden sm:block", multiAttach && not mobile )
                     ]
                 ]
-                [ i [ class "fa fa-images font-thin" ] []
+                [ if model.attachMenuOpen then
+                    i [ class "fa fa-chevron-up" ] []
+
+                  else
+                    i [ class "fa fa-chevron-down" ] []
                 ]
     in
     div [ class "flex flex-col sm:flex-row items-center w-full" ]
         [ attachSelectToggle False
-        , div [ class "ml-2 text-base font-bold flex-grow w-full text-center sm:text-left break-all" ]
+        , div [ class "text-base font-bold flex-grow w-full text-center sm:text-left break-all" ]
             [ text attachName
             , text " ("
             , text (Util.Size.bytesReadable Util.Size.B (toFloat attach.size))
@@ -252,18 +253,6 @@ attachHeader texts settings model _ attach =
                                 [ href (fileUrl ++ "/original")
                                 , target "_new"
                                 , classList [ ( "hidden", not attach.converted ) ]
-                                ]
-                          }
-                        , { icon =
-                                if Maybe.withDefault settings.nativePdfPreview model.pdfNativeView then
-                                    "fa fa-toggle-on"
-
-                                else
-                                    "fa fa-toggle-off"
-                          , label = texts.renderPdfByBrowser
-                          , attrs =
-                                [ onClick (TogglePdfNativeView settings.nativePdfPreview)
-                                , href "#"
                                 ]
                           }
                         , { icon =

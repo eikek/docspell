@@ -10,7 +10,7 @@ module Styles exposing (..)
 
 sidebar : String
 sidebar =
-    " flex flex-col flex-none md:w-80 w-full min-h-max px-2 dark:text-gray-200 shadow overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
+    " flex flex-col flex-none md:w-80 w-full min-h-max px-2 dark:text-gray-200 overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
 
 
 sidebarBg : String
@@ -46,6 +46,11 @@ successMessageLink =
 errorMessage : String
 errorMessage =
     " border border-red-600 bg-red-50 text-red-600 dark:border-orange-800 dark:bg-orange-300 dark:text-orange-800 px-2 py-2 rounded "
+
+
+errorText : String
+errorText =
+    " text-red-600 dark:text-orange-800 "
 
 
 warnMessage : String
@@ -93,6 +98,11 @@ redBasicLabel =
 basicLabel : String
 basicLabel =
     " label border-gray-600 text-gray-600 dark:border-bluegray-300 dark:text-bluegray-300 "
+
+
+blueBasicLabel : String
+blueBasicLabel =
+    " label border-blue-500 text-blue-500 dark:border-lightblue-200 dark:text-lightblue-200 "
 
 
 
@@ -320,7 +330,7 @@ border2 =
 
 header1 : String
 header1 =
-    " text-3xl mt-3 mb-5 font-semibold tracking-wide break-all"
+    " text-3xl mt-3 mb-3 sm:mb-5 font-semibold tracking-wide break-all"
 
 
 header2 : String

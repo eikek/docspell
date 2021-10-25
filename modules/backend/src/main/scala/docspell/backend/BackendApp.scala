@@ -48,6 +48,7 @@ trait BackendApp[F[_]] {
   def simpleSearch: OSimpleSearch[F]
   def clientSettings: OClientSettings[F]
   def totp: OTotp[F]
+  def share: OShare[F]
 }
 
 object BackendApp {
@@ -85,6 +86,9 @@ object BackendApp {
       customFieldsImpl <- OCustomFields(store)
       simpleSearchImpl = OSimpleSearch(fulltextImpl, itemSearchImpl)
       clientSettingsImpl <- OClientSettings(store)
+      shareImpl <- Resource.pure(
+        OShare(store, itemSearchImpl, simpleSearchImpl, javaEmil)
+      )
     } yield new BackendApp[F] {
       val login = loginImpl
       val signup = signupImpl
@@ -107,16 +111,16 @@ object BackendApp {
       val simpleSearch = simpleSearchImpl
       val clientSettings = clientSettingsImpl
       val totp = totpImpl
+      val share = shareImpl
     }
 
   def apply[F[_]: Async](
       cfg: Config,
-      connectEC: ExecutionContext,
-      httpClientEc: ExecutionContext
+      connectEC: ExecutionContext
   )(ftsFactory: Client[F] => Resource[F, FtsClient[F]]): Resource[F, BackendApp[F]] =
     for {
       store <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
-      httpClient <- BlazeClientBuilder[F](httpClientEc).resource
+      httpClient <- BlazeClientBuilder[F].resource
       ftsClient <- ftsFactory(httpClient)
       backend <- create(cfg, store, httpClient, ftsClient)
     } yield backend

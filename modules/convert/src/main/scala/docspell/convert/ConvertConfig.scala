@@ -6,11 +6,13 @@
 
 package docspell.convert
 
+import docspell.common.Password
+import docspell.convert.ConvertConfig.DecryptPdf
 import docspell.convert.extern.OcrMyPdfConfig
 import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}
 import docspell.convert.flexmark.MarkdownConfig
 
-case class ConvertConfig(
+final case class ConvertConfig(
     chunkSize: Int,
     convertedFilenamePart: String,
     maxImageSize: Int,
@@ -18,5 +20,11 @@ case class ConvertConfig(
     wkhtmlpdf: WkHtmlPdfConfig,
     tesseract: TesseractConfig,
     unoconv: UnoconvConfig,
-    ocrmypdf: OcrMyPdfConfig
+    ocrmypdf: OcrMyPdfConfig,
+    decryptPdf: DecryptPdf
 )
+
+object ConvertConfig {
+
+  final case class DecryptPdf(enabled: Boolean, passwords: List[Password])
+}

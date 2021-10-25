@@ -74,11 +74,12 @@ class ConversionTest extends FunSuite with FileChecks {
         Duration.seconds(20)
       ),
       target
-    )
+    ),
+    ConvertConfig.DecryptPdf(true, Nil)
   )
 
   val conversion =
-    Conversion.create[IO](convertConfig, SanitizeHtml.none, logger)
+    Conversion.create[IO](convertConfig, SanitizeHtml.none, Nil, logger)
 
   val bombs = List(
     ExampleFiles.bombs_20K_gray_jpeg,

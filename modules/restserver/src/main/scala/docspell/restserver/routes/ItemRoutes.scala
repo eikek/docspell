@@ -28,11 +28,11 @@ import docspell.restserver.http4s.BinaryUtil
 import docspell.restserver.http4s.Responses
 import docspell.restserver.http4s.{QueryParam => QP}
 
-import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
+import org.http4s.{HttpRoutes, Response}
 import org.log4s._
 
 object ItemRoutes {
@@ -415,7 +415,11 @@ object ItemRoutes {
   def searchItems[F[_]: Sync](
       backend: BackendApp[F],
       dsl: Http4sDsl[F]
-  )(settings: OSimpleSearch.Settings, fixQuery: Query.Fix, itemQuery: ItemQueryString) = {
+  )(
+      settings: OSimpleSearch.Settings,
+      fixQuery: Query.Fix,
+      itemQuery: ItemQueryString
+  ): F[Response[F]] = {
     import dsl._
 
     def convertFts(res: OSimpleSearch.Items.FtsItems): ItemLightList =
@@ -452,14 +456,14 @@ object ItemRoutes {
       }
   }
 
-  private def searchItemStats[F[_]: Sync](
+  def searchItemStats[F[_]: Sync](
       backend: BackendApp[F],
       dsl: Http4sDsl[F]
   )(
       settings: OSimpleSearch.StatsSettings,
       fixQuery: Query.Fix,
       itemQuery: ItemQueryString
-  ) = {
+  ): F[Response[F]] = {
     import dsl._
 
     backend.simpleSearch
@@ -479,7 +483,6 @@ object ItemRoutes {
         case StringSearchResult.ParseFailed(pf) =>
           BadRequest(BasicResult(false, s"Error reading query: ${pf.render}"))
       }
-
   }
 
   implicit final class OptionString(opt: Option[String]) {

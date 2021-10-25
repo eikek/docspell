@@ -19,6 +19,7 @@ services:
     image: docspell/joex:latest
     container_name: docspell-joex
     command:
+      - -J-Xmx3G
       - /opt/docspell.conf
     restart: unless-stopped
     env_file: ./.env
@@ -50,7 +51,7 @@ services:
       - restserver
 
   db:
-    image: postgres:13.4
+    image: postgres:14.0
     container_name: postgres_db
     restart: unless-stopped
     volumes:

@@ -10,6 +10,7 @@ module Page.CollectiveSettings.View2 exposing (viewContent, viewSidebar)
 import Api.Model.TagCount exposing (TagCount)
 import Comp.Basic as B
 import Comp.CollectiveSettingsForm
+import Comp.ShareManage
 import Comp.SourceManage
 import Comp.UserManage
 import Data.Flags exposing (Flags)
@@ -62,6 +63,17 @@ viewSidebar texts visible _ _ model =
                 ]
             , a
                 [ href "#"
+                , onClick (SetTab ShareTab)
+                , class S.sidebarLink
+                , menuEntryActive model ShareTab
+                ]
+                [ Icons.shareIcon ""
+                , span
+                    [ class "ml-3" ]
+                    [ text texts.shares ]
+                ]
+            , a
+                [ href "#"
                 , onClick (SetTab SettingsTab)
                 , menuEntryActive model SettingsTab
                 , class S.sidebarLink
@@ -104,6 +116,9 @@ viewContent texts flags settings model =
 
             Just SourceTab ->
                 viewSources texts flags settings model
+
+            Just ShareTab ->
+                viewShares texts settings flags model
 
             Nothing ->
                 []
@@ -227,6 +242,21 @@ viewSources texts flags settings model =
             ]
         ]
     , Html.map SourceMsg (Comp.SourceManage.view2 texts.sourceManage flags settings model.sourceModel)
+    ]
+
+
+viewShares : Texts -> UiSettings -> Flags -> Model -> List (Html Msg)
+viewShares texts settings flags model =
+    [ h1
+        [ class S.header1
+        , class "inline-flex items-center"
+        ]
+        [ Icons.shareIcon ""
+        , div [ class "ml-3" ]
+            [ text texts.shares
+            ]
+        ]
+    , Html.map ShareMsg (Comp.ShareManage.view texts.shareManage settings flags model.shareModel)
     ]
 
 

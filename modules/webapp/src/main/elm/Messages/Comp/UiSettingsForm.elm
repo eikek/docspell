@@ -13,9 +13,11 @@ module Messages.Comp.UiSettingsForm exposing
 
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
+import Data.Pdf exposing (PdfMode)
 import Messages.Basics
 import Messages.Data.Color
 import Messages.Data.Fields
+import Messages.Data.PdfMode
 
 
 type alias Texts =
@@ -53,6 +55,7 @@ type alias Texts =
     , fieldsInfo : String
     , fieldLabel : Field -> String
     , templateHelpMessage : String
+    , pdfMode : PdfMode -> String
     }
 
 
@@ -127,6 +130,7 @@ for example `{{corrOrg|corrPerson|-}}` would render the organization
 and if that is not present the person. If both are absent a dash `-`
 is rendered.
 """
+    , pdfMode = Messages.Data.PdfMode.gb
     }
 
 
@@ -203,4 +207,5 @@ verknüpft werden, bis zur ersten die einen Wert enthält. Zum Beispiel:
 oder, wenn diese leer ist, die Person. Sind beide leer wird ein `-`
 dargestellt.
 """
+    , pdfMode = Messages.Data.PdfMode.de
     }

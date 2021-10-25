@@ -14,6 +14,7 @@ module Page.Home.Data exposing
     , SelectActionMode(..)
     , SelectViewModel
     , ViewMode(..)
+    , createQuery
     , doSearchCmd
     , editActive
     , init
@@ -36,6 +37,7 @@ import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
 import Comp.ItemMerge
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
+import Comp.PublishItems
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
@@ -79,18 +81,20 @@ type alias SelectViewModel =
     , confirmModal : Maybe ConfirmModalValue
     , editModel : Comp.ItemDetail.MultiEditMenu.Model
     , mergeModel : Comp.ItemMerge.Model
+    , publishModel : Comp.PublishItems.Model
     , saveNameState : SaveNameState
     , saveCustomFieldState : Set String
     }
 
 
-initSelectViewModel : SelectViewModel
-initSelectViewModel =
+initSelectViewModel : Flags -> SelectViewModel
+initSelectViewModel flags =
     { ids = Set.empty
     , action = NoneAction
     , confirmModal = Nothing
     , editModel = Comp.ItemDetail.MultiEditMenu.init
     , mergeModel = Comp.ItemMerge.init []
+    , publishModel = Tuple.first (Comp.PublishItems.init flags)
     , saveNameState = SaveSuccess
     , saveCustomFieldState = Set.empty
     }
@@ -100,6 +104,7 @@ type ViewMode
     = SimpleView
     | SearchView
     | SelectView SelectViewModel
+    | PublishView Comp.PublishItems.Model
 
 
 init : Flags -> ViewMode -> Model
@@ -143,6 +148,9 @@ menuCollapsed model =
         SelectView _ ->
             False
 
+        PublishView _ ->
+            False
+
 
 selectActive : Model -> Bool
 selectActive model =
@@ -151,6 +159,9 @@ selectActive model =
             False
 
         SearchView ->
+            False
+
+        PublishView _ ->
             False
 
         SelectView _ ->
@@ -164,6 +175,9 @@ editActive model =
             False
 
         SearchView ->
+            False
+
+        PublishView _ ->
             False
 
         SelectView svm ->
@@ -211,6 +225,10 @@ type Msg
     | RemoveItem String
     | MergeSelectedItems
     | MergeItemsMsg Comp.ItemMerge.Msg
+    | PublishSelectedItems
+    | PublishItemsMsg Comp.PublishItems.Msg
+    | TogglePublishCurrentQueryView
+    | PublishViewMsg Comp.PublishItems.Msg
 
 
 type SearchType
@@ -225,6 +243,7 @@ type SelectActionMode
     | ReprocessSelected
     | RestoreSelected
     | MergeSelected
+    | PublishSelected
 
 
 type alias SearchParam =
@@ -251,10 +270,7 @@ doSearchDefaultCmd param model =
     let
         smask =
             Q.request model.searchMenuModel.searchMode <|
-                Q.and
-                    [ Comp.SearchMenu.getItemQuery model.searchMenuModel
-                    , Maybe.map Q.Fragment model.powerSearchInput.input
-                    ]
+                createQuery model
 
         mask =
             { smask
@@ -270,6 +286,14 @@ doSearchDefaultCmd param model =
 
     else
         Api.itemSearch param.flags mask ItemSearchAddResp
+
+
+createQuery : Model -> Maybe Q.ItemQuery
+createQuery model =
+    Q.and
+        [ Comp.SearchMenu.getItemQuery model.searchMenuModel
+        , Maybe.map Q.Fragment model.powerSearchInput.input
+        ]
 
 
 resultsBelowLimit : UiSettings -> Model -> Bool

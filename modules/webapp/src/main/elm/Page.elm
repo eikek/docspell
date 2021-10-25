@@ -19,6 +19,8 @@ module Page exposing
     , loginPageReferrer
     , pageFromString
     , pageName
+    , pageShareDetail
+    , pageShareId
     , pageToString
     , set
     , uploadId
@@ -59,6 +61,8 @@ type Page
     | UploadPage (Maybe String)
     | NewInvitePage
     | ItemDetailPage String
+    | SharePage String
+    | ShareDetailPage String String
 
 
 isSecured : Page -> Bool
@@ -94,6 +98,12 @@ isSecured page =
         ItemDetailPage _ ->
             True
 
+        SharePage _ ->
+            False
+
+        ShareDetailPage _ _ ->
+            False
+
 
 {-| Currently, all secured pages have a sidebar, except UploadPage.
 -}
@@ -102,6 +112,12 @@ hasSidebar page =
     case page of
         UploadPage _ ->
             False
+
+        SharePage _ ->
+            True
+
+        ShareDetailPage _ _ ->
+            True
 
         _ ->
             isSecured page
@@ -160,6 +176,12 @@ pageName page =
         ItemDetailPage _ ->
             "Item"
 
+        SharePage _ ->
+            "Share"
+
+        ShareDetailPage _ _ ->
+            "Share Detail"
+
 
 loginPageReferrer : Page -> LoginData
 loginPageReferrer page =
@@ -169,6 +191,26 @@ loginPageReferrer page =
 
         _ ->
             emptyLoginData
+
+
+pageShareId : Page -> Maybe String
+pageShareId page =
+    case page of
+        SharePage id ->
+            Just id
+
+        _ ->
+            Nothing
+
+
+pageShareDetail : Page -> Maybe ( String, String )
+pageShareDetail page =
+    case page of
+        ShareDetailPage shareId itemId ->
+            Just ( shareId, itemId )
+
+        _ ->
+            Nothing
 
 
 uploadId : Page -> Maybe String
@@ -223,6 +265,12 @@ pageToString page =
 
         ItemDetailPage id ->
             "/app/item/" ++ id
+
+        SharePage id ->
+            "/app/share/" ++ id
+
+        ShareDetailPage shareId itemId ->
+            "/app/share/" ++ shareId ++ "/" ++ itemId
 
 
 pageFromString : String -> Maybe Page
@@ -280,6 +328,8 @@ parser =
         , Parser.map (UploadPage Nothing) (s pathPrefix </> s "upload")
         , Parser.map NewInvitePage (s pathPrefix </> s "newinvite")
         , Parser.map ItemDetailPage (s pathPrefix </> s "item" </> string)
+        , Parser.map ShareDetailPage (s pathPrefix </> s "share" </> string </> string)
+        , Parser.map SharePage (s pathPrefix </> s "share" </> string)
         ]
 
 

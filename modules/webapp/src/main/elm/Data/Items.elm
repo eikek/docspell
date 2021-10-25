@@ -8,6 +8,7 @@
 module Data.Items exposing
     ( concat
     , first
+    , flatten
     , idSet
     , length
     , replaceIn
@@ -19,6 +20,11 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Dict exposing (Dict)
 import Set exposing (Set)
 import Util.List
+
+
+flatten : ItemLightList -> List ItemLight
+flatten list =
+    List.concatMap .items list.groups
 
 
 concat : ItemLightList -> ItemLightList -> ItemLightList

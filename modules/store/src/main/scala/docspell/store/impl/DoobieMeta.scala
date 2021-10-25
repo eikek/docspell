@@ -11,6 +11,7 @@ import java.time.{Instant, LocalDate}
 
 import docspell.common._
 import docspell.common.syntax.all._
+import docspell.query.{ItemQuery, ItemQueryParser}
 import docspell.totp.Key
 
 import com.github.eikek.calev.CalEvent
@@ -142,6 +143,11 @@ trait DoobieMeta extends EmilDoobieMeta {
 
   implicit val metaByteSize: Meta[ByteSize] =
     Meta[Long].timap(ByteSize.apply)(_.bytes)
+
+  implicit val metaItemQuery: Meta[ItemQuery] =
+    Meta[String].timap(s => ItemQueryParser.parseUnsafe(s))(q =>
+      q.raw.getOrElse(ItemQueryParser.unsafeAsString(q.expr))
+    )
 }
 
 object DoobieMeta extends DoobieMeta {

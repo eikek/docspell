@@ -63,6 +63,12 @@ trait OCollective[F[_]] {
 
   def findEnabledSource(sourceId: Ident): F[Option[RSource]]
 
+  def addPassword(collective: Ident, pw: Password): F[Unit]
+
+  def getPasswords(collective: Ident): F[List[RCollectivePassword]]
+
+  def removePassword(id: Ident): F[Unit]
+
   def startLearnClassifier(collective: Ident): F[Unit]
 
   def startEmptyTrash(args: EmptyTrashArgs): F[Unit]
@@ -149,7 +155,7 @@ object OCollective {
       private def updateLearnClassifierTask(coll: Ident, sett: Settings): F[Unit] =
         for {
           id <- Ident.randomId[F]
-          on = sett.classifier.map(_.enabled).getOrElse(false)
+          on = sett.classifier.exists(_.enabled)
           timer = sett.classifier.map(_.schedule).getOrElse(CalEvent.unsafe(""))
           args = LearnClassifierArgs(coll)
           ut = UserTask(
@@ -173,6 +179,18 @@ object OCollective {
           _ <- uts.updateOneTask(UserTaskScope(coll), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
         } yield ()
+
+      def addPassword(collective: Ident, pw: Password): F[Unit] =
+        for {
+          cpass <- RCollectivePassword.createNew[F](collective, pw)
+          _ <- store.transact(RCollectivePassword.upsert(cpass))
+        } yield ()
+
+      def getPasswords(collective: Ident): F[List[RCollectivePassword]] =
+        store.transact(RCollectivePassword.findAll(collective))
+
+      def removePassword(id: Ident): F[Unit] =
+        store.transact(RCollectivePassword.deleteById(id)).map(_ => ())
 
       def startLearnClassifier(collective: Ident): F[Unit] =
         for {

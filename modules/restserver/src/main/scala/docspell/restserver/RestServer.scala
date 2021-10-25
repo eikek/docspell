@@ -10,7 +10,7 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
-import docspell.backend.auth.AuthToken
+import docspell.backend.auth.{AuthToken, ShareToken}
 import docspell.common._
 import docspell.oidc.CodeFlowRoutes
 import docspell.restserver.auth.OpenId
@@ -34,18 +34,19 @@ object RestServer {
 
     val templates = TemplateRoutes[F](cfg)
     val app = for {
-      restApp <-
-        RestAppImpl
-          .create[F](cfg, pools.connectEC, pools.httpClientEC)
-      httpClient <- BlazeClientBuilder[F](pools.httpClientEC).resource
+      restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
+      httpClient <- BlazeClientBuilder[F].resource
       httpApp = Router(
         "/api/info" -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
           securedRoutes(cfg, restApp, token)
         },
-        "/api/v1/admin" -> AdminRoutes(cfg.adminEndpoint) {
+        "/api/v1/admin" -> AdminAuth(cfg.adminEndpoint) {
           adminRoutes(cfg, restApp)
+        },
+        "/api/v1/share" -> ShareAuth(restApp.backend.share, cfg.auth) { token =>
+          shareRoutes(cfg, restApp, token)
         },
         "/api/doc" -> templates.doc,
         "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F]),
@@ -61,7 +62,7 @@ object RestServer {
     Stream
       .resource(app)
       .flatMap(httpApp =>
-        BlazeServerBuilder[F](pools.restEC)
+        BlazeServerBuilder[F]
           .bindHttp(cfg.bind.port, cfg.bind.address)
           .withHttpApp(httpApp)
           .withoutBanner
@@ -94,6 +95,7 @@ object RestServer {
       "email/send" -> MailSendRoutes(restApp.backend, token),
       "email/settings" -> MailSettingsRoutes(restApp.backend, token),
       "email/sent" -> SentMailRoutes(restApp.backend, token),
+      "share" -> ShareRoutes.manage(restApp.backend, token),
       "usertask/notifydueitems" -> NotifyDueItemsRoutes(cfg, restApp.backend, token),
       "usertask/scanmailbox" -> ScanMailboxRoutes(restApp.backend, token),
       "calevent/check" -> CalEventCheckRoutes(),
@@ -119,7 +121,8 @@ object RestServer {
       "signup" -> RegisterRoutes(restApp.backend, cfg),
       "upload" -> UploadRoutes.open(restApp.backend, cfg),
       "checkfile" -> CheckFileRoutes.open(restApp.backend),
-      "integration" -> IntegrationEndpointRoutes.open(restApp.backend, cfg)
+      "integration" -> IntegrationEndpointRoutes.open(restApp.backend, cfg),
+      "share" -> ShareRoutes.verify(restApp.backend, cfg)
     )
 
   def adminRoutes[F[_]: Async](cfg: Config, restApp: RestApp[F]): HttpRoutes[F] =
@@ -129,6 +132,17 @@ object RestServer {
       "user" -> UserRoutes.admin(restApp.backend),
       "info" -> InfoRoutes.admin(cfg),
       "attachments" -> AttachmentRoutes.admin(restApp.backend)
+    )
+
+  def shareRoutes[F[_]: Async](
+      cfg: Config,
+      restApp: RestApp[F],
+      token: ShareToken
+  ): HttpRoutes[F] =
+    Router(
+      "search" -> ShareSearchRoutes(restApp.backend, cfg, token),
+      "attachment" -> ShareAttachmentRoutes(restApp.backend, token),
+      "item" -> ShareItemRoutes(restApp.backend, token)
     )
 
   def redirectTo[F[_]: Async](path: String): HttpRoutes[F] = {

@@ -77,17 +77,27 @@ object ConvertPdf {
       ctx: Context[F, ProcessItemArgs],
       item: ItemData
   )(ra: RAttachment, mime: MimeType): F[(RAttachment, Option[RAttachmentMeta])] =
-    Conversion.create[F](cfg, sanitizeHtml, ctx.logger).use { conv =>
-      mime match {
-        case mt =>
-          val data = ctx.store.fileStore.getBytes(ra.fileId)
-          val handler = conversionHandler[F](ctx, cfg, ra, item)
-          ctx.logger.info(s"Converting file ${ra.name} (${mime.asString}) into a PDF") *>
-            conv.toPDF(DataType(mt), ctx.args.meta.language, handler)(
-              data
-            )
+    loadCollectivePasswords(ctx).flatMap(collPass =>
+      Conversion.create[F](cfg, sanitizeHtml, collPass, ctx.logger).use { conv =>
+        mime match {
+          case mt =>
+            val data = ctx.store.fileStore.getBytes(ra.fileId)
+            val handler = conversionHandler[F](ctx, cfg, ra, item)
+            ctx.logger
+              .info(s"Converting file ${ra.name} (${mime.asString}) into a PDF") *>
+              conv.toPDF(DataType(mt), ctx.args.meta.language, handler)(
+                data
+              )
+        }
       }
-    }
+    )
+
+  private def loadCollectivePasswords[F[_]: Async](
+      ctx: Context[F, ProcessItemArgs]
+  ): F[List[Password]] =
+    ctx.store
+      .transact(RCollectivePassword.findAll(ctx.args.meta.collective))
+      .map(_.map(_.password).distinct)
 
   private def conversionHandler[F[_]: Sync](
       ctx: Context[F, ProcessItemArgs],

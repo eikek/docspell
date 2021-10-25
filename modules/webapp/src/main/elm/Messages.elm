@@ -21,6 +21,8 @@ import Messages.Page.ManageData
 import Messages.Page.NewInvite
 import Messages.Page.Queue
 import Messages.Page.Register
+import Messages.Page.Share
+import Messages.Page.ShareDetail
 import Messages.Page.Upload
 import Messages.Page.UserSettings
 import Messages.UiLanguage exposing (UiLanguage(..))
@@ -44,6 +46,8 @@ type alias Messages =
     , userSettings : Messages.Page.UserSettings.Texts
     , manageData : Messages.Page.ManageData.Texts
     , home : Messages.Page.Home.Texts
+    , share : Messages.Page.Share.Texts
+    , shareDetail : Messages.Page.ShareDetail.Texts
     }
 
 
@@ -109,6 +113,8 @@ gb =
     , userSettings = Messages.Page.UserSettings.gb
     , manageData = Messages.Page.ManageData.gb
     , home = Messages.Page.Home.gb
+    , share = Messages.Page.Share.gb
+    , shareDetail = Messages.Page.ShareDetail.gb
     }
 
 
@@ -129,4 +135,6 @@ de =
     , userSettings = Messages.Page.UserSettings.de
     , manageData = Messages.Page.ManageData.de
     , home = Messages.Page.Home.de
+    , share = Messages.Page.Share.de
+    , shareDetail = Messages.Page.ShareDetail.de
     }

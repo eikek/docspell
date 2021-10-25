@@ -32,11 +32,10 @@ object RestAppImpl {
 
   def create[F[_]: Async](
       cfg: Config,
-      connectEC: ExecutionContext,
-      httpClientEc: ExecutionContext
+      connectEC: ExecutionContext
   ): Resource[F, RestApp[F]] =
     for {
-      backend <- BackendApp(cfg.backend, connectEC, httpClientEc)(
+      backend <- BackendApp(cfg.backend, connectEC)(
         createFtsClient[F](cfg)
       )
       app = new RestAppImpl[F](cfg, backend)
