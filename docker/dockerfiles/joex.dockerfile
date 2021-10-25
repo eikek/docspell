@@ -62,7 +62,8 @@ WORKDIR /opt
 RUN wget ${joex_url:-https://github.com/eikek/docspell/releases/download/v$version/docspell-joex-$version.zip} && \
   unzip docspell-joex-*.zip && \
   rm docspell-joex-*.zip && \
-  ln -snf docspell-joex-* docspell-joex
+  ln -snf docspell-joex-* docspell-joex && \
+  rm docspell-joex/conf/docspell-joex.conf
 
 # Using these data files for japanese, because they work better. See #973
 RUN \

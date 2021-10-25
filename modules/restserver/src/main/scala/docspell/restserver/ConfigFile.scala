@@ -8,15 +8,13 @@ package docspell.restserver
 
 import java.security.SecureRandom
 
-import cats.Semigroup
-import cats.data.{Validated, ValidatedNec}
+import cats.Monoid
 import cats.effect.Async
-import cats.implicits._
 
 import docspell.backend.signup.{Config => SignupConfig}
 import docspell.common.Logger
-import docspell.config.ConfigFactory
 import docspell.config.Implicits._
+import docspell.config.{ConfigFactory, Validation}
 import docspell.oidc.{ProviderConfig, SignatureAlgo}
 import docspell.restserver.auth.OpenId
 
@@ -30,9 +28,10 @@ object ConfigFile {
 
   def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
     val logger = Logger.log4s(unsafeLogger)
+    val validate =
+      Validation.of(generateSecretIfEmpty, duplicateOpenIdProvider, signKeyVsUserUrl)
     ConfigFactory
-      .default[F, Config](logger, "docspell.server")(args)
-      .map(cfg => Validate(cfg))
+      .default[F, Config](logger, "docspell.server")(args, validate)
   }
 
   object Implicits {
@@ -46,29 +45,8 @@ object ConfigFile {
       ConfigReader[String].emap(reason(OpenId.UserInfo.Extractor.fromString))
   }
 
-  object Validate {
-
-    implicit val firstConfigSemigroup: Semigroup[Config] =
-      Semigroup.first
-
-    def apply(config: Config): Config =
-      all(config).foldLeft(valid(config))(_.combine(_)) match {
-        case Validated.Valid(cfg) => cfg
-        case Validated.Invalid(errs) =>
-          val msg = errs.toList.mkString("- ", "\n- ", "\n")
-          throw sys.error(s"\n\n$msg")
-      }
-
-    def all(cfg: Config) = List(
-      duplicateOpenIdProvider(cfg),
-      signKeyVsUserUrl(cfg),
-      generateSecretIfEmpty(cfg)
-    )
-
-    private def valid(cfg: Config): ValidatedNec[String, Config] =
-      Validated.validNec(cfg)
-
-    def generateSecretIfEmpty(cfg: Config): ValidatedNec[String, Config] =
+  def generateSecretIfEmpty: Validation[Config] =
+    Validation { cfg =>
       if (cfg.auth.serverSecret.isEmpty) {
         unsafeLogger.warn(
           "No serverSecret specified. Generating a random one. It is recommended to add a server-secret in the config file."
@@ -77,10 +55,12 @@ object ConfigFile {
         val buffer = new Array[Byte](32)
         random.nextBytes(buffer)
         val secret = ByteVector.view(buffer)
-        valid(cfg.copy(auth = cfg.auth.copy(serverSecret = secret)))
-      } else valid(cfg)
+        Validation.valid(cfg.copy(auth = cfg.auth.copy(serverSecret = secret)))
+      } else Validation.valid(cfg)
+    }
 
-    def duplicateOpenIdProvider(cfg: Config): ValidatedNec[String, Config] = {
+  def duplicateOpenIdProvider: Validation[Config] =
+    Validation { cfg =>
       val dupes =
         cfg.openid
           .filter(_.enabled)
@@ -90,27 +70,31 @@ object ConfigFile {
           .toList
 
       val dupesStr = dupes.mkString(", ")
-      if (dupes.isEmpty) valid(cfg)
-      else Validated.invalidNec(s"There is a duplicate openId provider: $dupesStr")
+      if (dupes.isEmpty) Validation.valid(cfg)
+      else Validation.invalid(s"There is a duplicate openId provider: $dupesStr")
     }
 
-    def signKeyVsUserUrl(cfg: Config): ValidatedNec[String, Config] = {
-      def checkProvider(p: ProviderConfig): ValidatedNec[String, Config] =
-        if (p.signKey.isEmpty && p.userUrl.isEmpty)
-          Validated.invalidNec(
-            s"Either user-url or sign-key must be set for provider ${p.providerId.id}"
-          )
-        else if (p.signKey.nonEmpty && p.scope.isEmpty)
-          Validated.invalidNec(
-            s"A scope is missing for OIDC auth at provider ${p.providerId.id}"
-          )
-        else Validated.valid(cfg)
+  def signKeyVsUserUrl: Validation[Config] =
+    Validation.flatten { cfg =>
+      def checkProvider(p: ProviderConfig): Validation[Config] =
+        Validation { _ =>
+          if (p.signKey.isEmpty && p.userUrl.isEmpty)
+            Validation.invalid(
+              s"Either user-url or sign-key must be set for provider ${p.providerId.id}"
+            )
+          else if (p.signKey.nonEmpty && p.scope.isEmpty)
+            Validation.invalid(
+              s"A scope is missing for OIDC auth at provider ${p.providerId.id}"
+            )
+          else Validation.valid(cfg)
+        }
 
-      cfg.openid
-        .filter(_.enabled)
-        .map(_.provider)
-        .map(checkProvider)
-        .foldLeft(valid(cfg))(_.combine(_))
+      Monoid[Validation[Config]]
+        .combineAll(
+          cfg.openid
+            .filter(_.enabled)
+            .map(_.provider)
+            .map(checkProvider)
+        )
     }
-  }
 }

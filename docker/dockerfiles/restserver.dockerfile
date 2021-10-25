@@ -12,7 +12,8 @@ WORKDIR /opt
 RUN wget ${restserver_url:-https://github.com/eikek/docspell/releases/download/v$version/docspell-restserver-$version.zip} && \
   unzip docspell-restserver-*.zip && \
   rm docspell-restserver-*.zip && \
-  ln -snf docspell-restserver-* docspell-restserver
+  ln -snf docspell-restserver-* docspell-restserver && \
+  rm docspell-restserver/conf/docspell-server.conf
 
 ENTRYPOINT ["/opt/docspell-restserver/bin/docspell-restserver", "-J-XX:+UseG1GC"]
 EXPOSE 7880
