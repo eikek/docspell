@@ -200,11 +200,12 @@ use with the following options.</p>
 <h1 id="scanners-watch-directories">Scanners / Watch Directories<a class="zola-anchor" href="#scanners-watch-directories" aria-label="Anchor link for: scanners-watch-directories">🔗</a></h1>
 <p>If you have a (document) scanner (or think about getting one), it can
 usually be configured to place scanned documents as image or PDF files
-on your NAS. On your NAS, run the provided <code>consumedir.sh</code> script as a
-service (there is a docker container to get started) that watches this
-directory and uploads all incoming files to Docspell. The script can
-watch directories recursively and can skip files already uploaded, so
-you can organize the files as you want in there (rename, move etc).</p>
+on your NAS. On your NAS, run <code>dsc watch</code> as a service (there is a
+docker container to get started) that watches this directory and
+uploads all incoming files to Docspell. The <a href="https://docspell.org/docs/tools/cli/">dsc
+tool</a> can watch directories recursively and can
+skip files already uploaded, so you can organize the files as you want
+in there (rename, move etc).</p>
 <p>This can be used multiple times on different machines, if desired.</p>
 <p>The scanner should support 300dpi for better results. Docspell
 converts the files into PDF adding a text layer of image-only files.</p>
@@ -214,7 +215,7 @@ your scanner is connected to your computer. This can create nice pdf
 files from scanners with ADF, applying corrections and sending them to
 docspell.</p>
 <div class="is-clearfix">
-    <a class="button is-pulled-right is-primary " href="&#x2F;docs&#x2F;tools&#x2F;consumedir">
+    <a class="button is-pulled-right is-primary " href="&#x2F;docs&#x2F;tools&#x2F;cli">
         More
     </a>
 </div>
