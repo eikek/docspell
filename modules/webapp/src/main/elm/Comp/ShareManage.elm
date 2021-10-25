@@ -382,7 +382,7 @@ viewForm texts settings flags model =
                             , title = "Submit this form"
                             , icon = "fa fa-save"
                             , label = texts.basics.submit
-                            , disabled = not isOwner
+                            , disabled = not isOwner && not newShare
                             , attrs = [ href "#" ]
                             }
                     , MB.SecondaryButton
@@ -427,12 +427,12 @@ viewForm texts settings flags model =
                         text m
                 ]
             , div
-                [ classList [ ( "hidden", isOwner ) ]
+                [ classList [ ( "hidden", isOwner || newShare ) ]
                 , class S.infoMessage
                 ]
                 [ text texts.notOwnerInfo
                 ]
-            , div [ classList [ ( "hidden", not isOwner ) ] ]
+            , div [ classList [ ( "hidden", not isOwner && not newShare ) ] ]
                 [ Html.map FormMsg (Comp.ShareForm.view texts.shareForm model.formModel)
                 ]
             , B.loadingDimmer
