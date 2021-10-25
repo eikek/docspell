@@ -4,9 +4,10 @@
         {% include "meta.html" %}
         <title>Docspell – Simple document organizer</title>
         <link rel="stylesheet" href="styles.css">
-        <script type="application/javascript" src="js/bundle.js"></script>
+        <script type="text/javascript" src="{{ get_url(path="/js/bundle.js") }}"></script>
     </head>
     <body id="app">
+
 
         <script type="application/javascript">
          var elmFlags = {
@@ -17,6 +18,7 @@
              flags: elmFlags
          });
         </script>
+
         {% include "fathom.html" %}
     </body>
 </html>

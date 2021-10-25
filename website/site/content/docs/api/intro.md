@@ -18,12 +18,13 @@ The "raw" `openapi.yml` specification file can be found
 
 The routes can be divided into protected, unprotected routes and admin
 routes. The unprotected, or open routes are at `/open/*` while the
-protected routes are at `/sec/*` and admin routes are at `/admin/*`.
-Open routes don't require authenticated access and can be used by any
-user. The protected routes require an authenticated user. The admin
-routes require a special http header with a value from the config
-file. They are disabled by default, you need to specify a secret in
-order to enable admin routes.
+protected routes are at `/sec/*` and `/share/*`, while admin routes
+are at `/admin/*`. Open routes don't require authenticated access and
+can be used by any user. The protected routes require either an
+authenticated user (for `/sec/*`) or a valid share id and possibly the
+password (for `/share/*`). The admin routes require a special http
+header with a value from the config file. They are disabled by
+default, you need to specify a secret in order to enable admin routes.
 
 ## Authentication
 
@@ -43,6 +44,16 @@ must be `docspell_auth` and a custom header must be named
 
 The admin route (see below) `/admin/user/resetPassword` can be used to
 reset a password of a user.
+
+To authenticate for a share, the `/open/share/verify` endpoint must be
+used. It expects the share id and possibly a password. If the share
+requires a password, but it was not specified in the request, the
+response indicates this. The request must then be replayed with the
+correct password to retrieve a token. This token can then be used to
+all `/share/*` endpoints to identify the share - analog to the
+protected `/sec/*` routes. It can be either specfied as a cookie or
+via the header `Docspell-Share-Auth`.
+
 
 ### OpenID Connect
 
