@@ -28,20 +28,21 @@ object ConfigFactory {
     *      the default config
     */
   def default[F[_]: Async, C: ClassTag: ConfigReader](logger: Logger[F], atPath: String)(
-      args: List[String]
+      args: List[String],
+      validation: Validation[C]
   ): F[C] =
     findFileFromArgs(args).flatMap {
       case Some(file) =>
         logger.info(s"Using config file: $file") *>
-          readFile[F, C](file, atPath)
+          readFile[F, C](file, atPath).map(validation.validOrThrow)
       case None =>
         checkSystemProperty.value.flatMap {
           case Some(file) =>
             logger.info(s"Using config file from system property: $file") *>
-              readConfig(atPath)
+              readConfig(atPath).map(validation.validOrThrow)
           case None =>
             logger.info("Using config from environment variables!") *>
-              readEnv(atPath)
+              readEnv(atPath).map(validation.validOrThrow)
         }
     }
 

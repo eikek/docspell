@@ -6,14 +6,11 @@
 
 package docspell.joex
 
-import cats.data.Validated
-import cats.data.ValidatedNec
 import cats.effect.Async
-import cats.implicits._
 
 import docspell.common.Logger
-import docspell.config.ConfigFactory
 import docspell.config.Implicits._
+import docspell.config.{ConfigFactory, Validation}
 import docspell.joex.scheduler.CountingScheme
 
 import emil.MailAddress
@@ -28,12 +25,8 @@ object ConfigFile {
   def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
     val logger = Logger.log4s[F](org.log4s.getLogger)
     ConfigFactory
-      .default[F, Config](logger, "docspell.joex")(args)
-      .map(cfg => validOrThrow(cfg))
+      .default[F, Config](logger, "docspell.joex")(args, validate)
   }
-
-  private def validOrThrow(cfg: Config): Config =
-    validate(cfg).fold(err => sys.error(err.toList.mkString("- ", "\n", "")), identity)
 
   object Implicits {
     implicit val countingSchemeReader: ConfigReader[CountingScheme] =
@@ -46,23 +39,19 @@ object ConfigFile {
       ConfigReader[String].emap(reason(MailAddress.parse))
   }
 
-  def validate(cfg: Config): ValidatedNec[String, Config] =
-    List(
-      failWhen(
-        cfg.updateCheck.enabled && cfg.updateCheck.recipients.isEmpty,
+  def validate: Validation[Config] =
+    Validation.of[Config](
+      Validation.failWhen(
+        cfg => cfg.updateCheck.enabled && cfg.updateCheck.recipients.isEmpty,
         "No recipients given for enabled update check!"
       ),
-      failWhen(
-        cfg.updateCheck.enabled && cfg.updateCheck.smtpId.isEmpty,
+      Validation.failWhen(
+        cfg => cfg.updateCheck.enabled && cfg.updateCheck.smtpId.isEmpty,
         "No recipients given for enabled update check!"
       ),
-      failWhen(
-        cfg.updateCheck.enabled && cfg.updateCheck.subject.els.isEmpty,
+      Validation.failWhen(
+        cfg => cfg.updateCheck.enabled && cfg.updateCheck.subject.els.isEmpty,
         "No subject given for enabled update check!"
       )
-    ).reduce(_ |+| _).map(_ => cfg)
-
-  def failWhen(cond: Boolean, msg: => String): ValidatedNec[String, Unit] =
-    Validated.condNec(!cond, (), msg)
-
+    )
 }
