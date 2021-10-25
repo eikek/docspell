@@ -36,7 +36,7 @@ viewSidebar : Texts -> Bool -> Flags -> UiSettings -> String -> String -> Model 
 viewSidebar texts visible flags settings shareId itemId model =
     div
         [ id "sidebar"
-        , classList [ ( "hidden", not visible ) ]
+        , classList [ ( "hidden", not visible || model.viewMode /= ViewNormal ) ]
         , class S.sidebar
         ]
         [ div [ class "pt-2" ]
