@@ -1,5 +1,48 @@
 # Changelog
 
+## v0.28.0
+
+*Oct 27, 2021*
+
+- Share items (#446). Allows to create shares, public cryptic links,
+  to a subset of your documents that can be shared with other people
+  (who don't need an account). It is possible to search inside the
+  shared subset. Shares have a lifetime and can be password protected.
+- Support encrypted PDFs (#1074). When importing PDF files, the
+  protection layer (usually for signed PDFs) is being removed in order
+  to process it. The config file and collective settings can now
+  define a list of passwords that are being used when trying to
+  decrypt encrypted PDFs.
+- Use environment variables to configure Docspell instead of a config
+  file (#1121). This is mainly intended when running via docker or
+  other similar tools. Note that settings that accept list as its
+  values are not yet supported.
+- Try to detect the best way to render PDFs (#1099). Mobile browsers
+  need a fallback for rendering PDFs, but desktop browsers can do it
+  much better natively. The user settings allow to decide how to
+  render a PDF or to let docspell detect it.
+- Filter possible values in search menu based on current results
+  (#856). This removes options that would only yield empty results
+  from the dropdowns.
+- Fix search in documenation (#1120)
+
+### Rest API Changes
+
+- `/share/*` routes to access a share
+- `/open/share/verify` routes to verify a share id
+- `/sec/share/*` routes to manage shares
+- extend `SearchStats` to include correspondents/concerning numbers
+
+### Configuration Changes
+
+- restserver: changed the server secret from the (dummy) value
+  `hex:caffee` to an empty string. This results in a random secret
+  generated at application start. It is recommended to set it to some
+  random value, otherwise sessions don't survive server restarts.
+- joex: adds a section `decrypt-pdf` for specifying a list of
+  passwords to try when encountering encrypted PDFs
+  
+
 ## v0.27.0
 
 *Sep 23, 2021*
