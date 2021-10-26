@@ -27,6 +27,9 @@
   #content .elm-datepicker--input {
       @apply dark:bg-bluegray-800 border-gray-400;
   }
+  #item-card-list .elm-datepicker--input {
+      @apply dark:bg-bluegray-800 border-gray-400;
+  }
 
   .elm-datepicker--container {
       @apply w-full;
