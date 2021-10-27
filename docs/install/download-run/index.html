@@ -27,11 +27,6 @@
 
         <title>Download &amp; Run – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -261,20 +256,20 @@
 <h2 id="using-zip-files">Using zip files<a class="zola-anchor" href="#using-zip-files" aria-label="Anchor link for: using-zip-files">🔗</a></h2>
 <p>You need to download the two files:</p>
 <ul>
-<li>[docspell-restserver-0.27.0.zip](https://github.com/eikek/docspell/releases/download/v0.27.0/docspell-restserver-0.27.0.zip)</li>
-<li>[docspell-joex-0.27.0.zip](https://github.com/eikek/docspell/releases/download/v0.27.0/docspell-joex-0.27.0.zip)</li>
+<li>[docspell-restserver-0.28.0.zip](https://github.com/eikek/docspell/releases/download/v0.28.0/docspell-restserver-0.28.0.zip)</li>
+<li>[docspell-joex-0.28.0.zip](https://github.com/eikek/docspell/releases/download/v0.28.0/docspell-joex-0.28.0.zip)</li>
 </ul>
 <ol>
-<li>Unzip both files:<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ unzip docspell-</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.zip
-</span></code></pre></li>
+<li>Unzip both files:<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ unzip docspell-</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.zip
+</span></code></pre>
+</li>
 <li>Open two terminal windows and navigate to the the directory
 containing the zip files.</li>
-<li>Start both components executing:<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ ./docspell-restserver</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-restserver
-</span></code></pre>in one terminal and<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ ./docspell-joex</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-joex
-</span></code></pre>in the other.</li>
+<li>Start both components executing:<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ ./docspell-restserver</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-restserver
+</span></code></pre>
+in one terminal and<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ ./docspell-joex</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">/bin/docspell-joex
+</span></code></pre>
+in the other.</li>
 <li>Point your browser to: <a href="http://localhost:7880/app">http://localhost:7880/app</a></li>
 <li>Register a new account, sign in and try it.</li>
 </ol>
@@ -282,39 +277,36 @@ containing the zip files.</li>
 fulltext search. Using zip/deb files requires to take care of the
 <a href="https://docspell.org/docs/install/prereq/">prerequisites</a> yourself.</p>
 <p>The provided scripts in
-[docspell-tools-0.27.0.zip](https://github.com/eikek/docspell/releases/download/v0.27.0/docspell-tools-0.27.0.zip)
+[docspell-tools-0.28.0.zip](https://github.com/eikek/docspell/releases/download/v0.28.0/docspell-tools-0.28.0.zip)
 must be extracted and installed manually somewhere in your <code>$PATH</code>.</p>
 <h2 id="using-deb-files">Using deb files<a class="zola-anchor" href="#using-deb-files" aria-label="Anchor link for: using-deb-files">🔗</a></h2>
 <p>Packages are also provided at the release page:</p>
 <ul>
-<li>[docspell-restserver_0.27.0<em>all.deb](https://github.com/eikek/docspell/releases/download/v0.27.0/docspell-restserver</em>0.27.0_all.deb)</li>
-<li>[docspell-joex_0.27.0<em>all.deb](https://github.com/eikek/docspell/releases/download/v0.27.0/docspell-joex</em>0.27.0_all.deb)</li>
+<li>[docspell-restserver_0.28.0<em>all.deb](https://github.com/eikek/docspell/releases/download/v0.28.0/docspell-restserver</em>0.28.0_all.deb)</li>
+<li>[docspell-joex_0.28.0<em>all.deb](https://github.com/eikek/docspell/releases/download/v0.28.0/docspell-joex</em>0.28.0_all.deb)</li>
 </ul>
 <p>The DEB packages can be installed on Debian, or Debian based Distros:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ sudo dpkg -i docspell</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.deb
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ sudo dpkg -i docspell</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">.deb
 </span></code></pre>
 <p>Then the start scripts are in your <code>$PATH</code>. Run <code>docspell-restserver</code>
 or <code>docspell-joex</code> from a terminal window.</p>
 <p>The packages come with a systemd unit file that will be installed to
 autostart the services.</p>
-<p>The provided scripts in <code>docspell-tools-&lt;pre data-shortcode&gt;0.27.0&lt;/pre&gt;.zip</code> must be
+<p>The provided scripts in <code>docspell-tools-&lt;pre data-shortcode&gt;0.28.0&lt;/pre&gt;.zip</code> must be
 extracted and installed manually somewhere in your <code>$PATH</code>. There are
 no deb files provided.</p>
 <h2 id="running">Running<a class="zola-anchor" href="#running" aria-label="Anchor link for: running">🔗</a></h2>
 <p>Run the start script (in the corresponding <code>bin/</code> directory when using
 the zip files):</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver
-$ ./docspell-joex*/bin/docspell-joex
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ ./docspell-restserver*/bin/docspell-restserver
+</span><span>$ ./docspell-joex*/bin/docspell-joex
 </span></code></pre>
 <p>This will startup both components using the default configuration.
 Please refer to the <a href="https://docspell.org/docs/configure/">configuration page</a>
 for how to create a custom config file. Once you have your config
 file, simply pass it as argument to the command:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">$ ./docspell-restserver*/bin/docspell-restserver /path/to/server-config.conf
-$ ./docspell-joex*/bin/docspell-joex /path/to/joex-config.conf
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ ./docspell-restserver*/bin/docspell-restserver /path/to/server-config.conf
+</span><span>$ ./docspell-joex*/bin/docspell-joex /path/to/joex-config.conf
 </span></code></pre>
 <p>After starting the rest server, you can reach the web application
 <code>http://localhost:7880/</code>.</p>
@@ -352,7 +344,7 @@ create a system service that runs the script in &quot;watch mode&quot;.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -368,6 +360,11 @@ create a system service that runs the script in &quot;watch mode&quot;.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

@@ -27,10 +27,10 @@
 
         <title>Query Language – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
     </head>
     <body>
@@ -250,7 +250,7 @@ enabled explicitely in your user settings.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;enable-powersearch.png">
+    <img src="https://docspell.org/docs/query/enable-powersearch.png">
 </figure>
 </div>
 <p>This changes the search bar on the items list page to expect a query
@@ -264,8 +264,7 @@ when applied to an item and so selects whether to include it in the
 results or not. It consists of smaller expressions that can be
 combined via the common ways: <code>and</code>, <code>or</code> and <code>not</code>.</p>
 <p>Simple expressions check some property of an item. The form is:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">&lt;field&gt;&lt;operator&gt;&lt;value&gt;
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>&lt;field&gt;&lt;operator&gt;&lt;value&gt;
 </span></code></pre>
 <p>For example: <code>tag=invoice</code> – where <code>tag</code> is the field, <code>=</code> the
 operator and <code>invoice</code> the value. It would evaluate to <code>true</code> if the
@@ -405,13 +404,11 @@ except for boolean fields.</p>
 sense for text values. It allows to do a substring search for a field.</p>
 <p>For example, this looks for an item with a name of exactly
 'invoice_22':</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">name=invoice_22
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>name=invoice_22
 </span></code></pre>
 <p>By using <code>:</code>, it is possible to look for items that have 'invoice'
 somewhere in their name:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">name:*invoice*
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>name:*invoice*
 </span></code></pre>
 <p>The asterisk <code>*</code> can be added at the beginning and/or end of the
 value, but not in betwee. Furthermore, the like operator is
@@ -419,8 +416,7 @@ case-insensitive, whereas <code>=</code> is not. This applies to all fields with
 a text value.</p>
 <p>This is another example looking for a correspondent person of with
 'marcus' in the name:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">corr.pers.name:*marcus*
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>corr.pers.name:*marcus*
 </span></code></pre>
 <hr />
 <p>Comparisons via <code>&lt;</code>/<code>&gt;</code> are done alphanumerically for text based
@@ -431,12 +427,10 @@ operators don't make sense and therefore don't work there.</p>
 <code>~=</code>. This is a more efficient form to specify a list of alternative
 values for the same field. It is logically the same as combining
 multiple expressions with <code>OR</code>. For example:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">source~=webapp,mailbox
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>source~=webapp,mailbox
 </span></code></pre>
 <p>is the same as</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">(| source=webapp source=mailbox )
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>(| source=webapp source=mailbox )
 </span></code></pre>
 <p>The <code>~=</code> version is nicer to read, safes some key strokes and also
 runs more efficient when the list grows. It is <em>not</em> possible to use a
@@ -445,8 +439,7 @@ longer form.</p>
 <p>If one value contains whitespace or other characters that require
 quoting, each value must be quoted, not the whole list. So this is
 correct:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">source~=&quot;web app&quot;,&quot;mail box&quot;
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>source~=&quot;web app&quot;,&quot;mail box&quot;
 </span></code></pre>
 <p>This is not correct: <code>source~=&quot;web app,mail box&quot;</code> – it would be treated
 as one single value and is then essentially the same as using <code>=</code>.</p>
@@ -455,18 +448,16 @@ as one single value and is then essentially the same as using <code>=</code>.</p
 <code>true</code> or <code>false</code>. The synonyms <code>yes</code> and <code>no</code> can also be used to
 make it better readable.</p>
 <p>This finds all items that have not been confirmed:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">inbox:yes
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>inbox:yes
 </span></code></pre>
 <p>The <code>incoming</code> can be used to show only incoming or only outgoing
 documents:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">incoming:yes
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>incoming:yes
 </span></code></pre>
 <p>For outgoing, you need to say:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">incoming:no
-</span></code></pre><h1 id="tags">Tags<a class="zola-anchor" href="#tags" aria-label="Anchor link for: tags">🔗</a></h1>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>incoming:no
+</span></code></pre>
+<h1 id="tags">Tags<a class="zola-anchor" href="#tags" aria-label="Anchor link for: tags">🔗</a></h1>
 <p>Tags have their own syntax, because they can appear multiple times on
 an item. Tags only allow for two operators: <code>=</code> and <code>:</code>. Combined with
 negation (the <code>!</code> operator), this is quite flexible.</p>
@@ -476,25 +467,21 @@ specified tags. Tags can be identified by their name or id and are
 given as a comma separated list (just like when using the
 in-operator).</p>
 <p>Some examples: Find all invoices that are todo:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">tag=invoice,todo
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag=invoice,todo
 </span></code></pre>
 <p>This returns all items that have both tags <code>invoice</code> and <code>todo</code>.
 Negating this:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">!tag=invoice,todo
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>!tag=invoice,todo
 </span></code></pre>
 <p>… results in an expression that returns all items that don't have
 <em>both</em> tags. It might return items with tag <code>invoice</code> and also items
 with tag <code>todo</code>, but no items that have both of them.</p>
 <p>Using <code>:</code> is just analog to <code>=</code>. This finds all items that are either
 <code>waiting</code> or <code>todo</code> (or both):</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">tag:waiting,todo
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag:waiting,todo
 </span></code></pre>
 <p>When negating this:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">!tag:waiting,todo
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>!tag:waiting,todo
 </span></code></pre>
 <p>it finds all items that have <em>none</em> of the tags.</p>
 <p>Tag names are always compared case-insensitive. Tags can also be
@@ -503,8 +490,7 @@ instead of <code>tag</code>.</p>
 <p>The field <code>cat</code> can be used the same way to search for tag categories.</p>
 <h1 id="custom-fields">Custom Fields<a class="zola-anchor" href="#custom-fields" aria-label="Anchor link for: custom-fields">🔗</a></h1>
 <p>Custom fields can be used via the following syntax:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">f:&lt;field-name&gt;&lt;operator&gt;&lt;value&gt;
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:&lt;field-name&gt;&lt;operator&gt;&lt;value&gt;
 </span></code></pre>
 <p>They look almost like a simple expression, only prefixed with a <code>f:</code>
 to indicate that the following is the name of a custom field.</p>
@@ -515,73 +501,67 @@ in-operator (<code>~=</code>).</p>
 <p>For example: assuming there is a custom field of type <em>money</em> and name
 <em>usd</em>, the following selects all items with an amount between 10 and
 150:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">f:usd&gt;10 f:usd&lt;150
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:usd&gt;10 f:usd&lt;150
 </span></code></pre>
 <p>The like-operator can be used, too. For example, to find all items
 that have a custom field <code>asn</code> (often used for a serial number printed
 on the document):</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">f:asn:*
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:asn:*
 </span></code></pre>
 <p>If the like operator is used on numeric fields, it falls back to
 text-comparison.</p>
 <p>Instead of using the name, the field-id can be used to select a field.
 Then the prefix is <code>f.id</code>:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">f.id:J2ES1Z4Ni9W-xw1VdFbt3KA-rL725kuyVzh-7La95Yw7Ax2:15.00
-</span></code></pre><h1 id="fulltext-search">Fulltext Search<a class="zola-anchor" href="#fulltext-search" aria-label="Anchor link for: fulltext-search">🔗</a></h1>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f.id:J2ES1Z4Ni9W-xw1VdFbt3KA-rL725kuyVzh-7La95Yw7Ax2:15.00
+</span></code></pre>
+<h1 id="fulltext-search">Fulltext Search<a class="zola-anchor" href="#fulltext-search" aria-label="Anchor link for: fulltext-search">🔗</a></h1>
 <p>The special field <code>content</code> allows to add a fulltext search. Using
 this is currently restricted: it must occur in the root (AND) query
 and cannot be nested in other complex expressions.</p>
 <p>The form is:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">content:&lt;your search query&gt;
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>content:&lt;your search query&gt;
 </span></code></pre>
 <p>The search query is interpreted by the fulltext index (currently it is
 SOLR). This is usually very powerful and in many cases this value must
 be quoted.</p>
 <p>For example, do a fulltext search for 'red needle':</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">content:&quot;red needle&quot;
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>content:&quot;red needle&quot;
 </span></code></pre>
 <p>It can be combined in an AND expression:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">content:&quot;red needle&quot; tag:todo
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>content:&quot;red needle&quot; tag:todo
 </span></code></pre>
 <p>But it can't be combined via OR. This is not possible:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">tag:todo (| content:&quot;red needle&quot; tag:waiting)
-</span></code></pre><h1 id="file-checksums">File Checksums<a class="zola-anchor" href="#file-checksums" aria-label="Anchor link for: file-checksums">🔗</a></h1>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag:todo (| content:&quot;red needle&quot; tag:waiting)
+</span></code></pre>
+<h1 id="file-checksums">File Checksums<a class="zola-anchor" href="#file-checksums" aria-label="Anchor link for: file-checksums">🔗</a></h1>
 <p>The <code>checksum</code> field can be used to look for items that have a certain
 file attached. It expects a SHA256 string.</p>
 <p>For example, this is the sha256 checksum of some file on the hard
 disk:
 <code>40675c22ab035b8a4ffe760732b65e5f1d452c59b44d3d0a2a08a95d28853497</code>.</p>
 <p>To find all items that have (exactly) this file attached:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">checksum:40675c22ab035b8a4ffe760732b65e5f1d452c59b44d3d0a2a08a95d28853497
-</span></code></pre><h1 id="exist">Exist<a class="zola-anchor" href="#exist" aria-label="Anchor link for: exist">🔗</a></h1>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>checksum:40675c22ab035b8a4ffe760732b65e5f1d452c59b44d3d0a2a08a95d28853497
+</span></code></pre>
+<h1 id="exist">Exist<a class="zola-anchor" href="#exist" aria-label="Anchor link for: exist">🔗</a></h1>
 <p>The <code>exist</code> field can be used with another field, to check whether an
 item has some value for it. It only works for fields that have at most
 one value.</p>
 <p>For example, it could be used to find items that are in any folder:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">exist:folder
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>exist:folder
 </span></code></pre>
 <p>When negating, it finds all items that are not in a folder:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">!exist:folder
-</span></code></pre><h1 id="attach-id">Attach-Id<a class="zola-anchor" href="#attach-id" aria-label="Anchor link for: attach-id">🔗</a></h1>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>!exist:folder
+</span></code></pre>
+<h1 id="attach-id">Attach-Id<a class="zola-anchor" href="#attach-id" aria-label="Anchor link for: attach-id">🔗</a></h1>
 <p>The <code>attach.id</code> field is a special field to find items by providing
 the id of an attachment. This can be helpful in certain situations
 when you only have the id or part of that of an attachment. It uses
 equality if no wildcard is present. A wildcard <code>*</code> can be used at
 beginning or end if only a part of the id is known.</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">attach.id=5YjdnuTAdKJ-V6ofWTYsqKV-mAwB5aXTNWE-FAbeRU58qLb
-attach.id=5YjdnuTAdKJ*
-</span></code></pre><h1 id="shortcuts">Shortcuts<a class="zola-anchor" href="#shortcuts" aria-label="Anchor link for: shortcuts">🔗</a></h1>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>attach.id=5YjdnuTAdKJ-V6ofWTYsqKV-mAwB5aXTNWE-FAbeRU58qLb
+</span><span>attach.id=5YjdnuTAdKJ*
+</span></code></pre>
+<h1 id="shortcuts">Shortcuts<a class="zola-anchor" href="#shortcuts" aria-label="Anchor link for: shortcuts">🔗</a></h1>
 <p>Shortcuts are only a short form of a longer query and are provided for
 convenience. The following exist:</p>
 <ul>
@@ -625,38 +605,31 @@ look into correspondent names and concerning names.</p>
 </ul>
 <h1 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h1>
 <p>Find items with 2 or more attachments:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">attach.count&gt;2
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>attach.count&gt;2
 </span></code></pre>
 <p>Find items with at least one tag invoice or todo that are due next:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">tag:invoice,todo due&gt;today
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag:invoice,todo due&gt;today
 </span></code></pre>
 <p>Find items with at least both tags invoice and todo:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">tag=invoice,todo
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag=invoice,todo
 </span></code></pre>
 <p>Find items with a concerning person of name starting with &quot;Marcus&quot;:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">conc.pers.name:marcus*
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>conc.pers.name:marcus*
 </span></code></pre>
 <p>Find items with at least a tag &quot;todo&quot; in year 2020:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">tag:todo year:2020
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag:todo year:2020
 </span></code></pre>
 <p>Find items within the last 30 days:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">date&gt;today;-30d
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>date&gt;today;-30d
 </span></code></pre>
 <p>Find items with a custom field <code>paid</code> set to any value:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">f:paid:*
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:paid:*
 </span></code></pre>
 <p>Find items that have been paid with more than $100 (using custom
 fields <code>paid</code> as a date and <code>usd</code> as money):</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">f:paid:* f:usd&gt;100
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:paid:* f:usd&gt;100
 </span></code></pre>
+
                         </div>
                     </div>
                 </div>
@@ -669,7 +642,7 @@ fields <code>paid</code> as a date and <code>usd</code> as money):</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

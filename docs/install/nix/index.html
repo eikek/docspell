@@ -27,11 +27,6 @@
 
         <title>Nix &#x2F; NixOS – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -241,35 +236,32 @@ referred to as <a href="https://nixos.wiki/wiki/Import_From_Derivation">import f
 derivation</a>.</p>
 <p>For example, the <code>builtins.fetchTarball</code> function can be used to
 retrieve the files; then import the <code>release.nix</code> file:</p>
-<pre style="background-color:#282828;">
-<code class="language-nix" data-lang="nix"><span style="color:#fa5c4b;">let
-  </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span style="color:#fdf4c1aa;">;
+<pre data-lang="nix" style="background-color:#282828;color:#fdf4c1aa;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#fa5c4b;">let
+</span><span>  </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span>;
 </span><span style="color:#fa5c4b;">in
-</span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span style="background-color:#932b1e;color:#fdf4c1;">;</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span style="background-color:#932b1e;color:#fdf4c1;">;</span><span>
 </span></code></pre>
 <p>This creates a set containing a function for creating a derivation for
 docspell. This then needs to be called like other custom packages. For
 example, in your <code>~/.nixpkgs/config.nix</code> you could write this:</p>
-<pre style="background-color:#282828;">
-<code class="language-nix" data-lang="nix"><span style="color:#fa5c4b;">let
-  </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span style="color:#fdf4c1aa;">;
-  </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span style="color:#fdf4c1aa;">;
+<pre data-lang="nix" style="background-color:#282828;color:#fdf4c1aa;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#fa5c4b;">let
+</span><span>  </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span>;
+</span><span>  </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span>;
 </span><span style="color:#fa5c4b;">in
-</span><span style="color:#fdf4c1aa;">{ </span><span style="color:#8ec07c;">packageOverrides </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fdf4c1aa;">:
-   </span><span style="color:#fa5c4b;">let
-     </span><span style="color:#8ec07c;">callPackage </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">lib</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">callPackageWith</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">custom </span><span style="color:#fe8019;">// </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fdf4c1aa;">);
-     </span><span style="color:#8ec07c;">custom </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-       </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">currentPkg </span><span style="color:#fdf4c1aa;">{};
-     };
-   </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">custom</span><span style="color:#fdf4c1aa;">;
-}
+</span><span>{ </span><span style="color:#8ec07c;">packageOverrides </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span>:
+</span><span>   </span><span style="color:#fa5c4b;">let
+</span><span>     </span><span style="color:#8ec07c;">callPackage </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">lib</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">callPackageWith</span><span>(</span><span style="color:#fdf4c1;">custom </span><span style="color:#fe8019;">// </span><span style="color:#fdf4c1;">pkgs</span><span>);
+</span><span>     </span><span style="color:#8ec07c;">custom </span><span style="color:#fe8019;">= </span><span>{
+</span><span>       </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">currentPkg </span><span>{};
+</span><span>     };
+</span><span>   </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">custom</span><span>;
+</span><span>}
 </span></code></pre>
 <p>The <code>docspell</code> custom package is again a set that contains derivations
 for all 3 installable docspell programs: the restserver, joex and the
 tools.</p>
 <p>Then you can install docspell via <code>nix-shell</code> or <code>nix-env</code>, for example:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ nix-env -iA nixpkgs.docspell.server nixpkgs.docspell.joex nixpkgs.docspell.tools
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ nix-env -iA nixpkgs.docspell.server nixpkgs.docspell.joex nixpkgs.docspell.tools
 </span></code></pre>
 <p>You may need to replace <code>nixpkgs</code> with <code>nixos</code> when you're on NixOS.</p>
 <p>The expression <code>docspell.currentPkg</code> refers to the most current
@@ -277,8 +269,8 @@ release of Docspell. So even if you use the tarball of the current
 master branch, the <code>release.nix</code> file only contains derivations for
 releases. The expression <code>docspell.currentPkg</code> is a shortcut for
 selecting the most current release. For example it translates to
-<code>docspell.pkg docspell.cfg.v&lt;pre data-shortcode&gt;0_27_0&lt;/pre&gt;</code> – if the current version
-is <code>&lt;pre data-shortcode&gt;0.27.0&lt;/pre&gt;</code>.</p>
+<code>docspell.pkg docspell.cfg.v&lt;pre data-shortcode&gt;0_28_0&lt;/pre&gt;</code> – if the current version
+is <code>&lt;pre data-shortcode&gt;0.28.0&lt;/pre&gt;</code>.</p>
 <h2 id="upgrading">Upgrading<a class="zola-anchor" href="#upgrading" aria-label="Anchor link for: upgrading">🔗</a></h2>
 <p>Since <a href="https://docspell.org/docs/install/downgrading/">downgrading</a> is not supported,
 it is recommended to backup your database before upgrading. Should
@@ -299,46 +291,45 @@ definition for installing Docspell as a service using systemd.</p>
 <p>You need to import the <code>release.nix</code> file as described above in your
 <code>configuration.nix</code> and then append the docspell module to your list of
 modules. Here is an example:</p>
-<pre style="background-color:#282828;">
-<code class="language-nix" data-lang="nix"><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">config</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">, ... </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+<pre data-lang="nix" style="background-color:#282828;color:#fdf4c1aa;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">config</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">, ... </span><span style="color:#d3869b;">}</span><span>:
 </span><span style="color:#fa5c4b;">let
-  </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span style="color:#fdf4c1aa;">;
-  </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span style="color:#fdf4c1aa;">;
+</span><span>  </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span>;
+</span><span>  </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span>;
 </span><span style="color:#fa5c4b;">in
-</span><span style="color:#fdf4c1aa;">{
-  </span><span style="color:#8ec07c;">imports </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[ </span><span style="color:#fdf4c1;">mymodule1 mymodule2 </span><span style="color:#fdf4c1aa;">] </span><span style="color:#fe8019;">++ </span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">modules</span><span style="color:#fdf4c1aa;">;
-
-  </span><span style="color:#8ec07c;">nixpkgs </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#8ec07c;">config </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#8ec07c;">packageOverrides </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fdf4c1aa;">:
-        </span><span style="color:#fa5c4b;">let
-          </span><span style="color:#8ec07c;">callPackage </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">lib</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">callPackageWith</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">custom </span><span style="color:#fe8019;">// </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fdf4c1aa;">);
-          </span><span style="color:#8ec07c;">custom </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-            </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">currentPkg </span><span style="color:#fdf4c1aa;">{};
-          };
-        </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">custom</span><span style="color:#fdf4c1aa;">;
-    };
-  };
-
-  </span><span style="color:#8ec07c;">services</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">docspell-restserver </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#8ec07c;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://docspelltest:7880&quot;</span><span style="color:#fdf4c1aa;">;
-    </span><span style="font-style:italic;color:#928374;"># ... more settings here
-  </span><span style="color:#fdf4c1aa;">};
-  </span><span style="color:#8ec07c;">services</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">docspell-joex </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#8ec07c;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://docspelltexst:7878&quot;</span><span style="color:#fdf4c1aa;">;
-    </span><span style="font-style:italic;color:#928374;"># ... more settings here
-  </span><span style="color:#fdf4c1aa;">};
-  </span><span style="color:#8ec07c;">services</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">docspell-consumedir </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#8ec07c;">watchDirs </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[</span><span style="color:#b8bb26;">&quot;/tmp/test&quot;</span><span style="color:#fdf4c1aa;">];
-    </span><span style="color:#8ec07c;">source-id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;the-source-id&quot;</span><span style="color:#fdf4c1aa;">;
-  };
-
-  ...
-}
-
+</span><span>{
+</span><span>  </span><span style="color:#8ec07c;">imports </span><span style="color:#fe8019;">= </span><span>[ </span><span style="color:#fdf4c1;">mymodule1 mymodule2 </span><span>] </span><span style="color:#fe8019;">++ </span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">modules</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#8ec07c;">nixpkgs </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#8ec07c;">config </span><span style="color:#fe8019;">= </span><span>{
+</span><span>      </span><span style="color:#8ec07c;">packageOverrides </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span>:
+</span><span>        </span><span style="color:#fa5c4b;">let
+</span><span>          </span><span style="color:#8ec07c;">callPackage </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">lib</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">callPackageWith</span><span>(</span><span style="color:#fdf4c1;">custom </span><span style="color:#fe8019;">// </span><span style="color:#fdf4c1;">pkgs</span><span>);
+</span><span>          </span><span style="color:#8ec07c;">custom </span><span style="color:#fe8019;">= </span><span>{
+</span><span>            </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">currentPkg </span><span>{};
+</span><span>          };
+</span><span>        </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">custom</span><span>;
+</span><span>    };
+</span><span>  };
+</span><span>
+</span><span>  </span><span style="color:#8ec07c;">services</span><span>.</span><span style="color:#8ec07c;">docspell-restserver </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span>;
+</span><span>    </span><span style="color:#8ec07c;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://docspelltest:7880&quot;</span><span>;
+</span><span>    </span><span style="font-style:italic;color:#928374;"># ... more settings here
+</span><span>  };
+</span><span>  </span><span style="color:#8ec07c;">services</span><span>.</span><span style="color:#8ec07c;">docspell-joex </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span>;
+</span><span>    </span><span style="color:#8ec07c;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://docspelltexst:7878&quot;</span><span>;
+</span><span>    </span><span style="font-style:italic;color:#928374;"># ... more settings here
+</span><span>  };
+</span><span>  </span><span style="color:#8ec07c;">services</span><span>.</span><span style="color:#8ec07c;">docspell-consumedir </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span>;
+</span><span>    </span><span style="color:#8ec07c;">watchDirs </span><span style="color:#fe8019;">= </span><span>[</span><span style="color:#b8bb26;">&quot;/tmp/test&quot;</span><span>];
+</span><span>    </span><span style="color:#8ec07c;">source-id </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;the-source-id&quot;</span><span>;
+</span><span>  };
+</span><span>
+</span><span>  ...
+</span><span>}
+</span><span>
 </span></code></pre>
 <p>Please see the <code>nix/module-server.nix</code> and <code>nix/module-joex.nix</code> files
 for the set of options. The nixos options are modelled after the
@@ -350,103 +341,103 @@ appropriate commit.</p>
 <p>This is a example system configuration that installs docspell with a
 postgres database. This snippet can be used to create a vm (using
 <code>nixos-rebuild build-vm</code> as shown above) or a container, for example.</p>
-<pre style="background-color:#282828;">
-<code class="language-nix" data-lang="nix"><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">config</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">, ... </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+<pre data-lang="nix" style="background-color:#282828;color:#fdf4c1aa;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">config</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">, ... </span><span style="color:#d3869b;">}</span><span>:
 </span><span style="color:#fa5c4b;">let
-  </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span style="color:#fdf4c1aa;">;
-  </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span style="color:#fdf4c1aa;">;
+</span><span>  </span><span style="color:#8ec07c;">docspellsrc </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fetchTarball </span><span style="color:#b8bb26;">&quot;https://github.com/eikek/docspell/archive/master.tar.gz&quot;</span><span>;
+</span><span>  </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&quot;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">docspellsrc</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/nix/release.nix&quot;</span><span>;
 </span><span style="color:#fa5c4b;">in
-</span><span style="color:#fdf4c1aa;">{
-  </span><span style="color:#8ec07c;">imports </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">modules</span><span style="color:#fdf4c1aa;">;
-
-  </span><span style="color:#8ec07c;">nixpkgs </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#8ec07c;">config </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#8ec07c;">packageOverrides </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fdf4c1aa;">:
-        </span><span style="color:#fa5c4b;">let
-          </span><span style="color:#8ec07c;">callPackage </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">lib</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">callPackageWith</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">custom </span><span style="color:#fe8019;">// </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fdf4c1aa;">);
-          </span><span style="color:#8ec07c;">custom </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-            </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">currentPkg </span><span style="color:#fdf4c1aa;">{};
-          };
-        </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">custom</span><span style="color:#fdf4c1aa;">;
-    };
-  };
-
-  </span><span style="font-style:italic;color:#928374;">##### just for the example…
-  </span><span style="color:#8ec07c;">users</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">users</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">root </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#8ec07c;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;root&quot;</span><span style="color:#fdf4c1aa;">;
-  };
-  </span><span style="font-style:italic;color:#928374;">#####
-
-  # install docspell-joex and enable the systemd service
-  </span><span style="color:#8ec07c;">services</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">docspell-joex </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#8ec07c;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7878&quot;</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#8ec07c;">bind </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#8ec07c;">address </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;0.0.0.0&quot;</span><span style="color:#fdf4c1aa;">;
-      </span><span style="color:#8ec07c;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7878</span><span style="color:#fdf4c1aa;">;
-    };
-    </span><span style="color:#8ec07c;">scheduler </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#8ec07c;">pool-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1aa;">;
-    };
-    </span><span style="color:#8ec07c;">jdbc </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#8ec07c;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:postgresql://localhost:5432/docspell&quot;</span><span style="color:#fdf4c1aa;">;
-      </span><span style="color:#8ec07c;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span style="color:#fdf4c1aa;">;
-      </span><span style="color:#8ec07c;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span style="color:#fdf4c1aa;">;
-    };
-  };
-
-  </span><span style="font-style:italic;color:#928374;"># install docspell-restserver and enable the systemd service
-  </span><span style="color:#8ec07c;">services</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">docspell-restserver </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#8ec07c;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#8ec07c;">bind </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#8ec07c;">address </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;0.0.0.0&quot;</span><span style="color:#fdf4c1aa;">;
-      </span><span style="color:#8ec07c;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7880</span><span style="color:#fdf4c1aa;">;
-    };
-    </span><span style="color:#8ec07c;">auth </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#8ec07c;">server-secret </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;b64:EirgaudMyNvWg4TvxVGxTu-fgtrto4ETz--Hk9Pv2o4=&quot;</span><span style="color:#fdf4c1aa;">;
-    };
-    </span><span style="color:#8ec07c;">backend </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#8ec07c;">signup </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-        </span><span style="color:#8ec07c;">mode </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;invite&quot;</span><span style="color:#fdf4c1aa;">;
-        </span><span style="color:#8ec07c;">new-invite-password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dsinvite2&quot;</span><span style="color:#fdf4c1aa;">;
-        </span><span style="color:#8ec07c;">invite-time </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;30 days&quot;</span><span style="color:#fdf4c1aa;">;
-      };
-      </span><span style="color:#8ec07c;">jdbc </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-        </span><span style="color:#8ec07c;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:postgresql://localhost:5432/docspell&quot;</span><span style="color:#fdf4c1aa;">;
-        </span><span style="color:#8ec07c;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span style="color:#fdf4c1aa;">;
-        </span><span style="color:#8ec07c;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span style="color:#fdf4c1aa;">;
-      };
-    };
-  };
-
-  </span><span style="font-style:italic;color:#928374;"># install postgresql and initially create user/database
-  </span><span style="color:#8ec07c;">services</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">postgresql </span><span style="color:#fe8019;">=
-  </span><span style="color:#fa5c4b;">let
-    </span><span style="color:#8ec07c;">pginit </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">writeText </span><span style="color:#b8bb26;">&quot;pginit.sql&quot; &#39;&#39;
-      CREATE USER docspell WITH PASSWORD &#39;docspell&#39; LOGIN CREATEDB;
-      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO docspell;
-      GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO docspell;
-      CREATE DATABASE DOCSPELL OWNER &#39;docspell&#39;;
-    &#39;&#39;</span><span style="color:#fdf4c1aa;">;
-  </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">;
-      </span><span style="color:#8ec07c;">package </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">postgresql_11</span><span style="color:#fdf4c1aa;">;
-      </span><span style="color:#8ec07c;">enableTCPIP </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span style="color:#fdf4c1aa;">;
-      </span><span style="color:#8ec07c;">initialScript </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pginit</span><span style="color:#fdf4c1aa;">;
-      </span><span style="color:#8ec07c;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">5432</span><span style="color:#fdf4c1aa;">;
-      </span><span style="color:#8ec07c;">authentication </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&#39;&#39;
-        host  all  all 0.0.0.0/0 md5
-      &#39;&#39;</span><span style="color:#fdf4c1aa;">;
-  };
-
-
-  </span><span style="color:#8ec07c;">networking </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#8ec07c;">hostName </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspellexample&quot;</span><span style="color:#fdf4c1aa;">;
-    </span><span style="color:#8ec07c;">firewall</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">allowedTCPPorts </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[</span><span style="color:#d3869b;">7880</span><span style="color:#fdf4c1aa;">];
-  };
-}
+</span><span>{
+</span><span>  </span><span style="color:#8ec07c;">imports </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">modules</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#8ec07c;">nixpkgs </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#8ec07c;">config </span><span style="color:#fe8019;">= </span><span>{
+</span><span>      </span><span style="color:#8ec07c;">packageOverrides </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span>:
+</span><span>        </span><span style="color:#fa5c4b;">let
+</span><span>          </span><span style="color:#8ec07c;">callPackage </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">lib</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">callPackageWith</span><span>(</span><span style="color:#fdf4c1;">custom </span><span style="color:#fe8019;">// </span><span style="color:#fdf4c1;">pkgs</span><span>);
+</span><span>          </span><span style="color:#8ec07c;">custom </span><span style="color:#fe8019;">= </span><span>{
+</span><span>            </span><span style="color:#8ec07c;">docspell </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage docspell</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">currentPkg </span><span>{};
+</span><span>          };
+</span><span>        </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">custom</span><span>;
+</span><span>    };
+</span><span>  };
+</span><span>
+</span><span>  </span><span style="font-style:italic;color:#928374;">##### just for the example…
+</span><span>  </span><span style="color:#8ec07c;">users</span><span>.</span><span style="color:#8ec07c;">users</span><span>.</span><span style="color:#8ec07c;">root </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#8ec07c;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;root&quot;</span><span>;
+</span><span>  };
+</span><span>  </span><span style="font-style:italic;color:#928374;">#####
+</span><span>
+</span><span>  </span><span style="font-style:italic;color:#928374;"># install docspell-joex and enable the systemd service
+</span><span>  </span><span style="color:#8ec07c;">services</span><span>.</span><span style="color:#8ec07c;">docspell-joex </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span>;
+</span><span>    </span><span style="color:#8ec07c;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7878&quot;</span><span>;
+</span><span>    </span><span style="color:#8ec07c;">bind </span><span style="color:#fe8019;">= </span><span>{
+</span><span>      </span><span style="color:#8ec07c;">address </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;0.0.0.0&quot;</span><span>;
+</span><span>      </span><span style="color:#8ec07c;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7878</span><span>;
+</span><span>    };
+</span><span>    </span><span style="color:#8ec07c;">scheduler </span><span style="color:#fe8019;">= </span><span>{
+</span><span>      </span><span style="color:#8ec07c;">pool-size </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1</span><span>;
+</span><span>    };
+</span><span>    </span><span style="color:#8ec07c;">jdbc </span><span style="color:#fe8019;">= </span><span>{
+</span><span>      </span><span style="color:#8ec07c;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:postgresql://localhost:5432/docspell&quot;</span><span>;
+</span><span>      </span><span style="color:#8ec07c;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span>;
+</span><span>      </span><span style="color:#8ec07c;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span>;
+</span><span>    };
+</span><span>  };
+</span><span>
+</span><span>  </span><span style="font-style:italic;color:#928374;"># install docspell-restserver and enable the systemd service
+</span><span>  </span><span style="color:#8ec07c;">services</span><span>.</span><span style="color:#8ec07c;">docspell-restserver </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span>;
+</span><span>    </span><span style="color:#8ec07c;">base-url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;</span><span>;
+</span><span>    </span><span style="color:#8ec07c;">bind </span><span style="color:#fe8019;">= </span><span>{
+</span><span>      </span><span style="color:#8ec07c;">address </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;0.0.0.0&quot;</span><span>;
+</span><span>      </span><span style="color:#8ec07c;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">7880</span><span>;
+</span><span>    };
+</span><span>    </span><span style="color:#8ec07c;">auth </span><span style="color:#fe8019;">= </span><span>{
+</span><span>      </span><span style="color:#8ec07c;">server-secret </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;b64:EirgaudMyNvWg4TvxVGxTu-fgtrto4ETz--Hk9Pv2o4=&quot;</span><span>;
+</span><span>    };
+</span><span>    </span><span style="color:#8ec07c;">backend </span><span style="color:#fe8019;">= </span><span>{
+</span><span>      </span><span style="color:#8ec07c;">signup </span><span style="color:#fe8019;">= </span><span>{
+</span><span>        </span><span style="color:#8ec07c;">mode </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;invite&quot;</span><span>;
+</span><span>        </span><span style="color:#8ec07c;">new-invite-password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;dsinvite2&quot;</span><span>;
+</span><span>        </span><span style="color:#8ec07c;">invite-time </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;30 days&quot;</span><span>;
+</span><span>      };
+</span><span>      </span><span style="color:#8ec07c;">jdbc </span><span style="color:#fe8019;">= </span><span>{
+</span><span>        </span><span style="color:#8ec07c;">url </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;jdbc:postgresql://localhost:5432/docspell&quot;</span><span>;
+</span><span>        </span><span style="color:#8ec07c;">user </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span>;
+</span><span>        </span><span style="color:#8ec07c;">password </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspell&quot;</span><span>;
+</span><span>      };
+</span><span>    };
+</span><span>  };
+</span><span>
+</span><span>  </span><span style="font-style:italic;color:#928374;"># install postgresql and initially create user/database
+</span><span>  </span><span style="color:#8ec07c;">services</span><span>.</span><span style="color:#8ec07c;">postgresql </span><span style="color:#fe8019;">=
+</span><span>  </span><span style="color:#fa5c4b;">let
+</span><span>    </span><span style="color:#8ec07c;">pginit </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">writeText </span><span style="color:#b8bb26;">&quot;pginit.sql&quot; &#39;&#39;
+</span><span style="color:#b8bb26;">      CREATE USER docspell WITH PASSWORD &#39;docspell&#39; LOGIN CREATEDB;
+</span><span style="color:#b8bb26;">      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO docspell;
+</span><span style="color:#b8bb26;">      GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO docspell;
+</span><span style="color:#b8bb26;">      CREATE DATABASE DOCSPELL OWNER &#39;docspell&#39;;
+</span><span style="color:#b8bb26;">    &#39;&#39;</span><span>;
+</span><span>  </span><span style="color:#fa5c4b;">in </span><span>{
+</span><span>      </span><span style="color:#8ec07c;">enable </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span>;
+</span><span>      </span><span style="color:#8ec07c;">package </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">postgresql_11</span><span>;
+</span><span>      </span><span style="color:#8ec07c;">enableTCPIP </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">true</span><span>;
+</span><span>      </span><span style="color:#8ec07c;">initialScript </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pginit</span><span>;
+</span><span>      </span><span style="color:#8ec07c;">port </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">5432</span><span>;
+</span><span>      </span><span style="color:#8ec07c;">authentication </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&#39;&#39;
+</span><span style="color:#b8bb26;">        host  all  all 0.0.0.0/0 md5
+</span><span style="color:#b8bb26;">      &#39;&#39;</span><span>;
+</span><span>  };
+</span><span>
+</span><span>
+</span><span>  </span><span style="color:#8ec07c;">networking </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#8ec07c;">hostName </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;docspellexample&quot;</span><span>;
+</span><span>    </span><span style="color:#8ec07c;">firewall</span><span>.</span><span style="color:#8ec07c;">allowedTCPPorts </span><span style="color:#fe8019;">= </span><span>[</span><span style="color:#d3869b;">7880</span><span>];
+</span><span>  };
+</span><span>}
 </span></code></pre>
+
                         </div>
                     </div>
                 </div>
@@ -457,7 +448,7 @@ postgres database. This snippet can be used to create a vm (using
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -473,6 +464,11 @@ postgres database. This snippet can be used to create a vm (using
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

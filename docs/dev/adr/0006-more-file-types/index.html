@@ -27,11 +27,6 @@
 
         <title>More File Types – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -388,15 +383,14 @@ implemented.</p>
 <h2 id="data-model">Data Model<a class="zola-anchor" href="#data-model" aria-label="Anchor link for: data-model">🔗</a></h2>
 <p>The <code>attachment</code> table holds one file. There will be another table
 <code>attachment_source</code> that holds the original file. It looks like this:</p>
-<pre style="background-color:#282828;">
-<code class="language-sql" data-lang="sql"><span style="color:#fa5c4b;">CREATE TABLE </span><span style="color:#fdf4c1aa;">&quot;</span><span style="color:#8ec07c;">attachment_source</span><span style="color:#fdf4c1aa;">&quot; (
-  </span><span style="color:#b8bb26;">&quot;id&quot; </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null </span><span style="color:#fa5c4b;">primary key</span><span style="color:#fdf4c1aa;">,
-  </span><span style="color:#b8bb26;">&quot;file_id&quot; </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
-  </span><span style="color:#b8bb26;">&quot;filename&quot; </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">),
-  </span><span style="color:#b8bb26;">&quot;created&quot; </span><span style="color:#fa5c4b;">timestamp </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
-  </span><span style="color:#fa5c4b;">foreign key</span><span style="color:#fdf4c1aa;"> (</span><span style="color:#b8bb26;">&quot;file_id&quot;</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fa5c4b;">references </span><span style="color:#b8bb26;">&quot;filemeta&quot;</span><span style="color:#fdf4c1aa;">(</span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1aa;">),
-  </span><span style="color:#fa5c4b;">foreign key</span><span style="color:#fdf4c1aa;"> (</span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fa5c4b;">references </span><span style="color:#b8bb26;">&quot;attachment&quot;</span><span style="color:#fdf4c1aa;">(</span><span style="color:#b8bb26;">&quot;attachid&quot;</span><span style="color:#fdf4c1aa;">)
-);
+<pre data-lang="sql" style="background-color:#282828;color:#fdf4c1aa;" class="language-sql "><code class="language-sql" data-lang="sql"><span style="color:#fa5c4b;">CREATE TABLE </span><span>&quot;</span><span style="color:#8ec07c;">attachment_source</span><span>&quot; (
+</span><span>  </span><span style="color:#b8bb26;">&quot;id&quot; </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">254</span><span>) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null </span><span style="color:#fa5c4b;">primary key</span><span>,
+</span><span>  </span><span style="color:#b8bb26;">&quot;file_id&quot; </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">254</span><span>) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span>,
+</span><span>  </span><span style="color:#b8bb26;">&quot;filename&quot; </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">254</span><span>),
+</span><span>  </span><span style="color:#b8bb26;">&quot;created&quot; </span><span style="color:#fa5c4b;">timestamp </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span>,
+</span><span>  </span><span style="color:#fa5c4b;">foreign key</span><span> (</span><span style="color:#b8bb26;">&quot;file_id&quot;</span><span>) </span><span style="color:#fa5c4b;">references </span><span style="color:#b8bb26;">&quot;filemeta&quot;</span><span>(</span><span style="color:#b8bb26;">&quot;id&quot;</span><span>),
+</span><span>  </span><span style="color:#fa5c4b;">foreign key</span><span> (</span><span style="color:#b8bb26;">&quot;id&quot;</span><span>) </span><span style="color:#fa5c4b;">references </span><span style="color:#b8bb26;">&quot;attachment&quot;</span><span>(</span><span style="color:#b8bb26;">&quot;attachid&quot;</span><span>)
+</span><span>);
 </span></code></pre>
 <p>The <code>id</code> is the primary key and is the same as the associated
 <code>attachment</code>, creating a <code>1-1</code> relationship (well, more correct is
@@ -444,7 +438,7 @@ But this is not always possible (like doing OCR).</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;process-files.png">
+    <img src="https://docspell.org/docs/dev/adr/process-files.png">
 </figure>
 <h3 id="conversion">Conversion<a class="zola-anchor" href="#conversion" aria-label="Anchor link for: conversion">🔗</a></h3>
 <ul>
@@ -483,7 +477,7 @@ unoconv (see <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -499,6 +493,11 @@ unoconv (see <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

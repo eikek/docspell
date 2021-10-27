@@ -27,11 +27,6 @@
 
         <title>E-Mail Settings – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -303,6 +298,15 @@
                                 
                             </li>
                             
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/share/"
+                                   >
+                                    Shares
+                                </a>
+                                
+                            </li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -336,7 +340,7 @@ available.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;mail-settings-1.png">
+    <img src="https://docspell.org/docs/webapp/mail-settings-1.png">
 </figure>
 <p>First, you need to provide some name that is used to recognize this
 account. This name is also used in URLs to docspell and so it must not
@@ -371,7 +375,7 @@ somewhere available.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;mail-settings-2.png">
+    <img src="https://docspell.org/docs/webapp/mail-settings-2.png">
 </figure>
 <p>First you need to define a <em>Name</em> to recognize this connection inside
 docspell. This name is also used in URLs to docspell and so it must
@@ -432,102 +436,97 @@ Client-Id and the Client-Secret, which look something like this:</p>
 Download the <code>oauth2.py</code> script from
 <a href="https://github.com/google/gmail-oauth2-tools">here</a> and first create
 an <em>oauth2-token</em>:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">./oauth2.py --user</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">your.name@gmail.com \
-   --client_id</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">106701....d8c.apps.googleusercontent.com \
-   --client_secret</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">5Z1...Kir_t \
-   --generate_oauth2_token
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">./oauth2.py --user</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">your.name@gmail.com \
+</span><span style="color:#fdf4c1;">   --client_id</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">106701....d8c.apps.googleusercontent.com \
+</span><span style="color:#fdf4c1;">   --client_secret</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">5Z1...Kir_t \
+</span><span style="color:#fdf4c1;">   --generate_oauth2_token
 </span></code></pre>
 <p>This will &quot;redirect you&quot; to an URL where you have to authenticate with
 google. Afterwards it lets you add permissions to the app for
 accessing your mail account. The result is another code you need to
 give to the script to proceed:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">4/zwE....q0QBAb-99yD7lw
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>4/zwE....q0QBAb-99yD7lw
 </span></code></pre>
 <p>Then the scripts produces this:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">Refresh Token: 1//09zH.........Lj6oc2SmFlZww
-Access Token: ya29.a0........SECDQ
-Access Token Expiration Seconds: 3599
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>Refresh Token: 1//09zH.........Lj6oc2SmFlZww
+</span><span>Access Token: ya29.a0........SECDQ
+</span><span>Access Token Expiration Seconds: 3599
 </span></code></pre>
 <p>The access token can be used to sign in via IMAP with google. The
 Refresh Token doesn't expire and can be used to generate new access
 tokens:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">./oauth2.py --user=your.name@gmail.com \
-   --client_id=106701....d8c.apps.googleusercontent.com \
-   --client_secret=5Z1...Kir_t \
-   --refresh_token=1//09zH.........Lj6oc2SmFlZww
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>./oauth2.py --user=your.name@gmail.com \
+</span><span>   --client_id=106701....d8c.apps.googleusercontent.com \
+</span><span>   --client_secret=5Z1...Kir_t \
+</span><span>   --refresh_token=1//09zH.........Lj6oc2SmFlZww
 </span></code></pre>
 <p>Output:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">Access Token: ya29.a0....._q-lX3ypntk3ln0h9Yk
-Access Token Expiration Seconds: 3599
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>Access Token: ya29.a0....._q-lX3ypntk3ln0h9Yk
+</span><span>Access Token Expiration Seconds: 3599
 </span></code></pre>
 <p>The problem is that the access token expires. Docspell doesn't support
 updating the access token. It could be worked around by setting up a
 cron-job or similiar which uses the <code>oauth2.py</code> tool to generate new
 access tokens and update your imap settings via a
 <a href="https://docspell.org/docs/api/">REST</a> call.</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="font-style:italic;color:#928374;">#!/usr/bin/env bash
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="font-style:italic;color:#928374;">#!/usr/bin/env bash
 </span><span style="color:#fabd2f;">set </span><span style="color:#fdf4c1;">-e
-
+</span><span>
 </span><span style="font-style:italic;color:#928374;">## Change this to your values:
-
+</span><span>
 </span><span style="color:#fdf4c1;">DOCSPELL_USER</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;[docspell-user]&quot;
 </span><span style="color:#fdf4c1;">DOCSPELL_PASSWORD</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;[docspell-password]&quot;
 </span><span style="color:#fdf4c1;">DOCSPELL_URL</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
 </span><span style="color:#fdf4c1;">DOCSPELL_IMAP_NAME</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;gmail.com&quot;
-
+</span><span>
 </span><span style="color:#fdf4c1;">GMAIL_USER</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;your.name@gmail.com&quot;
 </span><span style="color:#fdf4c1;">CLIENT_ID</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;106701....d8c.apps.googleusercontent.com&quot;
 </span><span style="color:#fdf4c1;">CLIENT_SECRET</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;secret=5Z1...Kir_t&quot;
 </span><span style="color:#fdf4c1;">REFRESH_TOKEN</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;1//09zH.........Lj6oc2SmFlZww&quot;
 </span><span style="font-style:italic;color:#928374;"># Path to the oauth2.py tool
 </span><span style="color:#fdf4c1;">OAUTH_TOOL</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;./oauth2.py&quot;
-
+</span><span>
 </span><span style="font-style:italic;color:#928374;">##############################################################################
-## Script
-
-
-# Login to docspell and store the auth-token
+</span><span style="font-style:italic;color:#928374;">## Script
+</span><span>
+</span><span>
+</span><span style="font-style:italic;color:#928374;"># Login to docspell and store the auth-token
 </span><span style="color:#fdf4c1;">AUTH_DATA</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">$(</span><span style="color:#fdf4c1;">curl --silent -XPOST \
-                 -H </span><span style="color:#b8bb26;">&#39;Content-Type: application/json&#39; </span><span style="color:#fdf4c1;">\
-                 --data-binary </span><span style="color:#b8bb26;">&quot;{\&quot;account\&quot;:\&quot;$</span><span style="color:#fdf4c1;">DOCSPELL_USER</span><span style="color:#b8bb26;">\&quot;,\&quot;password\&quot;:\&quot;$</span><span style="color:#fdf4c1;">DOCSPELL_PASSWORD</span><span style="color:#b8bb26;">\&quot;}&quot; </span><span style="color:#fdf4c1;">\
-                 $DOCSPELL_URL/api/v1/open/auth/login</span><span style="color:#b8bb26;">)
+</span><span style="color:#fdf4c1;">                 -H </span><span style="color:#b8bb26;">&#39;Content-Type: application/json&#39; </span><span style="color:#fdf4c1;">\
+</span><span style="color:#fdf4c1;">                 --data-binary </span><span style="color:#b8bb26;">&quot;{\&quot;account\&quot;:\&quot;$</span><span style="color:#fdf4c1;">DOCSPELL_USER</span><span style="color:#b8bb26;">\&quot;,\&quot;password\&quot;:\&quot;$</span><span style="color:#fdf4c1;">DOCSPELL_PASSWORD</span><span style="color:#b8bb26;">\&quot;}&quot; </span><span style="color:#fdf4c1;">\
+</span><span style="color:#fdf4c1;">                 $DOCSPELL_URL/api/v1/open/auth/login</span><span style="color:#b8bb26;">)
 </span><span style="color:#fa5c4b;">if </span><span style="color:#fabd2f;">[ </span><span style="color:#fdf4c1;">$(</span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$AUTH_DATA </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq .success) </span><span style="color:#fe8019;">== </span><span style="color:#b8bb26;">&quot;false&quot; </span><span style="color:#fabd2f;">]</span><span style="color:#fe8019;">; </span><span style="color:#fa5c4b;">then
-    </span><span style="color:#fabd2f;">echo </span><span style="color:#b8bb26;">&quot;Auth failed&quot;
-    </span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$AUTH_DATA
+</span><span>    </span><span style="color:#fabd2f;">echo </span><span style="color:#b8bb26;">&quot;Auth failed&quot;
+</span><span>    </span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$AUTH_DATA
 </span><span style="color:#fa5c4b;">fi
 </span><span style="color:#fdf4c1;">TOKEN</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$(</span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$AUTH_DATA </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq -r .token</span><span style="color:#b8bb26;">)&quot;
-
-
+</span><span>
+</span><span>
 </span><span style="font-style:italic;color:#928374;"># Get the imap settings
 </span><span style="color:#fdf4c1;">UPDATE_URL</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">DOCSPELL_URL</span><span style="color:#b8bb26;">/api/v1/sec/email/settings/imap/$</span><span style="color:#fdf4c1;">DOCSPELL_IMAP_NAME</span><span style="color:#b8bb26;">&quot;
 </span><span style="color:#fdf4c1;">IMAP_DATA</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">$(</span><span style="color:#fdf4c1;">curl -s -H </span><span style="color:#b8bb26;">&quot;X-Docspell-Auth: $</span><span style="color:#fdf4c1;">TOKEN</span><span style="color:#b8bb26;">&quot; &quot;$</span><span style="color:#fdf4c1;">UPDATE_URL</span><span style="color:#b8bb26;">&quot;)
-
+</span><span>
 </span><span style="color:#fabd2f;">echo </span><span style="color:#b8bb26;">&quot;Current Settings:&quot;
 </span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$IMAP_DATA </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq
-
-
+</span><span>
+</span><span>
 </span><span style="font-style:italic;color:#928374;"># Get the new access token
-</span><span style="color:#fdf4c1;">ACCESS_TOKEN=$($OAUTH_TOOL --user</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">$GMAIL_USER \
-    --client_id</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">CLIENT_ID</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fdf4c1;">\
-    --client_secret</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">CLIENT_SECRET</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fdf4c1;">\
-    --refresh_token</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">REFRESH_TOKEN</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">head -n1 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">cut -d</span><span style="color:#b8bb26;">&#39;:&#39;</span><span style="color:#fdf4c1;"> -f2 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs)
-
+</span><span style="color:#fdf4c1;">ACCESS_TOKEN</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">$(</span><span style="color:#fdf4c1;">$OAUTH_TOOL --user</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">$GMAIL_USER \
+</span><span style="color:#fdf4c1;">    --client_id</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">CLIENT_ID</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fdf4c1;">\
+</span><span style="color:#fdf4c1;">    --client_secret</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">CLIENT_SECRET</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fdf4c1;">\
+</span><span style="color:#fdf4c1;">    --refresh_token</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">REFRESH_TOKEN</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">head -n1 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">cut -d</span><span style="color:#b8bb26;">&#39;:&#39;</span><span style="color:#fdf4c1;"> -f2 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs</span><span style="color:#b8bb26;">)
+</span><span>
 </span><span style="font-style:italic;color:#928374;"># Update settings
-</span><span style="color:#fdf4c1;">echo </span><span style="color:#b8bb26;">&quot;Updating IMAP settings&quot;
+</span><span style="color:#fabd2f;">echo </span><span style="color:#b8bb26;">&quot;Updating IMAP settings&quot;
 </span><span style="color:#fdf4c1;">NEW_IMAP</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">$(</span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$IMAP_DATA </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq </span><span style="color:#b8bb26;">&quot;.imapPassword |= \&quot;$</span><span style="color:#fdf4c1;">ACCESS_TOKEN</span><span style="color:#b8bb26;">\&quot;&quot;)
 </span><span style="color:#fdf4c1;">curl -s -XPUT -H </span><span style="color:#b8bb26;">&quot;X-Docspell-Auth: $</span><span style="color:#fdf4c1;">TOKEN</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fdf4c1;">\
-     -H </span><span style="color:#b8bb26;">&#39;Content-Type: application/json&#39; </span><span style="color:#fdf4c1;">\
-     --data-binary </span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">NEW_IMAP</span><span style="color:#b8bb26;">&quot; &quot;$</span><span style="color:#fdf4c1;">UPDATE_URL</span><span style="color:#b8bb26;">&quot;
+</span><span style="color:#fdf4c1;">     -H </span><span style="color:#b8bb26;">&#39;Content-Type: application/json&#39; </span><span style="color:#fdf4c1;">\
+</span><span style="color:#fdf4c1;">     --data-binary </span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">NEW_IMAP</span><span style="color:#b8bb26;">&quot; &quot;$</span><span style="color:#fdf4c1;">UPDATE_URL</span><span style="color:#b8bb26;">&quot;
 </span><span style="color:#fabd2f;">echo
-echo </span><span style="color:#b8bb26;">&quot;New Settings:&quot;
+</span><span style="color:#fabd2f;">echo </span><span style="color:#b8bb26;">&quot;New Settings:&quot;
 </span><span style="color:#fdf4c1;">curl -s -H </span><span style="color:#b8bb26;">&quot;X-Docspell-Auth: $</span><span style="color:#fdf4c1;">TOKEN</span><span style="color:#b8bb26;">&quot; &quot;$</span><span style="color:#fdf4c1;">UPDATE_URL</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq
 </span></code></pre>
+
                         </div>
                     </div>
                 </div>
@@ -538,7 +537,7 @@ echo </span><span style="color:#b8bb26;">&quot;New Settings:&quot;
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -554,6 +553,11 @@ echo </span><span style="color:#b8bb26;">&quot;New Settings:&quot;
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

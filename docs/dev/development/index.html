@@ -27,11 +27,6 @@
 
         <title>Tips &amp; Setup – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -233,49 +228,47 @@
 <p>When developing, it's very convenient to use the <a href="https://github.com/spray/sbt-revolver">revolver sbt
 plugin</a>. Start the sbt console
 and then run:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">sbt:docspell-root&gt; restserver/reStart
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>sbt:docspell-root&gt; restserver/reStart
 </span></code></pre>
 <p>This starts a REST server. Once this started up, type:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">sbt:docspell-root&gt; joex/reStart
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>sbt:docspell-root&gt; joex/reStart
 </span></code></pre>
 <p>if also a joex component is required. Prefixing the commads with <code>~</code>,
 results in recompile+restart once a source file is modified.</p>
 <p>It is possible to start both in the root project:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">sbt:docspell-root&gt; reStart
-</span></code></pre><h1 id="custom-config-file">Custom config file<a class="zola-anchor" href="#custom-config-file" aria-label="Anchor link for: custom-config-file">🔗</a></h1>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>sbt:docspell-root&gt; reStart
+</span></code></pre>
+<h1 id="custom-config-file">Custom config file<a class="zola-anchor" href="#custom-config-file" aria-label="Anchor link for: custom-config-file">🔗</a></h1>
 <p>The sbt build is setup such that a file <code>dev.conf</code> in the directory
 <code>local</code> (at root of the source tree) is picked up as config file, if
 it exists. So you can create a custom config file for development. For
 example, a custom database for development may be setup this way:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="font-style:italic;color:#928374;">#jdbcurl = &quot;jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="font-style:italic;color:#928374;">#jdbcurl = &quot;jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
 </span><span style="color:#fdf4c1;">jdbcurl = </span><span style="color:#b8bb26;">&quot;jdbc:postgresql://localhost:5432/docspelldev&quot;
 </span><span style="font-style:italic;color:#928374;">#jdbcurl = &quot;jdbc:mariadb://localhost:3306/docspelldev&quot;
-
+</span><span>
 </span><span style="color:#fdf4c1;">docspell.server {
-  backend {
-    jdbc {
-      url = ${jdbcurl}
-      user = </span><span style="color:#b8bb26;">&quot;dev&quot;
+</span><span style="color:#fdf4c1;">  backend {
+</span><span style="color:#fdf4c1;">    jdbc {
+</span><span style="color:#fdf4c1;">      url = ${jdbcurl}
+</span><span style="color:#fdf4c1;">      user = </span><span style="color:#b8bb26;">&quot;dev&quot;
 </span><span style="color:#fdf4c1;">      password = </span><span style="color:#b8bb26;">&quot;dev&quot;
-    </span><span style="color:#fdf4c1;">}
-  }
-}
-
-docspell.joex {
-  jdbc {
-    url = ${jdbcurl}
-    user = </span><span style="color:#b8bb26;">&quot;dev&quot;
+</span><span style="color:#fdf4c1;">    }
+</span><span style="color:#fdf4c1;">  }
+</span><span style="color:#fdf4c1;">}
+</span><span>
+</span><span style="color:#fdf4c1;">docspell.joex {
+</span><span style="color:#fdf4c1;">  jdbc {
+</span><span style="color:#fdf4c1;">    url = ${jdbcurl}
+</span><span style="color:#fdf4c1;">    user = </span><span style="color:#b8bb26;">&quot;dev&quot;
 </span><span style="color:#fdf4c1;">    password = </span><span style="color:#b8bb26;">&quot;dev&quot;
-  </span><span style="color:#fdf4c1;">}
-  scheduler {
-    pool-size = 1
-  }
-}
-</span></code></pre><h1 id="developing-frontend">Developing Frontend<a class="zola-anchor" href="#developing-frontend" aria-label="Anchor link for: developing-frontend">🔗</a></h1>
+</span><span style="color:#fdf4c1;">  }
+</span><span style="color:#fdf4c1;">  scheduler {
+</span><span style="color:#fdf4c1;">    pool-size = 1
+</span><span style="color:#fdf4c1;">  }
+</span><span style="color:#fdf4c1;">}
+</span></code></pre>
+<h1 id="developing-frontend">Developing Frontend<a class="zola-anchor" href="#developing-frontend" aria-label="Anchor link for: developing-frontend">🔗</a></h1>
 <p>The frontend is a SPA written in <a href="https://elm-lang.org">Elm</a>. The UI
 framework in use is <a href="https://tailwindcss.com">tailwind</a>.</p>
 <p>The frontend code is in the sub-project <code>webapp</code>. Running sbt's
@@ -303,19 +296,18 @@ too. To avoid this annoyance, set a env variable <code>DOCSPELL_ENV</code> to th
 value <code>dev</code>. Docspell then adds a response header, preventing the
 browser to cache these files. This must be done, obviously, before
 starting the restserver:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ export DOCSPELL_ENV=dev
-$ sbt </span><span style="color:#b8bb26;">&quot;restserver/reStart&quot;
-</span></code></pre><h1 id="developing-backend">Developing Backend<a class="zola-anchor" href="#developing-backend" aria-label="Anchor link for: developing-backend">🔗</a></h1>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ export DOCSPELL_ENV=dev
+</span><span style="color:#fdf4c1;">$ sbt </span><span style="color:#b8bb26;">&quot;restserver/reStart&quot;
+</span></code></pre>
+<h1 id="developing-backend">Developing Backend<a class="zola-anchor" href="#developing-backend" aria-label="Anchor link for: developing-backend">🔗</a></h1>
 <h2 id="openapi">OpenAPI<a class="zola-anchor" href="#openapi" aria-label="Anchor link for: openapi">🔗</a></h2>
 <p>The http API is specified in the corresponding <code>-openapi.yml</code> file.
 The <code>component</code> section is being used to generate code for the client
 and the server, so that both are always in sync. However, the route
 definitions are not checked against the server implementation.</p>
 <p>Changes to the openapi files can be checked by running a sbt task:</p>
-<pre style="background-color:#282828;">
-<code class="language-scala" data-lang="scala"><span style="color:#fdf4c1aa;">restapi/openapiLint </span><span style="font-style:italic;color:#928374;">//and/or
-</span><span style="color:#fdf4c1aa;">joexapi/openapiLint
+<pre data-lang="scala" style="background-color:#282828;color:#fdf4c1aa;" class="language-scala "><code class="language-scala" data-lang="scala"><span>restapi/openapiLint </span><span style="font-style:italic;color:#928374;">//and/or
+</span><span>joexapi/openapiLint
 </span></code></pre>
 <p>These tasks must not show any errors (it is checked by the CI). The
 warnings should also be fixed.</p>
@@ -325,30 +317,27 @@ the nix package manager and to integrate it into NixOS.</p>
 <h2 id="testing-nixos-modules">Testing NixOS Modules<a class="zola-anchor" href="#testing-nixos-modules" aria-label="Anchor link for: testing-nixos-modules">🔗</a></h2>
 <p>The modules can be build by building the <code>configuration-test.nix</code> file
 together with some nixpkgs version. For example:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">nixos-rebuild build-vm -I nixos-config=./configuration-test.nix \
-  -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">nixos-rebuild build-vm -I nixos-config=./configuration-test.nix \
+</span><span style="color:#fdf4c1;">  -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
 </span></code></pre>
 <p>This will build all modules imported in <code>configuration-test.nix</code> and
 create a virtual machine containing the system. After that completes,
 the system configuration can be found behind the <code>./result/system</code>
 symlink. So it is possible to look at the generated systemd config for
 example:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service
 </span></code></pre>
 <p>And with some more commands (there probably is an easier way…) the
 config file can be checked:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">grep ExecStart </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">cut -d</span><span style="color:#b8bb26;">&#39;=&#39;</span><span style="color:#fdf4c1;"> -f2 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">tail -n1 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">awk </span><span style="color:#b8bb26;">&#39;{print $NF}&#39;</span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">sed </span><span style="color:#b8bb26;">&#39;s/.$//&#39; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">cat result/system/etc/systemd/system/docspell-joex.service </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">grep ExecStart </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">cut -d</span><span style="color:#b8bb26;">&#39;=&#39;</span><span style="color:#fdf4c1;"> -f2 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">tail -n1 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">awk </span><span style="color:#b8bb26;">&#39;{print $NF}&#39;</span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">sed </span><span style="color:#b8bb26;">&#39;s/.$//&#39; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs cat </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq
 </span></code></pre>
 <p>To see the module in action, the vm can be started (the first line
 sets more memory for the vm):</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">QEMU_OPTS</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;-m 2048&quot;
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">QEMU_OPTS</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;-m 2048&quot;
 </span><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">QEMU_NET_OPTS </span><span style="color:#b8bb26;">&quot;hostfwd=tcp::7880-:7880&quot;
 </span><span style="color:#fdf4c1;">./result/bin/run-docspelltest-vm
-</span></code></pre><h1 id="release">Release<a class="zola-anchor" href="#release" aria-label="Anchor link for: release">🔗</a></h1>
+</span></code></pre>
+<h1 id="release">Release<a class="zola-anchor" href="#release" aria-label="Anchor link for: release">🔗</a></h1>
 <p>The CI and making a release is done via <a href="https://docs.github.com/en/actions">github
 actions</a>. The workflow is roughly
 like this:</p>
@@ -403,7 +392,7 @@ internal/background info for various topics.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -419,6 +408,11 @@ internal/background info for various topics.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

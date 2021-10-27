@@ -27,11 +27,6 @@
 
         <title>CLI – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -299,12 +294,11 @@ page</a> for more info.</p>
 example the docspell url, the admin secret etc. They can be overriden
 by specifying them as options.</p>
 <p>The config looks like this:</p>
-<pre style="background-color:#282828;">
-<code class="language-toml" data-lang="toml"><span style="font-weight:bold;color:#8ec07c;">docspell_url </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
-</span><span style="font-weight:bold;color:#8ec07c;">default_format </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;Tabular&quot;
-</span><span style="font-weight:bold;color:#8ec07c;">admin_secret </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;admin123&quot;
-</span><span style="font-weight:bold;color:#8ec07c;">default_account </span><span style="color:#fdf4c1aa;">= </span><span style="color:#b8bb26;">&quot;demo&quot;
-</span><span style="font-weight:bold;color:#8ec07c;">pdf_viewer </span><span style="color:#fdf4c1aa;">= [</span><span style="color:#b8bb26;">&quot;zathura&quot;</span><span style="color:#fdf4c1aa;">, </span><span style="color:#b8bb26;">&quot;{}&quot;</span><span style="color:#fdf4c1aa;">]
+<pre data-lang="toml" style="background-color:#282828;color:#fdf4c1aa;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="font-weight:bold;color:#8ec07c;">docspell_url </span><span>= </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">default_format </span><span>= </span><span style="color:#b8bb26;">&quot;Tabular&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">admin_secret </span><span>= </span><span style="color:#b8bb26;">&quot;admin123&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">default_account </span><span>= </span><span style="color:#b8bb26;">&quot;demo&quot;
+</span><span style="font-weight:bold;color:#8ec07c;">pdf_viewer </span><span>= [</span><span style="color:#b8bb26;">&quot;zathura&quot;</span><span>, </span><span style="color:#b8bb26;">&quot;{}&quot;</span><span>]
 </span><span style="font-style:italic;color:#928374;">#pass_entry = &quot;my/entry&quot;
 </span></code></pre>
 <p>For linuxes, the default location is <code>~/.config/dsc/config.toml</code>. You
@@ -349,16 +343,15 @@ command doesn't require to be logged in, it can also upload via a
 <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration endpoint</a>.</p>
 <p>A source id can be given in the config file, then there are no
 additional options required. The simplest form is this:</p>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc upload *.pdf
-File already in Docspell: article-velo.pdf
-Adding to request: test-ocr.pdf
-Sending request …
-┌─────────┬──────────────────┐
-│ success │ message          │
-├─────────┼──────────────────┤
-│ true    │ Files submitted. │
-└─────────┴──────────────────┘
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc upload *.pdf
+</span><span>File already in Docspell: article-velo.pdf
+</span><span>Adding to request: test-ocr.pdf
+</span><span>Sending request …
+</span><span>┌─────────┬──────────────────┐
+</span><span>│ success │ message          │
+</span><span>├─────────┼──────────────────┤
+</span><span>│ true    │ Files submitted. │
+</span><span>└─────────┴──────────────────┘
 </span></code></pre>
 <p>By default, duplicate files are detected and not uploaded. This
 uploads all files in one single request. By default, each file results
@@ -372,21 +365,20 @@ and upload all files in them. In this mode, each file will be uploaded
 in a separate request, so the <code>--single-item</code> option cannot be used.</p>
 <p>There are options to exclude/include files based on a <a href="https://docs.rs/glob/0.3.0/glob/struct.Pattern.html">glob
 pattern</a>.</p>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc upload --traverse .
-File already in Docspell: article-velo.pdf
-File already in Docspell: demo/dirc/scan.21-03-12.15-50-54.pdf
-File already in Docspell: demo/dirc/test-stamp.pdf
-File already in Docspell: demo/letter-de.pdf
-Uploading eike/keywords.pdf
-File already in Docspell: eike/large-file.pdf
-Uploading eike/letter-en.pdf
-File already in Docspell: test-ocr.pdf
-┌─────────┬────────────┐
-│ success │ message    │
-├─────────┼────────────┤
-│ true    │ Uploaded 2 │
-└─────────┴────────────┘
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc upload --traverse .
+</span><span>File already in Docspell: article-velo.pdf
+</span><span>File already in Docspell: demo/dirc/scan.21-03-12.15-50-54.pdf
+</span><span>File already in Docspell: demo/dirc/test-stamp.pdf
+</span><span>File already in Docspell: demo/letter-de.pdf
+</span><span>Uploading eike/keywords.pdf
+</span><span>File already in Docspell: eike/large-file.pdf
+</span><span>Uploading eike/letter-en.pdf
+</span><span>File already in Docspell: test-ocr.pdf
+</span><span>┌─────────┬────────────┐
+</span><span>│ success │ message    │
+</span><span>├─────────┼────────────┤
+</span><span>│ true    │ Uploaded 2 │
+</span><span>└─────────┴────────────┘
 </span></code></pre>
 <p>The <code>--poll</code> option allows to periodically traverse and upload
 directories.</p>
@@ -399,15 +391,14 @@ upload via a source url, the integration endpoint or a valid session
 <p>It detects file creations and skips a rename within a watched folder.
 The flag <code>-r</code> or <code>--recursive</code> is required to recursively watch a
 directory.</p>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc watch -r .
-Watching directory (Recursive): .
-Press Ctrl-C to quit.
-------------------------------------------------------------------------------
-Got: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
-Adding to request: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
-Sending request …
-Server: Files submitted.
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc watch -r .
+</span><span>Watching directory (Recursive): .
+</span><span>Press Ctrl-C to quit.
+</span><span>------------------------------------------------------------------------------
+</span><span>Got: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
+</span><span>Adding to request: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
+</span><span>Sending request …
+</span><span>Server: Files submitted.
 </span></code></pre>
 <p>The <code>--matches</code> option allows to define a pattern for files to include.</p>
 <p>If watching a directory is not possible due to system constraints
@@ -421,20 +412,19 @@ potentially a secret if the endpoint is protected with a secret.</p>
 query. It is possible to download them all flat into some directory or
 directly into a zip file. For example, download all files that are
 tagged with <code>todo</code> into a zip file:</p>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc download --zip &#39;tag:todo&#39;
-Zipping 2 attachments into docspell-files.zip
-Downloading DOC-20191223-155707.jpg.pdf …
-Downloading DOC-20200803-174448.jpg.pdf …
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc download --zip &#39;tag:todo&#39;
+</span><span>Zipping 2 attachments into docspell-files.zip
+</span><span>Downloading DOC-20191223-155707.jpg.pdf …
+</span><span>Downloading DOC-20200803-174448.jpg.pdf …
 </span></code></pre>
 <p>It downloads the converted PDF files by default, which can be changed
 via some options.</p>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc download --zip --original &#39;tag:todo&#39;
-Zipping original files of 2 attachments into docspell-files.zip
-Downloading DOC-20191223-155707.jpg …
-Downloading DOC-20200803-174448.jpg …
-</span></code></pre><h2 id="export-data">Export data<a class="zola-anchor" href="#export-data" aria-label="Anchor link for: export-data">🔗</a></h2>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc download --zip --original &#39;tag:todo&#39;
+</span><span>Zipping original files of 2 attachments into docspell-files.zip
+</span><span>Downloading DOC-20191223-155707.jpg …
+</span><span>Downloading DOC-20200803-174448.jpg …
+</span></code></pre>
+<h2 id="export-data">Export data<a class="zola-anchor" href="#export-data" aria-label="Anchor link for: export-data">🔗</a></h2>
 <p>The <code>export</code> command allows to download all items with metadata and
 their files. It downloads all items by default, but a query is also
 supported.</p>
@@ -445,40 +435,39 @@ stored. So you don't loose the tags and correspondents that are
 carefully maintained with each item.</p>
 <p>It expects one directory where it will create a specfific directory
 structure as follows:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">exports/
-├── by_date
-│   ├── 2019-07
-│   ├── 2020-08
-|       ├── BV2po65mAFU-…-bqUiwjz8f2W -&gt; ../../items/BV/BV2po65mAFU-…-bqUiwjz8f2W
-|       └── FTUnhZ3AE1H-…-RQ9KhtRi486 -&gt; ../../items/FT/FTUnhZ3AE1H-…-RQ9KhtRi486
-│   ├── …
-│   └── 2021-07
-├── by_folder
-│   ├── Finance
-|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
-|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
-|   │   ├── Bank
-|   │   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
-|   │   │   ├── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
-├── by_tag
-│   ├── Contract
-│   ├── Important
-│   ├── Invoice
-|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
-|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
-|   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
-|   │   └── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
-│   ├── …
-│   └── Todo
-└── items
-    ├── 45
-    |   └── 455h3cQNdna-w8oTEw9wtpE-G7bCJbVpZPw-t6dF7NjAuDm
-    |       ├── files
-    |       │   └── DOC-20200803-174448.jpg
-    |       └── metadata.json
-    ├── …
-    └── Hb
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>exports/
+</span><span>├── by_date
+</span><span>│   ├── 2019-07
+</span><span>│   ├── 2020-08
+</span><span>|       ├── BV2po65mAFU-…-bqUiwjz8f2W -&gt; ../../items/BV/BV2po65mAFU-…-bqUiwjz8f2W
+</span><span>|       └── FTUnhZ3AE1H-…-RQ9KhtRi486 -&gt; ../../items/FT/FTUnhZ3AE1H-…-RQ9KhtRi486
+</span><span>│   ├── …
+</span><span>│   └── 2021-07
+</span><span>├── by_folder
+</span><span>│   ├── Finance
+</span><span>|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
+</span><span>|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
+</span><span>|   │   ├── Bank
+</span><span>|   │   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
+</span><span>|   │   │   ├── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
+</span><span>├── by_tag
+</span><span>│   ├── Contract
+</span><span>│   ├── Important
+</span><span>│   ├── Invoice
+</span><span>|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
+</span><span>|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
+</span><span>|   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
+</span><span>|   │   └── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
+</span><span>│   ├── …
+</span><span>│   └── Todo
+</span><span>└── items
+</span><span>    ├── 45
+</span><span>    |   └── 455h3cQNdna-w8oTEw9wtpE-G7bCJbVpZPw-t6dF7NjAuDm
+</span><span>    |       ├── files
+</span><span>    |       │   └── DOC-20200803-174448.jpg
+</span><span>    |       └── metadata.json
+</span><span>    ├── …
+</span><span>    └── Hb
 </span></code></pre>
 <p>All your items are stored below the <code>items</code> directory. It contains
 subdirectories that are created from the first two characters of the
@@ -499,24 +488,23 @@ into recursive paths (as shown in the example output above) using the
 <code>--folder-delimiter &quot;/&quot;</code> option. Otherwise, the name would be sanitized
 resulting in <code>Finance-Institute</code>.</p>
 <p>Example run (producing output shown above):</p>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc export --all --date-links --folder-links --folder-delimiter &quot;/&quot; --tag-links --target exports
-Exported item: test3.zip
-Exported item: README.md
-Exported item: LICENSE.txt
-Exported item: TestRMarkdown.pdf
-Exported item: DOC-20191223-155729.jpg
-Exported item: DOC-20191223-155707.jpg
-Exported item: DOC-20200808-154204.jpg
-Exported item: DOC-20200807-115654.jpg
-Exported item: DOC-20200803-174448.jpg
-Exported item: DOC-20200803-174448.jpg
-Exported item: DOC-20200803-174448.jpg
-Exported item: DOC-20200803-174448.jpg
-Exported item: DOC-20200804-132305.jpg
-Exported item: DOC-20191223-155707.jpg
-Exported item: keyweb.eml
-Exported 15 items.
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc export --all --date-links --folder-links --folder-delimiter &quot;/&quot; --tag-links --target exports
+</span><span>Exported item: test3.zip
+</span><span>Exported item: README.md
+</span><span>Exported item: LICENSE.txt
+</span><span>Exported item: TestRMarkdown.pdf
+</span><span>Exported item: DOC-20191223-155729.jpg
+</span><span>Exported item: DOC-20191223-155707.jpg
+</span><span>Exported item: DOC-20200808-154204.jpg
+</span><span>Exported item: DOC-20200807-115654.jpg
+</span><span>Exported item: DOC-20200803-174448.jpg
+</span><span>Exported item: DOC-20200803-174448.jpg
+</span><span>Exported item: DOC-20200803-174448.jpg
+</span><span>Exported item: DOC-20200803-174448.jpg
+</span><span>Exported item: DOC-20200804-132305.jpg
+</span><span>Exported item: DOC-20191223-155707.jpg
+</span><span>Exported item: keyweb.eml
+</span><span>Exported 15 items.
 </span></code></pre>
 <p>With output format <code>json</code> or <code>lisp</code> each item is printed instead in
 full detail.</p>
@@ -527,40 +515,38 @@ commands require the <a href="https://docspell.org/docs/configure/#admin-endpoin
 secret</a> either in the
 config file or as an argument.</p>
 <h3 id="reset-user-password">Reset user password<a class="zola-anchor" href="#reset-user-password" aria-label="Anchor link for: reset-user-password">🔗</a></h3>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc admin reset-password --account demo
-┌─────────┬──────────────┬──────────────────┐
-│ success │ new password │ message          │
-├─────────┼──────────────┼──────────────────┤
-│ true    │ 2q2UeCVvMYg  │ Password updated │
-└─────────┴──────────────┴──────────────────┘
-</span></code></pre><h3 id="recreate-fulltext-index">Recreate fulltext index<a class="zola-anchor" href="#recreate-fulltext-index" aria-label="Anchor link for: recreate-fulltext-index">🔗</a></h3>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc admin --admin-secret admin123 recreate-index
-┌─────────┬─────────────────────────────────────┐
-│ success │ message                             │
-├─────────┼─────────────────────────────────────┤
-│ true    │ Full-text index will be re-created. │
-└─────────┴─────────────────────────────────────┘
-</span></code></pre><h3 id="convert-all-files-to-pdf">Convert all files to PDF<a class="zola-anchor" href="#convert-all-files-to-pdf" aria-label="Anchor link for: convert-all-files-to-pdf">🔗</a></h3>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc admin --admin-secret admin123 convert-all-pdf
-┌─────────┬─────────────────────────────────┐
-│ success │ message                         │
-├─────────┼─────────────────────────────────┤
-│ true    │ Convert all PDFs task submitted │
-└─────────┴─────────────────────────────────┘
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc admin reset-password --account demo
+</span><span>┌─────────┬──────────────┬──────────────────┐
+</span><span>│ success │ new password │ message          │
+</span><span>├─────────┼──────────────┼──────────────────┤
+</span><span>│ true    │ 2q2UeCVvMYg  │ Password updated │
+</span><span>└─────────┴──────────────┴──────────────────┘
+</span></code></pre>
+<h3 id="recreate-fulltext-index">Recreate fulltext index<a class="zola-anchor" href="#recreate-fulltext-index" aria-label="Anchor link for: recreate-fulltext-index">🔗</a></h3>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc admin --admin-secret admin123 recreate-index
+</span><span>┌─────────┬─────────────────────────────────────┐
+</span><span>│ success │ message                             │
+</span><span>├─────────┼─────────────────────────────────────┤
+</span><span>│ true    │ Full-text index will be re-created. │
+</span><span>└─────────┴─────────────────────────────────────┘
+</span></code></pre>
+<h3 id="convert-all-files-to-pdf">Convert all files to PDF<a class="zola-anchor" href="#convert-all-files-to-pdf" aria-label="Anchor link for: convert-all-files-to-pdf">🔗</a></h3>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc admin --admin-secret admin123 convert-all-pdf
+</span><span>┌─────────┬─────────────────────────────────┐
+</span><span>│ success │ message                         │
+</span><span>├─────────┼─────────────────────────────────┤
+</span><span>│ true    │ Convert all PDFs task submitted │
+</span><span>└─────────┴─────────────────────────────────┘
 </span></code></pre>
 <p>This may be necessary if you disabled pdf conversion before and are
 enabling it now.</p>
 <h3 id="regenerate-preview-images">Regenerate preview images<a class="zola-anchor" href="#regenerate-preview-images" aria-label="Anchor link for: regenerate-preview-images">🔗</a></h3>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc admin --admin-secret admin123 convert-all-pdf
-┌─────────┬───────────────────────────────────────┐
-│ success │ message                               │
-├─────────┼───────────────────────────────────────┤
-│ true    │ Generate all previews task submitted. │
-└─────────┴───────────────────────────────────────┘
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc admin --admin-secret admin123 convert-all-pdf
+</span><span>┌─────────┬───────────────────────────────────────┐
+</span><span>│ success │ message                               │
+</span><span>├─────────┼───────────────────────────────────────┤
+</span><span>│ true    │ Generate all previews task submitted. │
+</span><span>└─────────┴───────────────────────────────────────┘
 </span></code></pre>
 <p>This submits tasks to (re)generate preview images of all files. This
 is necessary if you changed the <code>preview.dpi</code> setting in joex'
@@ -568,33 +554,32 @@ config.</p>
 <h2 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h2>
 <p>The <code>search</code> command takes a <a href="https://docspell.org/docs/query/">query</a> and
 prints the results.</p>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc search &#39;corr:*&#39;
-┌──────────┬────────────────────────────┬───────────┬────────────┬─────┬───────────────────────────┬───────────────┬────────┬─────────────┬────────────┬───────┐
-│ id       │ name                       │ state     │ date       │ due │ correspondent             │ concerning    │ folder │ tags        │ fields     │ files │
-├──────────┼────────────────────────────┼───────────┼────────────┼─────┼───────────────────────────┼───────────────┼────────┼─────────────┼────────────┼───────┤
-│ HVK7JuCF │ test-ocr.pdf               │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Certificate │            │ 1     │
-│ 3odNawKE │ letter-en.pdf              │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
-│ 3MA5NdhS │ large-file.pdf             │ confirmed │ 2021-07-18 │     │ Axa                       │               │        │ Certificate │            │ 1     │
-│ HDumXkRm │ keywords.pdf               │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
-│ 733gM656 │ test-stamp.pdf             │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Contract    │            │ 1     │
-│ 8LiciitB │ scan.21-03-12.15-50-54.pdf │ confirmed │ 2021-07-18 │     │ Supermarket               │               │        │ Receipt     │ CHF 89.44  │ 1     │
-│ 8nFt2z7T │ article-velo.pdf           │ confirmed │ 2021-07-18 │     │ Supermarket/Rudolf Müller │ Rudolf Müller │        │ invoice     │ CHF 123.11 │ 1     │
-│ kfugGdXU │ letter-de.pdf              │ created   │ 2021-07-18 │     │ Axa                       │ Rudolf Müller │        │ invoice     │            │ 1     │
-└──────────┴────────────────────────────┴───────────┴────────────┴─────┴───────────────────────────┴───────────────┴────────┴─────────────┴────────────┴───────┘
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc search &#39;corr:*&#39;
+</span><span>┌──────────┬────────────────────────────┬───────────┬────────────┬─────┬───────────────────────────┬───────────────┬────────┬─────────────┬────────────┬───────┐
+</span><span>│ id       │ name                       │ state     │ date       │ due │ correspondent             │ concerning    │ folder │ tags        │ fields     │ files │
+</span><span>├──────────┼────────────────────────────┼───────────┼────────────┼─────┼───────────────────────────┼───────────────┼────────┼─────────────┼────────────┼───────┤
+</span><span>│ HVK7JuCF │ test-ocr.pdf               │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Certificate │            │ 1     │
+</span><span>│ 3odNawKE │ letter-en.pdf              │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
+</span><span>│ 3MA5NdhS │ large-file.pdf             │ confirmed │ 2021-07-18 │     │ Axa                       │               │        │ Certificate │            │ 1     │
+</span><span>│ HDumXkRm │ keywords.pdf               │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
+</span><span>│ 733gM656 │ test-stamp.pdf             │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Contract    │            │ 1     │
+</span><span>│ 8LiciitB │ scan.21-03-12.15-50-54.pdf │ confirmed │ 2021-07-18 │     │ Supermarket               │               │        │ Receipt     │ CHF 89.44  │ 1     │
+</span><span>│ 8nFt2z7T │ article-velo.pdf           │ confirmed │ 2021-07-18 │     │ Supermarket/Rudolf Müller │ Rudolf Müller │        │ invoice     │ CHF 123.11 │ 1     │
+</span><span>│ kfugGdXU │ letter-de.pdf              │ created   │ 2021-07-18 │     │ Axa                       │ Rudolf Müller │        │ invoice     │            │ 1     │
+</span><span>└──────────┴────────────────────────────┴───────────┴────────────┴─────┴───────────────────────────┴───────────────┴────────┴─────────────┴────────────┴───────┘
 </span></code></pre>
 <p>The same can be formatted as json and, for example, only print the ids:</p>
-<pre style="background-color:#282828;">
-<code class="language-shell" data-lang="shell"><span style="color:#fdf4c1aa;">❯ dsc -f json search &#39;corr:*&#39; | jq &#39;.groups[].items[].id&#39;
-&quot;HVK7JuCFt4W-qxkcwq1cWCV-dvpGo4DpZzU-Q16Xoujojas&quot;
-&quot;3odNawKE1Ek-YJrWfPzekAq-47cjt14sexd-GK35JAEAanx&quot;
-&quot;3MA5NdhSrbx-3JkjEpqHiyU-XyVNb15tioh-SUVjMLi1aoV&quot;
-&quot;HDumXkRmDea-dNryjtRjk3V-ysdJmJNQGQS-UFb4DWNZJ3F&quot;
-&quot;733gM656S4T-d4HmEgdAV6Z-9zuHAd3biKM-mBwNriZpqMB&quot;
-&quot;8LiciitBVTi-DTmgiEUdqAJ-xXPckMvFHMc-JSiJMYvLaWh&quot;
-&quot;8nFt2z7T9go-1qaCTTgodub-592n6gpmdNR-VRcyYAyT7qj&quot;
-&quot;kfugGdXUGUc-mReaUnJxyUL-R44Lf7yH6RK-2JbZ1bv7dw&quot;
-</span></code></pre><h1 id="docker">Docker<a class="zola-anchor" href="#docker" aria-label="Anchor link for: docker">🔗</a></h1>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc -f json search &#39;corr:*&#39; | jq &#39;.groups[].items[].id&#39;
+</span><span>&quot;HVK7JuCFt4W-qxkcwq1cWCV-dvpGo4DpZzU-Q16Xoujojas&quot;
+</span><span>&quot;3odNawKE1Ek-YJrWfPzekAq-47cjt14sexd-GK35JAEAanx&quot;
+</span><span>&quot;3MA5NdhSrbx-3JkjEpqHiyU-XyVNb15tioh-SUVjMLi1aoV&quot;
+</span><span>&quot;HDumXkRmDea-dNryjtRjk3V-ysdJmJNQGQS-UFb4DWNZJ3F&quot;
+</span><span>&quot;733gM656S4T-d4HmEgdAV6Z-9zuHAd3biKM-mBwNriZpqMB&quot;
+</span><span>&quot;8LiciitBVTi-DTmgiEUdqAJ-xXPckMvFHMc-JSiJMYvLaWh&quot;
+</span><span>&quot;8nFt2z7T9go-1qaCTTgodub-592n6gpmdNR-VRcyYAyT7qj&quot;
+</span><span>&quot;kfugGdXUGUc-mReaUnJxyUL-R44Lf7yH6RK-2JbZ1bv7dw&quot;
+</span></code></pre>
+<h1 id="docker">Docker<a class="zola-anchor" href="#docker" aria-label="Anchor link for: docker">🔗</a></h1>
 <p>The provided docker-compose setup runs this script to watch a single
 directory, <code>./docs</code> in current directory, for new files. If a new file
 is detected, it is pushed to docspell.</p>
@@ -607,8 +592,7 @@ integration endpoint. This requires you to provide a secret, that is
 shared between the rest-server and the <code>dsc</code> tool. This can be done by
 defining an environment variable which gets picked up by the
 containers defined in <code>docker-compose.yml</code>:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">DOCSPELL_HEADER_VALUE</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;my-secret&quot;
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">DOCSPELL_HEADER_VALUE</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;my-secret&quot;
 </span><span style="color:#fdf4c1;">docker-compose up
 </span></code></pre>
 <p>Now you can create a folder <code>./docs/&lt;collective-name&gt;</code> and place all
@@ -625,7 +609,7 @@ the <code>consumedir</code> container will push it to docspell.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -641,6 +625,11 @@ the <code>consumedir</code> container will push it to docspell.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

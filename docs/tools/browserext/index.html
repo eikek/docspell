@@ -27,11 +27,6 @@
 
         <title>Browser Extension (Firefox) – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -213,13 +208,11 @@ tools and the web extension. Both work together.</p>
 <p>Then install the &quot;native&quot; part of the web extension:</p>
 <p>Copy or symlink the <code>native.py</code> script into some known location. For
 example:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">ln -s ~/docspell-checkout/tools/webextension/native/native.py /usr/local/share/docspell/native.py
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">ln -s ~/docspell-checkout/tools/webextension/native/native.py /usr/local/share/docspell/native.py
 </span></code></pre>
 <p>Then copy the <code>app_manifest.json</code> to
 <code>$HOME/.mozilla/native-messaging-hosts/docspell.json</code>. For example:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">cp ~/docspell-checkout/tools/webextension/native/app_manifest.json  ~/.mozilla/native-messaging-hosts/docspell.json
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">cp ~/docspell-checkout/tools/webextension/native/app_manifest.json  ~/.mozilla/native-messaging-hosts/docspell.json
 </span></code></pre>
 <p>See
 <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests#manifest_location">here</a>
@@ -270,7 +263,7 @@ there.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -286,6 +279,11 @@ there.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

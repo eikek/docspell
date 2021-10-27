@@ -27,11 +27,6 @@
 
         <title>Convert PDF Files – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -347,8 +342,7 @@ available.</p>
 create a text file of the extracted text with one run, too (exactly
 like it works for tesseract). But for &quot;text&quot; pdfs, ocrmypdf writes
 some info-message into this text file:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">[OCR skipped on page 1][OCR skipped on page 2]
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>[OCR skipped on page 1][OCR skipped on page 2]
 </span></code></pre>
 <p>Docspell cannot reliably tell, wether this is extracted text or not.
 It would be reqiured to load the pdf and check its contents. This is a
@@ -375,7 +369,7 @@ distributed under the GPL-3 license.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -391,6 +385,11 @@ distributed under the GPL-3 license.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

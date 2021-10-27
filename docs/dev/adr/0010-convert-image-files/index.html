@@ -27,11 +27,6 @@
 
         <title>Convert Image Files – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -360,12 +355,11 @@ they all look the same on the screen. Instead we look at the files
 properties.</p>
 <p><strong>Input File</strong></p>
 <p>The input files are:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">$ identify input/*
-input/jfif.jpg JPEG 2480x3514 2480x3514+0+0 8-bit sRGB 240229B 0.000u 0:00.000
-input/letter-en.jpg JPEG 1695x2378 1695x2378+0+0 8-bit Gray 256c 467341B 0.000u 0:00.000
-input/letter-en.png PNG 1695x2378 1695x2378+0+0 8-bit Gray 256c 191571B 0.000u 0:00.000
-input/letter-en.tiff TIFF 1695x2378 1695x2378+0+0 8-bit Grayscale Gray 4030880B 0.000u 0:00.000
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ identify input/*
+</span><span>input/jfif.jpg JPEG 2480x3514 2480x3514+0+0 8-bit sRGB 240229B 0.000u 0:00.000
+</span><span>input/letter-en.jpg JPEG 1695x2378 1695x2378+0+0 8-bit Gray 256c 467341B 0.000u 0:00.000
+</span><span>input/letter-en.png PNG 1695x2378 1695x2378+0+0 8-bit Gray 256c 191571B 0.000u 0:00.000
+</span><span>input/letter-en.tiff TIFF 1695x2378 1695x2378+0+0 8-bit Grayscale Gray 4030880B 0.000u 0:00.000
 </span></code></pre>
 <p>Size:</p>
 <ul>
@@ -380,36 +374,34 @@ There is an
 <a href="https://github.com/apache/pdfbox/blob/2cea31cc63623fd6ece149c60d5f0cc05a696ea7/examples/src/main/java/org/apache/pdfbox/examples/pdmodel/ImageToPDF.java">example</a>
 for this exact use case.</p>
 <p>This is the sample code:</p>
-<pre style="background-color:#282828;">
-<code class="language-scala" data-lang="scala"><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">imgtopdf</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">file</span><span style="color:#fdf4c1aa;">: </span><span style="color:#8ec07c;">String</span><span style="color:#fdf4c1aa;">): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">jpg </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Paths</span><span style="color:#fdf4c1aa;">.get(file).toAbsolutePath
-  </span><span style="color:#fa5c4b;">if </span><span style="color:#fdf4c1aa;">(!</span><span style="color:#fabd2f;">Files</span><span style="color:#fdf4c1aa;">.exists(jpg)) {
-    sys.error(</span><span style="color:#fabd2f;">s</span><span style="color:#b8bb26;">&quot;file doesn&#39;t exist: </span><span style="color:#fdf4c1;">$jpg</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1aa;">)
-  }
-  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">pd </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">PDDocument</span><span style="color:#fdf4c1aa;">()
-  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">page </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">PDPage</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fabd2f;">PDRectangle</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">A4</span><span style="color:#fdf4c1aa;">)
-  pd.addPage(page)
-  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">bimg </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">ImageIO</span><span style="color:#fdf4c1aa;">.read(jpg.toFile)
-
-  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">img </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">LosslessFactory</span><span style="color:#fdf4c1aa;">.createFromImage(pd, bimg)
-
-  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">stream </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">PDPageContentStream</span><span style="color:#fdf4c1aa;">(pd, page)
-  stream.drawImage(img, </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">, </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">, </span><span style="color:#fabd2f;">PDRectangle</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">A4</span><span style="color:#fdf4c1aa;">.getWidth, </span><span style="color:#fabd2f;">PDRectangle</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">A4</span><span style="color:#fdf4c1aa;">.getHeight)
-  stream.close()
-
-  pd.save(</span><span style="color:#b8bb26;">&quot;test.pdf&quot;</span><span style="color:#fdf4c1aa;">)
-  pd.close()
-
-  </span><span style="color:#fabd2f;">ExitCode</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">Success
-</span><span style="color:#fdf4c1aa;">}
+<pre data-lang="scala" style="background-color:#282828;color:#fdf4c1aa;" class="language-scala "><code class="language-scala" data-lang="scala"><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">imgtopdf</span><span>(</span><span style="color:#fdf4c1;">file</span><span>: </span><span style="color:#8ec07c;">String</span><span>): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span>{
+</span><span>  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">jpg </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Paths</span><span>.get(file).toAbsolutePath
+</span><span>  </span><span style="color:#fa5c4b;">if </span><span>(!</span><span style="color:#fabd2f;">Files</span><span>.exists(jpg)) {
+</span><span>    sys.error(</span><span style="color:#fabd2f;">s</span><span style="color:#b8bb26;">&quot;file doesn&#39;t exist: </span><span style="color:#fdf4c1;">$jpg</span><span style="color:#b8bb26;">&quot;</span><span>)
+</span><span>  }
+</span><span>  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">pd </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">PDDocument</span><span>()
+</span><span>  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">page </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">PDPage</span><span>(</span><span style="color:#fabd2f;">PDRectangle</span><span>.</span><span style="color:#fabd2f;">A4</span><span>)
+</span><span>  pd.addPage(page)
+</span><span>  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">bimg </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">ImageIO</span><span>.read(jpg.toFile)
+</span><span>
+</span><span>  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">img </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">LosslessFactory</span><span>.createFromImage(pd, bimg)
+</span><span>
+</span><span>  </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">stream </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">PDPageContentStream</span><span>(pd, page)
+</span><span>  stream.drawImage(img, </span><span style="color:#d3869b;">0</span><span>, </span><span style="color:#d3869b;">0</span><span>, </span><span style="color:#fabd2f;">PDRectangle</span><span>.</span><span style="color:#fabd2f;">A4</span><span>.getWidth, </span><span style="color:#fabd2f;">PDRectangle</span><span>.</span><span style="color:#fabd2f;">A4</span><span>.getHeight)
+</span><span>  stream.close()
+</span><span>
+</span><span>  pd.save(</span><span style="color:#b8bb26;">&quot;test.pdf&quot;</span><span>)
+</span><span>  pd.close()
+</span><span>
+</span><span>  </span><span style="color:#fabd2f;">ExitCode</span><span>.</span><span style="color:#fabd2f;">Success
+</span><span>}
 </span></code></pre>
 <p>Using pdfbox 2.0.18 and twelvemonkeys 3.5. Running time: <code>1384ms</code></p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">$ identify *.pdf
-jfif.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 129660B 0.000u 0:00.000
-letter-en.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
-letter-en.png.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
-letter-en.tiff.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ identify *.pdf
+</span><span>jfif.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 129660B 0.000u 0:00.000
+</span><span>letter-en.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
+</span><span>letter-en.png.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
+</span><span>letter-en.tiff.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
 </span></code></pre>
 <p>Size:</p>
 <ul>
@@ -422,12 +414,11 @@ letter-en.tiff.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49118B 0.000u 0:00.000
 <p>This is a python tool that adds the image into the pdf without
 reencoding.</p>
 <p>Using version 0.3.1. Running time: <code>323ms</code>.</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">$ identify *.pdf
-jfif.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 129708B 0.000u 0:00.000
-letter-en.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
-letter-en.png.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
-letter-en.tiff.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ identify *.pdf
+</span><span>jfif.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 129708B 0.000u 0:00.000
+</span><span>letter-en.jpg.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
+</span><span>letter-en.png.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
+</span><span>letter-en.tiff.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
 </span></code></pre>
 <p>Size:</p>
 <ul>
@@ -439,12 +430,11 @@ letter-en.tiff.pdf PDF 595x842 595x842+0+0 16-bit sRGB 49864B 0.000u 0:00.000
 <h2 id="imagemagick">ImageMagick<a class="zola-anchor" href="#imagemagick" aria-label="Anchor link for: imagemagick">🔗</a></h2>
 <p>The well known imagemagick tool can convert images to pdfs, too.</p>
 <p>Using version 6.9.10-71. Running time: <code>881ms</code>.</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">$ identify *.pdf
-jfif.jpg.pdf PDF 595x843 595x843+0+0 16-bit sRGB 134873B 0.000u 0:00.000
-letter-en.jpg.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 360100B 0.000u 0:00.000
-letter-en.png.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 322418B 0.000u 0:00.000
-letter-en.tiff.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 322418B 0.000u 0:00.000
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ identify *.pdf
+</span><span>jfif.jpg.pdf PDF 595x843 595x843+0+0 16-bit sRGB 134873B 0.000u 0:00.000
+</span><span>letter-en.jpg.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 360100B 0.000u 0:00.000
+</span><span>letter-en.png.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 322418B 0.000u 0:00.000
+</span><span>letter-en.tiff.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 322418B 0.000u 0:00.000
 </span></code></pre>
 <p>Size:</p>
 <ul>
@@ -458,20 +448,17 @@ letter-en.tiff.pdf PDF 1695x2378 1695x2378+0+0 16-bit sRGB 322418B 0.000u 0:00.0
 all other candidates, it can create PDFs that are searchable. Of
 course, this yields in much longer running time, that cannot be
 compared to the times of the other options.</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">tesseract doc3.jpg out -l deu pdf
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tesseract doc3.jpg out -l deu pdf
 </span></code></pre>
 <p>It can also create both outputs in one go:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">tesseract doc3.jpg out -l deu pdf txt
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tesseract doc3.jpg out -l deu pdf txt
 </span></code></pre>
 <p>Using tesseract 4. Running time: <code>6661ms</code></p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">$ identify *.pdf
-tesseract/jfif.jpg.pdf PDF 595x843 595x843+0+0 16-bit sRGB 130535B 0.000u 0:00.000
-tesseract/letter-en.jpg.pdf PDF 1743x2446 1743x2446+0+0 16-bit sRGB 328716B 0.000u 0:00.000
-tesseract/letter-en.png.pdf PDF 1743x2446 1743x2446+0+0 16-bit sRGB 328716B 0.000u 0:00.000
-tesseract/letter-en.tiff.pdf PDF 1743x2446 1743x2446+0+0 16-bit sRGB 328716B 0.000u 0:00.000
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ identify *.pdf
+</span><span>tesseract/jfif.jpg.pdf PDF 595x843 595x843+0+0 16-bit sRGB 130535B 0.000u 0:00.000
+</span><span>tesseract/letter-en.jpg.pdf PDF 1743x2446 1743x2446+0+0 16-bit sRGB 328716B 0.000u 0:00.000
+</span><span>tesseract/letter-en.png.pdf PDF 1743x2446 1743x2446+0+0 16-bit sRGB 328716B 0.000u 0:00.000
+</span><span>tesseract/letter-en.tiff.pdf PDF 1743x2446 1743x2446+0+0 16-bit sRGB 328716B 0.000u 0:00.000
 </span></code></pre>
 <p>Size:</p>
 <ul>
@@ -503,7 +490,7 @@ extraction is required anyways.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -519,6 +506,11 @@ extraction is required anyways.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

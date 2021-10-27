@@ -27,11 +27,6 @@
 
         <title>Convert Text Files – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -331,82 +326,81 @@ files?</p>
 contained when uploaded to Docspell.</p>
 <p>The test file is the current documentation page of Docspell, found in
 <code>microsite/docs/doc.md</code>.</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">---
-layout: docs
-position: 4
-title: Documentation
----
-
-# {page .title}
-
-
-Docspell assists in organizing large amounts of PDF files that are
-...
-
-## How it works
-
-Documents have two ...
-
-1. You maintain a kind of address book. It should list all possible
-   correspondents and the concerning people/things. This grows
-   incrementally with each new unknown document.
-2. When docspell analyzes a document, it tries to find matches within
-   your address ...
-3. You can inspect ...
-
-The set of meta data that docspell uses to draw suggestions from, must
-be maintained ...
-
-
-## Terms
-
-In order to better understand these pages, some terms should be
-explained first.
-
-### Item
-
-An **Item** is roughly your (pdf) document, only that an item may span
-multiple files, which are called **attachments**. And an item has
-**meta data** associated:
-
-- a **correspondent**: the other side of the communication. It can be
-  an organization or a person.
-- a **concerning person** or **equipment**: a person or thing that
-  this item is about. Maybe it is an insurance contract about your
-  car.
-- ...
-
-### Collective
-
-The users of the application are part of a **collective**. A
-**collective** is a group of users that share access to the same
-items. The account name is therefore comprised of a *collective name*
-and a *user name*.
-
-All users of a collective are equal; they have same permissions to
-access all...
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>---
+</span><span>layout: docs
+</span><span>position: 4
+</span><span>title: Documentation
+</span><span>---
+</span><span>
+</span><span># {page .title}
+</span><span>
+</span><span>
+</span><span>Docspell assists in organizing large amounts of PDF files that are
+</span><span>...
+</span><span>
+</span><span>## How it works
+</span><span>
+</span><span>Documents have two ...
+</span><span>
+</span><span>1. You maintain a kind of address book. It should list all possible
+</span><span>   correspondents and the concerning people/things. This grows
+</span><span>   incrementally with each new unknown document.
+</span><span>2. When docspell analyzes a document, it tries to find matches within
+</span><span>   your address ...
+</span><span>3. You can inspect ...
+</span><span>
+</span><span>The set of meta data that docspell uses to draw suggestions from, must
+</span><span>be maintained ...
+</span><span>
+</span><span>
+</span><span>## Terms
+</span><span>
+</span><span>In order to better understand these pages, some terms should be
+</span><span>explained first.
+</span><span>
+</span><span>### Item
+</span><span>
+</span><span>An **Item** is roughly your (pdf) document, only that an item may span
+</span><span>multiple files, which are called **attachments**. And an item has
+</span><span>**meta data** associated:
+</span><span>
+</span><span>- a **correspondent**: the other side of the communication. It can be
+</span><span>  an organization or a person.
+</span><span>- a **concerning person** or **equipment**: a person or thing that
+</span><span>  this item is about. Maybe it is an insurance contract about your
+</span><span>  car.
+</span><span>- ...
+</span><span>
+</span><span>### Collective
+</span><span>
+</span><span>The users of the application are part of a **collective**. A
+</span><span>**collective** is a group of users that share access to the same
+</span><span>items. The account name is therefore comprised of a *collective name*
+</span><span>and a *user name*.
+</span><span>
+</span><span>All users of a collective are equal; they have same permissions to
+</span><span>access all...
 </span></code></pre>
 <p>Then a plain text file is tried, too (without any markup).</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">Maecenas mauris lectus, lobortis et purus mattis
-
-Duis vehicula mi vel mi pretium
-
-In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu.
-
-Pellentesque scelerisque fermentum erat, id posuere justo pulvinar ut.
-Cras id eros sed enim aliquam lobortis. Sed lobortis nisl ut eros
-efficitur tincidunt. Cras justo mi, porttitor quis mattis vel,
-ultricies ut purus. Ut facilisis et lacus eu cursus.
-
-In eleifend velit vitae libero sollicitudin euismod:
-
-- Fusce vitae vestibulum velit,
-- Pellentesque vulputate lectus quis pellentesque commodo
-
-the end.
-</span></code></pre><h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>Maecenas mauris lectus, lobortis et purus mattis
+</span><span>
+</span><span>Duis vehicula mi vel mi pretium
+</span><span>
+</span><span>In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu.
+</span><span>
+</span><span>Pellentesque scelerisque fermentum erat, id posuere justo pulvinar ut.
+</span><span>Cras id eros sed enim aliquam lobortis. Sed lobortis nisl ut eros
+</span><span>efficitur tincidunt. Cras justo mi, porttitor quis mattis vel,
+</span><span>ultricies ut purus. Ut facilisis et lacus eu cursus.
+</span><span>
+</span><span>In eleifend velit vitae libero sollicitudin euismod:
+</span><span>
+</span><span>- Fusce vitae vestibulum velit,
+</span><span>- Pellentesque vulputate lectus quis pellentesque commodo
+</span><span>
+</span><span>the end.
+</span></code></pre>
+<h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
 <ul>
 <li><a href="https://github.com/vsch/flexmark-java">flexmark</a> for markdown to
 HTML, then use existing machinery described in <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/">adr
@@ -417,25 +411,24 @@ HTML, then use existing machinery described in <a href="https://docspell.org/doc
 <p>Process files with <a href="https://github.com/vsch/flexmark-java">flexmark</a>
 and then create a PDF from the resulting html.</p>
 <p>Using the following snippet:</p>
-<pre style="background-color:#282828;">
-<code class="language-scala" data-lang="scala"><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">renderMarkdown</span><span style="color:#fdf4c1aa;">(): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
-    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">opts </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">MutableDataSet</span><span style="color:#fdf4c1aa;">()
-    opts.set(</span><span style="color:#fabd2f;">Parser</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">EXTENSIONS</span><span style="color:#fdf4c1aa;">.asInstanceOf[</span><span style="color:#8ec07c;">DataKey</span><span style="color:#fdf4c1aa;">[</span><span style="color:#fabd2f;">util</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">Collection</span><span style="color:#fdf4c1aa;">[</span><span style="color:#fdf4c1;">_</span><span style="color:#fdf4c1aa;">]]],
-      util.</span><span style="color:#fabd2f;">Arrays</span><span style="color:#fdf4c1aa;">.asList(</span><span style="color:#fabd2f;">TablesExtension</span><span style="color:#fdf4c1aa;">.create(),
-      </span><span style="color:#fabd2f;">StrikethroughExtension</span><span style="color:#fdf4c1aa;">.create()));
-
-    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">parser </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Parser</span><span style="color:#fdf4c1aa;">.builder(opts).build()
-    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">renderer </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">HtmlRenderer</span><span style="color:#fdf4c1aa;">.builder(opts).build()
-    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">reader </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Files</span><span style="color:#fdf4c1aa;">.newBufferedReader(</span><span style="color:#fabd2f;">Paths</span><span style="color:#fdf4c1aa;">.get(</span><span style="color:#b8bb26;">&quot;in.txt|md&quot;</span><span style="color:#fdf4c1aa;">))
-    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">doc </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> parser.parseReader(reader)
-    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">html </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> renderer.render(doc)
-    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">body </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body style=\&quot;padding: 0 5em;\&quot;&gt;&quot;</span><span style="color:#fdf4c1aa;"> + html + </span><span style="color:#b8bb26;">&quot;&lt;/body&gt;&lt;/html&gt;&quot;
-    </span><span style="color:#fabd2f;">Files</span><span style="color:#fdf4c1aa;">.write(
-      </span><span style="color:#fabd2f;">Paths</span><span style="color:#fdf4c1aa;">.get(</span><span style="color:#b8bb26;">&quot;test.html&quot;</span><span style="color:#fdf4c1aa;">),
-      body.getBytes(</span><span style="color:#fabd2f;">StandardCharsets</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">UTF_8</span><span style="color:#fdf4c1aa;">))
-
-    </span><span style="color:#fabd2f;">ExitCode</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fabd2f;">Success
-  </span><span style="color:#fdf4c1aa;">}
+<pre data-lang="scala" style="background-color:#282828;color:#fdf4c1aa;" class="language-scala "><code class="language-scala" data-lang="scala"><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">renderMarkdown</span><span>(): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span>{
+</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">opts </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">MutableDataSet</span><span>()
+</span><span>    opts.set(</span><span style="color:#fabd2f;">Parser</span><span>.</span><span style="color:#fabd2f;">EXTENSIONS</span><span>.asInstanceOf[</span><span style="color:#8ec07c;">DataKey</span><span>[</span><span style="color:#fabd2f;">util</span><span>.</span><span style="color:#8ec07c;">Collection</span><span>[</span><span style="color:#fdf4c1;">_</span><span>]]],
+</span><span>      util.</span><span style="color:#fabd2f;">Arrays</span><span>.asList(</span><span style="color:#fabd2f;">TablesExtension</span><span>.create(),
+</span><span>      </span><span style="color:#fabd2f;">StrikethroughExtension</span><span>.create()));
+</span><span>
+</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">parser </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Parser</span><span>.builder(opts).build()
+</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">renderer </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">HtmlRenderer</span><span>.builder(opts).build()
+</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">reader </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Files</span><span>.newBufferedReader(</span><span style="color:#fabd2f;">Paths</span><span>.get(</span><span style="color:#b8bb26;">&quot;in.txt|md&quot;</span><span>))
+</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">doc </span><span style="color:#fe8019;">=</span><span> parser.parseReader(reader)
+</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">html </span><span style="color:#fe8019;">=</span><span> renderer.render(doc)
+</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">body </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body style=\&quot;padding: 0 5em;\&quot;&gt;&quot;</span><span> + html + </span><span style="color:#b8bb26;">&quot;&lt;/body&gt;&lt;/html&gt;&quot;
+</span><span>    </span><span style="color:#fabd2f;">Files</span><span>.write(
+</span><span>      </span><span style="color:#fabd2f;">Paths</span><span>.get(</span><span style="color:#b8bb26;">&quot;test.html&quot;</span><span>),
+</span><span>      body.getBytes(</span><span style="color:#fabd2f;">StandardCharsets</span><span>.</span><span style="color:#fabd2f;">UTF_8</span><span>))
+</span><span>
+</span><span>    </span><span style="color:#fabd2f;">ExitCode</span><span>.</span><span style="color:#fabd2f;">Success
+</span><span>  }
 </span></code></pre>
 <p>Then run the result through <code>wkhtmltopdf</code>.</p>
 <p>Markdown file:</p>
@@ -445,7 +438,7 @@ and then create a PDF from the resulting html.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-md-java.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-md-java.jpg">
 </figure>
 <p>TXT file:</p>
 <figure class="image">
@@ -454,12 +447,11 @@ and then create a PDF from the resulting html.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-txt-java.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-txt-java.jpg">
 </figure>
 <h2 id="pandoc">pandoc<a class="zola-anchor" href="#pandoc" aria-label="Anchor link for: pandoc">🔗</a></h2>
 <p>Command:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">pandoc -f markdown -t html -o test.pdf microsite/docs/doc.md
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>pandoc -f markdown -t html -o test.pdf microsite/docs/doc.md
 </span></code></pre>
 <p>Markdown/Latex:</p>
 <figure class="image">
@@ -468,7 +460,7 @@ and then create a PDF from the resulting html.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-md-pandoc-latex.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-md-pandoc-latex.jpg">
 </figure>
 <p>Markdown/Html:</p>
 <figure class="image">
@@ -477,7 +469,7 @@ and then create a PDF from the resulting html.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-md-pandoc-html.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-md-pandoc-html.jpg">
 </figure>
 <p>Text/Latex:</p>
 <figure class="image">
@@ -486,7 +478,7 @@ and then create a PDF from the resulting html.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-txt-pandoc-latex.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-txt-pandoc-latex.jpg">
 </figure>
 <p>Text/Html:</p>
 <figure class="image">
@@ -495,7 +487,7 @@ and then create a PDF from the resulting html.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-txt-pandoc-html.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-txt-pandoc-html.jpg">
 </figure>
 <h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
 <p>Java library &quot;flexmark&quot;.</p>
@@ -519,7 +511,7 @@ and then the already existing html-&gt;pdf conversion.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -535,6 +527,11 @@ and then the already existing html-&gt;pdf conversion.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

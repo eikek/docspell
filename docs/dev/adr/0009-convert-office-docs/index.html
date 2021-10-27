@@ -27,11 +27,6 @@
 
         <title>Convert Office Documents – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -363,31 +358,30 @@ doesn't look so great, that is ok.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-native.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-odt-native.jpg">
 </figure>
 <h2 id="xwpfconverter"><code>XWPFConverter</code><a class="zola-anchor" href="#xwpfconverter" aria-label="Anchor link for: xwpfconverter">🔗</a></h2>
 <p>I couldn't get any example to work. There were exceptions:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">java.lang.IllegalArgumentException: Value for parameter &#39;id&#39; was out of bounds
-    at org.apache.poi.util.IdentifierManager.reserve(IdentifierManager.java:80)
-    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:101)
-    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:146)
-    at org.apache.poi.xwpf.usermodel.XWPFParagraph.buildRunsInOrderFromXml(XWPFParagraph.java:135)
-    at org.apache.poi.xwpf.usermodel.XWPFParagraph.&lt;init&gt;(XWPFParagraph.java:88)
-    at org.apache.poi.xwpf.usermodel.XWPFDocument.onDocumentRead(XWPFDocument.java:147)
-    at org.apache.poi.POIXMLDocument.load(POIXMLDocument.java:159)
-    at org.apache.poi.xwpf.usermodel.XWPFDocument.&lt;init&gt;(XWPFDocument.java:124)
-    at docspell.convert.Testing$.withPoi(Testing.scala:17)
-    at docspell.convert.Testing$.$anonfun$run$1(Testing.scala:12)
-    at cats.effect.internals.IORunLoop$.cats$effect$internals$IORunLoop$$loop(IORunLoop.scala:87)
-    at cats.effect.internals.IORunLoop$RestartCallback.signal(IORunLoop.scala:355)
-    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:376)
-    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:316)
-    at cats.effect.internals.IOShift$Tick.run(IOShift.scala:36)
-    at cats.effect.internals.PoolUtils$$anon$2$$anon$3.run(PoolUtils.scala:51)
-    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-    at java.lang.Thread.run(Thread.java:748)
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>java.lang.IllegalArgumentException: Value for parameter &#39;id&#39; was out of bounds
+</span><span>    at org.apache.poi.util.IdentifierManager.reserve(IdentifierManager.java:80)
+</span><span>    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:101)
+</span><span>    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:146)
+</span><span>    at org.apache.poi.xwpf.usermodel.XWPFParagraph.buildRunsInOrderFromXml(XWPFParagraph.java:135)
+</span><span>    at org.apache.poi.xwpf.usermodel.XWPFParagraph.&lt;init&gt;(XWPFParagraph.java:88)
+</span><span>    at org.apache.poi.xwpf.usermodel.XWPFDocument.onDocumentRead(XWPFDocument.java:147)
+</span><span>    at org.apache.poi.POIXMLDocument.load(POIXMLDocument.java:159)
+</span><span>    at org.apache.poi.xwpf.usermodel.XWPFDocument.&lt;init&gt;(XWPFDocument.java:124)
+</span><span>    at docspell.convert.Testing$.withPoi(Testing.scala:17)
+</span><span>    at docspell.convert.Testing$.$anonfun$run$1(Testing.scala:12)
+</span><span>    at cats.effect.internals.IORunLoop$.cats$effect$internals$IORunLoop$$loop(IORunLoop.scala:87)
+</span><span>    at cats.effect.internals.IORunLoop$RestartCallback.signal(IORunLoop.scala:355)
+</span><span>    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:376)
+</span><span>    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:316)
+</span><span>    at cats.effect.internals.IOShift$Tick.run(IOShift.scala:36)
+</span><span>    at cats.effect.internals.PoolUtils$$anon$2$$anon$3.run(PoolUtils.scala:51)
+</span><span>    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+</span><span>    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+</span><span>    at java.lang.Thread.run(Thread.java:748)
 </span></code></pre>
 <p>The project (not Apache Poi, the other) seems unmaintained. I could
 not find any website and the artifact in maven central is from 2016.</p>
@@ -406,8 +400,7 @@ extension, as before, but add the --pdf-engine option or -t context,
 PDF from the intermediate format may be specified using --pdf-engine.</p>
 </blockquote>
 <p>Trying with latex engine:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">pandoc -f odt -o test.pdf example.odt
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>pandoc -f odt -o test.pdf example.odt
 </span></code></pre>
 <p>Results ODT:</p>
 <figure class="image">
@@ -416,10 +409,9 @@ PDF from the intermediate format may be specified using --pdf-engine.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-pandoc-latex.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-odt-pandoc-latex.jpg">
 </figure>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">pandoc -f odt -o test.pdf example.docx
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>pandoc -f odt -o test.pdf example.docx
 </span></code></pre>
 <p>Results DOCX:</p>
 <figure class="image">
@@ -428,12 +420,11 @@ PDF from the intermediate format may be specified using --pdf-engine.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-pandoc-latex.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-docx-pandoc-latex.jpg">
 </figure>
 <hr />
 <p>Trying with context engine:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">pandoc -f odt -t context -o test.pdf example.odt
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>pandoc -f odt -t context -o test.pdf example.odt
 </span></code></pre>
 <p>Results ODT:</p>
 <figure class="image">
@@ -442,7 +433,7 @@ PDF from the intermediate format may be specified using --pdf-engine.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-pandoc-context.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-odt-pandoc-context.jpg">
 </figure>
 <p>Results DOCX:</p>
 <figure class="image">
@@ -451,12 +442,11 @@ PDF from the intermediate format may be specified using --pdf-engine.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-pandoc-context.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-docx-pandoc-context.jpg">
 </figure>
 <hr />
 <p>Trying with ms engine:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">pandoc -f odt -t ms -o test.pdf example.odt
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>pandoc -f odt -t ms -o test.pdf example.odt
 </span></code></pre>
 <p>Results ODT:</p>
 <figure class="image">
@@ -465,7 +455,7 @@ PDF from the intermediate format may be specified using --pdf-engine.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-pandoc-ms.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-odt-pandoc-ms.jpg">
 </figure>
 <p>Results DOCX:</p>
 <figure class="image">
@@ -474,12 +464,11 @@ PDF from the intermediate format may be specified using --pdf-engine.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-pandoc-ms.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-docx-pandoc-ms.jpg">
 </figure>
 <hr />
 <p>Trying with html engine (this requires <code>wkhtmltopdf</code> to be present):</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">$ pandoc --extract-media . -f odt -t html -o test.pdf example.odt
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ pandoc --extract-media . -f odt -t html -o test.pdf example.odt
 </span></code></pre>
 <p>Results ODT:</p>
 <figure class="image">
@@ -488,7 +477,7 @@ PDF from the intermediate format may be specified using --pdf-engine.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-pandoc-html.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-odt-pandoc-html.jpg">
 </figure>
 <p>Results DOCX:</p>
 <figure class="image">
@@ -497,12 +486,11 @@ PDF from the intermediate format may be specified using --pdf-engine.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-pandoc-html.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-docx-pandoc-html.jpg">
 </figure>
 <h2 id="abiword">Abiword<a class="zola-anchor" href="#abiword" aria-label="Anchor link for: abiword">🔗</a></h2>
 <p>Trying with:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">abiword --to=pdf example.odt
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>abiword --to=pdf example.odt
 </span></code></pre>
 <p>Results:</p>
 <figure class="image">
@@ -511,15 +499,14 @@ PDF from the intermediate format may be specified using --pdf-engine.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-abiword.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-odt-abiword.jpg">
 </figure>
 <p>Trying with a <code>docx</code> file failed. It worked with a <code>doc</code> file.</p>
 <h2 id="unoconv">Unoconv<a class="zola-anchor" href="#unoconv" aria-label="Anchor link for: unoconv">🔗</a></h2>
 <p>Unoconv relies on libreoffice/openoffice, so installing it will result
 in installing parts of libreoffice, which is a very large dependency.</p>
 <p>Trying with:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">unoconv -f pdf example.odt
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>unoconv -f pdf example.odt
 </span></code></pre>
 <p>Results ODT:</p>
 <figure class="image">
@@ -528,7 +515,7 @@ in installing parts of libreoffice, which is a very large dependency.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-odt-unoconv.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-odt-unoconv.jpg">
 </figure>
 <p>Results DOCX:</p>
 <figure class="image">
@@ -537,7 +524,7 @@ in installing parts of libreoffice, which is a very large dependency.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;example-docx-unoconv.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-docx-unoconv.jpg">
 </figure>
 <h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
 <p>Unoconv.</p>
@@ -561,7 +548,7 @@ exchange it at any time with a different one.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -577,6 +564,11 @@ exchange it at any time with a different one.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

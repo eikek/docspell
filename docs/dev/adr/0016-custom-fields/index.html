@@ -27,11 +27,6 @@
 
         <title>Custom Fields – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -362,25 +357,24 @@ don't have any value associated and could be deleted.</li>
 <h2 id="ideas">Ideas<a class="zola-anchor" href="#ideas" aria-label="Anchor link for: ideas">🔗</a></h2>
 <h3 id="database">Database<a class="zola-anchor" href="#database" aria-label="Anchor link for: database">🔗</a></h3>
 <p>Initial sketch:</p>
-<pre style="background-color:#282828;">
-<code class="language-sql" data-lang="sql"><span style="color:#fa5c4b;">CREATE TABLE </span><span style="color:#8ec07c;">custom_field</span><span style="color:#fdf4c1aa;"> (
-  id </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">244</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null </span><span style="color:#fa5c4b;">primary key</span><span style="color:#fdf4c1aa;">,
-  name </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">100</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
-  cid </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
-  ftype </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">100</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
-  </span><span style="color:#fa5c4b;">foreign key </span><span style="color:#b8bb26;">&quot;cid&quot; </span><span style="color:#fa5c4b;">references</span><span style="color:#fdf4c1aa;"> collective(cid),
-  unique (cid, name)
-);
-
-</span><span style="color:#fa5c4b;">CREATE TABLE </span><span style="color:#8ec07c;">custom_field_item_value</span><span style="color:#fdf4c1aa;"> (
-  id </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null </span><span style="color:#fa5c4b;">primary key</span><span style="color:#fdf4c1aa;">,
-  item_id </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
-  field </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span style="color:#fdf4c1aa;">,
-  field_value </span><span style="color:#fa5c4b;">varchar</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">254</span><span style="color:#fdf4c1aa;">),
-  </span><span style="color:#fa5c4b;">foreign key</span><span style="color:#fdf4c1aa;"> item_id </span><span style="color:#fa5c4b;">references</span><span style="color:#fdf4c1aa;"> item(id),
-  </span><span style="color:#fa5c4b;">foreign key</span><span style="color:#fdf4c1aa;"> field </span><span style="color:#fa5c4b;">references</span><span style="color:#fdf4c1aa;"> custom_field(id),
-  unique (item_id, field) </span><span style="font-style:italic;color:#928374;">-- only one value allowed per item
-</span><span style="color:#fdf4c1aa;">)
+<pre data-lang="sql" style="background-color:#282828;color:#fdf4c1aa;" class="language-sql "><code class="language-sql" data-lang="sql"><span style="color:#fa5c4b;">CREATE TABLE </span><span style="color:#8ec07c;">custom_field</span><span> (
+</span><span>  id </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">244</span><span>) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null </span><span style="color:#fa5c4b;">primary key</span><span>,
+</span><span>  name </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">100</span><span>) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span>,
+</span><span>  cid </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">254</span><span>) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span>,
+</span><span>  ftype </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">100</span><span>) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span>,
+</span><span>  </span><span style="color:#fa5c4b;">foreign key </span><span style="color:#b8bb26;">&quot;cid&quot; </span><span style="color:#fa5c4b;">references</span><span> collective(cid),
+</span><span>  unique (cid, name)
+</span><span>);
+</span><span>
+</span><span style="color:#fa5c4b;">CREATE TABLE </span><span style="color:#8ec07c;">custom_field_item_value</span><span> (
+</span><span>  id </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">254</span><span>) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null </span><span style="color:#fa5c4b;">primary key</span><span>,
+</span><span>  item_id </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">254</span><span>) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span>,
+</span><span>  field </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">254</span><span>) </span><span style="color:#fe8019;">not </span><span style="color:#d3869b;">null</span><span>,
+</span><span>  field_value </span><span style="color:#fa5c4b;">varchar</span><span>(</span><span style="color:#d3869b;">254</span><span>),
+</span><span>  </span><span style="color:#fa5c4b;">foreign key</span><span> item_id </span><span style="color:#fa5c4b;">references</span><span> item(id),
+</span><span>  </span><span style="color:#fa5c4b;">foreign key</span><span> field </span><span style="color:#fa5c4b;">references</span><span> custom_field(id),
+</span><span>  unique (item_id, field) </span><span style="font-style:italic;color:#928374;">-- only one value allowed per item
+</span><span>)
 </span></code></pre>
 <ul>
 <li>field carries the type in the column <code>ftype</code>. type is an enum:
@@ -434,12 +428,12 @@ functions</li>
 <li>setting one value for a specific field. The server knows its type
 and converts accordingly (e.g. string-&gt;date)</li>
 <li>json only knows number, strings and bools (and null).</li>
-<li>make a structure to allow to specify all json types:<pre style="background-color:#282828;">
-<code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> value_str</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
-</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> value_num</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Float
-</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> value_bool</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
+<li>make a structure to allow to specify all json types:<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span> value_str</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
+</span><span style="color:#fabd2f;">,</span><span> value_num</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Float
+</span><span style="color:#fabd2f;">,</span><span> value_bool</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
 </span><span style="color:#fabd2f;">}
-</span></code></pre></li>
+</span></code></pre>
+</li>
 <li>con: setting all to <code>Nothing</code> is an error as well as using the wrong
 field with some type (e.g. setting <code>value_str</code> for setting a
 <code>numeric</code> field)</li>
@@ -449,10 +443,10 @@ field with some type (e.g. setting <code>value_str</code> for setting a
 </ul>
 <p>Input 2:</p>
 <ul>
-<li>send one value as a string<pre style="background-color:#282828;">
-<code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> value</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">String
+<li>send one value as a string<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span> value</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">String
 </span><span style="color:#fabd2f;">}
-</span></code></pre></li>
+</span></code></pre>
+</li>
 <li>string must be in a specific format according to its type. server
 may convert (like <code>12.4999</code> → <code>12.49</code>), or report an error</li>
 <li>client must create the correct string</li>
@@ -502,7 +496,7 @@ fields</li>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -518,6 +512,11 @@ fields</li>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

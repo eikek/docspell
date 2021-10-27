@@ -27,11 +27,6 @@
 
         <title>Upload Request – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -200,24 +195,23 @@ files.</p>
 have support for this.</p>
 <p>For example, here is a curl command uploading two files with meta
 data. Since <code>multiple</code> is <code>false</code>, both files are added to one item:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">curl -XPOST -F meta=</span><span style="color:#b8bb26;">&#39;{&quot;multiple&quot;:false, &quot;direction&quot;: &quot;outgoing&quot;, &quot;tags&quot;: {&quot;items&quot;:[&quot;Order&quot;]}}&#39; </span><span style="color:#fdf4c1;">\
-            -F file=@letter-en.pdf \
-            -F file=@letter-de.pdf \
-            http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
-</span></code></pre><h1 id="metadata">Metadata<a class="zola-anchor" href="#metadata" aria-label="Anchor link for: metadata">🔗</a></h1>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">curl -XPOST -F meta=</span><span style="color:#b8bb26;">&#39;{&quot;multiple&quot;:false, &quot;direction&quot;: &quot;outgoing&quot;, &quot;tags&quot;: {&quot;items&quot;:[&quot;Order&quot;]}}&#39; </span><span style="color:#fdf4c1;">\
+</span><span style="color:#fdf4c1;">            -F file=@letter-en.pdf \
+</span><span style="color:#fdf4c1;">            -F file=@letter-de.pdf \
+</span><span style="color:#fdf4c1;">            http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
+</span></code></pre>
+<h1 id="metadata">Metadata<a class="zola-anchor" href="#metadata" aria-label="Anchor link for: metadata">🔗</a></h1>
 <p>Each upload request can specify a set of metadata that should be
 applied to the item(s) that are created from this upload. This is
 specified via a JSON structure in a part with name <code>meta</code>:</p>
-<pre style="background-color:#282828;">
-<code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> multiple</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Bool
-</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> direction</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
-</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> folder</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
-</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> skipDuplicates</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
-</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> tags</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe StringList
-</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> fileFilter</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
-</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> language</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
-</span><span style="color:#fabd2f;">,</span><span style="color:#fdf4c1aa;"> attachmentsOnly</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
+<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span> multiple</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Bool
+</span><span style="color:#fabd2f;">,</span><span> direction</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
+</span><span style="color:#fabd2f;">,</span><span> folder</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
+</span><span style="color:#fabd2f;">,</span><span> skipDuplicates</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
+</span><span style="color:#fabd2f;">,</span><span> tags</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe StringList
+</span><span style="color:#fabd2f;">,</span><span> fileFilter</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
+</span><span style="color:#fabd2f;">,</span><span> language</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe String
+</span><span style="color:#fabd2f;">,</span><span> attachmentsOnly</span><span style="color:#fe8019;">: </span><span style="color:#fdf4c1;">Maybe Bool
 </span><span style="color:#fabd2f;">}
 </span></code></pre>
 <ul>
@@ -249,8 +243,7 @@ in docspell.</p>
 <p>The <code>tags</code> field can be used to provide tags that should be applied
 automatically. The <code>StringList</code> is a json object containing one
 field <code>items</code> that is a list of strings:</p>
-<pre style="background-color:#282828;">
-<code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span style="color:#fdf4c1aa;"> items</span><span style="color:#fe8019;">: </span><span style="color:#fa5c4b;">(</span><span style="color:#fdf4c1;">List String</span><span style="color:#fa5c4b;">)
+<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#fabd2f;">{</span><span> items</span><span style="color:#fe8019;">: </span><span style="color:#fa5c4b;">(</span><span style="color:#fdf4c1;">List String</span><span style="color:#fa5c4b;">)
 </span><span style="color:#fabd2f;">}
 </span></code></pre>
 <p>Tags can be defined using their ids or names.</p>
@@ -279,15 +272,13 @@ is therefore skipped.</p>
 <p>Docspell needs to know the collective that owns the files. There are
 the following ways for this.</p>
 <h2 id="authenticated-user">Authenticated User<a class="zola-anchor" href="#authenticated-user" aria-label="Anchor link for: authenticated-user">🔗</a></h2>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">/api/v1/sec/upload/item
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>/api/v1/sec/upload/item
 </span></code></pre>
 <p>This endpoint exists for authenticated users. That is, you must
 provide a valid cookie or <code>X-Docspell-Auth</code> header with the request.
 You can obtain this from the <code>login</code> endpoint.</p>
 <h2 id="url-protected">URL protected<a class="zola-anchor" href="#url-protected" aria-label="Anchor link for: url-protected">🔗</a></h2>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">/api/v1/open/upload/item/5JE…-…-…-…oHri
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>/api/v1/open/upload/item/5JE…-…-…-…oHri
 </span></code></pre>
 <p>A more flexible way for uploading files is to create a
 <a href="https://docspell.org/docs/webapp/uploading/#anonymous-upload">“Source”</a> that creates a
@@ -303,8 +294,7 @@ the corresponding source. Tags are applied from both inputs.</p>
 <p>Another option for uploading files is the special <em>integration
 endpoint</em>. This endpoint allows an admin to upload files to any
 collective, that is known by name.</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">/api/v1/open/integration/item/[collective-name]
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>/api/v1/open/integration/item/[collective-name]
 </span></code></pre>
 <p>The endpoint is behind <code>/api/v1/open</code>, so this route is not protected
 by an authentication token (see <a href="https://docspell.org/docs/api/">REST Api</a> for
@@ -322,8 +312,7 @@ on the same host or network).</p>
 the collective exists.</p>
 <p>It is also possible to check for existing files using their sha256
 checksum with:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">/api/v1/open/integration/checkfile/[collective-name]/[sha256-checksum]
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>/api/v1/open/integration/checkfile/[collective-name]/[sha256-checksum]
 </span></code></pre>
 <p>See the <a href="https://docspell.org/docs/tools/smtpgateway/">SMTP gateway</a> or the <a href="https://docspell.org/docs/tools/cli/#docker">dsc
 watch/upload</a> command for example can use
@@ -339,7 +328,7 @@ this endpoint.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -355,6 +344,11 @@ this endpoint.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

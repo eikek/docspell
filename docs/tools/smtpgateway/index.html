@@ -27,11 +27,6 @@
 
         <title>SMTP Gateway with Exim – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -238,65 +233,64 @@ agent). It is used here only because of previous knowledge, but same
 can be achieved with other MTAs.</p>
 <h1 id="the-config-file">The Config File<a class="zola-anchor" href="#the-config-file" aria-label="Anchor link for: the-config-file">🔗</a></h1>
 <p>Here is the example config file for exim:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1aa;">
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span>
 </span><span style="font-style:italic;color:#928374;">## Provide certificates to enable StartTLS
-# tls_certificate = /var/lib/acme/test.org/fullchain.pem
-# tls_privatekey = /var/lib/acme/test.org/key.pem
+</span><span style="font-style:italic;color:#928374;"># tls_certificate = /var/lib/acme/test.org/fullchain.pem
+</span><span style="font-style:italic;color:#928374;"># tls_privatekey = /var/lib/acme/test.org/key.pem
 </span><span style="color:#fdf4c1;">tls_advertise_hosts =
-
-primary_hostname = test.org
-domainlist local_domains = test.org
-timeout_frozen_after = 1m
-acl_smtp_rcpt = acl_check_rcpt
-acl_smtp_data = acl_check_data
-never_users = root
-host_lookup = </span><span style="color:#fe8019;">*
+</span><span>
+</span><span style="color:#fdf4c1;">primary_hostname = test.org
+</span><span style="color:#fdf4c1;">domainlist local_domains = test.org
+</span><span style="color:#fdf4c1;">timeout_frozen_after = 1m
+</span><span style="color:#fdf4c1;">acl_smtp_rcpt = acl_check_rcpt
+</span><span style="color:#fdf4c1;">acl_smtp_data = acl_check_data
+</span><span style="color:#fdf4c1;">never_users = root
+</span><span style="color:#fdf4c1;">host_lookup = </span><span style="color:#fe8019;">*
 </span><span style="color:#fdf4c1;">daemon_smtp_ports = 25
-
-message_size_limit = 30m
-
-keep_environment = DS_HEADER : DS_URL
-
-begin acl
-acl_check_rcpt:
-require
-  domains = +local_domains
-require
-  message = Sender verification failed
-  verify = sender
-require
-  message = Receiver verification failed
-  verify = recipient
-require
-  message = Recipient unknown
-  condition = ${run{</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1;">usr</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1;">bin/curl --out /dev/null --silent --fail -H </span><span style="color:#b8bb26;">&quot;Docspell-Integration: ${</span><span style="color:#fdf4c1;">env{DS_HEADER</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}&quot; &quot;${</span><span style="color:#fdf4c1;">env{DS_URL</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}/api/v1/open/integration/item/$</span><span style="color:#fdf4c1;">local_part</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1;">}{yes}{no}</span><span style="color:#fdf4c1aa;">}
+</span><span>
+</span><span style="color:#fdf4c1;">message_size_limit = 30m
+</span><span>
+</span><span style="color:#fdf4c1;">keep_environment = DS_HEADER : DS_URL
+</span><span>
+</span><span style="color:#fdf4c1;">begin acl
+</span><span style="color:#fdf4c1;">acl_check_rcpt:
+</span><span style="color:#fdf4c1;">require
+</span><span>  </span><span style="color:#fdf4c1;">domains = +local_domains
+</span><span style="color:#fdf4c1;">require
+</span><span>  </span><span style="color:#fdf4c1;">message = Sender verification failed
+</span><span>  </span><span style="color:#fdf4c1;">verify = sender
+</span><span style="color:#fdf4c1;">require
+</span><span>  </span><span style="color:#fdf4c1;">message = Receiver verification failed
+</span><span>  </span><span style="color:#fdf4c1;">verify = recipient
+</span><span style="color:#fdf4c1;">require
+</span><span>  </span><span style="color:#fdf4c1;">message = Recipient unknown
+</span><span>  </span><span style="color:#fdf4c1;">condition = ${run{</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1;">usr</span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1;">bin/curl --output /dev/null --silent --fail -H </span><span style="color:#b8bb26;">&quot;Docspell-Integration: ${</span><span style="color:#fdf4c1;">env{DS_HEADER</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}&quot; &quot;${</span><span style="color:#fdf4c1;">env{DS_URL</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}/api/v1/open/integration/item/$</span><span style="color:#fdf4c1;">local_part</span><span style="color:#b8bb26;">&quot;</span><span style="color:#fdf4c1;">}{yes}{no}</span><span>}
 </span><span style="color:#fdf4c1;">warn
-  message = Reverse lookup failed
-  </span><span style="color:#fdf4c1aa;">!</span><span style="color:#fdf4c1;">verify = reverse_host_lookup
-accept
-
-acl_check_data:
-deny
-  message = Sender verification failed
-  </span><span style="color:#fdf4c1aa;">!</span><span style="color:#fdf4c1;">verify = header_sender
-accept
-
-begin routers
-local_users:
-  driver = accept
-  transport = docspell
-
-begin transports
-docspell:
-  driver = pipe
-  </span><span style="color:#fabd2f;">command</span><span style="color:#fdf4c1;"> = /usr/bin/curl --out /dev/null --silent --fail -H </span><span style="color:#b8bb26;">&quot;Docspell-Integration: ${</span><span style="color:#fdf4c1;">env{DS_HEADER</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}&quot;</span><span style="color:#fdf4c1;"> -F </span><span style="color:#b8bb26;">&quot;file=@-;filename=\&quot;$</span><span style="color:#fdf4c1;">h_subject</span><span style="color:#b8bb26;">:\&quot;&quot; &quot;${</span><span style="color:#fdf4c1;">env{DS_URL</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}/api/v1/open/integration/item/$</span><span style="color:#fdf4c1;">local_part</span><span style="color:#b8bb26;">&quot;
-  </span><span style="color:#fdf4c1;">return_fail_output
-  user = nobody
-  delivery_date_add
-  envelope_to_add
-  return_path_add
-  log_output
+</span><span>  </span><span style="color:#fdf4c1;">message = Reverse lookup failed
+</span><span>  !</span><span style="color:#fdf4c1;">verify = reverse_host_lookup
+</span><span style="color:#fdf4c1;">accept
+</span><span>
+</span><span style="color:#fdf4c1;">acl_check_data:
+</span><span style="color:#fdf4c1;">deny
+</span><span>  </span><span style="color:#fdf4c1;">message = Sender verification failed
+</span><span>  !</span><span style="color:#fdf4c1;">verify = header_sender
+</span><span style="color:#fdf4c1;">accept
+</span><span>
+</span><span style="color:#fdf4c1;">begin routers
+</span><span style="color:#fdf4c1;">local_users:
+</span><span>  </span><span style="color:#fdf4c1;">driver = accept
+</span><span>  </span><span style="color:#fdf4c1;">transport = docspell
+</span><span>
+</span><span style="color:#fdf4c1;">begin transports
+</span><span style="color:#fdf4c1;">docspell:
+</span><span>  </span><span style="color:#fdf4c1;">driver = pipe
+</span><span>  </span><span style="color:#fabd2f;">command</span><span style="color:#fdf4c1;"> = /usr/bin/curl --output /dev/null --silent --fail -H </span><span style="color:#b8bb26;">&quot;Docspell-Integration: ${</span><span style="color:#fdf4c1;">env{DS_HEADER</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}&quot;</span><span style="color:#fdf4c1;"> -F </span><span style="color:#b8bb26;">&quot;file=@-;filename=\&quot;$</span><span style="color:#fdf4c1;">h_subject</span><span style="color:#b8bb26;">:\&quot;&quot; &quot;${</span><span style="color:#fdf4c1;">env{DS_URL</span><span style="color:#b8bb26;">}{$</span><span style="color:#fdf4c1;">value</span><span style="color:#b8bb26;">} fail}/api/v1/open/integration/item/$</span><span style="color:#fdf4c1;">local_part</span><span style="color:#b8bb26;">&quot;
+</span><span>  </span><span style="color:#fdf4c1;">return_fail_output
+</span><span>  </span><span style="color:#fdf4c1;">user = nobody
+</span><span>  </span><span style="color:#fdf4c1;">delivery_date_add
+</span><span>  </span><span style="color:#fdf4c1;">envelope_to_add
+</span><span>  </span><span style="color:#fdf4c1;">return_path_add
+</span><span>  </span><span style="color:#fdf4c1;">log_output
 </span></code></pre>
 <p>Exim has good <a href="https://www.exim.org/docs.html">documentation</a>, look
 there for more info. The following is only a quick summary of the file
@@ -340,64 +334,61 @@ mails to <code>somename@test.org</code> are uploaded to the collective
 </ul>
 <h1 id="install-with-docker">Install with Docker<a class="zola-anchor" href="#install-with-docker" aria-label="Anchor link for: install-with-docker">🔗</a></h1>
 <p>Go into the <code>tools/exim</code> directory and build the docker image:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docker build -t ds-exim:latest -f exim.dockerfile .
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docker build -t ds-exim:latest -f exim.dockerfile .
 </span></code></pre>
 <p>Then start docspell somewhere and configure the integration endpoint
 to use http-header protection; i.e. set this in the config file:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server {
-  integration-endpoint {
-    enabled = true
-    http-header = {
-      enabled = true
-      header-value = </span><span style="color:#b8bb26;">&quot;test123&quot;
-    </span><span style="color:#fdf4c1;">}
-  }
-}
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server {
+</span><span style="color:#fdf4c1;">  integration-endpoint {
+</span><span style="color:#fdf4c1;">    enabled = true
+</span><span style="color:#fdf4c1;">    http-header = {
+</span><span style="color:#fdf4c1;">      enabled = true
+</span><span style="color:#fdf4c1;">      header-value = </span><span style="color:#b8bb26;">&quot;test123&quot;
+</span><span style="color:#fdf4c1;">    }
+</span><span style="color:#fdf4c1;">  }
+</span><span style="color:#fdf4c1;">}
 </span></code></pre>
 <p>Then edit the <code>docker-compose.yml</code> and change the environment
 variables as needed.</p>
 <p>Finally start the container:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docker-compose up
-</span></code></pre><h1 id="test-run">Test Run<a class="zola-anchor" href="#test-run" aria-label="Anchor link for: test-run">🔗</a></h1>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docker-compose up
+</span></code></pre>
+<h1 id="test-run">Test Run<a class="zola-anchor" href="#test-run" aria-label="Anchor link for: test-run">🔗</a></h1>
 <p>Now it is possible to send mails to this MTA which will be immediatly
 uploaded to docspell for the collective corresponding to the
 <code>$local_part</code> of the recipients address. Here is a quick telnet
 session (the collective is named <code>family</code>):</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">~&gt; telnet localhost 25
-Trying ::1...
-Connected to localhost.
-Escape character is &#39;^]&#39;.
-220 test.org ESMTP Exim 4.93 Sun, 14 Jun 2020 19:03:51 +0000
-ehlo localhost
-250-test.org Hello localhost [::1]
-250-SIZE 31457280
-250-8BITMIME
-250-PIPELINING
-250-CHUNKING
-250 HELP
-mail from:&lt;me@test.org&gt;
-250 OK
-rcpt to:&lt;family@test.org&gt;
-250 Accepted
-data
-354 Enter message, ending with &quot;.&quot; on a line by itself
-From: me@test.org
-To: family@test.org
-Subject: This is a test
-
-Test,
-
-this is just a test mail.
-.
-250 OK id=1jkXwf-000007-0d
-quit
-221 test.org closing connection
-Connection closed by foreign host.
-~&gt;
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>~&gt; telnet localhost 25
+</span><span>Trying ::1...
+</span><span>Connected to localhost.
+</span><span>Escape character is &#39;^]&#39;.
+</span><span>220 test.org ESMTP Exim 4.93 Sun, 14 Jun 2020 19:03:51 +0000
+</span><span>ehlo localhost
+</span><span>250-test.org Hello localhost [::1]
+</span><span>250-SIZE 31457280
+</span><span>250-8BITMIME
+</span><span>250-PIPELINING
+</span><span>250-CHUNKING
+</span><span>250 HELP
+</span><span>mail from:&lt;me@test.org&gt;
+</span><span>250 OK
+</span><span>rcpt to:&lt;family@test.org&gt;
+</span><span>250 Accepted
+</span><span>data
+</span><span>354 Enter message, ending with &quot;.&quot; on a line by itself
+</span><span>From: me@test.org
+</span><span>To: family@test.org
+</span><span>Subject: This is a test
+</span><span>
+</span><span>Test,
+</span><span>
+</span><span>this is just a test mail.
+</span><span>.
+</span><span>250 OK id=1jkXwf-000007-0d
+</span><span>quit
+</span><span>221 test.org closing connection
+</span><span>Connection closed by foreign host.
+</span><span>~&gt;
 </span></code></pre>
 <p>The mail is processed and results in an item:</p>
 <figure class="image">
@@ -406,34 +397,34 @@ Connection closed by foreign host.
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;exim-mail.png">
+    <img src="https://docspell.org/docs/tools/exim-mail.png">
 </figure>
 <p>However, if a mail is to an unknown collective or not to the
 configured local domain, the server rejects it immediately:</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">~</span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> telnet localhost 25
-Trying ::1...
-Connected to localhost.
-Escape character is </span><span style="color:#b8bb26;">&#39;^]&#39;</span><span style="color:#fdf4c1;">.
-220 test.org ESMTP Exim 4.93 Sun, 14 Jun 2020 19:07:04 +0000
-ehlo localhost
-250-test.org Hello localhost </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::1</span><span style="color:#fa5c4b;">]
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">~</span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> telnet localhost 25
+</span><span style="color:#fdf4c1;">Trying ::1...
+</span><span style="color:#fdf4c1;">Connected to localhost.
+</span><span style="color:#fdf4c1;">Escape character is </span><span style="color:#b8bb26;">&#39;^]&#39;</span><span style="color:#fdf4c1;">.
+</span><span style="color:#fdf4c1;">220 test.org ESMTP Exim 4.93 Sun, 14 Jun 2020 19:07:04 +0000
+</span><span style="color:#fdf4c1;">ehlo localhost
+</span><span style="color:#fdf4c1;">250-test.org Hello localhost </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::1</span><span style="color:#fa5c4b;">]
 </span><span style="color:#fdf4c1;">250-SIZE 31457280
-250-8BITMIME
-250-PIPELINING
-250-CHUNKING
-250 HELP
-mail from:</span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">me@test.org</span><span style="color:#fe8019;">&gt;
-</span><span style="color:#d3869b;">250</span><span style="color:#fdf4c1;"> OK
-rcpt to:</span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">family22@test.org</span><span style="color:#fe8019;">&gt;
-</span><span style="color:#d3869b;">550</span><span style="color:#fdf4c1;"> Recipient unknown
-rcpt to:</span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">family@gmail.com</span><span style="color:#fe8019;">&gt;
-</span><span style="color:#d3869b;">550</span><span style="color:#fdf4c1;"> Administrative prohibition
-quit
-221 test.org closing connection
-Connection closed by foreign host.
-~</span><span style="color:#fe8019;">&gt;
+</span><span style="color:#fdf4c1;">250-8BITMIME
+</span><span style="color:#fdf4c1;">250-PIPELINING
+</span><span style="color:#fdf4c1;">250-CHUNKING
+</span><span style="color:#fdf4c1;">250 HELP
+</span><span style="color:#fdf4c1;">mail from:</span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">me@test.org</span><span style="color:#fe8019;">&gt;
+</span><span style="color:#fdf4c1;">250 OK
+</span><span style="color:#fdf4c1;">rcpt to:</span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">family22@test.org</span><span style="color:#fe8019;">&gt;
+</span><span style="color:#fdf4c1;">550 Recipient unknown
+</span><span style="color:#fdf4c1;">rcpt to:</span><span style="color:#fe8019;">&lt;</span><span style="color:#fdf4c1;">family@gmail.com</span><span style="color:#fe8019;">&gt;
+</span><span style="color:#fdf4c1;">550 Administrative prohibition
+</span><span style="color:#fdf4c1;">quit
+</span><span style="color:#fdf4c1;">221 test.org closing connection
+</span><span style="color:#fdf4c1;">Connection closed by foreign host.
+</span><span style="color:#fdf4c1;">~</span><span style="color:#fe8019;">&gt;
 </span></code></pre>
+
                         </div>
                     </div>
                 </div>
@@ -444,7 +435,7 @@ Connection closed by foreign host.
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -460,6 +451,11 @@ Connection closed by foreign host.
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

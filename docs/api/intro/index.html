@@ -27,11 +27,6 @@
 
         <title>Api Introduction – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -219,12 +214,13 @@ workflow.</p>
 <a href="/openapi/docspell-openapi.yml">here</a>.</p>
 <p>The routes can be divided into protected, unprotected routes and admin
 routes. The unprotected, or open routes are at <code>/open/*</code> while the
-protected routes are at <code>/sec/*</code> and admin routes are at <code>/admin/*</code>.
-Open routes don't require authenticated access and can be used by any
-user. The protected routes require an authenticated user. The admin
-routes require a special http header with a value from the config
-file. They are disabled by default, you need to specify a secret in
-order to enable admin routes.</p>
+protected routes are at <code>/sec/*</code> and <code>/share/*</code>, while admin routes
+are at <code>/admin/*</code>. Open routes don't require authenticated access and
+can be used by any user. The protected routes require either an
+authenticated user (for <code>/sec/*</code>) or a valid share id and possibly the
+password (for <code>/share/*</code>). The admin routes require a special http
+header with a value from the config file. They are disabled by
+default, you need to specify a secret in order to enable admin routes.</p>
 <h2 id="authentication">Authentication<a class="zola-anchor" href="#authentication" aria-label="Anchor link for: authentication">🔗</a></h2>
 <p>The unprotected route <code>/open/auth/login</code> can be used to login with
 account name and password. The response contains a token that can be
@@ -239,6 +235,14 @@ must be <code>docspell_auth</code> and a custom header must be named
 <code>X-Docspell-Auth</code>.</p>
 <p>The admin route (see below) <code>/admin/user/resetPassword</code> can be used to
 reset a password of a user.</p>
+<p>To authenticate for a share, the <code>/open/share/verify</code> endpoint must be
+used. It expects the share id and possibly a password. If the share
+requires a password, but it was not specified in the request, the
+response indicates this. The request must then be replayed with the
+correct password to retrieve a token. This token can then be used to
+all <code>/share/*</code> endpoints to identify the share - analog to the
+protected <code>/sec/*</code> routes. It can be either specfied as a cookie or
+via the header <code>Docspell-Share-Auth</code>.</p>
 <h3 id="openid-connect">OpenID Connect<a class="zola-anchor" href="#openid-connect" aria-label="Anchor link for: openid-connect">🔗</a></h3>
 <p>Docspell can be configured to be a relying party for OpenID Connect.
 Please see <a href="https://docspell.org/docs/configure/#openid-connect-oauth2">the config
@@ -253,8 +257,7 @@ secret defined in the configuration file. The person who installs
 docspell is the admin and knows this secret (and may share it) and
 requests must provide it as a http header <code>Docspell-Admin-Secret</code>.</p>
 <p>Example: re-create the fulltext index (over all collectives):</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&quot;Docspell-Admin-Secret: test123&quot;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/admin/fts/reIndexAll
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&quot;Docspell-Admin-Secret: test123&quot;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/admin/fts/reIndexAll
 </span></code></pre>
 <p>To enable these endpoints, you must provide a secret in the
 <a href="https://docspell.org/docs/configure/#admin-endpoint">configuration</a>.</p>
@@ -264,108 +267,108 @@ server provides a swagger generated api documenation, that allows
 playing around with the api. It requires a running docspell rest
 server. If it is deployed at <code>http://localhost:7880</code>, then check this
 url:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">http://localhost:7880/api/doc
-</span></code></pre><h2 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h2>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>http://localhost:7880/api/doc
+</span></code></pre>
+<h2 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h2>
 <p>These examples use the great command line tool
 <a href="https://curl.haxx.se/">curl</a>.</p>
 <h3 id="login">Login<a class="zola-anchor" href="#login" aria-label="Anchor link for: login">🔗</a></h3>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -X POST -d </span><span style="color:#b8bb26;">&#39;{&quot;account&quot;: &quot;smith&quot;, &quot;password&quot;: &quot;test&quot;}&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/open/auth/login
-{</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -X POST -d </span><span style="color:#b8bb26;">&#39;{&quot;account&quot;: &quot;smith&quot;, &quot;password&quot;: &quot;test&quot;}&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/open/auth/login
+</span><span style="color:#fdf4c1;">{</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;user&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true
-,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Login successful&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Login successful&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;token&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;1568142350115-ZWlrZS9laWtl-$</span><span style="color:#fdf4c1;">2</span><span style="color:#b8bb26;">a$</span><span style="color:#fdf4c1;">1</span><span style="color:#b8bb26;">0$</span><span style="color:#fdf4c1;">rGZUFDAVNIKh4Tj6u6tlI</span><span style="color:#b8bb26;">.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;validMs&quot;</span><span style="color:#fdf4c1;">:300000
-</span><span style="color:#fdf4c1aa;">}
-</span></code></pre><h3 id="get-new-token">Get new token<a class="zola-anchor" href="#get-new-token" aria-label="Anchor link for: get-new-token">🔗</a></h3>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142350115-ZWlrZS9laWtl-$2a$10$rGZUFDAVNIKh4Tj6u6tlI.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/auth/session
-{</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
+</span><span>}
+</span></code></pre>
+<h3 id="get-new-token">Get new token<a class="zola-anchor" href="#get-new-token" aria-label="Anchor link for: get-new-token">🔗</a></h3>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142350115-ZWlrZS9laWtl-$2a$10$rGZUFDAVNIKh4Tj6u6tlI.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/auth/session
+</span><span style="color:#fdf4c1;">{</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;user&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true
-,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Login successful&quot;
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Login successful&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;token&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;1568142446077-ZWlrZS9laWtl-$</span><span style="color:#fdf4c1;">2</span><span style="color:#b8bb26;">a$</span><span style="color:#fdf4c1;">1</span><span style="color:#b8bb26;">0$</span><span style="color:#fdf4c1;">3</span><span style="color:#b8bb26;">B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=&quot;
 </span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;validMs&quot;</span><span style="color:#fdf4c1;">:300000
-</span><span style="color:#fdf4c1aa;">}
-</span></code></pre><h3 id="get-some-insights">Get some insights<a class="zola-anchor" href="#get-some-insights" aria-label="Anchor link for: get-some-insights">🔗</a></h3>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142446077-ZWlrZS9laWtl-$2a$10$3B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/collective/insights
-{</span><span style="color:#b8bb26;">&quot;incomingCount&quot;</span><span style="color:#fdf4c1;">:3
-,</span><span style="color:#b8bb26;">&quot;outgoingCount&quot;</span><span style="color:#fdf4c1;">:1
-,</span><span style="color:#b8bb26;">&quot;itemSize&quot;</span><span style="color:#fdf4c1;">:207310
-,</span><span style="color:#b8bb26;">&quot;tagCloud&quot;</span><span style="color:#fdf4c1;">:{</span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">:[]</span><span style="color:#fdf4c1aa;">}
-}
-</span></code></pre><h3 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h3>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -i -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1615240493…kYtFynj4&#39; </span><span style="color:#fdf4c1;">\
-  </span><span style="color:#b8bb26;">&#39;http://localhost:7880/api/v1/sec/item/search?q=tag=todo,invoice%20year:2021&#39;
-</span><span style="color:#fdf4c1aa;">{
-  </span><span style="color:#b8bb26;">&quot;groups&quot;</span><span style="color:#fdf4c1;">: [
-    </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;2021-02&quot;</span><span style="color:#fdf4c1;">,
-      </span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">: [
-        </span><span style="color:#fdf4c1aa;">{
-          </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;41J962DjS7T-sjP9idxJ6o9-hJrmBk34YJN-mQqysHwcFD6&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;something.txt&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;state&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;date&quot;</span><span style="color:#fdf4c1;">: 1613598750202,
-          </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span style="color:#fdf4c1;">: 1617883200000,
-          </span><span style="color:#b8bb26;">&quot;source&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;outgoing&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span style="color:#fdf4c1;">: {
-            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH&quot;</span><span style="color:#fdf4c1;">,
-            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;EasyCare AG&quot;
-          </span><span style="color:#fdf4c1;">},
-          </span><span style="color:#b8bb26;">&quot;corrPerson&quot;</span><span style="color:#fdf4c1;">: null,
-          </span><span style="color:#b8bb26;">&quot;concPerson&quot;</span><span style="color:#fdf4c1;">: null,
-          </span><span style="color:#b8bb26;">&quot;concEquipment&quot;</span><span style="color:#fdf4c1;">: null,
-          </span><span style="color:#b8bb26;">&quot;folder&quot;</span><span style="color:#fdf4c1;">: {
-            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;GKwSvYVdvfb-QeAwzzT7pBM-Gbji2hQc2bL-uCyrMCAg3wo&quot;</span><span style="color:#fdf4c1;">,
-            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;test&quot;
-          </span><span style="color:#fdf4c1;">},
-          </span><span style="color:#b8bb26;">&quot;attachments&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;tags&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;customfields&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span style="color:#fdf4c1;">: null,
-          </span><span style="color:#b8bb26;">&quot;highlighting&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]
-        </span><span style="color:#fdf4c1aa;">}
-      </span><span style="color:#fdf4c1;">]
-    </span><span style="color:#fdf4c1aa;">}</span><span style="color:#fdf4c1;">,
-    </span><span style="color:#fdf4c1aa;">{
-      </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;2021-01&quot;</span><span style="color:#fdf4c1;">,
-      </span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">: [
-        </span><span style="color:#fdf4c1aa;">{
-          </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;ANqtuDynXWU-PrhzUxzQVmH-PDuJfeJ6dYB-Ut3g1jrcFhw&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;letter-de.pdf&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;state&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;date&quot;</span><span style="color:#fdf4c1;">: 1611144000000,
-          </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span style="color:#fdf4c1;">: null,
-          </span><span style="color:#b8bb26;">&quot;source&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;incoming&quot;</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span style="color:#fdf4c1;">: {
-            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH&quot;</span><span style="color:#fdf4c1;">,
-            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;EasyCare AG&quot;
-          </span><span style="color:#fdf4c1;">},
-          </span><span style="color:#b8bb26;">&quot;corrPerson&quot;</span><span style="color:#fdf4c1;">: null,
-          </span><span style="color:#b8bb26;">&quot;concPerson&quot;</span><span style="color:#fdf4c1;">: {
-            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;AA5sV1nH9ve-mDCn4DxDRvu-tWkUquiW4fZ-fVJimW4Vq79&quot;</span><span style="color:#fdf4c1;">,
-            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;Max Mustermann&quot;
-          </span><span style="color:#fdf4c1;">},
-          </span><span style="color:#b8bb26;">&quot;concEquipment&quot;</span><span style="color:#fdf4c1;">: null,
-          </span><span style="color:#b8bb26;">&quot;folder&quot;</span><span style="color:#fdf4c1;">: null,
-          </span><span style="color:#b8bb26;">&quot;attachments&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;tags&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;customfields&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-          </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span style="color:#fdf4c1;">: null,
-          </span><span style="color:#b8bb26;">&quot;highlighting&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]
-        </span><span style="color:#fdf4c1aa;">}
-      </span><span style="color:#fdf4c1;">]
-    </span><span style="color:#fdf4c1aa;">}
-  </span><span style="color:#fdf4c1;">]
-</span><span style="color:#fdf4c1aa;">}
+</span><span>}
 </span></code></pre>
+<h3 id="get-some-insights">Get some insights<a class="zola-anchor" href="#get-some-insights" aria-label="Anchor link for: get-some-insights">🔗</a></h3>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142446077-ZWlrZS9laWtl-$2a$10$3B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/collective/insights
+</span><span style="color:#fdf4c1;">{</span><span style="color:#b8bb26;">&quot;incomingCount&quot;</span><span style="color:#fdf4c1;">:3
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;outgoingCount&quot;</span><span style="color:#fdf4c1;">:1
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;itemSize&quot;</span><span style="color:#fdf4c1;">:207310
+</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;tagCloud&quot;</span><span style="color:#fdf4c1;">:{</span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">:[]</span><span>}
+</span><span>}
+</span></code></pre>
+<h3 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h3>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -i -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1615240493…kYtFynj4&#39; </span><span style="color:#fdf4c1;">\
+</span><span style="color:#fdf4c1;">  </span><span style="color:#b8bb26;">&#39;http://localhost:7880/api/v1/sec/item/search?q=tag=todo,invoice%20year:2021&#39;
+</span><span>{
+</span><span>  </span><span style="color:#b8bb26;">&quot;groups&quot;</span><span style="color:#fdf4c1;">: [
+</span><span>    {
+</span><span>      </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;2021-02&quot;</span><span style="color:#fdf4c1;">,
+</span><span>      </span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">: [
+</span><span>        {
+</span><span>          </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;41J962DjS7T-sjP9idxJ6o9-hJrmBk34YJN-mQqysHwcFD6&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;something.txt&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;state&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;date&quot;</span><span style="color:#fdf4c1;">: 1613598750202,
+</span><span>          </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span style="color:#fdf4c1;">: 1617883200000,
+</span><span>          </span><span style="color:#b8bb26;">&quot;source&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;outgoing&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span style="color:#fdf4c1;">: {
+</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH&quot;</span><span style="color:#fdf4c1;">,
+</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;EasyCare AG&quot;
+</span><span style="color:#fdf4c1;">          },
+</span><span>          </span><span style="color:#b8bb26;">&quot;corrPerson&quot;</span><span style="color:#fdf4c1;">: null,
+</span><span>          </span><span style="color:#b8bb26;">&quot;concPerson&quot;</span><span style="color:#fdf4c1;">: null,
+</span><span>          </span><span style="color:#b8bb26;">&quot;concEquipment&quot;</span><span style="color:#fdf4c1;">: null,
+</span><span>          </span><span style="color:#b8bb26;">&quot;folder&quot;</span><span style="color:#fdf4c1;">: {
+</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;GKwSvYVdvfb-QeAwzzT7pBM-Gbji2hQc2bL-uCyrMCAg3wo&quot;</span><span style="color:#fdf4c1;">,
+</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;test&quot;
+</span><span style="color:#fdf4c1;">          },
+</span><span>          </span><span style="color:#b8bb26;">&quot;attachments&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;tags&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;customfields&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span style="color:#fdf4c1;">: null,
+</span><span>          </span><span style="color:#b8bb26;">&quot;highlighting&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]
+</span><span>        }
+</span><span>      </span><span style="color:#fdf4c1;">]
+</span><span>    }</span><span style="color:#fdf4c1;">,
+</span><span>    {
+</span><span>      </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;2021-01&quot;</span><span style="color:#fdf4c1;">,
+</span><span>      </span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">: [
+</span><span>        {
+</span><span>          </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;ANqtuDynXWU-PrhzUxzQVmH-PDuJfeJ6dYB-Ut3g1jrcFhw&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;letter-de.pdf&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;state&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;date&quot;</span><span style="color:#fdf4c1;">: 1611144000000,
+</span><span>          </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span style="color:#fdf4c1;">: null,
+</span><span>          </span><span style="color:#b8bb26;">&quot;source&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;incoming&quot;</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span style="color:#fdf4c1;">: {
+</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH&quot;</span><span style="color:#fdf4c1;">,
+</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;EasyCare AG&quot;
+</span><span style="color:#fdf4c1;">          },
+</span><span>          </span><span style="color:#b8bb26;">&quot;corrPerson&quot;</span><span style="color:#fdf4c1;">: null,
+</span><span>          </span><span style="color:#b8bb26;">&quot;concPerson&quot;</span><span style="color:#fdf4c1;">: {
+</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;AA5sV1nH9ve-mDCn4DxDRvu-tWkUquiW4fZ-fVJimW4Vq79&quot;</span><span style="color:#fdf4c1;">,
+</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;Max Mustermann&quot;
+</span><span style="color:#fdf4c1;">          },
+</span><span>          </span><span style="color:#b8bb26;">&quot;concEquipment&quot;</span><span style="color:#fdf4c1;">: null,
+</span><span>          </span><span style="color:#b8bb26;">&quot;folder&quot;</span><span style="color:#fdf4c1;">: null,
+</span><span>          </span><span style="color:#b8bb26;">&quot;attachments&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;tags&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;customfields&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
+</span><span>          </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span style="color:#fdf4c1;">: null,
+</span><span>          </span><span style="color:#b8bb26;">&quot;highlighting&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]
+</span><span>        }
+</span><span>      </span><span style="color:#fdf4c1;">]
+</span><span>    }
+</span><span>  </span><span style="color:#fdf4c1;">]
+</span><span>}
+</span></code></pre>
+
                         </div>
                     </div>
                 </div>
@@ -376,7 +379,7 @@ url:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -392,6 +395,11 @@ url:</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

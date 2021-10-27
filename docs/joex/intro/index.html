@@ -27,11 +27,6 @@
 
         <title>Joex – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -252,38 +247,37 @@ logged in.</p>
 <h1 id="scheduler-config">Scheduler Config<a class="zola-anchor" href="#scheduler-config" aria-label="Anchor link for: scheduler-config">🔗</a></h1>
 <p>The relevant part of the config file regarding the scheduler is shown
 below with some explanations.</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.joex {
-  </span><span style="font-style:italic;color:#928374;"># other settings left out for brevity
-
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.joex {
+</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># other settings left out for brevity
+</span><span style="color:#fdf4c1;">
 </span><span style="color:#fdf4c1;">  scheduler {
-
-    </span><span style="font-style:italic;color:#928374;"># Number of processing allowed in parallel.
+</span><span style="color:#fdf4c1;">
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># Number of processing allowed in parallel.
 </span><span style="color:#fdf4c1;">    pool-size = 2
-
-    </span><span style="font-style:italic;color:#928374;"># A counting scheme determines the ratio of how high- and low-prio
-    # jobs are run. For example: 4,1 means run 4 high prio jobs, then
-    # 1 low prio and then start over.
+</span><span style="color:#fdf4c1;">
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># A counting scheme determines the ratio of how high- and low-prio
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># jobs are run. For example: 4,1 means run 4 high prio jobs, then
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># 1 low prio and then start over.
 </span><span style="color:#fdf4c1;">    counting-scheme = </span><span style="color:#b8bb26;">&quot;4,1&quot;
-
-    </span><span style="font-style:italic;color:#928374;"># How often a failed job should be retried until it enters failed
-    # state. If a job fails, it becomes &quot;stuck&quot; and will be retried
-    # after a delay.
+</span><span style="color:#fdf4c1;">
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># How often a failed job should be retried until it enters failed
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># state. If a job fails, it becomes &quot;stuck&quot; and will be retried
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># after a delay.
 </span><span style="color:#fdf4c1;">    retries = 5
-
-    </span><span style="font-style:italic;color:#928374;"># The delay until the next try is performed for a failed job. This
-    # delay is increased exponentially with the number of retries.
+</span><span style="color:#fdf4c1;">
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># The delay until the next try is performed for a failed job. This
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># delay is increased exponentially with the number of retries.
 </span><span style="color:#fdf4c1;">    retry-delay = </span><span style="color:#b8bb26;">&quot;1 minute&quot;
-
-    </span><span style="font-style:italic;color:#928374;"># The queue size of log statements from a job.
+</span><span style="color:#fdf4c1;">
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># The queue size of log statements from a job.
 </span><span style="color:#fdf4c1;">    log-buffer-size = 500
-
-    </span><span style="font-style:italic;color:#928374;"># If no job is left in the queue, the scheduler will wait until a
-    # notify is requested (using the REST interface). To also retry
-    # stuck jobs, it will notify itself periodically.
+</span><span style="color:#fdf4c1;">
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># If no job is left in the queue, the scheduler will wait until a
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># notify is requested (using the REST interface). To also retry
+</span><span style="color:#fdf4c1;">    </span><span style="font-style:italic;color:#928374;"># stuck jobs, it will notify itself periodically.
 </span><span style="color:#fdf4c1;">    wakeup-period = </span><span style="color:#b8bb26;">&quot;30 minutes&quot;
-  </span><span style="color:#fdf4c1;">}
-}
+</span><span style="color:#fdf4c1;">  }
+</span><span style="color:#fdf4c1;">}
 </span></code></pre>
 <p>The <code>pool-size</code> setting determines how many jobs run in parallel. You
 need to play with this setting on your machine to find an optimal
@@ -333,8 +327,7 @@ from the queue but it will wait until all running jobs have completed
 before shutting down.</p>
 <p>This can be done by sending a http POST request to the api of this job
 executor:</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">curl -XPOST &quot;http://localhost:7878/api/v1/shutdownAndExit&quot;
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>curl -XPOST &quot;http://localhost:7878/api/v1/shutdownAndExit&quot;
 </span></code></pre>
 <p>If joex receives this request it will immediately stop taking new jobs
 and it will quit when all running jobs are done.</p>
@@ -354,7 +347,7 @@ waiting state. Then send a graceful shutdown request as shown above.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -370,6 +363,11 @@ waiting state. Then send a graceful shutdown request as shown above.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

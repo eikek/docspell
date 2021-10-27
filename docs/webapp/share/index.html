@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Docspell is a Document Management System (DMS), a system that asists in organizing your piles of documents, resulting from scanners, e-mails and other sources with miminal effort.">
+<meta name="keywords" content="document management system dms organizer ocr open source free scan pdf word doc archive gpl machine learning nlp auto tagging"/>
+<meta name="robots" content="index,follow"/>
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Shares - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>Shares – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h1 class="title">
+                            Shares
+                        </h1>
+                        <h2 class="subtitle">
+                            Docspell Documentation
+                        </h2>
+                    </div>
+                    <div class="column">
+                        <id id="search"></id>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
+             style="position:sticky; top: 0; z-index:10;">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;">Web-UI</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;">Shares</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu"
+                         style="position:sticky; top:2rem; z-index:10;">
+                        <ul class="menu-list">
+                            
+                            
+
+                            <p class="menu-label">
+                                Web-UI
+                            </p>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/uploading/"
+                                   >
+                                    Uploads
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/metadata/"
+                                   >
+                                    Meta Data
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/customfields/"
+                                   >
+                                    Custom Fields
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/curate/"
+                                   >
+                                    Curate Items
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/multiedit/"
+                                   >
+                                    Multi Edit
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/finding/"
+                                   >
+                                    Finding Items
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/itemcard-customize/"
+                                   >
+                                    Customize Item Card
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/emailsettings/"
+                                   >
+                                    E-Mail Settings
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/mailitem/"
+                                   >
+                                    Send Items Via E-Mail
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/notifydueitems/"
+                                   >
+                                    Notify About Due Items
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/scanmailbox/"
+                                   >
+                                    Scan Mailboxes
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/processing/"
+                                   >
+                                    Processing Queue
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/autotagging/"
+                                   >
+                                    Auto Tagging
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/merge/"
+                                   >
+                                    Merge Items
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/totp/"
+                                   >
+                                    Two-Factor Authentication
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/share/"
+                                   class="is-active">
+                                    Shares
+                                </a>
+                                
+                                <ul class="menu-list">
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;#concept">
+                                            Concept
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;#use-cases">
+                                                    Use Cases
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;#limitations">
+                                                    Limitations
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;#creating-shares">
+                                            Creating shares
+                                        </a>
+                                        <ul>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;#creating-from-search-results">
+                                                    Creating from search results
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;#creating-from-selecting-items">
+                                                    Creating from selecting items
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;#creating-manually">
+                                                    Creating manually
+                                                </a>
+                                            </li>
+                                            
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;#managing-shares">
+                                                    Managing Shares
+                                                </a>
+                                            </li>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;share&#x2F;#accessing-a-share">
+                                            Accessing a share
+                                        </a>
+                                        <ul>
+                                            
+                                        </ul>
+                                    </li>
+                                    
+                                </ul>
+                                
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>Docspell has a thought-out share feature that allows you to create
+read-only views to a subset of your documents and create a public but
+not-guessable link to it.</p>
+<h1 id="concept">Concept<a class="zola-anchor" href="#concept" aria-label="Anchor link for: concept">🔗</a></h1>
+<p>A share is a cryptic <em>share id</em> that maps to a
+<a href="https://docspell.org/docs/query/">query</a>. A share can be accessed via a public
+link that contains the share id.</p>
+<div class="notification is-warning is-light" style="z-index: 0">
+    <div class="content ">
+        <p class="title is-5">
+            Please note
+        </p>
+        <div>
+            <p>Everyone who has this link can access all documents resulting from the
+query and their metadata.</p>
+
+        </div>
+    </div>
+</div>
+<p>To further protect this link, a password can be specified which should
+be distributed via a different channel than the link. If a password is
+defined for a share, it is required to access the items. Otherwise,
+the share id is all that's needed.</p>
+<p>A share also requires to set a <em>publication end date</em> as a protection
+for leaving links available forever. Of course, you can explicitely
+set it to a very far away date should you really want it.</p>
+<p>The query is executed under the user who created the share. Thus it
+returns all the items the user can see. This is important when you
+have folders that are only visible to you. If you don't want to share
+certain items, you must alter the query accordingly.</p>
+<p>Given the nature of a query, there are two kinds of shares possible:
+dynamic and static ones. A dynamic share uses a query that may yield
+different results over time, for example <code>tag:invoice</code>. A static query
+is a query that explicitely selects items by their id. This means the
+latter will always result in the selected items (except if one of them
+is deleted); whereas the former query could return different results
+each time it is executed, because new documents could have been added
+in the meantime that now match the criteria (like tagged with
+<code>invoice</code> in the example).</p>
+<p>A share can be enabled and disabled to quickly make it available or
+hidden.</p>
+<h2 id="use-cases">Use Cases<a class="zola-anchor" href="#use-cases" aria-label="Anchor link for: use-cases">🔗</a></h2>
+<p>A useful application for shares is to have a simple view to documents
+that are not sensible, like manuals. You could create a share for all
+your manuals, for example using tags <code>tags:manual</code> and bookmark it.</p>
+<p>Another use case is to share sensible documents with a partner who
+needs access to it, for example if you want to share all your tax
+documents with the company/person who helps you with doing you tax
+submission.</p>
+<h2 id="limitations">Limitations<a class="zola-anchor" href="#limitations" aria-label="Anchor link for: limitations">🔗</a></h2>
+<p>Currently, shares that contain fulltext search queries are not
+supported. The query for a share must not use any fulltext search.</p>
+<h1 id="creating-shares">Creating shares<a class="zola-anchor" href="#creating-shares" aria-label="Anchor link for: creating-shares">🔗</a></h1>
+<p>There are the following ways to create a share:</p>
+<ol>
+<li>From the search page: enter a query or use the search menu and then
+click the <em>share</em> button to share the resulting documents. This
+usually creates a dynamic share.</li>
+<li>From selecting items: In the search view, click <em>Select Mode</em> and
+select a few items. Then click the <em>share</em> button to share exactly
+these items. This will create a static share.</li>
+<li>By creating it manually: You can also go to <em>Collective Profile</em>
+and create a new share using the provided form.</li>
+</ol>
+<p>Once you created the share, you can copy the url or send it via e-mail
+(requires to have <a href="https://docspell.org/docs/webapp/emailsettings/#smtp-settings">e-mail
+settings</a> defined).</p>
+<h2 id="creating-from-search-results">Creating from search results<a class="zola-anchor" href="#creating-from-search-results" aria-label="Anchor link for: creating-from-search-results">🔗</a></h2>
+<p>When at the search page, add some criteria until you have the results
+you want to publish. In the screenshot below all items with tag
+<code>Manual</code> are selected. Then click the <em>Share Button</em>.</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-01.png">
+</figure>
+<p>A form appears that lets you edit the query and set some properties.
+The query is taken from the search page and may look a bit strange. It
+will use ids rather than names, which makes the query a bit more
+robust. For example: the query <code>tag=manual</code> also works, but should you
+rename the tag, the share won't work anymore. By using ids as in
+<code>tag.id=4AUye…</code>, the query is immune to renamings.</p>
+<p>A name can be given to make it better distinguishable from other
+shares. Then a password and the <em>Publish Until</em> date can be set. The
+<em>Publish Until</em> date is mandatory. You can set it to something very
+far away to have shares exist &quot;forever&quot;.</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-02.png">
+</figure>
+<p>Clicking <em>Cancel</em> brings you back to the search results. If you are
+satifsied, click <em>Publish</em>. The next screen allows you to inspect your
+new share and to copy the url and/or send an e-mail. The email form is
+prefilled with some template that contains the link, so you don't need
+to copy it.</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-03.png">
+</figure>
+<p>The new share can now be found in <em>Collective Profile -&gt; Shares</em>.
+Clicking <em>Done</em> brings you back to the search results.</p>
+<h2 id="creating-from-selecting-items">Creating from selecting items<a class="zola-anchor" href="#creating-from-selecting-items" aria-label="Anchor link for: creating-from-selecting-items">🔗</a></h2>
+<p>Creating a share for a hand picked set of items is almost the same as
+the above. In the search page, go to <em>Select Mode</em> and select some
+items.</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-04.png">
+</figure>
+<p>Then click the <em>Share</em> button and follow the same process as described
+above. The query selects now exactly the picked items like in
+<code>id~=AhVX…,FG65Xy…</code>.</p>
+<h2 id="creating-manually">Creating manually<a class="zola-anchor" href="#creating-manually" aria-label="Anchor link for: creating-manually">🔗</a></h2>
+<p>At <em>Collective Profile -&gt; Shares</em> there is a <em>New share</em> button, which
+will present a form where you can create a share. The query must then
+be filled manually (there is some syntax help). It is the same query
+as in the &quot;power search&quot; bar, as described
+<a href="https://docspell.org/docs/query/">here</a>.</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-12.png">
+</figure>
+<h2 id="managing-shares">Managing Shares<a class="zola-anchor" href="#managing-shares" aria-label="Anchor link for: managing-shares">🔗</a></h2>
+<p>Go to <em>Collective Profile -&gt; Shares</em> to see all the shares of your
+collective. You can also look into shares that were created by other
+users.</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-06.png">
+</figure>
+<p>To not make it too easy to look into private folders, you cannot
+change attributes of shares that were created by another user.
+However, you can delete all shares. This is for now a compromise,
+assuming small groups that still talk to each other: All users of a
+collective are equal and should be able to see shares and also delete
+them. But since a share of another user could be used to easily look
+into folders where you are not a member, editing other shares is not
+allowed.</p>
+<p>If you edit your own share, you can change its properties.</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-07.png">
+</figure>
+<p>If you are not the owner, the form is hidden:</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-08.png">
+</figure>
+<h1 id="accessing-a-share">Accessing a share<a class="zola-anchor" href="#accessing-a-share" aria-label="Anchor link for: accessing-a-share">🔗</a></h1>
+<p>Pasting the share link into a browser shows you the results of the
+query:</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-09.png">
+</figure>
+<p>The search input allows to do a fulltext search and the search menu to
+the left can be used to further constrain the results. The search will
+be combined with the stored query, such that the results always remain
+within the original results of the share.</p>
+<p>The options in the dropdown menus for correspondent, concerning etc
+are taken from the results. So only the data that is shared by the
+search results will be available to select. Other data is not leaked.</p>
+<p>Clicking the search icon next to the search input, switches the input
+to be the &quot;power search&quot; input:</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-11.png">
+</figure>
+<p>There is a link below the input field that opens a new tab with the
+<a href="https://docspell.org/docs/query/">query documentation page</a>.</p>
+<p>The user can click on the tags and other data in the item cards which
+will populate the corresponding section in the search menu, just like
+the default search view. You can click on an item card to go to the
+detail view:</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/share-10.png">
+</figure>
+<p>This link to a single item is also bookmarkable. You can copy it via
+the QR code or by clicking the <em>Copy</em> button. In the detail view you
+can select multiple attachments and download each.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell 0.28.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+    </body>
+</html>

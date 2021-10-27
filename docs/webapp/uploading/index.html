@@ -27,11 +27,6 @@
 
         <title>Uploads – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -282,6 +277,15 @@
                                 
                             </li>
                             
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/share/"
+                                   >
+                                    Shares
+                                </a>
+                                
+                            </li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -324,7 +328,7 @@ username is not visible.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;sources-edit.png">
+    <img src="https://docspell.org/docs/webapp/sources-edit.png">
 </figure>
 <p>This example shows a source with name &quot;test&quot;. Besides a description
 and a name that is only used for displaying purposes, a priority and a
@@ -344,7 +348,7 @@ this endpoint, into this folder.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;sources-form.png">
+    <img src="https://docspell.org/docs/webapp/sources-form.png">
 </figure>
 <p>The first points to a web page where everyone could upload files into
 your account. You could give this url to people for sending files
@@ -354,9 +358,8 @@ files. This second url can be used with the <a href="https://docspell.org/docs/t
 App</a> to upload files.</p>
 <p>Another example is to use curl for uploading files from the command
 line::</p>
-<pre style="background-color:#282828;">
-<code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -F file=@test.pdf http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
-{</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Files submitted.&quot;</span><span style="color:#fdf4c1aa;">}
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -F file=@test.pdf http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
+</span><span style="color:#fdf4c1;">{</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Files submitted.&quot;</span><span>}
 </span></code></pre>
 <p>There is a <a href="https://docspell.org/docs/tools/cli/">cli</a> to upload files from the command
 line more conveniently.</p>
@@ -382,7 +385,7 @@ can be found <a href="https://docspell.org/docs/api/upload/">here</a>.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -398,6 +401,11 @@ can be found <a href="https://docspell.org/docs/api/upload/">here</a>.</p>
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {

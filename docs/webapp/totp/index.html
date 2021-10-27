@@ -27,11 +27,6 @@
 
         <title>Two-Factor Authentication – Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
-        <script type="application/javascript" src="/search_index.en.js"></script>
-<script type="application/javascript" src="/elasticlunr.min.js"></script>
-<script type="application/javascript" src="/js/bundle.js"></script>
-<script type="application/javascript" src="/js/searchhelper.js"></script>
-
     </head>
     <body>
         <section class="hero is-info is-small">
@@ -282,6 +277,15 @@
                                 
                             </li>
                             
+                            
+                            <li>
+                                <a href="https://docspell.org/docs/webapp/share/"
+                                   >
+                                    Shares
+                                </a>
+                                
+                            </li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -309,7 +313,7 @@ and there are others as well.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp-01.png">
+    <img src="https://docspell.org/docs/webapp/totp-01.png">
 </figure>
 <p>Open the app (or whatever you use) and scan the QR code. A new account
 is created and a 6-digit code will be shown to you. Enter this code in
@@ -326,7 +330,7 @@ in this case.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp-02.png">
+    <img src="https://docspell.org/docs/webapp/totp-02.png">
 </figure>
 <p>When you now login, a second login form will be shown where you must
 now enter a one time password from the device.</p>
@@ -342,7 +346,7 @@ to enter a one time password.</p>
     
     
 
-    <img src="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp-03.png">
+    <img src="https://docspell.org/docs/webapp/totp-03.png">
 </figure>
 <p>If you have successfully disabled 2FA, you'll see the first screen
 where you can activate 2FA. You can remove the account from your
@@ -356,14 +360,14 @@ client</a> to execute an admin command that removes
 <p>For this to work, you need to <a href="https://docspell.org/docs/configure/#admin-endpoint">enable the admin
 endpoint</a>. Then execute the
 <code>disable-2fa</code> admin command and specify the complete account.</p>
-<pre style="background-color:#282828;">
-<code><span style="color:#fdf4c1aa;">$ dsc admin -a test123 disable-2fa --account demo
-┌─────────┬──────────────────────┐
-│ success │ message              │
-├─────────┼──────────────────────┤
-│ true    │ TOTP setup disabled. │
-└─────────┴──────────────────────┘
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ dsc admin -a test123 disable-2fa --account demo
+</span><span>┌─────────┬──────────────────────┐
+</span><span>│ success │ message              │
+</span><span>├─────────┼──────────────────────┤
+</span><span>│ true    │ TOTP setup disabled. │
+</span><span>└─────────┴──────────────────────┘
 </span></code></pre>
+
                         </div>
                     </div>
                 </div>
@@ -374,7 +378,7 @@ endpoint</a>. Then execute the
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.27.0
+                Docspell 0.28.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -390,6 +394,11 @@ endpoint</a>. Then execute the
     </div>
     
 </footer>
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
         <script>
  var initSearch = function() {
