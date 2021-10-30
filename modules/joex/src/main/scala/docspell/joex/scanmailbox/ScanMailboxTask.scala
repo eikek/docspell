@@ -162,7 +162,7 @@ object ScanMailboxTask {
 
     def requireFolder[C](a: Access[F, C])(name: String): MailOp[F, C, MailFolder] =
       if ("INBOX".equalsIgnoreCase(name)) a.getInbox
-      else //TODO resolve sub-folders
+      else // TODO resolve sub-folders
         a.findFolder(None, name)
           .map(_.toRight(new Exception(s"Folder '$name' not found")))
           .mapF(_.rethrow)

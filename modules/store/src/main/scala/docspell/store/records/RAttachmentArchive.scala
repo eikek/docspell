@@ -20,7 +20,7 @@ import doobie.implicits._
   * a 0..1-1 relationship.
   */
 case class RAttachmentArchive(
-    id: Ident, //same as RAttachment.id
+    id: Ident, // same as RAttachment.id
     fileId: Ident,
     name: Option[String],
     messageId: Option[String],

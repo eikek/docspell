@@ -26,7 +26,7 @@ class NerFileTest extends FunSuite {
 
     for ((name, first) <- names) {
       val ps = Pattern(1)(name).distinct
-      //check if it compiles to a regex pattern
+      // check if it compiles to a regex pattern
       ps.flatMap(_.value.split("\\s+").toList).foreach(_.r)
       ps.foreach(_.value.r)
 

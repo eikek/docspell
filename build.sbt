@@ -14,7 +14,7 @@ def inTest(d0: Seq[ModuleID], ds: Seq[ModuleID]*) =
 
 val scalafixSettings = Seq(
   semanticdbEnabled := true, // enable SemanticDB
-  semanticdbVersion := scalafixSemanticdb.revision, //"4.4.0"
+  semanticdbVersion := scalafixSemanticdb.revision, // "4.4.0"
   ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
 )
 
@@ -684,7 +684,7 @@ val restserver = project
     Universal / mappings := {
       val allMappings = (Universal / mappings).value
       allMappings.filter {
-        //scalajs artifacts are not needed at runtime
+        // scalajs artifacts are not needed at runtime
         case (file, name) => !name.contains("_sjs1_")
       }
     }

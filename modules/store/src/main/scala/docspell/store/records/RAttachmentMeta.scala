@@ -17,7 +17,7 @@ import doobie._
 import doobie.implicits._
 
 case class RAttachmentMeta(
-    id: Ident, //same as RAttachment.id
+    id: Ident, // same as RAttachment.id
     content: Option[String],
     nerlabels: List[NerLabel],
     proposals: MetaProposalList,

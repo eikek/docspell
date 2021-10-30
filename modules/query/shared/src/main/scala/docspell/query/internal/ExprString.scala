@@ -113,7 +113,7 @@ object ExprString {
       case Expr.NamesMacro(name) =>
         s"${C.names}:${quote(name)}"
       case Expr.YearMacro(_, year) =>
-        s"${C.year}:$year" //currently, only for Attr.Date
+        s"${C.year}:$year" // currently, only for Attr.Date
       case Expr.ConcMacro(term) =>
         s"${C.conc}:${quote(term)}"
       case Expr.CorrMacro(term) =>

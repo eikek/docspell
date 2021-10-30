@@ -143,7 +143,7 @@ object CreateItem {
           .fromOption[F](NonEmptyList.fromList(fileMetaIds.toList))
           .flatMap(fids =>
             OptionT(
-              //load attachments but only those mentioned in the task's arguments
+              // load attachments but only those mentioned in the task's arguments
               cand.headOption.traverse(ri =>
                 ctx.store
                   .transact(RAttachment.findByItemCollectiveSource(ri.id, ri.cid, fids))
@@ -195,7 +195,7 @@ object CreateItem {
     ctx.logger.error(msg) *> Sync[F].raiseError(new Exception(msg))
   }
 
-  //TODO if no source is present, it must be saved!
+  // TODO if no source is present, it must be saved!
   private def originFileTuple(
       t: (RAttachment, Option[RAttachmentSource])
   ): (Ident, Ident) =

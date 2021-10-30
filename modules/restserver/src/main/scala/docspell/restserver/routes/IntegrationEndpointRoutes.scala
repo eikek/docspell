@@ -140,9 +140,9 @@ object IntegrationEndpointRoutes {
         cfg: Config.IntegrationEndpoint.AllowedIps
     ): HttpRoutes[F] =
       HttpRoutes { req =>
-        //The `req.from' take the X-Forwarded-For header into account,
-        //which is not desirable here. The `http-header' auth config
-        //can be used to authenticate based on headers.
+        // The `req.from' take the X-Forwarded-For header into account,
+        // which is not desirable here. The `http-header' auth config
+        // can be used to authenticate based on headers.
         val from = req.remote.map(_.host)
         if (from.exists(cfg.containsAddress)) OptionT.none[F, Response[F]]
         else OptionT.pure(Responses.forbidden[F])

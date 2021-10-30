@@ -51,8 +51,8 @@ object Properties {
       "ner.statisticalOnly" -> "true",
       "ner.rulesOnly" -> "false",
       "ner.applyFineGrained" -> "false",
-      "ner.applyNumericClassifiers" -> "false", //only english supported, not needed currently
-      "ner.useSUTime" -> "false", //only english, unused in docspell
+      "ner.applyNumericClassifiers" -> "false", // only english supported, not needed currently
+      "ner.useSUTime" -> "false", // only english, unused in docspell
       "ner.language" -> "de",
       "ner.model" -> "edu/stanford/nlp/models/ner/german.distsim.crf.ser.gz,edu/stanford/nlp/models/ner/english.conll.4class.distsim.crf.ser.gz"
     ).withRegexNer(regexNerMappingFile).withHighRecall(highRecall)

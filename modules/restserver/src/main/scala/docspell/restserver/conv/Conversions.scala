@@ -235,9 +235,9 @@ trait Conversions {
       i.concPerson.map(mkIdName),
       i.concEquip.map(mkIdName),
       i.folder.map(mkIdName),
-      Nil, //attachments
-      Nil, //tags
-      Nil, //customfields
+      Nil, // attachments
+      Nil, // tags
+      Nil, // customfields
       i.notes,
       Nil // highlight
     )
