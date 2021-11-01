@@ -410,6 +410,36 @@ val store = project
   )
   .dependsOn(common, query.jvm, totp, files)
 
+val pubsubApi = project
+  .in(file("modules/pubsub/api"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "docspell-pubsub-api",
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    libraryDependencies ++=
+      Dependencies.fs2
+  )
+  .dependsOn(common)
+
+val pubsubNaive = project
+  .in(file("modules/pubsub/naive"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "docspell-pubsub-naive",
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+        Dependencies.http4sCirce ++
+        Dependencies.http4sDsl ++
+        Dependencies.http4sClient ++
+        Dependencies.circe
+  )
+  .dependsOn(common, pubsubApi, store % "compile->compile;test->test")
+
 val extract = project
   .in(file("modules/extract"))
   .disablePlugins(RevolverPlugin)
@@ -781,7 +811,9 @@ val root = project
     query.jvm,
     query.js,
     totp,
-    oidc
+    oidc,
+    pubsubApi,
+    pubsubNaive
   )
 
 // --- Helpers
