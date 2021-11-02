@@ -7,7 +7,7 @@ jobs:
   publish-website:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2.3.5
+      - uses: actions/checkout@v2.4.0
         with:
           fetch-depth: 0
       - name: Set current version
