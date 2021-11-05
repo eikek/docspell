@@ -25,8 +25,8 @@ trait HttpClientOps {
   def httpClient(ps: NaivePubSub[IO]): Client[IO] =
     httpClient(ps.receiveRoute)
 
-  def httpClient(ps: PubSubT[IO, NaivePubSub[IO]]): Client[IO] =
-    httpClient(ps.delegate)
+  def httpClient(ps: PubSubT[IO]): Client[IO] =
+    httpClient(ps.delegateT)
 
   implicit final class ClientOps(client: Client[IO]) {
     val uri = Uri.unsafeFromString("http://localhost/")
@@ -47,6 +47,10 @@ trait HttpClientOps {
 
     def send[A](typedTopic: TypedTopic[A], body: A): IO[Unit] =
       sendMessage(typedTopic.topic, body)(typedTopic.codec)
+  }
+
+  implicit final class PubSubTestOps(ps: PubSubT[IO]) {
+    def delegateT: NaivePubSub[IO] = ps.delegate.asInstanceOf[NaivePubSub[IO]]
   }
 }
 

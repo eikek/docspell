@@ -11,7 +11,7 @@ import fs2.{Pipe, Stream}
 
 import docspell.common.Logger
 
-trait PubSubT[F[_], P <: PubSub[F]] {
+trait PubSubT[F[_]] {
 
   def publish1[A](topic: TypedTopic[A], msg: A): F[MessageHead]
 
@@ -19,15 +19,15 @@ trait PubSubT[F[_], P <: PubSub[F]] {
 
   def subscribe[A](topic: TypedTopic[A]): Stream[F, Message[A]]
 
-  def delegate: P
+  def delegate: PubSub[F]
 
-  def withDelegate[R <: PubSub[F]](delegate: R): PubSubT[F, R]
+  def withDelegate(delegate: PubSub[F]): PubSubT[F]
 }
 
 object PubSubT {
 
-  def apply[F[_], P <: PubSub[F]](pubSub: P, logger: Logger[F]): PubSubT[F, P] =
-    new PubSubT[F, P] {
+  def apply[F[_]](pubSub: PubSub[F], logger: Logger[F]): PubSubT[F] =
+    new PubSubT[F] {
       def publish1[A](topic: TypedTopic[A], msg: A): F[MessageHead] =
         pubSub.publish1(topic.topic, topic.codec(msg))
 
@@ -49,9 +49,9 @@ object PubSubT {
             }
           )
 
-      def delegate: P = pubSub
+      def delegate: PubSub[F] = pubSub
 
-      def withDelegate[R <: PubSub[F]](newDelegate: R): PubSubT[F, R] =
+      def withDelegate(newDelegate: PubSub[F]): PubSubT[F] =
         PubSubT(newDelegate, logger)
     }
 }

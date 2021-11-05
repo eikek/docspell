@@ -23,7 +23,7 @@ trait Fixtures extends HttpClientOps { self: CatsEffectSuite =>
   val pubsubT = ResourceFixture {
     Fixtures
       .envResource("node-1")
-      .flatMap(e => Resource.eval(e.pubSub))
+      .flatMap(_.pubSub)
       .map(ps => PubSubT(ps, Fixtures.loggerIO))
   }
 
@@ -34,8 +34,8 @@ trait Fixtures extends HttpClientOps { self: CatsEffectSuite =>
       ps_2 <- env.withNodeId("node-2").pubSubT
 
       // both instances have a dummy client. now connect their clients to each other
-      ps1 = ps_1.withDelegate(ps_1.delegate.withClient(httpClient(ps_2)))
-      ps2 = ps_2.withDelegate(ps_2.delegate.withClient(httpClient(ps_1)))
+      ps1 = ps_1.withDelegate(ps_1.delegateT.withClient(httpClient(ps_2)))
+      ps2 = ps_2.withDelegate(ps_2.delegateT.withClient(httpClient(ps_1)))
     } yield (ps1, ps2)
 
   implicit final class StringId(s: String) {
@@ -47,11 +47,11 @@ object Fixtures {
   private val loggerIO: Logger[IO] = Logger.log4s(org.log4s.getLogger)
 
   final case class Env(store: Store[IO], cfg: PubSubConfig) {
-    def pubSub: IO[NaivePubSub[IO]] = {
+    def pubSub: Resource[IO, NaivePubSub[IO]] = {
       val dummyClient = Client[IO](_ => Resource.pure(Response.notFound[IO]))
       NaivePubSub(cfg, store, dummyClient)(Topics.all.map(_.topic))
     }
-    def pubSubT: IO[PubSubT[IO, NaivePubSub[IO]]] =
+    def pubSubT: Resource[IO, PubSubT[IO]] =
       pubSub.map(PubSubT(_, loggerIO))
 
     def withNodeId(nodeId: String): Env =
@@ -66,7 +66,7 @@ object Fixtures {
   def testConfig(nodeId: String) =
     PubSubConfig(
       Ident.unsafe(nodeId),
-      LenientUri.unsafe(s"http://${nodeId}/"),
+      LenientUri.unsafe(s"http://$nodeId/"),
       0
     )
 

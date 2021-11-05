@@ -185,18 +185,18 @@ object NaivePubSub {
       cfg: PubSubConfig,
       store: Store[F],
       client: Client[F]
-  )(topics: NonEmptyList[Topic]): F[NaivePubSub[F]] =
-    for {
+  )(topics: NonEmptyList[Topic]): Resource[F, NaivePubSub[F]] =
+    Resource.eval(for {
       state <- Ref.ofEffect[F, State[F]](State.create[F](topics))
       _ <- store.transact(RPubSub.initTopics(cfg.nodeId, cfg.url, topics.map(_.name)))
-    } yield new NaivePubSub[F](cfg, state, store, client)
+    } yield new NaivePubSub[F](cfg, state, store, client))
 
   def create[F[_]: Async](
       cfg: PubSubConfig,
       store: Store[F],
       client: Client[F],
       logger: Logger[F]
-  )(topics: NonEmptyList[Topic]): F[PubSubT[F, NaivePubSub[F]]] =
+  )(topics: NonEmptyList[Topic]): Resource[F, PubSubT[F]] =
     apply[F](cfg, store, client)(topics).map(ps => PubSubT(ps, logger))
 
   final case class State[F[_]](topics: Map[String, Fs2Topic[F, Message[Json]]]) {}

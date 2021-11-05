@@ -21,7 +21,7 @@ import munit.CatsEffectSuite
 class NaivePubSubTest extends CatsEffectSuite with Fixtures {
   private[this] val logger = Logger.log4s[IO](org.log4s.getLogger)
 
-  def subscribe[A](ps: PubSubT[IO, NaivePubSub[IO]], topic: TypedTopic[A]) =
+  def subscribe[A](ps: PubSubT[IO], topic: TypedTopic[A]) =
     for {
       received <- Ref.of[IO, Option[Message[A]]](None)
       halt <- SignallingRef.of[IO, Boolean](false)
@@ -72,7 +72,7 @@ class NaivePubSubTest extends CatsEffectSuite with Fixtures {
     for {
       res <- subscribe(ps, Topics.jobSubmitted)
       (received, _, subFiber) = res
-      client = httpClient(ps.delegate.receiveRoute)
+      client = httpClient(ps.delegateT.receiveRoute)
       _ <- client.send(Topics.jobSubmitted, msg)
       outcome <- subFiber.join
       msgRec <- received.get
@@ -84,45 +84,45 @@ class NaivePubSubTest extends CatsEffectSuite with Fixtures {
 
   pubsubEnv.test("send messages remotely") { env =>
     val msg = JobSubmittedMsg("hello-remote".id)
-    for {
-      // Create two pubsub instances connected to the same database
-      pubsubs <- conntectedPubsubs(env)
-      (ps1, ps2) = pubsubs
 
-      // subscribe to ps1 and send via ps2
-      res <- subscribe(ps1, Topics.jobSubmitted)
-      (received, _, subFiber) = res
-      _ <- ps2.publish1(Topics.jobSubmitted, msg)
-      outcome <- subFiber.join
-      msgRec <- received.get
+    // Create two pubsub instances connected to the same database
+    conntectedPubsubs(env).use { case (ps1, ps2) =>
+      for {
+        // subscribe to ps1 and send via ps2
+        res <- subscribe(ps1, Topics.jobSubmitted)
+        (received, _, subFiber) = res
+        _ <- ps2.publish1(Topics.jobSubmitted, msg)
+        outcome <- subFiber.join
+        msgRec <- received.get
 
-      // check results
-      _ = assert(outcome.isSuccess)
-      _ = assertEquals(msgRec.map(_.head.topic), Topics.jobSubmitted.topic.some)
-      _ = assertEquals(msgRec.map(_.body), msg.some)
-    } yield ()
+        // check results
+        _ = assert(outcome.isSuccess)
+        _ = assertEquals(msgRec.map(_.head.topic), Topics.jobSubmitted.topic.some)
+        _ = assertEquals(msgRec.map(_.body), msg.some)
+      } yield ()
+    }
   }
 
   pubsubEnv.test("do not receive remote message from other topic") { env =>
     val msg = JobDoneMsg("job-1".id, "task-2".id)
 
-    for {
-      // Create two pubsub instances connected to the same database
-      pubsubs <- conntectedPubsubs(env)
-      (ps1, ps2) = pubsubs
+    // Create two pubsub instances connected to the same database
+    conntectedPubsubs(env).use { case (ps1, ps2) =>
+      for {
+        // subscribe to ps1 and send via ps2
+        res <- subscribe(ps1, Topics.jobSubmitted)
+        (received, halt, subFiber) = res
+        _ <- ps2.publish1(Topics.jobDone, msg)
+        _ <- IO.sleep(100.millis)
+        _ <- halt.set(true)
+        outcome <- subFiber.join
+        msgRec <- received.get
 
-      // subscribe to ps1 and send via ps2
-      res <- subscribe(ps1, Topics.jobSubmitted)
-      (received, halt, subFiber) = res
-      _ <- ps2.publish1(Topics.jobDone, msg)
-      _ <- IO.sleep(100.millis)
-      _ <- halt.set(true)
-      outcome <- subFiber.join
-      msgRec <- received.get
+        // check results
+        _ = assert(outcome.isSuccess)
+        _ = assertEquals(msgRec, None)
+      } yield ()
+    }
 
-      // check results
-      _ = assert(outcome.isSuccess)
-      _ = assertEquals(msgRec, None)
-    } yield ()
   }
 }

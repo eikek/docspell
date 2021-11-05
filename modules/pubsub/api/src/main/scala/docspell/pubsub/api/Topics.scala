@@ -25,9 +25,13 @@ object Topics {
   val jobSubmitted: TypedTopic[JobSubmittedMsg] =
     TypedTopic[JobSubmittedMsg](Topic("job-submitted"))
 
-  val all: NonEmptyList[TypedTopic[_]] = NonEmptyList.of(jobDone, jobSubmitted)
+  /** Notify a node to cancel a job with the given id */
+  val cancelJob: TypedTopic[CancelJobMsg] =
+    TypedTopic[CancelJobMsg](Topic("cancel-job"))
 
-  final case class JobSubmittedMsg(id: Ident)
+  val all: NonEmptyList[TypedTopic[_]] = NonEmptyList.of(jobDone, jobSubmitted, cancelJob)
+
+  final case class JobSubmittedMsg(task: Ident)
   object JobSubmittedMsg {
     implicit val jsonDecoder: Decoder[JobSubmittedMsg] =
       deriveDecoder[JobSubmittedMsg]
@@ -43,5 +47,15 @@ object Topics {
 
     implicit val jsonEncoder: Encoder[JobDoneMsg] =
       deriveEncoder[JobDoneMsg]
+  }
+
+  final case class CancelJobMsg(jobId: Ident, nodeId: Ident)
+  object CancelJobMsg {
+    implicit val jsonDecoder: Decoder[CancelJobMsg] =
+      deriveDecoder[CancelJobMsg]
+
+    implicit val jsonEncoder: Encoder[CancelJobMsg] =
+      deriveEncoder[CancelJobMsg]
+
   }
 }
