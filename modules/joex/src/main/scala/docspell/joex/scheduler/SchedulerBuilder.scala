@@ -11,6 +11,7 @@ import cats.effect.std.Semaphore
 import cats.implicits._
 import fs2.concurrent.SignallingRef
 
+import docspell.pubsub.api.PubSubT
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 
@@ -19,7 +20,8 @@ case class SchedulerBuilder[F[_]: Async](
     tasks: JobTaskRegistry[F],
     store: Store[F],
     queue: Resource[F, JobQueue[F]],
-    logSink: LogSink[F]
+    logSink: LogSink[F],
+    pubSub: PubSubT[F]
 ) {
 
   def withConfig(cfg: SchedulerConfig): SchedulerBuilder[F] =
@@ -32,13 +34,16 @@ case class SchedulerBuilder[F[_]: Async](
     withTaskRegistry(tasks.withTask(task))
 
   def withQueue(queue: Resource[F, JobQueue[F]]): SchedulerBuilder[F] =
-    SchedulerBuilder[F](config, tasks, store, queue, logSink)
+    copy(queue = queue)
 
   def withLogSink(sink: LogSink[F]): SchedulerBuilder[F] =
     copy(logSink = sink)
 
   def withQueue(queue: JobQueue[F]): SchedulerBuilder[F] =
     copy(queue = Resource.pure[F, JobQueue[F]](queue))
+
+  def withPubSub(pubSubT: PubSubT[F]): SchedulerBuilder[F] =
+    copy(pubSub = pubSubT)
 
   def serve: Resource[F, Scheduler[F]] =
     resource.evalMap(sch => Async[F].start(sch.start.compile.drain).map(_ => sch))
@@ -52,6 +57,7 @@ case class SchedulerBuilder[F[_]: Async](
     } yield new SchedulerImpl[F](
       config,
       jq,
+      pubSub,
       tasks,
       store,
       logSink,
@@ -76,7 +82,8 @@ object SchedulerBuilder {
       JobTaskRegistry.empty[F],
       store,
       JobQueue(store),
-      LogSink.db[F](store)
+      LogSink.db[F](store),
+      PubSubT.noop[F]
     )
 
 }

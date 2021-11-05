@@ -6,8 +6,6 @@
 
 package docspell.backend
 
-import scala.concurrent.ExecutionContext
-
 import cats.effect._
 
 import docspell.backend.auth.Login
@@ -15,15 +13,13 @@ import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
 import docspell.ftsclient.FtsClient
-import docspell.joexapi.client.JoexClient
+import docspell.pubsub.api.PubSubT
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.usertask.UserTaskStore
 import docspell.totp.Totp
 
 import emil.javamail.{JavaMailEmil, Settings}
-import org.http4s.blaze.client.BlazeClientBuilder
-import org.http4s.client.Client
 
 trait BackendApp[F[_]] {
 
@@ -49,6 +45,7 @@ trait BackendApp[F[_]] {
   def clientSettings: OClientSettings[F]
   def totp: OTotp[F]
   def share: OShare[F]
+  def pubSub: PubSubT[F]
 }
 
 object BackendApp {
@@ -56,8 +53,8 @@ object BackendApp {
   def create[F[_]: Async](
       cfg: Config,
       store: Store[F],
-      httpClient: Client[F],
-      ftsClient: FtsClient[F]
+      ftsClient: FtsClient[F],
+      pubSubT: PubSubT[F]
   ): Resource[F, BackendApp[F]] =
     for {
       utStore <- UserTaskStore(store)
@@ -65,7 +62,7 @@ object BackendApp {
       totpImpl <- OTotp(store, Totp.default)
       loginImpl <- Login[F](store, Totp.default)
       signupImpl <- OSignup[F](store)
-      joexImpl <- OJoex(JoexClient(httpClient), store)
+      joexImpl <- OJoex(pubSubT)
       collImpl <- OCollective[F](store, utStore, queue, joexImpl)
       sourceImpl <- OSource[F](store)
       tagImpl <- OTag[F](store)
@@ -90,6 +87,7 @@ object BackendApp {
         OShare(store, itemSearchImpl, simpleSearchImpl, javaEmil)
       )
     } yield new BackendApp[F] {
+      val pubSub = pubSubT
       val login = loginImpl
       val signup = signupImpl
       val collective = collImpl
@@ -113,15 +111,4 @@ object BackendApp {
       val totp = totpImpl
       val share = shareImpl
     }
-
-  def apply[F[_]: Async](
-      cfg: Config,
-      connectEC: ExecutionContext
-  )(ftsFactory: Client[F] => Resource[F, FtsClient[F]]): Resource[F, BackendApp[F]] =
-    for {
-      store <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
-      httpClient <- BlazeClientBuilder[F].resource
-      ftsClient <- ftsFactory(httpClient)
-      backend <- create(cfg, store, httpClient, ftsClient)
-    } yield backend
 }

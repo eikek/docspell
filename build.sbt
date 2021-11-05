@@ -564,7 +564,7 @@ val backend = project
         Dependencies.http4sClient ++
         Dependencies.emil
   )
-  .dependsOn(store, joexapi, ftsclient, totp)
+  .dependsOn(store, joexapi, ftsclient, totp, pubsubApi)
 
 val oidc = project
   .in(file("modules/oidc"))
@@ -655,7 +655,8 @@ val joex = project
     analysis,
     joexapi,
     restapi,
-    ftssolr
+    ftssolr,
+    pubsubNaive
   )
 
 val restserver = project
@@ -719,7 +720,7 @@ val restserver = project
       }
     }
   )
-  .dependsOn(config, restapi, joexapi, backend, webapp, ftssolr, oidc)
+  .dependsOn(config, restapi, joexapi, backend, webapp, ftssolr, oidc, pubsubNaive)
 
 // --- Website Documentation
 

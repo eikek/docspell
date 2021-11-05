@@ -155,23 +155,16 @@ final class NaivePubSub[F[_]: Async](
 
     for {
       _ <- logger.trace(s"Find all nodes subscribed to topic ${msg.head.topic.name}")
-      urls <- store.transact(RPubSub.findSubs(msg.head.topic.name))
+      urls <- store.transact(RPubSub.findSubs(msg.head.topic.name, cfg.nodeId))
       _ <- logger.trace(s"Publishing to remote urls ${urls.map(_.asString)}: $msg")
       reqs = urls
         .map(u => Uri.unsafeFromString(u.asString))
         .map(uri => POST(List(msg), uri))
-      res <- reqs.traverse(req => client.status(req)).attempt
-      _ <- res match {
+      resList <- reqs.traverse(req => client.status(req).attempt)
+      _ <- resList.traverse {
         case Right(s) =>
-          if (s.forall(_.isSuccess)) ().pure[F]
-          else if (s.size == urls.size)
-            logger.warn(
-              s"No nodes was be reached! Reason: $s, message: $msg"
-            )
-          else
-            logger.warn(
-              s"Some nodes were not reached! Reason: $s, message: $msg"
-            )
+          if (s.isSuccess) ().pure[F]
+          else logger.warn(s"A node was not reached! Reason: $s, message: $msg")
         case Left(ex) =>
           logger.error(ex)(s"Error publishing ${msg.head.topic.name} message remotely")
       }

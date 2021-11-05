@@ -11,10 +11,14 @@ import cats.effect._
 import fs2.Stream
 import fs2.concurrent.SignallingRef
 
+import docspell.backend.msg.Topics
 import docspell.common.Pools
 import docspell.joex.routes._
+import docspell.pubsub.naive.NaivePubSub
+import docspell.store.Store
 
 import org.http4s.HttpApp
+import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.Router
@@ -33,9 +37,19 @@ object JoexServer {
     val app = for {
       signal <- Resource.eval(SignallingRef[F, Boolean](false))
       exitCode <- Resource.eval(Ref[F].of(ExitCode.Success))
-      joexApp <- JoexAppImpl.create[F](cfg, signal, pools.connectEC)
+
+      store <- Store.create[F](
+        cfg.jdbc,
+        cfg.files.chunkSize,
+        pools.connectEC
+      )
+      httpClient <- BlazeClientBuilder[F].resource
+      pubSub <- NaivePubSub(cfg.pubSubConfig, store, httpClient)(Topics.all.map(_.topic))
+
+      joexApp <- JoexAppImpl.create[F](cfg, signal, store, httpClient, pubSub)
 
       httpApp = Router(
+        "/internal/pubsub" -> pubSub.receiveRoute,
         "/api/info" -> InfoRoutes(cfg),
         "/api/v1" -> JoexRoutes(joexApp)
       ).orNotFound

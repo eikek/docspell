@@ -79,8 +79,12 @@ object RPubSub {
       )
     )
 
-  def findSubs(topic: String): ConnectionIO[List[LenientUri]] =
-    run(select(T.url), from(T), T.topic === topic && T.counter > 0)
+  def findSubs(topic: String, excludeNode: Ident): ConnectionIO[List[LenientUri]] =
+    run(
+      select(T.url),
+      from(T),
+      T.topic === topic && T.counter > 0 && T.nodeId <> excludeNode
+    )
       .query[LenientUri]
       .to[List]
 }

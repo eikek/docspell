@@ -11,12 +11,15 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.backend.auth.{AuthToken, ShareToken}
+import docspell.backend.msg.Topics
 import docspell.common._
 import docspell.oidc.CodeFlowRoutes
+import docspell.pubsub.naive.NaivePubSub
 import docspell.restserver.auth.OpenId
 import docspell.restserver.http4s.EnvMiddleware
 import docspell.restserver.routes._
 import docspell.restserver.webapp._
+import docspell.store.Store
 
 import org.http4s._
 import org.http4s.blaze.client.BlazeClientBuilder
@@ -34,9 +37,17 @@ object RestServer {
 
     val templates = TemplateRoutes[F](cfg)
     val app = for {
-      restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
+      store <- Store.create[F](
+        cfg.backend.jdbc,
+        cfg.backend.files.chunkSize,
+        pools.connectEC
+      )
+      httpClient <- BlazeClientBuilder[F].resource
+      pubSub <- NaivePubSub(cfg.pubSubConfig, store, httpClient)(Topics.all.map(_.topic))
+      restApp <- RestAppImpl.create[F](cfg, store, httpClient, pubSub)
       httpClient <- BlazeClientBuilder[F].resource
       httpApp = Router(
+        "/internal/pubsub" -> pubSub.receiveRoute,
         "/api/info" -> routes.InfoRoutes(),
         "/api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
         "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>

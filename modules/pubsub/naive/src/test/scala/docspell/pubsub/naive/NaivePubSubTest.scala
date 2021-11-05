@@ -13,8 +13,8 @@ import cats.implicits._
 import fs2.concurrent.SignallingRef
 
 import docspell.common._
-import docspell.pubsub.api.Topics.{JobDoneMsg, JobSubmittedMsg}
 import docspell.pubsub.api._
+import docspell.pubsub.naive.Topics._
 
 import munit.CatsEffectSuite
 
@@ -104,7 +104,7 @@ class NaivePubSubTest extends CatsEffectSuite with Fixtures {
   }
 
   pubsubEnv.test("do not receive remote message from other topic") { env =>
-    val msg = JobDoneMsg("job-1".id, "task-2".id)
+    val msg = JobCancelMsg("job-1".id)
 
     // Create two pubsub instances connected to the same database
     conntectedPubsubs(env).use { case (ps1, ps2) =>
@@ -112,7 +112,7 @@ class NaivePubSubTest extends CatsEffectSuite with Fixtures {
         // subscribe to ps1 and send via ps2
         res <- subscribe(ps1, Topics.jobSubmitted)
         (received, halt, subFiber) = res
-        _ <- ps2.publish1(Topics.jobDone, msg)
+        _ <- ps2.publish1(Topics.jobCancel, msg)
         _ <- IO.sleep(100.millis)
         _ <- halt.set(true)
         outcome <- subFiber.join

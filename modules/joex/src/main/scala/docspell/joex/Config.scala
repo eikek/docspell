@@ -20,6 +20,7 @@ import docspell.joex.analysis.RegexNerFile
 import docspell.joex.hk.HouseKeepingConfig
 import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.joex.updatecheck.UpdateCheckConfig
+import docspell.pubsub.naive.PubSubConfig
 import docspell.store.JdbcConfig
 
 case class Config(
@@ -39,7 +40,11 @@ case class Config(
     mailDebug: Boolean,
     fullTextSearch: Config.FullTextSearch,
     updateCheck: UpdateCheckConfig
-)
+) {
+
+  def pubSubConfig: PubSubConfig =
+    PubSubConfig(appId, baseUrl / "internal" / "pubsub", 100)
+}
 
 object Config {
   case class Bind(address: String, port: Int)

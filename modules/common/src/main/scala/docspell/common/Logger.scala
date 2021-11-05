@@ -6,6 +6,7 @@
 
 package docspell.common
 
+import cats.Applicative
 import cats.effect.Sync
 import fs2.Stream
 
@@ -44,6 +45,27 @@ trait Logger[F[_]] { self =>
 }
 
 object Logger {
+
+  def off[F[_]: Applicative]: Logger[F] =
+    new Logger[F] {
+      def trace(msg: => String): F[Unit] =
+        Applicative[F].pure(())
+
+      def debug(msg: => String): F[Unit] =
+        Applicative[F].pure(())
+
+      def info(msg: => String): F[Unit] =
+        Applicative[F].pure(())
+
+      def warn(msg: => String): F[Unit] =
+        Applicative[F].pure(())
+
+      def error(ex: Throwable)(msg: => String): F[Unit] =
+        Applicative[F].pure(())
+
+      def error(msg: => String): F[Unit] =
+        Applicative[F].pure(())
+    }
 
   def log4s[F[_]: Sync](log: Log4sLogger): Logger[F] =
     new Logger[F] {

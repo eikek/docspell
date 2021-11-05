@@ -6,14 +6,13 @@
 
 package docspell.joex
 
-import scala.concurrent.ExecutionContext
-
 import cats.effect._
 import cats.implicits._
 import fs2.concurrent.SignallingRef
 
 import docspell.analysis.TextAnalyser
 import docspell.backend.fulltext.CreateIndex
+import docspell.backend.msg.{CancelJob, Ping, Topics}
 import docspell.backend.ops._
 import docspell.common._
 import docspell.ftsclient.FtsClient
@@ -34,6 +33,7 @@ import docspell.joex.scanmailbox._
 import docspell.joex.scheduler._
 import docspell.joex.updatecheck._
 import docspell.joexapi.client.JoexClient
+import docspell.pubsub.api.{PubSub, PubSubT}
 import docspell.store.Store
 import docspell.store.queue._
 import docspell.store.records.{REmptyTrashSetting, RJobLog}
@@ -41,19 +41,20 @@ import docspell.store.usertask.UserTaskScope
 import docspell.store.usertask.UserTaskStore
 
 import emil.javamail._
-import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
 
 final class JoexAppImpl[F[_]: Async](
     cfg: Config,
-    nodeOps: ONode[F],
     store: Store[F],
     queue: JobQueue[F],
+    pubSubT: PubSubT[F],
     pstore: PeriodicTaskStore[F],
     termSignal: SignallingRef[F, Boolean],
     val scheduler: Scheduler[F],
     val periodicScheduler: PeriodicScheduler[F]
 ) extends JoexApp[F] {
+  private[this] val logger: Logger[F] =
+    Logger.log4s(org.log4s.getLogger(s"Joex-${cfg.appId.id}"))
 
   def init: F[Unit] = {
     val run = scheduler.start.compile.drain
@@ -64,15 +65,25 @@ final class JoexAppImpl[F[_]: Async](
       _ <- Async[F].start(prun)
       _ <- scheduler.periodicAwake
       _ <- periodicScheduler.periodicAwake
-      _ <- nodeOps.register(cfg.appId, NodeType.Joex, cfg.baseUrl)
+      _ <- subscriptions
     } yield ()
   }
 
+  def subscriptions =
+    for {
+      _ <- Async[F].start(pubSubT.subscribeSink(Ping.topic) { msg =>
+        logger.info(s">>>> PING $msg")
+      })
+      _ <- Async[F].start(pubSubT.subscribeSink(Topics.jobsNotify) { _ =>
+        scheduler.notifyChange
+      })
+      _ <- Async[F].start(pubSubT.subscribeSink(CancelJob.topic) { msg =>
+        scheduler.requestCancel(msg.body.jobId).as(())
+      })
+    } yield ()
+
   def findLogs(jobId: Ident): F[Vector[RJobLog]] =
     store.transact(RJobLog.findLogs(jobId))
-
-  def shutdown: F[Unit] =
-    nodeOps.unregister(cfg.appId)
 
   def initShutdown: F[Unit] =
     periodicScheduler.shutdown *> scheduler.shutdown(false) *> termSignal.set(true)
@@ -116,16 +127,19 @@ object JoexAppImpl {
   def create[F[_]: Async](
       cfg: Config,
       termSignal: SignallingRef[F, Boolean],
-      connectEC: ExecutionContext
+      store: Store[F],
+      httpClient: Client[F],
+      pubSub: PubSub[F]
   ): Resource[F, JoexApp[F]] =
     for {
-      httpClient <- BlazeClientBuilder[F].resource
-      client = JoexClient(httpClient)
-      store <- Store.create(cfg.jdbc, cfg.files.chunkSize, connectEC)
       queue <- JobQueue(store)
       pstore <- PeriodicTaskStore.create(store)
-      nodeOps <- ONode(store)
-      joex <- OJoex(client, store)
+      client = JoexClient(httpClient)
+      pubSubT = PubSubT(
+        pubSub,
+        Logger.log4s(org.log4s.getLogger(s"joex-${cfg.appId.id}"))
+      )
+      joex <- OJoex(pubSubT)
       upload <- OUpload(store, queue, joex)
       fts <- createFtsClient(cfg)(httpClient)
       createIndex <- CreateIndex.resource(fts, store)
@@ -138,6 +152,7 @@ object JoexAppImpl {
         JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
       sch <- SchedulerBuilder(cfg.scheduler, store)
         .withQueue(queue)
+        .withPubSub(pubSubT)
         .withTask(
           JobTask.json(
             ProcessItemArgs.taskName,
@@ -264,8 +279,8 @@ object JoexAppImpl {
         pstore,
         client
       )
-      app = new JoexAppImpl(cfg, nodeOps, store, queue, pstore, termSignal, sch, psch)
-      appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
+      app = new JoexAppImpl(cfg, store, queue, pubSubT, pstore, termSignal, sch, psch)
+      appR <- Resource.make(app.init.map(_ => app))(_.initShutdown)
     } yield appR
 
   private def createFtsClient[F[_]: Async](
