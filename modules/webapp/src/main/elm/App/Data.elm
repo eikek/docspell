@@ -190,6 +190,7 @@ type Msg
     | SetLanguage UiLanguage
     | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
     | ReceiveBrowserSettings StoredUiSettings
+    | ReceiveWsMessage String
 
 
 defaultPage : Flags -> Page

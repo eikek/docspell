@@ -308,6 +308,13 @@ updateWithSub msg model =
             in
             updateUserSettings texts lm model
 
+        ReceiveWsMessage data ->
+            let
+                _ =
+                    Debug.log "WS-msg" data
+            in
+            ( model, Cmd.none, Sub.none )
+
 
 applyClientSettings : Messages -> Model -> UiSettings -> ( Model, Cmd Msg, Sub Msg )
 applyClientSettings texts model settings =

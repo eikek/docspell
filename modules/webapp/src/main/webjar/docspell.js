@@ -135,3 +135,13 @@ elmApp.ports.printElement.subscribe(function(id) {
         }
     }
 });
+
+var socket = new WebSocket('ws://localhost:7880/api/v1/sec/ws');
+socket.addEventListener("message", function(event) {
+    if (event.data != "keep-alive" && event.data) {
+        elmApp.ports.receiveWsMessage.send(event.data);
+    }
+});
+// elmApp.ports.sendWsMessage.subscribe(function(msg) {
+//     socket.send(msg);
+// });

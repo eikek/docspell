@@ -26,30 +26,30 @@ import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{HttpRoutes, Uri}
 
-/** A pubsub implementation that can be used across machines, but uses a rather
-  * inefficient protocol. The reason is to make it work with the current setup, i.e. not
-  * requiring to add another complex piece of software to the mix, like Kafka or RabbitMQ.
+/** A pubsub implementation that can be used across machines, using a rather inefficient
+  * but simple protocol. It can therefore work with the current setup, i.e. not requiring
+  * to add another complex piece of software to the mix, like Kafka or RabbitMQ.
   *
   * However, the api should allow to be used on top of such a tool. This implementation
   * can be used in a personal setting, where there are only a few nodes.
   *
-  * How it works:
+  * How it works: Each node has a set of local subscribers and a http endpoint. If it
+  * publishes a message, it notifies all local subscribers and sends out a json message to
+  * all endpoints that are registered for this topic. If it receives a messagen through
+  * its endpoint, it notifies all local subscribers.
   *
-  * It is build on the `Topic` class from fs2.concurrent. A map of a topic name to such a
+  * It is build on the `Topic` class from fs2.concurrent. A map of the name to such a
   * `Topic` instance is maintained. To work across machines, the database is used as a
-  * synchronization point. Each subscriber must provide a http api and so its "callback"
-  * URL is added into the database to the list of remote subscribers.
+  * synchronization point. Each node must provide a http api and so its "callback" URL is
+  * added into the database associated to a topic name.
   *
   * When publishing a message, the message can be published to the internal fs2 topic.
   * Then all URLs to this topic name are looked up in the database and the message is
   * POSTed to each URL as JSON. The endpoint of each machine takes this message and
   * publishes it to its own internal fs2.concurrent.Topic instance.
   *
-  * Obviously, there are drawbacks: it is slow, because the messages go through http and
-  * connections must be opened/closed etc and the database is hit as well. Then it doesn't
-  * scale to lots of machines and messages. The upside is, that it works with the current
-  * setup and it should be good enough for personal use, where there are only a small
-  * amount of machines and messages.
+  * Obviously, this doesn't scale well to lots of machines and messages. It should be good
+  * enough for personal use, where there are only a small amount of machines and messages.
   *
   * The main use case for docspell is to communicate between the rest-server and job
   * executor. It is for internal communication and all topics are known at compile time.

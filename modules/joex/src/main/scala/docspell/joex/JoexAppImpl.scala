@@ -12,7 +12,7 @@ import fs2.concurrent.SignallingRef
 
 import docspell.analysis.TextAnalyser
 import docspell.backend.fulltext.CreateIndex
-import docspell.backend.msg.{CancelJob, Ping, Topics}
+import docspell.backend.msg.{CancelJob, Topics}
 import docspell.backend.ops._
 import docspell.common._
 import docspell.ftsclient.FtsClient
@@ -53,9 +53,6 @@ final class JoexAppImpl[F[_]: Async](
     val scheduler: Scheduler[F],
     val periodicScheduler: PeriodicScheduler[F]
 ) extends JoexApp[F] {
-  private[this] val logger: Logger[F] =
-    Logger.log4s(org.log4s.getLogger(s"Joex-${cfg.appId.id}"))
-
   def init: F[Unit] = {
     val run = scheduler.start.compile.drain
     val prun = periodicScheduler.start.compile.drain
@@ -71,9 +68,6 @@ final class JoexAppImpl[F[_]: Async](
 
   def subscriptions =
     for {
-      _ <- Async[F].start(pubSubT.subscribeSink(Ping.topic) { msg =>
-        logger.info(s">>>> PING $msg")
-      })
       _ <- Async[F].start(pubSubT.subscribeSink(Topics.jobsNotify) { _ =>
         scheduler.notifyChange
       })
