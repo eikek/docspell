@@ -12,9 +12,9 @@ function extend() {
     var result = {};
     for (var i = 0; i < arguments.length; i++) {
         forEachIn(arguments[i],
-            function(obj, key) {
-                result[key] = obj;
-            });
+                  function(obj, key) {
+                      result[key] = obj;
+                  });
     }
     return result;
 }
@@ -41,13 +41,18 @@ elmApp.ports.internalSetUiTheme.subscribe(function(themeName) {
 });
 
 elmApp.ports.setAccount.subscribe(function(authResult) {
-    console.log("Add account from local storage");
+    console.log("Add account to local storage");
     localStorage.setItem("account", JSON.stringify(authResult));
+
+    if (!dsWebSocket) {
+        initWS();
+    }
 });
 
 elmApp.ports.removeAccount.subscribe(function() {
     console.log("Remove account from local storage");
     localStorage.removeItem("account");
+    closeWS();
 });
 
 elmApp.ports.requestUiSettings.subscribe(function(args) {
@@ -136,12 +141,27 @@ elmApp.ports.printElement.subscribe(function(id) {
     }
 });
 
-var socket = new WebSocket('ws://localhost:7880/api/v1/sec/ws');
-socket.addEventListener("message", function(event) {
-    if (event.data != "keep-alive" && event.data) {
-        elmApp.ports.receiveWsMessage.send(event.data);
+
+var dsWebSocket = null;
+function closeWS() {
+    if (dsWebSocket) {
+        console.log("Closing websocket connection");
+        dsWebSocket.close(1000, "Done");
+        dsWebSocket = null;
     }
-});
+}
+function initWS() {
+    closeWS();
+    var protocol = (window.location.protocol === 'https:') ? 'wss:' : 'ws:';
+    var url = protocol + '//' + window.location.host + '/api/v1/sec/ws';
+    console.log("Initialize websocket at " + url);
+    dsWebSocket = new WebSocket(url);
+    dsWebSocket.addEventListener("message", function(event) {
+        if (event.data != "keep-alive" && event.data) {
+            elmApp.ports.receiveWsMessage.send(event.data);
+        }
+    });
+}
 // elmApp.ports.sendWsMessage.subscribe(function(msg) {
 //     socket.send(msg);
 // });
