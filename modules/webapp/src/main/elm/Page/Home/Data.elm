@@ -229,6 +229,7 @@ type Msg
     | PublishItemsMsg Comp.PublishItems.Msg
     | TogglePublishCurrentQueryView
     | PublishViewMsg Comp.PublishItems.Msg
+    | RefreshView
 
 
 type SearchType

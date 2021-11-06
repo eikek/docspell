@@ -15,6 +15,7 @@ import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
 import Data.Flags
+import Data.ServerEvent exposing (ServerEvent(..))
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme
 import Messages exposing (Messages)
@@ -310,10 +311,20 @@ updateWithSub msg model =
 
         ReceiveWsMessage data ->
             let
-                _ =
-                    Debug.log "WS-msg" data
+                se =
+                    Data.ServerEvent.fromString data
             in
-            ( model, Cmd.none, Sub.none )
+            case se of
+                Just ItemProcessed ->
+                    case model.page of
+                        HomePage ->
+                            updateHome texts Page.Home.Data.RefreshView model
+
+                        _ ->
+                            ( model, Cmd.none, Sub.none )
+
+                Nothing ->
+                    ( model, Cmd.none, Sub.none )
 
 
 applyClientSettings : Messages -> Model -> UiSettings -> ( Model, Cmd Msg, Sub Msg )

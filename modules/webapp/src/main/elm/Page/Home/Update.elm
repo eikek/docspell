@@ -227,6 +227,22 @@ update mId key flags texts settings msg model =
             else
                 doSearch param nm
 
+        RefreshView ->
+            let
+                param =
+                    { flags = flags
+                    , searchType = model.lastSearchType
+                    , pageSize = settings.itemSearchPageSize
+                    , offset = model.searchOffset
+                    , scroll = False
+                    }
+            in
+            if model.searchInProgress then
+                withSub ( model, Cmd.none )
+
+            else
+                doSearch param model
+
         ToggleSearchMenu ->
             let
                 nextView =
