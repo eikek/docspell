@@ -22,6 +22,7 @@ import docspell.common.syntax.all._
 import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
+import docspell.restserver.http4s.ContentDisposition
 import docspell.store.queries.{AttachmentLight => QAttachmentLight, IdRefCount}
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
@@ -377,7 +378,11 @@ trait Conversions {
       .filter(p => p.name.forall(s => !s.equalsIgnoreCase("meta")))
       .map(p =>
         OUpload
-          .File(p.filename, p.headers.get[`Content-Type`].map(fromContentType), p.body)
+          .File(
+            ContentDisposition.getFileName(p),
+            p.headers.get[`Content-Type`].map(fromContentType),
+            p.body
+          )
       )
     for {
       metaData <- meta
