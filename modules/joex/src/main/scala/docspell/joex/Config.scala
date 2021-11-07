@@ -18,6 +18,7 @@ import docspell.extract.ExtractConfig
 import docspell.ftssolr.SolrConfig
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.hk.HouseKeepingConfig
+import docspell.joex.routes.InternalHeader
 import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.joex.updatecheck.UpdateCheckConfig
 import docspell.pubsub.naive.PubSubConfig
@@ -42,8 +43,13 @@ case class Config(
     updateCheck: UpdateCheckConfig
 ) {
 
-  def pubSubConfig: PubSubConfig =
-    PubSubConfig(appId, baseUrl / "internal" / "pubsub", 100)
+  def pubSubConfig(headerValue: Ident): PubSubConfig =
+    PubSubConfig(
+      appId,
+      baseUrl / "internal" / "pubsub",
+      100,
+      InternalHeader.header(headerValue.id)
+    )
 }
 
 object Config {

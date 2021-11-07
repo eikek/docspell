@@ -8,6 +8,7 @@ package docspell.restserver
 
 import fs2.Stream
 import fs2.concurrent.Topic
+
 import docspell.backend.msg.JobDone
 import docspell.common.ProcessItemArgs
 import docspell.pubsub.api.PubSubT

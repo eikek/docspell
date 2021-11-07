@@ -14,6 +14,7 @@ import docspell.oidc.ProviderConfig
 import docspell.pubsub.naive.PubSubConfig
 import docspell.restserver.Config.OpenIdConfig
 import docspell.restserver.auth.OpenId
+import docspell.restserver.http4s.InternalHeader
 
 import com.comcast.ip4s.IpAddress
 
@@ -35,8 +36,13 @@ case class Config(
   def openIdEnabled: Boolean =
     openid.exists(_.enabled)
 
-  def pubSubConfig: PubSubConfig =
-    PubSubConfig(appId, baseUrl / "internal" / "pubsub", 100)
+  def pubSubConfig(headerValue: Ident): PubSubConfig =
+    PubSubConfig(
+      appId,
+      baseUrl / "internal" / "pubsub",
+      100,
+      InternalHeader.header(headerValue.id)
+    )
 }
 
 object Config {

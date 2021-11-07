@@ -8,4 +8,11 @@ package docspell.pubsub.naive
 
 import docspell.common.{Ident, LenientUri}
 
-case class PubSubConfig(nodeId: Ident, url: LenientUri, subscriberQueueSize: Int)
+import org.http4s.Header
+
+case class PubSubConfig(
+    nodeId: Ident,
+    url: LenientUri,
+    subscriberQueueSize: Int,
+    reqHeader: Header.Raw
+)

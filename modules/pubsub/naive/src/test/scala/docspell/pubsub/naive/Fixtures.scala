@@ -13,8 +13,9 @@ import docspell.pubsub.api._
 import docspell.store.{Store, StoreFixture}
 
 import munit.CatsEffectSuite
-import org.http4s.Response
 import org.http4s.client.Client
+import org.http4s.{Header, Response}
+import org.typelevel.ci._
 
 trait Fixtures extends HttpClientOps { self: CatsEffectSuite =>
 
@@ -67,7 +68,8 @@ object Fixtures {
     PubSubConfig(
       Ident.unsafe(nodeId),
       LenientUri.unsafe(s"http://$nodeId/"),
-      0
+      0,
+      Header.Raw(ci"Docspell-Internal", "abc")
     )
 
   def storeResource: Resource[IO, Store[IO]] =
