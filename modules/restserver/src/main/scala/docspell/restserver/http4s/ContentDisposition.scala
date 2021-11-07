@@ -18,13 +18,13 @@ import org.http4s.{Header, ParseFailure, ParseResult}
 import org.typelevel.ci.CIString
 import org.typelevel.ci._
 
-/** A replacement for http4s' `Content-Disposition` class with a slightly modified parser
-  * to allow utf8 filenames.
+/** A replacement for `Content-Disposition` class with a slightly modified parser to allow
+  * utf8 filenames.
   *
   * The usage of this class is already in the `Part` class to retrieve the filename. This
   * class can be used as follows:
   *
-  * {{{ ContentDisposition.getFileName(part) }}
+  * {{{ContentDisposition.getFileName(part)}}}
   *
   * where `part` is of type `multipart.Part[F]`.
   */

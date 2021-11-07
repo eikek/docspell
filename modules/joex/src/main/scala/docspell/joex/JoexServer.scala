@@ -16,6 +16,7 @@ import docspell.common.Pools
 import docspell.joex.routes._
 import docspell.pubsub.naive.NaivePubSub
 import docspell.store.Store
+import docspell.store.records.RInternalSetting
 
 import org.http4s.HttpApp
 import org.http4s.blaze.client.BlazeClientBuilder
@@ -43,13 +44,20 @@ object JoexServer {
         cfg.files.chunkSize,
         pools.connectEC
       )
+      settings <- Resource.eval(store.transact(RInternalSetting.create))
       httpClient <- BlazeClientBuilder[F].resource
-      pubSub <- NaivePubSub(cfg.pubSubConfig, store, httpClient)(Topics.all.map(_.topic))
+      pubSub <- NaivePubSub(
+        cfg.pubSubConfig(settings.internalRouteKey),
+        store,
+        httpClient
+      )(Topics.all.map(_.topic))
 
       joexApp <- JoexAppImpl.create[F](cfg, signal, store, httpClient, pubSub)
 
       httpApp = Router(
-        "/internal/pubsub" -> pubSub.receiveRoute,
+        "/internal" -> InternalHeader(settings.internalRouteKey) {
+          Router("pubsub" -> pubSub.receiveRoute)
+        },
         "/api/info" -> InfoRoutes(cfg),
         "/api/v1" -> JoexRoutes(joexApp)
       ).orNotFound

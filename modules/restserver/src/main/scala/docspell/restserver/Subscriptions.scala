@@ -10,8 +10,7 @@ import fs2.Stream
 import fs2.concurrent.Topic
 
 import docspell.backend.msg.JobDone
-import docspell.common._
-import docspell.common.syntax.StringSyntax._
+import docspell.common.ProcessItemArgs
 import docspell.pubsub.api.PubSubT
 import docspell.restserver.ws.OutputEvent
 
@@ -29,7 +28,5 @@ object Subscriptions {
     pubSub
       .subscribe(JobDone.topic)
       .filter(m => m.body.task == ProcessItemArgs.taskName)
-      .map(m => m.body.args.parseJsonAs[ProcessItemArgs])
-      .collect { case Right(a) => OutputEvent.ItemProcessed(a.meta.collective) }
-
+      .map(m => OutputEvent.ItemProcessed(m.body.group))
 }

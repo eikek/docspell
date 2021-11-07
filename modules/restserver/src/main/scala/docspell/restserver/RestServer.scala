@@ -19,12 +19,13 @@ import docspell.common._
 import docspell.oidc.CodeFlowRoutes
 import docspell.pubsub.naive.NaivePubSub
 import docspell.restserver.auth.OpenId
-import docspell.restserver.http4s.EnvMiddleware
+import docspell.restserver.http4s.{EnvMiddleware, InternalHeader}
 import docspell.restserver.routes._
 import docspell.restserver.webapp._
 import docspell.restserver.ws.OutputEvent.KeepAlive
 import docspell.restserver.ws.{OutputEvent, WebSocketRoutes}
 import docspell.store.Store
+import docspell.store.records.RInternalSetting
 
 import org.http4s._
 import org.http4s.blaze.client.BlazeClientBuilder
@@ -50,14 +51,14 @@ object RestServer {
       server =
         Stream
           .resource(createApp(cfg, pools))
-          .flatMap { case (restApp, pubSub, httpClient) =>
+          .flatMap { case (restApp, pubSub, httpClient, setting) =>
             Stream(
               Subscriptions(wsTopic, restApp.backend.pubSub),
               BlazeServerBuilder[F]
                 .bindHttp(cfg.bind.port, cfg.bind.address)
                 .withoutBanner
                 .withHttpWebSocketApp(
-                  createHttpApp(cfg, httpClient, pubSub, restApp, wsTopic)
+                  createHttpApp(cfg, setting, httpClient, pubSub, restApp, wsTopic)
                 )
                 .serve
                 .drain
@@ -71,7 +72,7 @@ object RestServer {
   def createApp[F[_]: Async](
       cfg: Config,
       pools: Pools
-  ): Resource[F, (RestApp[F], NaivePubSub[F], Client[F])] =
+  ): Resource[F, (RestApp[F], NaivePubSub[F], Client[F], RInternalSetting)] =
     for {
       httpClient <- BlazeClientBuilder[F].resource
       store <- Store.create[F](
@@ -79,12 +80,18 @@ object RestServer {
         cfg.backend.files.chunkSize,
         pools.connectEC
       )
-      pubSub <- NaivePubSub(cfg.pubSubConfig, store, httpClient)(Topics.all.map(_.topic))
+      setting <- Resource.eval(store.transact(RInternalSetting.create))
+      pubSub <- NaivePubSub(
+        cfg.pubSubConfig(setting.internalRouteKey),
+        store,
+        httpClient
+      )(Topics.all.map(_.topic))
       restApp <- RestAppImpl.create[F](cfg, store, httpClient, pubSub)
-    } yield (restApp, pubSub, httpClient)
+    } yield (restApp, pubSub, httpClient, setting)
 
   def createHttpApp[F[_]: Async](
       cfg: Config,
+      internSettings: RInternalSetting,
       httpClient: Client[F],
       pubSub: NaivePubSub[F],
       restApp: RestApp[F],
@@ -94,7 +101,9 @@ object RestServer {
   ) = {
     val templates = TemplateRoutes[F](cfg)
     val httpApp = Router(
-      "/internal/pubsub" -> pubSub.receiveRoute,
+      "/internal" -> InternalHeader(internSettings.internalRouteKey) {
+        internalRoutes(pubSub)
+      },
       "/api/info" -> routes.InfoRoutes(),
       "/api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
       "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
@@ -115,6 +124,11 @@ object RestServer {
 
     Logger.httpApp(logHeaders = false, logBody = false)(httpApp)
   }
+
+  def internalRoutes[F[_]: Async](pubSub: NaivePubSub[F]): HttpRoutes[F] =
+    Router(
+      "pubsub" -> pubSub.receiveRoute
+    )
 
   def securedRoutes[F[_]: Async](
       cfg: Config,

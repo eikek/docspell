@@ -159,7 +159,7 @@ final class NaivePubSub[F[_]: Async](
       _ <- logger.trace(s"Publishing to remote urls ${urls.map(_.asString)}: $msg")
       reqs = urls
         .map(u => Uri.unsafeFromString(u.asString))
-        .map(uri => POST(List(msg), uri))
+        .map(uri => POST(List(msg), uri).putHeaders(cfg.reqHeader))
       resList <- reqs.traverse(req => client.status(req).attempt)
       _ <- resList.traverse {
         case Right(s) =>
