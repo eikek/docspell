@@ -204,7 +204,7 @@ final class SchedulerImpl[F[_]: Async](
       _ <- QJob.setFinalState(job.id, finalState, store)
       _ <- pubSub.publish1IgnoreErrors(
         JobDone.topic,
-        JobDone(job.id, job.task, job.args, finalState)
+        JobDone(job.id, job.group, job.task, job.args, finalState)
       )
     } yield ()
 
