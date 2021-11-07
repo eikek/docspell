@@ -63,9 +63,14 @@ warnMessageColors =
     " border-yellow-800 bg-yellow-50 text-yellow-800 dark:border-amber-200 dark:bg-amber-800 dark:text-amber-200 "
 
 
+infoMessageBase : String
+infoMessageBase =
+    " border border-blue-800 bg-blue-100 text-blue-800 dark:border-lightblue-200 dark:bg-lightblue-800 dark:text-lightblue-200 dark:bg-opacity-25 "
+
+
 infoMessage : String
 infoMessage =
-    " border border-blue-800 bg-blue-100 text-blue-800 dark:border-lightblue-200 dark:bg-lightblue-800 dark:text-lightblue-200 dark:bg-opacity-25 px-2 py-2 rounded "
+    infoMessageBase ++ " px-2 py-2 rounded "
 
 
 message : String

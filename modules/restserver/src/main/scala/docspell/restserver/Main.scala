@@ -38,12 +38,6 @@ object Main extends IOApp {
 
     pools = connectEC.map(Pools.apply)
     rc <-
-      pools.use(p =>
-        RestServer
-          .stream[IO](cfg, p)
-          .compile
-          .drain
-          .as(ExitCode.Success)
-      )
+      pools.use(p => RestServer.serve[IO](cfg, p))
   } yield rc
 }

@@ -6,17 +6,25 @@
 
 package docspell.restserver
 
+import scala.concurrent.duration._
+
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import fs2.concurrent.Topic
 
 import docspell.backend.auth.{AuthToken, ShareToken}
+import docspell.backend.msg.Topics
 import docspell.common._
 import docspell.oidc.CodeFlowRoutes
+import docspell.pubsub.naive.NaivePubSub
 import docspell.restserver.auth.OpenId
 import docspell.restserver.http4s.EnvMiddleware
 import docspell.restserver.routes._
 import docspell.restserver.webapp._
+import docspell.restserver.ws.OutputEvent.KeepAlive
+import docspell.restserver.ws.{OutputEvent, WebSocketRoutes}
+import docspell.store.Store
 
 import org.http4s._
 import org.http4s.blaze.client.BlazeClientBuilder
@@ -27,55 +35,96 @@ import org.http4s.headers.Location
 import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.middleware.Logger
+import org.http4s.server.websocket.WebSocketBuilder2
 
 object RestServer {
 
-  def stream[F[_]: Async](cfg: Config, pools: Pools): Stream[F, Nothing] = {
+  def serve[F[_]: Async](cfg: Config, pools: Pools): F[ExitCode] =
+    for {
+      wsTopic <- Topic[F, OutputEvent]
+      keepAlive = Stream
+        .awakeEvery[F](30.seconds)
+        .map(_ => KeepAlive)
+        .through(wsTopic.publish)
 
-    val templates = TemplateRoutes[F](cfg)
-    val app = for {
-      restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
+      server =
+        Stream
+          .resource(createApp(cfg, pools))
+          .flatMap { case (restApp, pubSub, httpClient) =>
+            Stream(
+              Subscriptions(wsTopic, restApp.backend.pubSub),
+              BlazeServerBuilder[F]
+                .bindHttp(cfg.bind.port, cfg.bind.address)
+                .withoutBanner
+                .withHttpWebSocketApp(
+                  createHttpApp(cfg, httpClient, pubSub, restApp, wsTopic)
+                )
+                .serve
+                .drain
+            )
+          }
+
+      exit <-
+        (server ++ Stream(keepAlive)).parJoinUnbounded.compile.drain.as(ExitCode.Success)
+    } yield exit
+
+  def createApp[F[_]: Async](
+      cfg: Config,
+      pools: Pools
+  ): Resource[F, (RestApp[F], NaivePubSub[F], Client[F])] =
+    for {
       httpClient <- BlazeClientBuilder[F].resource
-      httpApp = Router(
-        "/api/info" -> routes.InfoRoutes(),
-        "/api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
-        "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
-          securedRoutes(cfg, restApp, token)
-        },
-        "/api/v1/admin" -> AdminAuth(cfg.adminEndpoint) {
-          adminRoutes(cfg, restApp)
-        },
-        "/api/v1/share" -> ShareAuth(restApp.backend.share, cfg.auth) { token =>
-          shareRoutes(cfg, restApp, token)
-        },
-        "/api/doc" -> templates.doc,
-        "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F]),
-        "/app" -> EnvMiddleware(templates.app),
-        "/sw.js" -> EnvMiddleware(templates.serviceWorker),
-        "/" -> redirectTo("/app")
-      ).orNotFound
-
-      finalHttpApp = Logger.httpApp(logHeaders = false, logBody = false)(httpApp)
-
-    } yield finalHttpApp
-
-    Stream
-      .resource(app)
-      .flatMap(httpApp =>
-        BlazeServerBuilder[F]
-          .bindHttp(cfg.bind.port, cfg.bind.address)
-          .withHttpApp(httpApp)
-          .withoutBanner
-          .serve
+      store <- Store.create[F](
+        cfg.backend.jdbc,
+        cfg.backend.files.chunkSize,
+        pools.connectEC
       )
-  }.drain
+      pubSub <- NaivePubSub(cfg.pubSubConfig, store, httpClient)(Topics.all.map(_.topic))
+      restApp <- RestAppImpl.create[F](cfg, store, httpClient, pubSub)
+    } yield (restApp, pubSub, httpClient)
+
+  def createHttpApp[F[_]: Async](
+      cfg: Config,
+      httpClient: Client[F],
+      pubSub: NaivePubSub[F],
+      restApp: RestApp[F],
+      topic: Topic[F, OutputEvent]
+  )(
+      wsB: WebSocketBuilder2[F]
+  ) = {
+    val templates = TemplateRoutes[F](cfg)
+    val httpApp = Router(
+      "/internal/pubsub" -> pubSub.receiveRoute,
+      "/api/info" -> routes.InfoRoutes(),
+      "/api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
+      "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
+        securedRoutes(cfg, restApp, wsB, topic, token)
+      },
+      "/api/v1/admin" -> AdminAuth(cfg.adminEndpoint) {
+        adminRoutes(cfg, restApp)
+      },
+      "/api/v1/share" -> ShareAuth(restApp.backend.share, cfg.auth) { token =>
+        shareRoutes(cfg, restApp, token)
+      },
+      "/api/doc" -> templates.doc,
+      "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F]),
+      "/app" -> EnvMiddleware(templates.app),
+      "/sw.js" -> EnvMiddleware(templates.serviceWorker),
+      "/" -> redirectTo("/app")
+    ).orNotFound
+
+    Logger.httpApp(logHeaders = false, logBody = false)(httpApp)
+  }
 
   def securedRoutes[F[_]: Async](
       cfg: Config,
       restApp: RestApp[F],
+      wsB: WebSocketBuilder2[F],
+      topic: Topic[F, OutputEvent],
       token: AuthToken
   ): HttpRoutes[F] =
     Router(
+      "ws" -> WebSocketRoutes(token, topic, wsB),
       "auth" -> LoginRoutes.session(restApp.backend.login, cfg, token),
       "tag" -> TagRoutes(restApp.backend, token),
       "equipment" -> EquipmentRoutes(restApp.backend, token),

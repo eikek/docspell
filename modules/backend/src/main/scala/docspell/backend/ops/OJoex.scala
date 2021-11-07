@@ -6,41 +6,27 @@
 
 package docspell.backend.ops
 
-import cats.data.OptionT
 import cats.effect._
-import cats.implicits._
 
-import docspell.common.{Ident, NodeType}
-import docspell.joexapi.client.JoexClient
-import docspell.store.Store
-import docspell.store.records.RNode
+import docspell.backend.msg.{CancelJob, Topics}
+import docspell.common.Ident
+import docspell.pubsub.api.PubSubT
 
 trait OJoex[F[_]] {
 
   def notifyAllNodes: F[Unit]
 
-  def cancelJob(job: Ident, worker: Ident): F[Boolean]
-
+  def cancelJob(job: Ident, worker: Ident): F[Unit]
 }
 
 object OJoex {
-
-  def apply[F[_]: Sync](client: JoexClient[F], store: Store[F]): Resource[F, OJoex[F]] =
+  def apply[F[_]](pubSub: PubSubT[F]): Resource[F, OJoex[F]] =
     Resource.pure[F, OJoex[F]](new OJoex[F] {
+
       def notifyAllNodes: F[Unit] =
-        for {
-          nodes <- store.transact(RNode.findAll(NodeType.Joex))
-          _ <- nodes.toList.traverse(n => client.notifyJoexIgnoreErrors(n.url))
-        } yield ()
+        pubSub.publish1IgnoreErrors(Topics.jobsNotify, ())
 
-      def cancelJob(job: Ident, worker: Ident): F[Boolean] =
-        (for {
-          node <- OptionT(store.transact(RNode.findById(worker)))
-          cancel <- OptionT.liftF(client.cancelJob(node.url, job))
-        } yield cancel.success).getOrElse(false)
+      def cancelJob(job: Ident, worker: Ident): F[Unit] =
+        pubSub.publish1IgnoreErrors(CancelJob.topic, CancelJob(job, worker))
     })
-
-  def create[F[_]: Async](store: Store[F]): Resource[F, OJoex[F]] =
-    JoexClient.resource.flatMap(client => apply(client, store))
-
 }

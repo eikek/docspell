@@ -64,6 +64,7 @@ type alias Model =
     , anonymousTheme : UiTheme
     , anonymousUiLang : UiLanguage
     , langMenuOpen : Bool
+    , showNewItemsArrived : Bool
     }
 
 
@@ -126,6 +127,7 @@ init key url flags_ settings =
       , anonymousTheme = Data.UiTheme.Light
       , anonymousUiLang = Messages.UiLanguage.English
       , langMenuOpen = False
+      , showNewItemsArrived = False
       }
     , Cmd.batch
         [ Cmd.map UserSettingsMsg uc
@@ -190,6 +192,8 @@ type Msg
     | SetLanguage UiLanguage
     | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
     | ReceiveBrowserSettings StoredUiSettings
+    | ReceiveWsMessage String
+    | ToggleShowNewItemsArrived
 
 
 defaultPage : Flags -> Page

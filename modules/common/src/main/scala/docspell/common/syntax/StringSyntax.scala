@@ -12,9 +12,7 @@ import io.circe.Decoder
 import io.circe.parser._
 
 trait StringSyntax {
-
   implicit class EvenMoreStringOps(s: String) {
-
     def asNonBlank: Option[String] =
       Option(s).filter(_.trim.nonEmpty)
 
@@ -24,5 +22,6 @@ trait StringSyntax {
         value <- json.as[A]
       } yield value
   }
-
 }
+
+object StringSyntax extends StringSyntax

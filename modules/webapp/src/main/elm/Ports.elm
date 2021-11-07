@@ -11,6 +11,7 @@ port module Ports exposing
     , printElement
     , receiveCheckQueryResult
     , receiveUiSettings
+    , receiveWsMessage
     , removeAccount
     , requestUiSettings
     , setAccount
@@ -53,6 +54,15 @@ port requestUiSettings : AuthResult -> Cmd msg
 and calls the print dialog.
 -}
 port printElement : String -> Cmd msg
+
+
+{-| Receives messages from the websocket.
+-}
+port receiveWsMessage : (String -> msg) -> Sub msg
+
+
+
+--- Higher level functions based on ports
 
 
 setUiTheme : UiTheme -> Cmd msg

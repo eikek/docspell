@@ -11,6 +11,7 @@ import docspell.backend.{Config => BackendConfig}
 import docspell.common._
 import docspell.ftssolr.SolrConfig
 import docspell.oidc.ProviderConfig
+import docspell.pubsub.naive.PubSubConfig
 import docspell.restserver.Config.OpenIdConfig
 import docspell.restserver.auth.OpenId
 
@@ -33,6 +34,9 @@ case class Config(
 ) {
   def openIdEnabled: Boolean =
     openid.exists(_.enabled)
+
+  def pubSubConfig: PubSubConfig =
+    PubSubConfig(appId, baseUrl / "internal" / "pubsub", 100)
 }
 
 object Config {

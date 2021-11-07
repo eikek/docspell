@@ -15,6 +15,7 @@ import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
 import Data.Flags
+import Data.ServerEvent exposing (ServerEvent(..))
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme
 import Messages exposing (Messages)
@@ -307,6 +308,33 @@ updateWithSub msg model =
                     Page.UserSettings.Data.ReceiveBrowserSettings sett
             in
             updateUserSettings texts lm model
+
+        ReceiveWsMessage data ->
+            let
+                se =
+                    Data.ServerEvent.fromString data
+            in
+            case se of
+                Just ItemProcessed ->
+                    let
+                        newModel =
+                            { model | showNewItemsArrived = True }
+                    in
+                    case model.page of
+                        HomePage ->
+                            updateHome texts Page.Home.Data.RefreshView newModel
+
+                        _ ->
+                            ( newModel, Cmd.none, Sub.none )
+
+                Nothing ->
+                    ( model, Cmd.none, Sub.none )
+
+        ToggleShowNewItemsArrived ->
+            ( { model | showNewItemsArrived = not model.showNewItemsArrived }
+            , Cmd.none
+            , Sub.none
+            )
 
 
 applyClientSettings : Messages -> Model -> UiSettings -> ( Model, Cmd Msg, Sub Msg )

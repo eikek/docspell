@@ -11,8 +11,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.ops.OJob.{CollectiveQueueState, JobCancelResult}
-import docspell.common.Priority
-import docspell.common.{Ident, JobState}
+import docspell.common._
 import docspell.store.Store
 import docspell.store.UpdateResult
 import docspell.store.queries.QJob
@@ -55,6 +54,7 @@ object OJob {
       joex: OJoex[F]
   ): Resource[F, OJob[F]] =
     Resource.pure[F, OJob[F]](new OJob[F] {
+      private[this] val logger = Logger.log4s(org.log4s.getLogger(OJob.getClass))
 
       def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState] =
         store
@@ -77,11 +77,9 @@ object OJob {
           job.worker match {
             case Some(worker) =>
               for {
-                flag <- joex.cancelJob(job.id, worker)
-                res <-
-                  if (flag) JobCancelResult.cancelRequested.pure[F]
-                  else remove(job)
-              } yield res
+                _ <- logger.debug(s"Attempt to cancel job: ${job.id.id}")
+                _ <- joex.cancelJob(job.id, worker)
+              } yield JobCancelResult.cancelRequested
             case None =>
               remove(job)
           }

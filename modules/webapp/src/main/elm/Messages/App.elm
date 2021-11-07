@@ -23,6 +23,7 @@ type alias Texts =
     , processingQueue : String
     , newInvites : String
     , help : String
+    , newItemsArrived : String
     }
 
 
@@ -38,6 +39,7 @@ gb =
     , processingQueue = "Processing Queue"
     , newInvites = "New Invites"
     , help = "Help"
+    , newItemsArrived = "New items arrived!"
     }
 
 
@@ -53,4 +55,5 @@ de =
     , processingQueue = "Verarbeitung"
     , newInvites = "Neue Einladung"
     , help = "Hilfe (English)"
+    , newItemsArrived = "Neue Dokumente eingetroffen!"
     }

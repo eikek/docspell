@@ -13,19 +13,22 @@ import cats.implicits._
 import fs2.Stream
 import fs2.concurrent.SignallingRef
 
+import docspell.backend.msg.JobDone
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.joex.scheduler.SchedulerImpl._
+import docspell.pubsub.api.PubSubT
 import docspell.store.Store
 import docspell.store.queries.QJob
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
 
-import org.log4s._
+import org.log4s.getLogger
 
 final class SchedulerImpl[F[_]: Async](
     val config: SchedulerConfig,
     queue: JobQueue[F],
+    pubSub: PubSubT[F],
     tasks: JobTaskRegistry[F],
     store: Store[F],
     logSink: LogSink[F],
@@ -55,20 +58,21 @@ final class SchedulerImpl[F[_]: Async](
     state.get.flatMap(s => QJob.findAll(s.getRunning, store))
 
   def requestCancel(jobId: Ident): F[Boolean] =
-    state.get.flatMap(_.cancelRequest(jobId) match {
-      case Some(ct) => ct.map(_ => true)
-      case None =>
-        (for {
-          job <- OptionT(store.transact(RJob.findByIdAndWorker(jobId, config.name)))
-          _ <- OptionT.liftF(
-            if (job.isInProgress) executeCancel(job)
-            else ().pure[F]
-          )
-        } yield true)
-          .getOrElseF(
-            logger.fwarn(s"Job ${jobId.id} not found, cannot cancel.").map(_ => false)
-          )
-    })
+    logger.finfo(s"Scheduler requested to cancel job: ${jobId.id}") *>
+      state.get.flatMap(_.cancelRequest(jobId) match {
+        case Some(ct) => ct.map(_ => true)
+        case None =>
+          (for {
+            job <- OptionT(store.transact(RJob.findByIdAndWorker(jobId, config.name)))
+            _ <- OptionT.liftF(
+              if (job.isInProgress) executeCancel(job)
+              else ().pure[F]
+            )
+          } yield true)
+            .getOrElseF(
+              logger.fwarn(s"Job ${jobId.id} not found, cannot cancel.").map(_ => false)
+            )
+      })
 
   def notifyChange: F[Unit] =
     waiter.update(b => !b)
@@ -198,6 +202,10 @@ final class SchedulerImpl[F[_]: Async](
       )
       _ <- state.modify(_.removeRunning(job))
       _ <- QJob.setFinalState(job.id, finalState, store)
+      _ <- pubSub.publish1IgnoreErrors(
+        JobDone.topic,
+        JobDone(job.id, job.task, job.args, finalState)
+      )
     } yield ()
 
   def onStart(job: RJob): F[Unit] =
