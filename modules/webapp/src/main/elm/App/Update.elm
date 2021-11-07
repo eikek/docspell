@@ -316,15 +316,25 @@ updateWithSub msg model =
             in
             case se of
                 Just ItemProcessed ->
+                    let
+                        newModel =
+                            { model | showNewItemsArrived = True }
+                    in
                     case model.page of
                         HomePage ->
-                            updateHome texts Page.Home.Data.RefreshView model
+                            updateHome texts Page.Home.Data.RefreshView newModel
 
                         _ ->
-                            ( model, Cmd.none, Sub.none )
+                            ( newModel, Cmd.none, Sub.none )
 
                 Nothing ->
                     ( model, Cmd.none, Sub.none )
+
+        ToggleShowNewItemsArrived ->
+            ( { model | showNewItemsArrived = not model.showNewItemsArrived }
+            , Cmd.none
+            , Sub.none
+            )
 
 
 applyClientSettings : Messages -> Model -> UiSettings -> ( Model, Cmd Msg, Sub Msg )

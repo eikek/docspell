@@ -71,7 +71,19 @@ topNavUser auth model =
             , activeStyle = "hover:bg-blue-200 dark:hover:bg-bluegray-800 w-12"
             }
         , headerNavItem True model
-        , div [ class "flex flex-grow justify-end" ]
+        , div [ class "flex flex-grow justify-center" ]
+            [ a
+                [ class S.infoMessageBase
+                , class "my-2 px-1 py-1 rounded-lg inline-block hover:opacity-50"
+                , classList [ ( "hidden", not model.showNewItemsArrived ) ]
+                , href "#"
+                , onClick ToggleShowNewItemsArrived
+                ]
+                [ i [ class "fa fa-exclamation-circle mr-1" ] []
+                , text texts.app.newItemsArrived
+                ]
+            ]
+        , div [ class "flex justify-end" ]
             [ userMenu texts.app auth model
             , dataMenu texts.app auth model
             ]
