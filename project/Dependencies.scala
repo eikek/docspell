@@ -7,7 +7,7 @@ object Dependencies {
 
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BinnyVersion = "0.2.0"
+  val BinnyVersion = "0.2.1"
   val CalevVersion = "0.6.0"
   val CatsParseVersion = "0.3.4"
   val CirceVersion = "0.14.1"
@@ -21,7 +21,7 @@ object Dependencies {
   val H2Version = "1.4.200"
   val Http4sVersion = "0.23.6"
   val Icu4jVersion = "70.1"
-  val javaOtpVersion = "0.3.0"
+  val JavaOtpVersion = "0.3.0"
   val JsoupVersion = "1.14.3"
   val JwtScalaVersion = "9.0.2"
   val KindProjectorVersion = "0.10.3"
@@ -58,7 +58,7 @@ object Dependencies {
   )
 
   val javaOtp = Seq(
-    "com.eatthepath" % "java-otp" % "0.3.0"
+    "com.eatthepath" % "java-otp" % JavaOtpVersion
   )
 
   val testContainer = Seq(
