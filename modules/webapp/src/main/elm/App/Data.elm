@@ -19,6 +19,7 @@ import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
+import Data.ServerEvent exposing (ServerEvent)
 import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import Data.UiTheme exposing (UiTheme)
 import Http
@@ -192,7 +193,7 @@ type Msg
     | SetLanguage UiLanguage
     | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
     | ReceiveBrowserSettings StoredUiSettings
-    | ReceiveWsMessage String
+    | ReceiveWsMessage (Result String ServerEvent)
     | ToggleShowNewItemsArrived
 
 

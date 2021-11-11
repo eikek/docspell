@@ -9,9 +9,7 @@ package docspell.restserver.ws
 import cats.effect.Async
 import fs2.concurrent.Topic
 import fs2.{Pipe, Stream}
-
 import docspell.backend.auth.AuthToken
-
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.websocket.WebSocketBuilder2

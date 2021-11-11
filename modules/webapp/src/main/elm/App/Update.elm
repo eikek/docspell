@@ -310,12 +310,8 @@ updateWithSub msg model =
             updateUserSettings texts lm model
 
         ReceiveWsMessage data ->
-            let
-                se =
-                    Data.ServerEvent.fromString data
-            in
-            case se of
-                Just ItemProcessed ->
+            case data of
+                Ok ItemProcessed ->
                     let
                         newModel =
                             { model | showNewItemsArrived = True }
@@ -327,7 +323,10 @@ updateWithSub msg model =
                         _ ->
                             ( newModel, Cmd.none, Sub.none )
 
-                Nothing ->
+                Ok (JobsWaiting n) ->
+                    ( model, Cmd.none, Sub.none )
+
+                Err err ->
                     ( model, Cmd.none, Sub.none )
 
         ToggleShowNewItemsArrived ->

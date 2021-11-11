@@ -10,12 +10,11 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.queries.QJob
 import docspell.store.records.RJob
 
-import org.log4s._
+import org.log4s.getLogger
 
 trait JobQueue[F[_]] {
 
@@ -29,11 +28,11 @@ trait JobQueue[F[_]] {
     *
     * If the job has no tracker defined, it is simply inserted.
     */
-  def insertIfNew(job: RJob): F[Unit]
+  def insertIfNew(job: RJob): F[Boolean]
 
-  def insertAll(jobs: Seq[RJob]): F[Unit]
+  def insertAll(jobs: Seq[RJob]): F[Int]
 
-  def insertAllIfNew(jobs: Seq[RJob]): F[Unit]
+  def insertAllIfNew(jobs: Seq[RJob]): F[Int]
 
   def nextJob(
       prio: Ident => F[Priority],
@@ -43,10 +42,9 @@ trait JobQueue[F[_]] {
 }
 
 object JobQueue {
-  private[this] val logger = getLogger
-
   def apply[F[_]: Async](store: Store[F]): Resource[F, JobQueue[F]] =
     Resource.pure[F, JobQueue[F]](new JobQueue[F] {
+      private[this] val logger = Logger.log4s(getLogger)
 
       def nextJob(
           prio: Ident => F[Priority],
@@ -54,7 +52,7 @@ object JobQueue {
           retryPause: Duration
       ): F[Option[RJob]] =
         logger
-          .ftrace("Select next job") *> QJob.takeNextJob(store)(prio, worker, retryPause)
+          .trace("Select next job") *> QJob.takeNextJob(store)(prio, worker, retryPause)
 
       def insert(job: RJob): F[Unit] =
         store
@@ -66,7 +64,7 @@ object JobQueue {
             else ().pure[F]
           }
 
-      def insertIfNew(job: RJob): F[Unit] =
+      def insertIfNew(job: RJob): F[Boolean] =
         for {
           rj <- job.tracker match {
             case Some(tid) =>
@@ -75,26 +73,30 @@ object JobQueue {
               None.pure[F]
           }
           ret <-
-            if (rj.isDefined) ().pure[F]
-            else insert(job)
+            if (rj.isDefined) false.pure[F]
+            else insert(job).as(true)
         } yield ret
 
-      def insertAll(jobs: Seq[RJob]): F[Unit] =
+      def insertAll(jobs: Seq[RJob]): F[Int] =
         jobs.toList
           .traverse(j => insert(j).attempt)
-          .map(_.foreach {
-            case Right(()) =>
+          .flatMap(_.traverse {
+            case Right(()) => 1.pure[F]
             case Left(ex) =>
-              logger.error(ex)("Could not insert job. Skipping it.")
-          })
+              logger.error(ex)("Could not insert job. Skipping it.").as(0)
 
-      def insertAllIfNew(jobs: Seq[RJob]): F[Unit] =
+          })
+          .map(_.sum)
+
+      def insertAllIfNew(jobs: Seq[RJob]): F[Int] =
         jobs.toList
           .traverse(j => insertIfNew(j).attempt)
-          .map(_.foreach {
-            case Right(()) =>
+          .flatMap(_.traverse {
+            case Right(true)  => 1.pure[F]
+            case Right(false) => 0.pure[F]
             case Left(ex) =>
-              logger.error(ex)("Could not insert job. Skipping it.")
+              logger.error(ex)("Could not insert job. Skipping it.").as(0)
           })
+          .map(_.sum)
     })
 }

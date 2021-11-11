@@ -94,7 +94,7 @@ final class JoexAppImpl[F[_]: Async](
       AllPreviewsTask
         .job(MakePreviewArgs.StoreMode.WhenMissing, None)
         .flatMap(queue.insertIfNew) *>
-      AllPageCountTask.job.flatMap(queue.insertIfNew)
+      AllPageCountTask.job.flatMap(queue.insertIfNew).as(())
 
   private def scheduleEmptyTrashTasks: F[Unit] =
     store

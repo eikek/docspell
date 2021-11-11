@@ -93,5 +93,5 @@ subscriptions model =
     Sub.batch
         [ model.subs
         , Ports.receiveUiSettings ReceiveBrowserSettings
-        , Ports.receiveWsMessage ReceiveWsMessage
+        , Ports.receiveServerEvent ReceiveWsMessage
         ]

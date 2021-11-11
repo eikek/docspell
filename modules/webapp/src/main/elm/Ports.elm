@@ -10,8 +10,8 @@ port module Ports exposing
     , initClipboard
     , printElement
     , receiveCheckQueryResult
+    , receiveServerEvent
     , receiveUiSettings
-    , receiveWsMessage
     , removeAccount
     , requestUiSettings
     , setAccount
@@ -20,8 +20,10 @@ port module Ports exposing
 
 import Api.Model.AuthResult exposing (AuthResult)
 import Data.QueryParseResult exposing (QueryParseResult)
+import Data.ServerEvent exposing (ServerEvent)
 import Data.UiSettings exposing (StoredUiSettings)
 import Data.UiTheme exposing (UiTheme)
+import Json.Decode as D
 
 
 {-| Save the result of authentication to local storage.
@@ -58,7 +60,7 @@ port printElement : String -> Cmd msg
 
 {-| Receives messages from the websocket.
 -}
-port receiveWsMessage : (String -> msg) -> Sub msg
+port receiveWsMessage : (D.Value -> msg) -> Sub msg
 
 
 
@@ -68,3 +70,8 @@ port receiveWsMessage : (String -> msg) -> Sub msg
 setUiTheme : UiTheme -> Cmd msg
 setUiTheme theme =
     internalSetUiTheme (Data.UiTheme.toString theme)
+
+
+receiveServerEvent : (Result String ServerEvent -> msg) -> Sub msg
+receiveServerEvent tagger =
+    receiveWsMessage (Data.ServerEvent.decode >> tagger)

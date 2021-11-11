@@ -8,25 +8,48 @@ package docspell.restserver.ws
 
 import docspell.backend.auth.AuthToken
 import docspell.common._
+import io.circe._
+import io.circe.syntax._
+import io.circe.generic.semiauto.deriveEncoder
 
+/** The event that is sent to clients through a websocket connection. All events are
+  * encoded as JSON.
+  */
 sealed trait OutputEvent {
   def forCollective(token: AuthToken): Boolean
-  def encode: String
+  def asJson: Json
+  def encode: String =
+    asJson.noSpaces
 }
 
 object OutputEvent {
 
   case object KeepAlive extends OutputEvent {
     def forCollective(token: AuthToken): Boolean = true
-    def encode: String = "keep-alive"
+    def asJson: Json =
+      Msg("keep-alive", ()).asJson
   }
 
   final case class ItemProcessed(collective: Ident) extends OutputEvent {
     def forCollective(token: AuthToken): Boolean =
       token.account.collective == collective
 
-    def encode: String =
-      "item-processed"
+    def asJson: Json =
+      Msg("item-processed", ()).asJson
   }
 
+  final case class JobsWaiting(group: Ident, count: Int) extends OutputEvent {
+    def forCollective(token: AuthToken): Boolean =
+      token.account.collective == group
+
+    def asJson: Json =
+      Msg("jobs-waiting", count).asJson
+  }
+
+  private case class Msg[A](tag: String, content: A)
+  private object Msg {
+    @scala.annotation.nowarn
+    implicit def jsonEncoder[A: Encoder]: Encoder[Msg[A]] =
+      deriveEncoder
+  }
 }

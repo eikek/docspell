@@ -5,18 +5,37 @@
 -}
 
 
-module Data.ServerEvent exposing (ServerEvent(..), fromString)
+module Data.ServerEvent exposing (ServerEvent(..), decode)
+
+import Json.Decode as D
 
 
 type ServerEvent
     = ItemProcessed
+    | JobsWaiting Int
 
 
-fromString : String -> Maybe ServerEvent
-fromString str =
-    case String.toLower str of
+decoder : D.Decoder ServerEvent
+decoder =
+    D.field "tag" D.string
+        |> D.andThen decodeTag
+
+
+decode : D.Value -> Result String ServerEvent
+decode json =
+    D.decodeValue decoder json
+        |> Result.mapError D.errorToString
+
+
+decodeTag : String -> D.Decoder ServerEvent
+decodeTag tag =
+    case tag of
         "item-processed" ->
-            Just ItemProcessed
+            D.succeed ItemProcessed
+
+        "jobs-waiting" ->
+            D.field "content" D.int
+                |> D.map JobsWaiting
 
         _ ->
-            Nothing
+            D.fail ("Unknown tag: " ++ tag)

@@ -157,8 +157,12 @@ function initWS() {
     console.log("Initialize websocket at " + url);
     dsWebSocket = new WebSocket(url);
     dsWebSocket.addEventListener("message", function(event) {
-        if (event.data != "keep-alive" && event.data) {
-            elmApp.ports.receiveWsMessage.send(event.data);
+
+        if (event.data) {
+            var dataJSON = JSON.parse(event.data);
+            if (dataJSON.tag !== "keep-alive") {
+                elmApp.ports.receiveWsMessage.send(dataJSON);
+            }
         }
     });
 }
