@@ -8,9 +8,10 @@ package docspell.restserver.ws
 
 import docspell.backend.auth.AuthToken
 import docspell.common._
+
 import io.circe._
-import io.circe.syntax._
 import io.circe.generic.semiauto.deriveEncoder
+import io.circe.syntax._
 
 /** The event that is sent to clients through a websocket connection. All events are
   * encoded as JSON.
