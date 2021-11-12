@@ -369,23 +369,38 @@ docker-compose file.</p>
 <pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cd docspell/docker/docker-compose
 </span></code></pre>
 <p>Then run <code>docker-compose</code>:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ export DOCSPELL_HEADER_VALUE=</span><span style="color:#b8bb26;">&quot;my-secret-123&quot;
-</span><span style="color:#fdf4c1;">$ docker-compose up
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ docker-compose up -d
 </span></code></pre>
-<p>The environment variable defines a secret that is shared between the
-container watching a directory and the server. It is the header
-defined for the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
-endpoint</a> containers. You
-can use whatever you like. Please see the help to the <a href="https://docspell.org/docs/tools/cli/">dsc
-tool</a> docs for additional info.</p>
-<p>Goto <code>http://localhost:7880</code>, signup and login. When signing up, you
+<p>If you look at <code>docker-compose.yml</code>, there are several environment
+variables defined. A few that you should change, i.e. all &quot;secrets&quot;:</p>
+<ul>
+<li><code>DOCSPELL_SERVER_ADMIN__ENDPOINT_SECRET</code></li>
+<li><code>DOCSPELL_SERVER_AUTH_SERVER__SECRET</code></li>
+<li><code>DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE</code></li>
+</ul>
+<p>Then, the value for
+<code>DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE</code>
+must be duplicated in the consumedir command (both values must match).
+It is the header defined for the <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration
+endpoint</a>. You can use
+whatever you like, best something random. Please see the help to the
+<a href="https://docspell.org/docs/tools/cli/">dsc tool</a> docs for additional info.</p>
+<p>Goto <code>http://localhost:7880</code>, signup and login. When signing up,
 choose the same name for collective and user. Then login with this
 name and the password.</p>
 <p>(Optional) Create a folder <code>./docs/&lt;collective-name&gt;</code> (the name you
 chose for the collective at registration) and place files in there for
 importing them.</p>
-<p>The directory contains a file <code>docspell.conf</code> that you can
-<a href="https://docspell.org/docs/configure/">modify</a> as needed.</p>
+<p>Docspell can be configured via environment variables or a config file.
+Please see the <a href="https://docspell.org/docs/configure/">configuration</a> for more
+details and possible values/variables. You can create a config file
+and mount it into the container. Then specify the config file as the
+an argument to the command, i.e. add a</p>
+<pre data-lang="yml" style="background-color:#282828;color:#fdf4c1aa;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="font-weight:bold;color:#8ec07c;">command</span><span>:
+</span><span>  - </span><span style="color:#b8bb26;">/path/to/config.conf
+</span></code></pre>
+<p>to the service definition (or add it to an existing <code>command:</code>
+section).</p>
 <h3 id="override-this-setup">Override this setup<a class="zola-anchor" href="#override-this-setup" aria-label="Anchor link for: override-this-setup">🔗</a></h3>
 <p>If you want to change this setup, you can simply use your own compose
 file or add a <code>docker-compose.override.yml</code> that allows to amend

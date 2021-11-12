@@ -592,8 +592,7 @@ integration endpoint. This requires you to provide a secret, that is
 shared between the rest-server and the <code>dsc</code> tool. This can be done by
 defining an environment variable which gets picked up by the
 containers defined in <code>docker-compose.yml</code>:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fa5c4b;">export </span><span style="color:#fdf4c1;">DOCSPELL_HEADER_VALUE</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;my-secret&quot;
-</span><span style="color:#fdf4c1;">docker-compose up
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docker-compose up -d
 </span></code></pre>
 <p>Now you can create a folder <code>./docs/&lt;collective-name&gt;</code> and place all
 files in there that you want to import. Once dropped in this folder
