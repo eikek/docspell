@@ -172,18 +172,25 @@ $ cd docspell/docker/docker-compose
 Then run `docker-compose`:
 
 ```bash
-$ export DOCSPELL_HEADER_VALUE="my-secret-123"
-$ docker-compose up
+$ docker-compose up -d
 ```
 
-The environment variable defines a secret that is shared between the
-container watching a directory and the server. It is the header
-defined for the [integration
-endpoint](@/docs/api/upload.md#integration-endpoint) containers. You
-can use whatever you like. Please see the help to the [dsc
-tool](@/docs/tools/cli.md) docs for additional info.
+If you look at `docker-compose.yml`, there are several environment
+variables defined. A few that you should change, i.e. all "secrets":
 
-Goto `http://localhost:7880`, signup and login. When signing up, you
+- `DOCSPELL_SERVER_ADMIN__ENDPOINT_SECRET`
+- `DOCSPELL_SERVER_AUTH_SERVER__SECRET`
+- `DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE`
+
+Then, the value for
+`DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE`
+must be duplicated in the consumedir command (both values must match).
+It is the header defined for the [integration
+endpoint](@/docs/api/upload.md#integration-endpoint). You can use
+whatever you like, best something random. Please see the help to the
+[dsc tool](@/docs/tools/cli.md) docs for additional info.
+
+Goto `http://localhost:7880`, signup and login. When signing up,
 choose the same name for collective and user. Then login with this
 name and the password.
 
@@ -191,9 +198,19 @@ name and the password.
 chose for the collective at registration) and place files in there for
 importing them.
 
-The directory contains a file `docspell.conf` that you can
-[modify](@/docs/configure/_index.md) as needed.
+Docspell can be configured via environment variables or a config file.
+Please see the [configuration](@/docs/configure/_index.md) for more
+details and possible values/variables. You can create a config file
+and mount it into the container. Then specify the config file as the
+an argument to the command, i.e. add a
 
+``` yml
+command:
+  - /path/to/config.conf
+```
+
+to the service definition (or add it to an existing `command:`
+section).
 
 ### Override this setup
 

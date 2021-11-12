@@ -25,8 +25,7 @@ getStarted version =
 3. Run `docker-compose up`:
 
    ```bash
-   $ export DOCSPELL_HEADER_VALUE="my-secret-123"
-   $ docker-compose up
+   $ docker-compose up -d
    ```
 
    The environment variable defines a secret that is shared between
