@@ -30,9 +30,9 @@ trait JobQueue[F[_]] {
     */
   def insertIfNew(job: RJob): F[Boolean]
 
-  def insertAll(jobs: Seq[RJob]): F[Int]
+  def insertAll(jobs: Seq[RJob]): F[List[Boolean]]
 
-  def insertAllIfNew(jobs: Seq[RJob]): F[Int]
+  def insertAllIfNew(jobs: Seq[RJob]): F[List[Boolean]]
 
   def nextJob(
       prio: Ident => F[Priority],
@@ -77,26 +77,24 @@ object JobQueue {
             else insert(job).as(true)
         } yield ret
 
-      def insertAll(jobs: Seq[RJob]): F[Int] =
+      def insertAll(jobs: Seq[RJob]): F[List[Boolean]] =
         jobs.toList
           .traverse(j => insert(j).attempt)
           .flatMap(_.traverse {
-            case Right(()) => 1.pure[F]
+            case Right(()) => true.pure[F]
             case Left(ex) =>
-              logger.error(ex)("Could not insert job. Skipping it.").as(0)
+              logger.error(ex)("Could not insert job. Skipping it.").as(false)
 
           })
-          .map(_.sum)
 
-      def insertAllIfNew(jobs: Seq[RJob]): F[Int] =
+      def insertAllIfNew(jobs: Seq[RJob]): F[List[Boolean]] =
         jobs.toList
           .traverse(j => insertIfNew(j).attempt)
           .flatMap(_.traverse {
-            case Right(true)  => 1.pure[F]
-            case Right(false) => 0.pure[F]
+            case Right(true)  => true.pure[F]
+            case Right(false) => false.pure[F]
             case Left(ex) =>
-              logger.error(ex)("Could not insert job. Skipping it.").as(0)
+              logger.error(ex)("Could not insert job. Skipping it.").as(false)
           })
-          .map(_.sum)
     })
 }

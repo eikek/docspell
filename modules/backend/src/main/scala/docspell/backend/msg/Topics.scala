@@ -19,5 +19,5 @@ object Topics {
 
   /** A list of all topics. It is required to list every topic in use here! */
   val all: NonEmptyList[TypedTopic[_]] =
-    NonEmptyList.of(JobDone.topic, CancelJob.topic, jobsNotify)
+    NonEmptyList.of(JobDone.topic, CancelJob.topic, jobsNotify, JobSubmitted.topic)
 }

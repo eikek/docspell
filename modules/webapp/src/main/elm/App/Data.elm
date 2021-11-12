@@ -66,6 +66,7 @@ type alias Model =
     , anonymousUiLang : UiLanguage
     , langMenuOpen : Bool
     , showNewItemsArrived : Bool
+    , jobsWaiting : Int
     }
 
 
@@ -129,6 +130,7 @@ init key url flags_ settings =
       , anonymousUiLang = Messages.UiLanguage.English
       , langMenuOpen = False
       , showNewItemsArrived = False
+      , jobsWaiting = 0
       }
     , Cmd.batch
         [ Cmd.map UserSettingsMsg uc

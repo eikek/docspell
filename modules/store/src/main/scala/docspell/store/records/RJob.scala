@@ -300,4 +300,10 @@ object RJob {
       where(T.tracker === trackerId, T.state.in(JobState.notDone))
     ).query[RJob].option
 
+  def getUnfinishedCount(group: Ident): ConnectionIO[Int] =
+    run(
+      select(count(T.id)),
+      from(T),
+      T.group === group && T.state.in(JobState.notDone)
+    ).query[Int].unique
 }

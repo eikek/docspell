@@ -12,7 +12,7 @@ import fs2.concurrent.SignallingRef
 
 import docspell.analysis.TextAnalyser
 import docspell.backend.fulltext.CreateIndex
-import docspell.backend.msg.{CancelJob, Topics}
+import docspell.backend.msg.{CancelJob, JobQueuePublish, Topics}
 import docspell.backend.ops._
 import docspell.common._
 import docspell.ftsclient.FtsClient
@@ -126,13 +126,13 @@ object JoexAppImpl {
       pubSub: PubSub[F]
   ): Resource[F, JoexApp[F]] =
     for {
-      queue <- JobQueue(store)
       pstore <- PeriodicTaskStore.create(store)
       client = JoexClient(httpClient)
       pubSubT = PubSubT(
         pubSub,
         Logger.log4s(org.log4s.getLogger(s"joex-${cfg.appId.id}"))
       )
+      queue <- JobQueuePublish(store, pubSubT)
       joex <- OJoex(pubSubT)
       upload <- OUpload(store, queue, joex)
       fts <- createFtsClient(cfg)(httpClient)

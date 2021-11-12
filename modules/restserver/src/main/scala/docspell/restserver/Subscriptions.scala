@@ -6,11 +6,11 @@
 
 package docspell.restserver
 
+import cats.effect.Async
 import fs2.Stream
 import fs2.concurrent.Topic
 
-import docspell.backend.msg.JobDone
-import docspell.common.ProcessItemArgs
+import docspell.backend.msg.{JobDone, JobSubmitted}
 import docspell.pubsub.api.PubSubT
 import docspell.restserver.ws.OutputEvent
 
@@ -18,15 +18,20 @@ import docspell.restserver.ws.OutputEvent
   */
 object Subscriptions {
 
-  def apply[F[_]](
+  def apply[F[_]: Async](
       wsTopic: Topic[F, OutputEvent],
       pubSub: PubSubT[F]
   ): Stream[F, Nothing] =
-    jobDone(pubSub).through(wsTopic.publish)
+    jobDone(pubSub).merge(jobSubmitted(pubSub)).through(wsTopic.publish)
 
   def jobDone[F[_]](pubSub: PubSubT[F]): Stream[F, OutputEvent] =
     pubSub
       .subscribe(JobDone.topic)
-      .filter(m => m.body.task == ProcessItemArgs.taskName)
-      .map(m => OutputEvent.ItemProcessed(m.body.group))
+      .map(m => OutputEvent.JobDone(m.body.group, m.body.task))
+
+  def jobSubmitted[F[_]](pubSub: PubSubT[F]): Stream[F, OutputEvent] =
+    pubSub
+      .subscribe(JobSubmitted.topic)
+      .map(m => OutputEvent.JobSubmitted(m.body.group, m.body.task))
+
 }
