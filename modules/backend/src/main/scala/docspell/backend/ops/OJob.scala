@@ -24,6 +24,8 @@ trait OJob[F[_]] {
   def cancelJob(id: Ident, collective: Ident): F[JobCancelResult]
 
   def setPriority(id: Ident, collective: Ident, prio: Priority): F[UpdateResult]
+
+  def getUnfinishedJobCount(collective: Ident): F[Int]
 }
 
 object OJob {
@@ -93,5 +95,8 @@ object OJob {
         } yield result)
           .getOrElse(JobCancelResult.jobNotFound)
       }
+
+      def getUnfinishedJobCount(collective: Ident): F[Int] =
+        store.transact(RJob.getUnfinishedCount(collective))
     })
 }

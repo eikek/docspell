@@ -138,7 +138,7 @@ object RestServer {
       token: AuthToken
   ): HttpRoutes[F] =
     Router(
-      "ws" -> WebSocketRoutes(token, topic, wsB),
+      "ws" -> WebSocketRoutes(token, restApp.backend, topic, wsB),
       "auth" -> LoginRoutes.session(restApp.backend.login, cfg, token),
       "tag" -> TagRoutes(restApp.backend, token),
       "equipment" -> EquipmentRoutes(restApp.backend, token),

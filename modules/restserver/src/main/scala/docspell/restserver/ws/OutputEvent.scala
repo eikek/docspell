@@ -31,17 +31,25 @@ object OutputEvent {
       Msg("keep-alive", ()).asJson
   }
 
-  final case class ItemProcessed(collective: Ident) extends OutputEvent {
-    def forCollective(token: AuthToken): Boolean =
-      token.account.collective == collective
-
-    def asJson: Json =
-      Msg("item-processed", ()).asJson
-  }
-
-  final case class JobsWaiting(group: Ident, count: Int) extends OutputEvent {
+  final case class JobSubmitted(group: Ident, task: Ident) extends OutputEvent {
     def forCollective(token: AuthToken): Boolean =
       token.account.collective == group
+
+    def asJson: Json =
+      Msg("job-submitted", task).asJson
+  }
+
+  final case class JobDone(group: Ident, task: Ident) extends OutputEvent {
+    def forCollective(token: AuthToken): Boolean =
+      token.account.collective == group
+
+    def asJson: Json =
+      Msg("job-done", task).asJson
+  }
+
+  final case class JobsWaiting(collective: Ident, count: Int) extends OutputEvent {
+    def forCollective(token: AuthToken): Boolean =
+      token.account.collective == collective
 
     def asJson: Json =
       Msg("jobs-waiting", count).asJson

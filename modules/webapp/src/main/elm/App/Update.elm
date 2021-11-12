@@ -311,20 +311,28 @@ updateWithSub msg model =
 
         ReceiveWsMessage data ->
             case data of
-                Ok ItemProcessed ->
+                Ok (JobDone task) ->
                     let
-                        newModel =
-                            { model | showNewItemsArrived = True }
-                    in
-                    case model.page of
-                        HomePage ->
-                            updateHome texts Page.Home.Data.RefreshView newModel
+                        isProcessItem =
+                            task == "process-item"
 
-                        _ ->
-                            ( newModel, Cmd.none, Sub.none )
+                        newModel =
+                            { model
+                                | showNewItemsArrived = isProcessItem
+                                , jobsWaiting = max 0 (model.jobsWaiting - 1)
+                            }
+                    in
+                    if model.page == HomePage && isProcessItem then
+                        updateHome texts Page.Home.Data.RefreshView newModel
+
+                    else
+                        ( newModel, Cmd.none, Sub.none )
+
+                Ok (JobSubmitted _) ->
+                    ( { model | jobsWaiting = model.jobsWaiting + 1 }, Cmd.none, Sub.none )
 
                 Ok (JobsWaiting n) ->
-                    ( model, Cmd.none, Sub.none )
+                    ( { model | jobsWaiting = max 0 n }, Cmd.none, Sub.none )
 
                 Err err ->
                     ( model, Cmd.none, Sub.none )

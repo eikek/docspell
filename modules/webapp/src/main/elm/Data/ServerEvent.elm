@@ -11,7 +11,8 @@ import Json.Decode as D
 
 
 type ServerEvent
-    = ItemProcessed
+    = JobSubmitted String
+    | JobDone String
     | JobsWaiting Int
 
 
@@ -30,8 +31,13 @@ decode json =
 decodeTag : String -> D.Decoder ServerEvent
 decodeTag tag =
     case tag of
-        "item-processed" ->
-            D.succeed ItemProcessed
+        "job-done" ->
+            D.field "content" D.string
+                |> D.map JobDone
+
+        "job-submitted" ->
+            D.field "content" D.string
+                |> D.map JobSubmitted
 
         "jobs-waiting" ->
             D.field "content" D.int

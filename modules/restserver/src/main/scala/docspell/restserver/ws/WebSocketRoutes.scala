@@ -7,9 +7,11 @@
 package docspell.restserver.ws
 
 import cats.effect.Async
+import cats.implicits._
 import fs2.concurrent.Topic
 import fs2.{Pipe, Stream}
 
+import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 
 import org.http4s.HttpRoutes
@@ -22,6 +24,7 @@ object WebSocketRoutes {
 
   def apply[F[_]: Async](
       user: AuthToken,
+      backend: BackendApp[F],
       topic: Topic[F, OutputEvent],
       wsb: WebSocketBuilder2[F]
   ): HttpRoutes[F] = {
@@ -29,11 +32,18 @@ object WebSocketRoutes {
     import dsl._
 
     HttpRoutes.of { case GET -> Root =>
+      val init =
+        for {
+          jc <- backend.job.getUnfinishedJobCount(user.account.collective)
+          msg = OutputEvent.JobsWaiting(user.account.collective, jc)
+        } yield Text(msg.encode)
+
       val toClient: Stream[F, WebSocketFrame.Text] =
-        topic
-          .subscribe(500)
-          .filter(_.forCollective(user))
-          .map(msg => Text(msg.encode))
+        Stream.eval(init) ++
+          topic
+            .subscribe(500)
+            .filter(_.forCollective(user))
+            .map(msg => Text(msg.encode))
 
       val toServer: Pipe[F, WebSocketFrame, Unit] =
         _.map(_ => ())

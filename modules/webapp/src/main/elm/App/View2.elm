@@ -259,10 +259,21 @@ dataMenu texts _ model =
     div [ class "relative" ]
         [ a
             [ class dropdownLink
+            , class "inline-block relative"
             , onClick ToggleNavMenu
             , href "#"
             ]
             [ i [ class "fa fa-cogs" ] []
+            , div
+                [ class "h-5 w-5 rounded-full text-xs px-1 py-1 absolute top-1 left-1 font-bold"
+                , class "dark:bg-lightblue-500 dark:border-gray-50 dark:text-gray-800"
+                , class "bg-blue-500 text-gray-50"
+                , classList [ ( "hidden", model.jobsWaiting <= 0 ) ]
+                ]
+                [ div [ class "-mt-0.5 ml-0.5" ]
+                    [ text (String.fromInt model.jobsWaiting)
+                    ]
+                ]
             ]
         , div
             [ class dropdownMenu
@@ -301,7 +312,14 @@ dataMenu texts _ model =
             , dataPageLink model
                 QueuePage
                 []
-                [ i [ class "fa fa-tachometer-alt w-6" ] []
+                [ i
+                    [ if model.jobsWaiting <= 0 then
+                        class "fa fa-tachometer-alt w-6"
+
+                      else
+                        class "fa fa-circle dark:text-lightblue-500 text-blue-500"
+                    ]
+                    []
                 , span [ class "ml-1" ]
                     [ text texts.processingQueue
                     ]

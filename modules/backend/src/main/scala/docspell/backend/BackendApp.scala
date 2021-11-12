@@ -10,12 +10,12 @@ import cats.effect._
 
 import docspell.backend.auth.Login
 import docspell.backend.fulltext.CreateIndex
+import docspell.backend.msg.JobQueuePublish
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
 import docspell.ftsclient.FtsClient
 import docspell.pubsub.api.PubSubT
 import docspell.store.Store
-import docspell.store.queue.JobQueue
 import docspell.store.usertask.UserTaskStore
 import docspell.totp.Totp
 
@@ -58,7 +58,7 @@ object BackendApp {
   ): Resource[F, BackendApp[F]] =
     for {
       utStore <- UserTaskStore(store)
-      queue <- JobQueue(store)
+      queue <- JobQueuePublish(store, pubSubT)
       totpImpl <- OTotp(store, Totp.default)
       loginImpl <- Login[F](store, Totp.default)
       signupImpl <- OSignup[F](store)
