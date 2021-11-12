@@ -14,7 +14,7 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
-import Data.Flags
+import Data.Flags exposing (Flags)
 import Data.ServerEvent exposing (ServerEvent(..))
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme
@@ -349,10 +349,13 @@ applyClientSettings texts model settings =
     let
         setTheme =
             Ports.setUiTheme settings.uiTheme
+
+        flags =
+            model.flags
     in
     Util.Update.andThen2
         [ \m ->
-            ( { m | sidebarVisible = settings.sideMenuVisible }
+            ( { m | sidebarVisible = flags.innerWidth > 768 && settings.sideMenuVisible }
             , setTheme
             , Sub.none
             )
