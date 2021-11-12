@@ -113,6 +113,12 @@ to copy it.
 
 {{ figure(file="share-03.png") }}
 
+When typing in an e-mail address, there are completion proposals
+provided from your address book. If you type in an arbitrary address
+(not in the proposals), hit *Enter* or *Space* in order to add the
+current address. You can hit *Backspace* two times to remove the last
+e-mail address.
+
 The new share can now be found in *Collective Profile -> Shares*.
 Clicking *Done* brings you back to the search results.
 

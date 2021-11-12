@@ -21,7 +21,7 @@ import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onBlur, onClick, onInput)
 import Http
 import Styles as S
 import Util.Html exposing (onKeyUp)
@@ -34,6 +34,7 @@ type alias Model =
     , menuOpen : Bool
     , candidates : List String
     , active : Maybe String
+    , backspaceCount : Int
     }
 
 
@@ -43,6 +44,7 @@ init =
     , menuOpen = False
     , candidates = []
     , active = Nothing
+    , backspaceCount = 0
     }
 
 
@@ -94,7 +96,14 @@ update flags current msg model =
                         email =
                             Maybe.withDefault model.input model.active
                     in
-                    update flags current (AddEmail email) model
+                    if email == "" then
+                        ( model, Cmd.none, current )
+
+                    else
+                        update flags current (AddEmail email) model
+
+                removeLast =
+                    ( { model | backspaceCount = 0 }, Cmd.none, Util.List.dropRight 1 current )
             in
             case Util.Html.intToKeyCode code of
                 Just Util.Html.Up ->
@@ -128,6 +137,13 @@ update flags current msg model =
                 Just Util.Html.Space ->
                     addCurrent
 
+                Just Util.Html.Backspace ->
+                    if model.backspaceCount >= 1 then
+                        removeLast
+
+                    else
+                        ( { model | backspaceCount = model.backspaceCount + 1 }, Cmd.none, current )
+
                 _ ->
                     ( model, Cmd.none, current )
 
@@ -154,9 +170,12 @@ type alias ViewSettings =
 view2 : ViewSettings -> List String -> Model -> Html Msg
 view2 cfg values model =
     div [ class "text-sm flex-row space-x-2 relative" ]
-        [ div [ class cfg.style.link ]
+        [ div
+            [ class cfg.style.link
+            , class "flex-wrap"
+            ]
             [ div
-                [ class "flex flex-row space-x-2 mr-2"
+                [ class "flex flex-row space-x-2 mr-2 flex-wrap"
                 , classList [ ( "hidden", List.isEmpty values ) ]
                 ]
                 (List.map renderValue2 values)
@@ -166,6 +185,7 @@ view2 cfg values model =
                 , placeholder cfg.placeholder
                 , onKeyUp KeyPress
                 , onInput SetInput
+                , onBlur (KeyPress 13)
                 , class "inline-flex w-24 border-0 px-0 focus:ring-0 h-6 text-sm"
                 , class "placeholder-gray-400 dark:text-bluegray-200 dark:bg-bluegray-800 dark:border-bluegray-500"
                 ]

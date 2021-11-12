@@ -788,6 +788,9 @@ view2 texts flags extraClasses settings model =
 
         tabActive t =
             ( tabLook t, ToggleAkkordionTab t.name )
+
+        isNew =
+            model.settings.id == ""
     in
     div
         [ class extraClasses
@@ -797,19 +800,24 @@ view2 texts flags extraClasses settings model =
             { start =
                 [ MB.PrimaryButton
                     { tagger = Submit
-                    , label = texts.basics.submit
-                    , title = texts.basics.submitThisForm
+                    , label = texts.save
+                    , title =
+                        if isNew then
+                            texts.saveNewTitle
+
+                        else
+                            texts.updateTitle
                     , icon = Just "fa fa-save"
                     }
                 , MB.SecondaryButton
                     { tagger = Cancel
-                    , label = texts.basics.cancel
+                    , label = texts.basics.back
                     , title = texts.basics.backToList
                     , icon = Just "fa fa-arrow-left"
                     }
                 ]
             , end =
-                if model.settings.id /= "" then
+                if not isNew then
                     [ startOnceBtn
                     , MB.DeleteButton
                         { tagger = RequestDelete

@@ -72,6 +72,9 @@ type alias Texts =
     , invalidCalEvent : String
     , attachmentsOnlyLabel : String
     , attachmentsOnlyInfo : String
+    , save : String
+    , saveNewTitle : String
+    , updateTitle : String
     }
 
 
@@ -153,6 +156,9 @@ gb =
     , invalidCalEvent = "The calendar event is not valid."
     , attachmentsOnlyLabel = "Only import e-mail attachments"
     , attachmentsOnlyInfo = "Discards the e-mail body and only imports the attachments."
+    , save = "Save"
+    , saveNewTitle = "Save a new task"
+    , updateTitle = "Update the task"
     }
 
 
@@ -229,4 +235,7 @@ kann hier ein Wert für alle festgelegt werden. Bei 'Automatisch' wird auf den S
     , invalidCalEvent = "Das Kalenderereignis ist ungültig."
     , attachmentsOnlyLabel = "Nur Anhänge importieren"
     , attachmentsOnlyInfo = "Verwirft den E-Mail Text und importiert nur die Anhänge."
+    , save = "Speichern"
+    , saveNewTitle = "Einen neuen Auftrag speichern"
+    , updateTitle = "Den Auftrag aktualisieren"
     }

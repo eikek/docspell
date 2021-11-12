@@ -34,7 +34,10 @@ field shows completion proposals from all contacts in your address
 book (from organizations and persons). Choose an address by pressing
 *Enter* or by clicking a proposal from the list. The proposal list can
 be iterated by the *Up* and *Down* arrows. You can type in any
-address, of course, it doesn't need to match a proposal.
+address, of course, it doesn't need to match a proposal. If you type
+in an arbitrary address, hit *Enter* or *Space* in order to add the
+current address. You can hit *Backspace* two times to remove the last
+e-mail address.
 
 If you have multiple mail settings defined, you can choose in the top
 dropdown which account to use for sending.
