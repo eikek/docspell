@@ -44,6 +44,8 @@ type KeyCode
     | Right
     | Enter
     | Space
+    | Backspace
+    | Tab
     | ESC
     | Letter_C
     | Letter_N
@@ -90,6 +92,12 @@ intToKeyCode code =
 
         32 ->
             Just Space
+
+        8 ->
+            Just Backspace
+
+        9 ->
+            Just Tab
 
         27 ->
             Just ESC
