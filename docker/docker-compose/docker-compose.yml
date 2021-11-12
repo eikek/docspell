@@ -51,7 +51,7 @@ services:
       - restserver
 
   db:
-    image: postgres:14.0
+    image: postgres:14.1
     container_name: postgres_db
     restart: unless-stopped
     volumes:
