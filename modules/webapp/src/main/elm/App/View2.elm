@@ -75,8 +75,8 @@ topNavUser auth model =
             [ a
                 [ class S.infoMessageBase
                 , class "my-2 px-1 py-1 rounded-lg inline-block hover:opacity-50"
-                , classList [ ( "hidden", not model.showNewItemsArrived ) ]
-                , href "#"
+                , classList [ ( "hidden", not model.showNewItemsArrived || model.page == HomePage ) ]
+                , Page.href HomePage
                 , onClick ToggleShowNewItemsArrived
                 ]
                 [ i [ class "fa fa-exclamation-circle mr-1" ] []
@@ -266,11 +266,11 @@ dataMenu texts _ model =
             [ i [ class "fa fa-cogs" ] []
             , div
                 [ class "h-5 w-5 rounded-full text-xs px-1 py-1 absolute top-1 left-1 font-bold"
-                , class "dark:bg-lightblue-500 dark:border-gray-50 dark:text-gray-800"
+                , class "dark:bg-lightblue-500 dark:text-gray-200"
                 , class "bg-blue-500 text-gray-50"
                 , classList [ ( "hidden", model.jobsWaiting <= 0 ) ]
                 ]
-                [ div [ class "-mt-0.5 ml-0.5" ]
+                [ div [ class "-mt-0.5 mx-auto text-center" ]
                     [ text (String.fromInt model.jobsWaiting)
                     ]
                 ]
@@ -317,7 +317,7 @@ dataMenu texts _ model =
                         class "fa fa-tachometer-alt w-6"
 
                       else
-                        class "fa fa-circle dark:text-lightblue-500 text-blue-500"
+                        class "fa fa-tachometer-alt w-6 animate-pulse dark:text-lightblue-500 text-blue-500"
                     ]
                     []
                 , span [ class "ml-1" ]

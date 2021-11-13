@@ -30,7 +30,7 @@ case class JdbcConfig(url: LenientUri, user: String, password: String) {
     }
 
   override def toString: String =
-    s"JdbcConfig($url, $user, ***)"
+    s"JdbcConfig(${url.asString}, $user, ***)"
 }
 
 object JdbcConfig {
