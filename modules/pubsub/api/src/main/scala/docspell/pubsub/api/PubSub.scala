@@ -15,7 +15,7 @@ import docspell.common.{Ident, Timestamp}
 import io.circe.Json
 
 trait PubSub[F[_]] {
-  def publish1(topic: Topic, msg: Json): F[MessageHead]
+  def publish1(topic: Topic, msg: Json): F[F[MessageHead]]
 
   def publish(topic: Topic): Pipe[F, Json, MessageHead]
 
@@ -24,8 +24,10 @@ trait PubSub[F[_]] {
 object PubSub {
   def noop[F[_]: Applicative]: PubSub[F] =
     new PubSub[F] {
-      def publish1(topic: Topic, msg: Json): F[MessageHead] =
-        Applicative[F].pure(MessageHead(Ident.unsafe("0"), Timestamp.Epoch, topic))
+      def publish1(topic: Topic, msg: Json): F[F[MessageHead]] =
+        Applicative[F].pure(
+          Applicative[F].pure(MessageHead(Ident.unsafe("0"), Timestamp.Epoch, topic))
+        )
 
       def publish(topic: Topic): Pipe[F, Json, MessageHead] =
         _ => Stream.empty

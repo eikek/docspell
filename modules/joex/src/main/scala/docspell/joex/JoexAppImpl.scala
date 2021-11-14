@@ -32,7 +32,6 @@ import docspell.joex.process.ReProcessItem
 import docspell.joex.scanmailbox._
 import docspell.joex.scheduler._
 import docspell.joex.updatecheck._
-import docspell.joexapi.client.JoexClient
 import docspell.pubsub.api.{PubSub, PubSubT}
 import docspell.store.Store
 import docspell.store.queue._
@@ -127,7 +126,6 @@ object JoexAppImpl {
   ): Resource[F, JoexApp[F]] =
     for {
       pstore <- PeriodicTaskStore.create(store)
-      client = JoexClient(httpClient)
       pubSubT = PubSubT(
         pubSub,
         Logger.log4s(org.log4s.getLogger(s"joex-${cfg.appId.id}"))
@@ -271,7 +269,7 @@ object JoexAppImpl {
         sch,
         queue,
         pstore,
-        client
+        joex
       )
       app = new JoexAppImpl(cfg, store, queue, pubSubT, pstore, termSignal, sch, psch)
       appR <- Resource.make(app.init.map(_ => app))(_.initShutdown)

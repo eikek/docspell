@@ -6,7 +6,9 @@
 
 package docspell.backend.ops
 
+import cats.Applicative
 import cats.effect._
+import cats.implicits._
 
 import docspell.backend.msg.{CancelJob, Topics}
 import docspell.common.Ident
@@ -20,13 +22,13 @@ trait OJoex[F[_]] {
 }
 
 object OJoex {
-  def apply[F[_]](pubSub: PubSubT[F]): Resource[F, OJoex[F]] =
+  def apply[F[_]: Applicative](pubSub: PubSubT[F]): Resource[F, OJoex[F]] =
     Resource.pure[F, OJoex[F]](new OJoex[F] {
 
       def notifyAllNodes: F[Unit] =
-        pubSub.publish1IgnoreErrors(Topics.jobsNotify, ())
+        pubSub.publish1IgnoreErrors(Topics.jobsNotify, ()).as(())
 
       def cancelJob(job: Ident, worker: Ident): F[Unit] =
-        pubSub.publish1IgnoreErrors(CancelJob.topic, CancelJob(job, worker))
+        pubSub.publish1IgnoreErrors(CancelJob.topic, CancelJob(job, worker)).as(())
     })
 }

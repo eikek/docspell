@@ -11,10 +11,10 @@ import cats.implicits._
 import fs2._
 import fs2.concurrent.SignallingRef
 
+import docspell.backend.ops.OJoex
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.joex.scheduler.PeriodicSchedulerImpl.State
-import docspell.joexapi.client.JoexClient
 import docspell.store.queue._
 import docspell.store.records.RPeriodicTask
 
@@ -26,7 +26,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
     sch: Scheduler[F],
     queue: JobQueue[F],
     store: PeriodicTaskStore[F],
-    client: JoexClient[F],
+    joex: OJoex[F],
     waiter: SignallingRef[F, Boolean],
     state: SignallingRef[F, State[F]]
 ) extends PeriodicScheduler[F] {
@@ -119,9 +119,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
       }
 
   def notifyJoex: F[Unit] =
-    sch.notifyChange *> store.findJoexNodes.flatMap(
-      _.traverse(n => client.notifyJoexIgnoreErrors(n.url)).map(_ => ())
-    )
+    sch.notifyChange *> joex.notifyAllNodes
 
   def scheduleNotify(pj: RPeriodicTask): F[Unit] =
     Timestamp
