@@ -75,7 +75,7 @@ topNavUser auth model =
             [ a
                 [ class S.infoMessageBase
                 , class "my-2 px-1 py-1 rounded-lg inline-block hover:opacity-50"
-                , classList [ ( "hidden", not model.showNewItemsArrived || model.page == HomePage ) ]
+                , classList [ ( "hidden", not model.showNewItemsArrived ) ]
                 , Page.href HomePage
                 , onClick ToggleShowNewItemsArrived
                 ]

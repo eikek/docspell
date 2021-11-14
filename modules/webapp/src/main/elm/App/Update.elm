@@ -318,7 +318,7 @@ updateWithSub msg model =
 
                         newModel =
                             { model
-                                | showNewItemsArrived = isProcessItem
+                                | showNewItemsArrived = isProcessItem && model.page /= HomePage
                                 , jobsWaiting = max 0 (model.jobsWaiting - 1)
                             }
                     in
