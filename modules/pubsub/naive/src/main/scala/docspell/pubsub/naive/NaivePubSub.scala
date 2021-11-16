@@ -65,7 +65,10 @@ final class NaivePubSub[F[_]: Async](
   def withClient(client: Client[F]): NaivePubSub[F] =
     new NaivePubSub[F](cfg, state, store, client)
 
-  def publish1(topic: Topic, msgBody: Json): F[MessageHead] =
+  def publish1(topic: Topic, msgBody: Json): F[F[MessageHead]] =
+    Async[F].start(publish0(topic, msgBody)).map(fiber => fiber.joinWithNever)
+
+  def publish0(topic: Topic, msgBody: Json): F[MessageHead] =
     for {
       head <- mkMessageHead(topic)
       msg = Message(head, msgBody)
@@ -78,7 +81,7 @@ final class NaivePubSub[F[_]: Async](
 
   def publish(topic: Topic): Pipe[F, Json, MessageHead] =
     ms => //TODO Do some optimization by grouping messages to the same topic
-      ms.evalMap(publish1(topic, _))
+      ms.evalMap(publish0(topic, _))
 
   def subscribe(topics: NonEmptyList[Topic]): Stream[F, Message[Json]] =
     (for {

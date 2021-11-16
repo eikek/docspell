@@ -44,7 +44,7 @@ class NaivePubSubTest extends CatsEffectSuite with Fixtures {
     for {
       res <- subscribe(ps, Topics.jobSubmitted)
       (received, _, subFiber) = res
-      headSend <- ps.publish1(Topics.jobSubmitted, JobSubmittedMsg("hello".id))
+      headSend <- ps.publish1(Topics.jobSubmitted, JobSubmittedMsg("hello".id)).flatten
       outcome <- subFiber.join
       msgRec <- received.get
       _ = assert(outcome.isSuccess)

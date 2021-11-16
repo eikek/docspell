@@ -10,7 +10,7 @@ import cats.effect._
 import fs2._
 import fs2.concurrent.SignallingRef
 
-import docspell.joexapi.client.JoexClient
+import docspell.backend.ops.OJoex
 import docspell.store.queue._
 
 /** A periodic scheduler takes care to submit periodic tasks to the job queue.
@@ -40,7 +40,7 @@ object PeriodicScheduler {
       sch: Scheduler[F],
       queue: JobQueue[F],
       store: PeriodicTaskStore[F],
-      client: JoexClient[F]
+      joex: OJoex[F]
   ): Resource[F, PeriodicScheduler[F]] =
     for {
       waiter <- Resource.eval(SignallingRef(true))
@@ -50,7 +50,7 @@ object PeriodicScheduler {
         sch,
         queue,
         store,
-        client,
+        joex,
         waiter,
         state
       )

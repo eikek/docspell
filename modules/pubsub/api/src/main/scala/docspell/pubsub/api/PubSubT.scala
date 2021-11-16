@@ -16,9 +16,9 @@ import docspell.common.Logger
 
 trait PubSubT[F[_]] {
 
-  def publish1[A](topic: TypedTopic[A], msg: A): F[MessageHead]
+  def publish1[A](topic: TypedTopic[A], msg: A): F[F[MessageHead]]
 
-  def publish1IgnoreErrors[A](topic: TypedTopic[A], msg: A): F[Unit]
+  def publish1IgnoreErrors[A](topic: TypedTopic[A], msg: A): F[F[Unit]]
 
   def publish[A](topic: TypedTopic[A]): Pipe[F, A, MessageHead]
 
@@ -37,15 +37,15 @@ object PubSubT {
 
   def apply[F[_]: Async](pubSub: PubSub[F], logger: Logger[F]): PubSubT[F] =
     new PubSubT[F] {
-      def publish1[A](topic: TypedTopic[A], msg: A): F[MessageHead] =
+      def publish1[A](topic: TypedTopic[A], msg: A): F[F[MessageHead]] =
         pubSub.publish1(topic.topic, topic.codec(msg))
 
-      def publish1IgnoreErrors[A](topic: TypedTopic[A], msg: A): F[Unit] =
-        publish1(topic, msg).attempt.flatMap {
+      def publish1IgnoreErrors[A](topic: TypedTopic[A], msg: A): F[F[Unit]] =
+        publish1(topic, msg).map(_.attempt.flatMap {
           case Right(_) => ().pure[F]
           case Left(ex) =>
             logger.error(ex)(s"Error publishing to topic ${topic.topic.name}: $msg")
-        }
+        })
 
       def publish[A](topic: TypedTopic[A]): Pipe[F, A, MessageHead] =
         _.map(topic.codec.apply).through(pubSub.publish(topic.topic))
