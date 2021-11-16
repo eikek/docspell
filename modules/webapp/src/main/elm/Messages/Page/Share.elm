@@ -24,6 +24,7 @@ type alias Texts =
     , authFailed : String
     , fulltextPlaceholder : String
     , powerSearchPlaceholder : String
+    , normalSearchPlaceholder : String
     , extendedSearch : String
     }
 
@@ -39,6 +40,7 @@ gb =
     , fulltextPlaceholder = "Fulltext search…"
     , powerSearchPlaceholder = "Extended search…"
     , extendedSearch = "Extended search query"
+    , normalSearchPlaceholder = "Search…"
     }
 
 
@@ -53,4 +55,5 @@ de =
     , fulltextPlaceholder = "Volltextsuche…"
     , powerSearchPlaceholder = "Erweiterte Suche…"
     , extendedSearch = "Erweiterte Suchanfrage"
+    , normalSearchPlaceholder = "Suche…"
     }

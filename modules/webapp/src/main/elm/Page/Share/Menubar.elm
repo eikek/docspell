@@ -10,7 +10,7 @@ module Page.Share.Menubar exposing (view)
 import Comp.Basic as B
 import Comp.MenuBar as MB
 import Comp.PowerSearchInput
-import Comp.SearchMenu
+import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -20,16 +20,9 @@ import Styles as S
 import Util.Html
 
 
-view : Texts -> Model -> Html Msg
-view texts model =
+view : Texts -> Flags -> Model -> Html Msg
+view texts flags model =
     let
-        btnStyle =
-            S.secondaryBasicButton ++ " text-sm"
-
-        searchInput =
-            Comp.SearchMenu.textSearchString
-                model.searchMenuModel.textSearchModel
-
         powerSearchBar =
             div [ class "flex-grow flex flex-col relative" ]
                 [ div
@@ -67,7 +60,11 @@ view texts model =
                     [ type_ "text"
                     , class S.textInput
                     , class "text-sm"
-                    , placeholder texts.fulltextPlaceholder
+                    , if flags.config.fullTextSearchEnabled then
+                        placeholder texts.fulltextPlaceholder
+
+                      else
+                        placeholder texts.normalSearchPlaceholder
                     , onInput SetContentSearch
                     , value (Maybe.withDefault "" model.contentSearch)
                     , Util.Html.onKeyUpCode ContentSearchKey

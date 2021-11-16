@@ -80,7 +80,7 @@ mainContent texts flags settings shareId model =
             ]
             [ text <| Maybe.withDefault "" model.verifyResult.name
             ]
-        , Menubar.view texts model
+        , Menubar.view texts flags model
         , errorMessage texts model
         , Results.view texts settings flags shareId model
         ]

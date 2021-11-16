@@ -214,7 +214,11 @@ makeSearchCmd flags model =
                             model.powerSearchInput.input
 
                         SearchBarContent ->
-                            Maybe.map (Q.Contents >> Q.render) model.contentSearch
+                            if flags.config.fullTextSearchEnabled then
+                                Maybe.map (Q.Contents >> Q.render) model.contentSearch
+
+                            else
+                                Maybe.map (Q.AllNames >> Q.render) model.contentSearch
                 ]
 
         request mq =
