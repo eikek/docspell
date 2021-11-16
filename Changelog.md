@@ -1,5 +1,37 @@
 # Changelog
 
+## v0.29.0
+
+*Nov 18, 2021*
+
+- Show number of waiting jobs in the top bar (#1069). This introduces
+  some changes under the hood, for example: while previously the
+  restserver was notifying job executors about new jobs, it will now
+  also *receive* messages from the job executors. This requires a new
+  setting (see below).
+- Hide sidebar by default on mobile (#1169)
+- Improve scanmailbox form (#1147)
+- Improve input of an e-mail address (#987)
+- Fix e-mail import for certain files (#1140)
+- FIx uploading files with non-ascii filenames (#991)
+
+### Rest API Changes
+
+None
+
+### Configuration Changes
+
+**Important**
+
+- the restserver has a new setting `internal-url` which must be set to
+  the base url of the server such that other nodes (i.e. joex nodes)
+  can reach it. It is by default set to `http://localhost:7880`. If
+  you are using docker: the `docker-compose.yml` in this repository
+  has been updated. You can copy&paste the new env variable
+  `DOCSPELL_SERVER_INTERNAL__URL=http://docspell-restserver:7880` into
+  your `docker-compose.yml` or add it to your config file.
+
+
 ## v0.28.0
 
 *Oct 27, 2021*
