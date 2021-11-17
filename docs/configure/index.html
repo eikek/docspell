@@ -676,7 +676,7 @@ which can be configured:</p>
 you need to add an option to use G1GC (<code>-XX:+UseG1GC</code>), for java11
 this is not necessary (but doesn't hurt either). This could look like
 this:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>./docspell-joex-&lt;pre data-shortcode&gt;0.28.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>./docspell-joex-&lt;pre data-shortcode&gt;0.29.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
 </span></code></pre>
 <p>Using these options you can define how much memory the JVM process is
 able to use. This might be necessary to adopt depending on the usage
@@ -729,6 +729,12 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># used instead or the value of the `X-Forwarded-For` header. If set
 </span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># to some other value, the request is not inspected.
 </span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
+</span><span style="color:#fdf4c1;">
+</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># This url is the base url for reaching this server internally.
+</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># While you might set `base-url` to some external address (like
+</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># mydocs.myserver.com), the `internal-url` must be set such that
+</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># other nodes can reach this server.
+</span><span style="color:#fdf4c1;">  internal-url = </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
 </span><span style="color:#fdf4c1;">
 </span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
 </span><span style="color:#fdf4c1;">  bind {
@@ -1857,6 +1863,12 @@ default values.</p>
 </span><span style="font-style:italic;color:#928374;">#  through this endpoint.
 </span><span style="color:#fdf4c1;">DOCSPELL_SERVER_INTEGRATION__ENDPOINT_SOURCE__NAME</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;integration&quot;
 </span><span>
+</span><span style="font-style:italic;color:#928374;">#  This url is the base url for reaching this server internally.
+</span><span style="font-style:italic;color:#928374;">#  While you might set `base-url` to some external address (like
+</span><span style="font-style:italic;color:#928374;">#  mydocs.myserver.com), the `internal-url` must be set such that
+</span><span style="font-style:italic;color:#928374;">#  other nodes can reach this server.
+</span><span style="color:#fdf4c1;">DOCSPELL_SERVER_INTERNAL__URL</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
+</span><span>
 </span><span style="font-style:italic;color:#928374;">#  This is a hard limit to restrict the size of a batch that is
 </span><span style="font-style:italic;color:#928374;">#  returned when searching for items. The user can set this limit
 </span><span style="font-style:italic;color:#928374;">#  within the client config, but it is restricted by the server to
@@ -2244,7 +2256,7 @@ default values.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.28.0
+                Docspell 0.29.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
