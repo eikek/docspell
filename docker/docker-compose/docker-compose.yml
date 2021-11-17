@@ -19,6 +19,7 @@ services:
     ports:
       - "7880:7880"
     environment:
+      - DOCSPELL_SERVER_INTERNAL__URL=http://docspell-restserver:7880
       - DOCSPELL_SERVER_ADMIN__ENDPOINT_SECRET=admin123
       - DOCSPELL_SERVER_AUTH_SERVER__SECRET=
       - DOCSPELL_SERVER_BACKEND_JDBC_PASSWORD=dbpass

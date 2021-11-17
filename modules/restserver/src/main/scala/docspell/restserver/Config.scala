@@ -22,6 +22,7 @@ case class Config(
     appName: String,
     appId: Ident,
     baseUrl: LenientUri,
+    internalUrl: LenientUri,
     bind: Config.Bind,
     backend: BackendConfig,
     auth: Login.Config,
@@ -39,7 +40,7 @@ case class Config(
   def pubSubConfig(headerValue: Ident): PubSubConfig =
     PubSubConfig(
       appId,
-      baseUrl / "internal" / "pubsub",
+      internalUrl / "internal" / "pubsub",
       100,
       InternalHeader.header(headerValue.id)
     )
