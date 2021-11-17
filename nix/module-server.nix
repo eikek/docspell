@@ -13,6 +13,7 @@ let
     app-name = "Docspell";
     app-id = "rest1";
     base-url = "http://localhost:7880";
+    internal-url = "http://localhost:7880";
     max-item-page-size = 200;
     max-note-length = 180;
     show-classification-settings = true;
@@ -142,6 +143,17 @@ in {
         description = ''
           This is the base URL this application is deployed to. This is used
           to create absolute URLs and to configure the cookie.
+        '';
+      };
+
+      internal-url = mkOption {
+        type = types.str;
+        default = defaults.internal-url;
+        description = ''
+          This url is the base url for reaching this server internally.
+          While you might set `base-url` to some external address (like
+          mydocs.myserver.com), the `internal-url` must be set such that
+          other nodes can reach this server.
         '';
       };
 
