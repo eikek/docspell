@@ -70,7 +70,7 @@ object BackendApp {
       orgImpl <- OOrganization(store)
       uploadImpl <- OUpload(store, queue, joexImpl)
       nodeImpl <- ONode(store)
-      jobImpl <- OJob(store, joexImpl)
+      jobImpl <- OJob(store, joexImpl, pubSubT)
       createIndex <- CreateIndex.resource(ftsClient, store)
       itemImpl <- OItem(store, ftsClient, createIndex, queue, joexImpl)
       itemSearchImpl <- OItemSearch(store)
