@@ -10,8 +10,10 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
+import docspell.backend.msg.JobDone
 import docspell.backend.ops.OJob.{CollectiveQueueState, JobCancelResult}
 import docspell.common._
+import docspell.pubsub.api.PubSubT
 import docspell.store.Store
 import docspell.store.UpdateResult
 import docspell.store.queries.QJob
@@ -53,7 +55,8 @@ object OJob {
 
   def apply[F[_]: Sync](
       store: Store[F],
-      joex: OJoex[F]
+      joex: OJoex[F],
+      pubsub: PubSubT[F]
   ): Resource[F, OJob[F]] =
     Resource.pure[F, OJob[F]](new OJob[F] {
       private[this] val logger = Logger.log4s(org.log4s.getLogger(OJob.getClass))
@@ -73,7 +76,16 @@ object OJob {
 
       def cancelJob(id: Ident, collective: Ident): F[JobCancelResult] = {
         def remove(job: RJob): F[JobCancelResult] =
-          store.transact(RJob.delete(job.id)) *> JobCancelResult.removed.pure[F]
+          for {
+            n <- store.transact(RJob.delete(job.id))
+            _ <-
+              if (n <= 0) ().pure[F]
+              else
+                pubsub.publish1IgnoreErrors(
+                  JobDone.topic,
+                  JobDone(job.id, job.group, job.task, job.args, JobState.Cancelled)
+                )
+          } yield JobCancelResult.removed
 
         def tryCancel(job: RJob): F[JobCancelResult] =
           job.worker match {
