@@ -37,8 +37,10 @@ services:
   joex:
     image: docspell/joex:latest
     container_name: docspell-joex
-    command:
-      - -J-Xmx3G
+    ## For more memory add corresponding arguments, like below. Also see
+    ## https://docspell.org/docs/configure/#jvm-options
+    # command:
+    #   - -J-Xmx3G
     restart: unless-stopped
     environment:
       - TZ=Europe/Berlin
