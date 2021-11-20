@@ -486,8 +486,8 @@ This setting defines which NLP mode to use. It defaults to `full`,
 which requires more memory for certain languages (with the advantage
 of better results). Other values are `basic`, `regexonly` and
 `disabled`. The modes `full` and `basic` use pre-defined lanugage
-models for procesing documents of languaes German, English and French.
-These require some amount of memory (see below).
+models for procesing documents of languaes German, English, French and
+Spanish. These require some amount of memory (see below).
 
 The mode `basic` is like the "light" variant to `full`. It doesn't use
 all NLP features, which makes memory consumption much lower, but comes

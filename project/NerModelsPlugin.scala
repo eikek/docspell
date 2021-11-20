@@ -67,18 +67,29 @@ object NerModelsPlugin extends AutoPlugin {
   }
 
   private val nerModels = List(
-    "german.distsim.crf.ser.gz",
+    // English
     "english.conll.4class.distsim.crf.ser.gz",
+    "regexner_caseless.tab",
+    "regexner_cased.tab",
+    "english-left3words-distsim.tagger",
+    "english-left3words-distsim.tagger.props",
+    // German
+    "german.distsim.crf.ser.gz",
+    "german-mwt.tsv",
+    "german-ud.tagger",
+    "german-ud.tagger.props",
+    // French
     "french-wikiner-4class.crf.ser.gz",
     "french-mwt-statistical.tsv",
     "french-mwt.tagger",
     "french-mwt.tsv",
-    "german-mwt.tsv",
-    "german-ud.tagger",
-    "german-ud.tagger.props",
     "french-ud.tagger",
     "french-ud.tagger.props",
-    "english-left3words-distsim.tagger",
-    "english-left3words-distsim.tagger.props"
+    // Spanish
+    "spanish.ancora.distsim.s512.crf.ser.gz",
+    "spanish-mwt.tsv",
+    "spanish-ud.tagger",
+    "kbp_regexner_number_sp.tag",
+    "kbp_regexner_mapping_sp.tag"
   )
 }

@@ -29,7 +29,7 @@ object BasicCRFAnnotator {
   private[this] val logger = getLogger
 
   // assert correct resource names
-  List(Language.French, Language.German, Language.English).foreach(classifierResource)
+  NLPLanguage.all.toList.foreach(classifierResource)
 
   type Annotator = AbstractSequenceClassifier[CoreLabel]
 
@@ -70,6 +70,12 @@ object BasicCRFAnnotator {
         "/edu/stanford/nlp/models/ner/german.distsim.crf.ser.gz"
       case Language.English =>
         "/edu/stanford/nlp/models/ner/english.conll.4class.distsim.crf.ser.gz"
+      case Language.Spanish =>
+        "/edu/stanford/nlp/models/ner/spanish.ancora.distsim.s512.crf.ser.gz"
+      // case Language.Italian =>
+      //   "/edu/stanford/nlp/models/ner/italian.crf.ser.gz"
+      // case Language.Hungarian =>
+      //   "/edu/stanford/nlp/models/ner/hungarian.crf.ser.gz"
     })
   }
 
@@ -77,12 +83,14 @@ object BasicCRFAnnotator {
     private[this] lazy val germanNerClassifier = makeAnnotator(Language.German)
     private[this] lazy val englishNerClassifier = makeAnnotator(Language.English)
     private[this] lazy val frenchNerClassifier = makeAnnotator(Language.French)
+    private[this] lazy val spanishNerClassifier = makeAnnotator(Language.Spanish)
 
     def forLang(language: NLPLanguage): Annotator =
       language match {
         case Language.French  => frenchNerClassifier
         case Language.German  => germanNerClassifier
         case Language.English => englishNerClassifier
+        case Language.Spanish => spanishNerClassifier
       }
   }
 

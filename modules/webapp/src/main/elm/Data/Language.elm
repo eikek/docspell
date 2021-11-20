@@ -31,6 +31,7 @@ type Language
     | Latvian
     | Japanese
     | Hebrew
+    | Hungarian
 
 
 fromString : String -> Maybe Language
@@ -85,6 +86,9 @@ fromString str =
 
     else if str == "heb" || str == "he" || str == "hebrew" then
         Just Hebrew
+
+    else if str == "hun" || str == "hu" || str == "hungarian" then
+        Just Hungarian
 
     else
         Nothing
@@ -144,6 +148,9 @@ toIso3 lang =
         Hebrew ->
             "heb"
 
+        Hungarian ->
+            "hun"
+
 
 all : List Language
 all =
@@ -164,4 +171,5 @@ all =
     , Latvian
     , Japanese
     , Hebrew
+    , Hungarian
     ]

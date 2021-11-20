@@ -45,15 +45,16 @@ object DateFind {
   private[this] val jpnChars =
     ("年月日" + MonthName.getAll(Language.Japanese).map(_.mkString).mkString).toSet
 
-  private def splitWords(text: String, lang: Language): Stream[Pure, Word] = {
+  private[date] def splitWords(text: String, lang: Language): Stream[Pure, Word] = {
     val stext =
       if (lang == Language.Japanese) {
         text.map(c => if (jpnChars.contains(c)) c else ' ')
       } else text
 
     TextSplitter
-      .splitToken(stext, " \t.,\n\r/年月日".toSet)
+      .splitToken(stext, " -\t.,\n\r/年月日".toSet)
       .filter(w => lang != Language.Latvian || w.value != "gada")
+      .filter(w => lang != Language.Spanish || w.value != "de")
   }
 
   case class SimpleDate(year: Int, month: Int, day: Int) {
@@ -91,6 +92,7 @@ object DateFind {
         case Language.French     => dmy.or(ymd).or(mdy)
         case Language.Italian    => dmy.or(ymd).or(mdy)
         case Language.Spanish    => dmy.or(ymd).or(mdy)
+        case Language.Hungarian  => ymd
         case Language.Czech      => dmy.or(ymd).or(mdy)
         case Language.Danish     => dmy.or(ymd).or(mdy)
         case Language.Finnish    => dmy.or(ymd).or(mdy)

@@ -914,7 +914,7 @@ in {
 
                       The full and basic variants rely on pre-build language models
                       that are available for only 3 lanugages at the moment: German,
-                      English and French.
+                      English, French and Spanish.
 
                       Memory usage varies greatly among the languages. German has
                       quite large models, that require about 1G heap. So joex should

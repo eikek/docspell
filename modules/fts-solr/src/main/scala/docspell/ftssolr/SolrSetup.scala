@@ -127,7 +127,13 @@ object SolrSetup {
             "Add hebrew content field",
             addContentField(Language.Hebrew)
           ),
-          SolrMigration.reIndexAll(18, "Re-Index after adding hebrew content field")
+          SolrMigration.reIndexAll(18, "Re-Index after adding hebrew content field"),
+          SolrMigration[F](
+            19,
+            "Add hungarian",
+            addContentField(Language.Hungarian)
+          ),
+          SolrMigration.reIndexAll(20, "Re-Index after adding hungarian content field")
         )
 
       def addFolderField: F[Unit] =
