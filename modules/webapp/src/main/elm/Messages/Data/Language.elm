@@ -67,6 +67,9 @@ gb lang =
         Hebrew ->
             "Hebrew"
 
+        Hungarian ->
+            "Hungarian"
+
 
 de : Language -> String
 de lang =
@@ -121,3 +124,6 @@ de lang =
 
         Hebrew ->
             "Hebräisch"
+
+        Hungarian ->
+            "Ungarisch"

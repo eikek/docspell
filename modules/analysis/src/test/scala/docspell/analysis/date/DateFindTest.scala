@@ -13,7 +13,7 @@ import docspell.files.TestFiles
 
 import munit._
 
-class DateFindSpec extends FunSuite {
+class DateFindTest extends FunSuite {
 
   test("find simple dates") {
     val expect = Vector(
@@ -179,4 +179,29 @@ class DateFindSpec extends FunSuite {
     )
   }
 
+  test("find spanish dates") {
+    assertEquals(
+      DateFind
+        .findDates("México, Distrito Federal a 15 de Diciembre de 2011", Language.Spanish)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2011, 12, 15),
+          NerLabel("15 de Diciembre de 2011", NerTag.Date, 27, 50)
+        )
+      )
+    )
+    println(DateFind.splitWords("2021-11-19", Language.Spanish).toList)
+    assertEquals(
+      DateFind
+        .findDates("2021-11-19", Language.Spanish)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2021, 11, 19),
+          NerLabel("2021-11-19", NerTag.Date, 0, 10)
+        )
+      )
+    )
+  }
 }

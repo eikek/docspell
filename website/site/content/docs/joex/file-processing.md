@@ -8,10 +8,10 @@ mktoc = true
 +++
 
 When uploading a file, it is only saved to the database together with
-the given meta information. The file is not visible in the ui yet.
-Then joex takes the next such file (or files in case you uploaded
-many) and starts processing it. When processing finished, the item and
-its files will show up in the ui.
+the given meta information as a "job". The file is not visible in the
+ui yet. Then joex takes the next such job and starts processing it.
+When processing finished, the item and its files will show up in the
+ui.
 
 If an error occurs during processing, the item will be created
 anyways, so you can see it. Depending on the error, some information
@@ -400,7 +400,7 @@ names etc. This also requires a statistical model, but this time for a
 whole language. These are also provided by [Stanford
 NLP](https://nlp.stanford.edu/software/), but not for all languages.
 So whether this can be used depends on the document language. Models
-exist for German, English and French currently.
+exist for German, English, French and Spanish currently.
 
 Then [Stanford NLP](https://nlp.stanford.edu/software/) also allows to
 run custom rules against a text. This can be used as a fallback for

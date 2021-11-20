@@ -30,6 +30,8 @@ object MonthName {
         italian
       case Language.Spanish =>
         spanish
+      case Language.Hungarian =>
+        hungarian
       case Language.Swedish =>
         swedish
       case Language.Norwegian =>
@@ -323,5 +325,20 @@ object MonthName {
     List("10", "אוקטובר"),
     List("11", "נובמבר"),
     List("12", "דצמבר")
+  )
+
+  private val hungarian = List(
+    List("I", "jan", "január"),
+    List("II", "febr", "február"),
+    List("III", "márc", "március"),
+    List("IV", "ápr", "április"),
+    List("V", "máj", "május"),
+    List("VI", "jún", "június"),
+    List("VII", "júl", "július"),
+    List("VIII", "aug", "augusztus"),
+    List("IX", "szept", "szeptember"),
+    List("X", "okt", "október"),
+    List("XI", "nov", "november"),
+    List("XII", "dec", "december")
   )
 }

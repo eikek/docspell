@@ -30,7 +30,7 @@ object Language {
     override val allowsNLP = true
   }
   object NLPLanguage {
-    val all: NonEmptyList[NLPLanguage] = NonEmptyList.of(German, English, French)
+    val all: NonEmptyList[NLPLanguage] = NonEmptyList.of(German, English, French, Spanish)
   }
 
   case object German extends NLPLanguage {
@@ -53,9 +53,14 @@ object Language {
     val iso3 = "ita"
   }
 
-  case object Spanish extends Language {
+  case object Spanish extends NLPLanguage {
     val iso2 = "es"
     val iso3 = "spa"
+  }
+
+  case object Hungarian extends Language {
+    val iso2 = "hu"
+    val iso3 = "hun"
   }
 
   case object Portuguese extends Language {
@@ -125,6 +130,7 @@ object Language {
       French,
       Italian,
       Spanish,
+      Hungarian,
       Dutch,
       Portuguese,
       Czech,

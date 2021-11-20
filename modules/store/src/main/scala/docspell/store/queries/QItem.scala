@@ -714,4 +714,13 @@ object QItem {
       txt = texts.map(_._1).mkString(pageSep)
     } yield TextAndTag(itemId, txt, tag)
 
+  /** Gets the language of the first attachment of the given item. */
+  def getItemLanguage(itemId: Ident): ConnectionIO[List[Language]] =
+    Select(
+      select(m.language),
+      from(m)
+        .innerJoin(a, a.id === m.id)
+        .innerJoin(i, i.id === a.itemId),
+      i.id === itemId
+    ).orderBy(a.position.asc).build.query[Language].to[List]
 }

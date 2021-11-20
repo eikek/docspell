@@ -147,11 +147,11 @@ experience. The features of text analysis strongly depend on the
 language. Docspell uses the [Stanford NLP
 Library](https://nlp.stanford.edu/software/) for its great machine
 learning algorithms. Some of them, like certain NLP features, are only
-available for some languages – namely German, English and French. The
-reason is that the required statistical models are not available for
-other languages. However, docspell can still run other algorithms for
-the other languages, like classification and custom rules based on the
-address book.
+available for some languages – namely German, English, French and
+Spanish. The reason is that the required statistical models are not
+available for other languages. However, docspell can still run other
+algorithms for the other languages, like classification and custom
+rules based on the address book.
 
 More information about file processing and text analysis can be found
 [here](@/docs/joex/file-processing.md#text-analysis).

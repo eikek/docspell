@@ -37,6 +37,8 @@ object Properties {
             Properties.nerEnglish(regexNerFile)
           case Language.French =>
             Properties.nerFrench(regexNerFile, highRecall)
+          case Language.Spanish =>
+            Properties.nerSpanish(regexNerFile, highRecall)
         }
       case StanfordNerSettings.RegexOnly(path) =>
         Properties.regexNerOnly(path)
@@ -86,6 +88,18 @@ object Properties {
       "ner.useSUTime" -> "false",
       "ner.language" -> "de",
       "ner.model" -> "edu/stanford/nlp/models/ner/french-wikiner-4class.crf.ser.gz,edu/stanford/nlp/models/ner/english.conll.4class.distsim.crf.ser.gz"
+    ).withRegexNer(regexNerMappingFile).withHighRecall(highRecall)
+
+  def nerSpanish(regexNerMappingFile: Option[String], highRecall: Boolean): JProps =
+    Properties(
+      "annotators" -> "tokenize, ssplit, mwt, pos, lemma, ner",
+      "tokenize.language" -> "es",
+      "mwt.mappingFile" -> "edu/stanford/nlp/models/mwt/spanish/spanish-mwt.tsv",
+      "pos.model" -> "edu/stanford/nlp/models/pos-tagger/spanish-ud.tagger",
+      "ner.model" -> "edu/stanford/nlp/models/ner/spanish.ancora.distsim.s512.crf.ser.gz",
+      "ner.applyNumericClassifiers" -> "true",
+      "ner.useSUTime" -> "false",
+      "ner.language" -> "es"
     ).withRegexNer(regexNerMappingFile).withHighRecall(highRecall)
 
   def regexNerOnly(regexNerMappingFile: Path): JProps =

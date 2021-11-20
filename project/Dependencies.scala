@@ -40,7 +40,7 @@ object Dependencies {
   val ScalaJavaTimeVersion = "2.3.0"
   val ScodecBitsVersion = "1.1.29"
   val Slf4jVersion = "1.7.32"
-  val StanfordNlpVersion = "4.2.2"
+  val StanfordNlpVersion = "4.3.2"
   val TikaVersion = "2.1.0"
   val YamuscaVersion = "0.8.1"
   val SwaggerUIVersion = "4.1.0"
@@ -185,18 +185,16 @@ object Dependencies {
     )
   )
 
-  val stanfordNlpModels = Seq(
-    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion)
-      .classifier("models"),
-    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion)
-      .classifier("models-german"),
-    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion)
-      .classifier("models-french"),
-    ("edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion)
-      .classifier(
-        "models-english"
-      )
-  )
+  val stanfordNlpModels = {
+    val artifact = "edu.stanford.nlp" % "stanford-corenlp" % StanfordNlpVersion
+    Seq(
+      artifact.classifier("models"),
+      artifact.classifier("models-german"),
+      artifact.classifier("models-french"),
+      artifact.classifier("models-english"),
+      artifact.classifier("models-spanish")
+    )
+  }
 
   val tika = Seq(
     "org.apache.tika" % "tika-core" % TikaVersion
