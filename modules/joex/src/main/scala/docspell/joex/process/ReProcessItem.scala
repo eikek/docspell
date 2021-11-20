@@ -22,6 +22,7 @@ import docspell.store.records.RAttachment
 import docspell.store.records.RAttachmentSource
 import docspell.store.records.RCollective
 import docspell.store.records.RItem
+import docspell.store.queries.QItem
 
 object ReProcessItem {
   type Args = ReProcessItemArgs
@@ -131,10 +132,13 @@ object ReProcessItem {
 
   def getLanguage[F[_]: Sync]: Task[F, Args, Language] =
     Task { ctx =>
-      (for {
-        coll <- OptionT(ctx.store.transact(RCollective.findByItem(ctx.args.itemId)))
-        lang = coll.language
-      } yield lang).getOrElse(Language.German)
+      val lang1 = OptionT(
+        ctx.store.transact(QItem.getItemLanguage(ctx.args.itemId)).map(_.headOption)
+      )
+      val lang2 = OptionT(ctx.store.transact(RCollective.findByItem(ctx.args.itemId)))
+        .map(_.language)
+
+      lang1.orElse(lang2).getOrElse(Language.German)
     }
 
   def isLastRetry[F[_]: Sync]: Task[F, Args, Boolean] =
