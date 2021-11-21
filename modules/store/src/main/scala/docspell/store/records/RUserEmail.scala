@@ -176,6 +176,13 @@ object RUserEmail {
     run(select(t.all), from(t), t.uid === userId).query[RUserEmail].to[Vector]
   }
 
+  def getByUser(userId: Ident, name: Ident): ConnectionIO[Option[RUserEmail]] = {
+    val t = Table(None)
+    run(select(t.all), from(t), t.uid === userId && t.name === name)
+      .query[RUserEmail]
+      .option
+  }
+
   private def findByAccount0(
       accId: AccountId,
       nameQ: Option[String],
@@ -205,6 +212,11 @@ object RUserEmail {
 
   def getByName(accId: AccountId, name: Ident): ConnectionIO[Option[RUserEmail]] =
     findByAccount0(accId, Some(name.id), true).option
+
+  def getById(id: Ident): ConnectionIO[Option[RUserEmail]] = {
+    val t = Table(None)
+    run(select(t.all), from(t), t.id === id).query[RUserEmail].option
+  }
 
   def delete(accId: AccountId, connName: Ident): ConnectionIO[Int] = {
     val user = RUser.as("u")

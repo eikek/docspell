@@ -103,6 +103,8 @@ case class LenientUri(
     val fragPart = fragment.map(f => s"#$f").getOrElse("")
     s"$schemePart:$authPart$pathPart$queryPart$fragPart"
   }
+  override def toString(): String =
+    asString
 }
 
 object LenientUri {

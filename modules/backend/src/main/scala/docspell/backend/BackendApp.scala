@@ -14,12 +14,13 @@ import docspell.backend.msg.JobQueuePublish
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
 import docspell.ftsclient.FtsClient
+import docspell.notification.api.{EventExchange, NotificationModule}
 import docspell.pubsub.api.PubSubT
 import docspell.store.Store
 import docspell.store.usertask.UserTaskStore
 import docspell.totp.Totp
 
-import emil.javamail.{JavaMailEmil, Settings}
+import emil.Emil
 
 trait BackendApp[F[_]] {
 
@@ -46,19 +47,22 @@ trait BackendApp[F[_]] {
   def totp: OTotp[F]
   def share: OShare[F]
   def pubSub: PubSubT[F]
+  def events: EventExchange[F]
+  def notification: ONotification[F]
 }
 
 object BackendApp {
 
   def create[F[_]: Async](
-      cfg: Config,
       store: Store[F],
+      javaEmil: Emil[F],
       ftsClient: FtsClient[F],
-      pubSubT: PubSubT[F]
+      pubSubT: PubSubT[F],
+      notificationMod: NotificationModule[F]
   ): Resource[F, BackendApp[F]] =
     for {
       utStore <- UserTaskStore(store)
-      queue <- JobQueuePublish(store, pubSubT)
+      queue <- JobQueuePublish(store, pubSubT, notificationMod)
       totpImpl <- OTotp(store, Totp.default)
       loginImpl <- Login[F](store, Totp.default)
       signupImpl <- OSignup[F](store)
@@ -75,8 +79,6 @@ object BackendApp {
       itemImpl <- OItem(store, ftsClient, createIndex, queue, joexImpl)
       itemSearchImpl <- OItemSearch(store)
       fulltextImpl <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
-      javaEmil =
-        JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
       mailImpl <- OMail(store, javaEmil)
       userTaskImpl <- OUserTask(utStore, queue, joexImpl)
       folderImpl <- OFolder(store)
@@ -86,6 +88,7 @@ object BackendApp {
       shareImpl <- Resource.pure(
         OShare(store, itemSearchImpl, simpleSearchImpl, javaEmil)
       )
+      notifyImpl <- ONotification(store, notificationMod)
     } yield new BackendApp[F] {
       val pubSub = pubSubT
       val login = loginImpl
@@ -110,5 +113,7 @@ object BackendApp {
       val clientSettings = clientSettingsImpl
       val totp = totpImpl
       val share = shareImpl
+      val events = notificationMod
+      val notification = notifyImpl
     }
 }

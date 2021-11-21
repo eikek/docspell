@@ -50,10 +50,11 @@ object RestServer {
 
       server =
         Stream
-          .resource(createApp(cfg, pools))
+          .resource(createApp(cfg, pools, wsTopic))
           .flatMap { case (restApp, pubSub, httpClient, setting) =>
             Stream(
-              Subscriptions(wsTopic, restApp.backend.pubSub),
+              restApp.subscriptions,
+              restApp.eventConsume(2),
               BlazeServerBuilder[F]
                 .bindHttp(cfg.bind.port, cfg.bind.address)
                 .withoutBanner
@@ -71,8 +72,12 @@ object RestServer {
 
   def createApp[F[_]: Async](
       cfg: Config,
-      pools: Pools
-  ): Resource[F, (RestApp[F], NaivePubSub[F], Client[F], RInternalSetting)] =
+      pools: Pools,
+      wsTopic: Topic[F, OutputEvent]
+  ): Resource[
+    F,
+    (RestApp[F], NaivePubSub[F], Client[F], RInternalSetting)
+  ] =
     for {
       httpClient <- BlazeClientBuilder[F].resource
       store <- Store.create[F](
@@ -86,7 +91,7 @@ object RestServer {
         store,
         httpClient
       )(Topics.all.map(_.topic))
-      restApp <- RestAppImpl.create[F](cfg, store, httpClient, pubSub)
+      restApp <- RestAppImpl.create[F](cfg, store, httpClient, pubSub, wsTopic)
     } yield (restApp, pubSub, httpClient, setting)
 
   def createHttpApp[F[_]: Async](
@@ -150,7 +155,7 @@ object RestServer {
       "collective" -> CollectiveRoutes(restApp.backend, token),
       "queue" -> JobQueueRoutes(restApp.backend, token),
       "item" -> ItemRoutes(cfg, restApp.backend, token),
-      "items" -> ItemMultiRoutes(restApp.backend, token),
+      "items" -> ItemMultiRoutes(cfg, restApp.backend, token),
       "attachment" -> AttachmentRoutes(restApp.backend, token),
       "attachments" -> AttachmentMultiRoutes(restApp.backend, token),
       "upload" -> UploadRoutes.secured(restApp.backend, cfg, token),
@@ -161,11 +166,13 @@ object RestServer {
       "share" -> ShareRoutes.manage(restApp.backend, token),
       "usertask/notifydueitems" -> NotifyDueItemsRoutes(cfg, restApp.backend, token),
       "usertask/scanmailbox" -> ScanMailboxRoutes(restApp.backend, token),
+      "usertask/periodicquery" -> PeriodicQueryRoutes(cfg, restApp.backend, token),
       "calevent/check" -> CalEventCheckRoutes(),
       "fts" -> FullTextIndexRoutes.secured(cfg, restApp.backend, token),
       "folder" -> FolderRoutes(restApp.backend, token),
       "customfield" -> CustomFieldRoutes(restApp.backend, token),
-      "clientSettings" -> ClientSettingsRoutes(restApp.backend, token)
+      "clientSettings" -> ClientSettingsRoutes(restApp.backend, token),
+      "notification" -> NotificationRoutes(cfg, restApp.backend, token)
     )
 
   def openRoutes[F[_]: Async](

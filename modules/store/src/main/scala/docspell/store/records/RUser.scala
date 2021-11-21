@@ -71,6 +71,9 @@ object RUser {
     val lastLogin = Column[Timestamp]("lastlogin", this)
     val created = Column[Timestamp]("created", this)
 
+    def isAccount(aid: AccountId) =
+      cid === aid.collective && login === aid.user
+
     val all =
       NonEmptyList.of[Column[_]](
         uid,

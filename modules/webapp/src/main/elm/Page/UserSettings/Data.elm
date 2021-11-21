@@ -13,10 +13,12 @@ module Page.UserSettings.Data exposing
     )
 
 import Comp.ChangePasswordForm
+import Comp.DueItemsTaskManage
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
-import Comp.NotificationManage
+import Comp.NotificationHookManage
 import Comp.OtpSetup
+import Comp.PeriodicQueryTaskManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
@@ -28,10 +30,12 @@ type alias Model =
     , changePassModel : Comp.ChangePasswordForm.Model
     , emailSettingsModel : Comp.EmailSettingsManage.Model
     , imapSettingsModel : Comp.ImapSettingsManage.Model
-    , notificationModel : Comp.NotificationManage.Model
+    , notificationModel : Comp.DueItemsTaskManage.Model
     , scanMailboxModel : Comp.ScanMailboxManage.Model
     , uiSettingsModel : Comp.UiSettingsManage.Model
     , otpSetupModel : Comp.OtpSetup.Model
+    , notificationHookModel : Comp.NotificationHookManage.Model
+    , periodicQueryModel : Comp.PeriodicQueryTaskManage.Model
     }
 
 
@@ -43,19 +47,29 @@ init flags settings =
 
         ( otpm, otpc ) =
             Comp.OtpSetup.init flags
+
+        ( nhm, nhc ) =
+            Comp.NotificationHookManage.init flags
+
+        ( pqm, pqc ) =
+            Comp.PeriodicQueryTaskManage.init flags
     in
     ( { currentTab = Just UiSettingsTab
       , changePassModel = Comp.ChangePasswordForm.emptyModel
       , emailSettingsModel = Comp.EmailSettingsManage.emptyModel
       , imapSettingsModel = Comp.ImapSettingsManage.emptyModel
-      , notificationModel = Tuple.first (Comp.NotificationManage.init flags)
+      , notificationModel = Tuple.first (Comp.DueItemsTaskManage.init flags)
       , scanMailboxModel = Tuple.first (Comp.ScanMailboxManage.init flags)
       , uiSettingsModel = um
       , otpSetupModel = otpm
+      , notificationHookModel = nhm
+      , periodicQueryModel = pqm
       }
     , Cmd.batch
         [ Cmd.map UiSettingsMsg uc
         , Cmd.map OtpSetupMsg otpc
+        , Cmd.map NotificationHookMsg nhc
+        , Cmd.map PeriodicQueryMsg pqc
         ]
     )
 
@@ -65,6 +79,9 @@ type Tab
     | EmailSettingsTab
     | ImapSettingsTab
     | NotificationTab
+    | NotificationWebhookTab
+    | NotificationQueriesTab
+    | NotificationDueItemsTab
     | ScanMailboxTab
     | UiSettingsTab
     | OtpTab
@@ -74,10 +91,12 @@ type Msg
     = SetTab Tab
     | ChangePassMsg Comp.ChangePasswordForm.Msg
     | EmailSettingsMsg Comp.EmailSettingsManage.Msg
-    | NotificationMsg Comp.NotificationManage.Msg
+    | NotificationMsg Comp.DueItemsTaskManage.Msg
     | ImapSettingsMsg Comp.ImapSettingsManage.Msg
     | ScanMailboxMsg Comp.ScanMailboxManage.Msg
     | UiSettingsMsg Comp.UiSettingsManage.Msg
     | OtpSetupMsg Comp.OtpSetup.Msg
+    | NotificationHookMsg Comp.NotificationHookManage.Msg
+    | PeriodicQueryMsg Comp.PeriodicQueryTaskManage.Msg
     | UpdateSettings
     | ReceiveBrowserSettings StoredUiSettings

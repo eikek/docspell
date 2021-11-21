@@ -47,8 +47,9 @@ description = "A list of features and limitations."
 - [Share](@/docs/webapp/share.md) documents via cryptic public links
   (optionally protected by a password)
 - [Send documents via e-mail](@/docs/webapp/mailitem.md)
-- [E-Mail notification](@/docs/webapp/notifydueitems.md) for documents
-  with due dates
+- [Notifications](@/docs/webapp/notification.md) for documents with
+  due dates or events via E-Mail, [Matrix](https://matrix.org) or
+  [Gotify](https://gotify.net)
 - [Read your mailboxes](@/docs/webapp/scanmailbox.md) via IMAP to
   import mails into docspell
 - [Edit multiple items](@/docs/webapp/multiedit.md) at once

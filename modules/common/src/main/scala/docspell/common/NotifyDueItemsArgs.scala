@@ -27,7 +27,7 @@ case class NotifyDueItemsArgs(
     daysBack: Option[Int],
     tagsInclude: List[Ident],
     tagsExclude: List[Ident]
-) {}
+)
 
 object NotifyDueItemsArgs {
 

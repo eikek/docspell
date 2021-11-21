@@ -11,6 +11,7 @@ import cats.effect.std.Semaphore
 import cats.implicits._
 import fs2.concurrent.SignallingRef
 
+import docspell.notification.api.EventSink
 import docspell.pubsub.api.PubSubT
 import docspell.store.Store
 import docspell.store.queue.JobQueue
@@ -21,7 +22,8 @@ case class SchedulerBuilder[F[_]: Async](
     store: Store[F],
     queue: Resource[F, JobQueue[F]],
     logSink: LogSink[F],
-    pubSub: PubSubT[F]
+    pubSub: PubSubT[F],
+    eventSink: EventSink[F]
 ) {
 
   def withConfig(cfg: SchedulerConfig): SchedulerBuilder[F] =
@@ -45,6 +47,9 @@ case class SchedulerBuilder[F[_]: Async](
   def withPubSub(pubSubT: PubSubT[F]): SchedulerBuilder[F] =
     copy(pubSub = pubSubT)
 
+  def withEventSink(sink: EventSink[F]): SchedulerBuilder[F] =
+    copy(eventSink = sink)
+
   def serve: Resource[F, Scheduler[F]] =
     resource.evalMap(sch => Async[F].start(sch.start.compile.drain).map(_ => sch))
 
@@ -58,6 +63,7 @@ case class SchedulerBuilder[F[_]: Async](
       config,
       jq,
       pubSub,
+      eventSink,
       tasks,
       store,
       logSink,
@@ -83,7 +89,8 @@ object SchedulerBuilder {
       store,
       JobQueue(store),
       LogSink.db[F](store),
-      PubSubT.noop[F]
+      PubSubT.noop[F],
+      EventSink.silent[F]
     )
 
 }

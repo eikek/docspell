@@ -410,6 +410,14 @@ object RItem {
   def findByIdAndCollective(itemId: Ident, coll: Ident): ConnectionIO[Option[RItem]] =
     run(select(T.all), from(T), T.id === itemId && T.cid === coll).query[RItem].option
 
+  def findAllByIdAndCollective(
+      itemIds: NonEmptyList[Ident],
+      coll: Ident
+  ): ConnectionIO[Vector[RItem]] =
+    run(select(T.all), from(T), T.id.in(itemIds) && T.cid === coll)
+      .query[RItem]
+      .to[Vector]
+
   def findById(itemId: Ident): ConnectionIO[Option[RItem]] =
     run(select(T.all), from(T), T.id === itemId).query[RItem].option
 

@@ -27,6 +27,8 @@ paths:
       description: |
         Returns the version and project name and other properties of the build.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -41,6 +43,8 @@ paths:
       description: |
         Notifies the job executor to wake up and look for jobs in th queue.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -55,6 +59,8 @@ paths:
       description: |
         Returns all jobs this executor is currently executing.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -69,6 +75,8 @@ paths:
       description: |
         Gracefully stops the scheduler and also stops the process.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -85,6 +93,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -103,6 +113,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:

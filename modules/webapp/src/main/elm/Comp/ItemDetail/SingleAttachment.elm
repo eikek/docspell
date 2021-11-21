@@ -217,6 +217,7 @@ attachHeader texts settings model _ attach =
             , MB.viewItem <|
                 MB.Dropdown
                     { linkIcon = "fa fa-bars"
+                    , label = ""
                     , linkClass =
                         [ ( "ml-2", True )
                         , ( S.secondaryBasicButton, True )
@@ -225,21 +226,21 @@ attachHeader texts settings model _ attach =
                     , toggleMenu = ToggleAttachmentDropdown
                     , menuOpen = model.attachmentDropdownOpen
                     , items =
-                        [ { icon = "fa fa-download"
+                        [ { icon = i [ class "fa fa-download" ] []
                           , label = texts.downloadFile
                           , attrs =
                                 [ download attachName
                                 , href fileUrl
                                 ]
                           }
-                        , { icon = "fa fa-file"
+                        , { icon = i [ class "fa fa-file" ] []
                           , label = texts.renameFile
                           , attrs =
                                 [ href "#"
                                 , onClick (EditAttachNameStart attach.id)
                                 ]
                           }
-                        , { icon = "fa fa-file-archive"
+                        , { icon = i [ class "fa fa-file-archive" ] []
                           , label = texts.downloadOriginalArchiveFile
                           , attrs =
                                 [ href (fileUrl ++ "/archive")
@@ -247,7 +248,7 @@ attachHeader texts settings model _ attach =
                                 , classList [ ( "hidden", not hasArchive ) ]
                                 ]
                           }
-                        , { icon = "fa fa-external-link-alt"
+                        , { icon = i [ class "fa fa-external-link-alt" ] []
                           , label = texts.originalFile
                           , attrs =
                                 [ href (fileUrl ++ "/original")
@@ -257,31 +258,31 @@ attachHeader texts settings model _ attach =
                           }
                         , { icon =
                                 if isAttachMetaOpen model attach.id then
-                                    "fa fa-toggle-on"
+                                    i [ class "fa fa-toggle-on" ] []
 
                                 else
-                                    "fa fa-toggle-off"
+                                    i [ class "fa fa-toggle-off" ] []
                           , label = texts.viewExtractedData
                           , attrs =
                                 [ onClick (AttachMetaClick attach.id)
                                 , href "#"
                                 ]
                           }
-                        , { icon = "fa fa-redo-alt"
+                        , { icon = i [ class "fa fa-redo-alt" ] []
                           , label = texts.reprocessFile
                           , attrs =
                                 [ onClick (RequestReprocessFile attach.id)
                                 , href "#"
                                 ]
                           }
-                        , { icon = Icons.showQr
+                        , { icon = i [ class Icons.showQr ] []
                           , label = texts.showQrCode
                           , attrs =
                                 [ onClick (ToggleShowQrAttach attach.id)
                                 , href "#"
                                 ]
                           }
-                        , { icon = "fa fa-trash"
+                        , { icon = i [ class "fa fa-trash" ] []
                           , label = texts.deleteThisFile
                           , attrs =
                                 [ onClick (RequestDeleteAttachment attach.id)

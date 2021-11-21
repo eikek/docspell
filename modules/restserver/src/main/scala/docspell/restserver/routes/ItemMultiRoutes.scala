@@ -14,7 +14,9 @@ import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
 import docspell.common._
 import docspell.restapi.model._
+import docspell.restserver.Config
 import docspell.restserver.conv.{Conversions, MultiIdSupport}
+import docspell.restserver.http4s.ClientRequestInfo
 
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
@@ -26,6 +28,7 @@ object ItemMultiRoutes extends MultiIdSupport {
   private[this] val log4sLogger = getLogger
 
   def apply[F[_]: Async](
+      cfg: Config,
       backend: BackendApp[F],
       user: AuthToken
   ): HttpRoutes[F] = {
@@ -66,7 +69,9 @@ object ItemMultiRoutes extends MultiIdSupport {
             json.refs,
             user.account.collective
           )
-          resp <- Ok(Conversions.basicResult(res, "Tags updated"))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Tags updated"))
         } yield resp
 
       case req @ POST -> Root / "tags" =>
@@ -78,7 +83,9 @@ object ItemMultiRoutes extends MultiIdSupport {
             json.refs,
             user.account.collective
           )
-          resp <- Ok(Conversions.basicResult(res, "Tags added."))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Tags added."))
         } yield resp
 
       case req @ POST -> Root / "tagsremove" =>
@@ -90,7 +97,9 @@ object ItemMultiRoutes extends MultiIdSupport {
             json.refs,
             user.account.collective
           )
-          resp <- Ok(Conversions.basicResult(res, "Tags removed"))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Tags removed"))
         } yield resp
 
       case req @ PUT -> Root / "name" =>
@@ -205,7 +214,9 @@ object ItemMultiRoutes extends MultiIdSupport {
             items,
             SetValue(json.field.field, json.field.value, user.account.collective)
           )
-          resp <- Ok(Conversions.basicResult(res))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value))
         } yield resp
 
       case req @ POST -> Root / "customfieldremove" =>
@@ -216,7 +227,9 @@ object ItemMultiRoutes extends MultiIdSupport {
           res <- backend.customFields.deleteValue(
             RemoveValue(field, items, user.account.collective)
           )
-          resp <- Ok(Conversions.basicResult(res, "Custom fields removed."))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Custom fields removed."))
         } yield resp
 
       case req @ POST -> Root / "merge" =>

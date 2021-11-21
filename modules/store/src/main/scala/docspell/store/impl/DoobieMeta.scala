@@ -11,6 +11,8 @@ import java.time.{Instant, LocalDate}
 
 import docspell.common._
 import docspell.common.syntax.all._
+import docspell.jsonminiq.JsonMiniQuery
+import docspell.notification.api.EventType
 import docspell.query.{ItemQuery, ItemQueryParser}
 import docspell.totp.Key
 
@@ -148,6 +150,12 @@ trait DoobieMeta extends EmilDoobieMeta {
     Meta[String].timap(s => ItemQueryParser.parseUnsafe(s))(q =>
       q.raw.getOrElse(ItemQueryParser.unsafeAsString(q.expr))
     )
+
+  implicit val metaEventType: Meta[EventType] =
+    Meta[String].timap(EventType.unsafeFromString)(_.name)
+
+  implicit val metaJsonMiniQuery: Meta[JsonMiniQuery] =
+    Meta[String].timap(JsonMiniQuery.unsafeParse)(_.unsafeAsString)
 }
 
 object DoobieMeta extends DoobieMeta {

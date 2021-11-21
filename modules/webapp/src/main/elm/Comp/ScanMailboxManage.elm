@@ -287,7 +287,8 @@ viewForm2 texts flags settings model =
 viewList2 : Texts -> Model -> List (Html Msg)
 viewList2 texts model =
     [ MB.view
-        { start =
+        { start = []
+        , end =
             [ MB.PrimaryButton
                 { tagger = NewTask
                 , label = texts.newTask
@@ -295,7 +296,6 @@ viewList2 texts model =
                 , title = texts.createNewTask
                 }
             ]
-        , end = []
         , rootClasses = "mb-4"
         }
     , Html.map ListMsg

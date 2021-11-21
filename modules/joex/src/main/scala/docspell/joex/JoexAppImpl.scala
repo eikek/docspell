@@ -11,6 +11,7 @@ import cats.implicits._
 import fs2.concurrent.SignallingRef
 
 import docspell.analysis.TextAnalyser
+import docspell.backend.MailAddressCodec
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.msg.{CancelJob, JobQueuePublish, Topics}
 import docspell.backend.ops._
@@ -32,6 +33,8 @@ import docspell.joex.process.ReProcessItem
 import docspell.joex.scanmailbox._
 import docspell.joex.scheduler._
 import docspell.joex.updatecheck._
+import docspell.notification.api.NotificationModule
+import docspell.notification.impl.NotificationModuleImpl
 import docspell.pubsub.api.{PubSub, PubSubT}
 import docspell.store.Store
 import docspell.store.queue._
@@ -49,16 +52,19 @@ final class JoexAppImpl[F[_]: Async](
     pubSubT: PubSubT[F],
     pstore: PeriodicTaskStore[F],
     termSignal: SignallingRef[F, Boolean],
+    notificationMod: NotificationModule[F],
     val scheduler: Scheduler[F],
     val periodicScheduler: PeriodicScheduler[F]
 ) extends JoexApp[F] {
   def init: F[Unit] = {
     val run = scheduler.start.compile.drain
     val prun = periodicScheduler.start.compile.drain
+    val eventConsume = notificationMod.consumeAllEvents(2).compile.drain
     for {
       _ <- scheduleBackgroundTasks
       _ <- Async[F].start(run)
       _ <- Async[F].start(prun)
+      _ <- Async[F].start(eventConsume)
       _ <- scheduler.periodicAwake
       _ <- periodicScheduler.periodicAwake
       _ <- subscriptions
@@ -115,7 +121,7 @@ final class JoexAppImpl[F[_]: Async](
 
 }
 
-object JoexAppImpl {
+object JoexAppImpl extends MailAddressCodec {
 
   def create[F[_]: Async](
       cfg: Config,
@@ -130,7 +136,12 @@ object JoexAppImpl {
         pubSub,
         Logger.log4s(org.log4s.getLogger(s"joex-${cfg.appId.id}"))
       )
-      queue <- JobQueuePublish(store, pubSubT)
+      javaEmil =
+        JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
+      notificationMod <- Resource.eval(
+        NotificationModuleImpl[F](store, javaEmil, httpClient, 200)
+      )
+      queue <- JobQueuePublish(store, pubSubT, notificationMod)
       joex <- OJoex(pubSubT)
       upload <- OUpload(store, queue, joex)
       fts <- createFtsClient(cfg)(httpClient)
@@ -140,11 +151,11 @@ object JoexAppImpl {
       analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
       regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
       updateCheck <- UpdateCheck.resource(httpClient)
-      javaEmil =
-        JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
+      notification <- ONotification(store, notificationMod)
       sch <- SchedulerBuilder(cfg.scheduler, store)
         .withQueue(queue)
         .withPubSub(pubSubT)
+        .withEventSink(notificationMod)
         .withTask(
           JobTask.json(
             ProcessItemArgs.taskName,
@@ -263,6 +274,20 @@ object JoexAppImpl {
             UpdateCheckTask.onCancel[F]
           )
         )
+        .withTask(
+          JobTask.json(
+            PeriodicQueryTask.taskName,
+            PeriodicQueryTask[F](notification),
+            PeriodicQueryTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            PeriodicDueItemsTask.taskName,
+            PeriodicDueItemsTask[F](notification),
+            PeriodicDueItemsTask.onCancel[F]
+          )
+        )
         .resource
       psch <- PeriodicScheduler.create(
         cfg.periodicScheduler,
@@ -271,7 +296,17 @@ object JoexAppImpl {
         pstore,
         joex
       )
-      app = new JoexAppImpl(cfg, store, queue, pubSubT, pstore, termSignal, sch, psch)
+      app = new JoexAppImpl(
+        cfg,
+        store,
+        queue,
+        pubSubT,
+        pstore,
+        termSignal,
+        notificationMod,
+        sch,
+        psch
+      )
       appR <- Resource.make(app.init.map(_ => app))(_.initShutdown)
     } yield appR
 

@@ -10,19 +10,36 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common.{Duration, Ident, Priority}
+import docspell.notification.api.Event
+import docspell.notification.api.EventSink
 import docspell.pubsub.api.PubSubT
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
 
-final class JobQueuePublish[F[_]: Sync](delegate: JobQueue[F], pubsub: PubSubT[F])
-    extends JobQueue[F] {
+final class JobQueuePublish[F[_]: Sync](
+    delegate: JobQueue[F],
+    pubsub: PubSubT[F],
+    eventSink: EventSink[F]
+) extends JobQueue[F] {
 
   private def msg(job: RJob): JobSubmitted =
     JobSubmitted(job.id, job.group, job.task, job.args)
 
+  private def event(job: RJob): Event.JobSubmitted =
+    Event.JobSubmitted(
+      job.id,
+      job.group,
+      job.task,
+      job.args,
+      job.state,
+      job.subject,
+      job.submitter
+    )
+
   private def publish(job: RJob): F[Unit] =
-    pubsub.publish1(JobSubmitted.topic, msg(job)).as(())
+    pubsub.publish1(JobSubmitted.topic, msg(job)).as(()) *>
+      eventSink.offer(event(job))
 
   def insert(job: RJob) =
     delegate.insert(job).flatTap(_ => publish(job))
@@ -54,6 +71,10 @@ final class JobQueuePublish[F[_]: Sync](delegate: JobQueue[F], pubsub: PubSubT[F
 }
 
 object JobQueuePublish {
-  def apply[F[_]: Async](store: Store[F], pubSub: PubSubT[F]): Resource[F, JobQueue[F]] =
-    JobQueue(store).map(q => new JobQueuePublish[F](q, pubSub))
+  def apply[F[_]: Async](
+      store: Store[F],
+      pubSub: PubSubT[F],
+      eventSink: EventSink[F]
+  ): Resource[F, JobQueue[F]] =
+    JobQueue(store).map(q => new JobQueuePublish[F](q, pubSub, eventSink))
 }

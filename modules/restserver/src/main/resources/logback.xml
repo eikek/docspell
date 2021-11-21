@@ -9,7 +9,7 @@
 
   <logger name="docspell" level="debug" />
   <logger name="emil" level="debug"/>
-
+  <logger name="org.http4s.server.message-failures" level="debug"/>
   <root level="INFO">
     <appender-ref ref="STDOUT" />
   </root>

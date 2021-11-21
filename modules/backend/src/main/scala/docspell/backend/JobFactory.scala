@@ -9,10 +9,29 @@ package docspell.backend
 import cats.effect._
 import cats.implicits._
 
+import docspell.backend.MailAddressCodec
 import docspell.common._
+import docspell.notification.api.ChannelOrRef._
+import docspell.notification.api.PeriodicQueryArgs
 import docspell.store.records.RJob
 
-object JobFactory {
+object JobFactory extends MailAddressCodec {
+  def periodicQuery[F[_]: Sync](args: PeriodicQueryArgs, submitter: AccountId): F[RJob] =
+    for {
+      id <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      job = RJob.newJob(
+        id,
+        PeriodicQueryArgs.taskName,
+        submitter.collective,
+        args,
+        s"Running periodic query, notify via ${args.channel.channelType}",
+        now,
+        submitter.user,
+        Priority.Low,
+        None
+      )
+    } yield job
 
   def makePageCount[F[_]: Sync](
       args: MakePageCountArgs,

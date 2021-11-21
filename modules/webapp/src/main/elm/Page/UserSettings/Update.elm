@@ -8,10 +8,12 @@
 module Page.UserSettings.Update exposing (UpdateResult, update)
 
 import Comp.ChangePasswordForm
+import Comp.DueItemsTaskManage
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
-import Comp.NotificationManage
+import Comp.NotificationHookManage
 import Comp.OtpSetup
+import Comp.PeriodicQueryTaskManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
@@ -62,10 +64,32 @@ update flags settings msg model =
                     UpdateResult m Cmd.none Sub.none Nothing
 
                 NotificationTab ->
+                    { model = m
+                    , cmd = Cmd.none
+                    , sub = Sub.none
+                    , newSettings = Nothing
+                    }
+
+                NotificationWebhookTab ->
+                    { model = m
+                    , cmd = Cmd.none
+                    , sub = Sub.none
+                    , newSettings = Nothing
+                    }
+
+                NotificationQueriesTab ->
                     let
                         initCmd =
                             Cmd.map NotificationMsg
-                                (Tuple.second (Comp.NotificationManage.init flags))
+                                (Tuple.second (Comp.DueItemsTaskManage.init flags))
+                    in
+                    UpdateResult m initCmd Sub.none Nothing
+
+                NotificationDueItemsTab ->
+                    let
+                        initCmd =
+                            Cmd.map NotificationMsg
+                                (Tuple.second (Comp.DueItemsTaskManage.init flags))
                     in
                     UpdateResult m initCmd Sub.none Nothing
 
@@ -119,7 +143,7 @@ update flags settings msg model =
         NotificationMsg lm ->
             let
                 ( m2, c2 ) =
-                    Comp.NotificationManage.update flags lm model.notificationModel
+                    Comp.DueItemsTaskManage.update flags lm model.notificationModel
             in
             { model = { model | notificationModel = m2 }
             , cmd = Cmd.map NotificationMsg c2
@@ -160,6 +184,17 @@ update flags settings msg model =
             , newSettings = Nothing
             }
 
+        NotificationHookMsg lm ->
+            let
+                ( hm, hc ) =
+                    Comp.NotificationHookManage.update flags lm model.notificationHookModel
+            in
+            { model = { model | notificationHookModel = hm }
+            , cmd = Cmd.map NotificationHookMsg hc
+            , sub = Sub.none
+            , newSettings = Nothing
+            }
+
         UpdateSettings ->
             update flags
                 settings
@@ -172,3 +207,14 @@ update flags settings msg model =
                     Comp.UiSettingsManage.ReceiveBrowserSettings sett
             in
             update flags settings (UiSettingsMsg lm) model
+
+        PeriodicQueryMsg lm ->
+            let
+                ( pqm, pqc, pqs ) =
+                    Comp.PeriodicQueryTaskManage.update flags lm model.periodicQueryModel
+            in
+            { model = { model | periodicQueryModel = pqm }
+            , cmd = Cmd.map PeriodicQueryMsg pqc
+            , sub = Sub.map PeriodicQueryMsg pqs
+            , newSettings = Nothing
+            }

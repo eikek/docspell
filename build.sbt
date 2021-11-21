@@ -20,7 +20,7 @@ val scalafixSettings = Seq(
 
 val sharedSettings = Seq(
   organization := "com.github.eikek",
-  scalaVersion := "2.13.6",
+  scalaVersion := "2.13.7",
   organizationName := "Eike K. & Contributors",
   licenses += ("AGPL-3.0-or-later", url(
     "https://spdx.org/licenses/AGPL-3.0-or-later.html"
@@ -41,7 +41,8 @@ val sharedSettings = Seq(
     "-Wdead-code",
     "-Wunused",
     "-Wvalue-discard",
-    "-Wnumeric-widen"
+    "-Wnumeric-widen",
+    "-Ywarn-macros:after"
   ),
   javacOptions ++= Seq("-target", "1.8", "-source", "1.8"),
   LocalRootProject / toolsPackage := {
@@ -272,6 +273,22 @@ val openapiScalaSettings = Seq(
                 )
               )
             )
+      case "channeltype" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("ChannelType", Imports("docspell.notification.api.ChannelType"))
+          )
+      case "eventtype" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("EventType", Imports("docspell.notification.api.EventType"))
+          )
+
+      case "jsonminiq" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("JsonMiniQuery", Imports("docspell.jsonminiq.JsonMiniQuery"))
+          )
     })
 )
 
@@ -385,6 +402,34 @@ val totp = project
         Dependencies.circe
   )
 
+val jsonminiq = project
+  .in(file("modules/jsonminiq"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "docspell-jsonminiq",
+    libraryDependencies ++=
+      Dependencies.circeCore ++
+        Dependencies.catsParse ++
+        Dependencies.circe.map(_ % Test)
+  )
+
+val notificationApi = project
+  .in(file("modules/notification/api"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "docspell-notification-api",
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+        Dependencies.emilCommon ++
+        Dependencies.circeGenericExtra
+  )
+  .dependsOn(common)
+
 val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
@@ -408,7 +453,27 @@ val store = project
     libraryDependencies ++=
       Dependencies.testContainer.map(_ % Test)
   )
-  .dependsOn(common, query.jvm, totp, files)
+  .dependsOn(common, query.jvm, totp, files, notificationApi, jsonminiq)
+
+val notificationImpl = project
+  .in(file("modules/notification/impl"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "docspell-notification-impl",
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+        Dependencies.emil ++
+        Dependencies.emilMarkdown ++
+        Dependencies.http4sClient ++
+        Dependencies.http4sCirce ++
+        Dependencies.http4sDsl ++
+        Dependencies.yamusca ++
+        Dependencies.yamuscaCirce
+  )
+  .dependsOn(notificationApi, store, jsonminiq)
 
 val pubsubApi = project
   .in(file("modules/pubsub/api"))
@@ -522,13 +587,13 @@ val restapi = project
   .settings(
     name := "docspell-restapi",
     libraryDependencies ++=
-      Dependencies.circe,
+      Dependencies.circe ++ Dependencies.emil,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.restapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc
   )
-  .dependsOn(common, query.jvm)
+  .dependsOn(common, query.jvm, notificationApi, jsonminiq)
 
 val joexapi = project
   .in(file("modules/joexapi"))
@@ -564,7 +629,7 @@ val backend = project
         Dependencies.http4sClient ++
         Dependencies.emil
   )
-  .dependsOn(store, joexapi, ftsclient, totp, pubsubApi)
+  .dependsOn(store, notificationApi, joexapi, ftsclient, totp, pubsubApi)
 
 val oidc = project
   .in(file("modules/oidc"))
@@ -656,7 +721,8 @@ val joex = project
     joexapi,
     restapi,
     ftssolr,
-    pubsubNaive
+    pubsubNaive,
+    notificationImpl
   )
 
 val restserver = project
@@ -720,7 +786,17 @@ val restserver = project
       }
     }
   )
-  .dependsOn(config, restapi, joexapi, backend, webapp, ftssolr, oidc, pubsubNaive)
+  .dependsOn(
+    config,
+    restapi,
+    joexapi,
+    backend,
+    webapp,
+    ftssolr,
+    oidc,
+    pubsubNaive,
+    notificationImpl
+  )
 
 // --- Website Documentation
 
@@ -811,10 +887,13 @@ val root = project
     restserver,
     query.jvm,
     query.js,
+    jsonminiq,
     totp,
     oidc,
     pubsubApi,
-    pubsubNaive
+    pubsubNaive,
+    notificationApi,
+    notificationImpl
   )
 
 // --- Helpers

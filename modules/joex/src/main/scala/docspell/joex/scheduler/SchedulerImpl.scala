@@ -17,6 +17,8 @@ import docspell.backend.msg.JobDone
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.joex.scheduler.SchedulerImpl._
+import docspell.notification.api.Event
+import docspell.notification.api.EventSink
 import docspell.pubsub.api.PubSubT
 import docspell.store.Store
 import docspell.store.queries.QJob
@@ -29,6 +31,7 @@ final class SchedulerImpl[F[_]: Async](
     val config: SchedulerConfig,
     queue: JobQueue[F],
     pubSub: PubSubT[F],
+    eventSink: EventSink[F],
     tasks: JobTaskRegistry[F],
     store: Store[F],
     logSink: LogSink[F],
@@ -205,6 +208,17 @@ final class SchedulerImpl[F[_]: Async](
       _ <- pubSub.publish1IgnoreErrors(
         JobDone.topic,
         JobDone(job.id, job.group, job.task, job.args, finalState)
+      )
+      _ <- eventSink.offer(
+        Event.JobDone(
+          job.id,
+          job.group,
+          job.task,
+          job.args,
+          job.state,
+          job.subject,
+          job.submitter
+        )
       )
     } yield ()
 
