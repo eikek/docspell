@@ -135,8 +135,7 @@ language can also specified with each [upload
 request](@/docs/api/upload.md).
 
 Go to the *Collective Settings* page and click *Document
-Language*. This will set the lanugage for all your documents. It is
-not (yet) possible to specify it when uploading.
+Language*. This will set the lanugage for all your documents.
 
 The language has effects in several areas: text extraction, fulltext
 search and text analysis. When extracting text from images, tesseract

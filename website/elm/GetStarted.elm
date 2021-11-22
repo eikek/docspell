@@ -28,9 +28,7 @@ getStarted version =
    $ docker-compose up -d
    ```
 
-   The environment variable defines a secret that is shared between
-   some containers. You can define whatever you like. Please see the
-   [`consumedir.sh`](doc/tools/consumedir#docker) docs for additional
+   Please see the [`consumedir.sh`](doc/tools/consumedir#docker) docs for additional
    info.
 4. Goto <http://localhost:7880>, signup and login. When signing up,
    choose the same name for collective and user. Then login
