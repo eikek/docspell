@@ -5,7 +5,7 @@
   "dependencies": {},
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
-    "@tailwindcss/forms": "^0.3.4",
+    "@tailwindcss/forms": "^0.4.0",
     "flag-icon-css": "^3.5.0",
     "postcss-cli": "^9.0.1",
     "postcss-import": "^14.0.2",
