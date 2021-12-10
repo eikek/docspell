@@ -27,11 +27,6 @@ getStarted version =
    ```bash
    $ docker-compose up -d
    ```
-
-   The environment variable defines a secret that is shared between
-   some containers. You can define whatever you like. Please see the
-   [`consumedir.sh`](doc/tools/consumedir#docker) docs for additional
-   info.
 4. Goto <http://localhost:7880>, signup and login. When signing up,
    choose the same name for collective and user. Then login
    with this name and the password.
@@ -40,8 +35,8 @@ getStarted version =
    chose for the collective at registration) and place files in there
    for importing them.
 
-The directory contains a file `docspell.conf` that you can
-[modify](docs/configure) as needed.
+The `docker-compose.yml` file defines some environment variables to
+configure docspell. You can [modify](docs/configure) them as needed.
     """
         ]
     , div [ class "content container" ]

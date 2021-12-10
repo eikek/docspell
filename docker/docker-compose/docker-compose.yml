@@ -12,6 +12,7 @@ services:
   # - DOCSPELL_SERVER_ADMIN__ENDPOINT_SECRET
   # - DOCSPELL_SERVER_AUTH_SERVER__SECRET
   # - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE
+  #   (use the same value at the consumedir container!)
   restserver:
     image: docspell/restserver:latest
     container_name: docspell-restserver
