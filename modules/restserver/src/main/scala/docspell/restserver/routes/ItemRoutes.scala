@@ -25,6 +25,7 @@ import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.BinaryUtil
+import docspell.restserver.http4s.ClientRequestInfo
 import docspell.restserver.http4s.Responses
 import docspell.restserver.http4s.{QueryParam => QP}
 
@@ -160,29 +161,37 @@ object ItemRoutes {
         for {
           tags <- req.as[StringList].map(_.items)
           res <- backend.item.setTags(id, tags, user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Tags updated"))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Tags updated"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "tags" =>
         for {
           data <- req.as[Tag]
           rtag <- Conversions.newTag(data, user.account.collective)
-          res <- backend.item.addNewTag(id, rtag)
-          resp <- Ok(Conversions.basicResult(res, "Tag added."))
+          res <- backend.item.addNewTag(user.account.collective, id, rtag)
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Tag added."))
         } yield resp
 
       case req @ PUT -> Root / Ident(id) / "taglink" =>
         for {
           tags <- req.as[StringList]
           res <- backend.item.linkTags(id, tags.items, user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Tags linked"))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Tags linked"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "tagtoggle" =>
         for {
           tags <- req.as[StringList]
           res <- backend.item.toggleTags(id, tags.items, user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Tags linked"))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Tags linked"))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "tagsremove" =>
@@ -193,7 +202,9 @@ object ItemRoutes {
             json.items,
             user.account.collective
           )
-          resp <- Ok(Conversions.basicResult(res, "Tags removed"))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Tags removed"))
         } yield resp
 
       case req @ PUT -> Root / Ident(id) / "direction" =>
@@ -392,15 +403,19 @@ object ItemRoutes {
             id,
             SetValue(data.field, data.value, user.account.collective)
           )
-          resp <- Ok(Conversions.basicResult(res))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value))
         } yield resp
 
-      case DELETE -> Root / Ident(id) / "customfield" / Ident(fieldId) =>
+      case req @ DELETE -> Root / Ident(id) / "customfield" / Ident(fieldId) =>
         for {
           res <- backend.customFields.deleteValue(
             RemoveValue(fieldId, NonEmptyList.of(id), user.account.collective)
           )
-          resp <- Ok(Conversions.basicResult(res, "Custom field value removed."))
+          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+          resp <- Ok(Conversions.basicResult(res.value, "Custom field value removed."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>

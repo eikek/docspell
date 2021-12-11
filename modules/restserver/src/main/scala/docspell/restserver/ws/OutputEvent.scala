@@ -57,7 +57,6 @@ object OutputEvent {
 
   private case class Msg[A](tag: String, content: A)
   private object Msg {
-    @scala.annotation.nowarn
     implicit def jsonEncoder[A: Encoder]: Encoder[Msg[A]] =
       deriveEncoder
   }

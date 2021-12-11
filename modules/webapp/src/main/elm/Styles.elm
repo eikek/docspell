@@ -7,6 +7,8 @@
 
 module Styles exposing (..)
 
+import Svg exposing (Svg)
+
 
 sidebar : String
 sidebar =
@@ -346,6 +348,11 @@ header2 =
 header3 : String
 header3 =
     " text-xl mb-3 font-medium tracking-wide "
+
+
+formHeader : String
+formHeader =
+    header3 ++ " text-xl mb-4 font-medium tracking-wide border-b dark:border-bluegray-300 border-gray-800"
 
 
 editLinkTableCellStyle : String

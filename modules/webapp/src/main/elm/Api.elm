@@ -21,10 +21,12 @@ module Api exposing
     , checkCalEvent
     , confirmMultiple
     , confirmOtp
+    , createHook
     , createImapSettings
     , createMailSettings
     , createNewFolder
     , createNotifyDueItems
+    , createPeriodicQuery
     , createScanMailbox
     , deleteAllItems
     , deleteAttachment
@@ -34,11 +36,13 @@ module Api exposing
     , deleteCustomValueMultiple
     , deleteEquip
     , deleteFolder
+    , deleteHook
     , deleteImapSettings
     , deleteItem
     , deleteMailSettings
     , deleteNotifyDueItems
     , deleteOrg
+    , deletePeriodicQueryTask
     , deletePerson
     , deleteScanMailbox
     , deleteShare
@@ -58,6 +62,7 @@ module Api exposing
     , getEquipments
     , getFolderDetail
     , getFolders
+    , getHooks
     , getImapSettings
     , getInsights
     , getItemProposals
@@ -69,6 +74,7 @@ module Api exposing
     , getOrgLight
     , getOrganizations
     , getOtpState
+    , getPeriodicQuery
     , getPersonFull
     , getPersons
     , getPersonsLight
@@ -113,6 +119,7 @@ module Api exposing
     , reprocessMultiple
     , restoreAllItems
     , restoreItem
+    , sampleEvent
     , saveClientSettings
     , searchShare
     , searchShareStats
@@ -150,18 +157,24 @@ module Api exposing
     , startClassifier
     , startEmptyTrash
     , startOnceNotifyDueItems
+    , startOncePeriodicQuery
     , startOnceScanMailbox
     , startReIndex
     , submitNotifyDueItems
+    , submitPeriodicQuery
+    , testHook
     , toggleTags
     , twoFactor
     , unconfirmMultiple
+    , updateHook
     , updateNotifyDueItems
+    , updatePeriodicQuery
     , updateScanMailbox
     , updateShare
     , upload
     , uploadAmend
     , uploadSingle
+    , verifyJsonFilter
     , verifyShare
     , versionInfo
     )
@@ -208,8 +221,8 @@ import Api.Model.JobQueueState exposing (JobQueueState)
 import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.NewCustomField exposing (NewCustomField)
 import Api.Model.NewFolder exposing (NewFolder)
-import Api.Model.NotificationSettings exposing (NotificationSettings)
-import Api.Model.NotificationSettingsList exposing (NotificationSettingsList)
+import Api.Model.NotificationChannelTestResult exposing (NotificationChannelTestResult)
+import Api.Model.NotificationSampleEventReq exposing (NotificationSampleEventReq)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
 import Api.Model.OptionalText exposing (OptionalText)
@@ -239,6 +252,7 @@ import Api.Model.SourceAndTags exposing (SourceAndTags)
 import Api.Model.SourceList exposing (SourceList)
 import Api.Model.SourceTagIn
 import Api.Model.StringList exposing (StringList)
+import Api.Model.StringValue exposing (StringValue)
 import Api.Model.Tag exposing (Tag)
 import Api.Model.TagCloud exposing (TagCloud)
 import Api.Model.TagList exposing (TagList)
@@ -249,9 +263,13 @@ import Api.Model.VersionInfo exposing (VersionInfo)
 import Data.ContactType exposing (ContactType)
 import Data.CustomFieldOrder exposing (CustomFieldOrder)
 import Data.EquipmentOrder exposing (EquipmentOrder)
+import Data.EventType exposing (EventType)
 import Data.Flags exposing (Flags)
 import Data.FolderOrder exposing (FolderOrder)
+import Data.NotificationHook exposing (NotificationHook)
 import Data.OrganizationOrder exposing (OrganizationOrder)
+import Data.PeriodicDueItemsSettings exposing (PeriodicDueItemsSettings)
+import Data.PeriodicQuerySettings exposing (PeriodicQuerySettings)
 import Data.PersonOrder exposing (PersonOrder)
 import Data.Priority exposing (Priority)
 import Data.TagOrder exposing (TagOrder)
@@ -571,68 +589,153 @@ deleteNotifyDueItems flags id receive =
 
 startOnceNotifyDueItems :
     Flags
-    -> NotificationSettings
+    -> PeriodicDueItemsSettings
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 startOnceNotifyDueItems flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems/startonce"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.NotificationSettings.encode settings)
+        , body = Http.jsonBody (Data.PeriodicDueItemsSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 
 updateNotifyDueItems :
     Flags
-    -> NotificationSettings
+    -> PeriodicDueItemsSettings
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 updateNotifyDueItems flags settings receive =
     Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.NotificationSettings.encode settings)
+        , body = Http.jsonBody (Data.PeriodicDueItemsSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 
 createNotifyDueItems :
     Flags
-    -> NotificationSettings
+    -> PeriodicDueItemsSettings
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 createNotifyDueItems flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.NotificationSettings.encode settings)
+        , body = Http.jsonBody (Data.PeriodicDueItemsSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 
 getNotifyDueItems :
     Flags
-    -> (Result Http.Error NotificationSettingsList -> msg)
+    -> (Result Http.Error (List PeriodicDueItemsSettings) -> msg)
     -> Cmd msg
 getNotifyDueItems flags receive =
     Http2.authGet
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
         , account = getAccount flags
-        , expect = Http.expectJson receive Api.Model.NotificationSettingsList.decoder
+        , expect = Http.expectJson receive (JsonDecode.list Data.PeriodicDueItemsSettings.decoder)
         }
 
 
 submitNotifyDueItems :
     Flags
-    -> NotificationSettings
+    -> PeriodicDueItemsSettings
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 submitNotifyDueItems flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.NotificationSettings.encode settings)
+        , body = Http.jsonBody (Data.PeriodicDueItemsSettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+
+--- PeriodicQueryTask
+
+
+deletePeriodicQueryTask :
+    Flags
+    -> String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+deletePeriodicQueryTask flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+startOncePeriodicQuery :
+    Flags
+    -> PeriodicQuerySettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+startOncePeriodicQuery flags settings receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery/startonce"
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.PeriodicQuerySettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+updatePeriodicQuery :
+    Flags
+    -> PeriodicQuerySettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+updatePeriodicQuery flags settings receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery"
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.PeriodicQuerySettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+createPeriodicQuery :
+    Flags
+    -> PeriodicQuerySettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+createPeriodicQuery flags settings receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery"
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.PeriodicQuerySettings.encode settings)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+getPeriodicQuery :
+    Flags
+    -> (Result Http.Error (List PeriodicQuerySettings) -> msg)
+    -> Cmd msg
+getPeriodicQuery flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery"
+        , account = getAccount flags
+        , expect = Http.expectJson receive (JsonDecode.list Data.PeriodicQuerySettings.decoder)
+        }
+
+
+submitPeriodicQuery :
+    Flags
+    -> PeriodicQuerySettings
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+submitPeriodicQuery flags settings receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery"
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.PeriodicQuerySettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -2350,6 +2453,88 @@ shareItemBasePreviewURL itemId =
 shareFileURL : String -> String
 shareFileURL attachId =
     "/api/v1/share/attachment/" ++ attachId
+
+
+
+--- NotificationHook
+
+
+getHooks : Flags -> (Result Http.Error (List NotificationHook) -> msg) -> Cmd msg
+getHooks flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook"
+        , account = getAccount flags
+        , expect = Http.expectJson receive (JsonDecode.list Data.NotificationHook.decoder)
+        }
+
+
+deleteHook : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteHook flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+createHook : Flags -> NotificationHook -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+createHook flags hook receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook"
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.NotificationHook.encode hook)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+updateHook : Flags -> NotificationHook -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+updateHook flags hook receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook"
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.NotificationHook.encode hook)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+sampleEvent : Flags -> EventType -> (Result Http.Error String -> msg) -> Cmd msg
+sampleEvent flags evt receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/event/sample"
+        , account = getAccount flags
+        , body =
+            Http.jsonBody
+                (Api.Model.NotificationSampleEventReq.encode
+                    (NotificationSampleEventReq <|
+                        Data.EventType.asString evt
+                    )
+                )
+        , expect = Http.expectString receive
+        }
+
+
+testHook :
+    Flags
+    -> NotificationHook
+    -> (Result Http.Error NotificationChannelTestResult -> msg)
+    -> Cmd msg
+testHook flags hook receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook/sendTestEvent"
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.NotificationHook.encode hook)
+        , expect = Http.expectJson receive Api.Model.NotificationChannelTestResult.decoder
+        }
+
+
+verifyJsonFilter : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+verifyJsonFilter flags query receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook/verifyJsonFilter"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.StringValue.encode (StringValue query))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 

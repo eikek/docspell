@@ -49,9 +49,9 @@ object Totp {
           time.plus(generator.getTimeStep)
         )
 
-      def checkPassword(key: Key, given: OnetimePassword, time: Instant): Boolean = {
+      def checkPassword(key: Key, givenPass: OnetimePassword, time: Instant): Boolean = {
         val pass = generate(key, time)
-        pass == given
+        pass == givenPass
       }
     }
 

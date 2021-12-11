@@ -12,6 +12,7 @@ import cats.data.{NonEmptyList => Nel}
 import cats.effect._
 import cats.implicits._
 
+import docspell.backend.AttachedEvent
 import docspell.backend.ops.OCustomFields.CustomFieldData
 import docspell.backend.ops.OCustomFields.CustomFieldOrder
 import docspell.backend.ops.OCustomFields.FieldValue
@@ -20,6 +21,7 @@ import docspell.backend.ops.OCustomFields.RemoveValue
 import docspell.backend.ops.OCustomFields.SetValue
 import docspell.backend.ops.OCustomFields.SetValueResult
 import docspell.common._
+import docspell.notification.api.Event
 import docspell.store.AddResult
 import docspell.store.Store
 import docspell.store.UpdateResult
@@ -53,12 +55,15 @@ trait OCustomFields[F[_]] {
   def delete(coll: Ident, fieldIdOrName: Ident): F[UpdateResult]
 
   /** Sets a value given a field an an item. Existing values are overwritten. */
-  def setValue(item: Ident, value: SetValue): F[SetValueResult]
+  def setValue(item: Ident, value: SetValue): F[AttachedEvent[SetValueResult]]
 
-  def setValueMultiple(items: Nel[Ident], value: SetValue): F[SetValueResult]
+  def setValueMultiple(
+      items: Nel[Ident],
+      value: SetValue
+  ): F[AttachedEvent[SetValueResult]]
 
   /** Deletes a value for a given field an item. */
-  def deleteValue(in: RemoveValue): F[UpdateResult]
+  def deleteValue(in: RemoveValue): F[AttachedEvent[UpdateResult]]
 
   /** Finds all values to the given items */
   def findAllValues(itemIds: Nel[Ident]): F[List[FieldValue]]
@@ -196,13 +201,13 @@ object OCustomFields {
         UpdateResult.fromUpdate(store.transact(update.getOrElse(0)))
       }
 
-      def setValue(item: Ident, value: SetValue): F[SetValueResult] =
+      def setValue(item: Ident, value: SetValue): F[AttachedEvent[SetValueResult]] =
         setValueMultiple(Nel.of(item), value)
 
       def setValueMultiple(
           items: Nel[Ident],
           value: SetValue
-      ): F[SetValueResult] =
+      ): F[AttachedEvent[SetValueResult]] =
         (for {
           field <- EitherT.fromOptionF(
             store.transact(RCustomField.findByIdOrName(value.field, value.collective)),
@@ -224,17 +229,24 @@ object OCustomFields {
               .traverse(item => store.transact(RCustomField.setValue(field, item, fval)))
               .map(_.toList.sum)
           )
-        } yield nu).fold(identity, _ => SetValueResult.success)
+          mkEvent =
+            Event.SetFieldValue.partial(items, field.id, fval)
 
-      def deleteValue(in: RemoveValue): F[UpdateResult] = {
+        } yield AttachedEvent(SetValueResult.success)(mkEvent))
+          .fold(AttachedEvent.only, identity)
+
+      def deleteValue(in: RemoveValue): F[AttachedEvent[UpdateResult]] = {
         val update =
-          for {
+          (for {
             field <- OptionT(RCustomField.findByIdOrName(in.field, in.collective))
             _ <- OptionT.liftF(logger.debug(s"Field found by '${in.field}': $field"))
             n <- OptionT.liftF(RCustomFieldValue.deleteValue(field.id, in.item))
-          } yield n
+            mkEvent = Event.DeleteFieldValue.partial(in.item, field.id)
+          } yield AttachedEvent(n)(mkEvent))
+            .getOrElse(AttachedEvent.only(0))
+            .map(_.map(UpdateResult.fromUpdateRows))
 
-        UpdateResult.fromUpdate(store.transact(update.getOrElse(0)))
+        store.transact(update)
       }
 
     })

@@ -7,18 +7,36 @@
 package docspell.restserver
 
 import cats.effect._
+import fs2.Stream
+import fs2.concurrent.Topic
 
 import docspell.backend.BackendApp
 import docspell.common.Logger
 import docspell.ftsclient.FtsClient
 import docspell.ftssolr.SolrFtsClient
+import docspell.notification.api.NotificationModule
+import docspell.notification.impl.NotificationModuleImpl
 import docspell.pubsub.api.{PubSub, PubSubT}
+import docspell.restserver.ws.OutputEvent
 import docspell.store.Store
 
+import emil.javamail.JavaMailEmil
 import org.http4s.client.Client
 
-final class RestAppImpl[F[_]](val config: Config, val backend: BackendApp[F])
-    extends RestApp[F] {}
+final class RestAppImpl[F[_]: Async](
+    val config: Config,
+    val backend: BackendApp[F],
+    notificationMod: NotificationModule[F],
+    wsTopic: Topic[F, OutputEvent],
+    pubSub: PubSubT[F]
+) extends RestApp[F] {
+
+  def eventConsume(maxConcurrent: Int): Stream[F, Nothing] =
+    notificationMod.consumeAllEvents(maxConcurrent)
+
+  def subscriptions: Stream[F, Nothing] =
+    Subscriptions[F](wsTopic, pubSub)
+}
 
 object RestAppImpl {
 
@@ -26,14 +44,21 @@ object RestAppImpl {
       cfg: Config,
       store: Store[F],
       httpClient: Client[F],
-      pubSub: PubSub[F]
+      pubSub: PubSub[F],
+      wsTopic: Topic[F, OutputEvent]
   ): Resource[F, RestApp[F]] = {
     val logger = Logger.log4s(org.log4s.getLogger(s"restserver-${cfg.appId.id}"))
     for {
       ftsClient <- createFtsClient(cfg)(httpClient)
       pubSubT = PubSubT(pubSub, logger)
-      backend <- BackendApp.create[F](cfg.backend, store, ftsClient, pubSubT)
-      app = new RestAppImpl[F](cfg, backend)
+      javaEmil = JavaMailEmil(cfg.backend.mailSettings)
+      notificationMod <- Resource.eval(
+        NotificationModuleImpl[F](store, javaEmil, httpClient, 200)
+      )
+      backend <- BackendApp
+        .create[F](store, javaEmil, ftsClient, pubSubT, notificationMod)
+
+      app = new RestAppImpl[F](cfg, backend, notificationMod, wsTopic, pubSubT)
     } yield app
   }
 

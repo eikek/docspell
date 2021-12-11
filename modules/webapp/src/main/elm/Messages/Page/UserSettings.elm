@@ -12,10 +12,12 @@ module Messages.Page.UserSettings exposing
     )
 
 import Messages.Comp.ChangePasswordForm
+import Messages.Comp.DueItemsTaskManage
 import Messages.Comp.EmailSettingsManage
 import Messages.Comp.ImapSettingsManage
-import Messages.Comp.NotificationManage
+import Messages.Comp.NotificationHookManage
 import Messages.Comp.OtpSetup
+import Messages.Comp.PeriodicQueryTaskManage
 import Messages.Comp.ScanMailboxManage
 import Messages.Comp.UiSettingsManage
 
@@ -25,8 +27,10 @@ type alias Texts =
     , uiSettingsManage : Messages.Comp.UiSettingsManage.Texts
     , emailSettingsManage : Messages.Comp.EmailSettingsManage.Texts
     , imapSettingsManage : Messages.Comp.ImapSettingsManage.Texts
-    , notificationManage : Messages.Comp.NotificationManage.Texts
+    , notificationManage : Messages.Comp.DueItemsTaskManage.Texts
     , scanMailboxManage : Messages.Comp.ScanMailboxManage.Texts
+    , notificationHookManage : Messages.Comp.NotificationHookManage.Texts
+    , periodicQueryTask : Messages.Comp.PeriodicQueryTaskManage.Texts
     , otpSetup : Messages.Comp.OtpSetup.Texts
     , userSettings : String
     , uiSettings : String
@@ -36,11 +40,16 @@ type alias Texts =
     , emailSettingImap : String
     , changePassword : String
     , uiSettingsInfo : String
-    , notificationInfoText : String
-    , notificationRemindDaysInfo : String
     , scanMailboxInfo1 : String
     , scanMailboxInfo2 : String
     , otpMenu : String
+    , webhooks : String
+    , genericQueries : String
+    , dueItems : String
+    , notificationInfoText : String
+    , webhookInfoText : String
+    , dueItemsInfoText : String
+    , periodicQueryInfoText : String
     }
 
 
@@ -50,8 +59,10 @@ gb =
     , uiSettingsManage = Messages.Comp.UiSettingsManage.gb
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.gb
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.gb
-    , notificationManage = Messages.Comp.NotificationManage.gb
+    , notificationManage = Messages.Comp.DueItemsTaskManage.gb
     , scanMailboxManage = Messages.Comp.ScanMailboxManage.gb
+    , notificationHookManage = Messages.Comp.NotificationHookManage.gb
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.gb
     , otpSetup = Messages.Comp.OtpSetup.gb
     , userSettings = "User Settings"
     , uiSettings = "UI Settings"
@@ -63,13 +74,6 @@ gb =
     , uiSettingsInfo =
         "These settings only affect the web ui. They are stored in the browser, "
             ++ "so they are separated between browsers and devices."
-    , notificationInfoText =
-        """
-            Docspell can notify you once the due dates of your items
-            come closer. Notification is done via e-mail. You need to
-            provide a connection in your e-mail settings."""
-    , notificationRemindDaysInfo =
-        "Docspell finds all items that are due in *Remind Days* days and sends this list via e-mail."
     , scanMailboxInfo1 =
         "Docspell can scan folders of your mailbox to import your mails. "
             ++ "You need to provide a connection in "
@@ -85,6 +89,28 @@ gb =
             adjust the schedule to avoid reading over the same mails
             again."""
     , otpMenu = "Two Factor Authentication"
+    , webhooks = "Webhooks"
+    , genericQueries = "Generic Queries"
+    , dueItems = "Due Items Query"
+    , notificationInfoText = """
+
+Docspell can send notification messages on various events. You can
+choose from these channels to send messages:
+[Matrix](https://matrix.org), [Gotify](https://gotify.net) or E-Mail.
+At last you can send a plain http request with the event details in
+its payload.
+
+Additionally, you can setup queries that are executed periodically.
+The results are send as a notification message.
+
+When creating a new notification task, choose first the communication
+channel.
+
+"""
+    , webhookInfoText = """Webhooks execute http request upon certain events in docspell.
+"""
+    , dueItemsInfoText = """Docspell can notify you once the due dates of your items come closer.  """
+    , periodicQueryInfoText = "You can define a custom query that gets executed periodically."
     }
 
 
@@ -94,8 +120,10 @@ de =
     , uiSettingsManage = Messages.Comp.UiSettingsManage.de
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.de
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.de
-    , notificationManage = Messages.Comp.NotificationManage.de
+    , notificationManage = Messages.Comp.DueItemsTaskManage.de
     , scanMailboxManage = Messages.Comp.ScanMailboxManage.de
+    , notificationHookManage = Messages.Comp.NotificationHookManage.de
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.de
     , otpSetup = Messages.Comp.OtpSetup.de
     , userSettings = "Benutzereinstellung"
     , uiSettings = "Oberfläche"
@@ -106,13 +134,6 @@ de =
     , changePassword = "Passwort ändern"
     , uiSettingsInfo =
         "Diese Einstellungen sind für die Web-Oberfläche."
-    , notificationInfoText =
-        """
-         Docspell kann eine E-Mail versenden, sobald das
-         Fälligkeitsdatum von Dokumenten näher kommt. Dafür muss eine
-         E-Mail-SMTP-Verbindung konfiguriert werden.."""
-    , notificationRemindDaysInfo =
-        "Docspell sucht Dokumente die in X Tagen fällig sind und sendet diese Liste als E-Mail."
     , scanMailboxInfo1 =
         """Docspell kann Postfächer durchsuchen und E-Mails importieren. Dafür sind
 E-Mail-Einstellungen (IMAP) notwendig."""
@@ -129,4 +150,26 @@ E-Mail-Einstellungen (IMAP) notwendig."""
             gleichen E-Mails möglichst nicht noch einmal eingelesen
             werden."""
     , otpMenu = "Zwei-Faktor-Authentifizierung"
+    , webhooks = "Webhooks"
+    , genericQueries = "Periodische Abfragen"
+    , dueItems = "Fällige Dokumente"
+    , notificationInfoText = """
+
+Docspell kann Benachrichtigungen bei gewissen Ereignissen versenden.
+Es kann aus diesen Versandkanälen gewählt werden:
+[Matrix](https://matrix.org), [Gotify](https://gotify.net) oder
+E-Mail. Zusätzlich kann das HTTP request direkt empfangen werden, was
+alle Details zu einem Ereignis enthält.
+
+
+Ausserdem können periodische Suchabfragen erstellt werden, dessen
+Ergebnis dann als Benachrichtigung versendet wird.
+
+Beim Erstellen eines neuen Auftrags muss zunächst der gewünschte
+Versandkanal gewählt werden.
+
+"""
+    , webhookInfoText = """Webhooks versenden HTTP Requests wenn bestimmte Ereignisse in Docspell auftreten."""
+    , dueItemsInfoText = """Docspell kann dich benachrichtigen, sobald das Fälligkeitsdatum von Dokumenten näher kommt. """
+    , periodicQueryInfoText = "Hier können beliebige Abfragen definiert werden, welche regelmäßig ausgeführt werden."
     }

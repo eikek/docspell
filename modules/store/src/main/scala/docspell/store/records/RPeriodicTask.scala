@@ -164,6 +164,19 @@ object RPeriodicTask {
   def as(alias: String): Table =
     Table(Some(alias))
 
+  def findByTask(taskName: Ident): ConnectionIO[Vector[RPeriodicTask]] =
+    Select(
+      select(T.all),
+      from(T),
+      T.task === taskName
+    ).build.query[RPeriodicTask].to[Vector]
+
+  def updateTask(id: Ident, taskName: Ident, args: String): ConnectionIO[Int] =
+    DML.update(T, T.id === id, DML.set(T.task.setTo(taskName), T.args.setTo(args)))
+
+  def setEnabledByTask(taskName: Ident, enabled: Boolean): ConnectionIO[Int] =
+    DML.update(T, T.task === taskName, DML.set(T.enabled.setTo(enabled)))
+
   def insert(v: RPeriodicTask): ConnectionIO[Int] =
     DML.insert(
       T,

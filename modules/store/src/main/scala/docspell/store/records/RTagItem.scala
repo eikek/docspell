@@ -95,11 +95,11 @@ object RTagItem {
           )
       } yield n
 
-  def appendTags(item: Ident, tags: List[Ident]): ConnectionIO[Int] =
+  def appendTags(item: Ident, tags: List[Ident]): ConnectionIO[Set[Ident]] =
     for {
       existing <- findByItem(item)
       toadd = tags.toSet.diff(existing.map(_.tagId).toSet)
-      n <- setAllTags(item, toadd.toSeq)
-    } yield n
+      _ <- setAllTags(item, toadd.toSeq)
+    } yield toadd
 
 }

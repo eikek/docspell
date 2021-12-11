@@ -22,12 +22,12 @@ object FlywayMigrate {
       logger.info("Running db migrations...")
       val locations = jdbc.dbmsName match {
         case Some(dbtype) =>
-          List(s"classpath:db/migration/$dbtype")
+          List(s"classpath:db/migration/$dbtype", "classpath:db/migration/common")
         case None =>
           logger.warn(
             s"Cannot read database name from jdbc url: ${jdbc.url}. Go with H2"
           )
-          List("classpath:db/h2")
+          List("classpath:db/migration/h2", "classpath:db/migration/common")
       }
 
       logger.info(s"Using migration locations: $locations")

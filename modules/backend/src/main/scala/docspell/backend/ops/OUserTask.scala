@@ -11,13 +11,32 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
+import docspell.backend.MailAddressCodec._
 import docspell.common._
+import docspell.notification.api.PeriodicDueItemsArgs
+import docspell.notification.api.PeriodicQueryArgs
 import docspell.store.queue.JobQueue
 import docspell.store.usertask._
 
 import io.circe.Encoder
 
 trait OUserTask[F[_]] {
+
+  /** Return the settings for all periodic-query tasks of the given user */
+  def getPeriodicQuery(scope: UserTaskScope): Stream[F, UserTask[PeriodicQueryArgs]]
+
+  /** Find a periodic-query task by the given id. */
+  def findPeriodicQuery(
+      id: Ident,
+      scope: UserTaskScope
+  ): OptionT[F, UserTask[PeriodicQueryArgs]]
+
+  /** Updates the periodic-query task of the given user. */
+  def submitPeriodicQuery(
+      scope: UserTaskScope,
+      subject: Option[String],
+      task: UserTask[PeriodicQueryArgs]
+  ): F[Unit]
 
   /** Return the settings for all scan-mailbox tasks of the current user. */
   def getScanMailbox(scope: UserTaskScope): Stream[F, UserTask[ScanMailboxArgs]]
@@ -36,19 +55,19 @@ trait OUserTask[F[_]] {
   ): F[Unit]
 
   /** Return the settings for all the notify-due-items task of the current user. */
-  def getNotifyDueItems(scope: UserTaskScope): Stream[F, UserTask[NotifyDueItemsArgs]]
+  def getNotifyDueItems(scope: UserTaskScope): Stream[F, UserTask[PeriodicDueItemsArgs]]
 
   /** Find a notify-due-items task by the given id. */
   def findNotifyDueItems(
       id: Ident,
       scope: UserTaskScope
-  ): OptionT[F, UserTask[NotifyDueItemsArgs]]
+  ): OptionT[F, UserTask[PeriodicDueItemsArgs]]
 
   /** Updates the notify-due-items tasks and notifies the joex nodes. */
   def submitNotifyDueItems(
       scope: UserTaskScope,
       subject: Option[String],
-      task: UserTask[NotifyDueItemsArgs]
+      task: UserTask[PeriodicDueItemsArgs]
   ): F[Unit]
 
   /** Removes a user task with the given id. */
@@ -109,23 +128,42 @@ object OUserTask {
 
       def getNotifyDueItems(
           scope: UserTaskScope
-      ): Stream[F, UserTask[NotifyDueItemsArgs]] =
+      ): Stream[F, UserTask[PeriodicDueItemsArgs]] =
         store
-          .getByName[NotifyDueItemsArgs](scope, NotifyDueItemsArgs.taskName)
+          .getByName[PeriodicDueItemsArgs](scope, PeriodicDueItemsArgs.taskName)
 
       def findNotifyDueItems(
           id: Ident,
           scope: UserTaskScope
-      ): OptionT[F, UserTask[NotifyDueItemsArgs]] =
+      ): OptionT[F, UserTask[PeriodicDueItemsArgs]] =
         OptionT(getNotifyDueItems(scope).find(_.id == id).compile.last)
 
       def submitNotifyDueItems(
           scope: UserTaskScope,
           subject: Option[String],
-          task: UserTask[NotifyDueItemsArgs]
+          task: UserTask[PeriodicDueItemsArgs]
       ): F[Unit] =
         for {
-          _ <- store.updateTask[NotifyDueItemsArgs](scope, subject, task)
+          _ <- store.updateTask[PeriodicDueItemsArgs](scope, subject, task)
+          _ <- joex.notifyAllNodes
+        } yield ()
+
+      def getPeriodicQuery(scope: UserTaskScope): Stream[F, UserTask[PeriodicQueryArgs]] =
+        store.getByName[PeriodicQueryArgs](scope, PeriodicQueryArgs.taskName)
+
+      def findPeriodicQuery(
+          id: Ident,
+          scope: UserTaskScope
+      ): OptionT[F, UserTask[PeriodicQueryArgs]] =
+        OptionT(getPeriodicQuery(scope).find(_.id == id).compile.last)
+
+      def submitPeriodicQuery(
+          scope: UserTaskScope,
+          subject: Option[String],
+          task: UserTask[PeriodicQueryArgs]
+      ): F[Unit] =
+        for {
+          _ <- store.updateTask[PeriodicQueryArgs](scope, subject, task)
           _ <- joex.notifyAllNodes
         } yield ()
     })

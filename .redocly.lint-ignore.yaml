@@ -1,0 +1,5 @@
+# This file instructs Redocly's linter to ignore the rules contained for specific parts of your API.
+# See https://redoc.ly/docs/cli/ for more information.
+modules/restapi/src/main/resources/docspell-openapi.yml:
+  spec:
+    - '#/extraSchemas'

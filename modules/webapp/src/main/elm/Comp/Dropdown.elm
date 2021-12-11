@@ -14,6 +14,7 @@ module Comp.Dropdown exposing
     , isDropdownChangeMsg
     , makeModel
     , makeMultiple
+    , makeMultipleList
     , makeSingle
     , makeSingleList
     , mkOption
@@ -114,6 +115,26 @@ makeMultiple =
         { multiple = True
         , searchable = \n -> n > 0
         }
+
+
+makeMultipleList :
+    { options : List a
+    , selected : List a
+    }
+    -> Model a
+makeMultipleList opts =
+    let
+        m =
+            makeMultiple
+
+        m2 =
+            { m | available = List.map (makeItem m) opts.options }
+
+        m3 =
+            List.map (makeItem m2) opts.selected
+                |> List.foldl (\el -> \model -> selectItem model el) m2
+    in
+    m3
 
 
 getSelected : Model a -> List a

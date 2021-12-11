@@ -231,9 +231,18 @@ object Dependencies {
     "org.http4s" %% "http4s-blaze-server" % Http4sVersion
   )
 
-  val circe = Seq(
-    "io.circe" %% "circe-generic" % CirceVersion,
+  val circeCore = Seq(
+    "io.circe" %% "circe-core" % CirceVersion
+  )
+  val circeParser = Seq(
     "io.circe" %% "circe-parser" % CirceVersion
+  )
+  val circe =
+    circeCore ++ circeParser ++ Seq(
+      "io.circe" %% "circe-generic" % CirceVersion
+    )
+  val circeGenericExtra = Seq(
+    "io.circe" %% "circe-generic-extras" % CirceVersion
   )
 
   // https://github.com/Log4s/log4s;ASL 2.0
@@ -284,6 +293,9 @@ object Dependencies {
 
   val yamusca = Seq(
     "com.github.eikek" %% "yamusca-core" % YamuscaVersion
+  )
+  val yamuscaCirce = Seq(
+    "com.github.eikek" %% "yamusca-circe" % YamuscaVersion
   )
 
   val munit = Seq(

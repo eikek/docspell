@@ -275,8 +275,8 @@ object Login {
           token <- RememberToken.user(rme.id, config.serverSecret)
         } yield token
 
-      private def check(given: String)(data: QLogin.Data): Boolean = {
-        val passOk = BCrypt.checkpw(given, data.password.pass)
+      private def check(givenPass: String)(data: QLogin.Data): Boolean = {
+        val passOk = BCrypt.checkpw(givenPass, data.password.pass)
         checkNoPassword(data, Set(AccountSource.Local)) && passOk
       }
 

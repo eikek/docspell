@@ -10,6 +10,7 @@
             "CurrySoftware/elm-datepicker": "4.0.0",
             "NoRedInk/elm-json-decode-pipeline": "1.0.0",
             "NoRedInk/elm-simple-fuzzy": "1.0.3",
+            "ThinkAlexandria/elm-pretty-print-json": "1.0.1",
             "elm/browser": "1.0.2",
             "elm/core": "1.0.5",
             "elm/file": "1.0.5",
@@ -35,9 +36,11 @@
             "elm/parser": "1.1.0",
             "elm/regex": "1.0.0",
             "elm/virtual-dom": "1.0.2",
+            "elm-community/basics-extra": "4.1.0",
             "elm-community/list-extra": "8.2.4",
             "folkertdev/elm-flate": "2.0.4",
-            "justgook/elm-image": "4.0.0"
+            "justgook/elm-image": "4.0.0",
+            "the-sett/elm-pretty-printer": "2.2.3"
         }
     },
     "test-dependencies": {

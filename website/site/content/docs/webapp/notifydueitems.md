@@ -1,6 +1,8 @@
 +++
 title = "Notify about due items"
 weight = 60
+draft = true
+render = false
 [extra]
 mktoc = true
 +++

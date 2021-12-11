@@ -8,6 +8,7 @@
 module Comp.MenuBar exposing
     ( ButtonData
     , CheckboxData
+    , DropdownMenu
     , Item(..)
     , MenuBar
     , TextInputData
@@ -85,6 +86,7 @@ type alias LabelData =
 type alias DropdownData msg =
     { linkIcon : String
     , linkClass : List ( String, Bool )
+    , label : String
     , toggleMenu : msg
     , menuOpen : Bool
     , items : List (DropdownMenu msg)
@@ -92,7 +94,7 @@ type alias DropdownData msg =
 
 
 type alias DropdownMenu msg =
-    { icon : String
+    { icon : Html msg
     , label : String
     , attrs : List (Attribute msg)
     }
@@ -175,11 +177,7 @@ makeDropdown model =
         menuItem m =
             a
                 (class itemStyle :: m.attrs)
-                [ i
-                    [ class m.icon
-                    , classList [ ( "hidden", m.icon == "" ) ]
-                    ]
-                    []
+                [ m.icon
                 , span
                     [ class "ml-2"
                     , classList [ ( "hidden", m.label == "" ) ]
@@ -196,6 +194,13 @@ makeDropdown model =
             , onClick model.toggleMenu
             ]
             [ i [ class model.linkIcon ] []
+            , if model.label == "" then
+                span [ class "hidden" ] []
+
+              else
+                span [ class "ml-2" ]
+                    [ text model.label
+                    ]
             ]
         , div
             [ class menuStyle
