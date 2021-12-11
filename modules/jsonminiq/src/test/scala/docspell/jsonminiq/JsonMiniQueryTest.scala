@@ -156,6 +156,6 @@ class JsonMiniQueryTest extends FunSuite with Fixtures {
     val json4 = parseJson(
       """[{"name":"max", "count":4}, {"name":"me", "count": 3}, {"name":"max", "count": 3}]"""
     )
-    println(q4(json4))
+    assertEquals(q4(json4), values("max", "max"))
   }
 }
