@@ -141,7 +141,7 @@ object ContentDisposition {
   }
 
   private val parser = makeParser(mimeValue)
-  //private val origParser = makeParser(Rfc7230.token | Rfc7230.quotedString)
+  // private val origParser = makeParser(Rfc7230.token | Rfc7230.quotedString)
 
   implicit val headerInstance: Header[ContentDisposition, Header.Single] = {
     val oh = `Content-Disposition`.headerInstance

@@ -59,7 +59,7 @@ class JsonMiniQueryTest extends FunSuite with Fixtures {
     assertEquals(r(sampleEvent), Vector.empty)
   }
 
-  //content.[added,removed].(category=expense & name=grocery)
+  // content.[added,removed].(category=expense & name=grocery)
   test("combine fields and filter") {
     val andOk = JQ.at("content").at("added", "removed") >>
       (JQ.at("name").is("grocery") && JQ.at("category").is("expense"))
@@ -156,6 +156,6 @@ class JsonMiniQueryTest extends FunSuite with Fixtures {
     val json4 = parseJson(
       """[{"name":"max", "count":4}, {"name":"me", "count": 3}, {"name":"max", "count": 3}]"""
     )
-    println(q4(json4))
+    assertEquals(q4(json4), values("max", "max"))
   }
 }

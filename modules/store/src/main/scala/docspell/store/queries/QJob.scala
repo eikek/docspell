@@ -61,7 +61,7 @@ object QJob {
       retryPause: Duration,
       currentTry: Int
   ): F[Either[Unit, Option[RJob]]] = {
-    //if this fails, we have to restart takeNextJob
+    // if this fails, we have to restart takeNextJob
     def markJob(job: RJob): F[Either[Unit, RJob]] =
       store.transact(for {
         n <- RJob.setScheduled(job.id, worker)
@@ -236,7 +236,7 @@ object QJob {
     val JC = RJob.T
     val waiting = NonEmptyList.of(JobState.Waiting, JobState.Stuck, JobState.Scheduled)
     val running = NonEmptyList.of(JobState.Running)
-    //val done                   = JobState.all.filterNot(js => ).diff(waiting).diff(running)
+    // val done                   = JobState.all.filterNot(js => ).diff(waiting).diff(running)
 
     def selectJobs(now: Timestamp): Stream[ConnectionIO, RJob] = {
       val refDate = now.minusHours(24)

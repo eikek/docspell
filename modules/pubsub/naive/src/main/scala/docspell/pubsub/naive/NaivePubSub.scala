@@ -80,7 +80,7 @@ final class NaivePubSub[F[_]: Async](
     } yield head
 
   def publish(topic: Topic): Pipe[F, Json, MessageHead] =
-    ms => //TODO Do some optimization by grouping messages to the same topic
+    ms => // TODO Do some optimization by grouping messages to the same topic
       ms.evalMap(publish0(topic, _))
 
   def subscribe(topics: NonEmptyList[Topic]): Stream[F, Message[Json]] =

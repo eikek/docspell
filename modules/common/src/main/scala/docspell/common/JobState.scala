@@ -50,7 +50,7 @@ object JobState {
     NonEmptyList.of(Waiting, Scheduled, Running, Stuck, Failed, Cancelled, Success)
   val queued: Set[JobState] = Set(Waiting, Scheduled, Stuck)
   val done: NonEmptyList[JobState] = NonEmptyList.of(Failed, Cancelled, Success)
-  val notDone: NonEmptyList[JobState] = //all - done
+  val notDone: NonEmptyList[JobState] = // all - done
     NonEmptyList.of(Waiting, Scheduled, Running, Stuck)
   val inProgress: Set[JobState] = Set(Scheduled, Running, Stuck)
 

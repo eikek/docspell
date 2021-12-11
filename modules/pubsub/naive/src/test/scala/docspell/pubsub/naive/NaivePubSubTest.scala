@@ -58,7 +58,7 @@ class NaivePubSubTest extends CatsEffectSuite with Fixtures {
       res <- subscribe(ps, Topics.jobSubmitted)
       (received, halt, subFiber) = res
       _ <- ps.publish1(otherTopic, JobSubmittedMsg("hello".id))
-      _ <- IO.sleep(100.millis) //allow some time for receiving
+      _ <- IO.sleep(100.millis) // allow some time for receiving
       _ <- halt.set(true)
       outcome <- subFiber.join
       _ = assert(outcome.isSuccess)

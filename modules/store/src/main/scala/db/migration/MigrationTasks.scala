@@ -81,7 +81,7 @@ trait MigrationTasks {
 
   def mkTransactor(ctx: Context): Transactor[IO] = {
     val xa = Transactor.fromConnection[IO](ctx.getConnection())
-    Transactor.strategy.set(xa, Strategy.void) //transactions are handled by flyway
+    Transactor.strategy.set(xa, Strategy.void) // transactions are handled by flyway
   }
 
 }

@@ -15,7 +15,7 @@ object Dependencies {
   val DoobieVersion = "1.0.0-RC1"
   val EmilVersion = "0.10.0-M3"
   val FlexmarkVersion = "0.62.2"
-  val FlywayVersion = "8.2.0"
+  val FlywayVersion = "8.2.1"
   val Fs2Version = "3.2.3"
   val Fs2CronVersion = "0.7.1"
   val H2Version = "1.4.200"
@@ -288,7 +288,8 @@ object Dependencies {
   // https://github.com/flyway/flyway
   // ASL 2.0
   val flyway = Seq(
-    "org.flywaydb" % "flyway-core" % FlywayVersion
+    "org.flywaydb" % "flyway-core" % FlywayVersion,
+    "org.flywaydb" % "flyway-mysql" % FlywayVersion
   )
 
   val yamusca = Seq(

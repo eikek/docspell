@@ -227,7 +227,7 @@ final class SchedulerImpl[F[_]: Async](
       job.id,
       config.name,
       store
-    ) //also increments retries if current state=stuck
+    ) // also increments retries if current state=stuck
 
   def wrapTask(
       job: RJob,

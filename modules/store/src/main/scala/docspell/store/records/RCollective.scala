@@ -120,7 +120,7 @@ object RCollective {
         cs.listType.s,
         es.schedule.s,
         es.minAge.s,
-        const(0) //dummy value to load Nil as list of passwords
+        const(0) // dummy value to load Nil as list of passwords
       ),
       from(c).leftJoin(cs, cs.cid === c.id).leftJoin(es, es.cid === c.id),
       c.id === coll

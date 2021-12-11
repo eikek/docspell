@@ -46,7 +46,7 @@ object RegexNerFile {
   final private class Impl[F[_]: Async](
       cfg: Config,
       store: Store[F],
-      writer: Semaphore[F] //TODO allow parallelism per collective
+      writer: Semaphore[F] // TODO allow parallelism per collective
   ) extends RegexNerFile[F] {
 
     def makeFile(collective: Ident): F[Option[Path]] =

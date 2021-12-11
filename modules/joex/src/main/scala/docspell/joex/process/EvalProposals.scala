@@ -60,7 +60,7 @@ object EvalProposals {
   ): Double =
     mp.proposalType match {
       case MetaProposalType.DueDate =>
-        //for due dates, sort earliest on top
+        // for due dates, sort earliest on top
         MetaProposal
           .parseDate(cand)
           .map { ld =>

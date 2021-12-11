@@ -44,7 +44,7 @@ object PdfExtract {
           s"Using stripped text (not OCR), as it is longer (${strippedRes._1.length} > ${ocrStr.length})"
         ) *> Result(strippedRes).pure[F]
 
-    //maybe better: inspect the pdf and decide whether ocr or not
+    // maybe better: inspect the pdf and decide whether ocr or not
     for {
       pdfboxRes <-
         logger.debug("Trying to strip text from pdf using pdfbox.") *>
