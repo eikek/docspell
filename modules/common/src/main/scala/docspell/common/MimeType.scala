@@ -168,7 +168,7 @@ object MimeType {
             left
         }
 
-    //https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.6
+    // https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.6
     private def isToken(s: String): Boolean =
       s.nonEmpty && s.forall(c => c.isLetterOrDigit || tokenExtraChars.contains(c))
 
@@ -186,7 +186,7 @@ object MimeType {
       seq(primary, sub)((p, s) => MimeType(p.toLowerCase, s.toLowerCase, None))
     }
 
-    //https://datatracker.ietf.org/doc/html/rfc2046#section-4.1.2
+    // https://datatracker.ietf.org/doc/html/rfc2046#section-4.1.2
     private val charset: P[Option[Charset]] = in =>
       in.trim.toLowerCase.indexOf("charset=") match {
         case -1 => Right((None, in))

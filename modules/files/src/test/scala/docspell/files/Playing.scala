@@ -15,8 +15,8 @@ object Playing extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] =
     IO {
-      //val ods = ExampleFiles.examples_sample_ods.readURL[IO](8192, blocker)
-      //val odt = ExampleFiles.examples_sample_odt.readURL[IO](8192, blocker)
+      // val ods = ExampleFiles.examples_sample_ods.readURL[IO](8192, blocker)
+      // val odt = ExampleFiles.examples_sample_odt.readURL[IO](8192, blocker)
       val rtf = ExampleFiles.examples_sample_rtf.readURL[IO](8192)
 
       val x = for {

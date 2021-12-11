@@ -59,7 +59,7 @@ class JsonMiniQueryTest extends FunSuite with Fixtures {
     assertEquals(r(sampleEvent), Vector.empty)
   }
 
-  //content.[added,removed].(category=expense & name=grocery)
+  // content.[added,removed].(category=expense & name=grocery)
   test("combine fields and filter") {
     val andOk = JQ.at("content").at("added", "removed") >>
       (JQ.at("name").is("grocery") && JQ.at("category").is("expense"))

@@ -16,8 +16,8 @@ import munit._
 
 class ImageSizeTest extends FunSuite {
 
-  //tiff files are not supported on the jdk by default
-  //requires an external library
+  // tiff files are not supported on the jdk by default
+  // requires an external library
   val files = List(
     ExampleFiles.camera_letter_en_jpg -> Dimension(1695, 2378),
     ExampleFiles.camera_letter_en_png -> Dimension(1695, 2378),

@@ -19,7 +19,7 @@ import doobie.implicits._
   * 1-1 (or 0..1-1) relationship.
   */
 case class RAttachmentSource(
-    id: Ident, //same as RAttachment.id
+    id: Ident, // same as RAttachment.id
     fileId: Ident,
     name: Option[String],
     created: Timestamp

@@ -108,9 +108,9 @@ object ReProcessItem {
               data.item.cid,
               args.itemId.some,
               lang,
-              None, //direction
-              data.item.source, //source-id
-              None, //folder
+              None, // direction
+              data.item.source, // source-id
+              None, // folder
               Seq.empty,
               false,
               None,
