@@ -26,6 +26,9 @@ type alias Texts =
     , powerSearchPlaceholder : String
     , normalSearchPlaceholder : String
     , extendedSearch : String
+    , showItemGroups : String
+    , listView : String
+    , tileView : String
     }
 
 
@@ -41,6 +44,9 @@ gb =
     , powerSearchPlaceholder = "Extended search…"
     , extendedSearch = "Extended search query"
     , normalSearchPlaceholder = "Search…"
+    , showItemGroups = "Group by month"
+    , listView = "List view"
+    , tileView = "Tile view"
     }
 
 
@@ -56,4 +62,7 @@ de =
     , powerSearchPlaceholder = "Erweiterte Suche…"
     , extendedSearch = "Erweiterte Suchanfrage"
     , normalSearchPlaceholder = "Suche…"
+    , showItemGroups = "nach Monat gruppieren"
+    , listView = "Listenansicht"
+    , tileView = "Kachelansicht"
     }

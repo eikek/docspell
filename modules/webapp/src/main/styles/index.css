@@ -16,6 +16,9 @@
   .ds-item-card.current {
       @apply shadow-lg dark:border-lightblue-600;
   }
+  .ds-item-row.current {
+      @apply bg-gray-200 bg-opacity-50 dark:bg-lightblue-600 dark:bg-opacity-10;
+  }
 
   .elm-datepicker--input {
       @apply pl-10 rounded w-full placeholder-gray-400 dark:text-bluegray-200 dark:border-bluegray-500;
@@ -188,6 +191,6 @@
     }
 
     .ds-card-search-hl strong {
-        @apply bg-lime-200 dark:bg-lightblue-700 italic font-bold px-1;
+        @apply bg-lime-200 dark:bg-lightblue-700 italic font-bold px-1 bg-opacity-60 dark:bg-opacity-60;
     }
 }

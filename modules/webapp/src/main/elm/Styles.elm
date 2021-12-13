@@ -375,6 +375,11 @@ dimmerCard =
     " absolute top-0 left-0 w-full h-full bg-black bg-opacity-60 dark:bg-lightblue-900 dark:bg-opacity-60 z-30 flex flex-col items-center justify-center px-4 py-2 "
 
 
+dimmerRow : String
+dimmerRow =
+    " absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 dark:bg-lightblue-900 dark:bg-opacity-50 z-30 flex flex-row items-center px-1 py-2 "
+
+
 tableMain : String
 tableMain =
     "border-collapse table w-full"

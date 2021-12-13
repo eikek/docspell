@@ -12,6 +12,7 @@ module Data.Items exposing
     , idSet
     , length
     , replaceIn
+    , unwrapGroups
     )
 
 import Api.Model.ItemLight exposing (ItemLight)
@@ -25,6 +26,11 @@ import Util.List
 flatten : ItemLightList -> List ItemLight
 flatten list =
     List.concatMap .items list.groups
+
+
+unwrapGroups : List ItemLightGroup -> List ItemLight
+unwrapGroups groups =
+    List.concatMap .items groups
 
 
 concat : ItemLightList -> ItemLightList -> ItemLightList

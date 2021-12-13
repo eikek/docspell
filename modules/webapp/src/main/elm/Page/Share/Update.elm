@@ -19,6 +19,7 @@ import Data.ItemQuery as Q
 import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
 import Page.Share.Data exposing (..)
+import Set
 import Util.Html
 import Util.Maybe
 import Util.Update
@@ -161,16 +162,31 @@ update flags settings shareId msg model =
 
         ItemListMsg lm ->
             let
-                ( im, ic, linkTarget ) =
+                result =
                     Comp.ItemCardList.update flags lm model.itemListModel
 
                 searchMsg =
-                    Maybe.map Util.Update.cmdUnit (linkTargetMsg linkTarget)
+                    Maybe.map Util.Update.cmdUnit (linkTargetMsg result.linkTarget)
                         |> Maybe.withDefault Cmd.none
+
+                vm =
+                    model.viewMode
+
+                itemRows =
+                    case result.toggleOpenRow of
+                        Just rid ->
+                            if Set.member rid vm.rowsOpen then
+                                Set.remove rid vm.rowsOpen
+
+                            else
+                                Set.insert rid vm.rowsOpen
+
+                        Nothing ->
+                            vm.rowsOpen
             in
             noSub
-                ( { model | itemListModel = im }
-                , Cmd.batch [ Cmd.map ItemListMsg ic, searchMsg ]
+                ( { model | itemListModel = result.model, viewMode = { vm | rowsOpen = itemRows } }
+                , Cmd.batch [ Cmd.map ItemListMsg result.cmd, searchMsg ]
                 )
 
         ToggleSearchBar ->
@@ -195,6 +211,36 @@ update flags settings shareId msg model =
 
         ContentSearchKey _ ->
             noSub ( model, Cmd.none )
+
+        ToggleShowGroups ->
+            let
+                vm =
+                    model.viewMode
+
+                next =
+                    { vm | showGroups = not vm.showGroups, menuOpen = False }
+            in
+            noSub ( { model | viewMode = next }, Cmd.none )
+
+        ToggleViewMenu ->
+            let
+                vm =
+                    model.viewMode
+
+                next =
+                    { vm | menuOpen = not vm.menuOpen }
+            in
+            noSub ( { model | viewMode = next }, Cmd.none )
+
+        ToggleArrange am ->
+            let
+                vm =
+                    model.viewMode
+
+                next =
+                    { vm | arrange = am, menuOpen = False }
+            in
+            noSub ( { model | viewMode = next }, Cmd.none )
 
 
 noSub : ( Model, Cmd Msg ) -> UpdateResult

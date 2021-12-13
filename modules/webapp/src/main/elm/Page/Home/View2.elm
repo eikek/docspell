@@ -19,7 +19,7 @@ import Comp.SearchMenu
 import Comp.SearchStatsView
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
-import Data.ItemQuery as Q
+import Data.ItemArrange
 import Data.ItemSelection
 import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
@@ -182,7 +182,7 @@ itemsBar texts flags settings model =
         SelectView svm ->
             [ editMenuBar texts model svm ]
 
-        PublishView query ->
+        PublishView _ ->
             [ defaultMenuBar texts flags settings model ]
 
 
@@ -248,6 +248,12 @@ defaultMenuBar texts flags settings model =
                 , Html.map PowerSearchMsg
                     (Comp.PowerSearchInput.viewResult [] model.powerSearchInput)
                 ]
+
+        isCardView =
+            settings.itemSearchArrange == Data.ItemArrange.Cards
+
+        isListView =
+            settings.itemSearchArrange == Data.ItemArrange.List
     in
     MB.view
         { end =
@@ -291,6 +297,61 @@ defaultMenuBar texts flags settings model =
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-bluegray-600", selectActive model )
+                    ]
+                }
+            , MB.Dropdown
+                { linkIcon = "fa fa-grip-vertical"
+                , label = ""
+                , linkClass =
+                    [ ( S.secondaryBasicButton, True )
+                    ]
+                , toggleMenu = ToggleViewMenu
+                , menuOpen = model.viewMenuOpen
+                , items =
+                    [ { icon =
+                            if settings.itemSearchShowGroups then
+                                i [ class "fa fa-check-square font-thin" ] []
+
+                            else
+                                i [ class "fa fa-square font-thin" ] []
+                      , label = texts.showItemGroups
+                      , attrs =
+                            [ href "#"
+                            , onClick ToggleShowGroups
+                            ]
+                      }
+                    , { icon =
+                            if isListView then
+                                i [ class "fa fa-check" ] []
+
+                            else
+                                i [ class "fa fa-list" ] []
+                      , label = texts.listView
+                      , attrs =
+                            [ href "#"
+                            , onClick (ToggleArrange Data.ItemArrange.List)
+                            ]
+                      }
+                    , { icon =
+                            if isCardView then
+                                i [ class "fa fa-check" ] []
+
+                            else
+                                i [ class "fa fa-th-large" ] []
+                      , label = texts.tileView
+                      , attrs =
+                            [ href "#"
+                            , onClick (ToggleArrange Data.ItemArrange.Cards)
+                            ]
+                      }
+                    , { icon = i [ class "fa fa-compress" ] []
+                      , label = texts.expandCollapseRows
+                      , attrs =
+                            [ href "#"
+                            , classList [ ( "hidden", not isListView ) ]
+                            , onClick ToggleExpandCollapseRows
+                            ]
+                      }
                     ]
                 }
             ]
@@ -469,13 +530,16 @@ itemCardList texts flags settings model =
             Api.itemBasePreviewURL item.id
 
         viewCfg sel =
-            Comp.ItemCardList.ViewConfig
-                model.scrollToCard
-                sel
-                previewUrl
-                previewUrlFallback
-                (.id >> Api.fileURL)
-                (.id >> ItemDetailPage)
+            { current = model.scrollToCard
+            , selection = sel
+            , previewUrl = previewUrl
+            , previewUrlFallback = previewUrlFallback
+            , attachUrl = .id >> Api.fileURL
+            , detailPage = .id >> ItemDetailPage
+            , arrange = settings.itemSearchArrange
+            , showGroups = settings.itemSearchShowGroups
+            , rowOpen = \id -> Set.member "all" model.itemRowsOpen || Set.member id model.itemRowsOpen
+            }
 
         itemViewCfg =
             case model.viewMode of
@@ -486,7 +550,7 @@ itemCardList texts flags settings model =
                     viewCfg Data.ItemSelection.Inactive
     in
     [ Html.map ItemCardListMsg
-        (Comp.ItemCardList.view2 texts.itemCardList
+        (Comp.ItemCardList.view texts.itemCardList
             itemViewCfg
             settings
             flags
