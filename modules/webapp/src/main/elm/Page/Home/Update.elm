@@ -144,15 +144,39 @@ update mId key flags texts settings msg model =
 
                         ( v, _ ) ->
                             v
+
+                itemRows =
+                    case result.toggleOpenRow of
+                        Just rid ->
+                            if Set.member rid model.itemRowsOpen then
+                                Set.remove rid model.itemRowsOpen
+
+                            else
+                                Set.insert rid model.itemRowsOpen
+
+                        Nothing ->
+                            model.itemRowsOpen
             in
             withSub
                 ( { model
                     | itemListModel = result.model
                     , viewMode = nextView
+                    , itemRowsOpen = itemRows
                     , dragDropData = DD.DragDropData result.dragModel Nothing
                   }
                 , Cmd.batch [ Cmd.map ItemCardListMsg result.cmd, searchMsg ]
                 )
+
+        ToggleExpandCollapseRows ->
+            let
+                itemRows =
+                    if Set.isEmpty model.itemRowsOpen then
+                        Set.singleton "all"
+
+                    else
+                        Set.empty
+            in
+            noSub ( { model | itemRowsOpen = itemRows, viewMenuOpen = False }, Cmd.none )
 
         ItemSearchResp scroll (Ok list) ->
             let
@@ -922,6 +946,29 @@ update mId key flags texts settings msg model =
 
                 _ ->
                     noSub ( model, Cmd.none )
+
+        ToggleViewMenu ->
+            noSub ( { model | viewMenuOpen = not model.viewMenuOpen }, Cmd.none )
+
+        ToggleShowGroups ->
+            let
+                newSettings =
+                    { settings | itemSearchShowGroups = not settings.itemSearchShowGroups }
+
+                cmd =
+                    Api.saveClientSettings flags newSettings (ClientSettingsSaveResp newSettings)
+            in
+            noSub ( { model | viewMenuOpen = False }, cmd )
+
+        ToggleArrange am ->
+            let
+                newSettings =
+                    { settings | itemSearchArrange = am }
+
+                cmd =
+                    Api.saveClientSettings flags newSettings (ClientSettingsSaveResp newSettings)
+            in
+            noSub ( { model | viewMenuOpen = False }, cmd )
 
 
 

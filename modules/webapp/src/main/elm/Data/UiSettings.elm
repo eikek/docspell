@@ -36,6 +36,7 @@ import Data.BasicSize exposing (BasicSize)
 import Data.Color exposing (Color)
 import Data.Fields exposing (Field)
 import Data.Flags exposing (Flags)
+import Data.ItemArrange exposing (ItemArrange)
 import Data.ItemTemplate exposing (ItemTemplate)
 import Data.Pdf exposing (PdfMode)
 import Data.UiTheme exposing (UiTheme)
@@ -50,7 +51,7 @@ import Messages.UiLanguage exposing (UiLanguage)
 
 
 {-| Settings for the web ui. All fields should be optional, since it
-is loaded from local storage.
+is loaded from the server and mus be backward compatible.
 
 Making fields optional, allows it to evolve without breaking previous
 versions. Also if a user is logged out, an empty object is send to
@@ -79,6 +80,8 @@ type alias StoredUiSettings =
     , sideMenuVisible : Bool
     , powerSearchEnabled : Bool
     , uiLang : Maybe String
+    , itemSearchShowGroups : Bool
+    , itemSearchArrange : Maybe String
     }
 
 
@@ -113,6 +116,8 @@ storedUiSettingsDecoder =
         |> P.optional "sideMenuVisible" Decode.bool False
         |> P.optional "powerSearchEnabled" Decode.bool False
         |> P.optional "uiLang" maybeString Nothing
+        |> P.optional "itemSearchShowGroups" Decode.bool True
+        |> P.optional "itemSearchArrange" maybeString Nothing
 
 
 storedUiSettingsEncode : StoredUiSettings -> Encode.Value
@@ -143,6 +148,8 @@ storedUiSettingsEncode value =
         , ( "sideMenuVisible", Encode.bool value.sideMenuVisible )
         , ( "powerSearchEnabled", Encode.bool value.powerSearchEnabled )
         , ( "uiLang", maybeEnc Encode.string value.uiLang )
+        , ( "itemSearchShowGroups", Encode.bool value.itemSearchShowGroups )
+        , ( "itemSearchArrange", maybeEnc Encode.string value.itemSearchArrange )
         ]
 
 
@@ -176,6 +183,8 @@ type alias UiSettings =
     , sideMenuVisible : Bool
     , powerSearchEnabled : Bool
     , uiLang : UiLanguage
+    , itemSearchShowGroups : Bool
+    , itemSearchArrange : ItemArrange
     }
 
 
@@ -248,6 +257,8 @@ defaults =
     , sideMenuVisible = True
     , powerSearchEnabled = False
     , uiLang = Messages.UiLanguage.English
+    , itemSearchShowGroups = True
+    , itemSearchArrange = Data.ItemArrange.Cards
     }
 
 
@@ -306,6 +317,10 @@ merge given fallback =
     , uiLang =
         Maybe.map Messages.fromIso2 given.uiLang
             |> Maybe.withDefault Messages.UiLanguage.English
+    , itemSearchShowGroups = given.itemSearchShowGroups
+    , itemSearchArrange =
+        Maybe.andThen Data.ItemArrange.fromString given.itemSearchArrange
+            |> Maybe.withDefault fallback.itemSearchArrange
     }
 
 
@@ -344,6 +359,8 @@ toStoredUiSettings settings =
     , sideMenuVisible = settings.sideMenuVisible
     , powerSearchEnabled = settings.powerSearchEnabled
     , uiLang = Just <| Messages.toIso2 settings.uiLang
+    , itemSearchShowGroups = settings.itemSearchShowGroups
+    , itemSearchArrange = Data.ItemArrange.asString settings.itemSearchArrange |> Just
     }
 
 

@@ -72,6 +72,8 @@ module Data.Icons exposing
     , tagIcon2
     , tags2
     , tagsIcon2
+    , trash
+    , trashIcon
     )
 
 import Data.CustomFieldType exposing (CustomFieldType)
@@ -79,6 +81,20 @@ import Html exposing (Html, i, img)
 import Html.Attributes exposing (class, src)
 import Svg
 import Svg.Attributes as SA
+
+
+trash : String
+trash =
+    "fa fa-trash-alt text-red-500 dark:text-orange-600"
+
+
+trashIcon : String -> Html msg
+trashIcon classes =
+    i
+        [ class classes
+        , class trash
+        ]
+        []
 
 
 share : String

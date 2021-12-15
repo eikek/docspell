@@ -17,7 +17,10 @@ import Comp.PowerSearchInput
 import Comp.SearchMenu
 import Comp.SharePasswordForm
 import Data.Flags exposing (Flags)
+import Data.ItemArrange exposing (ItemArrange)
 import Http
+import Page.Home.Data exposing (Msg(..))
+import Set exposing (Set)
 import Util.Html exposing (KeyCode)
 
 
@@ -50,6 +53,12 @@ type alias Model =
     , initialized : Bool
     , contentSearch : Maybe String
     , searchMode : SearchBarMode
+    , viewMode :
+        { menuOpen : Bool
+        , showGroups : Bool
+        , arrange : ItemArrange
+        , rowsOpen : Set String
+        }
     }
 
 
@@ -66,6 +75,12 @@ emptyModel flags =
     , initialized = False
     , contentSearch = Nothing
     , searchMode = SearchBarContent
+    , viewMode =
+        { menuOpen = False
+        , showGroups = True
+        , arrange = Data.ItemArrange.Cards
+        , rowsOpen = Set.empty
+        }
     }
 
 
@@ -100,3 +115,6 @@ type Msg
     | ToggleSearchBar
     | SetContentSearch String
     | ContentSearchKey (Maybe KeyCode)
+    | ToggleViewMenu
+    | ToggleArrange ItemArrange
+    | ToggleShowGroups

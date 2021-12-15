@@ -130,12 +130,12 @@ view texts settings model =
             [ if isDeleted then
                 div
                     [ classList
-                        [ ( "text-red-500 dark:text-orange-600 text-4xl", True )
+                        [ ( " text-4xl", True )
                         , ( "hidden", not isDeleted )
                         ]
                     , title texts.basics.deleted
                     ]
-                    [ i [ class "mr-2 fa fa-trash-alt" ] []
+                    [ Icons.trashIcon "mr-2"
                     ]
 
               else

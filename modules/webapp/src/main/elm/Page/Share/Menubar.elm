@@ -11,6 +11,7 @@ import Comp.Basic as B
 import Comp.MenuBar as MB
 import Comp.PowerSearchInput
 import Data.Flags exposing (Flags)
+import Data.ItemArrange
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -108,6 +109,43 @@ view texts flags model =
                     , handler = onClick ResetSearch
                     , attrs = [ href "#" ]
                     }
+            , MB.Dropdown
+                { linkIcon = "fa fa-grip-vertical"
+                , label = ""
+                , linkClass =
+                    [ ( S.secondaryBasicButton, True )
+                    ]
+                , toggleMenu = ToggleViewMenu
+                , menuOpen = model.viewMode.menuOpen
+                , items =
+                    [ { icon =
+                            if model.viewMode.showGroups then
+                                i [ class "fa fa-check-square font-thin" ] []
+
+                            else
+                                i [ class "fa fa-square font-thin" ] []
+                      , label = texts.showItemGroups
+                      , attrs =
+                            [ href "#"
+                            , onClick ToggleShowGroups
+                            ]
+                      }
+                    , { icon = i [ class "fa fa-list" ] []
+                      , label = texts.listView
+                      , attrs =
+                            [ href "#"
+                            , onClick (ToggleArrange Data.ItemArrange.List)
+                            ]
+                      }
+                    , { icon = i [ class "fa fa-th-large" ] []
+                      , label = texts.tileView
+                      , attrs =
+                            [ href "#"
+                            , onClick (ToggleArrange Data.ItemArrange.Cards)
+                            ]
+                      }
+                    ]
+                }
             ]
         , rootClasses = "mb-2 pt-1 dark:bg-bluegray-700 items-center text-sm"
         }

@@ -27,7 +27,6 @@ module Page.Home.Data exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
-import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Browser.Dom as Dom
@@ -40,6 +39,7 @@ import Comp.PowerSearchInput
 import Comp.PublishItems
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
+import Data.ItemArrange exposing (ItemArrange)
 import Data.ItemNav exposing (ItemNav)
 import Data.ItemQuery as Q
 import Data.Items
@@ -66,6 +66,8 @@ type alias Model =
     , scrollToCard : Maybe String
     , searchStats : SearchStats
     , powerSearchInput : Comp.PowerSearchInput.Model
+    , viewMenuOpen : Bool
+    , itemRowsOpen : Set String
     }
 
 
@@ -133,6 +135,8 @@ init flags viewMode =
     , viewMode = viewMode
     , searchStats = Api.Model.SearchStats.empty
     , powerSearchInput = Comp.PowerSearchInput.init
+    , viewMenuOpen = False
+    , itemRowsOpen = Set.empty
     }
 
 
@@ -230,6 +234,10 @@ type Msg
     | TogglePublishCurrentQueryView
     | PublishViewMsg Comp.PublishItems.Msg
     | RefreshView
+    | ToggleViewMenu
+    | ToggleShowGroups
+    | ToggleArrange ItemArrange
+    | ToggleExpandCollapseRows
 
 
 type SearchType

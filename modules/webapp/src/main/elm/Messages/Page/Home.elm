@@ -49,6 +49,10 @@ type alias Texts =
     , nothingSelectedToShare : String
     , loadMore : String
     , thatsAll : String
+    , showItemGroups : String
+    , listView : String
+    , tileView : String
+    , expandCollapseRows : String
     }
 
 
@@ -83,6 +87,10 @@ gb =
     , nothingSelectedToShare = "Sharing everything doesn't work. You need to apply some criteria."
     , loadMore = "Load more…"
     , thatsAll = "That's all"
+    , showItemGroups = "Group by month"
+    , listView = "List view"
+    , tileView = "Tile view"
+    , expandCollapseRows = "Expand/Collapse all"
     }
 
 
@@ -117,4 +125,8 @@ de =
     , nothingSelectedToShare = "Alles kann nicht geteilt werden; es muss etwas gesucht werden."
     , loadMore = "Mehr laden…"
     , thatsAll = "Mehr gibt es nicht"
+    , showItemGroups = "nach Monat gruppieren"
+    , listView = "Listenansicht"
+    , tileView = "Kachelansicht"
+    , expandCollapseRows = "Alle ein-/ausklappen"
     }
