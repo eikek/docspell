@@ -200,7 +200,7 @@ viewList texts cfg settings flags model =
             (List.map (viewGroup texts model cfg settings flags) model.results.groups)
 
     else
-        div [ class listingCss ]
+        div [ class (itemContainerCss cfg) ]
             (List.map (viewItem texts model cfg settings flags) items)
 
 
@@ -211,7 +211,7 @@ itemContainerCss cfg =
             "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2"
 
         Data.ItemArrange.List ->
-            "flex flex-col space-y-1"
+            "flex flex-col divide-y"
 
 
 viewCards : Texts -> ViewConfig -> UiSettings -> Flags -> Model -> Html Msg
@@ -283,7 +283,7 @@ viewItem texts model cfg settings flags item =
         itemClass =
             case cfg.arrange of
                 Data.ItemArrange.List ->
-                    " mb-1"
+                    " py-1 "
 
                 Data.ItemArrange.Cards ->
                     ""

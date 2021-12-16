@@ -279,7 +279,7 @@ viewRow texts cfg settings flags model item =
     in
     div
         ([ classList [ ( "border border-gray-800 border-dashed dark:border-lightblue-500", isMultiSelectMode cfg ) ]
-         , class "flex flex-col border-b pb-1 dark:border-bluegray-600 ds-item-row relative "
+         , class "flex flex-col dark:border-bluegray-600 ds-item-row relative "
          , class cfg.extraClasses
          , id item.id
          ]
@@ -300,7 +300,7 @@ viewRow texts cfg settings flags model item =
                 ]
             , div [ class "flex flex-grow flex-col truncate text-left" ]
                 [ div
-                    [ class "truncate w-full text-lg pointer font-medium"
+                    [ class "truncate w-full text-black dark:text-white pointer font-medium pt-1"
                     ]
                     [ trashIcon
                     , newIcon
@@ -329,7 +329,7 @@ viewRow texts cfg settings flags model item =
                         ]
                     ]
                 , div
-                    [ class "opacity-75  truncate flex flex-row items-center"
+                    [ class "opacity-75  truncate flex flex-row items-center text-sm -mt-1"
                     , classList
                         [ ( "hidden", IT.render subtitleTemplate (templateCtx texts) item == "" )
                         ]
