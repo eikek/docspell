@@ -177,6 +177,12 @@
                                                 </a>
                                             </li>
                                             
+                                            <li>
+                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#backups">
+                                                    Backups
+                                                </a>
+                                            </li>
+                                            
                                         </ul>
                                     </li>
                                     
@@ -357,8 +363,6 @@ steps instead:</p>
 <pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ mkdir -p docspell/docker/docker-compose
 </span><span style="color:#fdf4c1;">$ cd docspell/docker/docker-compose
 </span><span style="color:#fdf4c1;">$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docker-compose.yml
-</span><span style="color:#fdf4c1;">$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docspell.conf
-</span><span style="color:#fdf4c1;">$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/.env
 </span></code></pre>
 <p>You can choose any directory instead of
 <code>docspell/docker/docker-compose</code>, of course. It's only this folder to
@@ -447,6 +451,48 @@ tag, then run these commands to upgrade to newer images:</p>
 </span><span style="color:#fdf4c1;">$ docker-compose pull
 </span><span style="color:#fdf4c1;">$ docker-compose up --force-recreate --build -d
 </span></code></pre>
+<h3 id="backups">Backups<a class="zola-anchor" href="#backups" aria-label="Anchor link for: backups">🔗</a></h3>
+<p>When running the docker compose setup, you can use the following to
+backup the database.</p>
+<ol>
+<li>
+<p>(Optionally) Stop docspell, for example with <code>docker-compose down</code>.
+It is preferred to stop, i.e. should you upgrade versions.</p>
+</li>
+<li>
+<p>Add a new file <code>docker-compose.override.yml</code> (next to your
+<code>docker-compose.yml</code>) with this content:</p>
+<pre data-lang="yml" style="background-color:#282828;color:#fdf4c1aa;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="font-weight:bold;color:#8ec07c;">version</span><span>: </span><span style="color:#b8bb26;">&#39;3.8&#39;
+</span><span style="font-weight:bold;color:#8ec07c;">services</span><span>:
+</span><span>
+</span><span style="font-weight:bold;color:#8ec07c;">db</span><span>:
+</span><span>  </span><span style="font-weight:bold;color:#8ec07c;">volumes</span><span>:
+</span><span>    - </span><span style="color:#b8bb26;">/some/backupdir:/opt/backup
+</span></code></pre>
+<p>The <code>/some/backupdir</code> is the directory where the backup should be stored on the host.</p>
+</li>
+<li>
+<p>If you stopped the containers in step 1, start now  <strong>only</strong> the db service via <code>docker-compose up -d -- db</code></p>
+</li>
+<li>
+<p>Run the dump command:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>docker exec -it postgres_db pg_dump -d dbname -U dbuser -Fc -f /opt/backup/docspell.sqlc
+</span></code></pre>
+</li>
+</ol>
+<p>The <code>docker-compose.override.yml</code> file is only to mount a local
+directory into the db container. You can also add these lines directly
+into the <code>docker-compose.yml</code>. Now you have the dump in your local
+<code>/some/backupdir</code> directory.</p>
+<p>This dump can be restored almost the same way. Mount your backup
+directory into the db container as before in steps 1-3. Then run this
+command in step 4 instead:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>docker exec -it postgres_db pg_restore -d dbname -U dbuser -Fc /opt/backup/docspell.sqlc
+</span></code></pre>
+<p>So, before the upgrade run steps 1 to 4. Then you have a dump of your
+current database (everything, files and all other data). When creating
+and restoring a dump, do not start the docspell containers - make sure
+to start the db container only.</p>
 
                         </div>
                     </div>
