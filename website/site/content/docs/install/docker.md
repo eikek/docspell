@@ -152,8 +152,6 @@ steps instead:
 $ mkdir -p docspell/docker/docker-compose
 $ cd docspell/docker/docker-compose
 $ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docker-compose.yml
-$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docspell.conf
-$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/.env
 ```
 
 You can choose any directory instead of
