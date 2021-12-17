@@ -266,3 +266,47 @@ $ docker-compose down
 $ docker-compose pull
 $ docker-compose up --force-recreate --build -d
 ```
+
+### Backups
+
+When running the docker compose setup, you can use the following to
+backup the database.
+
+1. (Optionally) Stop docspell, for example with `docker-compose down`.
+   It is preferred to stop, i.e. should you upgrade versions.
+2. Add a new file `docker-compose.override.yml` (next to your
+   `docker-compose.yml`) with this content:
+
+   ```yml
+   version: '3.8'
+   services:
+
+   db:
+     volumes:
+       - /some/backupdir:/opt/backup
+   ```
+
+   The `/some/backupdir` is the directory where the backup should be stored on the host.
+3. If you stopped the containers in step 1, start now  **only** the db service via `docker-compose up -d -- db`
+4. Run the dump command:
+   ```
+   docker exec -it postgres_db pg_dump -d dbname -U dbuser -Fc -f /opt/backup/docspell.sqlc
+   ```
+
+The `docker-compose.override.yml` file is only to mount a local
+directory into the db container. You can also add these lines directly
+into the `docker-compose.yml`. Now you have the dump in your local
+`/some/backupdir` directory.
+
+This dump can be restored almost the same way. Mount your backup
+directory into the db container as before in steps 1-3. Then run this
+command in step 4 instead:
+
+```
+docker exec -it postgres_db pg_restore -d dbname -U dbuser -Fc /opt/backup/docspell.sqlc
+```
+
+So, before the upgrade run steps 1 to 4. Then you have a dump of your
+current database (everything, files and all other data). When creating
+and restoring a dump, do not start the docspell containers - make sure
+to start the db container only.
