@@ -65,6 +65,8 @@ services:
   # The value after `Docspell-Integration` must match the secret
   # specified at the restserver via
   # DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE.
+  #
+  # The --not-matches "**/.*" option is to exclude hidden files.
   consumedir:
     image: docspell/dsc:latest
     container_name: docspell-consumedir
@@ -75,6 +77,8 @@ services:
       - "watch"
       - "--delete"
       - "-ir"
+      - "--not-matches"
+      - "**/.*"
       - "--header"
       - "Docspell-Integration:integration-password123"
       - "/opt/docs"
