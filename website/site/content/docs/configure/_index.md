@@ -391,7 +391,7 @@ The `provider-id` is some identifier that is used in the URL to
 distinguish between possibly multiple providers. The `client-id` and
 `client-secret` define the two parameters required for a "confidential
 client". The different URLs are best explained at the [keycloak
-docs](https://www.keycloak.org/docs/latest/server_admin/#_oidc-endpoints).
+docs](https://www.keycloak.org/docs/latest/server_admin/).
 They are available for all OPs in some way. The `user-url` is not
 required, if the access token is already containing the necessary
 data. If not, then docspell performs another request to the
