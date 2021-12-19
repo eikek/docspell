@@ -1,14 +1,14 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <withJansi>true</withJansi>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
 
-        <encoder>
-            <pattern>%highlight(%-5level) [%t{10}] %cyan(%logger{15}) - %msg %n</pattern>
-        </encoder>
-    </appender>
+    <encoder>
+      <pattern>level=%-5level thread=%thread logger=%logger{15} message="%replace(%msg){'"', '\\"'}"%n</pattern>
+    </encoder>
+  </appender>
 
-    <logger name="docspell" level="warn" />
-    <root level="error">
-        <appender-ref ref="STDOUT" />
-    </root>
+  <logger name="docspell" level="warn" />
+  <root level="error">
+    <appender-ref ref="STDOUT" />
+  </root>
 </configuration>

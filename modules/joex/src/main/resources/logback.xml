@@ -3,7 +3,7 @@
     <withJansi>true</withJansi>
 
     <encoder>
-      <pattern>[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</pattern>
+      <pattern>level=%-5level thread=%thread logger=%logger{15} message="%replace(%msg){'"', '\\"'}"%n</pattern>
     </encoder>
   </appender>
 
