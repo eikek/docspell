@@ -46,7 +46,7 @@ gb =
                 "Reprocessing this file will not change metadata of "
                     ++ "this item, since it has been confirmed. Do you want to proceed?"
     , confirmDeleteItem =
-        "Really delete this item? This cannot be undone."
+        "Really trash this item? It can be resurrected from trash for some time."
     , confirmDeleteFile = "Really delete this file?"
     , confirmDeleteAllFiles = "Really delete these files?"
     }
@@ -74,7 +74,7 @@ de =
                 "Die Neuverarbeitung dieses Anhangs wird die Metadaten des Dokuments nicht beeinflussen, "
                     ++ "da sie bereits bestätigt sind. Möchtest du fortfahren?"
     , confirmDeleteItem =
-        "Dieses Dokument wirklich löschen? Das kann nicht rückgängig gemacht werden."
+        "Dieses Dokument wirklich löschen? Es kann für einige Zeit aus dem Papierkorb wiederhergestellt werden."
     , confirmDeleteFile = "Diese Datei wirklich löschen?"
     , confirmDeleteAllFiles = "Die gewählten Dateien wirklich löschen?"
     }
