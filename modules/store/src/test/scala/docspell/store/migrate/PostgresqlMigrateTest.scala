@@ -21,7 +21,7 @@ class PostgresqlMigrateTest extends FunSuite with TestContainerForAll {
   override val containerDef: PostgreSQLContainer.Def =
     PostgreSQLContainer.Def(DockerImageName.parse("postgres:13"))
 
-  test("postgres empty schema migration") {
+  test("postgres empty schema migration".ignore) {
     assume(Docker.existsUnsafe, "docker doesn't exist!")
     withContainers { cnt =>
       val jdbc =
