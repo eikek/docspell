@@ -180,7 +180,7 @@ viewRow texts cfg settings flags model item =
 
         cardColor =
             if isCreated then
-                "text-blue-500 dark:text-lightblue-500"
+                "text-blue-500 dark:text-sky-500"
 
             else if isDeleted then
                 "text-red-600 dark:text-orange-600"
@@ -211,7 +211,7 @@ viewRow texts cfg settings flags model item =
             a
                 [ classList
                     [ ( "my-auto flex text-lg w-4 text-left w-1", not rowOpen )
-                    , ( "flex w-full block text-xl bg-gray-50 dark:bg-bluegray-700 mb-2 rounded ", rowOpen )
+                    , ( "flex w-full block text-xl bg-gray-50 dark:bg-slate-700 mb-2 rounded ", rowOpen )
                     , ( "invisible", isSelected cfg item.id )
                     ]
                 , href "#"
@@ -266,7 +266,7 @@ viewRow texts cfg settings flags model item =
                     ]
                 , class S.dimmerRow
                 ]
-                [ div [ class "text-2xl font-bold text-blue-100 hover:text-blue-200 dark:text-lightblue-300 dark:hover:text-lightblue-200" ]
+                [ div [ class "text-2xl font-bold text-blue-100 hover:text-blue-200 dark:text-sky-300 dark:hover:text-sky-200" ]
                     [ a
                         (mkCardAction texts cfg settings item)
                         [ i [ class "fa fa-check-circle" ] []
@@ -278,8 +278,8 @@ viewRow texts cfg settings flags model item =
             mkCardAction texts cfg settings item
     in
     div
-        ([ classList [ ( "border border-gray-800 border-dashed dark:border-lightblue-500", isMultiSelectMode cfg ) ]
-         , class "flex flex-col dark:border-bluegray-600 ds-item-row relative "
+        ([ classList [ ( "border border-gray-800 border-dashed dark:border-sky-500", isMultiSelectMode cfg ) ]
+         , class "flex flex-col dark:border-slate-600 ds-item-row relative "
          , class cfg.extraClasses
          , id item.id
          ]
@@ -473,7 +473,7 @@ viewCard texts cfg settings flags model item =
 
         cardColor =
             if isCreated then
-                "text-blue-500 dark:text-lightblue-500"
+                "text-blue-500 dark:text-sky-500"
 
             else if isDeleted then
                 "text-red-600 dark:text-orange-600"
@@ -495,7 +495,7 @@ viewCard texts cfg settings flags model item =
                 , class S.dimmerCard
                 , class "rounded-lg"
                 ]
-                [ div [ class "text-9xl text-blue-400 hover:text-blue-500 dark:text-lightblue-300 dark:hover:text-lightblue-200" ]
+                [ div [ class "text-9xl text-blue-400 hover:text-blue-500 dark:text-sky-300 dark:hover:text-sky-200" ]
                     [ a
                         cardAction
                         [ i [ class "fa fa-check-circle font-thin" ] []
@@ -507,8 +507,8 @@ viewCard texts cfg settings flags model item =
         ([ class cfg.extraClasses
          , class "ds-item-card relative hover:shadow-lg rounded-lg flex flex-col break-all"
          , classList
-            [ ( "border border-gray-400 dark:border-bluegray-600 dark:hover:border-bluegray-500", not (isMultiSelectMode cfg) )
-            , ( "border-2 border-gray-800 border-dashed dark:border-lightblue-500", isMultiSelectMode cfg )
+            [ ( "border border-gray-400 dark:border-slate-600 dark:hover:border-slate-500", not (isMultiSelectMode cfg) )
+            , ( "border-2 border-gray-800 border-dashed dark:border-sky-500", isMultiSelectMode cfg )
             ]
          , id item.id
          ]
@@ -621,7 +621,7 @@ notesContent2 settings item =
                     || Util.String.isNothingOrBlank item.notes
               )
             ]
-        , class "px-2 py-2 border-t  dark:border-bluegray-600 opacity-50 text-sm"
+        , class "px-2 py-2 border-t  dark:border-slate-600 opacity-50 text-sm"
         ]
         [ Maybe.withDefault "" item.notes
             |> Util.String.ellipsis settings.itemSearchNoteLength
@@ -804,7 +804,7 @@ previewImage2 texts cfg settings model item =
             not isCardView
     in
     a
-        ([ class "overflow-hidden block bg-gray-50 dark:bg-bluegray-700 dark:bg-opacity-40  border-gray-400 dark:hover:border-bluegray-500 w-full"
+        ([ class "overflow-hidden block bg-gray-50 dark:bg-slate-700 dark:bg-opacity-40  border-gray-400 dark:hover:border-slate-500 w-full"
          , classList
             [ ( "rounded-t-lg", isCardView )
             , ( Data.UiSettings.cardPreviewSize2 settings, isCardView && not isRowOpen )
@@ -818,7 +818,7 @@ previewImage2 texts cfg settings model item =
                 [ ( "rounded-t-lg w-full -mt-1", settings.cardPreviewFullWidth && isCardView )
                 , ( Data.UiSettings.cardPreviewSize2 settings, not settings.cardPreviewFullWidth && isCardView )
                 , ( "h-12", isListView && not isRowOpen )
-                , ( "border-t border-r border-l dark:border-bluegray-600", isListView && isRowOpen )
+                , ( "border-t border-r border-l dark:border-slate-600", isListView && isRowOpen )
                 ]
             , src previewUrl
             ]
@@ -858,7 +858,7 @@ previewMenu2 texts settings flags cfg model item mainAttach =
                             || fieldHidden Data.Fields.DueDate
                       )
                     ]
-                , class "label font-semibold text-sm border-gray-300 dark:border-bluegray-600"
+                , class "label font-semibold text-sm border-gray-300 dark:border-slate-600"
                 , title (texts.dueOn ++ " " ++ dueDate)
                 ]
                 [ Icons.dueDateIcon2 "mr-2"
@@ -880,10 +880,10 @@ previewMenu2 texts settings flags cfg model item mainAttach =
             not isCardView
     in
     div
-        [ class "px-2 py-1 flex flex-row flex-wrap bg-gray-50 dark:bg-bluegray-700 dark:bg-opacity-40 rounded-b-lg md:text-sm"
+        [ class "px-2 py-1 flex flex-row flex-wrap bg-gray-50 dark:bg-slate-700 dark:bg-opacity-40 rounded-b-lg md:text-sm"
         , classList
             [ ( "border-0", isCardView || not isRowOpen )
-            , ( "border-b border-l border-r dark:border-bluegray-600", isListView && isRowOpen )
+            , ( "border-b border-l border-r dark:border-slate-600", isListView && isRowOpen )
             ]
         ]
         [ a
@@ -907,7 +907,7 @@ previewMenu2 texts settings flags cfg model item mainAttach =
             [ classList [ ( "hidden", attachCount > 1 && not (fieldHidden Data.Fields.PreviewImage) ) ]
             , class "ml-2"
             ]
-            [ div [ class "px-2 rounded border border-gray-300 dark:border-bluegray-600 py-1" ]
+            [ div [ class "px-2 rounded border border-gray-300 dark:border-slate-600 py-1" ]
                 [ text (String.fromInt pageCount)
                 , text "p."
                 ]
@@ -925,7 +925,7 @@ previewMenu2 texts settings flags cfg model item mainAttach =
                 ]
                 [ i [ class "fa fa-arrow-right" ] []
                 ]
-            , div [ class "px-2 rounded-r border-t border-r border-b border-gray-500 dark:border-bluegray-500 py-1" ]
+            , div [ class "px-2 rounded-r border-t border-r border-b border-gray-500 dark:border-slate-500 py-1" ]
                 [ currentPosition model item
                     |> String.fromInt
                     |> text

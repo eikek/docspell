@@ -478,7 +478,7 @@ shareInfo texts flags share =
         ]
         [ h2
             [ class S.header2
-            , class "border-b-2 dark:border-bluegray-600"
+            , class "border-b-2 dark:border-slate-600"
             ]
             [ text texts.shareInformation
             ]
@@ -498,7 +498,7 @@ shareSendMail texts flags settings model =
         ]
         [ a
             [ class S.header2
-            , class "border-b-2 dark:border-bluegray-600 w-full inline-block"
+            , class "border-b-2 dark:border-slate-600 w-full inline-block"
             , href "#"
             , onClick ToggleSendMailVisible
             ]
@@ -510,7 +510,7 @@ shareSendMail texts flags settings model =
             , text texts.sendViaMail
             ]
         , div
-            [ class "px-2 py-2 dark:border-bluegray-600"
+            [ class "px-2 py-2 dark:border-slate-600"
             , classList [ ( "hidden", not model.sendMailVisible ) ]
             ]
             [ Html.map MailMsg

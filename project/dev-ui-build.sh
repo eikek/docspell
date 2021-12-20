@@ -23,12 +23,35 @@ compile_css() {
     echo "Building css …"
     local srcs="$wdir/modules/webapp/src/main/styles/index.css"
     local target="$targetbase/css/styles.css"
-    cd $wdir/modules/webapp && npx postcss "$srcs" -o "$target" --env development && cd -
+    cd $wdir/modules/webapp && npx tailwindcss --input "$srcs" -o "$target" --config ./tailwind.config.js --postcss ./postcss.config.js  --env development && cd -
     cat "$target" | gzip > "$targetbase/css/styles.css.gz"
     cp "$targetbase/css/styles.css" "$resourcebase/css/"
     cp "$targetbase/css/styles.css.gz" "$resourcebase/css/"
 }
 
+watch_js() {
+    echo "Watching for elm sources. C-c to quit."
+    inotifywait -r --format '%w%f' \
+                -e close_write -m \
+                "$wdir/modules/webapp/src/main/elm" |
+        while read pathfile; do
+            compile_js
+            echo "Done."
+        done
+}
+
+watch_css() {
+    echo "Watching css …"
+    rm -f "$targetbase/css"/*.css
+    rm -f "$resourcebase/css"/*.css
+    local srcs="$wdir/modules/webapp/src/main/styles/index.css"
+    local target="$targetbase/css/styles.css"
+    cd $wdir/modules/webapp && \
+        npx tailwindcss --input "$srcs" \
+            -o "$target" -m \
+            --config ./tailwind.config.js \
+            --postcss ./postcss.config.js --watch
+}
 
 watch_both() {
     echo "Watching css and elm sources. C-c to quit."
@@ -39,6 +62,7 @@ watch_both() {
         while read pathfile; do
             if [[ "$pathfile" == *".elm" ]]; then
                 compile_js
+                compile_css
                 echo "Done."
             elif [[ "$pathfile" == *".css" ]]; then
                 compile_css
@@ -49,7 +73,8 @@ watch_both() {
 }
 
 cd "$wdir/modules/webapp"
-case "$1" in
+arg=${1:-_}
+case "$arg" in
     all)
         compile_js
         compile_css
@@ -66,14 +91,18 @@ case "$1" in
         echo "Done."
         ;;
 
-    watch)
+    watch-js)
         set +e
         compile_js
-        compile_css
-        watch_both
+        watch_js
+        ;;
+
+    watch-css)
+        set +e
+        watch_css
         ;;
 
     *)
-        echo "Need one of: all, js, css, watch"
+        echo "Need one of: all, js, css, watch, watch-js, watch-css"
         exit 1
 esac

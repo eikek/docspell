@@ -58,9 +58,9 @@ type alias State =
 
 defaultStyle : Style
 defaultStyle =
-    { rootClasses = "border-0 border-t  dark:border-bluegray-600"
-    , tabClasses = "border-0 border-b  dark:border-bluegray-600"
-    , titleClasses = "py-4 md:py-2 px-2 bg-gray-50 hover:bg-gray-100 dark:bg-bluegray-700 dark:bg-opacity-50 dark:hover:bg-opacity-100"
+    { rootClasses = "border-0 border-t  dark:border-slate-600"
+    , tabClasses = "border-0 border-b  dark:border-slate-600"
+    , titleClasses = "py-4 md:py-2 px-2 bg-gray-50 hover:bg-gray-100 dark:bg-slate-700 dark:bg-opacity-50 dark:hover:bg-opacity-100"
     , bodyClasses = "mt-2 py-2"
     }
 
@@ -69,7 +69,7 @@ searchMenuStyle : Style
 searchMenuStyle =
     { rootClasses = "border-0 "
     , tabClasses = "border-0 "
-    , titleClasses = "py-4 md:py-2 pl-2 bg-blue-50 hover:bg-blue-100 dark:bg-bluegray-700 dark:hover:bg-opacity-100 dark:hover:bg-bluegray-600 rounded"
+    , titleClasses = "py-4 md:py-2 pl-2 bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 dark:hover:bg-opacity-100 dark:hover:bg-slate-600 rounded"
     , bodyClasses = "mt-1 py-1 pl-2"
     }
 

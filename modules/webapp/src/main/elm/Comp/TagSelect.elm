@@ -481,7 +481,7 @@ viewTagsDrop2 texts ddm wm settings model =
                     , onInput Search
                     , class "bg-blue-50 w-30 h-6 px-0 py-0 text-xs"
                     , class "border-0 border-b border-gray-200 focus:ring-0 focus:border-black"
-                    , class "dark:bg-bluegray-700 dark:text-bluegray-200 dark:border-bluegray-400 dark:focus:border-white"
+                    , class "dark:bg-slate-700 dark:text-slate-200 dark:border-slate-400 dark:focus:border-white"
                     ]
                     []
                 , i [ class "fa fa-search absolute top-1/3 right-0 opacity-50" ] []
@@ -553,10 +553,10 @@ viewTagItem2 ddm settings model tag =
     in
     a
         ([ classList
-            [ ( "bg-blue-100 dark:bg-bluegray-600", dropActive )
+            [ ( "bg-blue-100 dark:bg-slate-600", dropActive )
             ]
          , class "flex flex-row items-center"
-         , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-bluegray-600"
+         , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-slate-600"
          , href "#"
          , onClick (ToggleTag tag.tag.id)
          ]
@@ -591,7 +591,7 @@ viewCategoryItem2 settings model cat =
     in
     a
         [ class "flex flex-row items-center"
-        , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-bluegray-600"
+        , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-slate-600"
         , href "#"
         , onClick (ToggleCat cat.name)
         ]
@@ -662,7 +662,7 @@ numberLabel : Int -> Html msg
 numberLabel num =
     div
         [ class "bg-gray-200 border rounded-full h-6 w-6 flex items-center justify-center text-xs"
-        , class "dark:bg-bluegray-800 dark:text-bluegray-200 dark:border-bluegray-800 dark:bg-opacity-50"
+        , class "dark:bg-slate-800 dark:text-slate-200 dark:border-slate-800 dark:bg-opacity-50"
         ]
         [ text (String.fromInt num)
         ]

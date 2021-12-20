@@ -324,8 +324,8 @@ itemCard texts settings model index item =
              , class "cursor-pointer items-center"
              , classList
                 [ ( "border-2 border-blue-500 dark:border-blue-500", index == 0 && not dropActive )
-                , ( "bg-blue-100 dark:bg-lightblue-900", index == 0 && not dropActive )
-                , ( "border border-gray-400 dark:border-bluegray-600 dark:hover:border-bluegray-500 bg-white dark:bg-bluegray-700 mt-2", index /= 0 )
+                , ( "bg-blue-100 dark:bg-sky-900", index == 0 && not dropActive )
+                , ( "border border-gray-400 dark:border-slate-600 dark:hover:border-slate-500 bg-white dark:bg-slate-700 mt-2", index /= 0 )
                 , ( "bg-yellow-50 dark:bg-lime-900 mt-4", dropActive )
                 ]
              , id ("merge-" ++ item.id)

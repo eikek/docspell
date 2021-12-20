@@ -187,7 +187,7 @@ view2 cfg values model =
                 , onInput SetInput
                 , onBlur (KeyPress 13)
                 , class "inline-flex w-24 border-0 px-0 focus:ring-0 h-6 text-sm"
-                , class "placeholder-gray-400 dark:text-bluegray-200 dark:bg-bluegray-800 dark:border-bluegray-500"
+                , class "placeholder-gray-400 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-500"
                 ]
                 []
             ]
@@ -217,7 +217,7 @@ renderMenu2 style model =
             a
                 [ class style.item
                 , classList
-                    [ ( "bg-gray-200 dark:bg-bluegray-700 dark:text-bluegray-50", model.active == Just v )
+                    [ ( "bg-gray-200 dark:bg-slate-700 dark:text-slate-50", model.active == Just v )
                     ]
                 , href "#"
                 , onClick (AddEmail v)

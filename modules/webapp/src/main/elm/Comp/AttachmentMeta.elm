@@ -99,7 +99,7 @@ viewData2 texts meta =
         [ div [ class "text-lg font-bold" ]
             [ text texts.content
             ]
-        , div [ class "px-2 py-2 text-sm bg-yellow-50 dark:bg-warmgray-800 break-words whitespace-pre max-h-80 overflow-auto" ]
+        , div [ class "px-2 py-2 text-sm bg-yellow-50 dark:bg-stone-800 break-words whitespace-pre max-h-80 overflow-auto" ]
             [ text meta.content
             ]
         , div [ class "text-lg font-bold mt-2" ]

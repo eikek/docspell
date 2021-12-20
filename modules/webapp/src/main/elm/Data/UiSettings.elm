@@ -392,7 +392,7 @@ tagColorString2 : Tag -> UiSettings -> String
 tagColorString2 tag settings =
     tagColor tag settings
         |> Maybe.map Data.Color.toString2
-        |> Maybe.withDefault "border-black dark:border-bluegray-200"
+        |> Maybe.withDefault "border-black dark:border-slate-200"
 
 
 tagColorFg2 : Tag -> UiSettings -> String

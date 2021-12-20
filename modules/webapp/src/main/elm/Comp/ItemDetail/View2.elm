@@ -134,7 +134,7 @@ menuBar texts inav settings model =
             , MB.CustomElement <|
                 a
                     [ classList
-                        [ ( "bg-gray-200 dark:bg-bluegray-600", model.mailOpen )
+                        [ ( "bg-gray-200 dark:bg-slate-600", model.mailOpen )
                         ]
                     , title texts.sendMail
                     , onClick ToggleMail
@@ -146,7 +146,7 @@ menuBar texts inav settings model =
             , MB.CustomElement <|
                 a
                     [ classList
-                        [ ( "bg-gray-200 dark:bg-bluegray-600", model.addFilesOpen )
+                        [ ( "bg-gray-200 dark:bg-slate-600", model.addFilesOpen )
                         ]
                     , if model.addFilesOpen then
                         title texts.close
@@ -162,7 +162,7 @@ menuBar texts inav settings model =
             , MB.CustomElement <|
                 a
                     [ classList
-                        [ ( "bg-gray-200 dark:bg-bluegray-600", isShowQrItem model.showQrModel )
+                        [ ( "bg-gray-200 dark:bg-slate-600", isShowQrItem model.showQrModel )
                         ]
                     , if isShowQrItem model.showQrModel then
                         title texts.close
@@ -258,7 +258,7 @@ leftArea texts flags settings model =
                 ]
             , class "mt-4 "
             ]
-            [ h3 [ class "flex flex-row items-center border-b dark:border-bluegray-600 font-bold text-lg" ]
+            [ h3 [ class "flex flex-row items-center border-b dark:border-slate-600 font-bold text-lg" ]
                 [ text texts.sentEmails
                 ]
             , Html.map SentMailsMsg (Comp.SentMails.view2 texts.sentMails model.sentMails)
@@ -323,7 +323,7 @@ sendMailForm texts settings model =
 
 itemIdInfo : Texts -> Model -> Html msg
 itemIdInfo texts model =
-    div [ class "flex flex-col opacity-50 text-xs pb-1 mt-3 border-t dark:border-bluegray-600" ]
+    div [ class "flex flex-col opacity-50 text-xs pb-1 mt-3 border-t dark:border-slate-600" ]
         [ div
             [ class "inline-flex items-center"
             , title texts.itemId

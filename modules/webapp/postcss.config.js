@@ -1,31 +1,21 @@
 //postcss.config.js
-const tailwindcss = require("tailwindcss");
 
-const devPlugins =
+const basePlugins =
       [
           require('postcss-import'),
-          tailwindcss("./tailwind.config.js"),
-          require("autoprefixer")
+          require('tailwindcss'),
+          require('autoprefixer'),
       ];
 
 const prodPlugins =
       [
           require('postcss-import'),
-          tailwindcss("./tailwind.config.js"),
-          require("autoprefixer"),
-          require("postcss-purgecss")({
-              content: [
-                  "./src/main/elm/**/*.elm",
-                  "./src/main/styles/keep.txt",
-                  "../restserver/src/main/templates/*.html"
-              ],
-              defaultExtractor: content => content.match(/[A-Za-z0-9-_:/\.]+/g) || []
-          }),
-          require('cssnano')({
-              preset: 'default'
-          })
-      ]
+          require('tailwindcss'),
+          require('autoprefixer'),
+          require('cssnano'),
+      ];
+
 
 module.exports = (ctx) => ({
-    plugins: ctx.env === 'production' ? prodPlugins : devPlugins
-});
+    plugins: ctx && ctx.env === 'production' ? prodPlugins : basePlugins
+})

@@ -36,7 +36,7 @@ view texts flags settings model =
                     , title = texts.editMode
                     , inputClass =
                         [ ( S.secondaryBasicButton, True )
-                        , ( "bg-gray-200 dark:bg-bluegray-600", selectActive model )
+                        , ( "bg-gray-200 dark:bg-slate-600", selectActive model )
                         ]
                     }
                 , MB.CustomButton

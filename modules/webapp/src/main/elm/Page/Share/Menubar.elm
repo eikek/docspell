@@ -91,7 +91,7 @@ view texts flags model =
                     , attrs =
                         [ href "#"
                         , title texts.extendedSearch
-                        , classList [ ( "bg-gray-200 dark:bg-bluegray-600", model.searchMode == SearchBarNormal ) ]
+                        , classList [ ( "bg-gray-200 dark:bg-slate-600", model.searchMode == SearchBarNormal ) ]
                         ]
                     }
             ]
@@ -147,5 +147,5 @@ view texts flags model =
                     ]
                 }
             ]
-        , rootClasses = "mb-2 pt-1 dark:bg-bluegray-700 items-center text-sm"
+        , rootClasses = "mb-2 pt-1 dark:bg-slate-700 items-center text-sm"
         }

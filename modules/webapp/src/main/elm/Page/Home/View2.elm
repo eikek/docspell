@@ -296,7 +296,7 @@ defaultMenuBar texts flags settings model =
                 , title = texts.selectModeTitle
                 , inputClass =
                     [ ( btnStyle, True )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", selectActive model )
+                    , ( "bg-gray-200 dark:bg-slate-600", selectActive model )
                     ]
                 }
             , MB.Dropdown
@@ -375,11 +375,11 @@ defaultMenuBar texts flags settings model =
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "hidden sm:inline-block", False )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", settings.cardPreviewFullWidth )
+                    , ( "bg-gray-200 dark:bg-slate-600", settings.cardPreviewFullWidth )
                     ]
                 }
             ]
-        , rootClasses = "mb-2 pt-1 dark:bg-bluegray-700 items-center text-sm"
+        , rootClasses = "mb-2 pt-1 dark:bg-slate-700 items-center text-sm"
         }
 
 
@@ -401,7 +401,7 @@ editMenuBar texts model svm =
                 , title = texts.editSelectedItems selectCount
                 , inputClass =
                     [ ( btnStyle, True )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == EditSelected )
+                    , ( "bg-gray-200 dark:bg-slate-600", svm.action == EditSelected )
                     , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
@@ -412,7 +412,7 @@ editMenuBar texts model svm =
                 , title = texts.reprocessSelectedItems selectCount
                 , inputClass =
                     [ ( btnStyle, True )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == ReprocessSelected )
+                    , ( "bg-gray-200 dark:bg-slate-600", svm.action == ReprocessSelected )
                     , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
@@ -423,7 +423,7 @@ editMenuBar texts model svm =
                 , title = texts.deleteSelectedItems selectCount
                 , inputClass =
                     [ ( btnStyle, True )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == DeleteSelected )
+                    , ( "bg-gray-200 dark:bg-slate-600", svm.action == DeleteSelected )
                     , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
@@ -434,7 +434,7 @@ editMenuBar texts model svm =
                 , title = texts.undeleteSelectedItems selectCount
                 , inputClass =
                     [ ( btnStyle, True )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == RestoreSelected )
+                    , ( "bg-gray-200 dark:bg-slate-600", svm.action == RestoreSelected )
                     , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Normal )
                     ]
                 }
@@ -445,7 +445,7 @@ editMenuBar texts model svm =
                 , title = texts.mergeItemsTitle selectCount
                 , inputClass =
                     [ ( btnStyle, True )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == MergeSelected )
+                    , ( "bg-gray-200 dark:bg-slate-600", svm.action == MergeSelected )
                     , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
@@ -456,7 +456,7 @@ editMenuBar texts model svm =
                 , title = texts.publishItemsTitle selectCount
                 , inputClass =
                     [ ( btnStyle, True )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", svm.action == PublishSelected )
+                    , ( "bg-gray-200 dark:bg-slate-600", svm.action == PublishSelected )
                     , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
                     ]
                 }
@@ -483,7 +483,7 @@ editMenuBar texts model svm =
             , MB.TextLabel
                 { icon = ""
                 , label = String.fromInt selectCount
-                , class = "px-4 py-2 w-10 rounded-full font-bold bg-blue-100 dark:bg-lightblue-600 "
+                , class = "px-4 py-2 w-10 rounded-full font-bold bg-blue-100 dark:bg-sky-600 "
                 }
             , MB.CustomButton
                 { tagger = ResetSearch
@@ -502,7 +502,7 @@ editMenuBar texts model svm =
                 , title = texts.exitSelectMode
                 , inputClass =
                     [ ( btnStyle, True )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", selectActive model )
+                    , ( "bg-gray-200 dark:bg-slate-600", selectActive model )
                     ]
                 }
             ]

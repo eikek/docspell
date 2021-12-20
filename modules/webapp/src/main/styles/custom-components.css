@@ -1,0 +1,99 @@
+@layer components {
+  .label {
+      @apply flex flex-row items-center px-2 py-0.5 rounded border ;
+  }
+
+  .ds-item-card.current {
+      @apply shadow-lg dark:border-sky-600;
+  }
+  .ds-item-row.current {
+      @apply bg-gray-200 bg-opacity-50 dark:bg-sky-600 dark:bg-opacity-10;
+  }
+
+  .elm-datepicker--input {
+      @apply pl-10 rounded w-full placeholder-gray-400 dark:text-slate-200 dark:border-slate-500;
+  }
+  #sidebar .elm-datepicker--input {
+      @apply dark:bg-slate-700 border-gray-500 bg-blue-50;
+  }
+
+  #content .elm-datepicker--input {
+      @apply dark:bg-slate-800 border-gray-400;
+  }
+  #item-card-list .elm-datepicker--input {
+      @apply dark:bg-slate-800 border-gray-400;
+  }
+
+  .elm-datepicker--container {
+      @apply w-full;
+  }
+  .elm-datepicker--picker {
+      @apply absolute top-11 z-50 bg-white dark:bg-slate-800 w-full flex flex-col border border-gray-300 dark:border-slate-500 shadow-lg;
+  }
+  .elm-datepicker--picker-header {
+      @apply flex flex-row items-center py-2 bg-blue-50 dark:bg-slate-700;
+  }
+  .elm-datepicker--prev-container {
+      @apply flex-none px-2;
+  }
+  .elm-datepicker--prev {
+      @apply fa fa-chevron-left inline-flex block px-2 py-2 focus:outline-none hover:opacity-75;
+  }
+  .elm-datepicker--month-container {
+      @apply flex-grow px-2 flex flex-col space-y-1 items-center;
+  }
+  .elm-datepicker--next-container {
+      @apply px-2;
+  }
+  .elm-datepicker--next {
+      @apply fa fa-chevron-right inline-flex block px-2 py-2 focus:outline-none hover:opacity-75;
+  }
+  .elm-datepicker--year-menu {
+      @apply dark:text-slate-200 dark:bg-slate-600 dark:border-slate-400 rounded text-sm py-1 focus:ring focus:ring-black focus:ring-opacity-50 focus:ring-offset-0 dark:focus:ring-slate-400;
+  }
+
+  .elm-datepicker--table {
+      @apply border-collapse w-full text-lg;
+  }
+  .elm-datepicker--weekdays {
+      @apply font-semibold text-sm  border-0 border-b dark:border-slate-500;
+  }
+  .elm-datepicker--year {
+      @apply h-8;
+  }
+  .elm-datepicker--dow  {
+      @apply px-1 py-1 text-center;
+  }
+  .elm-datepicker--day {
+      @apply cursor-pointer text-center hover:underline;
+  }
+  .elm-datepicker--day.elm-datepicker--other-month {
+      @apply opacity-50;
+  }
+  .elm-datepicker--day.elm-datepicker--today {
+      @apply border-2 rounded-full border-blue-500 dark:border-sky-500 h-5/6 w-5/6 flex items-center justify-center ;
+  }
+
+
+  .markdown-preview h3,h4,h5,h6 {
+      @apply text-lg font-semibold mb-2;
+  }
+  .markdown-preview h2 {
+      @apply text-xl font-semibold mb-2;
+  }
+  .markdown-preview h1 {
+      @apply text-2xl font-semibold mb-2;
+  }
+  .markdown-preview ul {
+      @apply list-disc py-2 ml-4;
+  }
+  .markdown-preview ol {
+      @apply list-decimal py-2 ml-4;
+  }
+  .markdown-preview p {
+      @apply py-2;
+  }
+  .markdown-preview a {
+      @apply text-blue-400 hover:text-blue-500 dark:text-sky-200 dark:hover:text-sky-100 cursor-pointer;
+  }
+}

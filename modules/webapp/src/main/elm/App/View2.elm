@@ -68,7 +68,7 @@ topNavUser auth model =
             , disabled = not (Page.hasSidebar model.page)
             , attrs = [ href "#" ]
             , baseStyle = "font-bold inline-flex items-center px-4 py-2"
-            , activeStyle = "hover:bg-blue-200 dark:hover:bg-bluegray-800 w-12"
+            , activeStyle = "hover:bg-blue-200 dark:hover:bg-slate-800 w-12"
             }
         , headerNavItem True model
         , div [ class "flex flex-grow justify-center" ]
@@ -103,7 +103,7 @@ topNavAnon model =
             , disabled = not (Page.hasSidebar model.page)
             , attrs = [ href "#" ]
             , baseStyle = "font-bold inline-flex items-center px-4 py-2"
-            , activeStyle = "hover:bg-blue-200 dark:hover:bg-bluegray-800 w-12"
+            , activeStyle = "hover:bg-blue-200 dark:hover:bg-slate-800 w-12"
             }
         , headerNavItem False model
         , div [ class "flex flex-grow justify-end" ]
@@ -131,7 +131,7 @@ headerNavItem authenticated model =
     in
     tag
         [ class "inline-flex font-bold items-center px-4"
-        , classList [ ( "hover:bg-blue-200 dark:hover:bg-bluegray-800", authenticated ) ]
+        , classList [ ( "hover:bg-blue-200 dark:hover:bg-slate-800", authenticated ) ]
         , if authenticated then
             Page.href HomePage
 
@@ -204,12 +204,12 @@ mainContent model =
 
 styleTopNav : String
 styleTopNav =
-    "top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-blue-100 dark:bg-bluegray-900 text-gray-800 dark:text-bluegray-200 antialiased"
+    "top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-blue-100 dark:bg-slate-900 text-gray-800 dark:text-slate-200 antialiased"
 
 
 styleMain : String
 styleMain =
-    "mt-12 flex md:flex-row flex-col w-full h-screen-12 overflow-y-hidden bg-white dark:bg-bluegray-800 text-gray-800 dark:text-bluegray-300 antialiased"
+    "mt-12 flex md:flex-row flex-col w-full h-screen-12 overflow-y-hidden bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-300 antialiased"
 
 
 langMenu : Model -> Html Msg
@@ -226,7 +226,7 @@ langMenu model =
             a
                 [ classList
                     [ ( dropdownItem, True )
-                    , ( "bg-gray-200 dark:bg-bluegray-700", lang == texts.lang )
+                    , ( "bg-gray-200 dark:bg-slate-700", lang == texts.lang )
                     ]
                 , onClick (SetLanguage lang)
                 , href "#"
@@ -266,7 +266,7 @@ dataMenu texts _ model =
             [ i [ class "fa fa-cogs" ] []
             , div
                 [ class "h-5 w-5 rounded-full text-xs px-1 py-1 absolute top-1 left-1 font-bold"
-                , class "dark:bg-lightblue-500 dark:text-gray-200"
+                , class "dark:bg-sky-500 dark:text-gray-200"
                 , class "bg-blue-500 text-gray-50"
                 , classList [ ( "hidden", model.jobsWaiting <= 0 ) ]
                 ]
@@ -317,7 +317,7 @@ dataMenu texts _ model =
                         class "fa fa-tachometer-alt w-6"
 
                       else
-                        class "fa fa-tachometer-alt w-6 animate-pulse dark:text-lightblue-500 text-blue-500"
+                        class "fa fa-tachometer-alt w-6 animate-pulse dark:text-sky-500 text-blue-500"
                     ]
                     []
                 , span [ class "ml-1" ]
@@ -424,7 +424,7 @@ userPageLink model page children =
     a
         [ classList
             [ ( dropdownItem, True )
-            , ( "bg-gray-200 dark:bg-bluegray-700", model.page == page )
+            , ( "bg-gray-200 dark:bg-slate-700", model.page == page )
             ]
         , onClick ToggleUserMenu
         , Page.href page
@@ -437,7 +437,7 @@ dataPageLink model page classes children =
     a
         [ classList
             ([ ( dropdownItem, True )
-             , ( "bg-gray-200 dark:bg-bluegray-700", model.page == page )
+             , ( "bg-gray-200 dark:bg-slate-700", model.page == page )
              ]
                 ++ classes
             )
@@ -449,12 +449,12 @@ dataPageLink model page classes children =
 
 dropdownLink : String
 dropdownLink =
-    "px-4 py-2 w-12 font-bold inline-flex h-full items-center hover:bg-blue-200 dark:hover:bg-bluegray-800"
+    "px-4 py-2 w-12 font-bold inline-flex h-full items-center hover:bg-blue-200 dark:hover:bg-slate-800"
 
 
 dropdownItem : String
 dropdownItem =
-    "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-bluegray-700 dark:hover:text-bluegray-50"
+    "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-slate-700 dark:hover:text-slate-50"
 
 
 dropdownHeadItem : String
@@ -464,7 +464,7 @@ dropdownHeadItem =
 
 dropdownMenu : String
 dropdownMenu =
-    " absolute right-0 bg-white dark:bg-bluegray-800 border dark:border-bluegray-700 dark:text-bluegray-300 shadow-lg opacity-1 transition duration-200 min-w-max "
+    " absolute right-0 bg-white dark:bg-slate-800 border dark:border-slate-700 dark:text-slate-300 shadow-lg opacity-1 transition duration-200 min-w-max "
 
 
 viewShare : Messages -> String -> Model -> List (Html Msg)

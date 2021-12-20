@@ -97,7 +97,7 @@ itemData texts flags model shareId itemId =
             "mb-4 sm:mb-6"
 
         headerStyle =
-            "py-2 bg-blue-50 hover:bg-blue-100 dark:bg-bluegray-700 dark:hover:bg-opacity-100 dark:hover:bg-bluegray-600 text-lg font-medium rounded-lg"
+            "py-2 bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 dark:hover:bg-opacity-100 dark:hover:bg-slate-600 text-lg font-medium rounded-lg"
 
         showTag tag =
             div
@@ -200,9 +200,9 @@ itemPreview texts flags settings model =
             Maybe.withDefault (texts.noName ++ ".pdf") attach.name
     in
     div
-        [ class "flex flex-grow flex-col h-full border-t dark:border-bluegray-600"
+        [ class "flex flex-grow flex-col h-full border-t dark:border-slate-600"
         ]
-        [ div [ class "flex flex-col sm:flex-row items-center py-1 px-1 border-l border-r dark:border-bluegray-600" ]
+        [ div [ class "flex flex-col sm:flex-row items-center py-1 px-1 border-l border-r dark:border-slate-600" ]
             [ div [ class "text-base font-bold flex-grow w-full text-center sm:text-left break-all" ]
                 [ text attachName
                 , text " ("
@@ -242,7 +242,7 @@ itemPreview texts flags settings model =
             ]
         , attachmentSelect texts model
         , div
-            [ class "flex w-full h-full mb-4 border-b border-l border-r dark:border-bluegray-600"
+            [ class "flex w-full h-full mb-4 border-b border-l border-r dark:border-slate-600"
             , style "min-height" "500px"
             ]
             [ embed
@@ -299,7 +299,7 @@ passwordContent texts flags versionInfo model =
 attachmentSelect : Texts -> Model -> Html Msg
 attachmentSelect texts model =
     div
-        [ class "flex flex-row border-l border-t border-r px-2 py-2 dark:border-bluegray-600 "
+        [ class "flex flex-row border-l border-t border-r px-2 py-2 dark:border-slate-600 "
         , class "overflow-x-auto overflow-y-none"
         , classList
             [ ( "hidden", not model.attachMenuOpen )
@@ -319,11 +319,11 @@ menuItem texts model pos attach =
     in
     a
         [ classList <|
-            [ ( "border-blue-500 dark:border-lightblue-500", pos == 0 )
-            , ( "dark:border-bluegray-600", pos /= 0 )
+            [ ( "border-blue-500 dark:border-sky-500", pos == 0 )
+            , ( "dark:border-slate-600", pos /= 0 )
             ]
         , class "flex flex-col relative border rounded px-1 py-1 mr-2"
-        , class " hover:shadow dark:hover:border-bluegray-500"
+        , class " hover:shadow dark:hover:border-slate-500"
         , href "#"
         , onClick (SelectActiveAttachment pos)
         ]
@@ -331,7 +331,7 @@ menuItem texts model pos attach =
             [ classList
                 [ ( "hidden", not visible )
                 ]
-            , class "absolute right-1 top-1 text-blue-400 dark:text-lightblue-400 text-xl"
+            , class "absolute right-1 top-1 text-blue-400 dark:text-sky-400 text-xl"
             ]
             [ i [ class iconClass ] []
             ]

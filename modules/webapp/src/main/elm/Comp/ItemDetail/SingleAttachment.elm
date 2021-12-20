@@ -65,7 +65,7 @@ view texts flags settings model pos attach =
                     Html.map (AttachMetaMsg attach.id)
                         (Comp.AttachmentMeta.view2
                             texts.attachmentMeta
-                            [ class "border-r border-l border-b dark:border-bluegray-600 px-2" ]
+                            [ class "border-r border-l border-b dark:border-slate-600 px-2" ]
                             am
                         )
 
@@ -74,13 +74,13 @@ view texts flags settings model pos attach =
 
           else if isShowQrAttach model.showQrModel then
             Comp.ItemDetail.ShowQrCode.view1 flags
-                "border-r border-l border-b dark:border-bluegray-600 h-full"
+                "border-r border-l border-b dark:border-slate-600 h-full"
                 (Comp.ItemDetail.ShowQrCode.Attach attach.id)
 
           else
             div
                 [ class "flex flex-col relative px-2 pt-2 h-full"
-                , class "border-r border-l border-b dark:border-bluegray-600"
+                , class "border-r border-l border-b dark:border-slate-600"
                 , id "ds-pdf-view-parent"
                 , style "max-height" "calc(100vh - 140px)"
                 , style "min-height" "500px"
@@ -155,7 +155,7 @@ attachHeader texts settings model _ attach =
                 , class S.secondaryBasicButton
                 , class "mr-2"
                 , classList
-                    [ ( "bg-gray-200 dark:bg-bluegray-600 ", model.attachMenuOpen )
+                    [ ( "bg-gray-200 dark:bg-slate-600 ", model.attachMenuOpen )
                     , ( "hidden", not multiAttach )
                     , ( "sm:hidden", multiAttach && mobile )
                     , ( "hidden sm:block", multiAttach && not mobile )
@@ -191,7 +191,7 @@ attachHeader texts settings model _ attach =
             , a
                 [ classList
                     [ ( S.secondaryBasicButton ++ " text-sm", True )
-                    , ( "bg-gray-200 dark:bg-bluegray-600", selectView )
+                    , ( "bg-gray-200 dark:bg-slate-600", selectView )
                     , ( "hidden", not selectPossible )
                     , ( "ml-2", True )
                     ]
@@ -319,7 +319,7 @@ editAttachmentName model attach =
     in
     case am of
         Just m ->
-            div [ class "flex flex-row border-l border-r px-2 py-2 dark:border-bluegray-600" ]
+            div [ class "flex flex-row border-l border-r px-2 py-2 dark:border-slate-600" ]
                 [ input
                     [ type_ "text"
                     , value m.newName
@@ -349,7 +349,7 @@ editAttachmentName model attach =
 attachmentSelect : Texts -> Model -> Int -> Attachment -> Html Msg
 attachmentSelect texts model _ _ =
     div
-        [ class "flex flex-row border-l border-r px-2 py-2 dark:border-bluegray-600 "
+        [ class "flex flex-row border-l border-r px-2 py-2 dark:border-slate-600 "
         , class "overflow-x-auto overflow-y-none"
         , classList
             [ ( "hidden", not model.attachMenuOpen )
@@ -372,7 +372,7 @@ menuItem texts model pos attach =
                 enable =
                     Just attach.id == dropId && dropId /= dragId
             in
-            [ ( "bg-gray-300 dark:bg-bluegray-700 current-drop-target", enable )
+            [ ( "bg-gray-300 dark:bg-slate-700 current-drop-target", enable )
             ]
 
         iconClass =
@@ -405,12 +405,12 @@ menuItem texts model pos attach =
     in
     a
         ([ classList <|
-            [ ( "border-blue-500 dark:border-lightblue-500", pos == 0 )
-            , ( "dark:border-bluegray-600", pos /= 0 )
+            [ ( "border-blue-500 dark:border-sky-500", pos == 0 )
+            , ( "dark:border-slate-600", pos /= 0 )
             ]
                 ++ highlight
          , class "flex flex-col relative border rounded px-1 py-1 mr-2"
-         , class " hover:shadow dark:hover:border-bluegray-500"
+         , class " hover:shadow dark:hover:border-slate-500"
          , href "#"
          , onClick msg
          ]
@@ -421,7 +421,7 @@ menuItem texts model pos attach =
             [ classList
                 [ ( "hidden", not visible )
                 ]
-            , class "absolute right-1 top-1 text-blue-400 dark:text-lightblue-400 text-xl"
+            , class "absolute right-1 top-1 text-blue-400 dark:text-sky-400 text-xl"
             ]
             [ i [ class iconClass ] []
             ]

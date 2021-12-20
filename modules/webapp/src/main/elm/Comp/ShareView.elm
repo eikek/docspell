@@ -62,7 +62,7 @@ viewActive cfg texts flags share =
             flags.config.baseUrl ++ "/app/share/" ++ share.id
 
         styleUrl =
-            "truncate px-2 py-2 border-0 border-t border-b border-r font-mono text-sm my-auto rounded-r border-gray-400 dark:border-bluegray-500"
+            "truncate px-2 py-2 border-0 border-t border-b border-r font-mono text-sm my-auto rounded-r border-gray-400 dark:border-slate-500"
 
         infoLine hidden icon label value =
             div

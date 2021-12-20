@@ -43,7 +43,7 @@ view2 texts classes stats =
             f.sum > 0
 
         statValues f =
-            tr [ class "border-0 border-t  dark:border-bluegray-600" ]
+            tr [ class "border-0 border-t  dark:border-slate-600" ]
                 [ td [ class "text-left text-sm" ]
                     [ div
                         [ class S.basicLabel

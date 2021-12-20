@@ -102,12 +102,12 @@ type alias DropdownMenu msg =
 
 view : MenuBar msg -> Html msg
 view =
-    view1 "bg-white dark:bg-bluegray-800"
+    view1 "bg-white dark:bg-slate-800"
 
 
 viewSide : MenuBar msg -> Html msg
 viewSide =
-    view1 "bg-blue-50 dark:bg-bluegray-700"
+    view1 "bg-blue-50 dark:bg-slate-700"
 
 
 view1 : String -> MenuBar msg -> Html msg
@@ -169,10 +169,10 @@ makeDropdown : DropdownData msg -> Html msg
 makeDropdown model =
     let
         menuStyle =
-            "absolute right-0 bg-white dark:bg-bluegray-800 border dark:border-bluegray-700 z-50 dark:text-bluegray-300 shadow-lg transition duration-200 min-w-max  "
+            "absolute right-0 bg-white dark:bg-slate-800 border dark:border-slate-700 z-50 dark:text-slate-300 shadow-lg transition duration-200 min-w-max  "
 
         itemStyle =
-            "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-bluegray-700 dark:hover:text-bluegray-50"
+            "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-slate-700 dark:hover:text-slate-50"
 
         menuItem m =
             a

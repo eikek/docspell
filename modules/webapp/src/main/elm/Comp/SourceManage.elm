@@ -279,7 +279,7 @@ viewLinks2 texts flags _ source =
             flags.config.baseUrl ++ "/api/v1/open/upload/item/" ++ source.source.id
 
         styleUrl =
-            "truncate px-2 py-2 border-0 border-t border-b border-r font-mono text-sm my-auto rounded-r border-gray-400 dark:border-bluegray-500"
+            "truncate px-2 py-2 border-0 border-t border-b border-r font-mono text-sm my-auto rounded-r border-gray-400 dark:border-slate-500"
     in
     div
         []

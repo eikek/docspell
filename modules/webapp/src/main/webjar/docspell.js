@@ -31,10 +31,10 @@ elmApp.ports.internalSetUiTheme.subscribe(function(themeName) {
         var bodyClasses = body[0].classList;
         // seems that body attributes cannot be set from inside Elm.
         if (themeName && themeName.toLowerCase() === 'dark') {
-            bodyClasses.add("bg-bluegray-800");
+            bodyClasses.add("bg-slate-800");
             bodyClasses.add("dark");
         } else {
-            bodyClasses.remove("bg-bluegray-800");
+            bodyClasses.remove("bg-slate-800");
             bodyClasses.remove("dark");
         }
     }

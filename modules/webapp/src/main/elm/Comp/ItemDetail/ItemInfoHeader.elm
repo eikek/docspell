@@ -155,7 +155,7 @@ view texts settings model =
                         [ classList
                             [ ( "hidden", not isCreated )
                             ]
-                        , class "ml-3 text-base label bg-blue-500 dark:bg-lightblue-500 text-white rounded-lg"
+                        , class "ml-3 text-base label bg-blue-500 dark:bg-sky-500 text-white rounded-lg"
                         ]
                         [ text texts.new
                         , i [ class "fa fa-exclamation ml-2" ] []

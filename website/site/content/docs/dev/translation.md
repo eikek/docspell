@@ -125,32 +125,38 @@ just left as is. Only the new compiled webapp must be made available
 to the running server. For this, a script is provided in the
 `project/` folder.
 
-Now open another terminal and `cd` into the docspell folder as before
-and run the following:
+Now open two more terminals and `cd` into the docspell folder as before
+and run the following in one:
 
 ``` bash
-❯ ./project/dev-ui-build.sh watch
+❯ ./project/dev-ui-build.sh watch-js
 Compile elm to js …
 Success!
 
     Main ───> /tmp/docspell/modules/webapp/target/scala-2.13/classes/META-INF/resources/webjars/docspell-webapp/0.22.0-SNAPSHOT/docspell-app.js
 
-Building css …
-/tmp/docspell
-Watching css and elm sources. C-c to quit.
+Watching elm sources. C-c to quit.
 Setting up watches.  Beware: since -r was given, this may take a while!
 Watches established.
 ```
 
-Once you see this, you're all set. The docspell application is running
-and changes to elm files are detected, the webapp is compiled and the
-resulting javascript file is copied to the correct location. To see
-your changes, a refresh in the browser is necessary.
+And in the other run this:
+
+``` bash
+❯ ./project/dev-ui-build.sh watch-css
+Watching css …
+```
+
+Once you have this, you're all set. The docspell application is
+running and changes to elm and css files are detected, the webapp is
+compiled and the resulting javascript and css file is copied to the
+correct location. To see your changes, a refresh in the browser is
+necessary.
 
 If this script is not working, install inotify-tools. The
 `inotifywait` command is required.
 
-You'll notice that compiling elm files is very fast!
+You'll notice that compiling elm and css is very fast.
 
 
 ## Find the webapp sources

@@ -97,7 +97,7 @@ openIdLinks texts flags =
                     { label = texts.or
                     , topCss = "w-2/3 mb-4 hidden md:inline-flex w-full"
                     , labelCss = "px-4 bg-gray-200 bg-opacity-50"
-                    , lineColor = "bg-gray-300 dark:bg-bluegray-600"
+                    , lineColor = "bg-gray-300 dark:bg-slate-600"
                     }
                 , div [ class "flex flex-row space-x-4 items-center justify-center" ]
                     (List.map renderLink provs)

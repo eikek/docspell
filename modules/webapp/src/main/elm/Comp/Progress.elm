@@ -17,7 +17,7 @@ import Html.Attributes exposing (attribute, class, style)
 
 progress2 : Int -> Html msg
 progress2 percent =
-    div [ class "shadow w-full h-full bg-gray-200 dark:bg-bluegray-600 rounded relative" ]
+    div [ class "shadow w-full h-full bg-gray-200 dark:bg-slate-600 rounded relative" ]
         [ div
             [ class "transition-duration-300 h-full bg-blue-500 dark:bg-light-blue-500 block text-xs text-center"
             , style "width" (String.fromInt percent ++ "%")

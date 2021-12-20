@@ -108,7 +108,7 @@ view2 values model =
             ]
         , div
             [ class "flex flex-col space-y-4 md:space-y-2 mt-2"
-            , class "px-2 border-0 border-l dark:border-bluegray-600"
+            , class "px-2 border-0 border-l dark:border-slate-600"
             ]
             (List.map valueItem values)
         ]

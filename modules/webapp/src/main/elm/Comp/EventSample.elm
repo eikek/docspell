@@ -88,7 +88,7 @@ update flags msg model =
 
 styleBase : String
 styleBase =
-    "bg-gray-100 dark:bg-bluegray-900 text-gray-900 dark:text-gray-100 text-sm leading-5"
+    "bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100 text-sm leading-5"
 
 
 stylePayload : String

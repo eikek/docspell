@@ -215,10 +215,10 @@ viewItem2 dropModel model item =
     in
     a
         ([ classList
-            [ ( "bg-blue-100 dark:bg-bluegray-600", highlightDrop )
+            [ ( "bg-blue-100 dark:bg-slate-600", highlightDrop )
             ]
          , class "flex flex-row items-center"
-         , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-bluegray-600"
+         , class "rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-slate-600"
          , href "#"
          , onClick (Toggle item)
          ]
@@ -237,7 +237,7 @@ numberLabel : Int -> Html msg
 numberLabel num =
     div
         [ class "bg-gray-200 border rounded-full h-6 w-6 flex items-center justify-center text-xs"
-        , class "dark:bg-bluegray-800 dark:text-bluegray-200 dark:border-bluegray-800 dark:bg-opacity-50"
+        , class "dark:bg-slate-800 dark:text-slate-200 dark:border-slate-800 dark:bg-opacity-50"
         ]
         [ text (String.fromInt num)
         ]

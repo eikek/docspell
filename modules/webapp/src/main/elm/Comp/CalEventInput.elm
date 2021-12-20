@@ -317,7 +317,7 @@ view2 texts extraClasses mev model =
                     text ""
             ]
         , div
-            [ class "px-2 pt-4 pb-2 border-0 border-l border-b border-r bg-gray-50 dark:bg-bluegray-700"
+            [ class "px-2 pt-4 pb-2 border-0 border-l border-b border-r bg-gray-50 dark:bg-slate-700"
             , class S.border
             ]
             [ div []

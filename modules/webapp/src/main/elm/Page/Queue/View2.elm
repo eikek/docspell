@@ -55,7 +55,7 @@ viewSidebar texts visible _ _ model =
                 [ href "#"
                 , class S.sidebarLink
                 , class cls
-                , classList [ ( "bg-blue-100 dark:bg-bluegray-600", model.queueView == v ) ]
+                , classList [ ( "bg-blue-100 dark:bg-slate-600", model.queueView == v ) ]
                 , onClick (SetQueueView v)
                 ]
                 [ i [ class icon ]
@@ -63,7 +63,7 @@ viewSidebar texts visible _ _ model =
                 , div
                     [ class "ml-3" ]
                     [ text label ]
-                , div [ class "ml-auto bg-gray-200 border rounded-full h-6 w-6 flex items-center justify-center text-xs dark:bg-bluegray-800 dark:text-bluegray-200 dark:border-bluegray-800 dark:bg-opacity-50" ]
+                , div [ class "ml-auto bg-gray-200 border rounded-full h-6 w-6 flex items-center justify-center text-xs dark:bg-slate-800 dark:text-slate-200 dark:border-slate-800 dark:bg-opacity-50" ]
                     [ count v |> String.fromInt |> text
                     ]
                 ]
@@ -191,7 +191,7 @@ renderJobLog : JobDetail -> Html Msg
 renderJobLog job =
     div
         [ class " absolute top-12 left-0 w-full h-full-12 z-40 flex flex-col items-center px-4 py-2 "
-        , class "bg-white bg-opacity-80 dark:bg-black dark:bg-bluegray-900 dark:bg-opacity-90"
+        , class "bg-white bg-opacity-80 dark:bg-black dark:bg-slate-900 dark:bg-opacity-90"
         ]
         [ div [ class (S.box ++ "py-2 px-2 flex flex-col w-full") ]
             [ div [ class "flex flex-row mb-4 px-2" ]

@@ -245,7 +245,7 @@ viewGroup texts model cfg settings flags group =
     div [ class "ds-item-group" ]
         [ div
             [ class "flex py-1 mt-2 mb-2 flex flex-row items-center"
-            , class "bg-white dark:bg-bluegray-800 text-xl font-bold z-35"
+            , class "bg-white dark:bg-slate-800 text-xl font-bold z-35"
             , class "relative sticky top-10"
             ]
             [ hr

@@ -1,0 +1,86 @@
+@layer utilities {
+    .disabled {
+        @apply opacity-50 cursor-not-allowed;
+    }
+    .h-screen-10 {
+        height: calc(100vh - 2.5rem);
+    }
+    .h-screen-11 {
+        height: calc(100vh - 2.75rem);
+    }
+    .h-screen-12 {
+        height: calc(100vh - 3rem);
+    }
+    .h-full-10 {
+        height: calc(100% - 2.5rem);
+    }
+    .h-full-11 {
+        height: calc(100% - 2.75rem);
+    }
+    .h-full-12 {
+        height: calc(100% - 3rem);
+    }
+    .z-35 {
+        z-index: 35;
+    }
+
+    @variants responsive {
+        .min-h-7 {
+            min-height: 1.75rem;
+        }
+
+    }
+
+    .scrollbar-none {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    /* Chrome, Safari and Opera */
+    .scrollbar-none::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scrollbar-thin {
+        scrollbar-width: thin;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    @variants dark {
+        .scrollbar-dark-sidebar {
+            scrollbar-color: rgba(15,23,42,0.9) rgba(15,23,42,0.3);
+        }
+        .scrollbar-light-sidebar {
+            scrollbar-color: rgba(219, 234, 254, 1.0) rgba(219, 234, 254,0.3);
+        }
+        .scrollbar-main {
+            scrollbar-color: rgba(156, 163, 175,0.9) rgba(156, 163, 175,0.3);
+        }
+
+        .scrollbar-dark-sidebar::-webkit-scrollbar {
+            background-color: rgba(15,23,42,0.3);
+        }
+        .scrollbar-dark-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(15,23,42,0.9);
+        }
+
+        .scrollbar-light-sidebar::-webkit-scrollbar {
+            background-color: rgba(219, 234, 254, 0.3);
+        }
+        .scrollbar-light-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(219, 234, 254, 1.0);
+        }
+
+        .scrollbar-main::-webkit-scrollbar {
+            background-color: rgba(156, 163, 175, 0.3);
+        }
+        .scrollbar-main::-webkit-scrollbar-thumb {
+            background:  rgba(156, 163, 175, 0.9);
+        }
+    }
+
+    .ds-card-search-hl strong {
+        @apply bg-lime-200 dark:bg-sky-700 italic font-bold px-1 bg-opacity-60 dark:bg-opacity-60;
+    }
+}

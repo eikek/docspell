@@ -30,7 +30,7 @@ view texts model =
     case model.notesField of
         ViewNotes ->
             div [ class "flex flex-col ds-item-detail-notes" ]
-                [ div [ class "flex flex-row items-center border-b dark:border-bluegray-600" ]
+                [ div [ class "flex flex-row items-center border-b dark:border-slate-600" ]
                     [ div [ class "flex-grow font-bold text-lg" ]
                         [ text texts.notes
                         ]
