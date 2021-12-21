@@ -21,7 +21,7 @@ class MariaDbMigrateTest extends FunSuite with TestContainerForAll {
   override val containerDef: MariaDBContainer.Def =
     MariaDBContainer.Def(DockerImageName.parse("mariadb:10.5"))
 
-  test("mariadb empty schema migration".ignore) {
+  test("mariadb empty schema migration") {
     assume(Docker.existsUnsafe, "docker doesn't exist!")
     withContainers { cnt =>
       val jdbc =
