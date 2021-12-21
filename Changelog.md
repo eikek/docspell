@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.30.0
+
+*Dec 21, 2021*
+
+- Add a list view for items, allowing to toggle between tile and list
+  view (#526)
+- Generic notification system: It is a start. A few events are
+  available with the idea to add more when needed. Get notified about
+  certain events via gotify, matrix or e-mail. A generic periodic
+  query has been added (in addition to the notify-due-items task).
+  (#848, #1174)
+- Update stanford-corenlp and add Spanish to the supported language
+  set for NLP and Hungarian to the standard set of languages.
+- Fix to update job execution count when a job is canceled (#1182)
+- Change the log format to [logfmt](https://www.brandur.org/logfmt)
+  and remove all ansi color sequences
+
+### Rest API Changes
+
+- added new routes to manage notification channels and hooks
+- added new routes for the generic periodic query task
+
+### Configuration Changes
+
+None.
+
+
 ## v0.29.0
 
 *Nov 18, 2021*
@@ -13,7 +40,7 @@
 - Improve scanmailbox form (#1147)
 - Improve input of an e-mail address (#987)
 - Fix e-mail import for certain files (#1140)
-- FIx uploading files with non-ascii filenames (#991)
+- Fix uploading files with non-ascii filenames (#991)
 
 ### Rest API Changes
 
