@@ -327,27 +327,30 @@ and takes quite long. When only coding on the webui the server can be
 just left as is. Only the new compiled webapp must be made available
 to the running server. For this, a script is provided in the
 <code>project/</code> folder.</p>
-<p>Now open another terminal and <code>cd</code> into the docspell folder as before
-and run the following:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ ./project/dev-ui-build.sh watch
+<p>Now open two more terminals and <code>cd</code> into the docspell folder as before
+and run the following in one:</p>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ ./project/dev-ui-build.sh watch-js
 </span><span style="color:#fdf4c1;">Compile elm to js …
 </span><span style="color:#fdf4c1;">Success!
 </span><span>
 </span><span>    </span><span style="color:#fdf4c1;">Main ───</span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> /tmp/docspell/modules/webapp/target/scala-2.13/classes/META-INF/resources/webjars/docspell-webapp/0.22.0-SNAPSHOT/docspell-app.js
 </span><span>
-</span><span style="color:#fdf4c1;">Building css …
-</span><span style="color:#fdf4c1;">/tmp/docspell
-</span><span style="color:#fdf4c1;">Watching css and elm sources. C-c to quit.
+</span><span style="color:#fdf4c1;">Watching elm sources. C-c to quit.
 </span><span style="color:#fdf4c1;">Setting up watches.  Beware: since -r was given, this may take a while!
 </span><span style="color:#fdf4c1;">Watches established.
 </span></code></pre>
-<p>Once you see this, you're all set. The docspell application is running
-and changes to elm files are detected, the webapp is compiled and the
-resulting javascript file is copied to the correct location. To see
-your changes, a refresh in the browser is necessary.</p>
+<p>And in the other run this:</p>
+<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ ./project/dev-ui-build.sh watch-css
+</span><span style="color:#fdf4c1;">Watching css …
+</span></code></pre>
+<p>Once you have this, you're all set. The docspell application is
+running and changes to elm and css files are detected, the webapp is
+compiled and the resulting javascript and css file is copied to the
+correct location. To see your changes, a refresh in the browser is
+necessary.</p>
 <p>If this script is not working, install inotify-tools. The
 <code>inotifywait</code> command is required.</p>
-<p>You'll notice that compiling elm files is very fast!</p>
+<p>You'll notice that compiling elm and css is very fast.</p>
 <h2 id="find-the-webapp-sources">Find the webapp sources<a class="zola-anchor" href="#find-the-webapp-sources" aria-label="Anchor link for: find-the-webapp-sources">🔗</a></h2>
 <p>The web-ui is implemented in the <code>webapp</code> module. The sources can be
 found in the folder <code>modules/webapp/src/main/elm</code>.</p>
@@ -550,7 +553,7 @@ work, try:</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.29.0
+                Docspell 0.30.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

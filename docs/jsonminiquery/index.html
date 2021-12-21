@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Docspell is a Document Management System (DMS), a system that asists in organizing your piles of documents, resulting from scanners, e-mails and other sources with miminal effort.">
+<meta name="keywords" content="document management system dms organizer ocr open source free scan pdf word doc archive gpl machine learning nlp auto tagging"/>
+<meta name="robots" content="index,follow"/>
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="JSON (mini) query - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+        <title>JSON (mini) query – Docspell Documentation</title>
+        <link rel="stylesheet" href="/styles.css">
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+    </head>
+    <body>
+        <section class="hero is-info is-small">
+            <div class="hero-head">
+                <nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <span class="icon">
+                <img src="/icons/logo-only-36.svg">
+            </span>
+            <span>
+                Docspell
+            </span>
+        </a>
+    </div>
+    <div class="navbar-start">
+        <a target="_blank"
+           href="https://github.com/eikek/docspell"
+           class="navbar-item">
+            <span class="icon">
+                <img src="/icons/github-40.svg">
+            </span>
+            <span>
+                Github
+            </span>
+        </a>
+    </div>
+</nav>
+
+            </div>
+            <div class="hero-body">
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h1 class="title">
+                            JSON (mini) query
+                        </h1>
+                        <h2 class="subtitle">
+                            Docspell Documentation
+                        </h2>
+                    </div>
+                    <div class="column">
+                        <div id="search"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
+             style="position:sticky; top: 0; z-index:10;">
+            <ul>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
+                </li>
+                
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
+                </li>
+                
+                <li>
+                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;">JSON (mini) query</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <section class="section pt-2">
+            <div class="columns is-desktop">
+                <div class="column is-3">
+                    <div class="menu"
+                         style="position:sticky; top:2rem; z-index:10;">
+                        <ul class="menu-list">
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#structure">
+                                    Structure
+                                </a>
+                                <ul>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#field-selection">
+                                            Field selection
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#array-selection">
+                                            Array selection
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#matching-values">
+                                            Matching Values
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#combining">
+                                            Combining
+                                        </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#example-walkthrough">
+                                            Example walkthrough
+                                        </a>
+                                    </li>
+                                    
+                                </ul>
+                            </li>
+                            
+                            <li>
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#sample-json">
+                                    Sample JSON
+                                </a>
+                                <ul>
+                                    
+                                </ul>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="column is-9">
+                    <div class="container">
+                        <div class="content doc">
+                            <p>A &quot;JSON mini query&quot; is a simple expression that evaluates to <code>true</code> or
+<code>false</code> for any given JSON value.</p>
+<p>It is used in docspell to filter notification events.</p>
+<p>The examples shown here assume the JSON at <a href="https://docspell.org/docs/jsonminiquery/#sample-json">the end of this
+page</a>.</p>
+<h1 id="structure">Structure</h1>
+<p>A json mini query is a sequence of &quot;segments&quot; where each one selects
+contents from the &quot;current result&quot;. The current result is always a
+list of JSON values and starts out with a single element list
+containing the given root JSON document.</p>
+<p>When the expression is applied, it is read from left to right where
+each segment is evaluated against the JSON. All results are always
+aggregated into a single list which is handed to the next segment as
+input. Each segment of the expression is always applied to every
+element in the list.</p>
+<p>The expression evaluates to <code>true</code> if the final result is non-empty
+and to <code>false</code> otherwise. So the actual values selected at the and are
+not really of interest. It only matters if the last result is the
+empty list or not.</p>
+<p>There are the following possible segments:</p>
+<ul>
+<li>selecting fields: <code>fieldname[,fieldname2,…]</code></li>
+<li>selecting specific array elements: <code>(0[,1,…])</code></li>
+<li>filter list of nodes against given values: <code>=some-value</code>,
+<code>!some-value</code></li>
+<li>combining the above (sequence, <code>&amp;</code> and <code>|</code>)</li>
+</ul>
+<h2 id="field-selection">Field selection</h2>
+<p>The simplest segment is just a field name. It looks up the field name
+in the current JSON result and replaces each element in the result
+with the value at that field.</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: a
+</span><span>current result: [{&quot;a&quot;:1,&quot;b&quot;:2}, {&quot;a&quot;:5, &quot;b&quot;:2}]
+</span><span>next result: [1, 5]
+</span></code></pre>
+<p>You can select multiple fields at once by separating names by comma.
+This simply combines all results into a list:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: a,b
+</span><span>current result: [{&quot;a&quot;:1,&quot;b&quot;:2}, {&quot;a&quot;:5, &quot;b&quot;:2}]
+</span><span>next result: [1, 2, 5, 2]
+</span></code></pre>
+<p>You can use dot-notation combining several field selection segments to
+select elements deeper in the JSON:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: a.b.x,y
+</span><span>current result:
+</span><span>  [{&quot;a&quot;: {&quot;b&quot;: {&quot;x&quot;: 1, &quot;y&quot;: 2}}, &quot;v&quot;: 0},
+</span><span>   {&quot;a&quot;: {&quot;b&quot;: {&quot;y&quot;: 9, &quot;b&quot;: 2}}, &quot;z&quot;: 0}]
+</span><span>next result: [1, 2, 9]
+</span></code></pre>
+<h2 id="array-selection">Array selection</h2>
+<p>When looking at an array, you can select specific elements by their
+indexes. To distinguish it from field selection, you must surround it
+by parens:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: (0,2)
+</span><span>current result: [[1,2,3,4]]
+</span><span>next result: [1,3]
+</span></code></pre>
+<p>If you combine field selection and array selection, keep in mind that
+a previous field selection combines both arrays into one before array
+selection is used!</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: a(0,2)
+</span><span>current result: [{&quot;a&quot;: [10,9,8,7]}, {&quot;a&quot;: [1,2,3,4]}]
+</span><span>next result: [10,8]
+</span></code></pre>
+<h2 id="matching-values">Matching Values</h2>
+<p>You can filter elements of the current result based on their value.
+This only works for primitive elements.</p>
+<ul>
+<li>equals (case insensitive): <code>=</code></li>
+<li>not equals (case insensitive): <code>!</code></li>
+</ul>
+<p>Values can be given either as a simple string or, should it contain
+whitespace or brackets/parens, you need to enclose it either in single
+or double quotes. If you want to check for <code>null</code> use the special
+<code>*null*</code> value.</p>
+<p>The match will be applied to all elements in the current result and
+filters out those that don't match.</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: =blue
+</span><span>current result: [&quot;blue&quot;, &quot;green&quot;, &quot;red&quot;]
+</span><span>next result: [&quot;blue&quot;]
+</span></code></pre>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: color=blue
+</span><span>current result:
+</span><span>    [{&quot;color&quot;: &quot;blue&quot;, &quot;count&quot;: 2},
+</span><span>     {&quot;color&quot;: &quot;blue&quot;, &quot;count&quot;: 1},
+</span><span>     {&quot;color&quot;: &quot;red&quot;, &quot;count&quot;: 3}]
+</span><span>next result:[&quot;blue&quot;, &quot;blue&quot;]
+</span></code></pre>
+<h2 id="combining">Combining</h2>
+<p>The above expressions can be combined by writing one after the other,
+sequencing them. This has been shown in some examples above. The next
+segment will be applied to the result of the previous segment. When
+sequencing field names they must be separated by a dot.</p>
+<p>Another form is to combine several expressions using <code>&amp;</code> or <code>|</code>. The
+results of all sub expressions will be concatenated into a single
+list. When using <code>&amp;</code>, results are only concatenated if all lists are
+not empty; otherwise the result is the empty list.</p>
+<p>This example filters all <code>count</code> equal to <code>6</code> and all <code>name</code> equal to
+<code>max</code>. Since there are now <code>count</code>s with value <code>6</code>, the final result
+is empty.</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: [count=6 &amp; name=max]
+</span><span>current result:
+</span><span>  [{&quot;name&quot;:&quot;max&quot;, &quot;count&quot;:4},
+</span><span>   {&quot;name&quot;:&quot;me&quot;, &quot;count&quot;: 3},
+</span><span>   {&quot;name&quot;:&quot;max&quot;, &quot;count&quot;: 3}
+</span><span>  ]
+</span><span>next result: []
+</span></code></pre>
+<p>Using <code>|</code> for combining lets all the <code>max</code> values through:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: [count=6 &amp; name=max]
+</span><span>current result:
+</span><span>  [{&quot;name&quot;:&quot;max&quot;, &quot;count&quot;:4},
+</span><span>   {&quot;name&quot;:&quot;me&quot;, &quot;count&quot;: 3},
+</span><span>   {&quot;name&quot;:&quot;max&quot;, &quot;count&quot;: 3}
+</span><span>  ]
+</span><span>next result: [&quot;max&quot;, &quot;max&quot;]
+</span></code></pre>
+<h2 id="example-walkthrough">Example walkthrough</h2>
+<p>Let's look at an example:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>content.added,removed[name=Invoice | category=expense]
+</span></code></pre>
+<p>Starting out with the root JSON document, a list is created containing
+it as the only element:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>( {&quot;eventType&quot;: &quot;TagsChanged&quot;, &quot;content: {…}, …} )
+</span></code></pre>
+<p>Then the field <code>content</code> is selected. This changes the list to contain
+this sub-document:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>( {&quot;account&quot;: &quot;demo&quot;, &quot;added&quot;:[…], &quot;removed&quot;:[…], …} )
+</span></code></pre>
+<p>Then two fields are selected. They both select arrays. Both results
+are combined into a single list and arrays are flattened. So the
+result after <code>content.added,removed</code> looks like this:</p>
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>( {&quot;id&quot;:&quot;Fy4…&quot;,name=&quot;…&quot;,category=&quot;…&quot;}, {&quot;id&quot;:&quot;7zae…&quot;,…}, {&quot;id&quot;:&quot;GbXg…&quot;,…} )
+</span></code></pre>
+<p>At last, the remaining elements are filtered. It resolve all <code>name</code>
+fields and keeps only <code>invoice</code> values. It also resolves <code>category</code>
+and keeps only <code>expense</code> values. Both lists are then concatenated into
+one. The final result is then <code>[&quot;Invoice&quot;, &quot;expense&quot;]</code>, which matches
+the sample json data below.</p>
+<h1 id="sample-json">Sample JSON</h1>
+<p>Some examples assume the following JSON:</p>
+<pre data-lang="json" style="background-color:#282828;color:#fdf4c1aa;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>  </span><span style="color:#b8bb26;">&quot;eventType&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;TagsChanged&quot;</span><span>,
+</span><span>  </span><span style="color:#b8bb26;">&quot;account&quot;</span><span>: {
+</span><span>    </span><span style="color:#b8bb26;">&quot;collective&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;demo&quot;</span><span>,
+</span><span>    </span><span style="color:#b8bb26;">&quot;user&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;demo&quot;</span><span>,
+</span><span>    </span><span style="color:#b8bb26;">&quot;login&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;demo&quot;
+</span><span>  },
+</span><span>  </span><span style="color:#b8bb26;">&quot;content&quot;</span><span>: {
+</span><span>    </span><span style="color:#b8bb26;">&quot;account&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;demo&quot;</span><span>,
+</span><span>    </span><span style="color:#b8bb26;">&quot;items&quot;</span><span>: [
+</span><span>      {
+</span><span>        </span><span style="color:#b8bb26;">&quot;id&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;4PvMM4m7Fwj-FsPRGxYt9zZ-uUzi35S2rEX-usyDEVyheR8&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;name&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;MapleSirupLtd_202331.pdf&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;dateMillis&quot;</span><span>: </span><span style="color:#d3869b;">1633557740733</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;date&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;2021-10-06&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;incoming&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;state&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;dueDateMillis&quot;</span><span>: </span><span style="color:#d3869b;">1639173740733</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;2021-12-10&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;source&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;overDue&quot;</span><span>: </span><span style="color:#d3869b;">false</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;dueIn&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;in 3 days&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Acme AG&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span>: </span><span style="color:#d3869b;">null
+</span><span>      }
+</span><span>    ],
+</span><span>    </span><span style="color:#b8bb26;">&quot;added&quot;</span><span>: [
+</span><span>      {
+</span><span>        </span><span style="color:#b8bb26;">&quot;id&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Fy4VC6hQwcL-oynrHaJg47D-Q5RiQyB5PQP-N5cFJ368c4N&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;name&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Invoice&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;category&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;doctype&quot;
+</span><span>      },
+</span><span>      {
+</span><span>        </span><span style="color:#b8bb26;">&quot;id&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;7zaeU6pqVym-6Je3Q36XNG2-ZdBTFSVwNjc-pJRXciTMP3B&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;name&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Grocery&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;category&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;expense&quot;
+</span><span>      }
+</span><span>    ],
+</span><span>    </span><span style="color:#b8bb26;">&quot;removed&quot;</span><span>: [
+</span><span>      {
+</span><span>        </span><span style="color:#b8bb26;">&quot;id&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;GbXgszdjBt4-zrzuLHoUx7N-RMFatC8CyWt-5dsBCvxaEuW&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;name&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Receipt&quot;</span><span>,
+</span><span>        </span><span style="color:#b8bb26;">&quot;category&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;doctype&quot;
+</span><span>      }
+</span><span>    ],
+</span><span>    </span><span style="color:#b8bb26;">&quot;itemUrl&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;http://localhost:7880/app/item&quot;
+</span><span>  }
+</span><span>}
+</span></code></pre>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        
+        <footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <span>
+                Docspell 0.30.0
+            </span>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+            <span class="ml-1 mr-1">•</span>
+            <a href="https://github.com/eikek/docspell" target="_blank">
+                Source Code
+            </a>
+            <span class="ml-1 mr-1">•</span>
+            <span>
+                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
+            </span>
+        </div>
+    </div>
+    
+</footer>
+
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+    </body>
+</html>

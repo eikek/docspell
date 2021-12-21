@@ -210,10 +210,10 @@
                     <div class="container">
                         <div class="content doc">
                             <p>When uploading a file, it is only saved to the database together with
-the given meta information. The file is not visible in the ui yet.
-Then joex takes the next such file (or files in case you uploaded
-many) and starts processing it. When processing finished, the item and
-its files will show up in the ui.</p>
+the given meta information as a &quot;job&quot;. The file is not visible in the
+ui yet. Then joex takes the next such job and starts processing it.
+When processing finished, the item and its files will show up in the
+ui.</p>
 <p>If an error occurs during processing, the item will be created
 anyways, so you can see it. Depending on the error, some information
 may not be available.</p>
@@ -514,7 +514,7 @@ names etc. This also requires a statistical model, but this time for a
 whole language. These are also provided by <a href="https://nlp.stanford.edu/software/">Stanford
 NLP</a>, but not for all languages.
 So whether this can be used depends on the document language. Models
-exist for German, English and French currently.</p>
+exist for German, English, French and Spanish currently.</p>
 <p>Then <a href="https://nlp.stanford.edu/software/">Stanford NLP</a> also allows to
 run custom rules against a text. This can be used as a fallback for
 terms where the statistical model didn't succeed. But it can also be
@@ -584,7 +584,7 @@ to disable it by setting it to <code>0</code>.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.29.0
+                Docspell 0.30.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

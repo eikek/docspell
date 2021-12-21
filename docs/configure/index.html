@@ -602,8 +602,8 @@ limits.</p>
 which requires more memory for certain languages (with the advantage
 of better results). Other values are <code>basic</code>, <code>regexonly</code> and
 <code>disabled</code>. The modes <code>full</code> and <code>basic</code> use pre-defined lanugage
-models for procesing documents of languaes German, English and French.
-These require some amount of memory (see below).</p>
+models for procesing documents of languaes German, English, French and
+Spanish. These require some amount of memory (see below).</p>
 <p>The mode <code>basic</code> is like the &quot;light&quot; variant to <code>full</code>. It doesn't use
 all NLP features, which makes memory consumption much lower, but comes
 with the compromise of less accurate results.</p>
@@ -676,7 +676,7 @@ which can be configured:</p>
 you need to add an option to use G1GC (<code>-XX:+UseG1GC</code>), for java11
 this is not necessary (but doesn't hurt either). This could look like
 this:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>./docspell-joex-&lt;pre data-shortcode&gt;0.29.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>./docspell-joex-&lt;pre data-shortcode&gt;0.30.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
 </span></code></pre>
 <p>Using these options you can define how much memory the JVM process is
 able to use. This might be necessary to adopt depending on the usage
@@ -2256,7 +2256,7 @@ default values.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.29.0
+                Docspell 0.30.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

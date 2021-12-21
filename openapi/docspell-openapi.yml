@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.29.0
+  version: 0.30.0
   description: |
     This is the remote API to Docspell. Docspell is a free document
     management system focused on small groups or families.
@@ -36,6 +36,8 @@ paths:
       description: |
         Returns information about this software.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -64,6 +66,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UserPass"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -88,6 +92,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SecondFactor"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -112,6 +118,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/providerId"
       responses:
+        422:
+          description: BadRequest
         302:
           description: Found. Redirect to external authentication provider
         200:
@@ -135,6 +143,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/providerId"
       responses:
+        422:
+          description: BadRequest
         303:
           description: See Other. Redirect to the webapp
         200:
@@ -155,6 +165,8 @@ paths:
         - $ref: "#/components/parameters/id"
         - $ref: "#/components/parameters/checksum"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -198,6 +210,8 @@ paths:
                     type: string
                     format: binary
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -241,6 +255,8 @@ paths:
                     type: string
                     format: binary
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -264,6 +280,8 @@ paths:
       security:
         - adminHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -282,6 +300,8 @@ paths:
         response is immediately returned and a task is submitted that
         will be executed by a job executor.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -305,6 +325,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/checksum"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -347,6 +369,8 @@ paths:
                     type: string
                     format: binary
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -392,6 +416,8 @@ paths:
                     type: string
                     format: binary
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -414,6 +440,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -465,6 +493,8 @@ paths:
                     type: string
                     format: binary
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -489,6 +519,8 @@ paths:
         - $ref: "#/components/parameters/id"
         - $ref: "#/components/parameters/checksum"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -509,6 +541,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Registration"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -532,6 +566,8 @@ paths:
             schema:
               $ref: "#/components/schemas/GenInvite"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -562,6 +598,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ShareSecret"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -580,6 +618,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -597,6 +637,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
 
@@ -615,6 +657,8 @@ paths:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/sort"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -636,6 +680,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Tag"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -657,6 +703,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Tag"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -675,6 +723,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -698,6 +748,8 @@ paths:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/sort"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -721,6 +773,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Organization"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -742,6 +796,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Organization"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -760,6 +816,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -777,6 +835,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -801,6 +861,8 @@ paths:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/sort"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -824,6 +886,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Person"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -845,6 +909,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Person"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -863,6 +929,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -880,6 +948,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -901,6 +971,8 @@ paths:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/sort"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -922,6 +994,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Equipment"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -943,6 +1017,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Equipment"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -961,6 +1037,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -980,6 +1058,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1005,6 +1085,8 @@ paths:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/owning"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1026,6 +1108,8 @@ paths:
             schema:
               $ref: "#/components/schemas/NewFolder"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1044,6 +1128,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1066,6 +1152,8 @@ paths:
             schema:
               $ref: "#/components/schemas/NewFolder"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1083,6 +1171,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1102,6 +1192,8 @@ paths:
         - $ref: "#/components/parameters/id"
         - $ref: "#/components/parameters/userId"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1120,6 +1212,8 @@ paths:
         - $ref: "#/components/parameters/id"
         - $ref: "#/components/parameters/userId"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1137,6 +1231,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1153,6 +1249,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1173,6 +1271,8 @@ paths:
             schema:
               $ref: "#/components/schemas/CollectiveSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1190,6 +1290,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1206,6 +1308,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1227,6 +1331,8 @@ paths:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/contactKind"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1249,6 +1355,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1275,6 +1383,8 @@ paths:
             schema:
               $ref: "#/components/schemas/EmptyTrashSetting"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1292,6 +1402,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1313,6 +1425,8 @@ paths:
             schema:
               $ref: "#/components/schemas/User"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1334,6 +1448,8 @@ paths:
             schema:
               $ref: "#/components/schemas/User"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1352,6 +1468,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/username"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1372,6 +1490,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/username"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1394,6 +1514,8 @@ paths:
             schema:
               $ref: "#/components/schemas/PasswordChange"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1411,6 +1533,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1433,6 +1557,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1459,6 +1585,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OtpConfirm"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1486,12 +1614,271 @@ paths:
             schema:
               $ref: "#/components/schemas/OtpConfirm"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+
+  /sec/notification/channel:
+    get:
+      operationId: "sec-notification-channel-get"
+      tags: [ Notification ]
+      summary: Return notification channels of the current user
+      description: |
+        Returns a list of notification channels for the current user.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/NotificationMail"
+                  - $ref: "#/components/schemas/NotificationGotify"
+                  - $ref: "#/components/schemas/NotificationMatrix"
+                  - $ref: "#/components/schemas/NotificationHttp"                    
+    post:
+      operationId: "sec-notification-channel-post"
+      tags: [ Notification ]
+      summary: Create a new notification channel
+      description: |
+        Creates a new channel that can be used for notification.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/NotificationMail"
+                  - $ref: "#/components/schemas/NotificationGotify"
+                  - $ref: "#/components/schemas/NotificationMatrix"
+                  - $ref: "#/components/schemas/NotificationHttp"                    
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      operationId: "sec-notification-channel-put"
+      tags: [ Notification ]
+      summary: Change a notification channel
+      description: |
+        Change details about a notification channel.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/NotificationMail"
+                  - $ref: "#/components/schemas/NotificationGotify"
+                  - $ref: "#/components/schemas/NotificationMatrix"
+                  - $ref: "#/components/schemas/NotificationHttp"                    
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/notification/channel/{id}:
+    delete:
+      operationId: "sec-notification-channel-delete"
+      tags: [ Notification ]
+      summary: Delete a channel
+      description: |
+        Deletes the channel with the given id. This causes all hooks
+        of this channel to be deleted as well.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/notification/hook:
+    get:
+      operationId: "sec-notification-hook-get"
+      tags: [ Notification ]
+      summary: Return list of all hooks
+      description: |
+        Returns a list of all defined hooks for the current user.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/extraSchemas/NotificationHook"
+    post:
+      operationId: "sec-notification-hook-post"
+      tags: [ Notification ]
+      summary: Creates a new notification hook
+      description: |
+        Creates a new notification hook, that issues a request via the
+        given channel description.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/extraSchemas/NotificationHook"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      operationId: "sec-notification-hook-put"
+      tags: [ Notification ]
+      summary: Updates a notification hook
+      description: |
+        Updates the hook details.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/extraSchemas/NotificationHook"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/notification/hook/{id}:
+    delete:
+      operationId: "sec-notification-hook-delete"
+      tags: [ Notification ]
+      summary: Delete a hook
+      description: |
+        Deletes the hook with the given id.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/notification/hook/sendTestEvent:
+    post:
+      operationId: "sec-notification-hook-sendtestevent-post"
+      tags: [ Notification ]
+      summary: Test a webhook
+      description: |
+        Tests the webhook specified in the body by applying it to a
+        sample event.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/extraSchemas/NotificationHook"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationChannelTestResult"
+  /sec/notification/hook/verifyJsonFilter:
+    post:
+      operationId: "sec-notification-hook-verifyjsonfilter-post"
+      tags: [ Notification ]
+      summary: Verify a json filter expression
+      description: |
+        Parses the given value into a JSON mini query. 
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StringValue"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+
+  /sec/notification/event/sample:
+    post:
+      operationId: "sec-notification-sample-event-post"
+      tags: [ Notification ]
+      summary: Provide sample event data
+      description: |
+        Given an event type, generate some random sample of what would
+        be send on such an event.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationSampleEventReq"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema: {}
 
   /sec/clientSettings/{clientId}:
     parameters:
@@ -1508,6 +1895,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1535,6 +1924,8 @@ paths:
           application/json:
             schema: {}
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1551,6 +1942,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1575,6 +1968,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemQuery"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1597,6 +1992,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemQuery"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1615,6 +2012,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1634,6 +2033,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           headers:
@@ -1663,6 +2064,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1692,6 +2095,8 @@ paths:
       responses:
         303:
           description: See Other
+        422:
+          description: BadRequest
         200:
           description: Ok      
   /share/attachment/{id}/preview:
@@ -1731,6 +2136,8 @@ paths:
         - $ref: "#/components/parameters/id"
         - $ref: "#/components/parameters/withFallback"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1757,6 +2164,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ResetPassword"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1781,6 +2190,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ResetPassword"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1807,6 +2218,8 @@ paths:
       security:
         - adminHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1838,6 +2251,8 @@ paths:
       security:
         - adminHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1855,6 +2270,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1876,6 +2293,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SourceTagIn"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1897,6 +2316,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SourceTagIn"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1916,6 +2337,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1936,6 +2359,8 @@ paths:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/owningShare"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1956,6 +2381,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ShareData"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1982,6 +2409,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SimpleShareMail"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2000,6 +2429,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2020,6 +2451,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ShareData"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2035,6 +2468,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2063,6 +2498,8 @@ paths:
         - $ref: "#/components/parameters/withDetails"
         - $ref: "#/components/parameters/searchMode"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2088,6 +2525,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemQuery"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2120,6 +2559,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemQuery"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2143,6 +2584,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemQuery"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2162,6 +2605,8 @@ paths:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/searchMode"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2181,6 +2626,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2200,6 +2647,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2219,6 +2668,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2247,6 +2698,8 @@ paths:
             schema:
               $ref: "#/components/schemas/StringList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2273,6 +2726,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Tag"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2299,6 +2754,8 @@ paths:
             schema:
               $ref: "#/components/schemas/StringList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2327,6 +2784,8 @@ paths:
             schema:
               $ref: "#/components/schemas/StringList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2352,6 +2811,8 @@ paths:
             schema:
               $ref: "#/components/schemas/StringList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2376,6 +2837,8 @@ paths:
             schema:
               $ref: "#/components/schemas/DirectionValue"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2402,6 +2865,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalId"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2425,6 +2890,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalId"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2448,6 +2915,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Organization"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2471,6 +2940,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalId"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2494,6 +2965,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Person"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2517,6 +2990,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalId"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2540,6 +3015,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Person"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2563,6 +3040,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalId"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2586,6 +3065,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Equipment"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2609,6 +3090,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalText"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2632,6 +3115,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalText"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2651,6 +3136,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2670,6 +3157,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2693,6 +3182,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalDate"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2716,6 +3207,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalDate"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2736,6 +3229,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2756,6 +3251,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
         404:
@@ -2777,6 +3274,8 @@ paths:
         - $ref: "#/components/parameters/id"
         - $ref: "#/components/parameters/withFallback"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2804,6 +3303,8 @@ paths:
             schema:
               $ref: "#/components/schemas/CustomFieldValue"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2824,6 +3325,8 @@ paths:
         - $ref: "#/components/parameters/id"
         - $ref: "#/components/parameters/itemId"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2854,6 +3357,8 @@ paths:
             schema:
               $ref: "#/components/schemas/IdList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2881,6 +3386,8 @@ paths:
             schema:
               $ref: "#/components/schemas/MoveAttachment"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2919,6 +3426,8 @@ paths:
             schema:
               $ref: "#/components/schemas/IdList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2942,6 +3451,8 @@ paths:
             schema:
               $ref: "#/components/schemas/IdList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2965,6 +3476,8 @@ paths:
             schema:
               $ref: "#/components/schemas/IdList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -2991,6 +3504,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndRefs"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3013,6 +3528,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndRefs"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3036,6 +3553,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndRefs"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3061,6 +3580,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndName"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3086,6 +3607,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndRef"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3110,6 +3633,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndDirection"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3135,6 +3660,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndDate"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3160,6 +3687,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndDate"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3185,6 +3714,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndRef"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3210,6 +3741,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndRef"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3235,6 +3768,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndRef"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3260,6 +3795,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndRef"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3283,6 +3820,8 @@ paths:
             schema:
               $ref: "#/components/schemas/IdList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3306,6 +3845,8 @@ paths:
             schema:
               $ref: "#/components/schemas/IdList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3333,6 +3874,8 @@ paths:
               $ref: "#/components/schemas/IdList"
 
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3358,6 +3901,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndFieldValue"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3381,6 +3926,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ItemsAndName"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3407,6 +3954,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3425,6 +3974,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           headers:
@@ -3454,6 +4005,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3477,6 +4030,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           headers:
@@ -3508,6 +4063,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3531,6 +4088,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           headers:
@@ -3562,6 +4121,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3582,6 +4143,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
         404:
@@ -3603,6 +4166,8 @@ paths:
         - $ref: "#/components/parameters/id"
         - $ref: "#/components/parameters/withFallback"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3622,6 +4187,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3642,6 +4209,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3670,6 +4239,8 @@ paths:
       responses:
         303:
           description: See Other
+        422:
+          description: BadRequest
         200:
           description: Ok
   /sec/attachment/{id}/name:
@@ -3691,6 +4262,8 @@ paths:
             schema:
               $ref: "#/components/schemas/OptionalText"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3714,6 +4287,8 @@ paths:
             schema:
               $ref: "#/components/schemas/IdList"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3733,6 +4308,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3753,6 +4330,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3777,6 +4356,8 @@ paths:
             schema:
               $ref: "#/components/schemas/JobPriority"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3802,6 +4383,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/q"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3822,6 +4405,8 @@ paths:
             schema:
               $ref: "#/components/schemas/EmailSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3841,6 +4426,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3861,6 +4448,8 @@ paths:
             schema:
               $ref: "#/components/schemas/EmailSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3876,6 +4465,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3900,6 +4491,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/q"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3920,6 +4513,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ImapSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3939,6 +4534,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3959,6 +4556,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ImapSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -3974,6 +4573,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4001,6 +4602,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SimpleMail"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4020,6 +4623,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4038,6 +4643,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4053,6 +4660,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4075,12 +4684,15 @@ paths:
             schema:
               $ref: "#/components/schemas/CalEventCheck"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CalEventCheckResult"
+
   /sec/usertask/notifydueitems:
     get:
       operationId: "sec-usertask-notify-all"
@@ -4094,12 +4706,16 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationSettingsList"
+                type: array
+                items:
+                  $ref: "#/extraSchemas/PeriodicDueItemsSettings"
     post:
       operationId: "sec-usertask-notify-new"
       tags: [ User Tasks ]
@@ -4113,8 +4729,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NotificationSettings"
+              $ref: "#/extraSchemas/PeriodicDueItemsSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4134,8 +4752,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NotificationSettings"
+              $ref: "#/extraSchemas/PeriodicDueItemsSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4155,12 +4775,14 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationSettings"
+                $ref: "#/extraSchemas/PeriodicDueItemsSettings"
     delete:
       operationId: "sec-usertask-notify-delete"
       tags: [ User Tasks ]
@@ -4171,6 +4793,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4192,8 +4816,141 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NotificationSettings"
+              $ref: "#/extraSchemas/PeriodicDueItemsSettings"
       responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/usertask/periodicquery:
+    get:
+      operationId: "sec-usertask-periodic-query-all"
+      tags: [ User Tasks ]
+      summary: Get settings for PeriodicQuery task
+      description: |
+        Return all current settings of the authenticated user. 
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/extraSchemas/PeriodicQuerySettings"
+    post:
+      operationId: "sec-usertask-periodic-query-new"
+      tags: [ User Tasks ]
+      summary: Create settings for PeriodicQuery task
+      description: |
+        Create a new periodic-query task of the authenticated user.
+        The id field in the input is ignored.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/extraSchemas/PeriodicQuerySettings"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      operationId: "sec-usertask-periodic-query-edit"
+      tags: [ User Tasks ]
+      summary: Change settings for PeriodicQuery task
+      description: |
+        Change the settings for a periodic-query task. The task is
+        looked up by its id.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/extraSchemas/PeriodicQuerySettings"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/usertask/periodicquery/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      operationId: "sec-usertask-periodic-query-get-details"
+      tags: [ User Tasks ]
+      summary: Get periodic query for a specific task
+      description: |
+        Return the current settings for a single periodic-query task
+        of the authenticated user.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/extraSchemas/PeriodicQuerySettings"
+    delete:
+      operationId: "sec-usertask-periodic-query-delete"
+      tags: [ User Tasks ]
+      summary: Delete a specific periodic-query task
+      description: |
+        Delete the settings to a periodic-query task of the
+        authenticated user.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/usertask/periodicquery/startonce:
+    post:
+      operationId: "sec-usertask-periodic-query-start-now"
+      tags: [ User Tasks ]
+      summary: Start the PeriodicQuery task once
+      description: |
+        Starts the periodic-query task just once, discarding the
+        schedule and not updating the periodic task.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/extraSchemas/PeriodicQuerySettings"
+      responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4214,6 +4971,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4235,6 +4994,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ScanMailboxSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4256,6 +5017,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ScanMailboxSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4276,6 +5039,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4292,6 +5057,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4315,6 +5082,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ScanMailboxSettings"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4338,6 +5107,8 @@ paths:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/sort"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4358,6 +5129,8 @@ paths:
             schema:
               $ref: "#/components/schemas/NewCustomField"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4377,6 +5150,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4402,6 +5177,8 @@ paths:
             schema:
               $ref: "#/components/schemas/NewCustomField"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4417,6 +5194,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -4427,6 +5206,136 @@ paths:
 
 components:
   schemas:
+    StringValue:
+      description: |
+        A generic string value
+      required:
+        - value
+      properties:
+        value:
+          type: string
+
+    NotificationSampleEventReq:
+      description: |
+        An event type.
+      required:
+        - eventType
+      properties:
+        eventType:
+          type: string
+          format: eventtype
+    NotificationChannelTestResult:
+      description: |
+        Results from running a sample event.
+      required:
+        - success
+        - messages
+      properties:
+        success:
+          type: boolean
+        messages:
+          type: array
+          items:
+            type: string
+    NotificationChannelRef:
+      description: |
+        A reference to a channel.
+      required:
+        - id
+        - channelType
+      properties:
+        id:
+          type: string
+          format: ident
+        channelType:
+          type: string
+          format: channeltype
+    NotificationMatrix:
+      description: |
+        A notification channel for matrix.
+      required:
+        - id
+        - channelType
+        - homeServer
+        - roomId
+        - accessToken
+      properties:
+        id:
+          type: string
+          format: ident
+        channelType:
+          type: string
+          format: channeltype
+        homeServer:
+          type: string
+          format: uri
+        roomId:
+          type: string
+        accessToken:
+          type: string
+          format: password
+    NotificationGotify:
+      description: |
+        A notification channel for gotify.
+      required:
+        - id
+        - channelType
+        - url
+        - appKey
+      properties:
+        id:
+          type: string
+          format: ident
+        channelType:
+          type: string
+          format: channeltype
+        url:
+          type: string
+          format: uri
+        appKey:
+          type: string
+          format: password
+    NotificationHttp:
+      description: |
+        A notification channel for receiving a generic http request.
+      required:
+        - id
+        - channelType
+        - url
+      properties:
+        id:
+          type: string
+          format: ident
+        channelType:
+          type: string
+          format: channeltype
+        url:
+          type: string
+          format: uri
+    NotificationMail:
+      description: |
+        A notification channel for receiving e-mails.
+      required:
+        - id
+        - channelType
+        - connection
+        - recipients
+      properties:
+        id:
+          type: string
+          format: ident
+        channelType:
+          type: string
+          format: channeltype
+        connection:
+          type: string
+          format: ident
+        recipients:
+          type: array
+          items:
+            type: string
+            format: ident
+
     ShareSecret:
       description: |
         The secret (the share id + optional password) to access a
@@ -5172,70 +6081,6 @@ components:
       properties:
         event:
           type: string
-    NotificationSettingsList:
-      description: |
-        A list of notification settings.
-      required:
-        - items
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/NotificationSettings"
-    NotificationSettings:
-      description: |
-        Settings for notifying about due items.
-      required:
-        - id
-        - enabled
-        - smtpConnection
-        - recipients
-        - schedule
-        - remindDays
-        - capOverdue
-        - tagsInclude
-        - tagsExclude
-      properties:
-        id:
-          type: string
-          format: ident
-        enabled:
-          type: boolean
-        summary:
-          type: string
-        smtpConnection:
-          type: string
-          format: ident
-        recipients:
-          type: array
-          items:
-            type: string
-            format: ident
-        schedule:
-          type: string
-          format: calevent
-        remindDays:
-          type: integer
-          format: int32
-          description: |
-            Used to restrict items by their due dates. All items with
-            a due date lower than (now + remindDays) are searched.
-        capOverdue:
-          type: boolean
-          description: |
-            If this is true, the search is also restricted to due
-            dates greater than `now - remindDays'. Otherwise, due date
-            are not restricted in that direction (only lower than `now
-            + remindDays' applies) and it is expected to restrict it
-            more using custom tags.
-        tagsInclude:
-          type: array
-          items:
-            $ref: "#/components/schemas/Tag"
-        tagsExclude:
-          type: array
-          items:
-            $ref: "#/components/schemas/Tag"
     SentMails:
       description: |
         A list of sent mails.
@@ -6917,3 +7762,133 @@ components:
       schema:
         type: string
         format: ident
+
+# sadly no generator support for these.
+# Changes here requires corresponding changes in:
+# - NotificationHook.elm
+# - routes.model.*
+extraSchemas:
+  NotificationHook:
+    description: |
+      Describes a notifcation hook. There must be exactly one channel
+      specified, so either use a `channelRef` or one `channel`.
+    required:
+      - id
+      - enabled
+      - channel
+      - events
+      - allEvents
+    properties:
+      id:
+        type: string
+        format: ident
+      enabled:
+        type: boolean
+      channel:
+        oneOf:
+          - $ref: "#/components/schemas/NotificationMail"
+          - $ref: "#/components/schemas/NotificationGotify"
+          - $ref: "#/components/schemas/NotificationMatrix"
+          - $ref: "#/components/schemas/NotificationHttp"
+          - $ref: "#/components/schemas/NotificationChannelRef"
+      allEvents:
+        type: boolean
+      eventFilter:
+        type: string
+        format: jsonminiq
+        description: |
+          A filter expression that is applied to the event to be able
+          to ignore a subset of them. See its
+          [documentation](https://docspell.org/docs/jsonminiquery/).
+      events:
+        type: array
+        items:
+          type: string
+          format: eventtype
+          enum:
+            - tagsAdded
+            - tagsSet
+
+  PeriodicQuerySettings:
+    description: |
+      Settings for the periodc-query task.
+    required:
+      - id
+      - enabled
+      - channel
+      - query
+      - schedule
+    properties:
+      id:
+        type: string
+        format: ident
+      enabled:
+        type: boolean
+      summary:
+        type: string
+      channel:
+        oneOf:
+          - $ref: "#/components/schemas/NotificationMail"
+          - $ref: "#/components/schemas/NotificationGotify"
+          - $ref: "#/components/schemas/NotificationMatrix"
+          - $ref: "#/components/schemas/NotificationHttp"
+          - $ref: "#/components/schemas/NotificationChannelRef"
+      schedule:
+        type: string
+        format: calevent
+      query:
+        type: string
+        format: itemquery
+
+  PeriodicDueItemsSettings:
+    description: |
+      Settings for notifying about due items.
+    required:
+      - id
+      - enabled
+      - channel
+      - schedule
+      - remindDays
+      - capOverdue
+      - tagsInclude
+      - tagsExclude
+    properties:
+      id:
+        type: string
+        format: ident
+      enabled:
+        type: boolean
+      summary:
+        type: string
+      channel:
+        oneOf:
+          - $ref: "#/components/schemas/NotificationMail"
+          - $ref: "#/components/schemas/NotificationGotify"
+          - $ref: "#/components/schemas/NotificationMatrix"
+          - $ref: "#/components/schemas/NotificationHttp"
+          - $ref: "#/components/schemas/NotificationChannelRef"
+      schedule:
+        type: string
+        format: calevent
+      remindDays:
+        type: integer
+        format: int32
+        description: |
+          Used to restrict items by their due dates. All items with
+          a due date lower than (now + remindDays) are searched.
+      capOverdue:
+        type: boolean
+        description: |
+          If this is true, the search is also restricted to due
+          dates greater than `now - remindDays'. Otherwise, due date
+          are not restricted in that direction (only lower than `now
+          + remindDays' applies) and it is expected to restrict it
+          more using custom tags.
+      tagsInclude:
+        type: array
+        items:
+          $ref: "#/components/schemas/Tag"
+      tagsExclude:
+        type: array
+        items:
+          $ref: "#/components/schemas/Tag"

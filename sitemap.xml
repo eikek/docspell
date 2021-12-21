@@ -139,6 +139,9 @@
         <loc>https://docspell.org/docs/joex/intro/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/jsonminiquery/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/query/</loc>
     </url>
     <url>
@@ -193,7 +196,7 @@
         <loc>https://docspell.org/docs/webapp/multiedit/</loc>
     </url>
     <url>
-        <loc>https://docspell.org/docs/webapp/notifydueitems/</loc>
+        <loc>https://docspell.org/docs/webapp/notification/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/webapp/processing/</loc>
