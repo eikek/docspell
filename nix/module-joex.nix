@@ -1418,6 +1418,9 @@ in {
       createHome = true;
       home = "/var/docspell";
       description = "Docspell user";
+      group = user;
+    };
+    users.groups."${user}" = mkIf (cfg.runAs == null) {
     };
 
     # Setting up a unoconv listener to improve conversion performance

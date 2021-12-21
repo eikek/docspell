@@ -7,4 +7,4 @@ fi
 
 nixos-rebuild build-vm \
   -I nixos-config=./configuration-test.nix \
-  -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-21.05.tar.gz
+  -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-21.11.tar.gz

@@ -663,7 +663,11 @@ in {
       createHome = true;
       home = "/var/docspell";
       description = "Docspell user";
+      group = user;
     };
+    users.groups."${user}" = mkIf (cfg.runAs == null) {
+    };
+
 
     systemd.services.docspell-restserver =
     let

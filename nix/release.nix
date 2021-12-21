@@ -1,5 +1,16 @@
 rec {
   cfg = {
+    v0_30_0 = rec {
+      version = "0.30.0";
+      server = {
+        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-restserver-${version}.zip";
+        sha256 = "1f5rhqjpl2lw70gp9v3shxzh2sjhqzba56dp4vyzwcqpw20m2hd1";
+      };
+      joex = {
+        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-joex-${version}.zip";
+        sha256 = "043bm318c09acid9899nss9qa3limpyaspchk53jhrwvm9dzacsz";
+      };
+    };
     v0_29_0 = rec {
       version = "0.29.0";
       server = {
@@ -104,36 +115,6 @@ rec {
         sha256 = "00n9z2z06hr431xascpxmb6vn5lc2a3hz4p2ap3zc1nbkkdwmkh2";
       };
     };
-    v0_21_0 = rec {
-      version = "0.21.0";
-      server = {
-        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-restserver-${version}.zip";
-        sha256 = "1bk904wsyfv78cgbf0srk0jzm2qd7ycz2fxci75s7dv0g3r7cas0";
-      };
-      joex = {
-        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-joex-${version}.zip";
-        sha256 = "0b05qpshmigwf4swixwxd1nff639yvbbjwn8s9aj7yi9zrc5wpj6";
-      };
-      tools = {
-        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-tools-${version}.zip";
-        sha256 = "1h2b2pf1zi811yasmfxnb6nnxysbcvmxlh1b0iyh9hmkh3pi1v7x";
-      };
-    };
-    v0_20_0 = rec {
-      version = "0.20.0";
-      server = {
-        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-restserver-${version}.zip";
-        sha256 = "1kiczs8z4j8m00w1yqirsnnjyka6knc3i6laxrb93z64n164gdwz";
-      };
-      joex = {
-        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-joex-${version}.zip";
-        sha256 = "1lvvp2irgfbmfrqg8y23n07qwx16q8666b1ywrka84fv6c0zrig9";
-      };
-      tools = {
-        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-tools-${version}.zip";
-        sha256 = "1nnvn1gwvv6i3f6wpckm8l8hagj87vmfp70ykpxndk5i1i2nyfay";
-      };
-    };
     v0_1_0 = rec {
       version = "0.1.0";
       server = {
@@ -151,7 +132,7 @@ rec {
     };
   };
   pkg = v: import ./pkg.nix v;
-  currentPkg = pkg cfg.v0_29_0;
+  currentPkg = pkg cfg.v0_30_0;
   module-joex = ./module-joex.nix;
   module-restserver = ./module-server.nix;
   modules = [ module-joex
