@@ -24,12 +24,13 @@ trait TaskOperations {
   def withChannel[F[_]: Sync](
       logger: Logger[F],
       channel: ChannelOrRef,
+      userId: Ident,
       ops: ONotification[F]
   )(
       cont: Vector[NotificationChannel] => F[Unit]
   ): F[Unit] = {
     val channels = channel match {
-      case Right(ch) => ops.mkNotificationChannel(ch)
+      case Right(ch) => ops.mkNotificationChannel(ch, userId)
       case Left(ref) => ops.findNotificationChannel(ref)
     }
     channels.flatMap { ch =>

@@ -7,6 +7,7 @@
 package docspell.joex.notify
 
 import cats.data.NonEmptyList
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
@@ -23,6 +24,7 @@ import docspell.query.ItemQueryDsl._
 import docspell.store.qb.Batch
 import docspell.store.queries.ListItem
 import docspell.store.queries.{QItem, Query}
+import docspell.store.records.RUser
 
 object PeriodicDueItemsTask {
   val taskName = PeriodicDueItemsArgs.taskName
@@ -49,7 +51,11 @@ object PeriodicDueItemsTask {
   def withChannel[F[_]: Sync](ctx: Context[F, Args], ops: ONotification[F])(
       cont: Vector[NotificationChannel] => F[Unit]
   ): F[Unit] =
-    TaskOperations.withChannel(ctx.logger, ctx.args.channel, ops)(cont)
+    OptionT(ctx.store.transact(RUser.findIdByAccount(ctx.args.account)))
+      .semiflatMap(userId =>
+        TaskOperations.withChannel(ctx.logger, ctx.args.channel, userId, ops)(cont)
+      )
+      .getOrElse(())
 
   def withItems[F[_]: Sync](ctx: Context[F, Args], limit: Int, now: Timestamp)(
       cont: Vector[ListItem] => F[Unit]

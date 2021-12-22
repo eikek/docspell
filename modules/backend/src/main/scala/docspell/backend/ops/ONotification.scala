@@ -34,7 +34,10 @@ trait ONotification[F[_]] {
 
   def offerEvents(ev: Iterable[Event]): F[Unit]
 
-  def mkNotificationChannel(channel: Channel): F[Vector[NotificationChannel]]
+  def mkNotificationChannel(
+      channel: Channel,
+      userId: Ident
+  ): F[Vector[NotificationChannel]]
 
   def findNotificationChannel(ref: ChannelRef): F[Vector[NotificationChannel]]
 
@@ -109,22 +112,30 @@ object ONotification {
           channel: Channel,
           account: AccountId,
           baseUrl: Option[LenientUri]
-      ): F[SendTestResult] =
-        (for {
-          ev <- sampleEvent(evt, account, baseUrl)
-          logbuf <- Logger.buffer()
-          ch <- mkNotificationChannel(channel)
-          _ <- notMod.send(logbuf._2.andThen(log), ev, ch)
-          logs <- logbuf._1.get
-          res = SendTestResult(true, logs)
-        } yield res).attempt
-          .map {
-            case Right(res) => res
-            case Left(ex) =>
-              val ps = new StringWriter()
-              ex.printStackTrace(new PrintWriter(ps))
-              SendTestResult(false, Vector(s"${ex.getMessage}\n$ps"))
-          }
+      ): F[SendTestResult] = {
+        def doCreate(userId: Ident) =
+          (for {
+            ev <- sampleEvent(evt, account, baseUrl)
+            logbuf <- Logger.buffer()
+            ch <- mkNotificationChannel(channel, userId)
+            _ <- notMod.send(logbuf._2.andThen(log), ev, ch)
+            logs <- logbuf._1.get
+            res = SendTestResult(true, logs)
+          } yield res).attempt
+            .map {
+              case Right(res) => res
+              case Left(ex) =>
+                val ps = new StringWriter()
+                ex.printStackTrace(new PrintWriter(ps))
+                SendTestResult(false, Vector(s"${ex.getMessage}\n$ps"))
+            }
+
+        OptionT(store.transact(RUser.findIdByAccount(account)))
+          .semiflatMap(doCreate)
+          .getOrElse(
+            SendTestResult(false, Vector(s"No user found in db for: ${account.asString}"))
+          )
+      }
 
       def listChannels(account: AccountId): F[Vector[Channel]] =
         store
@@ -142,7 +153,7 @@ object ONotification {
         (for {
           newId <- OptionT.liftF(Ident.randomId[F])
           userId <- OptionT(store.transact(RUser.findIdByAccount(account)))
-          r <- ChannelConv.makeRecord[F](store, Right(channel), newId, userId)
+          r <- ChannelConv.makeRecord[F](store, log, Right(channel), newId, userId)
           _ <- OptionT.liftF(store.transact(RNotificationChannel.insert(r)))
           _ <- OptionT.liftF(log.debug(s"Created channel $r for $account"))
         } yield AddResult.Success)
@@ -151,7 +162,7 @@ object ONotification {
       def updateChannel(channel: Channel, account: AccountId): F[UpdateResult] =
         (for {
           userId <- OptionT(store.transact(RUser.findIdByAccount(account)))
-          r <- ChannelConv.makeRecord[F](store, Right(channel), channel.id, userId)
+          r <- ChannelConv.makeRecord[F](store, log, Right(channel), channel.id, userId)
           n <- OptionT.liftF(store.transact(RNotificationChannel.update(r)))
         } yield UpdateResult.fromUpdateRows(n)).getOrElse(UpdateResult.notFound)
 
@@ -170,7 +181,7 @@ object ONotification {
           _ <- OptionT.liftF(log.debug(s"Creating new notification hook: $hook"))
           channelId <- OptionT.liftF(Ident.randomId[F])
           userId <- OptionT(store.transact(RUser.findIdByAccount(account)))
-          r <- ChannelConv.makeRecord[F](store, hook.channel, channelId, userId)
+          r <- ChannelConv.makeRecord[F](store, log, hook.channel, channelId, userId)
           _ <- OptionT.liftF(
             if (channelId == r.id) store.transact(RNotificationChannel.insert(r))
             else ().pure[F]
@@ -196,7 +207,7 @@ object ONotification {
             r: RNotificationHook
         )(f: RNotificationChannel => F[UpdateResult]): F[UpdateResult] =
           ChannelConv
-            .makeRecord(store, hook.channel, r.channelId, r.uid)
+            .makeRecord(store, log, hook.channel, r.channelId, r.uid)
             .semiflatMap(f)
             .getOrElse(UpdateResult.notFound)
 
@@ -221,10 +232,13 @@ object ONotification {
         withHook(doUpdate)
       }
 
-      def mkNotificationChannel(channel: Channel): F[Vector[NotificationChannel]] =
+      def mkNotificationChannel(
+          channel: Channel,
+          userId: Ident
+      ): F[Vector[NotificationChannel]] =
         (for {
           rec <- ChannelConv
-            .makeRecord(store, Right(channel), channel.id, Ident.unsafe(""))
+            .makeRecord(store, log, Right(channel), channel.id, userId)
           ch <- OptionT.liftF(store.transact(QNotification.readChannel(rec)))
         } yield ch).getOrElse(Vector.empty)
 
@@ -249,13 +263,15 @@ object ONotification {
 
     private[ops] def makeRecord[F[_]: Sync](
         store: Store[F],
+        logger: Logger[F],
         channelIn: Either[ChannelRef, Channel],
         id: Ident,
         userId: Ident
     ): OptionT[F, RNotificationChannel] =
       channelIn match {
         case Left(ref) =>
-          OptionT(store.transact(RNotificationChannel.getByRef(ref)))
+          OptionT.liftF(logger.debug(s"Loading channel for ref: ${ref}")) *>
+            OptionT(store.transact(RNotificationChannel.getByRef(ref)))
 
         case Right(channel) =>
           for {
@@ -264,6 +280,11 @@ object ONotification {
               channel match {
                 case Channel.Mail(_, conn, recipients) =>
                   for {
+                    _ <- OptionT.liftF(
+                      logger.debug(
+                        s"Looking up user smtp for ${userId.id} and ${conn.id}"
+                      )
+                    )
                     mailConn <- OptionT(
                       store.transact(RUserEmail.getByUser(userId, conn))
                     )
