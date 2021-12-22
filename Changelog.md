@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.30.1
+
+*Dec 22, 2021*
+
+Bug fix release for #1229: notification mails could not be sent. 
+
+
 ## v0.30.0
 
 *Dec 21, 2021*
