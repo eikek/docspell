@@ -18,7 +18,7 @@ object Dependencies {
   val FlywayVersion = "8.2.3"
   val Fs2Version = "3.2.3"
   val Fs2CronVersion = "0.7.1"
-  val H2Version = "1.4.200"
+  val H2Version = "2.0.204"
   val Http4sVersion = "0.23.7"
   val Icu4jVersion = "70.1"
   val JavaOtpVersion = "0.3.1"
