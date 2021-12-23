@@ -30,13 +30,13 @@ object ClientSettingsRoutes {
       case req @ PUT -> Root / Ident(clientId) =>
         for {
           data <- req.as[Json]
-          _ <- backend.clientSettings.save(clientId, user.account, data)
+          _ <- backend.clientSettings.saveUser(clientId, user.account, data)
           res <- Ok(BasicResult(true, "Settings stored"))
         } yield res
 
       case GET -> Root / Ident(clientId) =>
         for {
-          data <- backend.clientSettings.load(clientId, user.account)
+          data <- backend.clientSettings.loadUser(clientId, user.account)
           res <- data match {
             case Some(d) => Ok(d.settingsData)
             case None    => NotFound()
@@ -45,7 +45,7 @@ object ClientSettingsRoutes {
 
       case DELETE -> Root / Ident(clientId) =>
         for {
-          flag <- backend.clientSettings.delete(clientId, user.account)
+          flag <- backend.clientSettings.deleteUser(clientId, user.account)
           res <- Ok(
             BasicResult(
               flag,
