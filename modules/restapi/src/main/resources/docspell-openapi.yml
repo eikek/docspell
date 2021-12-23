@@ -1880,13 +1880,44 @@ paths:
             application/json:
               schema: {}
 
+
   /sec/clientSettings/{clientId}:
     parameters:
       - $ref: "#/components/parameters/clientId"
     get:
       operationId: "sec-clientsettings-get"
       tags: [ Client Settings ]
-      summary: Return the current user settings
+      summary: Return the client settings of current user
+      description: |
+        Returns the settings for the current user by merging the
+        client settings for the collective and the user's own client
+        settings into one json structure.
+
+        Null, Array, Boolean, String and Number are treated as values,
+        and values from the users settings completely replace values
+        from the collective's settings.
+        
+        The `clientId` is an identifier to a client application. It
+        returns a JSON structure. The server doesn't care about the
+        actual data, since it is meant to be interpreted by clients.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema: {}
+
+  /sec/clientSettings/user/{clientId}:
+    parameters:
+      - $ref: "#/components/parameters/clientId"
+    get:
+      operationId: "sec-clientsettings-user-get"
+      tags: [ Client Settings ]
+      summary: Return the user's own client settings 
       description: |
         Returns the settings for the current user. The `clientId` is
         an identifier to a client application. It returns a JSON
@@ -1903,9 +1934,9 @@ paths:
             application/json:
               schema: {}
     put:
-      operationId: "sec-clientsettings-update"
+      operationId: "sec-clientsettings-user-update"
       tags: [ Client Settings ]
-      summary: Update current user settings
+      summary: Update client settings of current user
       description: |
         Updates (replaces or creates) the current user's settings with
         the given data. The `clientId` is an identifier to a client
@@ -1933,12 +1964,83 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
     delete:
-      operationId: "sec-clientsettings-delete"
+      operationId: "sec-clientsettings-user-delete"
       tags: [ Client Settings ]
-      summary: Clears the current user settings
+      summary: Clears client settings of current user
       description: |
         Removes all stored user settings for the client identified by
         `clientId`.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/clientSettings/collective/{clientId}:
+    parameters:
+      - $ref: "#/components/parameters/clientId"
+    get:
+      operationId: "sec-clientsettings-collective-get"
+      tags: [ Client Settings ]
+      summary: Return collective client settings
+      description: |
+        Returns the settings for the current collective. The
+        `clientId` is an identifier to a client application. It
+        returns a JSON structure. The server doesn't care about the
+        actual data, since it is meant to be interpreted by clients.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema: {}
+    put:
+      operationId: "sec-clientsettings-collective-update"
+      tags: [ Client Settings ]
+      summary: Update collective client settings
+      description: |
+        Updates (replaces or creates) the current collective's
+        settings with the given data. The `clientId` is an identifier
+        to a client application. The request body is expected to be
+        JSON, the structure is not important to the server.
+
+        The data is stored for the current user and given `clientId`.
+
+        The data is only saved without being checked in any way
+        (besides being valid JSON). It is returned "as is" to the
+        client in the corresponding GET endpoint.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      operationId: "sec-clientsettings-collective-delete"
+      tags: [ Client Settings ]
+      summary: Clears collective's client settings
+      description: |
+        Removes all stored client settings of id `clientId` for
+        collective.
       security:
         - authTokenHeader: []
       responses:

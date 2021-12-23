@@ -2261,7 +2261,7 @@ getClientSettings flags receive =
                 Data.UiSettings.storedUiSettingsDecoder
     in
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/webClient"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/user/webClient"
         , account = getAccount flags
         , expect = Http.expectJson receive decoder
         }
@@ -2277,7 +2277,7 @@ saveClientSettings flags settings receive =
             Data.UiSettings.storedUiSettingsEncode storedSettings
     in
     Http2.authPut
-        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/webClient"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/user/webClient"
         , account = getAccount flags
         , body = Http.jsonBody encode
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
