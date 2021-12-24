@@ -41,7 +41,7 @@ object Dependencies {
   val ScodecBitsVersion = "1.1.30"
   val Slf4jVersion = "1.7.32"
   val StanfordNlpVersion = "4.3.2"
-  val TikaVersion = "2.2.0"
+  val TikaVersion = "2.2.1"
   val YamuscaVersion = "0.8.2"
   val SwaggerUIVersion = "4.1.3"
   val TestContainerVersion = "0.39.12"
