@@ -41,6 +41,7 @@ menuItem : Texts -> Model msg -> ChannelType -> MB.DropdownMenu msg
 menuItem texts model ct =
     { icon = Data.ChannelType.icon ct "w-6 h-6 text-center inline-block"
     , label = texts ct
+    , disabled = False
     , attrs =
         [ href ""
         , onClick (model.onItem ct)

@@ -872,7 +872,7 @@ update mId key flags texts settings msg model =
                 cmd =
                     Api.saveClientSettings flags newSettings (ClientSettingsSaveResp newSettings)
             in
-            noSub ( model, cmd )
+            noSub ( { model | viewMenuOpen = False }, cmd )
 
         ClientSettingsSaveResp newSettings (Ok res) ->
             if res.success then
@@ -922,7 +922,7 @@ update mId key flags texts settings msg model =
                         ( pm, pc ) =
                             Comp.PublishItems.initQuery flags q
                     in
-                    noSub ( { model | viewMode = PublishView pm }, Cmd.map PublishViewMsg pc )
+                    noSub ( { model | viewMode = PublishView pm, viewMenuOpen = False }, Cmd.map PublishViewMsg pc )
 
                 Nothing ->
                     noSub ( model, Cmd.none )
