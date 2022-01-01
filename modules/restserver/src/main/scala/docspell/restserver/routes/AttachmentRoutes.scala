@@ -15,6 +15,7 @@ import docspell.backend.ops._
 import docspell.common.Ident
 import docspell.common.MakePreviewArgs
 import docspell.restapi.model._
+import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.BinaryUtil
 import docspell.restserver.webapp.Webjars
@@ -29,6 +30,7 @@ object AttachmentRoutes {
 
   def apply[F[_]: Async](
       backend: BackendApp[F],
+      cfg: Config,
       user: AuthToken
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
@@ -132,8 +134,8 @@ object AttachmentRoutes {
       case GET -> Root / Ident(id) / "view" =>
         // this route exists to provide a stable url
         // it redirects currently to viewerjs
-        val attachUrl = s"/api/v1/sec/attachment/${id.id}"
-        val path = s"/app/assets${Webjars.viewerjs}/index.html#$attachUrl"
+        val attachUrl = s"${cfg.baseUrl.path.asString}/api/v1/sec/attachment/${id.id}"
+        val path = s"${cfg.baseUrl.path.asString}/app/assets${Webjars.viewerjs}/index.html#$attachUrl"
         SeeOther(Location(Uri(path = Uri.Path.unsafeFromString(path))))
 
       case GET -> Root / Ident(id) / "meta" =>

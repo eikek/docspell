@@ -12,6 +12,7 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.ShareToken
 import docspell.common._
+import docspell.restserver.Config
 import docspell.restserver.http4s.BinaryUtil
 import docspell.restserver.webapp.Webjars
 
@@ -23,6 +24,7 @@ object ShareAttachmentRoutes {
 
   def apply[F[_]: Async](
       backend: BackendApp[F],
+      cfg: Config,
       token: ShareToken
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
@@ -44,8 +46,8 @@ object ShareAttachmentRoutes {
       case GET -> Root / Ident(id) / "view" =>
         // this route exists to provide a stable url
         // it redirects currently to viewerjs
-        val attachUrl = s"/api/v1/share/attachment/${id.id}"
-        val path = s"/app/assets${Webjars.viewerjs}/index.html#$attachUrl"
+        val attachUrl = s"${cfg.baseUrl.path.asString}/api/v1/share/attachment/${id.id}"
+        val path = s"${cfg.baseUrl.path.asString}/app/assets${Webjars.viewerjs}/index.html#$attachUrl"
         SeeOther(Location(Uri(path = Uri.Path.unsafeFromString(path))))
 
       case req @ GET -> Root / Ident(id) / "preview" =>

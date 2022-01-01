@@ -35,7 +35,7 @@ object Flags {
       cfg.appName,
       getBaseUrl(cfg),
       cfg.backend.signup.mode,
-      s"/app/assets/docspell-webapp/${BuildInfo.version}",
+      s"${cfg.baseUrl.path.asString}/app/assets/docspell-webapp/${BuildInfo.version}",
       cfg.integrationEndpoint.enabled,
       cfg.fullTextSearch.enabled,
       cfg.maxItemPageSize,
