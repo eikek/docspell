@@ -27,6 +27,7 @@ module Page exposing
     )
 
 import Browser.Navigation as Nav
+import Data.Flags exposing (Flags)
 import Html exposing (Attribute)
 import Html.Attributes as Attr
 import Url exposing (Url)
@@ -227,50 +228,51 @@ pageToString : Page -> String
 pageToString page =
     case page of
         HomePage ->
-            "/app/home"
+            "/andy" ++ "/app/home"
 
         LoginPage data ->
             case data.referrer of
                 Just (LoginPage _) ->
-                    "/app/login"
+                    "/andy" ++ "/app/login"
 
                 Just p ->
-                    "/app/login?r=" ++ pageToString p
+                    String.concat ["/andy", "/app/login?r=", pageToString p]
 
                 Nothing ->
-                    "/app/login"
+                    "/andy" ++ "/app/login"
 
         ManageDataPage ->
-            "/app/managedata"
+            "/andy" ++ "/app/managedata"
 
         CollectiveSettingPage ->
-            "/app/csettings"
+            "/andy" ++ "/app/csettings"
 
         UserSettingPage ->
-            "/app/usettings"
+            "/andy" ++ "/app/usettings"
 
         QueuePage ->
-            "/app/queue"
+            "/andy" ++ "/app/queue"
 
         RegisterPage ->
-            "/app/register"
+            "/andy" ++ "/app/register"
 
         UploadPage sourceId ->
             Maybe.map (\id -> "/" ++ id) sourceId
                 |> Maybe.withDefault ""
+                |> (++) "/andy"
                 |> (++) "/app/upload"
 
         NewInvitePage ->
-            "/app/newinvite"
+            "/andy" ++ "/app/newinvite"
 
         ItemDetailPage id ->
-            "/app/item/" ++ id
+            "/andy" ++ "/app/item/" ++ id
 
         SharePage id ->
-            "/app/share/" ++ id
+            "/andy" ++ "/app/share/" ++ id
 
         ShareDetailPage shareId itemId ->
-            "/app/share/" ++ shareId ++ "/" ++ itemId
+            "/andy" ++ "/app/share/" ++ shareId ++ "/" ++ itemId
 
 
 pageFromString : String -> Maybe Page
