@@ -24,7 +24,7 @@ externalDocs:
   url: https://docspell.org
 
 servers:
-  - url: /api/v1
+  - url: /andy/api/v1
     description: Current host
 
 paths:
