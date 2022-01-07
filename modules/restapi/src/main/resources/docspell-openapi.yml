@@ -6407,6 +6407,7 @@ components:
       required:
         - id
         - enabled
+        - scanRecursively
         - imapConnection
         - schedule
         - folders
@@ -6426,6 +6427,10 @@ components:
           type: array
           items:
             type: string
+        scanRecursively:
+          type: boolean
+          description: |
+            Scan folders recursively for new mails.
         schedule:
           type: string
           format: calevent
