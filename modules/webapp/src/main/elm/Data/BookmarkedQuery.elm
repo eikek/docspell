@@ -5,13 +5,17 @@ module Data.BookmarkedQuery exposing
     , Bookmarks
     , Location(..)
     , add
+    , allBookmarksEmpty
     , bookmarksDecoder
     , bookmarksEncode
     , emptyBookmarks
     , exists
+    , filter
+    , map
     , remove
     )
 
+import Api.Model.ShareDetail exposing (ShareDetail)
 import Json.Decode as D
 import Json.Encode as E
 
@@ -52,6 +56,20 @@ type Bookmarks
     = Bookmarks (List BookmarkedQuery)
 
 
+map : (BookmarkedQuery -> a) -> Bookmarks -> List a
+map f bms =
+    case bms of
+        Bookmarks items ->
+            List.map f items
+
+
+filter : (BookmarkedQuery -> Bool) -> Bookmarks -> Bookmarks
+filter f bms =
+    case bms of
+        Bookmarks items ->
+            Bookmarks <| List.filter f items
+
+
 emptyBookmarks : Bookmarks
 emptyBookmarks =
     Bookmarks []
@@ -60,7 +78,13 @@ emptyBookmarks =
 type alias AllBookmarks =
     { collective : Bookmarks
     , user : Bookmarks
+    , shares : List ShareDetail
     }
+
+
+allBookmarksEmpty : AllBookmarks
+allBookmarksEmpty =
+    AllBookmarks emptyBookmarks emptyBookmarks []
 
 
 {-| Checks wether a bookmark of this name already exists.

@@ -2334,10 +2334,16 @@ getBookmarks flags receive =
         user =
             getBookmarksTask flags Data.BookmarkedQuery.User
 
-        combine bc bu =
-            AllBookmarks bc bu
+        shares =
+            getSharesTask flags "" False
+
+        activeShare s =
+            s.enabled && s.name /= Nothing
+
+        combine bc bu bs =
+            AllBookmarks bc bu (List.filter activeShare bs.items)
     in
-    Task.map2 combine coll user
+    Task.map3 combine coll user shares
         |> Task.attempt receive
 
 
@@ -2436,10 +2442,12 @@ disableOtp flags otp receive =
 --- Share
 
 
-getShares : Flags -> String -> Bool -> (Result Http.Error ShareList -> msg) -> Cmd msg
-getShares flags query owning receive =
-    Http2.authGet
-        { url =
+getSharesTask : Flags -> String -> Bool -> Task.Task Http.Error ShareList
+getSharesTask flags query owning =
+    Http2.authTask
+        { method =
+            "GET"
+        , url =
             flags.config.baseUrl
                 ++ "/api/v1/sec/share?q="
                 ++ Url.percentEncode query
@@ -2450,8 +2458,16 @@ getShares flags query owning receive =
                         ""
                    )
         , account = getAccount flags
-        , expect = Http.expectJson receive Api.Model.ShareList.decoder
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver Api.Model.ShareList.decoder
+        , headers = []
+        , timeout = Nothing
         }
+
+
+getShares : Flags -> String -> Bool -> (Result Http.Error ShareList -> msg) -> Cmd msg
+getShares flags query owning receive =
+    getSharesTask flags query owning |> Task.attempt receive
 
 
 getShare : Flags -> String -> (Result Http.Error ShareDetail -> msg) -> Cmd msg

@@ -966,10 +966,20 @@ update mId key flags texts settings msg model =
 
                             else
                                 BookmarkQuery res.model
+
+                        refreshCmd =
+                            if res.outcome == Comp.BookmarkQueryManage.Done then
+                                Cmd.map SearchMenuMsg (Comp.SearchMenu.refreshBookmarks flags)
+
+                            else
+                                Cmd.none
                     in
                     makeResult
                         ( { model | topWidgetModel = nextModel }
-                        , Cmd.map BookmarkQueryMsg res.cmd
+                        , Cmd.batch
+                            [ Cmd.map BookmarkQueryMsg res.cmd
+                            , refreshCmd
+                            ]
                         , Sub.map BookmarkQueryMsg res.sub
                         )
 
@@ -991,7 +1001,10 @@ update mId key flags texts settings msg model =
                                 )
 
                         Comp.PublishItems.OutcomeDone ->
-                            noSub ( { model | viewMode = SearchView }, Cmd.none )
+                            noSub
+                                ( { model | viewMode = SearchView }
+                                , Cmd.map SearchMenuMsg (Comp.SearchMenu.refreshBookmarks flags)
+                                )
 
                 _ ->
                     noSub ( model, Cmd.none )
