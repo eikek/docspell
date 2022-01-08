@@ -29,7 +29,7 @@ object ClientRequestInfo {
       host <- getHostname(req)
       port = xForwardedPort(req).getOrElse(serverPort)
       hostPort = if (port == 80 || port == 443) host else s"$host:$port"
-    } yield LenientUri(scheme, Some(hostPort), LenientUri.EmptyPath, None, None)
+    } yield LenientUri(scheme, Some(hostPort), LenientUri.NonEmptyPath(NonEmptyList.of("andy")), None, None)
 
   def getHostname[F[_]](req: Request[F]): Option[String] =
     xForwardedHost(req)

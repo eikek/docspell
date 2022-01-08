@@ -236,7 +236,7 @@ pageToString page =
                     "/andy" ++ "/app/login"
 
                 Just p ->
-                    String.concat ["/andy", "/app/login?r=", pageToString p]
+                    String.concat [ "/andy", "/app/login?r=", pageToString p ]
 
                 Nothing ->
                     "/andy" ++ "/app/login"
@@ -306,6 +306,11 @@ goto page =
     Nav.load (pageToString page)
 
 
+basePath : String
+basePath =
+    "andy"
+
+
 pathPrefix : String
 pathPrefix =
     "app"
@@ -317,21 +322,21 @@ parser =
         [ Parser.map HomePage
             (oneOf
                 [ Parser.top
-                , s pathPrefix </> s "home"
+                , s basePath </> s pathPrefix </> s "home"
                 ]
             )
-        , Parser.map LoginPage (s pathPrefix </> s "login" <?> loginPageParser)
-        , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
-        , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")
-        , Parser.map UserSettingPage (s pathPrefix </> s "usettings")
-        , Parser.map QueuePage (s pathPrefix </> s "queue")
-        , Parser.map RegisterPage (s pathPrefix </> s "register")
-        , Parser.map (\s -> UploadPage (Just s)) (s pathPrefix </> s "upload" </> string)
-        , Parser.map (UploadPage Nothing) (s pathPrefix </> s "upload")
-        , Parser.map NewInvitePage (s pathPrefix </> s "newinvite")
-        , Parser.map ItemDetailPage (s pathPrefix </> s "item" </> string)
-        , Parser.map ShareDetailPage (s pathPrefix </> s "share" </> string </> string)
-        , Parser.map SharePage (s pathPrefix </> s "share" </> string)
+        , Parser.map LoginPage (s basePath </> s pathPrefix </> s "login" <?> loginPageParser)
+        , Parser.map ManageDataPage (s basePath </> s pathPrefix </> s "managedata")
+        , Parser.map CollectiveSettingPage (s basePath </> s pathPrefix </> s "csettings")
+        , Parser.map UserSettingPage (s basePath </> s pathPrefix </> s "usettings")
+        , Parser.map QueuePage (s basePath </> s pathPrefix </> s "queue")
+        , Parser.map RegisterPage (s basePath </> s pathPrefix </> s "register")
+        , Parser.map (\s -> UploadPage (Just s)) (s basePath </> s pathPrefix </> s "upload" </> string)
+        , Parser.map (UploadPage Nothing) (s basePath </> s pathPrefix </> s "upload")
+        , Parser.map NewInvitePage (s basePath </> s pathPrefix </> s "newinvite")
+        , Parser.map ItemDetailPage (s basePath </> s pathPrefix </> s "item" </> string)
+        , Parser.map ShareDetailPage (s basePath </> s pathPrefix </> s "share" </> string </> string)
+        , Parser.map SharePage (s basePath </> s pathPrefix </> s "share" </> string)
         ]
 
 
