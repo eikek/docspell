@@ -12,6 +12,7 @@ module Messages.Page.Home exposing
     )
 
 import Messages.Basics
+import Messages.Comp.BookmarkQueryManage
 import Messages.Comp.ItemCardList
 import Messages.Comp.ItemMerge
 import Messages.Comp.PublishItems
@@ -26,6 +27,7 @@ type alias Texts =
     , sideMenu : Messages.Page.HomeSideMenu.Texts
     , itemMerge : Messages.Comp.ItemMerge.Texts
     , publishItems : Messages.Comp.PublishItems.Texts
+    , bookmarkManage : Messages.Comp.BookmarkQueryManage.Texts
     , contentSearch : String
     , searchInNames : String
     , selectModeTitle : String
@@ -46,6 +48,7 @@ type alias Texts =
     , mergeItemsTitle : Int -> String
     , publishItemsTitle : Int -> String
     , publishCurrentQueryTitle : String
+    , shareResults : String
     , nothingSelectedToShare : String
     , loadMore : String
     , thatsAll : String
@@ -53,6 +56,8 @@ type alias Texts =
     , listView : String
     , tileView : String
     , expandCollapseRows : String
+    , bookmarkQuery : String
+    , nothingToBookmark : String
     }
 
 
@@ -64,6 +69,7 @@ gb =
     , sideMenu = Messages.Page.HomeSideMenu.gb
     , itemMerge = Messages.Comp.ItemMerge.gb
     , publishItems = Messages.Comp.PublishItems.gb
+    , bookmarkManage = Messages.Comp.BookmarkQueryManage.gb
     , contentSearch = "Content search…"
     , searchInNames = "Search in names…"
     , selectModeTitle = "Select Mode"
@@ -84,6 +90,7 @@ gb =
     , mergeItemsTitle = \n -> "Merge " ++ String.fromInt n ++ " selected items"
     , publishItemsTitle = \n -> "Publish " ++ String.fromInt n ++ " selected items"
     , publishCurrentQueryTitle = "Publish current results"
+    , shareResults = "Share Results"
     , nothingSelectedToShare = "Sharing everything doesn't work. You need to apply some criteria."
     , loadMore = "Load more…"
     , thatsAll = "That's all"
@@ -91,6 +98,8 @@ gb =
     , listView = "List view"
     , tileView = "Tile view"
     , expandCollapseRows = "Expand/Collapse all"
+    , bookmarkQuery = "Bookmark query"
+    , nothingToBookmark = "Nothing selected to bookmark"
     }
 
 
@@ -102,6 +111,7 @@ de =
     , sideMenu = Messages.Page.HomeSideMenu.de
     , itemMerge = Messages.Comp.ItemMerge.de
     , publishItems = Messages.Comp.PublishItems.de
+    , bookmarkManage = Messages.Comp.BookmarkQueryManage.de
     , contentSearch = "Volltextsuche…"
     , searchInNames = "Suche in Namen…"
     , selectModeTitle = "Auswahlmodus"
@@ -122,6 +132,7 @@ de =
     , mergeItemsTitle = \n -> String.fromInt n ++ " gewählte Dokumente zusammenführen"
     , publishItemsTitle = \n -> String.fromInt n ++ " gewählte Dokumente publizieren"
     , publishCurrentQueryTitle = "Aktuelle Ansicht publizieren"
+    , shareResults = "Ergebnisse teilen"
     , nothingSelectedToShare = "Alles kann nicht geteilt werden; es muss etwas gesucht werden."
     , loadMore = "Mehr laden…"
     , thatsAll = "Mehr gibt es nicht"
@@ -129,4 +140,6 @@ de =
     , listView = "Listenansicht"
     , tileView = "Kachelansicht"
     , expandCollapseRows = "Alle ein-/ausklappen"
+    , bookmarkQuery = "Abfrage merken"
+    , nothingToBookmark = "Keine Abfrage vorhanden"
     }

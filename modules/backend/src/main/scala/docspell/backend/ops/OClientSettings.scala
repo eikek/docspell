@@ -27,7 +27,10 @@ trait OClientSettings[F[_]] {
 
   def deleteCollective(clientId: Ident, account: AccountId): F[Boolean]
   def saveCollective(clientId: Ident, account: AccountId, data: Json): F[Unit]
-  def loadCollective(clientId: Ident, account: AccountId): F[Option[RClientSettingsCollective]]
+  def loadCollective(
+      clientId: Ident,
+      account: AccountId
+  ): F[Option[RClientSettingsCollective]]
 
 }
 

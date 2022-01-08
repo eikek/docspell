@@ -13,6 +13,7 @@ module Page.Home.Update exposing
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Browser.Navigation as Nav
+import Comp.BookmarkQueryManage
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
@@ -925,6 +926,54 @@ update mId key flags texts settings msg model =
                     noSub ( { model | viewMode = PublishView pm, viewMenuOpen = False }, Cmd.map PublishViewMsg pc )
 
                 Nothing ->
+                    noSub ( model, Cmd.none )
+
+        ToggleBookmarkCurrentQueryView ->
+            case createQuery model of
+                Just q ->
+                    case model.topWidgetModel of
+                        BookmarkQuery _ ->
+                            noSub ( { model | topWidgetModel = TopWidgetHidden, viewMenuOpen = False }, Cmd.none )
+
+                        TopWidgetHidden ->
+                            let
+                                ( qm, qc ) =
+                                    Comp.BookmarkQueryManage.init (Q.render q)
+                            in
+                            noSub
+                                ( { model | topWidgetModel = BookmarkQuery qm, viewMenuOpen = False }
+                                , Cmd.map BookmarkQueryMsg qc
+                                )
+
+                Nothing ->
+                    noSub ( model, Cmd.none )
+
+        BookmarkQueryMsg lm ->
+            case model.topWidgetModel of
+                BookmarkQuery bm ->
+                    let
+                        res =
+                            Comp.BookmarkQueryManage.update flags lm bm
+
+                        nextModel =
+                            if
+                                res.outcome
+                                    == Comp.BookmarkQueryManage.Cancelled
+                                    || res.outcome
+                                    == Comp.BookmarkQueryManage.Done
+                            then
+                                TopWidgetHidden
+
+                            else
+                                BookmarkQuery res.model
+                    in
+                    makeResult
+                        ( { model | topWidgetModel = nextModel }
+                        , Cmd.map BookmarkQueryMsg res.cmd
+                        , Sub.map BookmarkQueryMsg res.sub
+                        )
+
+                TopWidgetHidden ->
                     noSub ( model, Cmd.none )
 
         PublishViewMsg lmsg ->

@@ -53,7 +53,7 @@ object ClientSettingsRoutes {
           data <- backend.clientSettings.loadUser(clientId, user.account)
           res <- data match {
             case Some(d) => Ok(d.settingsData)
-            case None    => NotFound()
+            case None    => Ok(Map.empty[String, String])
           }
         } yield res
 
@@ -80,7 +80,7 @@ object ClientSettingsRoutes {
           data <- backend.clientSettings.loadCollective(clientId, user.account)
           res <- data match {
             case Some(d) => Ok(d.settingsData)
-            case None    => NotFound()
+            case None    => Ok(Map.empty[String, String])
           }
         } yield res
 

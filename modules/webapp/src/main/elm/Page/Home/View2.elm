@@ -9,6 +9,7 @@ module Page.Home.View2 exposing (viewContent, viewSidebar)
 
 import Api
 import Comp.Basic as B
+import Comp.BookmarkQueryManage
 import Comp.ConfirmModal
 import Comp.ItemCardList
 import Comp.ItemMerge
@@ -103,7 +104,21 @@ mainView texts flags settings model =
             body
 
         Nothing ->
-            itemCardList texts flags settings model
+            bookmarkQueryWidget texts settings flags model
+                ++ itemCardList texts flags settings model
+
+
+bookmarkQueryWidget : Texts -> UiSettings -> Flags -> Model -> List (Html Msg)
+bookmarkQueryWidget texts settings flags model =
+    case model.topWidgetModel of
+        BookmarkQuery m ->
+            [ div [ class "px-2 mb-4 border-l border-r border-b dark:border-slate-600" ]
+                [ Html.map BookmarkQueryMsg (Comp.BookmarkQueryManage.view texts.bookmarkManage m)
+                ]
+            ]
+
+        TopWidgetHidden ->
+            []
 
 
 itemPublishView : Texts -> UiSettings -> Flags -> SelectViewModel -> List (Html Msg)
@@ -354,7 +369,7 @@ defaultMenuBar texts flags settings model =
                             ]
                       }
                     , menuSep
-                    , { label = "Share Results"
+                    , { label = texts.shareResults
                       , icon = Icons.shareIcon ""
                       , disabled = createQuery model == Nothing
                       , attrs =
@@ -370,6 +385,24 @@ defaultMenuBar texts flags settings model =
 
                               else
                                 onClick TogglePublishCurrentQueryView
+                            ]
+                      }
+                    , { label = texts.bookmarkQuery
+                      , icon = i [ class "fa fa-bookmark" ] []
+                      , disabled = createQuery model == Nothing
+                      , attrs =
+                            [ title <|
+                                if createQuery model == Nothing then
+                                    texts.nothingToBookmark
+
+                                else
+                                    texts.bookmarkQuery
+                            , href "#"
+                            , if createQuery model == Nothing then
+                                class ""
+
+                              else
+                                onClick ToggleBookmarkCurrentQueryView
                             ]
                       }
                     , { label =

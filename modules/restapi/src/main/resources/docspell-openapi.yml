@@ -1923,6 +1923,9 @@ paths:
         an identifier to a client application. It returns a JSON
         structure. The server doesn't care about the actual data,
         since it is meant to be interpreted by clients.
+
+        If there is nothing stored for the given `clientId` an empty
+        JSON object (`{}`) is returned!
       security:
         - authTokenHeader: []
       responses:
@@ -1994,6 +1997,9 @@ paths:
         `clientId` is an identifier to a client application. It
         returns a JSON structure. The server doesn't care about the
         actual data, since it is meant to be interpreted by clients.
+
+        If there is nothing stored for the given `clientId` an empty
+        JSON object (`{}`) is returned!
       security:
         - authTokenHeader: []
       responses:
