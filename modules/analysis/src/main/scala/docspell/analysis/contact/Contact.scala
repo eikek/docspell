@@ -52,7 +52,7 @@ object Contact {
         case LenientUri.EmptyPath => false
         case LenientUri.NonEmptyPath(segs) =>
           Ident.fromString(segs.last).isRight &&
-            segs.init.takeRight(3) == List("open", "upload", "item")
+          segs.init.takeRight(3) == List("open", "upload", "item")
       }
     LenientUri
       .parse(str)
