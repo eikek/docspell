@@ -42,7 +42,7 @@ view : Texts -> Flags -> UiSettings -> Model -> Int -> Attachment -> Html Msg
 view texts flags settings model pos attach =
     let
         fileUrl =
-            Api.fileURL attach.id
+            Api.fileURL flags attach.id
     in
     div
         [ class "flex flex-col md:relative h-full mb-2"
@@ -55,10 +55,10 @@ view texts flags settings model pos attach =
             [ class "flex flex-row px-2 py-2 text-sm"
             , class S.border
             ]
-            [ attachHeader texts settings model pos attach
+            [ attachHeader texts flags settings model pos attach
             ]
         , editAttachmentName model attach
-        , attachmentSelect texts model pos attach
+        , attachmentSelect texts flags model pos attach
         , if isAttachMetaOpen model attach.id then
             case Dict.get attach.id model.attachMeta of
                 Just am ->
@@ -110,14 +110,14 @@ view texts flags settings model pos attach =
       - native view
 
 -}
-attachHeader : Texts -> UiSettings -> Model -> Int -> Attachment -> Html Msg
-attachHeader texts settings model _ attach =
+attachHeader : Texts -> Flags -> UiSettings -> Model -> Int -> Attachment -> Html Msg
+attachHeader texts flags _ model _ attach =
     let
         attachName =
             Maybe.withDefault texts.noName attach.name
 
         fileUrl =
-            Api.fileURL attach.id
+            Api.fileURL flags attach.id
 
         hasArchive =
             List.map .id model.item.archives
@@ -346,8 +346,8 @@ editAttachmentName model attach =
             span [ class "hidden" ] []
 
 
-attachmentSelect : Texts -> Model -> Int -> Attachment -> Html Msg
-attachmentSelect texts model _ _ =
+attachmentSelect : Texts -> Flags -> Model -> Int -> Attachment -> Html Msg
+attachmentSelect texts flags model _ _ =
     div
         [ class "flex flex-row border-l border-r px-2 py-2 dark:border-slate-600 "
         , class "overflow-x-auto overflow-y-none"
@@ -355,11 +355,11 @@ attachmentSelect texts model _ _ =
             [ ( "hidden", not model.attachMenuOpen )
             ]
         ]
-        (List.indexedMap (menuItem texts model) model.item.attachments)
+        (List.indexedMap (menuItem texts flags model) model.item.attachments)
 
 
-menuItem : Texts -> Model -> Int -> Attachment -> Html Msg
-menuItem texts model pos attach =
+menuItem : Texts -> Flags -> Model -> Int -> Attachment -> Html Msg
+menuItem texts flags model pos attach =
     let
         highlight =
             let
@@ -427,7 +427,7 @@ menuItem texts model pos attach =
             ]
         , div [ class "flex-grow" ]
             [ img
-                [ src (Api.attachmentPreviewURL attach.id)
+                [ src (Api.attachmentPreviewURL flags attach.id)
                 , class "block w-20 mx-auto"
                 ]
                 []

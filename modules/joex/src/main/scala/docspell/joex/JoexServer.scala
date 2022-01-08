@@ -54,13 +54,12 @@ object JoexServer {
 
       joexApp <- JoexAppImpl.create[F](cfg, signal, store, httpClient, pubSub)
 
-      val basePath = cfg.baseUrl.path.asString
       httpApp = Router(
-        basePath  + "/internal" -> InternalHeader(settings.internalRouteKey) {
+        "/internal" -> InternalHeader(settings.internalRouteKey) {
           Router("pubsub" -> pubSub.receiveRoute)
         },
-        basePath + "/api/info" -> InfoRoutes(cfg),
-        basePath + "/api/v1" -> JoexRoutes(joexApp)
+        "/api/info" -> InfoRoutes(cfg),
+        "/api/v1" -> JoexRoutes(joexApp)
       ).orNotFound
 
       // With Middlewares in place

@@ -14,7 +14,6 @@ import App.View2
 import Browser exposing (Document)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
-import Data.NotificationChannel
 import Data.UiSettings
 import Html exposing (..)
 import Html.Attributes exposing (..)
