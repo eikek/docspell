@@ -16,6 +16,7 @@ module Api exposing
     , addTag
     , addTagsMultiple
     , attachmentPreviewURL
+    , bookmarkNameExists
     , cancelJob
     , changeFolderName
     , changePassword
@@ -2369,6 +2370,23 @@ addBookmark flags model receive =
                 |> saveBookmarksTask flags model.location
     in
     Task.andThen add load |> Task.attempt receive
+
+
+bookmarkNameExistsTask : Flags -> BookmarkLocation -> String -> Task.Task Http.Error Bool
+bookmarkNameExistsTask flags loc name =
+    let
+        load =
+            getBookmarksTask flags loc
+
+        exists current =
+            Data.BookmarkedQuery.exists name current
+    in
+    Task.map exists load
+
+
+bookmarkNameExists : Flags -> BookmarkLocation -> String -> (Result Http.Error Bool -> msg) -> Cmd msg
+bookmarkNameExists flags loc name receive =
+    bookmarkNameExistsTask flags loc name |> Task.attempt receive
 
 
 

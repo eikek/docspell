@@ -7,6 +7,7 @@
 
 module Comp.BookmarkQueryForm exposing (Model, Msg, get, init, initQuery, update, view)
 
+import Api
 import Comp.Basic as B
 import Comp.PowerSearchInput
 import Data.BookmarkedQuery exposing (BookmarkedQueryDef, Location(..))
@@ -14,15 +15,20 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onInput)
+import Http
 import Messages.Comp.BookmarkQueryForm exposing (Texts)
 import Styles as S
+import Throttle exposing (Throttle)
+import Time
 import Util.Maybe
 
 
 type alias Model =
     { name : Maybe String
+    , nameExists : Bool
     , queryModel : Comp.PowerSearchInput.Model
     , location : Location
+    , nameExistsThrottle : Throttle Msg
     }
 
 
@@ -35,8 +41,10 @@ initQuery q =
                 Comp.PowerSearchInput.init
     in
     ( { name = Nothing
+      , nameExists = False
       , queryModel = res.model
       , location = User
+      , nameExistsThrottle = Throttle.create 1
       }
     , Cmd.batch
         [ Cmd.map QueryMsg res.cmd
@@ -79,16 +87,46 @@ type Msg
     = SetName String
     | QueryMsg Comp.PowerSearchInput.Msg
     | SetLocation Location
+    | NameExistsResp (Result Http.Error Bool)
+    | UpdateThrottle
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update _ msg model =
+update flags msg model =
+    let
+        nameCheck1 name =
+            Api.bookmarkNameExists flags model.location name NameExistsResp
+
+        nameCheck2 loc =
+            case model.name of
+                Just n ->
+                    Api.bookmarkNameExists flags loc n NameExistsResp
+
+                Nothing ->
+                    Cmd.none
+
+        throttleSub =
+            Throttle.ifNeeded
+                (Time.every 150 (\_ -> UpdateThrottle))
+                model.nameExistsThrottle
+    in
     case msg of
         SetName n ->
-            ( { model | name = Util.Maybe.fromString n }, Cmd.none, Sub.none )
+            let
+                ( newThrottle, cmd ) =
+                    Throttle.try (nameCheck1 n) model.nameExistsThrottle
+            in
+            ( { model | name = Util.Maybe.fromString n, nameExistsThrottle = newThrottle }
+            , cmd
+            , throttleSub
+            )
 
         SetLocation loc ->
-            ( { model | location = loc }, Cmd.none, Sub.none )
+            let
+                ( newThrottle, cmd ) =
+                    Throttle.try (nameCheck2 loc) model.nameExistsThrottle
+            in
+            ( { model | location = loc, nameExistsThrottle = newThrottle }, cmd, throttleSub )
 
         QueryMsg lm ->
             let
@@ -98,6 +136,25 @@ update _ msg model =
             ( { model | queryModel = res.model }
             , Cmd.map QueryMsg res.cmd
             , Sub.map QueryMsg res.subs
+            )
+
+        NameExistsResp (Ok flag) ->
+            ( { model | nameExists = flag }
+            , Cmd.none
+            , Sub.none
+            )
+
+        NameExistsResp (Err err) ->
+            ( model, Cmd.none, Sub.none )
+
+        UpdateThrottle ->
+            let
+                ( newThrottle, cmd ) =
+                    Throttle.update model.nameExistsThrottle
+            in
+            ( { model | nameExistsThrottle = newThrottle }
+            , cmd
+            , throttleSub
             )
 
 
@@ -124,9 +181,9 @@ view texts model =
     in
     div
         [ class "flex flex-col" ]
-        [ div [ class "mb-4" ]
+        [ div [ class "mb-2" ]
             [ label
-                [ for "sharename"
+                [ for "bookmark-name"
                 , class S.inputLabel
                 ]
                 [ text texts.basics.name
@@ -137,10 +194,17 @@ view texts model =
                 , onInput SetName
                 , placeholder texts.basics.name
                 , value <| Maybe.withDefault "" model.name
-                , id "sharename"
+                , id "bookmark-name"
                 , class S.textInput
                 ]
                 []
+            , span
+                [ class S.infoMessagePlain
+                , class "font-medium text-sm"
+                , classList [ ( "invisible", not model.nameExists ) ]
+                ]
+                [ text texts.nameExistsWarning
+                ]
             ]
         , div [ class "flex flex-col mb-4 " ]
             [ label [ class "inline-flex items-center" ]
