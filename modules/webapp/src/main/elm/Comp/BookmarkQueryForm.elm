@@ -76,9 +76,11 @@ initWith bm =
 
 isValid : Model -> Bool
 isValid model =
-    Comp.PowerSearchInput.isValid model.queryModel
-        && model.name
-        /= Nothing
+    List.all identity
+        [ Comp.PowerSearchInput.isValid model.queryModel
+        , model.name /= Nothing
+        , not model.nameExists
+        ]
 
 
 get : Model -> Maybe BookmarkedQuery
@@ -116,14 +118,6 @@ update flags msg model =
         nameCheck1 name =
             Api.bookmarkNameExists flags name NameExistsResp
 
-        nameCheck2 =
-            case model.name of
-                Just n ->
-                    Api.bookmarkNameExists flags n NameExistsResp
-
-                Nothing ->
-                    Cmd.none
-
         throttleSub =
             Throttle.ifNeeded
                 (Time.every 150 (\_ -> UpdateThrottle))
@@ -141,11 +135,7 @@ update flags msg model =
             )
 
         SetPersonal flag ->
-            let
-                ( newThrottle, cmd ) =
-                    Throttle.try nameCheck2 model.nameExistsThrottle
-            in
-            ( { model | isPersonal = flag, nameExistsThrottle = newThrottle }, cmd, throttleSub )
+            ( { model | isPersonal = flag }, Cmd.none, Sub.none )
 
         QueryMsg lm ->
             let
@@ -218,7 +208,7 @@ view texts model =
                 ]
                 []
             , span
-                [ class S.infoMessagePlain
+                [ class S.warnMessagePlain
                 , class "font-medium text-sm"
                 , classList [ ( "invisible", not model.nameExists ) ]
                 ]

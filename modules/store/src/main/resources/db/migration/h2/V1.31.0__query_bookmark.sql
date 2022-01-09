@@ -6,7 +6,8 @@ CREATE TABLE "query_bookmark" (
   "cid" varchar(254) not null,
   "query" varchar(2000) not null,
   "created" timestamp,
+  "__user_id" varchar(254) not null,
   foreign key ("user_id") references "user_"("uid") on delete cascade,
   foreign key ("cid") references "collective"("cid") on delete cascade,
-  unique("cid", "user_id", "name")
+  unique("cid", "__user_id", "name")
 )

@@ -57,14 +57,11 @@ object OQueryBookmarks {
             _.map(r => Bookmark(r.id, r.name, r.label, r.query, r.isPersonal, r.created))
           )
 
-      def create(account: AccountId, b: NewBookmark): F[AddResult] =
-        store
-          .transact(for {
-            r <- RQueryBookmark.createNew(account, b.name, b.label, b.query, b.personal)
-            n <- RQueryBookmark.insert(r)
-          } yield n)
-          .attempt
-          .map(AddResult.fromUpdate)
+      def create(account: AccountId, b: NewBookmark): F[AddResult] = {
+        val record =
+          RQueryBookmark.createNew(account, b.name, b.label, b.query, b.personal)
+        store.transact(RQueryBookmark.insertIfNotExists(account, record))
+      }
 
       def update(account: AccountId, id: Ident, b: NewBookmark): F[UpdateResult] =
         UpdateResult.fromUpdate(
