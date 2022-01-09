@@ -7,6 +7,7 @@
 
 module Page.ManageData.View2 exposing (viewContent, viewSidebar)
 
+import Comp.BookmarkManage
 import Comp.CustomFieldManage
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -121,6 +122,18 @@ viewSidebar texts visible _ settings model =
                     [ text texts.basics.customFields
                     ]
                 ]
+            , a
+                [ href "#"
+                , onClick (SetTab BookmarkTab)
+                , menuEntryActive model BookmarkTab
+                , class S.sidebarLink
+                ]
+                [ i [ class "fa fa-bookmark" ] []
+                , span
+                    [ class "ml-3" ]
+                    [ text texts.bookmarks
+                    ]
+                ]
             ]
         ]
 
@@ -149,6 +162,9 @@ viewContent texts flags settings model =
 
             Just CustomFieldTab ->
                 viewCustomFields texts flags settings model
+
+            Just BookmarkTab ->
+                viewBookmarks texts flags settings model
 
             Nothing ->
                 []
@@ -273,4 +289,19 @@ viewCustomFields texts flags _ model =
             flags
             model.fieldManageModel
         )
+    ]
+
+
+viewBookmarks : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewBookmarks texts flags settings model =
+    [ h2
+        [ class S.header1
+        , class "inline-flex items-center"
+        ]
+        [ i [ class "fa fa-bookmark" ] []
+        , div [ class "ml-2" ]
+            [ text texts.bookmarks
+            ]
+        ]
+    , Html.map BookmarkMsg (Comp.BookmarkManage.view texts.bookmarkManage settings flags model.bookmarkModel)
     ]

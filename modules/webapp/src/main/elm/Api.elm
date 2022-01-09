@@ -33,6 +33,7 @@ module Api exposing
     , deleteAllItems
     , deleteAttachment
     , deleteAttachments
+    , deleteBookmark
     , deleteCustomField
     , deleteCustomValue
     , deleteCustomValueMultiple
@@ -170,6 +171,7 @@ module Api exposing
     , toggleTags
     , twoFactor
     , unconfirmMultiple
+    , updateBookmark
     , updateHook
     , updateNotifyDueItems
     , updatePeriodicQuery
@@ -2378,6 +2380,20 @@ addBookmark flags model receive =
     Task.andThen add load |> Task.attempt receive
 
 
+updateBookmark : Flags -> String -> BookmarkedQueryDef -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+updateBookmark flags oldName model receive =
+    let
+        load =
+            getBookmarksTask flags model.location
+
+        add current =
+            Data.BookmarkedQuery.remove oldName current
+                |> Data.BookmarkedQuery.add model.query
+                |> saveBookmarksTask flags model.location
+    in
+    Task.andThen add load |> Task.attempt receive
+
+
 bookmarkNameExistsTask : Flags -> BookmarkLocation -> String -> Task.Task Http.Error Bool
 bookmarkNameExistsTask flags loc name =
     let
@@ -2393,6 +2409,19 @@ bookmarkNameExistsTask flags loc name =
 bookmarkNameExists : Flags -> BookmarkLocation -> String -> (Result Http.Error Bool -> msg) -> Cmd msg
 bookmarkNameExists flags loc name receive =
     bookmarkNameExistsTask flags loc name |> Task.attempt receive
+
+
+deleteBookmark : Flags -> BookmarkLocation -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteBookmark flags loc name receive =
+    let
+        load =
+            getBookmarksTask flags loc
+
+        remove current =
+            Data.BookmarkedQuery.remove name current
+                |> saveBookmarksTask flags loc
+    in
+    Task.andThen remove load |> Task.attempt receive
 
 
 

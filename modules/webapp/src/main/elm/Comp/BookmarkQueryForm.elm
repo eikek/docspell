@@ -5,7 +5,7 @@
 -}
 
 
-module Comp.BookmarkQueryForm exposing (Model, Msg, get, init, initQuery, update, view)
+module Comp.BookmarkQueryForm exposing (Model, Msg, get, init, initQuery, initWith, update, view)
 
 import Api
 import Comp.Basic as B
@@ -55,6 +55,20 @@ initQuery q =
 init : ( Model, Cmd Msg )
 init =
     initQuery ""
+
+
+initWith : BookmarkedQueryDef -> ( Model, Cmd Msg )
+initWith bm =
+    let
+        ( m, c ) =
+            initQuery bm.query.query
+    in
+    ( { m
+        | name = Just bm.query.name
+        , location = bm.location
+      }
+    , c
+    )
 
 
 isValid : Model -> Bool

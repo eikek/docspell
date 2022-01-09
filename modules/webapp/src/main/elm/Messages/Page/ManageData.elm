@@ -12,6 +12,7 @@ module Messages.Page.ManageData exposing
     )
 
 import Messages.Basics
+import Messages.Comp.BookmarkManage
 import Messages.Comp.CustomFieldManage
 import Messages.Comp.EquipmentManage
 import Messages.Comp.FolderManage
@@ -28,7 +29,9 @@ type alias Texts =
     , personManage : Messages.Comp.PersonManage.Texts
     , folderManage : Messages.Comp.FolderManage.Texts
     , customFieldManage : Messages.Comp.CustomFieldManage.Texts
+    , bookmarkManage : Messages.Comp.BookmarkManage.Texts
     , manageData : String
+    , bookmarks : String
     }
 
 
@@ -41,7 +44,9 @@ gb =
     , personManage = Messages.Comp.PersonManage.gb
     , folderManage = Messages.Comp.FolderManage.gb
     , customFieldManage = Messages.Comp.CustomFieldManage.gb
+    , bookmarkManage = Messages.Comp.BookmarkManage.gb
     , manageData = "Manage Data"
+    , bookmarks = "Bookmarks"
     }
 
 
@@ -54,5 +59,7 @@ de =
     , personManage = Messages.Comp.PersonManage.de
     , folderManage = Messages.Comp.FolderManage.de
     , customFieldManage = Messages.Comp.CustomFieldManage.de
+    , bookmarkManage = Messages.Comp.BookmarkManage.de
     , manageData = "Daten verwalten"
+    , bookmarks = "Bookmarks"
     }
