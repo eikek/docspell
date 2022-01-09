@@ -7,6 +7,8 @@
 package docspell.store.records
 
 import cats.data.NonEmptyList
+import cats.data.OptionT
+import cats.effect.Sync
 
 import docspell.common._
 import docspell.store.qb.DSL._
@@ -14,8 +16,6 @@ import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
-import cats.data.OptionT
-import cats.effect.Sync
 
 case class RUser(
     uid: Ident,

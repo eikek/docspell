@@ -1,13 +1,20 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.backend.ops
+
+import cats.effect._
+import cats.implicits._
 
 import docspell.common._
 import docspell.query.ItemQuery
-import cats.effect._
-import docspell.store.Store
-import docspell.store.records.RQueryBookmark
-import cats.implicits._
-import docspell.store.UpdateResult
 import docspell.store.AddResult
+import docspell.store.Store
+import docspell.store.UpdateResult
+import docspell.store.records.RQueryBookmark
 
 trait OQueryBookmarks[F[_]] {
 

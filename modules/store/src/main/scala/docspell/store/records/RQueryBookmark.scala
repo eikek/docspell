@@ -1,4 +1,13 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.store.records
+
+import cats.data.NonEmptyList
+import cats.syntax.option._
 
 import docspell.common._
 import docspell.query.ItemQuery
@@ -7,8 +16,6 @@ import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
-import cats.data.NonEmptyList
-import cats.syntax.option._
 
 final case class RQueryBookmark(
     id: Ident,
@@ -52,8 +59,8 @@ object RQueryBookmark {
       account: AccountId,
       name: String,
       label: Option[String],
-    query: ItemQuery,
-    personal: Boolean
+      query: ItemQuery,
+      personal: Boolean
   ): ConnectionIO[RQueryBookmark] =
     for {
       userId <- RUser.getIdByAccount(account)

@@ -13,11 +13,11 @@ import cats.implicits._
 import docspell.common.AccountId
 import docspell.common._
 import docspell.store.Store
+import docspell.store.records.RClientSettingsCollective
 import docspell.store.records.RClientSettingsUser
 import docspell.store.records.RUser
 
 import io.circe.Json
-import docspell.store.records.RClientSettingsCollective
 
 trait OClientSettings[F[_]] {
 

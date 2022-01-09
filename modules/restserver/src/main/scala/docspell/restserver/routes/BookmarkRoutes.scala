@@ -1,17 +1,25 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.restserver.routes
 
+import cats.effect.Async
+import cats.implicits._
+
+import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.OQueryBookmarks
+import docspell.common.Ident
+import docspell.restapi.model.BookmarkedQuery
+import docspell.restserver.conv.Conversions
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import cats.effect.Async
-import docspell.backend.ops.OQueryBookmarks
-import docspell.restapi.model.BookmarkedQuery
-import docspell.backend.BackendApp
-import cats.implicits._
-import docspell.restserver.conv.Conversions
-import docspell.common.Ident
 
 object BookmarkRoutes {
 
