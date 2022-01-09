@@ -14,7 +14,7 @@ module Comp.BookmarkChooser exposing
 import Api.Model.ShareDetail exposing (ShareDetail)
 import Data.BookmarkedQuery exposing (AllBookmarks, BookmarkedQuery)
 import Data.Icons as Icons
-import Html exposing (Html, a, div, i, span, text)
+import Html exposing (Html, a, div, i, label, span, text)
 import Html.Attributes exposing (class, classList, href)
 import Html.Events exposing (onClick)
 import Messages.Comp.BookmarkChooser exposing (Texts)
@@ -121,15 +121,22 @@ view texts model selection =
         ]
 
 
+titleDiv : String -> Html msg
+titleDiv label =
+    div [ class "text-sm opacity-75 py-0.5 italic" ]
+        [ text label
+
+        --, text " ──"
+        ]
+
+
 userBookmarks : Texts -> Model -> Selection -> Html Msg
 userBookmarks texts model sel =
     div
         [ class "mb-2"
         , classList [ ( "hidden", Data.BookmarkedQuery.emptyBookmarks == model.all.user ) ]
         ]
-        [ div [ class " text-sm font-semibold py-0.5 " ]
-            [ text texts.userLabel
-            ]
+        [ titleDiv texts.userLabel
         , div [ class "flex flex-col space-y-2 md:space-y-1" ]
             (Data.BookmarkedQuery.map (mkItem "fa fa-bookmark" sel User) model.all.user)
         ]
@@ -141,9 +148,7 @@ collBookmarks texts model sel =
         [ class "mb-2"
         , classList [ ( "hidden", Data.BookmarkedQuery.emptyBookmarks == model.all.collective ) ]
         ]
-        [ div [ class " text-sm font-semibold py-0.5 " ]
-            [ text texts.collectiveLabel
-            ]
+        [ titleDiv texts.collectiveLabel
         , div [ class "flex flex-col space-y-2 md:space-y-1" ]
             (Data.BookmarkedQuery.map (mkItem "fa fa-bookmark font-light" sel Collective) model.all.collective)
         ]
@@ -159,9 +164,7 @@ shares texts model sel =
         [ class ""
         , classList [ ( "hidden", List.isEmpty bms ) ]
         ]
-        [ div [ class " text-sm font-semibold py-0.5 " ]
-            [ text texts.shareLabel
-            ]
+        [ titleDiv texts.shareLabel
         , div [ class "flex flex-col space-y-2 md:space-y-1" ]
             (List.map (mkItem Icons.share sel Share) bms)
         ]
