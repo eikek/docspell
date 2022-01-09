@@ -87,7 +87,8 @@ settings](@/docs/webapp/emailsettings.md#smtp-settings) defined).
 
 When at the search page, add some criteria until you have the results
 you want to publish. In the screenshot below all items with tag
-`Manual` are selected. Then click the *Share Button*.
+`Manual` are selected. Then click the *Share Results* item in the
+menu.
 
 {{ figure(file="share-01.png") }}
 
@@ -119,8 +120,9 @@ provided from your address book. If you type in an arbitrary address
 current address. You can hit *Backspace* two times to remove the last
 e-mail address.
 
-The new share can now be found in *Collective Profile -> Shares*.
-Clicking *Done* brings you back to the search results.
+The new share can now be found in *Collective Profile -> Shares* and
+is also added to the *Bookmarks* section in the search menu. Clicking
+*Done* brings you back to the search results.
 
 ## Creating from selecting items
 
