@@ -1880,6 +1880,98 @@ paths:
             application/json:
               schema: {}
 
+  /sec/querybookmark:
+    get:
+      operationId: "sec-querybookmark-get-all"
+      tags: [Query Bookmarks]
+      summary: Return all query bookmarks
+      description: |
+        Returns all query bookmarks of the current user.
+
+        Bookmarks can be "global", where they belong to the whole
+        collective or personal, so they are only for the user. This
+        returns both.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookmarkedQuery"
+    post:
+      operationId: "sec-querybookmark-post"
+      tags: [Query Bookmarks]
+      summary: Create a new query bookmark
+      description: |
+        Creates a new query bookmark.
+
+        A bookmark must have a unique name (within both collective and
+        personal scope). If a name already exists, a failure is
+        returned - use PUT instead for changing existing bookmarks.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookmarkedQuery"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      operationId: "sec-querybookmark-put"
+      tags: [Query Bookmarks]
+      summary: Change a query bookmark
+      description: |
+        Changes an existing  query bookmark.
+
+        A bookmark must have a unique name within the collective
+        (considering collective and personal scope). The bookmark is
+        identified by its id, which must exist.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookmarkedQuery"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /sec/querybookmark/{bookmarkId}:
+    delete:
+      operationId: "sec-querybookmark-delete"
+      tags: [Query Bookmark]
+      summary: Delete a bookmark.
+      description: |
+        Deletes a bookmarks by its id.
+      responses:
+        422:
+          description: BadRequest            
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
   /sec/clientSettings/{clientId}:
     parameters:
@@ -5314,6 +5406,32 @@ paths:
 
 components:
   schemas:
+    BookmarkedQuery:
+      description: |
+        A query bookmark.
+      required:
+        - id
+        - name
+        - query
+        - personal
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        label:
+          type: string
+        query:
+          type: string
+          format: itemquery
+        personal:
+          type: boolean
+        created:
+          type: integer
+          format: date-time
+
     StringValue:
       description: |
         A generic string value

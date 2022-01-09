@@ -11,8 +11,9 @@ module Comp.BookmarkChooser exposing
     , view
     )
 
+import Api.Model.BookmarkedQuery exposing (BookmarkedQuery)
 import Api.Model.ShareDetail exposing (ShareDetail)
-import Data.BookmarkedQuery exposing (AllBookmarks, BookmarkedQuery)
+import Data.Bookmarks exposing (AllBookmarks)
 import Data.Icons as Icons
 import Html exposing (Html, a, div, i, label, span, text)
 import Html.Attributes exposing (class, classList, href)
@@ -34,19 +35,18 @@ init all =
 
 isEmpty : Model -> Bool
 isEmpty model =
-    model.all == Data.BookmarkedQuery.allBookmarksEmpty
+    model.all == Data.Bookmarks.empty
 
 
 type alias Selection =
-    { user : Set String
-    , collective : Set String
+    { bookmarks : Set String
     , shares : Set String
     }
 
 
 emptySelection : Selection
 emptySelection =
-    { user = Set.empty, collective = Set.empty, shares = Set.empty }
+    { bookmarks = Set.empty, shares = Set.empty }
 
 
 isEmptySelection : Selection -> Bool
@@ -55,8 +55,7 @@ isEmptySelection sel =
 
 
 type Kind
-    = User
-    | Collective
+    = Bookmark
     | Share
 
 
@@ -68,14 +67,13 @@ getQueries : Model -> Selection -> List BookmarkedQuery
 getQueries model sel =
     let
         member set bm =
-            Set.member bm.name set
+            Set.member bm.id set
 
         filterBookmarks f bms =
-            Data.BookmarkedQuery.filter f bms |> Data.BookmarkedQuery.map identity
+            List.filter f bms |> List.map identity
     in
     List.concat
-        [ filterBookmarks (member sel.user) model.all.user
-        , filterBookmarks (member sel.collective) model.all.collective
+        [ filterBookmarks (member sel.bookmarks) model.all.bookmarks
         , List.map shareToBookmark model.all.shares
             |> List.filter (member sel.shares)
         ]
@@ -96,16 +94,13 @@ update msg model current =
                 Set.insert name set
     in
     case msg of
-        Toggle kind name ->
+        Toggle kind id ->
             case kind of
-                User ->
-                    ( model, { current | user = toggle name current.user } )
-
-                Collective ->
-                    ( model, { current | collective = toggle name current.collective } )
+                Bookmark ->
+                    ( model, { current | bookmarks = toggle id current.bookmarks } )
 
                 Share ->
-                    ( model, { current | shares = toggle name current.shares } )
+                    ( model, { current | shares = toggle id current.shares } )
 
 
 
@@ -114,9 +109,13 @@ update msg model current =
 
 view : Texts -> Model -> Selection -> Html Msg
 view texts model selection =
+    let
+        ( user, coll ) =
+            List.partition .personal model.all.bookmarks
+    in
     div [ class "flex flex-col" ]
-        [ userBookmarks texts model selection
-        , collBookmarks texts model selection
+        [ userBookmarks texts user selection
+        , collBookmarks texts coll selection
         , shares texts model selection
         ]
 
@@ -130,27 +129,27 @@ titleDiv label =
         ]
 
 
-userBookmarks : Texts -> Model -> Selection -> Html Msg
+userBookmarks : Texts -> List BookmarkedQuery -> Selection -> Html Msg
 userBookmarks texts model sel =
     div
         [ class "mb-2"
-        , classList [ ( "hidden", Data.BookmarkedQuery.emptyBookmarks == model.all.user ) ]
+        , classList [ ( "hidden", model == [] ) ]
         ]
         [ titleDiv texts.userLabel
         , div [ class "flex flex-col space-y-2 md:space-y-1" ]
-            (Data.BookmarkedQuery.map (mkItem "fa fa-bookmark" sel User) model.all.user)
+            (List.map (mkItem "fa fa-bookmark" sel Bookmark) model)
         ]
 
 
-collBookmarks : Texts -> Model -> Selection -> Html Msg
+collBookmarks : Texts -> List BookmarkedQuery -> Selection -> Html Msg
 collBookmarks texts model sel =
     div
         [ class "mb-2"
-        , classList [ ( "hidden", Data.BookmarkedQuery.emptyBookmarks == model.all.collective ) ]
+        , classList [ ( "hidden", [] == model ) ]
         ]
         [ titleDiv texts.collectiveLabel
         , div [ class "flex flex-col space-y-2 md:space-y-1" ]
-            (Data.BookmarkedQuery.map (mkItem "fa fa-bookmark font-light" sel Collective) model.all.collective)
+            (List.map (mkItem "fa fa-bookmark font-light" sel Bookmark) model)
         ]
 
 
@@ -175,9 +174,9 @@ mkItem icon sel kind bm =
     a
         [ class "flex flex-row items-center rounded px-1 py-1 hover:bg-blue-100 dark:hover:bg-slate-600"
         , href "#"
-        , onClick (Toggle kind bm.name)
+        , onClick (Toggle kind bm.id)
         ]
-        [ if isSelected sel kind bm.name then
+        [ if isSelected sel kind bm.id then
             i [ class "fa fa-check" ] []
 
           else
@@ -187,14 +186,11 @@ mkItem icon sel kind bm =
 
 
 isSelected : Selection -> Kind -> String -> Bool
-isSelected sel kind name =
-    Set.member name <|
+isSelected sel kind id =
+    Set.member id <|
         case kind of
-            User ->
-                sel.user
-
-            Collective ->
-                sel.collective
+            Bookmark ->
+                sel.bookmarks
 
             Share ->
                 sel.shares
@@ -202,4 +198,4 @@ isSelected sel kind name =
 
 shareToBookmark : ShareDetail -> BookmarkedQuery
 shareToBookmark share =
-    BookmarkedQuery (Maybe.withDefault "-" share.name) share.query
+    BookmarkedQuery share.id (Maybe.withDefault "-" share.name) share.name share.query False 0

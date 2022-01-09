@@ -14,6 +14,8 @@ import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
+import cats.data.OptionT
+import cats.effect.Sync
 
 case class RUser(
     uid: Ident,
@@ -149,6 +151,13 @@ object RUser {
     )
       .query[Ident]
       .option
+
+  def getIdByAccount(account: AccountId): ConnectionIO[Ident] =
+    OptionT(findIdByAccount(account)).getOrElseF(
+      Sync[ConnectionIO].raiseError(
+        new Exception(s"No user found for: ${account.asString}")
+      )
+    )
 
   def updateLogin(accountId: AccountId): ConnectionIO[Int] = {
     val t = Table(None)

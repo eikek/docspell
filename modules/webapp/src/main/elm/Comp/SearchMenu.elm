@@ -43,7 +43,7 @@ import Comp.LinkTarget exposing (LinkTarget)
 import Comp.MenuBar as MB
 import Comp.Tabs
 import Comp.TagSelect
-import Data.BookmarkedQuery exposing (AllBookmarks)
+import Data.Bookmarks exposing (AllBookmarks)
 import Data.CustomFieldChange exposing (CustomFieldValueCollect)
 import Data.Direction exposing (Direction)
 import Data.DropdownStyle as DS
@@ -146,7 +146,7 @@ init flags =
     , customFieldModel = Comp.CustomFieldMultiInput.initWith []
     , customValues = Data.CustomFieldChange.emptyCollect
     , sourceModel = Nothing
-    , allBookmarks = Comp.BookmarkChooser.init Data.BookmarkedQuery.allBookmarksEmpty
+    , allBookmarks = Comp.BookmarkChooser.init Data.Bookmarks.empty
     , selectedBookmarks = Comp.BookmarkChooser.emptySelection
     , openTabs = Set.fromList [ "Tags", "Inbox" ]
     , searchMode = Data.SearchMode.Normal

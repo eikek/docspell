@@ -14,7 +14,7 @@ import Comp.BookmarkQueryForm
 import Comp.BookmarkTable
 import Comp.ItemDetail.Model exposing (Msg(..))
 import Comp.MenuBar as MB
-import Data.BookmarkedQuery exposing (AllBookmarks)
+import Data.Bookmarks exposing (AllBookmarks)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -43,16 +43,10 @@ type DeleteConfirm
     | DeleteConfirmOn
 
 
-type alias FormData =
-    { model : Comp.BookmarkQueryForm.Model
-    , oldName : Maybe String
-    }
-
-
 type alias Model =
     { viewMode : ViewMode
     , bookmarks : AllBookmarks
-    , formData : FormData
+    , formModel : Comp.BookmarkQueryForm.Model
     , loading : Bool
     , formError : FormError
     , deleteConfirm : DeleteConfirm
@@ -66,11 +60,8 @@ init flags =
             Comp.BookmarkQueryForm.init
     in
     ( { viewMode = Table
-      , bookmarks = Data.BookmarkedQuery.allBookmarksEmpty
-      , formData =
-            { model = fm
-            , oldName = Nothing
-            }
+      , bookmarks = Data.Bookmarks.empty
+      , formModel = fm
       , loading = False
       , formError = FormErrorNone
       , deleteConfirm = DeleteConfirmOff
@@ -84,14 +75,14 @@ init flags =
 
 type Msg
     = LoadBookmarks
-    | TableMsg Data.BookmarkedQuery.Location Comp.BookmarkTable.Msg
+    | TableMsg Comp.BookmarkTable.Msg
     | FormMsg Comp.BookmarkQueryForm.Msg
     | InitNewBookmark
     | SetViewMode ViewMode
     | Submit
     | RequestDelete
     | CancelDelete
-    | DeleteBookmarkNow Data.BookmarkedQuery.Location String
+    | DeleteBookmarkNow String
     | LoadBookmarksResp (Result Http.Error AllBookmarks)
     | AddBookmarkResp (Result Http.Error BasicResult)
     | UpdateBookmarkResp (Result Http.Error BasicResult)
@@ -119,8 +110,7 @@ update flags msg model =
                     { model
                         | viewMode = Form
                         , formError = FormErrorNone
-                        , formData =
-                            { model = bm, oldName = Nothing }
+                        , formModel = bm
                     }
             in
             ( nm, Cmd.map FormMsg bc, Sub.none )
@@ -138,14 +128,14 @@ update flags msg model =
         FormMsg lm ->
             let
                 ( fm, fc, fs ) =
-                    Comp.BookmarkQueryForm.update flags lm model.formData.model
+                    Comp.BookmarkQueryForm.update flags lm model.formModel
             in
-            ( { model | formData = { model = fm, oldName = model.formData.oldName }, formError = FormErrorNone }
+            ( { model | formModel = fm, formError = FormErrorNone }
             , Cmd.map FormMsg fc
             , Sub.map FormMsg fs
             )
 
-        TableMsg loc lm ->
+        TableMsg lm ->
             let
                 action =
                     Comp.BookmarkTable.update lm
@@ -154,15 +144,12 @@ update flags msg model =
                 Comp.BookmarkTable.Edit bookmark ->
                     let
                         ( bm, bc ) =
-                            Comp.BookmarkQueryForm.initWith
-                                { query = bookmark
-                                , location = loc
-                                }
+                            Comp.BookmarkQueryForm.initWith bookmark
                     in
                     ( { model
                         | viewMode = Form
                         , formError = FormErrorNone
-                        , formData = { model = bm, oldName = Just bookmark.name }
+                        , formModel = bm
                       }
                     , Cmd.map FormMsg bc
                     , Sub.none
@@ -174,9 +161,9 @@ update flags msg model =
         CancelDelete ->
             ( { model | deleteConfirm = DeleteConfirmOff }, Cmd.none, Sub.none )
 
-        DeleteBookmarkNow loc name ->
+        DeleteBookmarkNow id ->
             ( { model | deleteConfirm = DeleteConfirmOff, loading = True }
-            , Api.deleteBookmark flags loc name DeleteBookmarkResp
+            , Api.deleteBookmark flags id DeleteBookmarkResp
             , Sub.none
             )
 
@@ -196,14 +183,13 @@ update flags msg model =
             ( { model | loading = False, formError = FormErrorHttp err }, Cmd.none, Sub.none )
 
         Submit ->
-            case Comp.BookmarkQueryForm.get model.formData.model of
+            case Comp.BookmarkQueryForm.get model.formModel of
                 Just data ->
-                    case model.formData.oldName of
-                        Just prevName ->
-                            ( { model | loading = True }, Api.updateBookmark flags prevName data AddBookmarkResp, Sub.none )
+                    if data.id /= "" then
+                        ( { model | loading = True }, Api.updateBookmark flags data AddBookmarkResp, Sub.none )
 
-                        Nothing ->
-                            ( { model | loading = True }, Api.addBookmark flags data AddBookmarkResp, Sub.none )
+                    else
+                        ( { model | loading = True }, Api.addBookmark flags data AddBookmarkResp, Sub.none )
 
                 Nothing ->
                     ( { model | formError = FormErrorInvalid }, Cmd.none, Sub.none )
@@ -254,6 +240,10 @@ view texts settings flags model =
 
 viewTable : Texts -> Model -> Html Msg
 viewTable texts model =
+    let
+        ( user, coll ) =
+            List.partition .personal model.bookmarks.bookmarks
+    in
     div [ class "flex flex-col" ]
         [ MB.view
             { start =
@@ -268,17 +258,23 @@ viewTable texts model =
                 ]
             , rootClasses = "mb-4"
             }
-        , div [ class "flex flex-col" ]
+        , div
+            [ class "flex flex-col"
+            , classList [ ( "hidden", user == [] ) ]
+            ]
             [ h3 [ class S.header3 ]
                 [ text texts.userBookmarks ]
-            , Html.map (TableMsg Data.BookmarkedQuery.User)
-                (Comp.BookmarkTable.view texts.bookmarkTable model.bookmarks.user)
+            , Html.map TableMsg
+                (Comp.BookmarkTable.view texts.bookmarkTable user)
             ]
-        , div [ class "flex flex-col mt-3" ]
+        , div
+            [ class "flex flex-col mt-3"
+            , classList [ ( "hidden", coll == [] ) ]
+            ]
             [ h3 [ class S.header3 ]
                 [ text texts.collectiveBookmarks ]
-            , Html.map (TableMsg Data.BookmarkedQuery.Collective)
-                (Comp.BookmarkTable.view texts.bookmarkTable model.bookmarks.collective)
+            , Html.map TableMsg
+                (Comp.BookmarkTable.view texts.bookmarkTable coll)
             ]
         , B.loadingDimmer
             { label = ""
@@ -291,10 +287,10 @@ viewForm : Texts -> UiSettings -> Flags -> Model -> Html Msg
 viewForm texts _ _ model =
     let
         newBookmark =
-            model.formData.oldName == Nothing
+            model.formModel.bookmark.id == ""
 
         isValid =
-            Comp.BookmarkQueryForm.get model.formData.model /= Nothing
+            Comp.BookmarkQueryForm.get model.formModel /= Nothing
     in
     div []
         [ Html.form []
@@ -305,7 +301,7 @@ viewForm texts _ _ model =
 
               else
                 h1 [ class S.header2 ]
-                    [ text (Maybe.withDefault "" model.formData.model.name)
+                    [ text (Maybe.withDefault "" model.formModel.name)
                     ]
             , MB.view
                 { start =
@@ -360,7 +356,7 @@ viewForm texts _ _ model =
                         text m
                 ]
             , div []
-                [ Html.map FormMsg (Comp.BookmarkQueryForm.view texts.bookmarkForm model.formData.model)
+                [ Html.map FormMsg (Comp.BookmarkQueryForm.view texts.bookmarkForm model.formModel)
                 ]
             , B.loadingDimmer
                 { active = model.loading
@@ -378,11 +374,7 @@ viewForm texts _ _ model =
                             { label = texts.basics.yes
                             , icon = "fa fa-check"
                             , disabled = False
-                            , handler =
-                                onClick
-                                    (DeleteBookmarkNow model.formData.model.location
-                                        (Maybe.withDefault "" model.formData.model.name)
-                                    )
+                            , handler = onClick (DeleteBookmarkNow model.formModel.bookmark.id)
                             , attrs = [ href "#" ]
                             }
                         , B.secondaryButton

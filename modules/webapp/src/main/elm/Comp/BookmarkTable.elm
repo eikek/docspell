@@ -12,8 +12,8 @@ module Comp.BookmarkTable exposing
     , view
     )
 
+import Api.Model.BookmarkedQuery exposing (BookmarkedQuery)
 import Comp.Basic as B
-import Data.BookmarkedQuery exposing (BookmarkedQuery, Bookmarks)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Comp.BookmarkTable exposing (Texts)
@@ -39,7 +39,7 @@ update msg =
 --- View
 
 
-view : Texts -> Bookmarks -> Html Msg
+view : Texts -> List BookmarkedQuery -> Html Msg
 view texts bms =
     table [ class S.tableMain ]
         [ thead []
@@ -51,7 +51,7 @@ view texts bms =
                 ]
             ]
         , tbody []
-            (Data.BookmarkedQuery.map (renderBookmarkLine texts) bms)
+            (List.map (renderBookmarkLine texts) bms)
         ]
 
 

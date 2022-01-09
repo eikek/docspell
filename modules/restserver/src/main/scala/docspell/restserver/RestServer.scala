@@ -172,7 +172,8 @@ object RestServer {
       "folder" -> FolderRoutes(restApp.backend, token),
       "customfield" -> CustomFieldRoutes(restApp.backend, token),
       "clientSettings" -> ClientSettingsRoutes(restApp.backend, token),
-      "notification" -> NotificationRoutes(cfg, restApp.backend, token)
+      "notification" -> NotificationRoutes(cfg, restApp.backend, token),
+      "querybookmark" -> BookmarkRoutes(restApp.backend, token)
     )
 
   def openRoutes[F[_]: Async](

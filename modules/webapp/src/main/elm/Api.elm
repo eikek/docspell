@@ -124,7 +124,6 @@ module Api exposing
     , restoreAllItems
     , restoreItem
     , sampleEvent
-    , saveBookmarks
     , saveClientSettings
     , searchShare
     , searchShareStats
@@ -188,6 +187,7 @@ module Api exposing
 import Api.Model.AttachmentMeta exposing (AttachmentMeta)
 import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.BookmarkedQuery exposing (BookmarkedQuery)
 import Api.Model.CalEventCheck exposing (CalEventCheck)
 import Api.Model.CalEventCheckResult exposing (CalEventCheckResult)
 import Api.Model.Collective exposing (Collective)
@@ -266,7 +266,7 @@ import Api.Model.User exposing (User)
 import Api.Model.UserList exposing (UserList)
 import Api.Model.UserPass exposing (UserPass)
 import Api.Model.VersionInfo exposing (VersionInfo)
-import Data.BookmarkedQuery exposing (AllBookmarks, BookmarkedQuery, BookmarkedQueryDef, Bookmarks)
+import Data.Bookmarks exposing (AllBookmarks, Bookmarks)
 import Data.ContactType exposing (ContactType)
 import Data.CustomFieldOrder exposing (CustomFieldOrder)
 import Data.EquipmentOrder exposing (EquipmentOrder)
@@ -2295,46 +2295,29 @@ saveClientSettings flags settings receive =
 --- Query Bookmarks
 
 
-type alias BookmarkLocation =
-    Data.BookmarkedQuery.Location
+bookmarkUri : Flags -> String
+bookmarkUri flags =
+    flags.config.baseUrl ++ "/api/v1/sec/querybookmark"
 
 
-bookmarkLocationUri : Flags -> BookmarkLocation -> String
-bookmarkLocationUri flags loc =
-    case loc of
-        Data.BookmarkedQuery.User ->
-            flags.config.baseUrl ++ "/api/v1/sec/clientSettings/user/webClientBookmarks"
-
-        Data.BookmarkedQuery.Collective ->
-            flags.config.baseUrl ++ "/api/v1/sec/clientSettings/collective/webClientBookmarks"
-
-
-getBookmarksTask : Flags -> BookmarkLocation -> Task.Task Http.Error Bookmarks
-getBookmarksTask flags loc =
+getBookmarksTask : Flags -> Task.Task Http.Error Bookmarks
+getBookmarksTask flags =
     Http2.authTask
         { method = "GET"
-        , url = bookmarkLocationUri flags loc
+        , url = bookmarkUri flags
         , account = getAccount flags
         , body = Http.emptyBody
-        , resolver = Http2.jsonResolver Data.BookmarkedQuery.bookmarksDecoder
+        , resolver = Http2.jsonResolver Data.Bookmarks.bookmarksDecoder
         , headers = []
         , timeout = Nothing
         }
 
 
-getBookmarksFor : Flags -> BookmarkLocation -> (Result Http.Error Bookmarks -> msg) -> Cmd msg
-getBookmarksFor flags loc receive =
-    Task.attempt receive (getBookmarksTask flags loc)
-
-
 getBookmarks : Flags -> (Result Http.Error AllBookmarks -> msg) -> Cmd msg
 getBookmarks flags receive =
     let
-        coll =
-            getBookmarksTask flags Data.BookmarkedQuery.Collective
-
-        user =
-            getBookmarksTask flags Data.BookmarkedQuery.User
+        bms =
+            getBookmarksTask flags
 
         shares =
             getSharesTask flags "" False
@@ -2342,86 +2325,57 @@ getBookmarks flags receive =
         activeShare s =
             s.enabled && s.name /= Nothing
 
-        combine bc bu bs =
-            AllBookmarks bc bu (List.filter activeShare bs.items)
+        combine bm bs =
+            AllBookmarks (Data.Bookmarks.sort bm) (List.filter activeShare bs.items)
     in
-    Task.map3 combine coll user shares
+    Task.map2 combine bms shares
         |> Task.attempt receive
 
 
-saveBookmarksTask : Flags -> BookmarkLocation -> Bookmarks -> Task.Task Http.Error BasicResult
-saveBookmarksTask flags loc bookmarks =
-    Http2.authTask
-        { method = "PUT"
-        , url = bookmarkLocationUri flags loc
+addBookmark : Flags -> BookmarkedQuery -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addBookmark flags model receive =
+    Http2.authPost
+        { url = bookmarkUri flags
         , account = getAccount flags
-        , body = Http.jsonBody (Data.BookmarkedQuery.bookmarksEncode bookmarks)
-        , resolver = Http2.jsonResolver Api.Model.BasicResult.decoder
-        , headers = []
-        , timeout = Nothing
+        , body = Http.jsonBody (Api.Model.BookmarkedQuery.encode model)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 
-saveBookmarks : Flags -> Bookmarks -> BookmarkLocation -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-saveBookmarks flags bookmarks loc receive =
-    Task.attempt receive (saveBookmarksTask flags loc bookmarks)
+updateBookmark : Flags -> BookmarkedQuery -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+updateBookmark flags model receive =
+    Http2.authPut
+        { url = bookmarkUri flags
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.BookmarkedQuery.encode model)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
-addBookmark : Flags -> BookmarkedQueryDef -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-addBookmark flags model receive =
+bookmarkNameExistsTask : Flags -> String -> Task.Task Http.Error Bool
+bookmarkNameExistsTask flags name =
     let
         load =
-            getBookmarksTask flags model.location
-
-        add current =
-            Data.BookmarkedQuery.add model.query current
-                |> saveBookmarksTask flags model.location
-    in
-    Task.andThen add load |> Task.attempt receive
-
-
-updateBookmark : Flags -> String -> BookmarkedQueryDef -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-updateBookmark flags oldName model receive =
-    let
-        load =
-            getBookmarksTask flags model.location
-
-        add current =
-            Data.BookmarkedQuery.remove oldName current
-                |> Data.BookmarkedQuery.add model.query
-                |> saveBookmarksTask flags model.location
-    in
-    Task.andThen add load |> Task.attempt receive
-
-
-bookmarkNameExistsTask : Flags -> BookmarkLocation -> String -> Task.Task Http.Error Bool
-bookmarkNameExistsTask flags loc name =
-    let
-        load =
-            getBookmarksTask flags loc
+            getBookmarksTask flags
 
         exists current =
-            Data.BookmarkedQuery.exists name current
+            Data.Bookmarks.exists name current
     in
     Task.map exists load
 
 
-bookmarkNameExists : Flags -> BookmarkLocation -> String -> (Result Http.Error Bool -> msg) -> Cmd msg
-bookmarkNameExists flags loc name receive =
-    bookmarkNameExistsTask flags loc name |> Task.attempt receive
+bookmarkNameExists : Flags -> String -> (Result Http.Error Bool -> msg) -> Cmd msg
+bookmarkNameExists flags name receive =
+    bookmarkNameExistsTask flags name |> Task.attempt receive
 
 
-deleteBookmark : Flags -> BookmarkLocation -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-deleteBookmark flags loc name receive =
-    let
-        load =
-            getBookmarksTask flags loc
-
-        remove current =
-            Data.BookmarkedQuery.remove name current
-                |> saveBookmarksTask flags loc
-    in
-    Task.andThen remove load |> Task.attempt receive
+deleteBookmark : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteBookmark flags id receive =
+    Http2.authDelete
+        { url = bookmarkUri flags ++ "/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 

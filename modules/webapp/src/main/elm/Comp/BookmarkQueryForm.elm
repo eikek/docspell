@@ -8,9 +8,9 @@
 module Comp.BookmarkQueryForm exposing (Model, Msg, get, init, initQuery, initWith, update, view)
 
 import Api
+import Api.Model.BookmarkedQuery exposing (BookmarkedQuery)
 import Comp.Basic as B
 import Comp.PowerSearchInput
-import Data.BookmarkedQuery exposing (BookmarkedQueryDef, Location(..))
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -24,10 +24,11 @@ import Util.Maybe
 
 
 type alias Model =
-    { name : Maybe String
+    { bookmark : BookmarkedQuery
+    , name : Maybe String
     , nameExists : Bool
     , queryModel : Comp.PowerSearchInput.Model
-    , location : Location
+    , isPersonal : Bool
     , nameExistsThrottle : Throttle Msg
     }
 
@@ -40,10 +41,11 @@ initQuery q =
                 (Comp.PowerSearchInput.setSearchString q)
                 Comp.PowerSearchInput.init
     in
-    ( { name = Nothing
+    ( { bookmark = Api.Model.BookmarkedQuery.empty
+      , name = Nothing
       , nameExists = False
       , queryModel = res.model
-      , location = User
+      , isPersonal = True
       , nameExistsThrottle = Throttle.create 1
       }
     , Cmd.batch
@@ -57,15 +59,16 @@ init =
     initQuery ""
 
 
-initWith : BookmarkedQueryDef -> ( Model, Cmd Msg )
+initWith : BookmarkedQuery -> ( Model, Cmd Msg )
 initWith bm =
     let
         ( m, c ) =
-            initQuery bm.query.query
+            initQuery bm.query
     in
     ( { m
-        | name = Just bm.query.name
-        , location = bm.location
+        | name = Just bm.name
+        , isPersonal = bm.personal
+        , bookmark = bm
       }
     , c
     )
@@ -78,19 +81,21 @@ isValid model =
         /= Nothing
 
 
-get : Model -> Maybe BookmarkedQueryDef
+get : Model -> Maybe BookmarkedQuery
 get model =
     let
         qStr =
             Maybe.withDefault "" model.queryModel.input
+
+        bm =
+            model.bookmark
     in
     if isValid model then
         Just
-            { query =
-                { query = qStr
+            { bm
+                | query = qStr
                 , name = Maybe.withDefault "" model.name
-                }
-            , location = model.location
+                , personal = model.isPersonal
             }
 
     else
@@ -100,7 +105,7 @@ get model =
 type Msg
     = SetName String
     | QueryMsg Comp.PowerSearchInput.Msg
-    | SetLocation Location
+    | SetPersonal Bool
     | NameExistsResp (Result Http.Error Bool)
     | UpdateThrottle
 
@@ -109,12 +114,12 @@ update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 update flags msg model =
     let
         nameCheck1 name =
-            Api.bookmarkNameExists flags model.location name NameExistsResp
+            Api.bookmarkNameExists flags name NameExistsResp
 
-        nameCheck2 loc =
+        nameCheck2 =
             case model.name of
                 Just n ->
-                    Api.bookmarkNameExists flags loc n NameExistsResp
+                    Api.bookmarkNameExists flags n NameExistsResp
 
                 Nothing ->
                     Cmd.none
@@ -135,12 +140,12 @@ update flags msg model =
             , throttleSub
             )
 
-        SetLocation loc ->
+        SetPersonal flag ->
             let
                 ( newThrottle, cmd ) =
-                    Throttle.try (nameCheck2 loc) model.nameExistsThrottle
+                    Throttle.try nameCheck2 model.nameExistsThrottle
             in
-            ( { model | location = loc, nameExistsThrottle = newThrottle }, cmd, throttleSub )
+            ( { model | isPersonal = flag, nameExistsThrottle = newThrottle }, cmd, throttleSub )
 
         QueryMsg lm ->
             let
@@ -224,8 +229,8 @@ view texts model =
             [ label [ class "inline-flex items-center" ]
                 [ input
                     [ type_ "radio"
-                    , checked (model.location == User)
-                    , onCheck (\_ -> SetLocation User)
+                    , checked model.isPersonal
+                    , onCheck (\_ -> SetPersonal True)
                     , class S.radioInput
                     ]
                     []
@@ -235,9 +240,9 @@ view texts model =
             , label [ class "inline-flex items-center" ]
                 [ input
                     [ type_ "radio"
-                    , checked (model.location == Collective)
+                    , checked (not model.isPersonal)
                     , class S.radioInput
-                    , onCheck (\_ -> SetLocation Collective)
+                    , onCheck (\_ -> SetPersonal False)
                     ]
                     []
                 , span [ class "ml-2" ] [ text texts.collectiveLocation ]

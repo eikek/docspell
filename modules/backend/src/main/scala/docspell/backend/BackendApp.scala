@@ -49,6 +49,7 @@ trait BackendApp[F[_]] {
   def pubSub: PubSubT[F]
   def events: EventExchange[F]
   def notification: ONotification[F]
+  def bookmarks: OQueryBookmarks[F]
 }
 
 object BackendApp {
@@ -89,6 +90,7 @@ object BackendApp {
         OShare(store, itemSearchImpl, simpleSearchImpl, javaEmil)
       )
       notifyImpl <- ONotification(store, notificationMod)
+      bookmarksImpl <- OQueryBookmarks(store)
     } yield new BackendApp[F] {
       val pubSub = pubSubT
       val login = loginImpl
@@ -115,5 +117,6 @@ object BackendApp {
       val share = shareImpl
       val events = notificationMod
       val notification = notifyImpl
+      val bookmarks = bookmarksImpl
     }
 }

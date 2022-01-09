@@ -2,12 +2,12 @@ module Comp.BookmarkQueryManage exposing (..)
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.BookmarkedQuery exposing (BookmarkedQuery)
 import Comp.Basic as B
 import Comp.BookmarkQueryForm
-import Data.BookmarkedQuery exposing (BookmarkedQueryDef)
 import Data.Flags exposing (Flags)
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (class, classList, href)
+import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Http
 import Messages.Comp.BookmarkQueryManage exposing (Texts)
@@ -55,7 +55,7 @@ type Msg
 
 
 type FormResult
-    = Submitted BookmarkedQueryDef
+    = Submitted BookmarkedQuery
     | Cancelled
     | Done
     | None
@@ -117,7 +117,7 @@ update flags msg model =
             { empty | model = { model | loading = False, formState = FormStateError err } }
 
 
-save : Flags -> BookmarkedQueryDef -> Cmd Msg
+save : Flags -> BookmarkedQuery -> Cmd Msg
 save flags model =
     Api.addBookmark flags model SaveResp
 
