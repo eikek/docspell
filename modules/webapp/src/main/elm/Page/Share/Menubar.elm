@@ -125,6 +125,7 @@ view texts flags model =
                             else
                                 i [ class "fa fa-square font-thin" ] []
                       , label = texts.showItemGroups
+                      , disabled = False
                       , attrs =
                             [ href "#"
                             , onClick ToggleShowGroups
@@ -132,6 +133,7 @@ view texts flags model =
                       }
                     , { icon = i [ class "fa fa-list" ] []
                       , label = texts.listView
+                      , disabled = False
                       , attrs =
                             [ href "#"
                             , onClick (ToggleArrange Data.ItemArrange.List)
@@ -139,6 +141,7 @@ view texts flags model =
                       }
                     , { icon = i [ class "fa fa-th-large" ] []
                       , label = texts.tileView
+                      , disabled = False
                       , attrs =
                             [ href "#"
                             , onClick (ToggleArrange Data.ItemArrange.Cards)

@@ -15,7 +15,8 @@ import io.circe.{Decoder, Encoder}
 final case class PeriodicQueryArgs(
     account: AccountId,
     channel: ChannelOrRef,
-    query: ItemQueryString,
+    query: Option[ItemQueryString],
+    bookmark: Option[String],
     baseUrl: Option[LenientUri]
 )
 

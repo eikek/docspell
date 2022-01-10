@@ -21,7 +21,8 @@ final case class PeriodicQuerySettings(
     summary: Option[String],
     enabled: Boolean,
     channel: NotificationChannel,
-    query: ItemQuery,
+    query: Option[ItemQuery],
+    bookmark: Option[String],
     schedule: CalEvent
 ) {}
 

@@ -834,7 +834,7 @@ viewIntern2 texts settings withButtons model =
         ]
     , case model.form of
         TM tm ->
-            Html.map TagMsg (Comp.TagForm.view2 texts.tagForm tm)
+            Html.map TagMsg (Comp.TagForm.view2 texts.tagForm settings tm)
 
         PMR pm ->
             Html.map PersonMsg (Comp.PersonForm.view2 texts.personForm True settings pm)

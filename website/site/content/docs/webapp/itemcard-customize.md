@@ -1,6 +1,6 @@
 +++
 title = "Customize Item Card"
-weight = 32
+weight = 39
 [extra]
 mktoc = true
 +++

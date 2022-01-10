@@ -14,6 +14,7 @@ module Messages.Comp.PeriodicQueryTaskForm exposing
 import Data.ChannelType exposing (ChannelType)
 import Http
 import Messages.Basics
+import Messages.Comp.BookmarkDropdown
 import Messages.Comp.CalEventInput
 import Messages.Comp.ChannelForm
 import Messages.Comp.HttpError
@@ -24,6 +25,7 @@ type alias Texts =
     { basics : Messages.Basics.Texts
     , calEventInput : Messages.Comp.CalEventInput.Texts
     , channelForm : Messages.Comp.ChannelForm.Texts
+    , bookmarkDropdown : Messages.Comp.BookmarkDropdown.Texts
     , httpError : Http.Error -> String
     , reallyDeleteTask : String
     , startOnce : String
@@ -49,6 +51,7 @@ gb =
     , calEventInput = Messages.Comp.CalEventInput.gb
     , channelForm = Messages.Comp.ChannelForm.gb
     , httpError = Messages.Comp.HttpError.gb
+    , bookmarkDropdown = Messages.Comp.BookmarkDropdown.gb
     , reallyDeleteTask = "Really delete this notification task?"
     , startOnce = "Start Once"
     , startTaskNow = "Start this task now"
@@ -66,7 +69,7 @@ gb =
     , invalidCalEvent = "The calendar event is not valid."
     , queryLabel = "Query"
     , channelRequired = "A valid channel must be given."
-    , queryStringRequired = "A query string must be supplied"
+    , queryStringRequired = "A query string and/or bookmark must be supplied"
     , channelHeader = \ct -> "Connection details for " ++ Messages.Data.ChannelType.gb ct
     }
 
@@ -77,6 +80,7 @@ de =
     , calEventInput = Messages.Comp.CalEventInput.de
     , channelForm = Messages.Comp.ChannelForm.de
     , httpError = Messages.Comp.HttpError.de
+    , bookmarkDropdown = Messages.Comp.BookmarkDropdown.de
     , reallyDeleteTask = "Diesen Benachrichtigungsauftrag wirklich löschen?"
     , startOnce = "Jetzt starten"
     , startTaskNow = "Starte den Auftrag sofort"
@@ -94,6 +98,6 @@ de =
     , invalidCalEvent = "Das Kalenderereignis ist nicht gültig."
     , queryLabel = "Abfrage"
     , channelRequired = "Ein Versandkanal muss angegeben werden."
-    , queryStringRequired = "Eine Suchabfrage muss angegeben werden."
+    , queryStringRequired = "Eine Suchabfrage und/oder ein Bookmark muss angegeben werden."
     , channelHeader = \ct -> "Details für " ++ Messages.Data.ChannelType.de ct
     }

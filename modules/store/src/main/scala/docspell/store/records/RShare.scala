@@ -138,6 +138,23 @@ object RShare {
         .option
     })
 
+  def findOneByCollective(
+      cid: Ident,
+      enabled: Option[Boolean],
+      nameOrId: String
+  ): ConnectionIO[Option[RShare]] = {
+    val s = RShare.as("s")
+    val u = RUser.as("u")
+
+    Select(
+      select(s.all),
+      from(s).innerJoin(u, u.uid === s.userId),
+      u.cid === cid &&
+        (s.name === nameOrId || s.id ==== nameOrId) &&?
+        enabled.map(e => s.enabled === e)
+    ).build.query[RShare].option
+  }
+
   def findAllByCollective(
       cid: Ident,
       ownerLogin: Option[Ident],

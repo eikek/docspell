@@ -96,6 +96,7 @@ type alias DropdownData msg =
 type alias DropdownMenu msg =
     { icon : Html msg
     , label : String
+    , disabled : Bool
     , attrs : List (Attribute msg)
     }
 
@@ -171,10 +172,16 @@ makeDropdown model =
         menuStyle =
             "absolute right-0 bg-white dark:bg-slate-800 border dark:border-slate-700 z-50 dark:text-slate-300 shadow-lg transition duration-200 min-w-max  "
 
-        itemStyle =
-            "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-slate-700 dark:hover:text-slate-50"
+        itemStyleBase =
+            "transition-colors duration-200 items-center block px-4 py-2 text-normal z-50 "
 
-        menuItem m =
+        itemStyleHover =
+            " hover:bg-gray-200 dark:hover:bg-slate-700 dark:hover:text-slate-50"
+
+        itemStyle =
+            itemStyleBase ++ itemStyleHover
+
+        menuLink m =
             a
                 (class itemStyle :: m.attrs)
                 [ m.icon
@@ -185,6 +192,34 @@ makeDropdown model =
                     [ text m.label
                     ]
                 ]
+
+        disabledLink m =
+            a
+                ([ href "#"
+                 , disabled True
+                 , class itemStyleBase
+                 , class "disabled"
+                 ]
+                    ++ m.attrs
+                )
+                [ m.icon
+                , span
+                    [ class "ml-2"
+                    , classList [ ( "hidden", m.label == "" ) ]
+                    ]
+                    [ text m.label
+                    ]
+                ]
+
+        menuItem m =
+            if m.label == "separator" then
+                div [ class "py-1" ] [ hr [ class S.border ] [] ]
+
+            else if m.disabled then
+                disabledLink m
+
+            else
+                menuLink m
     in
     div [ class "relative" ]
         [ a

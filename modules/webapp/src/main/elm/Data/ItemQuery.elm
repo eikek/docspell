@@ -71,7 +71,7 @@ and list =
             Nothing
 
         es ->
-            Just (And es)
+            Just (unwrap (And es))
 
 
 request : SearchMode -> Maybe ItemQuery -> RQ.ItemQuery
@@ -88,6 +88,32 @@ renderMaybe : Maybe ItemQuery -> String
 renderMaybe mq =
     Maybe.map render mq
         |> Maybe.withDefault ""
+
+
+unwrap : ItemQuery -> ItemQuery
+unwrap query =
+    case query of
+        And inner ->
+            case inner of
+                first :: [] ->
+                    unwrap first
+
+                _ ->
+                    And (List.map unwrap inner)
+
+        Or inner ->
+            case inner of
+                first :: [] ->
+                    unwrap first
+
+                _ ->
+                    Or (List.map unwrap inner)
+
+        Not (Not inner) ->
+            unwrap inner
+
+        _ ->
+            query
 
 
 render : ItemQuery -> String
@@ -118,7 +144,7 @@ render q =
             String.replace "\"" "\\\""
                 >> surround "\""
     in
-    case q of
+    case unwrap q of
         And inner ->
             List.map render inner
                 |> String.join " "

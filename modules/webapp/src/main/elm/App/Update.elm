@@ -592,12 +592,12 @@ updateHome texts lmsg model =
 updateManageData : Page.ManageData.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateManageData lmsg model =
     let
-        ( lm, lc ) =
+        ( lm, lc, ls ) =
             Page.ManageData.Update.update model.flags lmsg model.manageDataModel
     in
     ( { model | manageDataModel = lm }
     , Cmd.map ManageDataMsg lc
-    , Sub.none
+    , Sub.map ManageDataMsg ls
     )
 
 

@@ -146,6 +146,7 @@ items tagged *Todo* etc.
 
 ## Due Items Task
 
+{{ figure(file="notification-06.png") }}
 
 The settings allow to customize the query for searching items. You can
 choose to only include items that have one or more tags (these are
@@ -175,8 +176,11 @@ selected. In other words, only items with an overdue time of *at most*
 ## Generic Query Task
 
 This is the generic version of the *Due Items Task*. Instead of
-selecting teh items via form elements, you can define a custom
-[query](@/docs/query/_index.md).
+selecting the items via form elements, you can define a custom
+[query](@/docs/query/_index.md) and optionally in combination with a
+[bookmark](@/docs/webapp/bookmarks.md).
+
+{{ figure(file="notification-07.png") }}
 
 ## Schedule
 

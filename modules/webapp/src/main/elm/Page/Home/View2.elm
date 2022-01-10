@@ -9,6 +9,7 @@ module Page.Home.View2 exposing (viewContent, viewSidebar)
 
 import Api
 import Comp.Basic as B
+import Comp.BookmarkQueryManage
 import Comp.ConfirmModal
 import Comp.ItemCardList
 import Comp.ItemMerge
@@ -103,7 +104,21 @@ mainView texts flags settings model =
             body
 
         Nothing ->
-            itemCardList texts flags settings model
+            bookmarkQueryWidget texts settings flags model
+                ++ itemCardList texts flags settings model
+
+
+bookmarkQueryWidget : Texts -> UiSettings -> Flags -> Model -> List (Html Msg)
+bookmarkQueryWidget texts settings flags model =
+    case model.topWidgetModel of
+        BookmarkQuery m ->
+            [ div [ class "px-2 mb-4 border-l border-r border-b dark:border-slate-600" ]
+                [ Html.map BookmarkQueryMsg (Comp.BookmarkQueryManage.view texts.bookmarkManage m)
+                ]
+            ]
+
+        TopWidgetHidden ->
+            []
 
 
 itemPublishView : Texts -> UiSettings -> Flags -> SelectViewModel -> List (Html Msg)
@@ -254,29 +269,26 @@ defaultMenuBar texts flags settings model =
 
         isListView =
             settings.itemSearchArrange == Data.ItemArrange.List
+
+        menuSep =
+            { icon = i [] []
+            , label = "separator"
+            , disabled = False
+            , attrs =
+                []
+            }
     in
     MB.view
-        { end =
+        { start =
             [ MB.CustomElement <|
-                B.secondaryBasicButton
-                    { label = ""
-                    , icon = Icons.share
-                    , disabled = createQuery model == Nothing
-                    , handler = onClick TogglePublishCurrentQueryView
-                    , attrs =
-                        [ title <|
-                            if createQuery model == Nothing then
-                                texts.nothingSelectedToShare
+                if settings.powerSearchEnabled then
+                    powerSearchBar
 
-                            else
-                                texts.publishCurrentQueryTitle
-                        , classList
-                            [ ( btnStyle, True )
-                            ]
-                        , href "#"
-                        ]
-                    }
-            , MB.CustomElement <|
+                else
+                    simpleSearchBar
+            ]
+        , end =
+            [ MB.CustomElement <|
                 B.secondaryBasicButton
                     { label = ""
                     , icon =
@@ -300,7 +312,7 @@ defaultMenuBar texts flags settings model =
                     ]
                 }
             , MB.Dropdown
-                { linkIcon = "fa fa-grip-vertical"
+                { linkIcon = "fa fa-bars"
                 , label = ""
                 , linkClass =
                     [ ( S.secondaryBasicButton, True )
@@ -314,6 +326,7 @@ defaultMenuBar texts flags settings model =
 
                             else
                                 i [ class "fa fa-square font-thin" ] []
+                      , disabled = False
                       , label = texts.showItemGroups
                       , attrs =
                             [ href "#"
@@ -326,6 +339,7 @@ defaultMenuBar texts flags settings model =
 
                             else
                                 i [ class "fa fa-list" ] []
+                      , disabled = False
                       , label = texts.listView
                       , attrs =
                             [ href "#"
@@ -338,6 +352,7 @@ defaultMenuBar texts flags settings model =
 
                             else
                                 i [ class "fa fa-th-large" ] []
+                      , disabled = False
                       , label = texts.tileView
                       , attrs =
                             [ href "#"
@@ -346,36 +361,67 @@ defaultMenuBar texts flags settings model =
                       }
                     , { icon = i [ class "fa fa-compress" ] []
                       , label = texts.expandCollapseRows
+                      , disabled = False
                       , attrs =
                             [ href "#"
                             , classList [ ( "hidden", not isListView ) ]
                             , onClick ToggleExpandCollapseRows
                             ]
                       }
-                    ]
-                }
-            ]
-        , start =
-            [ MB.CustomElement <|
-                if settings.powerSearchEnabled then
-                    powerSearchBar
+                    , menuSep
+                    , { label = texts.shareResults
+                      , icon = Icons.shareIcon ""
+                      , disabled = createQuery model == Nothing
+                      , attrs =
+                            [ title <|
+                                if createQuery model == Nothing then
+                                    texts.nothingSelectedToShare
 
-                else
-                    simpleSearchBar
-            , MB.CustomButton
-                { tagger = TogglePreviewFullWidth
-                , label = ""
-                , icon = Just "fa fa-expand"
-                , title =
-                    if settings.cardPreviewFullWidth then
-                        texts.fullHeightPreviewTitle
+                                else
+                                    texts.publishCurrentQueryTitle
+                            , href "#"
+                            , if createQuery model == Nothing then
+                                class ""
 
-                    else
-                        texts.fullWidthPreviewTitle
-                , inputClass =
-                    [ ( btnStyle, True )
-                    , ( "hidden sm:inline-block", False )
-                    , ( "bg-gray-200 dark:bg-slate-600", settings.cardPreviewFullWidth )
+                              else
+                                onClick TogglePublishCurrentQueryView
+                            ]
+                      }
+                    , { label = texts.bookmarkQuery
+                      , icon = i [ class "fa fa-bookmark" ] []
+                      , disabled = createQuery model == Nothing
+                      , attrs =
+                            [ title <|
+                                if createQuery model == Nothing then
+                                    texts.nothingToBookmark
+
+                                else
+                                    texts.bookmarkQuery
+                            , href "#"
+                            , if createQuery model == Nothing then
+                                class ""
+
+                              else
+                                onClick ToggleBookmarkCurrentQueryView
+                            ]
+                      }
+                    , { label =
+                            if settings.cardPreviewFullWidth then
+                                texts.fullHeightPreviewTitle
+
+                            else
+                                texts.fullWidthPreviewTitle
+                      , icon = i [ class "fa fa-expand" ] []
+                      , disabled = False
+                      , attrs =
+                            [ href "#"
+                            , onClick TogglePreviewFullWidth
+                            , classList
+                                [ ( "hidden sm:inline-block", False )
+                                , ( "bg-gray-200 dark:bg-slate-600", settings.cardPreviewFullWidth )
+                                ]
+                            ]
+                      }
                     ]
                 }
             ]

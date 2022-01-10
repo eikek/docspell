@@ -117,11 +117,20 @@ object PeriodicQueryRoutes extends MailAddressCodec {
     Sync[F]
       .pure(for {
         ch <- NotificationChannel.convert(settings.channel)
-        qstr <- ItemQueryParser
-          .asString(settings.query.expr)
-          .left
-          .map(err => new IllegalArgumentException(s"Query not renderable: $err"))
-      } yield (ch, ItemQueryString(qstr)))
+        qstr <- settings.query match {
+          case Some(q) =>
+            ItemQueryParser
+              .asString(q.expr)
+              .left
+              .map(err => new IllegalArgumentException(s"Query not renderable: $err"))
+              .map(Option.apply)
+          case None =>
+            Right(None)
+        }
+        _ <-
+          if (qstr.nonEmpty || settings.bookmark.nonEmpty) Right(())
+          else Left(new IllegalArgumentException("No query or bookmark provided"))
+      } yield (ch, qstr.map(ItemQueryString.apply)))
       .rethrow
       .map { case (channel, qstr) =>
         UserTask(
@@ -134,6 +143,7 @@ object PeriodicQueryRoutes extends MailAddressCodec {
             user,
             Right(channel),
             qstr,
+            settings.bookmark,
             Some(baseUrl / "app" / "item")
           )
         )
@@ -155,7 +165,8 @@ object PeriodicQueryRoutes extends MailAddressCodec {
       task.summary,
       task.enabled,
       ch,
-      ItemQueryParser.parseUnsafe(task.args.query.query),
+      task.args.query.map(_.query).map(ItemQueryParser.parseUnsafe),
+      task.args.bookmark,
       task.timer
     )
 }

@@ -19,6 +19,7 @@ description = "A list of features and limitations."
   into searchable PDF/A pdfs.
 - A powerful [query language](@/docs/query/_index.md) to find
   documents
+- use [bookmarks](@/docs/webapp/bookmarks.md) to save more complex queries
 - Non-destructive: all your uploaded files are never modified and can
   always be downloaded untouched
 - Organize files using tags, folders, [Custom

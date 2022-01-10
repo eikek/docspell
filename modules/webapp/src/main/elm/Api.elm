@@ -6,7 +6,8 @@
 
 
 module Api exposing
-    ( addConcEquip
+    ( addBookmark
+    , addConcEquip
     , addConcPerson
     , addCorrOrg
     , addCorrPerson
@@ -15,6 +16,7 @@ module Api exposing
     , addTag
     , addTagsMultiple
     , attachmentPreviewURL
+    , bookmarkNameExists
     , cancelJob
     , changeFolderName
     , changePassword
@@ -31,6 +33,7 @@ module Api exposing
     , deleteAllItems
     , deleteAttachment
     , deleteAttachments
+    , deleteBookmark
     , deleteCustomField
     , deleteCustomValue
     , deleteCustomValueMultiple
@@ -52,6 +55,7 @@ module Api exposing
     , disableOtp
     , fileURL
     , getAttachmentMeta
+    , getBookmarks
     , getClientSettings
     , getCollective
     , getCollectiveSettings
@@ -166,6 +170,7 @@ module Api exposing
     , toggleTags
     , twoFactor
     , unconfirmMultiple
+    , updateBookmark
     , updateHook
     , updateNotifyDueItems
     , updatePeriodicQuery
@@ -182,6 +187,7 @@ module Api exposing
 import Api.Model.AttachmentMeta exposing (AttachmentMeta)
 import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.BookmarkedQuery exposing (BookmarkedQuery)
 import Api.Model.CalEventCheck exposing (CalEventCheck)
 import Api.Model.CalEventCheckResult exposing (CalEventCheckResult)
 import Api.Model.Collective exposing (Collective)
@@ -260,6 +266,7 @@ import Api.Model.User exposing (User)
 import Api.Model.UserList exposing (UserList)
 import Api.Model.UserPass exposing (UserPass)
 import Api.Model.VersionInfo exposing (VersionInfo)
+import Data.Bookmarks exposing (AllBookmarks, Bookmarks)
 import Data.ContactType exposing (ContactType)
 import Data.CustomFieldOrder exposing (CustomFieldOrder)
 import Data.EquipmentOrder exposing (EquipmentOrder)
@@ -2261,7 +2268,7 @@ getClientSettings flags receive =
                 Data.UiSettings.storedUiSettingsDecoder
     in
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/webClient"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/user/webClient"
         , account = getAccount flags
         , expect = Http.expectJson receive decoder
         }
@@ -2277,9 +2284,96 @@ saveClientSettings flags settings receive =
             Data.UiSettings.storedUiSettingsEncode storedSettings
     in
     Http2.authPut
-        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/webClient"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/user/webClient"
         , account = getAccount flags
         , body = Http.jsonBody encode
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+
+--- Query Bookmarks
+
+
+bookmarkUri : Flags -> String
+bookmarkUri flags =
+    flags.config.baseUrl ++ "/api/v1/sec/querybookmark"
+
+
+getBookmarksTask : Flags -> Task.Task Http.Error Bookmarks
+getBookmarksTask flags =
+    Http2.authTask
+        { method = "GET"
+        , url = bookmarkUri flags
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver Data.Bookmarks.bookmarksDecoder
+        , headers = []
+        , timeout = Nothing
+        }
+
+
+getBookmarks : Flags -> (Result Http.Error AllBookmarks -> msg) -> Cmd msg
+getBookmarks flags receive =
+    let
+        bms =
+            getBookmarksTask flags
+
+        shares =
+            getSharesTask flags "" False
+
+        activeShare s =
+            s.enabled && s.name /= Nothing
+
+        combine bm bs =
+            AllBookmarks (Data.Bookmarks.sort bm) (List.filter activeShare bs.items)
+    in
+    Task.map2 combine bms shares
+        |> Task.attempt receive
+
+
+addBookmark : Flags -> BookmarkedQuery -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addBookmark flags model receive =
+    Http2.authPost
+        { url = bookmarkUri flags
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.BookmarkedQuery.encode model)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+updateBookmark : Flags -> BookmarkedQuery -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+updateBookmark flags model receive =
+    Http2.authPut
+        { url = bookmarkUri flags
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.BookmarkedQuery.encode model)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+bookmarkNameExistsTask : Flags -> String -> Task.Task Http.Error Bool
+bookmarkNameExistsTask flags name =
+    let
+        load =
+            getBookmarksTask flags
+
+        exists current =
+            Data.Bookmarks.exists name current
+    in
+    Task.map exists load
+
+
+bookmarkNameExists : Flags -> String -> (Result Http.Error Bool -> msg) -> Cmd msg
+bookmarkNameExists flags name receive =
+    bookmarkNameExistsTask flags name |> Task.attempt receive
+
+
+deleteBookmark : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteBookmark flags id receive =
+    Http2.authDelete
+        { url = bookmarkUri flags ++ "/" ++ id
+        , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -2331,10 +2425,12 @@ disableOtp flags otp receive =
 --- Share
 
 
-getShares : Flags -> String -> Bool -> (Result Http.Error ShareList -> msg) -> Cmd msg
-getShares flags query owning receive =
-    Http2.authGet
-        { url =
+getSharesTask : Flags -> String -> Bool -> Task.Task Http.Error ShareList
+getSharesTask flags query owning =
+    Http2.authTask
+        { method =
+            "GET"
+        , url =
             flags.config.baseUrl
                 ++ "/api/v1/sec/share?q="
                 ++ Url.percentEncode query
@@ -2345,8 +2441,16 @@ getShares flags query owning receive =
                         ""
                    )
         , account = getAccount flags
-        , expect = Http.expectJson receive Api.Model.ShareList.decoder
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver Api.Model.ShareList.decoder
+        , headers = []
+        , timeout = Nothing
         }
+
+
+getShares : Flags -> String -> Bool -> (Result Http.Error ShareList -> msg) -> Cmd msg
+getShares flags query owning receive =
+    getSharesTask flags query owning |> Task.attempt receive
 
 
 getShare : Flags -> String -> (Result Http.Error ShareDetail -> msg) -> Cmd msg

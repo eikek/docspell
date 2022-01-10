@@ -228,6 +228,7 @@ attachHeader texts settings model _ attach =
                     , items =
                         [ { icon = i [ class "fa fa-download" ] []
                           , label = texts.downloadFile
+                          , disabled = False
                           , attrs =
                                 [ download attachName
                                 , href fileUrl
@@ -235,6 +236,7 @@ attachHeader texts settings model _ attach =
                           }
                         , { icon = i [ class "fa fa-file" ] []
                           , label = texts.renameFile
+                          , disabled = False
                           , attrs =
                                 [ href "#"
                                 , onClick (EditAttachNameStart attach.id)
@@ -242,6 +244,7 @@ attachHeader texts settings model _ attach =
                           }
                         , { icon = i [ class "fa fa-file-archive" ] []
                           , label = texts.downloadOriginalArchiveFile
+                          , disabled = False
                           , attrs =
                                 [ href (fileUrl ++ "/archive")
                                 , target "_new"
@@ -250,6 +253,7 @@ attachHeader texts settings model _ attach =
                           }
                         , { icon = i [ class "fa fa-external-link-alt" ] []
                           , label = texts.originalFile
+                          , disabled = False
                           , attrs =
                                 [ href (fileUrl ++ "/original")
                                 , target "_new"
@@ -263,6 +267,7 @@ attachHeader texts settings model _ attach =
                                 else
                                     i [ class "fa fa-toggle-off" ] []
                           , label = texts.viewExtractedData
+                          , disabled = False
                           , attrs =
                                 [ onClick (AttachMetaClick attach.id)
                                 , href "#"
@@ -270,6 +275,7 @@ attachHeader texts settings model _ attach =
                           }
                         , { icon = i [ class "fa fa-redo-alt" ] []
                           , label = texts.reprocessFile
+                          , disabled = False
                           , attrs =
                                 [ onClick (RequestReprocessFile attach.id)
                                 , href "#"
@@ -277,6 +283,7 @@ attachHeader texts settings model _ attach =
                           }
                         , { icon = i [ class Icons.showQr ] []
                           , label = texts.showQrCode
+                          , disabled = False
                           , attrs =
                                 [ onClick (ToggleShowQrAttach attach.id)
                                 , href "#"
@@ -284,6 +291,7 @@ attachHeader texts settings model _ attach =
                           }
                         , { icon = i [ class "fa fa-trash" ] []
                           , label = texts.deleteThisFile
+                          , disabled = False
                           , attrs =
                                 [ onClick (RequestDeleteAttachment attach.id)
                                 , href "#"

@@ -462,16 +462,17 @@ view2 cfg settings model =
         viewMultiple2 cfg settings model
 
     else
-        viewSingle2 cfg model
+        viewSingle2 cfg settings model
 
 
-viewSingle2 : ViewSettings a -> Model a -> Html (Msg a)
-viewSingle2 cfg model =
+viewSingle2 : ViewSettings a -> UiSettings -> Model a -> Html (Msg a)
+viewSingle2 cfg settings model =
     let
         renderItem item =
             a
                 [ href "#"
                 , class cfg.style.item
+                , class (cfg.labelColor item.value settings)
                 , classList
                     [ ( cfg.style.itemActive, item.active )
                     , ( "font-semibold", item.selected )
@@ -480,7 +481,7 @@ viewSingle2 cfg model =
                 , onKeyUp KeyPress
                 ]
                 [ text <| (.value >> cfg.makeOption >> .text) item
-                , span [ class "text-gray-400 float-right" ]
+                , span [ class "text-gray-400 opacity-75 float-right" ]
                     [ text <| (.value >> cfg.makeOption >> .additional) item
                     ]
                 ]

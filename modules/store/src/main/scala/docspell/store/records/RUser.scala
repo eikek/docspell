@@ -7,6 +7,8 @@
 package docspell.store.records
 
 import cats.data.NonEmptyList
+import cats.data.OptionT
+import cats.effect.Sync
 
 import docspell.common._
 import docspell.store.qb.DSL._
@@ -149,6 +151,13 @@ object RUser {
     )
       .query[Ident]
       .option
+
+  def getIdByAccount(account: AccountId): ConnectionIO[Ident] =
+    OptionT(findIdByAccount(account)).getOrElseF(
+      Sync[ConnectionIO].raiseError(
+        new Exception(s"No user found for: ${account.asString}")
+      )
+    )
 
   def updateLogin(accountId: AccountId): ConnectionIO[Int] = {
     val t = Table(None)

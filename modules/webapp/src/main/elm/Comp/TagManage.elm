@@ -24,6 +24,7 @@ import Comp.TagTable
 import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.TagOrder exposing (TagOrder)
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit)
@@ -247,13 +248,13 @@ update flags msg model =
 --- View2
 
 
-view2 : Texts -> Model -> Html Msg
-view2 texts model =
+view2 : Texts -> UiSettings -> Model -> Html Msg
+view2 texts settings model =
     if model.viewMode == Table then
         viewTable2 texts model
 
     else
-        viewForm2 texts model
+        viewForm2 texts settings model
 
 
 viewTable2 : Texts -> Model -> Html Msg
@@ -290,8 +291,8 @@ viewTable2 texts model =
         ]
 
 
-viewForm2 : Texts -> Model -> Html Msg
-viewForm2 texts model =
+viewForm2 : Texts -> UiSettings -> Model -> Html Msg
+viewForm2 texts settings model =
     let
         newTag =
             model.tagFormModel.tag.id == ""
@@ -373,7 +374,7 @@ viewForm2 texts model =
                 FormErrorSubmit m ->
                     text m
             ]
-        , Html.map FormMsg (Comp.TagForm.view2 texts.tagForm model.tagFormModel)
+        , Html.map FormMsg (Comp.TagForm.view2 texts.tagForm settings model.tagFormModel)
         , B.loadingDimmer
             { active = model.loading
             , label = texts.basics.loading

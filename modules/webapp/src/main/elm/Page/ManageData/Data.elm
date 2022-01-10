@@ -12,6 +12,7 @@ module Page.ManageData.Data exposing
     , init
     )
 
+import Comp.BookmarkManage
 import Comp.CustomFieldManage
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -29,6 +30,7 @@ type alias Model =
     , personManageModel : Comp.PersonManage.Model
     , folderManageModel : Comp.FolderManage.Model
     , fieldManageModel : Comp.CustomFieldManage.Model
+    , bookmarkModel : Comp.BookmarkManage.Model
     }
 
 
@@ -37,6 +39,9 @@ init flags =
     let
         ( m2, c2 ) =
             Comp.TagManage.update flags Comp.TagManage.LoadTags Comp.TagManage.emptyModel
+
+        ( bm, bc ) =
+            Comp.BookmarkManage.init flags
     in
     ( { currentTab = Just TagTab
       , tagManageModel = m2
@@ -45,8 +50,12 @@ init flags =
       , personManageModel = Comp.PersonManage.emptyModel
       , folderManageModel = Comp.FolderManage.empty
       , fieldManageModel = Comp.CustomFieldManage.empty
+      , bookmarkModel = bm
       }
-    , Cmd.map TagManageMsg c2
+    , Cmd.batch
+        [ Cmd.map TagManageMsg c2
+        , Cmd.map BookmarkMsg bc
+        ]
     )
 
 
@@ -57,6 +66,7 @@ type Tab
     | PersonTab
     | FolderTab
     | CustomFieldTab
+    | BookmarkTab
 
 
 type Msg
@@ -67,3 +77,4 @@ type Msg
     | PersonManageMsg Comp.PersonManage.Msg
     | FolderMsg Comp.FolderManage.Msg
     | CustomFieldMsg Comp.CustomFieldManage.Msg
+    | BookmarkMsg Comp.BookmarkManage.Msg

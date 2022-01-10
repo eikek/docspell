@@ -18,7 +18,8 @@ type alias PeriodicQuerySettings =
     , enabled : Bool
     , summary : Maybe String
     , channel : NotificationChannel
-    , query : String
+    , query : Maybe String
+    , bookmark : Maybe String
     , schedule : String
     }
 
@@ -29,19 +30,21 @@ empty ct =
     , enabled = False
     , summary = Nothing
     , channel = Data.NotificationChannel.empty ct
-    , query = ""
+    , query = Nothing
+    , bookmark = Nothing
     , schedule = ""
     }
 
 
 decoder : D.Decoder PeriodicQuerySettings
 decoder =
-    D.map6 PeriodicQuerySettings
+    D.map7 PeriodicQuerySettings
         (D.field "id" D.string)
         (D.field "enabled" D.bool)
-        (D.field "summary" (D.maybe D.string))
+        (D.maybe (D.field "summary" D.string))
         (D.field "channel" Data.NotificationChannel.decoder)
-        (D.field "query" D.string)
+        (D.maybe (D.field "query" D.string))
+        (D.maybe (D.field "bookmark" D.string))
         (D.field "schedule" D.string)
 
 
@@ -52,6 +55,7 @@ encode s =
         , ( "enabled", E.bool s.enabled )
         , ( "summary", Maybe.map E.string s.summary |> Maybe.withDefault E.null )
         , ( "channel", Data.NotificationChannel.encode s.channel )
-        , ( "query", E.string s.query )
+        , ( "query", Maybe.map E.string s.query |> Maybe.withDefault E.null )
+        , ( "bookmark", Maybe.map E.string s.bookmark |> Maybe.withDefault E.null )
         , ( "schedule", E.string s.schedule )
         ]

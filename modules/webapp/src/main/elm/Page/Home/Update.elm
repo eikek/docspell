@@ -13,6 +13,7 @@ module Page.Home.Update exposing
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Browser.Navigation as Nav
+import Comp.BookmarkQueryManage
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
@@ -872,7 +873,7 @@ update mId key flags texts settings msg model =
                 cmd =
                     Api.saveClientSettings flags newSettings (ClientSettingsSaveResp newSettings)
             in
-            noSub ( model, cmd )
+            noSub ( { model | viewMenuOpen = False }, cmd )
 
         ClientSettingsSaveResp newSettings (Ok res) ->
             if res.success then
@@ -922,9 +923,67 @@ update mId key flags texts settings msg model =
                         ( pm, pc ) =
                             Comp.PublishItems.initQuery flags q
                     in
-                    noSub ( { model | viewMode = PublishView pm }, Cmd.map PublishViewMsg pc )
+                    noSub ( { model | viewMode = PublishView pm, viewMenuOpen = False }, Cmd.map PublishViewMsg pc )
 
                 Nothing ->
+                    noSub ( model, Cmd.none )
+
+        ToggleBookmarkCurrentQueryView ->
+            case createQuery model of
+                Just q ->
+                    case model.topWidgetModel of
+                        BookmarkQuery _ ->
+                            noSub ( { model | topWidgetModel = TopWidgetHidden, viewMenuOpen = False }, Cmd.none )
+
+                        TopWidgetHidden ->
+                            let
+                                ( qm, qc ) =
+                                    Comp.BookmarkQueryManage.init (Q.render q)
+                            in
+                            noSub
+                                ( { model | topWidgetModel = BookmarkQuery qm, viewMenuOpen = False }
+                                , Cmd.map BookmarkQueryMsg qc
+                                )
+
+                Nothing ->
+                    noSub ( model, Cmd.none )
+
+        BookmarkQueryMsg lm ->
+            case model.topWidgetModel of
+                BookmarkQuery bm ->
+                    let
+                        res =
+                            Comp.BookmarkQueryManage.update flags lm bm
+
+                        nextModel =
+                            if
+                                res.outcome
+                                    == Comp.BookmarkQueryManage.Cancelled
+                                    || res.outcome
+                                    == Comp.BookmarkQueryManage.Done
+                            then
+                                TopWidgetHidden
+
+                            else
+                                BookmarkQuery res.model
+
+                        refreshCmd =
+                            if res.outcome == Comp.BookmarkQueryManage.Done then
+                                Cmd.map SearchMenuMsg (Comp.SearchMenu.refreshBookmarks flags)
+
+                            else
+                                Cmd.none
+                    in
+                    makeResult
+                        ( { model | topWidgetModel = nextModel }
+                        , Cmd.batch
+                            [ Cmd.map BookmarkQueryMsg res.cmd
+                            , refreshCmd
+                            ]
+                        , Sub.map BookmarkQueryMsg res.sub
+                        )
+
+                TopWidgetHidden ->
                     noSub ( model, Cmd.none )
 
         PublishViewMsg lmsg ->
@@ -942,7 +1001,10 @@ update mId key flags texts settings msg model =
                                 )
 
                         Comp.PublishItems.OutcomeDone ->
-                            noSub ( { model | viewMode = SearchView }, Cmd.none )
+                            noSub
+                                ( { model | viewMode = SearchView }
+                                , Cmd.map SearchMenuMsg (Comp.SearchMenu.refreshBookmarks flags)
+                                )
 
                 _ ->
                     noSub ( model, Cmd.none )

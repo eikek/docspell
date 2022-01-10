@@ -16,6 +16,7 @@ module Comp.SearchMenu exposing
     , isFulltextSearch
     , isNamesSearch
     , linkTargetMsg
+    , refreshBookmarks
     , setFromStats
     , textSearchString
     , update
@@ -33,6 +34,7 @@ import Api.Model.ItemQuery exposing (ItemQuery)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.SearchStats exposing (SearchStats)
+import Comp.BookmarkChooser
 import Comp.CustomFieldMultiInput
 import Comp.DatePicker
 import Comp.Dropdown exposing (isDropdownChangeMsg)
@@ -41,6 +43,7 @@ import Comp.LinkTarget exposing (LinkTarget)
 import Comp.MenuBar as MB
 import Comp.Tabs
 import Comp.TagSelect
+import Data.Bookmarks exposing (AllBookmarks)
 import Data.CustomFieldChange exposing (CustomFieldValueCollect)
 import Data.Direction exposing (Direction)
 import Data.DropdownStyle as DS
@@ -96,6 +99,8 @@ type alias Model =
     , customFieldModel : Comp.CustomFieldMultiInput.Model
     , customValues : CustomFieldValueCollect
     , sourceModel : Maybe String
+    , allBookmarks : Comp.BookmarkChooser.Model
+    , selectedBookmarks : Comp.BookmarkChooser.Selection
     , openTabs : Set String
     , searchMode : SearchMode
     }
@@ -141,6 +146,8 @@ init flags =
     , customFieldModel = Comp.CustomFieldMultiInput.initWith []
     , customValues = Data.CustomFieldChange.emptyCollect
     , sourceModel = Nothing
+    , allBookmarks = Comp.BookmarkChooser.init Data.Bookmarks.empty
+    , selectedBookmarks = Comp.BookmarkChooser.emptySelection
     , openTabs = Set.fromList [ "Tags", "Inbox" ]
     , searchMode = Data.SearchMode.Normal
     }
@@ -243,6 +250,10 @@ getItemQuery model =
 
         textSearch =
             textSearchValue model.textSearchModel
+
+        bookmarks =
+            List.map .query (Comp.BookmarkChooser.getQueries model.allBookmarks model.selectedBookmarks)
+                |> List.map Q.Fragment
     in
     Q.and
         [ when model.inboxCheckbox (Q.Inbox True)
@@ -289,6 +300,7 @@ getItemQuery model =
             |> Maybe.map Q.Dir
         , textSearch.fullText
             |> Maybe.map Q.Contents
+        , whenNotEmpty bookmarks Q.And
         ]
 
 
@@ -333,6 +345,7 @@ resetModel model =
                 model.customFieldModel
         , customValues = Data.CustomFieldChange.emptyCollect
         , sourceModel = Nothing
+        , selectedBookmarks = Comp.BookmarkChooser.emptySelection
         , searchMode = Data.SearchMode.Normal
     }
 
@@ -380,6 +393,8 @@ type Msg
     | GetAllTagsResp (Result Http.Error SearchStats)
     | ToggleAkkordionTab String
     | ToggleOpenAllAkkordionTabs
+    | AllBookmarksResp (Result Http.Error AllBookmarks)
+    | SelectBookmarkMsg Comp.BookmarkChooser.Msg
 
 
 setFromStats : SearchStats -> Msg
@@ -424,6 +439,11 @@ type alias NextState =
     , stateChange : Bool
     , dragDrop : DD.DragDropData
     }
+
+
+refreshBookmarks : Flags -> Cmd Msg
+refreshBookmarks flags =
+    Api.getBookmarks flags AllBookmarksResp
 
 
 update : Flags -> UiSettings -> Msg -> Model -> NextState
@@ -488,6 +508,7 @@ updateDrop ddm flags settings msg model =
                     , Api.getPersons flags "" Data.PersonOrder.NameAsc GetPersonResp
                     , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
                     , cdp
+                    , Api.getBookmarks flags AllBookmarksResp
                     ]
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
@@ -1040,6 +1061,31 @@ updateDrop ddm flags settings msg model =
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
+        AllBookmarksResp (Ok bm) ->
+            { model = { model | allBookmarks = Comp.BookmarkChooser.init bm }
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
+        AllBookmarksResp (Err err) ->
+            { model = model
+            , cmd = Cmd.none
+            , stateChange = False
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
+        SelectBookmarkMsg lm ->
+            let
+                ( next, sel ) =
+                    Comp.BookmarkChooser.update lm model.allBookmarks model.selectedBookmarks
+            in
+            { model = { model | allBookmarks = next, selectedBookmarks = sel }
+            , cmd = Cmd.none
+            , stateChange = sel /= model.selectedBookmarks
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
 
 
 --- View2
@@ -1064,6 +1110,7 @@ viewDrop2 texts ddd flags cfg settings model =
 
 type SearchTab
     = TabInbox
+    | TabBookmarks
     | TabTags
     | TabTagCategories
     | TabFolder
@@ -1080,6 +1127,7 @@ type SearchTab
 allTabs : List SearchTab
 allTabs =
     [ TabInbox
+    , TabBookmarks
     , TabTags
     , TabTagCategories
     , TabFolder
@@ -1099,6 +1147,9 @@ tabName tab =
     case tab of
         TabInbox ->
             "inbox"
+
+        TabBookmarks ->
+            "bookmarks"
 
         TabTags ->
             "tags"
@@ -1139,6 +1190,9 @@ findTab tab =
     case tab.name of
         "inbox" ->
             Just TabInbox
+
+        "bookmarks" ->
+            Just TabBookmarks
 
         "tags" ->
             Just TabTags
@@ -1214,6 +1268,16 @@ tabLook settings model tab =
     case tab of
         TabInbox ->
             activeWhen model.inboxCheckbox
+
+        TabBookmarks ->
+            if Comp.BookmarkChooser.isEmpty model.allBookmarks then
+                Comp.Tabs.Hidden
+
+            else if not <| Comp.BookmarkChooser.isEmptySelection model.selectedBookmarks then
+                Comp.Tabs.Active
+
+            else
+                Comp.Tabs.Normal
 
         TabTags ->
             hiddenOr [ Data.Fields.Tag ]
@@ -1329,52 +1393,15 @@ searchTabs texts ddd flags settings model =
                     , label = texts.inbox
                     , tagger = \_ -> ToggleInbox
                     }
-            , div [ class "mt-2 hidden" ]
-                [ label [ class S.inputLabel ]
-                    [ text
-                        (case model.textSearchModel of
-                            Fulltext _ ->
-                                texts.fulltextSearch
-
-                            Names _ ->
-                                texts.searchInNames
-                        )
-                    , a
-                        [ classList
-                            [ ( "hidden", not flags.config.fullTextSearchEnabled )
-                            ]
-                        , class "float-right"
-                        , class S.link
-                        , href "#"
-                        , onClick SwapTextSearch
-                        , title texts.switchSearchModes
-                        ]
-                        [ i [ class "fa fa-exchange-alt" ] []
-                        ]
-                    ]
-                , input
-                    [ type_ "text"
-                    , onInput SetTextSearch
-                    , Util.Html.onKeyUpCode KeyUpMsg
-                    , textSearchString model.textSearchModel |> Maybe.withDefault "" |> value
-                    , case model.textSearchModel of
-                        Fulltext _ ->
-                            placeholder texts.contentSearch
-
-                        Names _ ->
-                            placeholder texts.searchInNamesPlaceholder
-                    , class S.textInputSidebar
-                    ]
-                    []
-                , span [ class "opacity-50 text-sm" ]
-                    [ case model.textSearchModel of
-                        Fulltext _ ->
-                            text texts.fulltextSearchInfo
-
-                        Names _ ->
-                            text texts.nameSearchInfo
-                    ]
-                ]
+            ]
+      }
+    , { name = tabName TabBookmarks
+      , title = texts.bookmarks
+      , titleRight = []
+      , info = Nothing
+      , body =
+            [ Html.map SelectBookmarkMsg
+                (Comp.BookmarkChooser.view texts.bookmarkChooser model.allBookmarks model.selectedBookmarks)
             ]
       }
     , { name = tabName TabTags

@@ -13,6 +13,7 @@ module Messages.Comp.SearchMenu exposing
 
 import Data.Direction exposing (Direction)
 import Messages.Basics
+import Messages.Comp.BookmarkChooser
 import Messages.Comp.CustomFieldMultiInput
 import Messages.Comp.FolderSelect
 import Messages.Comp.TagSelect
@@ -24,6 +25,7 @@ type alias Texts =
     , customFieldMultiInput : Messages.Comp.CustomFieldMultiInput.Texts
     , tagSelect : Messages.Comp.TagSelect.Texts
     , folderSelect : Messages.Comp.FolderSelect.Texts
+    , bookmarkChooser : Messages.Comp.BookmarkChooser.Texts
     , chooseDirection : String
     , choosePerson : String
     , chooseEquipment : String
@@ -47,6 +49,7 @@ type alias Texts =
     , searchInItemSource : String
     , direction : Direction -> String
     , trashcan : String
+    , bookmarks : String
     }
 
 
@@ -56,6 +59,7 @@ gb =
     , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.gb
     , tagSelect = Messages.Comp.TagSelect.gb
     , folderSelect = Messages.Comp.FolderSelect.gb
+    , bookmarkChooser = Messages.Comp.BookmarkChooser.gb
     , chooseDirection = "Choose a direction…"
     , choosePerson = "Choose a person"
     , chooseEquipment = "Choose an equipment"
@@ -79,6 +83,7 @@ gb =
     , searchInItemSource = "Search in item source…"
     , direction = Messages.Data.Direction.gb
     , trashcan = "Trash"
+    , bookmarks = "Bookmarks"
     }
 
 
@@ -88,6 +93,7 @@ de =
     , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.de
     , tagSelect = Messages.Comp.TagSelect.de
     , folderSelect = Messages.Comp.FolderSelect.de
+    , bookmarkChooser = Messages.Comp.BookmarkChooser.de
     , chooseDirection = "Wähle eine Richtung…"
     , choosePerson = "Wähle eine Person…"
     , chooseEquipment = "Wähle eine Ausstattung"
@@ -111,4 +117,5 @@ de =
     , searchInItemSource = "Suche in Dokumentquelle…"
     , direction = Messages.Data.Direction.de
     , trashcan = "Papierkorb"
+    , bookmarks = "Bookmarks"
     }

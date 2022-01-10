@@ -17,7 +17,7 @@ import doobie._
 import doobie.implicits._
 import io.circe.Json
 
-case class RClientSettings(
+case class RClientSettingsUser(
     id: Ident,
     clientId: Ident,
     userId: Ident,
@@ -26,10 +26,10 @@ case class RClientSettings(
     created: Timestamp
 ) {}
 
-object RClientSettings {
+object RClientSettingsUser {
 
   final case class Table(alias: Option[String]) extends TableDef {
-    val tableName = "client_settings"
+    val tableName = "client_settings_user"
 
     val id = Column[Ident]("id", this)
     val clientId = Column[Ident]("client_id", this)
@@ -44,7 +44,7 @@ object RClientSettings {
   def as(alias: String): Table = Table(Some(alias))
   val T = Table(None)
 
-  def insert(v: RClientSettings): ConnectionIO[Int] = {
+  def insert(v: RClientSettingsUser): ConnectionIO[Int] = {
     val t = Table(None)
     DML.insert(
       t,
@@ -71,15 +71,15 @@ object RClientSettings {
       now <- Timestamp.current[ConnectionIO]
       nup <- updateSettings(clientId, userId, data, now)
       nin <-
-        if (nup <= 0) insert(RClientSettings(id, clientId, userId, data, now, now))
+        if (nup <= 0) insert(RClientSettingsUser(id, clientId, userId, data, now, now))
         else 0.pure[ConnectionIO]
     } yield nup + nin
 
   def delete(clientId: Ident, userId: Ident): ConnectionIO[Int] =
     DML.delete(T, T.clientId === clientId && T.userId === userId)
 
-  def find(clientId: Ident, userId: Ident): ConnectionIO[Option[RClientSettings]] =
+  def find(clientId: Ident, userId: Ident): ConnectionIO[Option[RClientSettingsUser]] =
     run(select(T.all), from(T), T.clientId === clientId && T.userId === userId)
-      .query[RClientSettings]
+      .query[RClientSettingsUser]
       .option
 }

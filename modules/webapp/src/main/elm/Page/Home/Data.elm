@@ -13,6 +13,7 @@ module Page.Home.Data exposing
     , SearchType(..)
     , SelectActionMode(..)
     , SelectViewModel
+    , TopWidgetModel(..)
     , ViewMode(..)
     , createQuery
     , doSearchCmd
@@ -30,6 +31,7 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Browser.Dom as Dom
+import Comp.BookmarkQueryManage
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange)
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
@@ -68,7 +70,13 @@ type alias Model =
     , powerSearchInput : Comp.PowerSearchInput.Model
     , viewMenuOpen : Bool
     , itemRowsOpen : Set String
+    , topWidgetModel : TopWidgetModel
     }
+
+
+type TopWidgetModel
+    = TopWidgetHidden
+    | BookmarkQuery Comp.BookmarkQueryManage.Model
 
 
 type ConfirmModalValue
@@ -137,6 +145,7 @@ init flags viewMode =
     , powerSearchInput = Comp.PowerSearchInput.init
     , viewMenuOpen = False
     , itemRowsOpen = Set.empty
+    , topWidgetModel = TopWidgetHidden
     }
 
 
@@ -238,6 +247,8 @@ type Msg
     | ToggleShowGroups
     | ToggleArrange ItemArrange
     | ToggleExpandCollapseRows
+    | ToggleBookmarkCurrentQueryView
+    | BookmarkQueryMsg Comp.BookmarkQueryManage.Msg
 
 
 type SearchType
