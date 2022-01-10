@@ -1957,6 +1957,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
   /sec/querybookmark/{bookmarkId}:
+    parameters:
+      - $ref: "#/components/parameters/bookmarkId"
     delete:
       operationId: "sec-querybookmark-delete"
       tags: [Query Bookmark]
@@ -7979,6 +7981,14 @@ components:
       required: true
       description: |
         some identifier for a client application
+      schema:
+        type: string
+    bookmarkId:
+      name: bookmarkId
+      in: path
+      required: true
+      description: |
+        An identifier for a bookmark
       schema:
         type: string
     providerId:
