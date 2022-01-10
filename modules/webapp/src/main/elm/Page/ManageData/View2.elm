@@ -146,7 +146,7 @@ viewContent texts flags settings model =
         ]
         (case model.currentTab of
             Just TagTab ->
-                viewTags texts model
+                viewTags texts settings model
 
             Just EquipTab ->
                 viewEquip texts model
@@ -180,8 +180,8 @@ menuEntryActive model tab =
         class ""
 
 
-viewTags : Texts -> Model -> List (Html Msg)
-viewTags texts model =
+viewTags : Texts -> UiSettings -> Model -> List (Html Msg)
+viewTags texts settings model =
     [ h2
         [ class S.header1
         , class "inline-flex items-center"
@@ -194,6 +194,7 @@ viewTags texts model =
     , Html.map TagManageMsg
         (Comp.TagManage.view2
             texts.tagManage
+            settings
             model.tagManageModel
         )
     ]

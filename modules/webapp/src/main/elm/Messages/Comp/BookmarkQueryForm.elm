@@ -33,7 +33,7 @@ gb =
     , userLocationText = "The bookmarked query is just for you"
     , collectiveLocation = "Collective scope"
     , collectiveLocationText = "The bookmarked query can be used and edited by all users"
-    , nameExistsWarning = "A bookmark with this name exists!"
+    , nameExistsWarning = "A bookmark with this name exists! Choose another name."
     }
 
 
@@ -45,5 +45,5 @@ de =
     , userLocationText = "Der Bookmark ist nur für dich"
     , collectiveLocation = "Kollektiv-Bookmark"
     , collectiveLocationText = "Der Bookmark kann von allen Benutzer verwendet werden"
-    , nameExistsWarning = "Der Bookmark existiert bereits!"
+    , nameExistsWarning = "Der Bookmark existiert bereits! Verwende einen anderen Namen."
     }

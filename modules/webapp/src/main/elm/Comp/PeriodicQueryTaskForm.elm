@@ -17,6 +17,7 @@ module Comp.PeriodicQueryTaskForm exposing
     )
 
 import Comp.Basic as B
+import Comp.BookmarkDropdown
 import Comp.CalEventInput
 import Comp.ChannelForm
 import Comp.MenuBar as MB
@@ -44,6 +45,7 @@ type alias Model =
     , scheduleModel : Comp.CalEventInput.Model
     , queryModel : Comp.PowerSearchInput.Model
     , channelModel : Comp.ChannelForm.Model
+    , bookmarkDropdown : Comp.BookmarkDropdown.Model
     , formState : FormState
     , loading : Int
     }
@@ -75,6 +77,7 @@ type Msg
     | CalEventMsg Comp.CalEventInput.Msg
     | QueryMsg Comp.PowerSearchInput.Msg
     | ChannelMsg Comp.ChannelForm.Msg
+    | BookmarkMsg Comp.BookmarkDropdown.Msg
     | StartOnce
     | Cancel
     | RequestDelete
@@ -93,11 +96,14 @@ initWith flags s =
 
         res =
             Comp.PowerSearchInput.update
-                (Comp.PowerSearchInput.setSearchString s.query)
+                (Comp.PowerSearchInput.setSearchString (Maybe.withDefault "" s.query))
                 Comp.PowerSearchInput.init
 
         ( cfm, cfc ) =
             Comp.ChannelForm.initWith flags s.channel
+
+        ( bm, bc ) =
+            Comp.BookmarkDropdown.init flags s.bookmark
     in
     ( { settings = s
       , enabled = s.enabled
@@ -105,6 +111,7 @@ initWith flags s =
       , scheduleModel = sm
       , queryModel = res.model
       , channelModel = cfm
+      , bookmarkDropdown = bm
       , formState = FormStateInitial
       , loading = 0
       , summary = s.summary
@@ -113,6 +120,7 @@ initWith flags s =
         [ Cmd.map CalEventMsg sc
         , Cmd.map QueryMsg res.cmd
         , Cmd.map ChannelMsg cfc
+        , Cmd.map BookmarkMsg bc
         ]
     )
 
@@ -128,6 +136,9 @@ init flags ct =
 
         ( cfm, cfc ) =
             Comp.ChannelForm.init flags ct
+
+        ( bm, bc ) =
+            Comp.BookmarkDropdown.init flags Nothing
     in
     ( { settings = Data.PeriodicQuerySettings.empty ct
       , enabled = False
@@ -135,6 +146,7 @@ init flags ct =
       , scheduleModel = sm
       , queryModel = Comp.PowerSearchInput.init
       , channelModel = cfm
+      , bookmarkDropdown = bm
       , formState = FormStateInitial
       , loading = 0
       , summary = Nothing
@@ -142,6 +154,7 @@ init flags ct =
     , Cmd.batch
         [ Cmd.map CalEventMsg scmd
         , Cmd.map ChannelMsg cfc
+        , Cmd.map BookmarkMsg bc
         ]
     )
 
@@ -172,27 +185,46 @@ makeSettings model =
                 Nothing ->
                     Err ValidateCalEventInvalid
 
-        queryString =
-            Result.fromMaybe ValidateQueryStringRequired model.queryModel.input
+        query =
+            let
+                qstr =
+                    model.queryModel.input
+
+                bm =
+                    Comp.BookmarkDropdown.getSelectedId model.bookmarkDropdown
+            in
+            case ( qstr, bm ) of
+                ( Just _, Just _ ) ->
+                    Result.Ok ( qstr, bm )
+
+                ( Just _, Nothing ) ->
+                    Result.Ok ( qstr, bm )
+
+                ( Nothing, Just _ ) ->
+                    Result.Ok ( qstr, bm )
+
+                ( Nothing, Nothing ) ->
+                    Result.Err ValidateQueryStringRequired
 
         channelM =
             Result.fromMaybe
                 ValidateChannelRequired
                 (Comp.ChannelForm.getChannel model.channelModel)
 
-        make timer channel query =
+        make timer channel q =
             { prev
                 | enabled = model.enabled
                 , schedule = Data.CalEvent.makeEvent timer
                 , summary = model.summary
                 , channel = channel
-                , query = query
+                , query = Tuple.first q
+                , bookmark = Tuple.second q
             }
     in
     Result.map3 make
         schedule_
         channelM
-        queryString
+        query
 
 
 withValidSettings : (PeriodicQuerySettings -> Action) -> Model -> UpdateResult
@@ -254,6 +286,17 @@ update flags msg model =
             { model = { model | channelModel = cfm }
             , action = NoAction
             , cmd = Cmd.map ChannelMsg cfc
+            , sub = Sub.none
+            }
+
+        BookmarkMsg lm ->
+            let
+                ( bm, bc ) =
+                    Comp.BookmarkDropdown.update lm model.bookmarkDropdown
+            in
+            { model = { model | bookmarkDropdown = bm }
+            , action = NoAction
+            , cmd = Cmd.map BookmarkMsg bc
             , sub = Sub.none
             }
 
@@ -344,9 +387,14 @@ view texts extraClasses settings model =
                     (Comp.PowerSearchInput.viewResult [] model.queryModel)
                 ]
 
-        formHeader txt =
+        formHeader txt req =
             h2 [ class S.formHeader, class "mt-2" ]
                 [ text txt
+                , if req then
+                    B.inputRequired
+
+                  else
+                    span [] []
                 ]
     in
     div
@@ -438,23 +486,29 @@ view texts extraClasses settings model =
                 ]
             ]
         , div [ class "mb-4" ]
-            [ formHeader (texts.channelHeader (Comp.ChannelForm.channelType model.channelModel))
+            [ formHeader (texts.channelHeader (Comp.ChannelForm.channelType model.channelModel)) False
             , Html.map ChannelMsg
                 (Comp.ChannelForm.view texts.channelForm settings model.channelModel)
             ]
         , div [ class "mb-4" ]
-            [ formHeader texts.queryLabel
-            , label
-                [ for "sharequery"
-                , class S.inputLabel
+            [ formHeader texts.queryLabel True
+            , div [ class "mb-3" ]
+                [ label [ class S.inputLabel ]
+                    [ text "Bookmark" ]
+                , Html.map BookmarkMsg (Comp.BookmarkDropdown.view texts.bookmarkDropdown settings model.bookmarkDropdown)
                 ]
-                [ text texts.queryLabel
-                , B.inputRequired
+            , div [ class "mb-3" ]
+                [ label
+                    [ for "sharequery"
+                    , class S.inputLabel
+                    ]
+                    [ text texts.queryLabel
+                    ]
+                , queryInput
                 ]
-            , queryInput
             ]
         , div [ class "mb-4" ]
-            [ formHeader texts.schedule
+            [ formHeader texts.schedule False
             , label [ class S.inputLabel ]
                 [ text texts.schedule
                 , B.inputRequired

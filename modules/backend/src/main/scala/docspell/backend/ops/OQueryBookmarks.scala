@@ -20,6 +20,8 @@ trait OQueryBookmarks[F[_]] {
 
   def getAll(account: AccountId): F[Vector[OQueryBookmarks.Bookmark]]
 
+  def findOne(account: AccountId, nameOrId: String): F[Option[OQueryBookmarks.Bookmark]]
+
   def create(account: AccountId, bookmark: OQueryBookmarks.NewBookmark): F[AddResult]
 
   def update(
@@ -53,9 +55,15 @@ object OQueryBookmarks {
       def getAll(account: AccountId): F[Vector[Bookmark]] =
         store
           .transact(RQueryBookmark.allForUser(account))
-          .map(
-            _.map(r => Bookmark(r.id, r.name, r.label, r.query, r.isPersonal, r.created))
-          )
+          .map(_.map(convert.toModel))
+
+      def findOne(
+          account: AccountId,
+          nameOrId: String
+      ): F[Option[OQueryBookmarks.Bookmark]] =
+        store
+          .transact(RQueryBookmark.findByNameOrId(account, nameOrId))
+          .map(_.map(convert.toModel))
 
       def create(account: AccountId, b: NewBookmark): F[AddResult] = {
         val record =
@@ -65,23 +73,28 @@ object OQueryBookmarks {
 
       def update(account: AccountId, id: Ident, b: NewBookmark): F[UpdateResult] =
         UpdateResult.fromUpdate(
-          store.transact(
-            RQueryBookmark.update(
-              RQueryBookmark(
-                id,
-                b.name,
-                b.label,
-                None, // userId and some other values are not used
-                account.collective,
-                b.query,
-                Timestamp.Epoch
-              )
-            )
-          )
+          store.transact(RQueryBookmark.update(convert.toRecord(account, id, b)))
         )
 
       def delete(account: AccountId, bookmark: Ident): F[Unit] =
         store.transact(RQueryBookmark.deleteById(account.collective, bookmark)).as(())
-
     })
+
+  private object convert {
+
+    def toModel(r: RQueryBookmark): Bookmark =
+      Bookmark(r.id, r.name, r.label, r.query, r.isPersonal, r.created)
+
+    def toRecord(account: AccountId, id: Ident, b: NewBookmark): RQueryBookmark =
+      RQueryBookmark(
+        id,
+        b.name,
+        b.label,
+        None, // userId and some other values are not used
+        account.collective,
+        b.query,
+        Timestamp.Epoch
+      )
+
+  }
 }

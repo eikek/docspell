@@ -8037,12 +8037,12 @@ extraSchemas:
 
   PeriodicQuerySettings:
     description: |
-      Settings for the periodc-query task.
+      Settings for the periodc-query task. At least one of `query` and
+      `bookmark` is required!
     required:
       - id
       - enabled
       - channel
-      - query
       - schedule
     properties:
       id:
@@ -8065,6 +8065,10 @@ extraSchemas:
       query:
         type: string
         format: itemquery
+      bookmark:
+        type: string
+        description: |
+          Name or ID of bookmark to use. 
 
   PeriodicDueItemsSettings:
     description: |

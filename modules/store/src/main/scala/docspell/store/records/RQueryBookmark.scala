@@ -11,12 +11,12 @@ import cats.syntax.all._
 
 import docspell.common._
 import docspell.query.ItemQuery
+import docspell.store.AddResult
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
-import docspell.store.AddResult
 
 final case class RQueryBookmark(
     id: Ident,
@@ -152,5 +152,26 @@ object RQueryBookmark {
       from(bm),
       bm.cid === account.collective && (bm.userId.isNull || bm.userId.in(users))
     ).build.query[RQueryBookmark].to[Vector]
+  }
+
+  def findByNameOrId(
+      account: AccountId,
+      nameOrId: String
+  ): ConnectionIO[Option[RQueryBookmark]] = {
+    val user = RUser.as("u")
+    val bm = RQueryBookmark.as("bm")
+
+    val users = Select(
+      user.uid.s,
+      from(user),
+      user.cid === account.collective && user.login === account.user
+    )
+    Select(
+      select(bm.all),
+      from(bm),
+      bm.cid === account.collective &&
+        (bm.userId.isNull || bm.userId.in(users)) &&
+        (bm.name === nameOrId || bm.id ==== nameOrId)
+    ).build.query[RQueryBookmark].option
   }
 }
