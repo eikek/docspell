@@ -62,7 +62,7 @@ object PeriodicQueryTask {
   private def queryString(q: ItemQuery.Expr) =
     ItemQueryParser.asString(q)
 
-  def makeQuery[F[_]: Sync](ctx: Context[F, Args])(cont: Query => F[Unit]): F[Unit] = {
+  def withQuery[F[_]: Sync](ctx: Context[F, Args])(cont: Query => F[Unit]): F[Unit] = {
     def fromBookmark(id: String) =
       ctx.store
         .transact(RQueryBookmark.findByNameOrId(ctx.args.account, id))
@@ -82,7 +82,7 @@ object PeriodicQueryTask {
     def fromBookmarkOrShare(id: String) =
       OptionT(fromBookmark(id)).orElse(OptionT(fromShare(id))).value
 
-    def withQuery(bm: Option[ItemQuery], str: String): F[Unit] =
+    def runQuery(bm: Option[ItemQuery], str: String): F[Unit] =
       ItemQueryParser.parse(str) match {
         case Right(q) =>
           val expr = bm.map(b => AndExpr(Nel.of(b.expr, q.expr))).getOrElse(q.expr)
@@ -98,7 +98,7 @@ object PeriodicQueryTask {
     (ctx.args.bookmark, ctx.args.query) match {
       case (Some(bm), Some(qstr)) =>
         ctx.logger.debug(s"Using bookmark $bm and query $qstr") *>
-          fromBookmarkOrShare(bm).flatMap(bq => withQuery(bq, qstr.query))
+          fromBookmarkOrShare(bm).flatMap(bq => runQuery(bq, qstr.query))
 
       case (Some(bm), None) =>
         fromBookmarkOrShare(bm).flatMap {
@@ -113,7 +113,7 @@ object PeriodicQueryTask {
         }
 
       case (None, Some(qstr)) =>
-        ctx.logger.debug(s"Using query: ${qstr.query}") *> withQuery(None, qstr.query)
+        ctx.logger.debug(s"Using query: ${qstr.query}") *> runQuery(None, qstr.query)
 
       case (None, None) =>
         ctx.logger.error(s"No query provided for task $taskName!")
@@ -123,7 +123,7 @@ object PeriodicQueryTask {
   def withItems[F[_]: Sync](ctx: Context[F, Args], limit: Int, now: Timestamp)(
       cont: Vector[ListItem] => F[Unit]
   ): F[Unit] =
-    makeQuery(ctx) { query =>
+    withQuery(ctx) { query =>
       val items = ctx.store
         .transact(QItem.findItems(query, now.toUtcDate, 0, Batch.limit(limit)))
         .compile
