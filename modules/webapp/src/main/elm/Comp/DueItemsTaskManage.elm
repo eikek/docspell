@@ -238,7 +238,7 @@ view2 texts settings model =
     div [ class "flex flex-col" ]
         (div
             [ classList
-                [ ( S.errorMessage, model.formState /= FormStateInitial )
+                [ ( S.errorMessage, not (isSuccess model.formState) )
                 , ( S.successMessage, isSuccess model.formState )
                 , ( "hidden", model.formState == FormStateInitial )
                 ]

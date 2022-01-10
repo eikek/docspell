@@ -30,7 +30,7 @@ import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Messages.Comp.PeriodicQueryTaskForm exposing (Texts)
 import Styles as S
@@ -48,6 +48,7 @@ type alias Model =
     , bookmarkDropdown : Comp.BookmarkDropdown.Model
     , formState : FormState
     , loading : Int
+    , deleteRequested : Bool
     }
 
 
@@ -82,6 +83,8 @@ type Msg
     | Cancel
     | RequestDelete
     | SetSummary String
+    | DeleteTaskNow String
+    | CancelDelete
 
 
 initWith : Flags -> PeriodicQuerySettings -> ( Model, Cmd Msg )
@@ -115,6 +118,7 @@ initWith flags s =
       , formState = FormStateInitial
       , loading = 0
       , summary = s.summary
+      , deleteRequested = False
       }
     , Cmd.batch
         [ Cmd.map CalEventMsg sc
@@ -150,6 +154,7 @@ init flags ct =
       , formState = FormStateInitial
       , loading = 0
       , summary = Nothing
+      , deleteRequested = False
       }
     , Cmd.batch
         [ Cmd.map CalEventMsg scmd
@@ -194,17 +199,11 @@ makeSettings model =
                     Comp.BookmarkDropdown.getSelectedId model.bookmarkDropdown
             in
             case ( qstr, bm ) of
-                ( Just _, Just _ ) ->
-                    Result.Ok ( qstr, bm )
-
-                ( Just _, Nothing ) ->
-                    Result.Ok ( qstr, bm )
-
-                ( Nothing, Just _ ) ->
-                    Result.Ok ( qstr, bm )
-
                 ( Nothing, Nothing ) ->
                     Result.Err ValidateQueryStringRequired
+
+                ( _, _ ) ->
+                    Result.Ok ( qstr, bm )
 
         channelM =
             Result.fromMaybe
@@ -329,7 +328,21 @@ update flags msg model =
             }
 
         RequestDelete ->
-            { model = model
+            { model = { model | deleteRequested = True }
+            , action = NoAction
+            , cmd = Cmd.none
+            , sub = Sub.none
+            }
+
+        DeleteTaskNow id ->
+            { model = { model | deleteRequested = False }
+            , action = DeleteAction id
+            , cmd = Cmd.none
+            , sub = Sub.none
+            }
+
+        CancelDelete ->
+            { model = { model | deleteRequested = False }
             , action = NoAction
             , cmd = Cmd.none
             , sub = Sub.none
@@ -405,6 +418,31 @@ view texts extraClasses settings model =
             { active = model.loading > 0
             , label = texts.basics.loading
             }
+        , B.contentDimmer
+            model.deleteRequested
+            (div [ class "flex flex-col" ]
+                [ div [ class "text-lg" ]
+                    [ i [ class "fa fa-info-circle mr-2" ] []
+                    , text texts.reallyDeleteTask
+                    ]
+                , div [ class "mt-4 flex flex-row items-center" ]
+                    [ B.deleteButton
+                        { label = texts.basics.yes
+                        , icon = "fa fa-check"
+                        , disabled = False
+                        , handler = onClick (DeleteTaskNow model.settings.id)
+                        , attrs = [ href "#" ]
+                        }
+                    , B.secondaryButton
+                        { label = texts.basics.no
+                        , icon = "fa fa-times"
+                        , disabled = False
+                        , handler = onClick CancelDelete
+                        , attrs = [ href "#", class "ml-2" ]
+                        }
+                    ]
+                ]
+            )
         , MB.view
             { start =
                 [ MB.PrimaryButton
