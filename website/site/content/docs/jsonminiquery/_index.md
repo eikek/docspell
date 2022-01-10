@@ -140,8 +140,8 @@ list. When using `&`, results are only concatenated if all lists are
 not empty; otherwise the result is the empty list.
 
 This example filters all `count` equal to `6` and all `name` equal to
-`max`. Since there are now `count`s with value `6`, the final result
-is empty.
+`max`. Since there are no `count`s with value `6`, the final result is
+empty.
 
 ```
 query: [count=6 & name=max]
