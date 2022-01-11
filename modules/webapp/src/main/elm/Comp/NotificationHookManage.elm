@@ -277,7 +277,7 @@ viewState : Texts -> Model -> Html Msg
 viewState texts model =
     div
         [ classList
-            [ ( S.errorMessage, model.formState /= FormStateInitial )
+            [ ( S.errorMessage, not (isSuccess model.formState) )
             , ( S.successMessage, isSuccess model.formState )
             , ( "hidden", model.formState == FormStateInitial )
             ]
