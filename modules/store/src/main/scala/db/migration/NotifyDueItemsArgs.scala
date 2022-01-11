@@ -17,6 +17,9 @@ import io.circe.generic.semiauto._
   *
   * If the structure changes, there must be some database migration to update or remove
   * the json data of the corresponding task.
+  *
+  * @deprecated note: This has been removed and copied to this place to be able to
+  * migrate away from this structure. Replaced by PeriodicDueItemsArgs
   */
 case class NotifyDueItemsArgs(
     account: AccountId,
