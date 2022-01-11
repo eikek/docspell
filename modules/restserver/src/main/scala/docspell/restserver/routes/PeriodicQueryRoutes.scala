@@ -144,7 +144,8 @@ object PeriodicQueryRoutes extends MailAddressCodec {
             Right(channel),
             qstr,
             settings.bookmark,
-            Some(baseUrl / "app" / "item")
+            Some(baseUrl / "app" / "item"),
+            settings.contentStart
           )
         )
       }
@@ -167,6 +168,7 @@ object PeriodicQueryRoutes extends MailAddressCodec {
       ch,
       task.args.query.map(_.query).map(ItemQueryParser.parseUnsafe),
       task.args.bookmark,
+      task.args.contentStart,
       task.timer
     )
 }

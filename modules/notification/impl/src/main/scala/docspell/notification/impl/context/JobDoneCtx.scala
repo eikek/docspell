@@ -23,7 +23,9 @@ final case class JobDoneCtx(event: Event.JobDone, data: JobDoneCtx.Data)
   val content = data.asJson
 
   val titleTemplate = Right(mustache"{{eventType}} (by *{{account.user}}*)")
-  val bodyTemplate = Right(mustache"""{{#content}}_'{{subject}}'_ finished {{/content}}""")
+  val bodyTemplate = Right(
+    mustache"""{{#content}}_'{{subject}}'_ finished {{/content}}"""
+  )
 }
 
 object JobDoneCtx {

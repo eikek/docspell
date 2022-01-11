@@ -46,6 +46,7 @@ type alias Model =
     , queryModel : Comp.PowerSearchInput.Model
     , channelModel : Comp.ChannelForm.Model
     , bookmarkDropdown : Comp.BookmarkDropdown.Model
+    , contentStart : Maybe String
     , formState : FormState
     , loading : Int
     , deleteRequested : Bool
@@ -79,6 +80,7 @@ type Msg
     | QueryMsg Comp.PowerSearchInput.Msg
     | ChannelMsg Comp.ChannelForm.Msg
     | BookmarkMsg Comp.BookmarkDropdown.Msg
+    | SetContentStart String
     | StartOnce
     | Cancel
     | RequestDelete
@@ -115,6 +117,7 @@ initWith flags s =
       , queryModel = res.model
       , channelModel = cfm
       , bookmarkDropdown = bm
+      , contentStart = Nothing
       , formState = FormStateInitial
       , loading = 0
       , summary = s.summary
@@ -151,6 +154,7 @@ init flags ct =
       , queryModel = Comp.PowerSearchInput.init
       , channelModel = cfm
       , bookmarkDropdown = bm
+      , contentStart = Nothing
       , formState = FormStateInitial
       , loading = 0
       , summary = Nothing
@@ -218,6 +222,7 @@ makeSettings model =
                 , channel = channel
                 , query = Tuple.first q
                 , bookmark = Tuple.second q
+                , contentStart = model.contentStart
             }
     in
     Result.map3 make
@@ -296,6 +301,13 @@ update flags msg model =
             { model = { model | bookmarkDropdown = bm }
             , action = NoAction
             , cmd = Cmd.map BookmarkMsg bc
+            , sub = Sub.none
+            }
+
+        SetContentStart str ->
+            { model = { model | contentStart = Util.Maybe.fromString str }
+            , action = NoAction
+            , cmd = Cmd.none
             , sub = Sub.none
             }
 
@@ -543,6 +555,22 @@ view texts extraClasses settings model =
                     [ text texts.queryLabel
                     ]
                 , queryInput
+                ]
+            ]
+        , div [ class "mb-4" ]
+            [ formHeader texts.messageContentTitle False
+            , label [ class S.inputLabel ]
+                [ text texts.messageContentLabel
+                ]
+            , textarea
+                [ onInput SetContentStart
+                , Maybe.withDefault "" model.contentStart |> value
+                , placeholder texts.messageContentPlaceholder
+                , class S.textAreaInput
+                ]
+                []
+            , span [ class "text-sm opacity-75" ]
+                [ text texts.messageContentInfo
                 ]
             ]
         , div [ class "mb-4" ]

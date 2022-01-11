@@ -19,39 +19,29 @@ import doobie._
 import io.circe.Encoder
 import io.circe.syntax._
 import yamusca.implicits._
+import yamusca.imports._
 
 final case class ItemSelectionCtx(event: Event.ItemSelection, data: ItemSelectionCtx.Data)
     extends AbstractEventContext {
-
   val content = data.asJson
 
   val titleTemplate = Right(mustache"Your items")
-  val bodyTemplate = Right(mustache"""
-Hello {{{ content.username }}},
+  val bodyTemplate = event.contentStart match {
+    case Some(cnt) =>
+      mustache
+        .parse(cnt)
+        .leftMap { case (in, err) =>
+          s"Error parsing template: $err! Near ${in.pos}: ${in.raw}."
+        }
+        .map(start => start ++ ItemSelectionCtx.basicBody)
 
-this is Docspell informing you about your next items.
+    case None =>
+      Right(ItemSelectionCtx.basicBodyStart ++ ItemSelectionCtx.basicBody)
+  }
 
-{{#content}}
-{{#itemUrl}}
-{{#items}}
-- {{#overDue}}**(OVERDUE)** {{/overDue}}[{{name}}]({{itemUrl}}/{{id}}){{#dueDate}}, {{#overDue}}was {{/overDue}}due {{dueIn}} on *{{dueDate}}*{{/dueDate}}; {{#corrOrg}}from {{corrOrg}}{{/corrOrg}} received on {{date}} via {{source}}
-{{/items}}
-{{/itemUrl}}
-{{^itemUrl}}
-{{#items}}
-- {{#overDue}}**(OVERDUE)** {{/overDue}}*{{name}}*{{#dueDate}}, {{#overDue}}was {{/overDue}}due {{dueIn}} on *{{dueDate}}*{{/dueDate}}; {{#corrOrg}}from {{corrOrg}}{{/corrOrg}} received on {{date}} via {{source}}
-{{/items}}
-{{/itemUrl}}
-{{#more}}
-- … more have been left out for brevity
-{{/more}}
-{{/content}}
-
-
-Sincerely yours,
-
-Docspell
-""")
+  implicit final class TemplateOps(self: Template) {
+    def ++(next: Template) = Template(self.els ++ next.els)
+  }
 }
 
 object ItemSelectionCtx {
@@ -113,4 +103,26 @@ object ItemSelectionCtx {
         account.user.id
       )
   }
+
+  private val basicBodyStart = mustache"""
+Hello {{{ content.username }}},
+
+this is Docspell informing you about your next items."""
+
+  private val basicBody = mustache"""
+{{#content}}
+{{#itemUrl}}
+{{#items}}
+- {{#overDue}}**(OVERDUE)** {{/overDue}}[{{name}}]({{itemUrl}}/{{id}}){{#dueDate}}, {{#overDue}}was {{/overDue}}due {{dueIn}} on *{{dueDate}}*{{/dueDate}}; {{#corrOrg}}from {{corrOrg}}{{/corrOrg}} received on {{date}} via {{source}}
+{{/items}}
+{{/itemUrl}}
+{{^itemUrl}}
+{{#items}}
+- {{#overDue}}**(OVERDUE)** {{/overDue}}*{{name}}*{{#dueDate}}, {{#overDue}}was {{/overDue}}due {{dueIn}} on *{{dueDate}}*{{/dueDate}}; {{#corrOrg}}from {{corrOrg}}{{/corrOrg}} received on {{date}} via {{source}}
+{{/items}}
+{{/itemUrl}}
+{{#more}}
+- … more have been left out for brevity
+{{/more}}
+{{/content}}"""
 }

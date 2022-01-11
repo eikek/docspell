@@ -143,6 +143,7 @@ object PeriodicQueryTask {
       ctx.args.account,
       ctx.args.baseUrl,
       items,
+      ctx.args.contentStart,
       limit,
       now
     )(cont)

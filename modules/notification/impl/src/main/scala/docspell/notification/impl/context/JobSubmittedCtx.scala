@@ -24,7 +24,9 @@ final case class JobSubmittedCtx(event: Event.JobSubmitted, data: JobSubmittedCt
 
   val titleTemplate = Right(mustache"{{eventType}} (by *{{account.user}}*)")
   val bodyTemplate =
-    Right(mustache"""{{#content}}_'{{subject}}'_ submitted by {{submitter}} {{/content}}""")
+    Right(
+      mustache"""{{#content}}_'{{subject}}'_ submitted by {{submitter}} {{/content}}"""
+    )
 }
 
 object JobSubmittedCtx {

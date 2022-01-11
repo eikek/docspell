@@ -23,6 +23,7 @@ final case class PeriodicQuerySettings(
     channel: NotificationChannel,
     query: Option[ItemQuery],
     bookmark: Option[String],
+    contentStart: Option[String],
     schedule: CalEvent
 ) {}
 

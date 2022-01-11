@@ -28,7 +28,9 @@ final case class TagsChangedCtx(event: Event.TagsChanged, data: TagsChangedCtx.D
 
   val titleTemplate = Right(mustache"{{eventType}} (by *{{account.user}}*)")
   val bodyTemplate =
-    Right(mustache"""{{#content}}{{#added}}{{#-first}}Adding {{/-first}}{{^-first}}, {{/-first}}*{{name}}*{{/added}}{{#removed}}{{#added}}{{#-first}};{{/-first}}{{/added}}{{#-first}} Removing {{/-first}}{{^-first}}, {{/-first}}*{{name}}*{{/removed}} on {{#items}}{{^-first}}, {{/-first}}{{#itemUrl}}[`{{name}}`]({{{itemUrl}}}/{{{id}}}){{/itemUrl}}{{^itemUrl}}`{{name}}`{{/itemUrl}}{{/items}}.{{/content}}""")
+    Right(
+      mustache"""{{#content}}{{#added}}{{#-first}}Adding {{/-first}}{{^-first}}, {{/-first}}*{{name}}*{{/added}}{{#removed}}{{#added}}{{#-first}};{{/-first}}{{/added}}{{#-first}} Removing {{/-first}}{{^-first}}, {{/-first}}*{{name}}*{{/removed}} on {{#items}}{{^-first}}, {{/-first}}{{#itemUrl}}[`{{name}}`]({{{itemUrl}}}/{{{id}}}){{/itemUrl}}{{^itemUrl}}`{{name}}`{{/itemUrl}}{{/items}}.{{/content}}"""
+    )
 }
 
 object TagsChangedCtx {

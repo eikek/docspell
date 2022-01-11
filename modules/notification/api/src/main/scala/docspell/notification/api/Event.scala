@@ -148,7 +148,8 @@ object Event {
       account: AccountId,
       items: Nel[Ident],
       more: Boolean,
-      baseUrl: Option[LenientUri]
+      baseUrl: Option[LenientUri],
+      contentStart: Option[String]
   ) extends Event {
     val eventType = ItemSelection
   }
@@ -161,7 +162,7 @@ object Event {
       for {
         id1 <- Ident.randomId[F]
         id2 <- Ident.randomId[F]
-      } yield ItemSelection(account, Nel.of(id1, id2), true, baseUrl)
+      } yield ItemSelection(account, Nel.of(id1, id2), true, baseUrl, None)
   }
 
   /** Event when a new job is added to the queue */

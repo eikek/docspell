@@ -1,7 +1,14 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.notification.impl
 
-import docspell.notification.api.EventContext
 import docspell.common.Logger
+import docspell.notification.api.EventContext
+
 import io.circe.Json
 
 trait EventContextSyntax {
@@ -21,7 +28,9 @@ trait EventContextSyntax {
         case Left(err) => logError(logger)(err)
       }
 
-    def withDefaultBoth[F[_]](logger: Logger[F])(f: (String, String) => F[Unit]): F[Unit] =
+    def withDefaultBoth[F[_]](
+        logger: Logger[F]
+    )(f: (String, String) => F[Unit]): F[Unit] =
       (for {
         md <- self.defaultBoth
         html <- self.defaultBothHtml

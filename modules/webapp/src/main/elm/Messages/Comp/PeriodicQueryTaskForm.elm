@@ -42,6 +42,10 @@ type alias Texts =
     , channelRequired : String
     , queryStringRequired : String
     , channelHeader : ChannelType -> String
+    , messageContentTitle : String
+    , messageContentLabel : String
+    , messageContentInfo : String
+    , messageContentPlaceholder : String
     }
 
 
@@ -71,6 +75,10 @@ gb =
     , channelRequired = "A valid channel must be given."
     , queryStringRequired = "A query string and/or bookmark must be supplied"
     , channelHeader = \ct -> "Connection details for " ++ Messages.Data.ChannelType.gb ct
+    , messageContentTitle = "Customize message"
+    , messageContentLabel = "Beginning of message"
+    , messageContentInfo = "Insert text that is prependend to the generated message."
+    , messageContentPlaceholder = "Hello, this is Docspell informing you about new items …"
     }
 
 
@@ -100,4 +108,8 @@ de =
     , channelRequired = "Ein Versandkanal muss angegeben werden."
     , queryStringRequired = "Eine Suchabfrage und/oder ein Bookmark muss angegeben werden."
     , channelHeader = \ct -> "Details für " ++ Messages.Data.ChannelType.de ct
+    , messageContentTitle = "Nachricht anpassen"
+    , messageContentLabel = "Anfang der Nachricht"
+    , messageContentInfo = "Dieser Text wird an den Anfang der generierten Nachricht angefügt."
+    , messageContentPlaceholder = "Hallo, hier ist Docspell mit den nächsten Themen …"
     }

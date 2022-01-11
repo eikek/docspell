@@ -30,7 +30,9 @@ final case class SetFieldValueCtx(event: Event.SetFieldValue, data: SetFieldValu
 
   val titleTemplate = Right(mustache"{{eventType}} (by *{{account.user}}*)")
   val bodyTemplate =
-    Right(mustache"""{{#content}}{{#field.label}}*{{field.label}}* {{/field.label}}{{^field.label}}*{{field.name}}* {{/field.label}} was set to '{{value}}' on {{#items}}{{^-first}}, {{/-first}}{{#itemUrl}}[`{{name}}`]({{{itemUrl}}}/{{{id}}}){{/itemUrl}}{{^itemUrl}}`{{name}}`{{/itemUrl}}{{/items}}.{{/content}}""")
+    Right(
+      mustache"""{{#content}}{{#field.label}}*{{field.label}}* {{/field.label}}{{^field.label}}*{{field.name}}* {{/field.label}} was set to '{{value}}' on {{#items}}{{^-first}}, {{/-first}}{{#itemUrl}}[`{{name}}`]({{{itemUrl}}}/{{{id}}}){{/itemUrl}}{{^itemUrl}}`{{name}}`{{/itemUrl}}{{/items}}.{{/content}}"""
+    )
 
 }
 

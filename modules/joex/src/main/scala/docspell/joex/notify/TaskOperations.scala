@@ -45,6 +45,7 @@ trait TaskOperations {
       account: AccountId,
       baseUrl: Option[LenientUri],
       items: Vector[ListItem],
+      contentStart: Option[String],
       limit: Int,
       now: Timestamp
   )(cont: EventContext => F[Unit]): F[Unit] =
@@ -52,7 +53,7 @@ trait TaskOperations {
       case Some(nel) =>
         val more = items.size >= limit
         val eventCtx = ItemSelectionCtx(
-          Event.ItemSelection(account, nel.map(_.id), more, baseUrl),
+          Event.ItemSelection(account, nel.map(_.id), more, baseUrl, contentStart),
           ItemSelectionCtx.Data
             .create(account, items, baseUrl, more, now)
         )
