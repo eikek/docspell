@@ -25,8 +25,8 @@ final case class ItemSelectionCtx(event: Event.ItemSelection, data: ItemSelectio
 
   val content = data.asJson
 
-  val titleTemplate = mustache"Your items"
-  val bodyTemplate = mustache"""
+  val titleTemplate = Right(mustache"Your items")
+  val bodyTemplate = Right(mustache"""
 Hello {{{ content.username }}},
 
 this is Docspell informing you about your next items.
@@ -51,7 +51,7 @@ this is Docspell informing you about your next items.
 Sincerely yours,
 
 Docspell
-"""
+""")
 }
 
 object ItemSelectionCtx {
@@ -113,5 +113,4 @@ object ItemSelectionCtx {
         account.user.id
       )
   }
-
 }
