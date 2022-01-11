@@ -326,7 +326,7 @@ defaultMenuBar texts flags settings model =
 
                             else
                                 i [ class "fa fa-square font-thin" ] []
-                      , disabled = False
+                      , disabled = List.length model.itemListModel.results.groups <= 1
                       , label = texts.showItemGroups
                       , attrs =
                             [ href "#"
