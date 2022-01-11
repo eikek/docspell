@@ -106,6 +106,7 @@ object PeriodicDueItemsTask {
       ctx.args.account,
       ctx.args.baseUrl,
       items,
+      None,
       limit,
       now
     )(cont)

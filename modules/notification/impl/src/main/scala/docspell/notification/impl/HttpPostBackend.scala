@@ -21,16 +21,18 @@ final class HttpPostBackend[F[_]: Async](
     channel: NotificationChannel.HttpPost,
     client: Client[F],
     logger: Logger[F]
-) extends NotificationBackend[F] {
+) extends NotificationBackend[F]
+    with EventContextSyntax {
 
   val dsl = new Http4sDsl[F] with Http4sClientDsl[F] {}
   import dsl._
   import org.http4s.circe.CirceEntityCodec._
 
-  def send(event: EventContext): F[Unit] = {
-    val url = Uri.unsafeFromString(channel.url.asString)
-    val req = POST(event.asJsonWithMessage, url).putHeaders(channel.headers.toList)
-    logger.debug(s"$channel sending request: $req") *>
-      HttpSend.sendRequest(client, req, channel, logger)
-  }
+  def send(event: EventContext): F[Unit] =
+    event.withJsonMessage(logger) { json =>
+      val url = Uri.unsafeFromString(channel.url.asString)
+      val req = POST(json, url).putHeaders(channel.headers.toList)
+      logger.debug(s"$channel sending request: $req") *>
+        HttpSend.sendRequest(client, req, channel, logger)
+    }
 }

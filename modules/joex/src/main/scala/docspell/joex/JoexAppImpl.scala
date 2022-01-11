@@ -172,13 +172,6 @@ object JoexAppImpl extends MailAddressCodec {
         )
         .withTask(
           JobTask.json(
-            NotifyDueItemsArgs.taskName,
-            NotifyDueItemsTask[F](cfg.sendMail, javaEmil),
-            NotifyDueItemsTask.onCancel[F]
-          )
-        )
-        .withTask(
-          JobTask.json(
             ScanMailboxArgs.taskName,
             ScanMailboxTask[F](cfg.userTasks.scanMailbox, javaEmil, upload, joex),
             ScanMailboxTask.onCancel[F]

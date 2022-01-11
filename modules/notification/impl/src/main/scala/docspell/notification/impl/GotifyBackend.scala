@@ -23,27 +23,29 @@ final class GotifyBackend[F[_]: Async](
     channel: NotificationChannel.Gotify,
     client: Client[F],
     logger: Logger[F]
-) extends NotificationBackend[F] {
+) extends NotificationBackend[F]
+    with EventContextSyntax {
 
   val dsl = new Http4sDsl[F] with Http4sClientDsl[F] {}
   import dsl._
 
-  def send(event: EventContext): F[Unit] = {
-    val url = Uri.unsafeFromString((channel.url / "message").asString)
-    val req = POST(
-      Json.obj(
-        "title" -> Json.fromString(event.defaultTitle),
-        "message" -> Json.fromString(event.defaultBody),
-        "extras" -> Json.obj(
-          "client::display" -> Json.obj(
-            "contentType" -> Json.fromString("text/markdown")
+  def send(event: EventContext): F[Unit] =
+    event.withDefault(logger) { (title, body) =>
+      val url = Uri.unsafeFromString((channel.url / "message").asString)
+      val req = POST(
+        Json.obj(
+          "title" -> Json.fromString(title),
+          "message" -> Json.fromString(body),
+          "extras" -> Json.obj(
+            "client::display" -> Json.obj(
+              "contentType" -> Json.fromString("text/markdown")
+            )
           )
-        )
-      ),
-      url
-    )
-      .putHeaders("X-Gotify-Key" -> channel.appKey.pass)
-    logger.debug(s"Seding request: $req") *>
-      HttpSend.sendRequest(client, req, channel, logger)
-  }
+        ),
+        url
+      )
+        .putHeaders("X-Gotify-Key" -> channel.appKey.pass)
+      logger.debug(s"Seding request: $req") *>
+        HttpSend.sendRequest(client, req, channel, logger)
+    }
 }

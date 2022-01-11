@@ -31,30 +31,33 @@ trait EventContext {
       "content" -> content
     )
 
-  def defaultTitle: String
-  def defaultTitleHtml: String
+  def defaultTitle: Either[String, String]
+  def defaultTitleHtml: Either[String, String]
 
-  def defaultBody: String
-  def defaultBodyHtml: String
+  def defaultBody: Either[String, String]
+  def defaultBodyHtml: Either[String, String]
 
-  def defaultBoth: String
-  def defaultBothHtml: String
+  def defaultBoth: Either[String, String]
+  def defaultBothHtml: Either[String, String]
 
-  lazy val asJsonWithMessage: Json = {
-    val data = asJson
-    val msg = Json.obj(
-      "message" -> Json.obj(
-        "title" -> defaultTitle.asJson,
-        "body" -> defaultBody.asJson
-      ),
-      "messageHtml" -> Json.obj(
-        "title" -> defaultTitleHtml.asJson,
-        "body" -> defaultBodyHtml.asJson
+  lazy val asJsonWithMessage: Either[String, Json] =
+    for {
+      tt1 <- defaultTitle
+      tb1 <- defaultBody
+      tt2 <- defaultTitleHtml
+      tb2 <- defaultBodyHtml
+      data = asJson
+      msg = Json.obj(
+        "message" -> Json.obj(
+          "title" -> tt1.asJson,
+          "body" -> tb1.asJson
+        ),
+        "messageHtml" -> Json.obj(
+          "title" -> tt2.asJson,
+          "body" -> tb2.asJson
+        )
       )
-    )
-
-    data.withObject(o1 => msg.withObject(o2 => o1.deepMerge(o2).asJson))
-  }
+    } yield data.withObject(o1 => msg.withObject(o2 => o1.deepMerge(o2).asJson))
 }
 
 object EventContext {
@@ -62,12 +65,12 @@ object EventContext {
     new EventContext {
       val event = ev
       def content = Json.obj()
-      def defaultTitle = ""
-      def defaultTitleHtml = ""
-      def defaultBody = ""
-      def defaultBodyHtml = ""
-      def defaultBoth: String = ""
-      def defaultBothHtml: String = ""
+      def defaultTitle = Right("")
+      def defaultTitleHtml = Right("")
+      def defaultBody = Right("")
+      def defaultBodyHtml = Right("")
+      def defaultBoth = Right("")
+      def defaultBothHtml = Right("")
     }
 
   /** For an event, the context can be created that is usually amended with more

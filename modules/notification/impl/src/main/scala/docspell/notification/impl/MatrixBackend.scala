@@ -20,26 +20,28 @@ final class MatrixBackend[F[_]: Async](
     channel: NotificationChannel.Matrix,
     client: Client[F],
     logger: Logger[F]
-) extends NotificationBackend[F] {
+) extends NotificationBackend[F]
+    with EventContextSyntax {
 
   val dsl = new Http4sDsl[F] with Http4sClientDsl[F] {}
   import dsl._
   import org.http4s.circe.CirceEntityCodec._
 
-  def send(event: EventContext): F[Unit] = {
-    val url =
-      (channel.homeServer / "_matrix" / "client" / "r0" / "rooms" / channel.roomId / "send" / "m.room.message")
-        .withQuery("access_token", channel.accessToken.pass)
-    val uri = Uri.unsafeFromString(url.asString)
-    val req = POST(
-      Map(
-        "msgtype" -> channel.messageType,
-        "format" -> "org.matrix.custom.html",
-        "formatted_body" -> event.defaultBothHtml,
-        "body" -> event.defaultBoth
-      ),
-      uri
-    )
-    HttpSend.sendRequest(client, req, channel, logger)
-  }
+  def send(event: EventContext): F[Unit] =
+    event.withDefaultBoth(logger) { (md, html) =>
+      val url =
+        (channel.homeServer / "_matrix" / "client" / "r0" / "rooms" / channel.roomId / "send" / "m.room.message")
+          .withQuery("access_token", channel.accessToken.pass)
+      val uri = Uri.unsafeFromString(url.asString)
+      val req = POST(
+        Map(
+          "msgtype" -> channel.messageType,
+          "format" -> "org.matrix.custom.html",
+          "formatted_body" -> html,
+          "body" -> md
+        ),
+        uri
+      )
+      HttpSend.sendRequest(client, req, channel, logger)
+    }
 }

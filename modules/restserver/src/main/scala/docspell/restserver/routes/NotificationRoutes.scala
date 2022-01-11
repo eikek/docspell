@@ -162,7 +162,11 @@ object NotificationRoutes {
           user.account,
           baseUrl.some
         )
-        resp <- Ok(data.asJsonWithMessage)
+        resp <- data.asJsonWithMessage match {
+          case Right(m) => Ok(m)
+          case Left(err) =>
+            BadRequest(BasicResult(false, s"Unable to render message: $err"))
+        }
       } yield resp
     }
   }

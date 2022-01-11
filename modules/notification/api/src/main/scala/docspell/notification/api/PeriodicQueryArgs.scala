@@ -17,7 +17,8 @@ final case class PeriodicQueryArgs(
     channel: ChannelOrRef,
     query: Option[ItemQueryString],
     bookmark: Option[String],
-    baseUrl: Option[LenientUri]
+    baseUrl: Option[LenientUri],
+    contentStart: Option[String]
 )
 
 object PeriodicQueryArgs {

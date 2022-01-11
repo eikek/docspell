@@ -14,9 +14,9 @@ import yamusca.imports._
 
 abstract class AbstractEventContext extends EventContext {
 
-  def titleTemplate: Template
+  def titleTemplate: Either[String, Template]
 
-  def bodyTemplate: Template
+  def bodyTemplate: Either[String, Template]
 
   def render(template: Template): String =
     asJson.render(template).trim()
@@ -24,33 +24,39 @@ abstract class AbstractEventContext extends EventContext {
   def renderHtml(template: Template): String =
     Markdown.toHtml(render(template))
 
-  lazy val defaultTitle: String =
-    render(titleTemplate)
+  lazy val defaultTitle: Either[String, String] =
+    titleTemplate.map(render)
 
-  lazy val defaultTitleHtml: String =
-    renderHtml(titleTemplate)
+  lazy val defaultTitleHtml: Either[String, String] =
+    titleTemplate.map(renderHtml)
 
-  lazy val defaultBody: String =
-    render(bodyTemplate)
+  lazy val defaultBody: Either[String, String] =
+    bodyTemplate.map(render)
 
-  lazy val defaultBodyHtml: String =
-    renderHtml(bodyTemplate)
+  lazy val defaultBodyHtml: Either[String, String] =
+    bodyTemplate.map(renderHtml)
 
-  lazy val defaultBoth: String =
-    render(
+  lazy val defaultBoth: Either[String, String] =
+    for {
+      tt <- titleTemplate
+      tb <- bodyTemplate
+    } yield render(
       AbstractEventContext.concat(
-        titleTemplate,
+        tt,
         AbstractEventContext.sepTemplate,
-        bodyTemplate
+        tb
       )
     )
 
-  lazy val defaultBothHtml: String =
-    renderHtml(
+  lazy val defaultBothHtml: Either[String, String] =
+    for {
+      tt <- titleTemplate
+      tb <- bodyTemplate
+    } yield renderHtml(
       AbstractEventContext.concat(
-        titleTemplate,
+        tt,
         AbstractEventContext.sepTemplate,
-        bodyTemplate
+        tb
       )
     )
 }
