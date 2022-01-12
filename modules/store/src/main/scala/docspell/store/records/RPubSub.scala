@@ -52,7 +52,7 @@ object RPubSub {
       url: LenientUri,
       topics: NonEmptyList[String]
   ): ConnectionIO[Int] =
-    DML.delete(T, T.nodeId === nodeId) *>
+    DML.delete(T, T.nodeId === nodeId || T.url === url) *>
       topics.toList
         .traverse(t =>
           Ident
@@ -60,6 +60,9 @@ object RPubSub {
             .flatMap(id => insert(RPubSub(id, nodeId, url, t, 0)))
         )
         .map(_.sum)
+
+  def deleteTopics(nodeId: Ident): ConnectionIO[Int] =
+    DML.delete(T, T.nodeId === nodeId)
 
   def increment(url: LenientUri, topics: NonEmptyList[String]): ConnectionIO[Int] =
     DML.update(
