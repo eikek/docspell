@@ -35,6 +35,7 @@ final class GotifyBackend[F[_]: Async](
       val req = POST(
         Json.obj(
           "title" -> Json.fromString(title),
+          "priority" -> Json.fromInt(channel.priority.getOrElse(0)),
           "message" -> Json.fromString(body),
           "extras" -> Json.obj(
             "client::display" -> Json.obj(

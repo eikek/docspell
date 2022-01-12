@@ -20,6 +20,7 @@ final case class RNotificationChannelGotify(
     uid: Ident,
     url: LenientUri,
     appKey: Password,
+    priority: Option[Int],
     created: Timestamp
 ) {
   def vary: RNotificationChannel =
@@ -35,10 +36,11 @@ object RNotificationChannelGotify {
     val uid = Column[Ident]("uid", this)
     val url = Column[LenientUri]("url", this)
     val appKey = Column[Password]("app_key", this)
+    val priority = Column[Int]("priority", this)
     val created = Column[Timestamp]("created", this)
 
     val all: NonEmptyList[Column[_]] =
-      NonEmptyList.of(id, uid, url, appKey, created)
+      NonEmptyList.of(id, uid, url, appKey, priority, created)
   }
 
   val T: Table = Table(None)
@@ -49,7 +51,11 @@ object RNotificationChannelGotify {
     run(select(T.all), from(T), T.id === id).query[RNotificationChannelGotify].option
 
   def insert(r: RNotificationChannelGotify): ConnectionIO[Int] =
-    DML.insert(T, T.all, sql"${r.id},${r.uid},${r.url},${r.appKey},${r.created}")
+    DML.insert(
+      T,
+      T.all,
+      sql"${r.id},${r.uid},${r.url},${r.appKey},${r.priority},${r.created}"
+    )
 
   def update(r: RNotificationChannelGotify): ConnectionIO[Int] =
     DML.update(
@@ -57,7 +63,8 @@ object RNotificationChannelGotify {
       T.id === r.id && T.uid === r.uid,
       DML.set(
         T.url.setTo(r.url),
-        T.appKey.setTo(r.appKey)
+        T.appKey.setTo(r.appKey),
+        T.priority.setTo(r.priority)
       )
     )
 

@@ -255,7 +255,7 @@ object ONotification {
       r.fold(
         mail =>
           Channel.Mail(mail.id, mail.connection, Nel.fromListUnsafe(mail.recipients)),
-        gotify => Channel.Gotify(r.id, gotify.url, gotify.appKey),
+        gotify => Channel.Gotify(r.id, gotify.url, gotify.appKey, gotify.priority),
         matrix =>
           Channel.Matrix(r.id, matrix.homeServer, matrix.roomId, matrix.accessToken),
         http => Channel.Http(r.id, http.url)
@@ -296,9 +296,9 @@ object ONotification {
                       time
                     ).vary
                   } yield rec
-                case Channel.Gotify(_, url, appKey) =>
+                case Channel.Gotify(_, url, appKey, prio) =>
                   OptionT.pure[F](
-                    RNotificationChannelGotify(id, userId, url, appKey, time).vary
+                    RNotificationChannelGotify(id, userId, url, appKey, prio, time).vary
                   )
                 case Channel.Matrix(_, homeServer, roomId, accessToken) =>
                   OptionT.pure[F](

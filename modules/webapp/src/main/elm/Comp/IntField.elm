@@ -149,16 +149,3 @@ view cfg model =
             [ Maybe.withDefault "" model.error |> text
             ]
         ]
-
-
-viewWithInfo2 : String -> String -> Maybe Int -> String -> Model -> Html Msg
-viewWithInfo2 label info nval classes model =
-    let
-        cfg =
-            { label = label
-            , info = info
-            , number = nval
-            , classes = classes
-            }
-    in
-    view cfg model

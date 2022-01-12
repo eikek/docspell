@@ -30,7 +30,8 @@ object NotificationChannel {
       headers: Map[String, String]
   ) extends NotificationChannel
 
-  final case class Gotify(url: LenientUri, appKey: Password) extends NotificationChannel
+  final case class Gotify(url: LenientUri, appKey: Password, priority: Option[Int])
+      extends NotificationChannel
 
   final case class Matrix(
       homeServer: LenientUri,

@@ -74,7 +74,8 @@ object NotificationChannel {
           .flatMap(_.toRight("No recipients given!"))
           .leftMap(new IllegalArgumentException(_))
           .map(rec => Channel.Mail(mail.id, mail.connection, rec)),
-      gotify => Right(Channel.Gotify(gotify.id, gotify.url, gotify.appKey)),
+      gotify =>
+        Right(Channel.Gotify(gotify.id, gotify.url, gotify.appKey, gotify.priority)),
       matrix =>
         Right(
           Channel
@@ -94,7 +95,8 @@ object NotificationChannel {
             m.recipients.toList.map(_.displayString)
           )
         },
-      g => gotify(NotificationGotify(g.id, ChannelType.Gotify, g.url, g.appKey)),
+      g =>
+        gotify(NotificationGotify(g.id, ChannelType.Gotify, g.url, g.appKey, g.priority)),
       m =>
         matrix(
           NotificationMatrix(
