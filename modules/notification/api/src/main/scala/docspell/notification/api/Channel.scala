@@ -53,7 +53,12 @@ object Channel {
       deriveConfiguredEncoder[Mail]
   }
 
-  final case class Gotify(id: Ident, url: LenientUri, appKey: Password) extends Channel {
+  final case class Gotify(
+      id: Ident,
+      url: LenientUri,
+      appKey: Password,
+      priority: Option[Int]
+  ) extends Channel {
     val channelType = ChannelType.Gotify
     def fold[A](
         f1: Mail => A,

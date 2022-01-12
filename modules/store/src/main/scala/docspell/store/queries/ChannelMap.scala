@@ -26,7 +26,7 @@ object ChannelMap {
   def readGotify(
       r: RNotificationChannelGotify
   ): ConnectionIO[Vector[NotificationChannel]] =
-    pure(NotificationChannel.Gotify(r.url, r.appKey))
+    pure(NotificationChannel.Gotify(r.url, r.appKey, r.priority))
 
   def readMatrix(
       r: RNotificationChannelMatrix

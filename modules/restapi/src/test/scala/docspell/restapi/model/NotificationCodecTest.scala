@@ -53,7 +53,34 @@ class NotificationCodecTest extends FunSuite {
             id(""),
             ChannelType.Gotify,
             LenientUri.unsafe("http://test.gotify.com"),
-            Password("abcde")
+            Password("abcde"),
+            None
+          )
+        )
+      )
+    )
+  }
+
+  test("decode with gotify data with prio") {
+    val json = """{"id":"",
+ "enabled": true,
+ "channel": {"id":"", "channelType":"gotify", "url":"http://test.gotify.com", "appKey": "abcde", "priority":9},
+ "allEvents": false,
+ "eventFilter": null,
+ "events": ["TagsChanged", "SetFieldValue"]
+}"""
+    val hook = parse[NotificationHook](json)
+    assertEquals(hook.enabled, true)
+    assertEquals(
+      hook.channel,
+      Right(
+        NotificationChannel.Gotify(
+          NotificationGotify(
+            id(""),
+            ChannelType.Gotify,
+            LenientUri.unsafe("http://test.gotify.com"),
+            Password("abcde"),
+            Some(9)
           )
         )
       )

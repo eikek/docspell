@@ -5523,6 +5523,11 @@ components:
         appKey:
           type: string
           format: password
+        priority:
+          type: integer
+          format: int32
+          description: |
+            A priority number [0-10]
     NotificationHttp:
       description: |
         A notification channel for receiving a generic http request.
