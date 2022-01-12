@@ -330,7 +330,11 @@ defaultMenuBar texts flags settings model =
                       , label = texts.showItemGroups
                       , attrs =
                             [ href "#"
-                            , onClick ToggleShowGroups
+                            , if List.length model.itemListModel.results.groups <= 1 then
+                                class ""
+
+                              else
+                                onClick ToggleShowGroups
                             ]
                       }
                     , { icon =

@@ -807,7 +807,7 @@ previewImage2 texts cfg settings model item =
         ([ class "overflow-hidden block bg-gray-50 dark:bg-slate-700 dark:bg-opacity-40  border-gray-400 dark:hover:border-slate-500 w-full"
          , classList
             [ ( "rounded-t-lg", isCardView )
-            , ( Data.UiSettings.cardPreviewSize2 settings, isCardView && not isRowOpen )
+            , ( Data.UiSettings.cardPreviewSize2 settings, isCardView )
             ]
          ]
             ++ mkCardAction texts cfg settings item
