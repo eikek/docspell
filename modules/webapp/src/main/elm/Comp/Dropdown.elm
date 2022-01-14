@@ -62,6 +62,7 @@ type alias Model a =
     , menuOpen : Bool
     , filterString : String
     , searchable : Int -> Bool
+    , searchWithAdditional : Bool
     }
 
 
@@ -77,6 +78,7 @@ makeModel input =
     , available = []
     , menuOpen = False
     , filterString = ""
+    , searchWithAdditional = False
     }
 
 
@@ -465,6 +467,29 @@ view2 cfg settings model =
         viewSingle2 cfg settings model
 
 
+searchInValueOnly : ViewSettings a -> (a -> String)
+searchInValueOnly cfg =
+    cfg.makeOption >> .text
+
+
+searchInValueAdditional : ViewSettings a -> (a -> String)
+searchInValueAdditional cfg =
+    let
+        combine item =
+            item.text ++ " " ++ item.additional |> String.trim
+    in
+    cfg.makeOption >> combine
+
+
+searchIn : Model a -> ViewSettings a -> (a -> String)
+searchIn model cfg =
+    if model.searchWithAdditional then
+        searchInValueAdditional cfg
+
+    else
+        searchInValueOnly cfg
+
+
 viewSingle2 : ViewSettings a -> UiSettings -> Model a -> Html (Msg a)
 viewSingle2 cfg settings model =
     let
@@ -527,7 +552,7 @@ viewSingle2 cfg settings model =
             , input
                 [ type_ "text"
                 , placeholder cfg.placeholder
-                , onInput (Filter (cfg.makeOption >> .text))
+                , onInput (Filter (searchIn model cfg))
                 , value model.filterString
                 , class "inline-block border-0 px-0 w-full py-0 focus:ring-0 "
                 , class cfg.style.input
@@ -603,7 +628,7 @@ viewMultiple2 cfg settings model =
             , input
                 [ type_ "text"
                 , placeholder cfg.placeholder
-                , onInput (Filter (cfg.makeOption >> .text))
+                , onInput (Filter (searchIn model cfg))
                 , value model.filterString
                 , class "inline-flex w-16 border-0 px-0 focus:ring-0 h-6"
                 , class cfg.style.input
