@@ -22,15 +22,19 @@ import Util.List
 
 makeDropdownModel : Comp.Dropdown.Model Tag
 makeDropdownModel =
-    Comp.Dropdown.makeModel
-        { multiple = True
-        , searchable = \n -> n > 0
-        }
+    let
+        init =
+            Comp.Dropdown.makeModel
+                { multiple = True
+                , searchable = \n -> n > 0
+                }
+    in
+    { init | searchWithAdditional = True }
 
 
 tagSettings : String -> DS.DropdownStyle -> Comp.Dropdown.ViewSettings Tag
 tagSettings placeholder ds =
-    { makeOption = \tag -> { text = tag.name, additional = "" }
+    { makeOption = \tag -> { text = tag.name, additional = Maybe.withDefault "" tag.category }
     , labelColor =
         \tag ->
             \settings ->
