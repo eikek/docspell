@@ -22,7 +22,7 @@ import Api.Model.IdName exposing (IdName)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
 import Api.Model.StringList exposing (StringList)
-import Api.Model.Tag exposing (Tag)
+import Api.Model.Tag
 import Api.Model.TagList exposing (TagList)
 import Comp.Basic as B
 import Comp.CalEventInput
@@ -32,6 +32,7 @@ import Comp.IntField
 import Comp.MenuBar as MB
 import Comp.StringListInput
 import Comp.Tabs
+import Comp.TagDropdown
 import Comp.YesNoDimmer
 import Data.CalEvent exposing (CalEvent)
 import Data.Direction exposing (Direction(..))
@@ -51,10 +52,9 @@ import Messages.Comp.ScanMailboxForm exposing (Texts)
 import Messages.Data.Language
 import Set exposing (Set)
 import Styles as S
-import Util.Folder exposing (mkFolderOption)
+import Util.Folder
 import Util.List
 import Util.Maybe
-import Util.Tag
 import Util.Update
 
 
@@ -77,7 +77,7 @@ type alias Model =
     , folderModel : Comp.Dropdown.Model IdName
     , allFolders : List FolderItem
     , itemFolderId : Maybe String
-    , tagModel : Comp.Dropdown.Model Tag
+    , tagModel : Comp.TagDropdown.Model
     , existingTags : List String
     , fileFilter : Maybe String
     , subjectFilter : Maybe String
@@ -161,7 +161,7 @@ type Msg
     | GetFolderResp (Result Http.Error FolderList)
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
     | GetTagResp (Result Http.Error TagList)
-    | TagDropdownMsg (Comp.Dropdown.Msg Tag)
+    | TagDropdownMsg Comp.TagDropdown.Msg
     | SetFileFilter String
     | SetSubjectFilter String
     | LanguageMsg (Comp.FixedDropdown.Msg Language)
@@ -206,7 +206,7 @@ initWith flags s =
         , formState = FormStateInitial
         , yesNoDelete = Comp.YesNoDimmer.emptyModel
         , itemFolderId = s.itemFolder
-        , tagModel = Util.Tag.makeDropdownModel
+        , tagModel = Comp.TagDropdown.initWith [] []
         , existingTags =
             Maybe.map .items s.tags
                 |> Maybe.withDefault []
@@ -256,7 +256,7 @@ init flags =
       , folderModel = Comp.Dropdown.makeSingle
       , allFolders = []
       , itemFolderId = Nothing
-      , tagModel = Util.Tag.makeDropdownModel
+      , tagModel = Comp.TagDropdown.initWith [] []
       , existingTags = []
       , fileFilter = Nothing
       , subjectFilter = Nothing
@@ -322,7 +322,7 @@ makeSettings model =
                 , fileFilter = model.fileFilter
                 , subjectFilter = model.subjectFilter
                 , tags =
-                    case Comp.Dropdown.getSelected model.tagModel of
+                    case Comp.TagDropdown.getSelected model.tagModel of
                         [] ->
                             Nothing
 
@@ -628,17 +628,9 @@ update flags msg model =
 
                 selected =
                     List.filter isExistingTag list.items
-                        |> Comp.Dropdown.SetSelection
 
-                opts =
-                    Comp.Dropdown.SetOptions list.items
-
-                ( tagModel_, tagcmd ) =
-                    Util.Update.andThen1
-                        [ Comp.Dropdown.update selected
-                        , Comp.Dropdown.update opts
-                        ]
-                        model.tagModel
+                tagModel_ =
+                    Comp.TagDropdown.initWith list.items selected
 
                 nextModel =
                     { model
@@ -648,7 +640,7 @@ update flags msg model =
             in
             ( nextModel
             , NoAction
-            , Cmd.map TagDropdownMsg tagcmd
+            , Cmd.none
             )
 
         GetTagResp (Err _) ->
@@ -660,7 +652,7 @@ update flags msg model =
         TagDropdownMsg lm ->
             let
                 ( m2, c2 ) =
-                    Comp.Dropdown.update lm model.tagModel
+                    Comp.TagDropdown.update lm model.tagModel
 
                 newModel =
                     { model | tagModel = m2 }
@@ -1177,9 +1169,10 @@ viewMetadata2 texts flags settings model =
         [ label [ class S.inputLabel ]
             [ text texts.basics.tags ]
         , Html.map TagDropdownMsg
-            (Comp.Dropdown.view2
-                (Util.Tag.tagSettings texts.basics.chooseTag DS.mainStyle)
+            (Comp.TagDropdown.view
+                texts.tagDropdown
                 settings
+                DS.mainStyle
                 model.tagModel
             )
         , div [ class "opacity-50 text-sm" ]

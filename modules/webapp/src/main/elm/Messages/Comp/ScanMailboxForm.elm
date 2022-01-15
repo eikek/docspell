@@ -15,12 +15,14 @@ import Http
 import Messages.Basics
 import Messages.Comp.CalEventInput
 import Messages.Comp.HttpError
+import Messages.Comp.TagDropdown
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
     , calEventInput : Messages.Comp.CalEventInput.Texts
     , httpError : Http.Error -> String
+    , tagDropdown : Messages.Comp.TagDropdown.Texts
     , reallyDeleteTask : String
     , startOnce : String
     , startNow : String
@@ -83,6 +85,7 @@ gb =
     { basics = Messages.Basics.gb
     , calEventInput = Messages.Comp.CalEventInput.gb
     , httpError = Messages.Comp.HttpError.gb
+    , tagDropdown = Messages.Comp.TagDropdown.gb
     , reallyDeleteTask = "Really delete this scan mailbox task?"
     , startOnce = "Start Once"
     , startNow = "Start this task now"
@@ -167,6 +170,7 @@ de =
     { basics = Messages.Basics.de
     , calEventInput = Messages.Comp.CalEventInput.de
     , httpError = Messages.Comp.HttpError.de
+    , tagDropdown = Messages.Comp.TagDropdown.de
     , reallyDeleteTask = "Den Auftrag wirklich löschen?"
     , startOnce = "Jetzt starten"
     , startNow = "Den Auftrag sofort starten"

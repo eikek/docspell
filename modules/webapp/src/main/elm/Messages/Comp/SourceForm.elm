@@ -13,11 +13,13 @@ module Messages.Comp.SourceForm exposing
 
 import Data.Language exposing (Language)
 import Messages.Basics
+import Messages.Comp.TagDropdown
 import Messages.Data.Language
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
+    , tagDropdown : Messages.Comp.TagDropdown.Texts
     , description : String
     , enabled : String
     , priority : String
@@ -38,6 +40,7 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
+    , tagDropdown = Messages.Comp.TagDropdown.gb
     , description = "Description"
     , enabled = "Enabled"
     , priority = "Priority"
@@ -69,6 +72,7 @@ Specify a file glob to filter files when uploading archives
 de : Texts
 de =
     { basics = Messages.Basics.de
+    , tagDropdown = Messages.Comp.TagDropdown.de
     , description = "Beschreibung"
     , enabled = "Aktiviert"
     , priority = "Priorität"

@@ -89,6 +89,7 @@ module Api exposing
     , getSources
     , getTagCloud
     , getTags
+    , getTagsIgnoreError
     , getUsers
     , initOtp
     , itemBasePreviewURL
@@ -1280,18 +1281,33 @@ getContacts flags kind q receive =
 --- Tags
 
 
-getTags : Flags -> String -> TagOrder -> (Result Http.Error TagList -> msg) -> Cmd msg
-getTags flags query order receive =
-    Http2.authGet
+getTagsTask : Flags -> String -> TagOrder -> Task.Task Http.Error TagList
+getTagsTask flags query order =
+    Http2.authTask
         { url =
             flags.config.baseUrl
                 ++ "/api/v1/sec/tag?sort="
                 ++ Data.TagOrder.asString order
                 ++ "&q="
                 ++ Url.percentEncode query
+        , method = "GET"
+        , headers = []
         , account = getAccount flags
-        , expect = Http.expectJson receive Api.Model.TagList.decoder
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver Api.Model.TagList.decoder
+        , timeout = Nothing
         }
+
+
+getTags : Flags -> String -> TagOrder -> (Result Http.Error TagList -> msg) -> Cmd msg
+getTags flags query order receive =
+    getTagsTask flags query order |> Task.attempt receive
+
+
+getTagsIgnoreError : Flags -> String -> TagOrder -> (TagList -> msg) -> Cmd msg
+getTagsIgnoreError flags query order tagger =
+    getTagsTask flags query order
+        |> Task.attempt (Result.map tagger >> Result.withDefault (tagger Api.Model.TagList.empty))
 
 
 postTag : Flags -> Tag -> (Result Http.Error BasicResult -> msg) -> Cmd msg

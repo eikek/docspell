@@ -1,0 +1,34 @@
+{-
+   Copyright 2020 Eike K. & Contributors
+
+   SPDX-License-Identifier: AGPL-3.0-or-later
+-}
+
+
+module Messages.Comp.TagDropdown exposing
+    ( Texts
+    , de
+    , gb
+    )
+
+import Messages.Basics
+
+
+type alias Texts =
+    { basics : Messages.Basics.Texts
+    , placeholder : String
+    }
+
+
+gb : Texts
+gb =
+    { basics = Messages.Basics.gb
+    , placeholder = "Search…"
+    }
+
+
+de : Texts
+de =
+    { basics = Messages.Basics.de
+    , placeholder = "Suche…"
+    }

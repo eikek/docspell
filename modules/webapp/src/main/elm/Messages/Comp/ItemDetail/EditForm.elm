@@ -14,6 +14,7 @@ module Messages.Comp.ItemDetail.EditForm exposing
 import Data.Direction exposing (Direction)
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
+import Messages.Comp.TagDropdown
 import Messages.Data.Direction
 import Messages.DateFormat as DF
 import Messages.UiLanguage
@@ -22,6 +23,7 @@ import Messages.UiLanguage
 type alias Texts =
     { basics : Messages.Basics.Texts
     , customFieldInput : Messages.Comp.CustomFieldMultiInput.Texts
+    , tagDropdown : Messages.Comp.TagDropdown.Texts
     , createNewCustomField : String
     , chooseDirection : String
     , dueDateTab : String
@@ -45,6 +47,7 @@ gb : Texts
 gb =
     { basics = Messages.Basics.gb
     , customFieldInput = Messages.Comp.CustomFieldMultiInput.gb
+    , tagDropdown = Messages.Comp.TagDropdown.gb
     , createNewCustomField = "Create new custom field"
     , chooseDirection = "Choose a direction…"
     , dueDateTab = "Due Date"
@@ -68,6 +71,7 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , customFieldInput = Messages.Comp.CustomFieldMultiInput.de
+    , tagDropdown = Messages.Comp.TagDropdown.de
     , createNewCustomField = "Erstelle neues Benutzerfeld"
     , chooseDirection = "Wähle Richtung…"
     , dueDateTab = "Fälligkeitsdatum"

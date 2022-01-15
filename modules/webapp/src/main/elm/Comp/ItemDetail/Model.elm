@@ -53,6 +53,7 @@ import Comp.KeyInput
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.MarkdownInput
 import Comp.SentMails
+import Comp.TagDropdown
 import Data.Direction exposing (Direction)
 import Data.Fields exposing (Field)
 import DatePicker exposing (DatePicker)
@@ -73,7 +74,7 @@ type alias Model =
     , visibleAttach : Int
     , attachMenuOpen : Bool
     , menuOpen : Bool
-    , tagModel : Comp.Dropdown.Model Tag
+    , tagModel : Comp.TagDropdown.Model
     , directionModel : Comp.Dropdown.Model Direction
     , corrOrgModel : Comp.Dropdown.Model IdName
     , corrPersonModel : Comp.Dropdown.Model IdName
@@ -204,7 +205,7 @@ emptyModel =
     , visibleAttach = 0
     , attachMenuOpen = False
     , menuOpen = False
-    , tagModel = Util.Tag.makeDropdownModel
+    , tagModel = Comp.TagDropdown.emptyModel
     , directionModel =
         Comp.Dropdown.makeSingleList
             { options = Data.Direction.all
@@ -272,7 +273,7 @@ type Msg
     | SetItem ItemDetail
     | SetActiveAttachment Int
     | ToggleAttachment String
-    | TagDropdownMsg (Comp.Dropdown.Msg Tag)
+    | TagDropdownMsg Comp.TagDropdown.Msg
     | DirDropdownMsg (Comp.Dropdown.Msg Direction)
     | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
     | CorrPersonMsg (Comp.Dropdown.Msg IdName)
