@@ -38,7 +38,6 @@ import Set exposing (Set)
 import Styles as S
 import Util.Folder
 import Util.Person
-import Util.Tag
 
 
 view2 : Texts -> Flags -> UiSettings -> Model -> Html Msg

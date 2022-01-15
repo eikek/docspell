@@ -70,7 +70,7 @@ searchMenuStyle =
     { rootClasses = "border-0 "
     , tabClasses = "border-0 "
     , titleClasses = "py-4 md:py-2 pl-2 bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 dark:hover:bg-opacity-100 dark:hover:bg-slate-600 rounded"
-    , bodyClasses = "mt-1 py-1 pl-2"
+    , bodyClasses = "mt-1 pl-2"
     }
 
 

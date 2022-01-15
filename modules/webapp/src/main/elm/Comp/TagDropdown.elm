@@ -1,3 +1,10 @@
+{-
+   Copyright 2020 Eike K. & Contributors
+
+   SPDX-License-Identifier: AGPL-3.0-or-later
+-}
+
+
 module Comp.TagDropdown exposing
     ( Model
     , Msg
@@ -20,25 +27,31 @@ import Data.DropdownStyle exposing (DropdownStyle)
 import Data.Flags exposing (Flags)
 import Data.TagOrder
 import Data.UiSettings exposing (UiSettings)
-import Html exposing (Html)
+import Html exposing (Html, a, div, i)
+import Html.Attributes exposing (class, classList, href, title)
+import Html.Events exposing (onClick)
 import Messages.Comp.TagDropdown exposing (Texts)
+import Util.List
 
 
 type alias Model =
     { ddm : Comp.Dropdown.Model Tag
     , allTags : List Tag
+    , constrainedCat : Maybe String
     }
 
 
 type Msg
     = DropdownMsg (Comp.Dropdown.Msg Tag)
     | GetTagsResp TagList
+    | ConstrainCat String
 
 
 emptyModel : Model
 emptyModel =
     { ddm = makeDropdownModel
     , allTags = []
+    , constrainedCat = Nothing
     }
 
 
@@ -70,7 +83,7 @@ getSelected model =
 
 setOptions : List Tag -> Msg
 setOptions tags =
-    DropdownMsg (Comp.Dropdown.SetOptions tags)
+    GetTagsResp (TagList 0 tags)
 
 
 setSelected : List Tag -> Msg
@@ -86,6 +99,11 @@ isChangeMsg msg =
 
         _ ->
             False
+
+
+isConstrained : Model -> String -> Bool
+isConstrained model category =
+    model.constrainedCat == Just category
 
 
 
@@ -109,7 +127,17 @@ update msg model =
                 ( dm, dc ) =
                     Comp.Dropdown.update lm model.ddm
             in
-            ( { model | ddm = dm }, Cmd.map DropdownMsg dc )
+            ( { model
+                | ddm = dm
+                , constrainedCat =
+                    if isChangeMsg msg then
+                        Nothing
+
+                    else
+                        model.constrainedCat
+              }
+            , Cmd.map DropdownMsg dc
+            )
 
         GetTagsResp list ->
             let
@@ -120,6 +148,24 @@ update msg model =
                     Comp.Dropdown.SetOptions newModel.allTags
             in
             update (DropdownMsg ddMsg) newModel
+
+        ConstrainCat cat ->
+            let
+                setOpts tags =
+                    DropdownMsg (Comp.Dropdown.SetOptions tags)
+            in
+            if model.constrainedCat == Just cat then
+                update (setOpts model.allTags)
+                    { model | constrainedCat = Nothing }
+
+            else
+                update (setOpts <| List.filter (isCategory cat) model.allTags)
+                    { model | constrainedCat = Just cat }
+
+
+isCategory : String -> Tag -> Bool
+isCategory cat tag =
+    tag.category == Just cat || (tag.category == Nothing && cat == "")
 
 
 
@@ -132,7 +178,62 @@ view texts settings dds model =
         viewSettings =
             tagSettings texts.placeholder dds
     in
-    Html.map DropdownMsg (Comp.Dropdown.view2 viewSettings settings model.ddm)
+    div [ class "flex flex-col" ]
+        [ viewCategorySelect texts settings model
+        , Html.map DropdownMsg (Comp.Dropdown.view2 viewSettings settings model.ddm)
+        ]
+
+
+viewCategorySelect : Texts -> UiSettings -> Model -> Html Msg
+viewCategorySelect texts settings model =
+    let
+        categories =
+            List.map .category model.allTags
+                |> List.map (Maybe.withDefault "")
+                |> Util.List.distinct
+                |> List.sort
+
+        catFilterLink cat =
+            a
+                [ classList
+                    [ ( "opacity-75", not (isConstrained model cat) )
+                    ]
+                , href "#"
+                , title <|
+                    if cat == "" then
+                        texts.noCategory
+
+                    else
+                        cat
+                , onClick (ConstrainCat cat)
+                ]
+                [ if cat == "" then
+                    i
+                        [ class <|
+                            if isConstrained model cat then
+                                "fa fa-check-circle font-thin"
+
+                            else
+                                "fa fa-circle font-thin"
+                        ]
+                        []
+
+                  else
+                    i
+                        [ classList
+                            [ ( "fa fa-circle", not (isConstrained model cat) )
+                            , ( "fa fa-check-circle", isConstrained model cat )
+                            ]
+                        , class <| Data.UiSettings.catColorFg2 settings cat
+                        ]
+                        []
+                ]
+    in
+    div
+        [ class "flex-wrap space-x-1 text-xl sm:text-sm "
+        , classList [ ( "hidden", not model.ddm.menuOpen ) ]
+        ]
+        (List.map catFilterLink categories)
 
 
 
