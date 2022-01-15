@@ -95,7 +95,8 @@ object RQueryBookmark {
       DML.set(
         T.name.setTo(r.name),
         T.label.setTo(r.label),
-        T.query.setTo(r.query)
+        T.query.setTo(r.query),
+        T.userId.setTo(r.userId)
       )
     )
 
@@ -119,9 +120,12 @@ object RQueryBookmark {
     ).build.query[Int].unique.map(_ > 0)
   }
 
-  // impl note: store.add doesn't work, because it checks for duplicate
-  // after trying to insert the check is necessary because a name
-  // should be unique across personal *and* collective bookmarks
+  // impl note: store.add doesn't work, because it checks for
+  // duplicate after trying to insert. the check is necessary because
+  // a name should be unique across personal *and* collective
+  // bookmarks, which is not covered by db indexes. This is now
+  // checked before (and therefore subject to race conditions, but is
+  // neglected here)
   def insertIfNotExists(
       account: AccountId,
       r: ConnectionIO[RQueryBookmark]
