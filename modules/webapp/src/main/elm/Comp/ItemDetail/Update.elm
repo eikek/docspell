@@ -57,6 +57,7 @@ import Comp.MarkdownInput
 import Comp.OrgForm
 import Comp.PersonForm
 import Comp.SentMails
+import Comp.TagDropdown
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction
 import Data.EquipmentOrder
@@ -124,7 +125,7 @@ update key flags inav settings msg model =
                         flags
                         inav
                         settings
-                        (TagDropdownMsg (Comp.Dropdown.SetSelection item.tags))
+                        (TagDropdownMsg (Comp.TagDropdown.setSelected item.tags))
                         model
 
                 res2 =
@@ -348,13 +349,13 @@ update key flags inav settings msg model =
         TagDropdownMsg m ->
             let
                 ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagModel
+                    Comp.TagDropdown.update m model.tagModel
 
                 newModel =
                     { model | tagModel = m2 }
 
                 save =
-                    if isDropdownChangeMsg m then
+                    if Comp.TagDropdown.isChangeMsg m then
                         saveTags flags newModel
 
                     else
@@ -615,10 +616,13 @@ update key flags inav settings msg model =
 
         GetTagsResp (Ok tags) ->
             let
-                tagList =
-                    Comp.Dropdown.SetOptions tags.items
+                tagModel =
+                    Comp.TagDropdown.initWith tags.items model.item.tags
+
+                newModel =
+                    { model | allTags = tags.items, tagModel = tagModel }
             in
-            update key flags inav settings (TagDropdownMsg tagList) { model | allTags = tags.items }
+            resultModel newModel
 
         GetTagsResp (Err _) ->
             resultModel model
@@ -1645,7 +1649,7 @@ saveTags : Flags -> Model -> Cmd Msg
 saveTags flags model =
     let
         tags =
-            Comp.Dropdown.getSelected model.tagModel
+            Comp.TagDropdown.getSelected model.tagModel
                 |> Util.List.distinct
                 |> List.map (\t -> t.id)
                 |> StringList

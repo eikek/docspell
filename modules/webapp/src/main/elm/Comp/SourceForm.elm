@@ -25,12 +25,12 @@ import Api.Model.TagList exposing (TagList)
 import Comp.Basic as B
 import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.FixedDropdown
+import Comp.TagDropdown
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.FolderOrder
 import Data.Language exposing (Language)
 import Data.Priority exposing (Priority)
-import Data.TagOrder
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -41,7 +41,6 @@ import Messages.Comp.SourceForm exposing (Texts)
 import Styles as S
 import Util.Folder exposing (mkFolderOption)
 import Util.Maybe
-import Util.Tag
 import Util.Update
 
 
@@ -55,7 +54,7 @@ type alias Model =
     , folderModel : Comp.Dropdown.Model IdName
     , allFolders : List FolderItem
     , folderId : Maybe String
-    , tagModel : Comp.Dropdown.Model Tag
+    , tagModel : Comp.TagDropdown.Model
     , fileFilter : Maybe String
     , languageModel : Comp.Dropdown.Model Language
     , language : Maybe String
@@ -75,7 +74,7 @@ emptyModel =
     , folderModel = Comp.Dropdown.makeSingle
     , allFolders = []
     , folderId = Nothing
-    , tagModel = Util.Tag.makeDropdownModel
+    , tagModel = Comp.TagDropdown.initWith [] []
     , fileFilter = Nothing
     , languageModel =
         Comp.Dropdown.makeSingleList
@@ -89,10 +88,14 @@ emptyModel =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( emptyModel
+    let
+        ( tm, tc ) =
+            Comp.TagDropdown.init flags
+    in
+    ( { emptyModel | tagModel = tm }
     , Cmd.batch
         [ Api.getFolders flags "" Data.FolderOrder.NameAsc False GetFolderResp
-        , Api.getTags flags "" Data.TagOrder.NameAsc GetTagResp
+        , Cmd.map TagDropdownMsg tc
         ]
     )
 
@@ -112,7 +115,7 @@ getSource model =
             st.source
 
         tags =
-            Comp.Dropdown.getSelected model.tagModel
+            Comp.TagDropdown.getSelected model.tagModel
 
         n =
             { s
@@ -137,8 +140,7 @@ type Msg
     | PrioDropdownMsg (Comp.FixedDropdown.Msg Priority)
     | GetFolderResp (Result Http.Error FolderList)
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
-    | GetTagResp (Result Http.Error TagList)
-    | TagDropdownMsg (Comp.Dropdown.Msg Tag)
+    | TagDropdownMsg Comp.TagDropdown.Msg
     | SetFileFilter String
     | LanguageMsg (Comp.Dropdown.Msg Language)
     | ToggleAttachmentsOnly
@@ -213,7 +215,7 @@ update flags msg model =
                             []
 
                 tags =
-                    Comp.Dropdown.SetSelection t.tags.items
+                    Comp.TagDropdown.setSelected t.tags.items
             in
             Util.Update.andThen1
                 [ update flags (FolderDropdownMsg (Comp.Dropdown.SetSelection sel))
@@ -286,20 +288,10 @@ update flags msg model =
             in
             ( model_, Cmd.map FolderDropdownMsg c2 )
 
-        GetTagResp (Ok list) ->
-            let
-                opts =
-                    Comp.Dropdown.SetOptions list.items
-            in
-            update flags (TagDropdownMsg opts) model
-
-        GetTagResp (Err _) ->
-            ( model, Cmd.none )
-
         TagDropdownMsg lm ->
             let
                 ( m2, c2 ) =
-                    Comp.Dropdown.update lm model.tagModel
+                    Comp.TagDropdown.update lm model.tagModel
 
                 newModel =
                     { model | tagModel = m2 }
@@ -347,9 +339,6 @@ view2 flags texts settings model =
             , labelColor = \_ -> \_ -> ""
             , style = DS.mainStyle
             }
-
-        tagCfg =
-            Util.Tag.tagSettings texts.basics.chooseTag DS.mainStyle
 
         languageCfg =
             { makeOption =
@@ -477,9 +466,10 @@ view2 flags texts settings model =
                 [ text texts.basics.tags
                 ]
             , Html.map TagDropdownMsg
-                (Comp.Dropdown.view2
-                    tagCfg
+                (Comp.TagDropdown.view
+                    texts.tagDropdown
                     settings
+                    DS.mainStyle
                     model.tagModel
                 )
             , div [ class "opacity-50 text-sm" ]

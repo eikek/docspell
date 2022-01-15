@@ -14,12 +14,14 @@ module Messages.Comp.ItemDetail.MultiEditMenu exposing
 import Data.Direction exposing (Direction)
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
+import Messages.Comp.TagDropdown
 import Messages.Data.Direction
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
     , customFieldMultiInput : Messages.Comp.CustomFieldMultiInput.Texts
+    , tagDropdown : Messages.Comp.TagDropdown.Texts
     , tagModeAddInfo : String
     , tagModeRemoveInfo : String
     , tagModeReplaceInfo : String
@@ -37,6 +39,7 @@ gb : Texts
 gb =
     { basics = Messages.Basics.gb
     , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.gb
+    , tagDropdown = Messages.Comp.TagDropdown.gb
     , tagModeAddInfo = "Tags chosen here are *added* to all selected items."
     , tagModeRemoveInfo = "Tags chosen here are *removed* from all selected items."
     , tagModeReplaceInfo = "Tags chosen here *replace* those on selected items."
@@ -54,6 +57,7 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.de
+    , tagDropdown = Messages.Comp.TagDropdown.de
     , tagModeAddInfo = "Tags werden zu gewählten Dokumenten *hinzugefügt*."
     , tagModeRemoveInfo = "Tags werden von gewählten Dokumenten *entfernt*."
     , tagModeReplaceInfo = "Tags *ersetzen* die der gewählten Dokumente."

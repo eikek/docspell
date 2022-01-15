@@ -22,9 +22,9 @@ import Api.Model.TagList exposing (TagList)
 import Comp.Basic as B
 import Comp.CalEventInput
 import Comp.ChannelForm
-import Comp.Dropdown
 import Comp.IntField
 import Comp.MenuBar as MB
+import Comp.TagDropdown
 import Comp.YesNoDimmer
 import Data.CalEvent exposing (CalEvent)
 import Data.ChannelType exposing (ChannelType)
@@ -50,8 +50,8 @@ import Util.Update
 type alias Model =
     { settings : PeriodicDueItemsSettings
     , channelModel : Comp.ChannelForm.Model
-    , tagInclModel : Comp.Dropdown.Model Tag
-    , tagExclModel : Comp.Dropdown.Model Tag
+    , tagInclModel : Comp.TagDropdown.Model
+    , tagExclModel : Comp.TagDropdown.Model
     , remindDays : Maybe Int
     , remindDaysModel : Comp.IntField.Model
     , capOverdue : Bool
@@ -87,8 +87,8 @@ type Action
 
 type Msg
     = Submit
-    | TagIncMsg (Comp.Dropdown.Msg Tag)
-    | TagExcMsg (Comp.Dropdown.Msg Tag)
+    | TagIncMsg Comp.TagDropdown.Msg
+    | TagExcMsg Comp.TagDropdown.Msg
     | GetTagsResp (Result Http.Error TagList)
     | RemindDaysMsg Comp.IntField.Msg
     | ToggleEnabled
@@ -112,16 +112,6 @@ initWith flags s =
         ( im, ic ) =
             init flags ct
 
-        removeAction ( tm, _, tc ) =
-            ( tm, tc )
-
-        ( nm, nc ) =
-            Util.Update.andThen1
-                [ update flags (TagIncMsg (Comp.Dropdown.SetSelection s.tagsInclude)) >> removeAction
-                , update flags (TagExcMsg (Comp.Dropdown.SetSelection s.tagsExclude)) >> removeAction
-                ]
-                im
-
         newSchedule =
             Data.CalEvent.fromEvent s.schedule
                 |> Maybe.withDefault Data.CalEvent.everyMonth
@@ -132,9 +122,11 @@ initWith flags s =
         ( cfm, cfc ) =
             Comp.ChannelForm.initWith flags s.channel
     in
-    ( { nm
+    ( { im
         | settings = s
         , channelModel = cfm
+        , tagExclModel = Comp.TagDropdown.initWith [] s.tagsExclude
+        , tagInclModel = Comp.TagDropdown.initWith [] s.tagsInclude
         , remindDays = Just s.remindDays
         , enabled = s.enabled
         , capOverdue = s.capOverdue
@@ -146,8 +138,7 @@ initWith flags s =
         , summary = s.summary
       }
     , Cmd.batch
-        [ nc
-        , ic
+        [ ic
         , Cmd.map CalEventMsg sc
         , Cmd.map ChannelMsg cfc
         ]
@@ -168,8 +159,8 @@ init flags ct =
     in
     ( { settings = Data.PeriodicDueItemsSettings.empty ct
       , channelModel = cfm
-      , tagInclModel = Util.Tag.makeDropdownModel
-      , tagExclModel = Util.Tag.makeDropdownModel
+      , tagInclModel = Comp.TagDropdown.initWith [] []
+      , tagExclModel = Comp.TagDropdown.initWith [] []
       , remindDays = Just 1
       , remindDaysModel = Comp.IntField.init (Just 1) Nothing True
       , enabled = False
@@ -218,8 +209,8 @@ makeSettings model =
 
         make days timer channel =
             { prev
-                | tagsInclude = Comp.Dropdown.getSelected model.tagInclModel
-                , tagsExclude = Comp.Dropdown.getSelected model.tagExclModel
+                | tagsInclude = Comp.TagDropdown.getSelected model.tagInclModel
+                , tagsExclude = Comp.TagDropdown.getSelected model.tagExclModel
                 , remindDays = days
                 , capOverdue = model.capOverdue
                 , enabled = model.enabled
@@ -283,7 +274,7 @@ update flags msg model =
         TagIncMsg m ->
             let
                 ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagInclModel
+                    Comp.TagDropdown.update m model.tagInclModel
             in
             ( { model
                 | tagInclModel = m2
@@ -296,7 +287,7 @@ update flags msg model =
         TagExcMsg m ->
             let
                 ( m2, c2 ) =
-                    Comp.Dropdown.update m model.tagExclModel
+                    Comp.TagDropdown.update m model.tagExclModel
             in
             ( { model
                 | tagExclModel = m2
@@ -308,20 +299,20 @@ update flags msg model =
 
         GetTagsResp (Ok tags) ->
             let
-                tagList =
-                    Comp.Dropdown.SetOptions tags.items
+                incModel =
+                    Comp.TagDropdown.initWith tags.items model.settings.tagsInclude
 
-                removeAction ( tm, _, tc ) =
-                    ( tm, tc )
+                excModel =
+                    Comp.TagDropdown.initWith tags.items model.settings.tagsExclude
 
-                ( m, c ) =
-                    Util.Update.andThen1
-                        [ update flags (TagIncMsg tagList) >> removeAction
-                        , update flags (TagExcMsg tagList) >> removeAction
-                        ]
-                        { model | loading = model.loading - 1 }
+                newModel =
+                    { model
+                        | loading = model.loading - 1
+                        , tagExclModel = excModel
+                        , tagInclModel = incModel
+                    }
             in
-            ( m, NoAction, c )
+            ( newModel, NoAction, Cmd.none )
 
         GetTagsResp (Err err) ->
             ( { model
@@ -556,9 +547,10 @@ view2 texts extraClasses settings model =
             [ label [ class S.inputLabel ]
                 [ text texts.tagsInclude ]
             , Html.map TagIncMsg
-                (Comp.Dropdown.view2
-                    (Util.Tag.tagSettings texts.basics.chooseTag DS.mainStyle)
+                (Comp.TagDropdown.view
+                    texts.tagDropdown
                     settings
+                    DS.mainStyle
                     model.tagInclModel
                 )
             , span [ class "opacity-50 text-sm" ]
@@ -569,9 +561,10 @@ view2 texts extraClasses settings model =
             [ label [ class S.inputLabel ]
                 [ text texts.tagsExclude ]
             , Html.map TagExcMsg
-                (Comp.Dropdown.view2
-                    (Util.Tag.tagSettings texts.basics.chooseTag DS.mainStyle)
+                (Comp.TagDropdown.view
+                    texts.tagDropdown
                     settings
+                    DS.mainStyle
                     model.tagExclModel
                 )
             , span [ class "opacity-50 text-sm" ]

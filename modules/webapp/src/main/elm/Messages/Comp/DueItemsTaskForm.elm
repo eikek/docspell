@@ -16,6 +16,7 @@ import Messages.Basics
 import Messages.Comp.CalEventInput
 import Messages.Comp.ChannelForm
 import Messages.Comp.HttpError
+import Messages.Comp.TagDropdown
 import Messages.Data.ChannelType
 
 
@@ -24,6 +25,7 @@ type alias Texts =
     , calEventInput : Messages.Comp.CalEventInput.Texts
     , httpError : Http.Error -> String
     , channelForm : Messages.Comp.ChannelForm.Texts
+    , tagDropdown : Messages.Comp.TagDropdown.Texts
     , reallyDeleteTask : String
     , startOnce : String
     , startTaskNow : String
@@ -58,6 +60,7 @@ gb =
     , calEventInput = Messages.Comp.CalEventInput.gb
     , httpError = Messages.Comp.HttpError.gb
     , channelForm = Messages.Comp.ChannelForm.gb
+    , tagDropdown = Messages.Comp.TagDropdown.gb
     , reallyDeleteTask = "Really delete this notification task?"
     , startOnce = "Start Once"
     , startTaskNow = "Start this task now"
@@ -96,6 +99,7 @@ de =
     , calEventInput = Messages.Comp.CalEventInput.de
     , httpError = Messages.Comp.HttpError.de
     , channelForm = Messages.Comp.ChannelForm.gb
+    , tagDropdown = Messages.Comp.TagDropdown.gb
     , reallyDeleteTask = "Diesen Benachrichtigungsauftrag wirklich löschen?"
     , startOnce = "Jetzt starten"
     , startTaskNow = "Starte den Auftrag sofort"

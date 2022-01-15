@@ -32,6 +32,7 @@ import Comp.Dropdown exposing (isDropdownChangeMsg)
 import Comp.ItemDetail.FieldTabState as FTabState exposing (EditTab(..), tabName)
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.Tabs as TB
+import Comp.TagDropdown
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction exposing (Direction)
 import Data.DropdownStyle
@@ -60,7 +61,6 @@ import Time
 import Util.Folder
 import Util.List
 import Util.Maybe
-import Util.Tag
 
 
 
@@ -80,7 +80,7 @@ type TagEditMode
 
 
 type alias Model =
-    { tagModel : Comp.Dropdown.Model Tag
+    { tagModel : Comp.TagDropdown.Model
     , nameModel : String
     , nameSaveThrottle : Throttle Msg
     , folderModel : Comp.Dropdown.Model IdName
@@ -112,13 +112,12 @@ type Msg
     | ConfirmMsg Bool
     | ToggleTagEditMode
     | FolderDropdownMsg (Comp.Dropdown.Msg IdName)
-    | TagDropdownMsg (Comp.Dropdown.Msg Tag)
+    | TagDropdownMsg Comp.TagDropdown.Msg
     | DirDropdownMsg (Comp.Dropdown.Msg Direction)
     | OrgDropdownMsg (Comp.Dropdown.Msg IdName)
     | CorrPersonMsg (Comp.Dropdown.Msg IdName)
     | ConcPersonMsg (Comp.Dropdown.Msg IdName)
     | ConcEquipMsg (Comp.Dropdown.Msg IdName)
-    | GetTagsResp (Result Http.Error TagList)
     | GetOrgResp (Result Http.Error ReferenceList)
     | GetPersonResp (Result Http.Error PersonList)
     | GetEquipResp (Result Http.Error EquipmentList)
@@ -129,7 +128,7 @@ type Msg
 
 init : Model
 init =
-    { tagModel = Util.Tag.makeDropdownModel
+    { tagModel = Comp.TagDropdown.initWith [] []
     , directionModel =
         Comp.Dropdown.makeSingleList
             { options = Data.Direction.all
@@ -159,16 +158,19 @@ loadModel flags =
     let
         ( _, dpc ) =
             Comp.DatePicker.init
+
+        ( _, tc ) =
+            Comp.TagDropdown.init flags
     in
     Cmd.batch
-        [ Api.getTags flags "" Data.TagOrder.NameAsc GetTagsResp
-        , Api.getOrgLight flags GetOrgResp
+        [ Api.getOrgLight flags GetOrgResp
         , Api.getPersons flags "" Data.PersonOrder.NameAsc GetPersonResp
         , Api.getEquipments flags "" Data.EquipmentOrder.NameAsc GetEquipResp
         , Api.getFolders flags "" Data.FolderOrder.NameAsc False GetFolderResp
         , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd flags)
         , Cmd.map ItemDatePickerMsg dpc
         , Cmd.map DueDatePickerMsg dpc
+        , Cmd.map TagDropdownMsg tc
         ]
 
 
@@ -213,8 +215,8 @@ update flags msg model =
 
         TagDropdownMsg m ->
             let
-                ( m2, _ ) =
-                    Comp.Dropdown.update m model.tagModel
+                ( m2, c2 ) =
+                    Comp.TagDropdown.update m model.tagModel
 
                 newModel =
                     { model | tagModel = m2 }
@@ -231,8 +233,8 @@ update flags msg model =
                             ReplaceTagChange list
 
                 change =
-                    if isDropdownChangeMsg m then
-                        Comp.Dropdown.getSelected newModel.tagModel
+                    if Comp.TagDropdown.isChangeMsg m then
+                        Comp.TagDropdown.getSelected newModel.tagModel
                             |> Util.List.distinct
                             |> List.map (\t -> IdName t.id t.name)
                             |> ReferenceList
@@ -241,12 +243,12 @@ update flags msg model =
                     else
                         NoFormChange
             in
-            resultNoCmd change newModel
+            UpdateResult newModel (Cmd.map TagDropdownMsg c2) Sub.none change
 
         ToggleTagEditMode ->
             let
                 ( m2, _ ) =
-                    Comp.Dropdown.update (Comp.Dropdown.SetSelection []) model.tagModel
+                    Comp.TagDropdown.update (Comp.TagDropdown.setSelected []) model.tagModel
 
                 newModel =
                     { model | tagModel = m2 }
@@ -260,16 +262,6 @@ update flags msg model =
 
                 ReplaceTags ->
                     resultNone { newModel | tagEditMode = AddTags }
-
-        GetTagsResp (Ok tags) ->
-            let
-                tagList =
-                    Comp.Dropdown.SetOptions tags.items
-            in
-            update flags (TagDropdownMsg tagList) model
-
-        GetTagsResp (Err _) ->
-            resultNone model
 
         FolderDropdownMsg m ->
             let
@@ -756,8 +748,10 @@ renderEditForm2 texts flags cfg settings model =
                                 ]
                             ]
                         , Html.map TagDropdownMsg
-                            (Comp.Dropdown.view2 (Util.Tag.tagSettings texts.basics.chooseTag dds)
+                            (Comp.TagDropdown.view
+                                texts.tagDropdown
                                 settings
+                                dds
                                 model.tagModel
                             )
                         , Markdown.toHtml [ class "opacity-50 text-sm" ] tagModeMsg

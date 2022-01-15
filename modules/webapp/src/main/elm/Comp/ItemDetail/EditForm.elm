@@ -21,7 +21,7 @@ import Comp.ItemDetail.Model
         )
 import Comp.KeyInput
 import Comp.Tabs as TB
-import Data.Direction
+import Comp.TagDropdown
 import Data.DropdownStyle
 import Data.Fields
 import Data.Flags exposing (Flags)
@@ -38,7 +38,6 @@ import Set exposing (Set)
 import Styles as S
 import Util.Folder
 import Util.Person
-import Util.Tag
 
 
 view2 : Texts -> Flags -> UiSettings -> Model -> Html Msg
@@ -213,10 +212,7 @@ formTabs texts flags settings model =
       , body =
             [ div [ class "mb-4 flex flex-col" ]
                 [ Html.map TagDropdownMsg
-                    (Comp.Dropdown.view2 (Util.Tag.tagSettings texts.basics.chooseTag dds)
-                        settings
-                        model.tagModel
-                    )
+                    (Comp.TagDropdown.view texts.tagDropdown settings dds model.tagModel)
                 , div [ class "flex flex-row items-center justify-end" ]
                     [ a
                         [ class S.secondaryButton
