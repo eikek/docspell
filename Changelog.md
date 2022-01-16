@@ -1,5 +1,41 @@
 # Changelog
 
+## v0.31.0
+
+*Jan 16, 2022*
+
+- Bookmark queries and use it in searches. (#1175) Also the periodic
+  query form is updated to allow using a bookmarks.
+- Customize message for periodic queries (#1258). You can now add your
+  own sentence to the beginning of the message notifying you for a
+  list of items.
+- Allow to configure a priority for Gotify notifications (#1277)
+- Improve handling tags (#960). When choosing a tag by the dropdown
+  the catgory is shown next to a tag and the options can be
+  constrainted by clicking a category bubble.
+- Fix timezone in docker image (#1234)
+- Fix adding high-dpi images that would cause an out-of-memory error
+  when generating previews (#1183).
+- Fix tearing down and initializing pubsub table to allow changing app
+  ids (#1251)
+- Fix switching between tile and list view when "full width" preview
+  is enabled (#1261)
+- Disable "group by month" if there are no groups (#1255)
+- Fix deleting periodic queries (button was not working) (#1257)
+
+### Rest API Changes
+
+- new routes for managing bookmarks
+- added routes for client settings to be separated between user and
+  collective, the previous endpoint now returns a merged json
+- add a priority value to gotify settings
+- add bookmark value to periodic query settings
+
+### Configuration Changes
+
+None.
+
+
 ## v0.30.1
 
 *Dec 22, 2021*
