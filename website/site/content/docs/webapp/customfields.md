@@ -73,11 +73,7 @@ corresponding input field is shown asking for values. You can select
 multiple fields. Only one value is allowed to set per item and field.
 The example below shows a text field and a money field:
 
-<div class="columns is-centered">
-    <div class="column">
-    {{ figure(file="custom-fields-03.png") }}
-    </div>
-</div>
+{{ figure(file="custom-fields-03.png") }}
 
 You can create new fields right here without going to the _Manage
 Data_ page, by clicking the plus icon (1). The format of each field is
@@ -106,11 +102,7 @@ Adding values for custom fields in
 The search menu shows the same dropdown for selecting a custom field.
 Then you can set values that are matched against your items.
 
-<div class="columns is-centered">
-    <div class="column">
-    {{ figure(file="custom-fields-06.png") }}
-    </div>
-</div>
+{{ figure(file="custom-fields-06.png") }}
 
 Values are also validated in the search form. Only valid values are
 sent to the server for searching. There is one exception: you can use
