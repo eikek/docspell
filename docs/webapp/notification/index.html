@@ -167,6 +167,15 @@
                             
                             
                             <li>
+                                <a href="https://docspell.org/docs/webapp/bookmarks/"
+                                   >
+                                    Bookmarks
+                                </a>
+                                
+                            </li>
+                            
+                            
+                            <li>
                                 <a href="https://docspell.org/docs/webapp/itemcard-customize/"
                                    >
                                     Customize Item Card
@@ -486,6 +495,14 @@ converted into a message and sent to the specified target system.</p>
 <p>For example, this can be used to regularly inform about due items, all
 items tagged <em>Todo</em> etc.</p>
 <h2 id="due-items-task">Due Items Task<a class="zola-anchor" href="#due-items-task" aria-label="Anchor link for: due-items-task">🔗</a></h2>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/notification-06.png">
+</figure>
 <p>The settings allow to customize the query for searching items. You can
 choose to only include items that have one or more tags (these are
 <code>and</code>-ed, so all tags must exist on the item). You can also provide
@@ -509,8 +526,17 @@ selected. In other words, only items with an overdue time of <em>at most</em>
 <em>Remind Days</em> are included.</p>
 <h2 id="generic-query-task">Generic Query Task<a class="zola-anchor" href="#generic-query-task" aria-label="Anchor link for: generic-query-task">🔗</a></h2>
 <p>This is the generic version of the <em>Due Items Task</em>. Instead of
-selecting teh items via form elements, you can define a custom
-<a href="https://docspell.org/docs/query/">query</a>.</p>
+selecting the items via form elements, you can define a custom
+<a href="https://docspell.org/docs/query/">query</a> and optionally in combination with a
+<a href="https://docspell.org/docs/webapp/bookmarks/">bookmark</a>.</p>
+<figure class="image">
+    
+    
+    
+    
+
+    <img src="https://docspell.org/docs/webapp/notification-07.png">
+</figure>
 <h2 id="schedule">Schedule<a class="zola-anchor" href="#schedule" aria-label="Anchor link for: schedule">🔗</a></h2>
 <p>Both tasks have a <em>Schedule</em> field to specify the periodicity of the
 task. The syntax is similiar to a date-time string, like <code>2019-09-15 12:32</code>, where each part is a pattern to also match multple values. The
@@ -542,7 +568,7 @@ page</a>.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.30.1
+                Docspell 0.31.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

@@ -258,8 +258,8 @@ results of all sub expressions will be concatenated into a single
 list. When using <code>&amp;</code>, results are only concatenated if all lists are
 not empty; otherwise the result is the empty list.</p>
 <p>This example filters all <code>count</code> equal to <code>6</code> and all <code>name</code> equal to
-<code>max</code>. Since there are now <code>count</code>s with value <code>6</code>, the final result
-is empty.</p>
+<code>max</code>. Since there are no <code>count</code>s with value <code>6</code>, the final result is
+empty.</p>
 <pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: [count=6 &amp; name=max]
 </span><span>current result:
 </span><span>  [{&quot;name&quot;:&quot;max&quot;, &quot;count&quot;:4},
@@ -363,7 +363,7 @@ the sample json data below.</p>
     <div class="container">
         <div class="content has-text-centered">
             <span>
-                Docspell 0.30.1
+                Docspell 0.31.0
             </span>
             <span class="ml-1 mr-1">•</span>
             <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
