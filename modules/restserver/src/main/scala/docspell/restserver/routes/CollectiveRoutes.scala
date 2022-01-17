@@ -62,7 +62,7 @@ object CollectiveRoutes {
                 settings.emptyTrash.minAge
               )
             ),
-            settings.passwords.map(Password.apply)
+            settings.passwords
           )
           res <-
             backend.collective
@@ -90,7 +90,7 @@ object CollectiveRoutes {
                 trash.schedule,
                 trash.minAge
               ),
-              settDb.map(_.passwords).getOrElse(Nil).map(_.pass)
+              settDb.map(_.passwords).getOrElse(Nil)
             )
           )
           resp <- sett.toResponse()

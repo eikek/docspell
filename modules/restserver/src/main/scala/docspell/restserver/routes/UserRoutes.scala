@@ -73,7 +73,7 @@ object UserRoutes {
             AccountId(user.account.collective, username)
           )
           resp <- Ok(
-            DeleteUserData(data.ownedFolders.map(_.id), data.sentMails, data.shares)
+            DeleteUserData(data.ownedFolders, data.sentMails, data.shares)
           )
         } yield resp
     }

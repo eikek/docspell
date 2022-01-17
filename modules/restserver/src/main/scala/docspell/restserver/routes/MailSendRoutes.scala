@@ -46,10 +46,9 @@ object MailSendRoutes {
       rec <- s.recipients.traverse(MailAddress.parse)
       cc <- s.cc.traverse(MailAddress.parse)
       bcc <- s.bcc.traverse(MailAddress.parse)
-      fileIds <- s.attachmentIds.traverse(Ident.fromString)
       sel =
         if (s.addAllAttachments) AttachSelection.All
-        else AttachSelection.Selected(fileIds)
+        else AttachSelection.Selected(s.attachmentIds)
     } yield ItemMail(item, s.subject, rec, cc, bcc, s.body, sel)
 
   def convertOut(res: SendResult): BasicResult =

@@ -5567,7 +5567,6 @@ components:
           type: array
           items:
             type: string
-            format: ident
 
     ShareSecret:
       description: |
@@ -5811,8 +5810,8 @@ components:
 
     ItemsAndRefs:
       description: |
-        Holds a list of item ids and a list of ids of some other
-        related entity (e.g. tags).
+        Holds a list of item ids and a list of names or ids of some
+        other related entity (e.g. tags).
       required:
         - items
         - refs
@@ -5826,7 +5825,6 @@ components:
           type: array
           items:
             type: string
-            format: ident
     ItemsAndRef:
       description: |
         Holds a list of item ids and a single optional id of some

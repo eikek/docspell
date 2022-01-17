@@ -390,9 +390,8 @@ object ItemRoutes {
       case req @ POST -> Root / Ident(id) / "reprocess" =>
         for {
           data <- req.as[IdList]
-          ids = data.ids.flatMap(s => Ident.fromString(s).toOption)
           _ <- logger.fdebug(s"Re-process item ${id.id}")
-          res <- backend.item.reprocess(id, ids, user.account, true)
+          res <- backend.item.reprocess(id, data.ids, user.account, true)
           resp <- Ok(Conversions.basicResult(res, "Re-process task submitted."))
         } yield resp
 
