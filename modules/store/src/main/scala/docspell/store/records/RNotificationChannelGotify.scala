@@ -18,6 +18,7 @@ import doobie.implicits._
 final case class RNotificationChannelGotify(
     id: Ident,
     uid: Ident,
+    name: Option[String],
     url: LenientUri,
     appKey: Password,
     priority: Option[Int],
@@ -34,13 +35,14 @@ object RNotificationChannelGotify {
 
     val id = Column[Ident]("id", this)
     val uid = Column[Ident]("uid", this)
+    val name = Column[String]("name", this)
     val url = Column[LenientUri]("url", this)
     val appKey = Column[Password]("app_key", this)
     val priority = Column[Int]("priority", this)
     val created = Column[Timestamp]("created", this)
 
     val all: NonEmptyList[Column[_]] =
-      NonEmptyList.of(id, uid, url, appKey, priority, created)
+      NonEmptyList.of(id, uid, name, url, appKey, priority, created)
   }
 
   val T: Table = Table(None)
@@ -54,7 +56,7 @@ object RNotificationChannelGotify {
     DML.insert(
       T,
       T.all,
-      sql"${r.id},${r.uid},${r.url},${r.appKey},${r.priority},${r.created}"
+      sql"${r.id},${r.uid},${r.name},${r.url},${r.appKey},${r.priority},${r.created}"
     )
 
   def update(r: RNotificationChannelGotify): ConnectionIO[Int] =
@@ -64,7 +66,8 @@ object RNotificationChannelGotify {
       DML.set(
         T.url.setTo(r.url),
         T.appKey.setTo(r.appKey),
-        T.priority.setTo(r.priority)
+        T.priority.setTo(r.priority),
+        T.name.setTo(r.name)
       )
     )
 

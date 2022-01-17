@@ -73,15 +73,24 @@ object NotificationChannel {
           .map(NonEmptyList.fromList)
           .flatMap(_.toRight("No recipients given!"))
           .leftMap(new IllegalArgumentException(_))
-          .map(rec => Channel.Mail(mail.id, mail.connection, rec)),
+          .map(rec => Channel.Mail(mail.id, mail.name, mail.connection, rec)),
       gotify =>
-        Right(Channel.Gotify(gotify.id, gotify.url, gotify.appKey, gotify.priority)),
+        Right(
+          Channel
+            .Gotify(gotify.id, gotify.name, gotify.url, gotify.appKey, gotify.priority)
+        ),
       matrix =>
         Right(
           Channel
-            .Matrix(matrix.id, matrix.homeServer, matrix.roomId, matrix.accessToken)
+            .Matrix(
+              matrix.id,
+              matrix.name,
+              matrix.homeServer,
+              matrix.roomId,
+              matrix.accessToken
+            )
         ),
-      http => Right(Channel.Http(http.id, http.url))
+      http => Right(Channel.Http(http.id, http.name, http.url))
     )
 
   def convert(c: Channel): NotificationChannel =
@@ -90,24 +99,35 @@ object NotificationChannel {
         mail {
           NotificationMail(
             m.id,
+            m.name,
             ChannelType.Mail,
             m.connection,
             m.recipients.toList.map(_.displayString)
           )
         },
       g =>
-        gotify(NotificationGotify(g.id, ChannelType.Gotify, g.url, g.appKey, g.priority)),
+        gotify(
+          NotificationGotify(
+            g.id,
+            g.name,
+            ChannelType.Gotify,
+            g.url,
+            g.appKey,
+            g.priority
+          )
+        ),
       m =>
         matrix(
           NotificationMatrix(
             m.id,
+            m.name,
             ChannelType.Matrix,
             m.homeServer,
             m.roomId,
             m.accessToken
           )
         ),
-      h => http(NotificationHttp(h.id, ChannelType.Http, h.url))
+      h => http(NotificationHttp(h.id, h.name, ChannelType.Http, h.url))
     )
 
   implicit val jsonDecoder: Decoder[NotificationChannel] =

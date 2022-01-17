@@ -33,6 +33,7 @@ object Channel {
 
   final case class Mail(
       id: Ident,
+      name: Option[String],
       connection: Ident,
       recipients: Nel[MailAddress]
   ) extends Channel {
@@ -55,6 +56,7 @@ object Channel {
 
   final case class Gotify(
       id: Ident,
+      name: Option[String],
       url: LenientUri,
       appKey: Password,
       priority: Option[Int]
@@ -77,6 +79,7 @@ object Channel {
 
   final case class Matrix(
       id: Ident,
+      name: Option[String],
       homeServer: LenientUri,
       roomId: String,
       accessToken: Password
@@ -95,7 +98,7 @@ object Channel {
     implicit val jsonEncoder: Encoder[Matrix] = deriveConfiguredEncoder
   }
 
-  final case class Http(id: Ident, url: LenientUri) extends Channel {
+  final case class Http(id: Ident, name: Option[String], url: LenientUri) extends Channel {
     val channelType = ChannelType.Http
     def fold[A](
         f1: Mail => A,

@@ -254,11 +254,18 @@ object ONotification {
     private[ops] def makeChannel(r: RNotificationChannel): Channel =
       r.fold(
         mail =>
-          Channel.Mail(mail.id, mail.connection, Nel.fromListUnsafe(mail.recipients)),
-        gotify => Channel.Gotify(r.id, gotify.url, gotify.appKey, gotify.priority),
+          Channel.Mail(
+            mail.id,
+            mail.name,
+            mail.connection,
+            Nel.fromListUnsafe(mail.recipients)
+          ),
+        gotify =>
+          Channel.Gotify(r.id, gotify.name, gotify.url, gotify.appKey, gotify.priority),
         matrix =>
-          Channel.Matrix(r.id, matrix.homeServer, matrix.roomId, matrix.accessToken),
-        http => Channel.Http(r.id, http.url)
+          Channel
+            .Matrix(r.id, matrix.name, matrix.homeServer, matrix.roomId, matrix.accessToken),
+        http => Channel.Http(r.id, http.name, http.url)
       )
 
     private[ops] def makeRecord[F[_]: Sync](
@@ -278,7 +285,7 @@ object ONotification {
             time <- OptionT.liftF(Timestamp.current[F])
             r <-
               channel match {
-                case Channel.Mail(_, conn, recipients) =>
+                case Channel.Mail(_, name, conn, recipients) =>
                   for {
                     _ <- OptionT.liftF(
                       logger.debug(
@@ -291,20 +298,30 @@ object ONotification {
                     rec = RNotificationChannelMail(
                       id,
                       userId,
+                      name,
                       mailConn.id,
                       recipients.toList,
                       time
                     ).vary
                   } yield rec
-                case Channel.Gotify(_, url, appKey, prio) =>
+                case Channel.Gotify(_, name, url, appKey, prio) =>
                   OptionT.pure[F](
-                    RNotificationChannelGotify(id, userId, url, appKey, prio, time).vary
+                    RNotificationChannelGotify(
+                      id,
+                      userId,
+                      name,
+                      url,
+                      appKey,
+                      prio,
+                      time
+                    ).vary
                   )
-                case Channel.Matrix(_, homeServer, roomId, accessToken) =>
+                case Channel.Matrix(_, name, homeServer, roomId, accessToken) =>
                   OptionT.pure[F](
                     RNotificationChannelMatrix(
                       id,
                       userId,
+                      name,
                       homeServer,
                       roomId,
                       accessToken,
@@ -312,8 +329,10 @@ object ONotification {
                       time
                     ).vary
                   )
-                case Channel.Http(_, url) =>
-                  OptionT.pure[F](RNotificationChannelHttp(id, userId, url, time).vary)
+                case Channel.Http(_, name, url) =>
+                  OptionT.pure[F](
+                    RNotificationChannelHttp(id, userId, name, url, time).vary
+                  )
               }
           } yield r
       }

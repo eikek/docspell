@@ -5491,6 +5491,8 @@ components:
         id:
           type: string
           format: ident
+        name:
+          type: string
         channelType:
           type: string
           format: channeltype
@@ -5514,6 +5516,8 @@ components:
         id:
           type: string
           format: ident
+        name:
+          type: string
         channelType:
           type: string
           format: channeltype
@@ -5539,6 +5543,8 @@ components:
         id:
           type: string
           format: ident
+        name:
+          type: string
         channelType:
           type: string
           format: channeltype
@@ -5557,6 +5563,8 @@ components:
         id:
           type: string
           format: ident
+        name:
+          type: string
         channelType:
           type: string
           format: channeltype

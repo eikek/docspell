@@ -18,6 +18,7 @@ import doobie.implicits._
 final case class RNotificationChannelMatrix(
     id: Ident,
     uid: Ident,
+    name: Option[String],
     homeServer: LenientUri,
     roomId: String,
     accessToken: Password,
@@ -34,6 +35,7 @@ object RNotificationChannelMatrix {
 
     val id = Column[Ident]("id", this)
     val uid = Column[Ident]("uid", this)
+    val name = Column[String]("name", this)
     val homeServer = Column[LenientUri]("home_server", this)
     val roomId = Column[String]("room_id", this)
     val accessToken = Column[Password]("access_token", this)
@@ -41,7 +43,16 @@ object RNotificationChannelMatrix {
     val created = Column[Timestamp]("created", this)
 
     val all: NonEmptyList[Column[_]] =
-      NonEmptyList.of(id, uid, homeServer, roomId, accessToken, messageType, created)
+      NonEmptyList.of(
+        id,
+        uid,
+        name,
+        homeServer,
+        roomId,
+        accessToken,
+        messageType,
+        created
+      )
   }
   val T: Table = Table(None)
   def as(alias: String): Table = Table(Some(alias))
@@ -50,7 +61,7 @@ object RNotificationChannelMatrix {
     DML.insert(
       T,
       T.all,
-      sql"${r.id},${r.uid},${r.homeServer},${r.roomId},${r.accessToken},${r.messageType},${r.created}"
+      sql"${r.id},${r.uid},${r.name},${r.homeServer},${r.roomId},${r.accessToken},${r.messageType},${r.created}"
     )
 
   def update(r: RNotificationChannelMatrix): ConnectionIO[Int] =
@@ -61,7 +72,8 @@ object RNotificationChannelMatrix {
         T.homeServer.setTo(r.homeServer),
         T.roomId.setTo(r.roomId),
         T.accessToken.setTo(r.accessToken),
-        T.messageType.setTo(r.messageType)
+        T.messageType.setTo(r.messageType),
+        T.name.setTo(r.name)
       )
     )
 

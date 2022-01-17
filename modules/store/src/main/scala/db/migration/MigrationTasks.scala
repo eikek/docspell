@@ -70,7 +70,7 @@ trait MigrationTasks {
       .map { rec =>
         PeriodicDueItemsArgs(
           old.account,
-          Right(Channel.Mail(Ident.unsafe(""), old.smtpConnection, rec)),
+          Right(Channel.Mail(Ident.unsafe(""), None, old.smtpConnection, rec)),
           old.remindDays,
           old.daysBack,
           old.tagsInclude,

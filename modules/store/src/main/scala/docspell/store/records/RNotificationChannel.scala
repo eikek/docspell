@@ -16,7 +16,9 @@ import doobie._
 
 sealed trait RNotificationChannel {
 
-  def id: Ident
+  def id: Ident = fold(_.id, _.id, _.id, _.id)
+
+  def name: Option[String] = fold(_.name, _.name, _.name, _.name)
 
   def fold[A](
       f1: RNotificationChannelMail => A,
@@ -24,7 +26,6 @@ sealed trait RNotificationChannel {
       f3: RNotificationChannelMatrix => A,
       f4: RNotificationChannelHttp => A
   ): A
-
 }
 
 object RNotificationChannel {
@@ -37,8 +38,6 @@ object RNotificationChannel {
         f3: RNotificationChannelMatrix => A,
         f4: RNotificationChannelHttp => A
     ): A = f1(r)
-
-    val id = r.id
   }
 
   final case class Gotify(r: RNotificationChannelGotify) extends RNotificationChannel {
@@ -48,8 +47,6 @@ object RNotificationChannel {
         f3: RNotificationChannelMatrix => A,
         f4: RNotificationChannelHttp => A
     ): A = f2(r)
-
-    val id = r.id
   }
 
   final case class Matrix(r: RNotificationChannelMatrix) extends RNotificationChannel {
@@ -59,8 +56,6 @@ object RNotificationChannel {
         f3: RNotificationChannelMatrix => A,
         f4: RNotificationChannelHttp => A
     ): A = f3(r)
-
-    val id = r.id
   }
 
   final case class Http(r: RNotificationChannelHttp) extends RNotificationChannel {
@@ -70,8 +65,6 @@ object RNotificationChannel {
         f3: RNotificationChannelMatrix => A,
         f4: RNotificationChannelHttp => A
     ): A = f4(r)
-
-    val id = r.id
   }
 
   def insert(r: RNotificationChannel): ConnectionIO[Int] =
