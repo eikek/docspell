@@ -12,14 +12,14 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.restapi.model._
-import docspell.restserver.conv.MultiIdSupport
+import docspell.restserver.conv.NonEmptyListSupport
 
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 
-object AttachmentMultiRoutes extends MultiIdSupport {
+object AttachmentMultiRoutes extends NonEmptyListSupport {
 
   def apply[F[_]: Async](
       backend: BackendApp[F],
@@ -32,7 +32,7 @@ object AttachmentMultiRoutes extends MultiIdSupport {
     HttpRoutes.of { case req @ POST -> Root / "delete" =>
       for {
         json <- req.as[IdList]
-        attachments <- readIds[F](json.ids)
+        attachments <- requireNonEmpty(json.ids)
         n <- backend.item.deleteAttachmentMultiple(attachments, user.account.collective)
         res = BasicResult(
           n > 0,
