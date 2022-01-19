@@ -11,7 +11,6 @@ import cats.implicits._
 
 import docspell.backend.MailAddressCodec
 import docspell.common._
-import docspell.notification.api.ChannelOrRef._
 import docspell.notification.api.PeriodicQueryArgs
 import docspell.store.records.RJob
 
@@ -25,7 +24,7 @@ object JobFactory extends MailAddressCodec {
         PeriodicQueryArgs.taskName,
         submitter.collective,
         args,
-        s"Running periodic query, notify via ${args.channel.channelType}",
+        s"Running periodic query, notify via ${args.channels.map(_.channelType)}",
         now,
         submitter.user,
         Priority.Low,

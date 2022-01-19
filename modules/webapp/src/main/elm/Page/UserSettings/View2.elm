@@ -11,6 +11,7 @@ import Comp.ChangePasswordForm
 import Comp.DueItemsTaskManage
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
+import Comp.NotificationChannelManage
 import Comp.NotificationHookManage
 import Comp.OtpSetup
 import Comp.PeriodicQueryTaskManage
@@ -77,7 +78,7 @@ viewSidebar texts visible _ _ model =
                     , menuEntryActive model NotificationTab
                     , class S.sidebarLink
                     ]
-                    [ i [ class "fa fa-bullhorn" ] []
+                    [ i [ class "fa fa-comment font-thin" ] []
                     , span
                         [ class "ml-3" ]
                         [ text texts.notifications ]
@@ -120,6 +121,17 @@ viewSidebar texts visible _ _ model =
                             [ text texts.genericQueries ]
                         ]
                     ]
+                ]
+            , a
+                [ href "#"
+                , onClick (SetTab ChannelTab)
+                , menuEntryActive model ChannelTab
+                , class S.sidebarLink
+                ]
+                [ i [ class "fa fa-bullhorn" ] []
+                , span
+                    [ class "ml-3" ]
+                    [ text texts.channelSettings ]
                 ]
             , a
                 [ href "#"
@@ -217,6 +229,9 @@ viewContent texts flags settings model =
             Just OtpTab ->
                 viewOtpSetup texts settings model
 
+            Just ChannelTab ->
+                viewChannels texts settings model
+
             Nothing ->
                 []
         )
@@ -233,6 +248,26 @@ menuEntryActive model tab =
 
     else
         class ""
+
+
+viewChannels : Texts -> UiSettings -> Model -> List (Html Msg)
+viewChannels texts settings model =
+    [ h2
+        [ class S.header1
+        , class "inline-flex items-center"
+        ]
+        [ i [ class "fa fa-bell" ] []
+        , div [ class "ml-3" ]
+            [ text texts.channels
+            ]
+        ]
+    , Markdown.toHtml [ class "opacity-80  text-lg mb-3 markdown-preview" ] texts.channelInfoText
+    , Html.map ChannelMsg
+        (Comp.NotificationChannelManage.view texts.channelManage
+            settings
+            model.channelModel
+        )
+    ]
 
 
 viewOtpSetup : Texts -> UiSettings -> Model -> List (Html Msg)

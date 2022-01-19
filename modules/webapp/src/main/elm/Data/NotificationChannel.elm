@@ -12,17 +12,18 @@ module Data.NotificationChannel exposing
     , decoder
     , empty
     , encode
+    , getRef
     , setTypeGotify
     , setTypeHttp
     , setTypeMail
     , setTypeMatrix
     )
 
+import Api.Model.NotificationChannelRef exposing (NotificationChannelRef)
 import Api.Model.NotificationGotify exposing (NotificationGotify)
 import Api.Model.NotificationHttp exposing (NotificationHttp)
 import Api.Model.NotificationMail exposing (NotificationMail)
 import Api.Model.NotificationMatrix exposing (NotificationMatrix)
-import Data.ChannelRef exposing (ChannelRef)
 import Data.ChannelType exposing (ChannelType)
 import Json.Decode as D
 import Json.Encode as E
@@ -33,7 +34,6 @@ type NotificationChannel
     | Mail NotificationMail
     | Gotify NotificationGotify
     | Http NotificationHttp
-    | Ref ChannelRef
 
 
 empty : ChannelType -> NotificationChannel
@@ -87,46 +87,49 @@ decoder =
         , D.map Mail Api.Model.NotificationMail.decoder
         , D.map Matrix Api.Model.NotificationMatrix.decoder
         , D.map Http Api.Model.NotificationHttp.decoder
-        , D.map Ref Data.ChannelRef.decoder
         ]
+
+
+fold :
+    (NotificationMail -> a)
+    -> (NotificationGotify -> a)
+    -> (NotificationMatrix -> a)
+    -> (NotificationHttp -> a)
+    -> NotificationChannel
+    -> a
+fold fa fb fc fd channel =
+    case channel of
+        Mail ch ->
+            fa ch
+
+        Gotify ch ->
+            fb ch
+
+        Matrix ch ->
+            fc ch
+
+        Http ch ->
+            fd ch
 
 
 encode : NotificationChannel -> E.Value
 encode channel =
-    case channel of
-        Matrix ch ->
-            Api.Model.NotificationMatrix.encode ch
-
-        Mail ch ->
-            Api.Model.NotificationMail.encode ch
-
-        Gotify ch ->
-            Api.Model.NotificationGotify.encode ch
-
-        Http ch ->
-            Api.Model.NotificationHttp.encode ch
-
-        Ref ch ->
-            Data.ChannelRef.encode ch
+    fold
+        Api.Model.NotificationMail.encode
+        Api.Model.NotificationGotify.encode
+        Api.Model.NotificationMatrix.encode
+        Api.Model.NotificationHttp.encode
+        channel
 
 
 channelType : NotificationChannel -> Maybe ChannelType
 channelType ch =
-    case ch of
-        Matrix m ->
-            Data.ChannelType.fromString m.channelType
-
-        Mail m ->
-            Data.ChannelType.fromString m.channelType
-
-        Gotify m ->
-            Data.ChannelType.fromString m.channelType
-
-        Http m ->
-            Data.ChannelType.fromString m.channelType
-
-        Ref m ->
-            Just m.channelType
+    fold
+        (.channelType >> Data.ChannelType.fromString)
+        (.channelType >> Data.ChannelType.fromString)
+        (.channelType >> Data.ChannelType.fromString)
+        (.channelType >> Data.ChannelType.fromString)
+        ch
 
 
 asString : NotificationChannel -> String
@@ -144,5 +147,12 @@ asString channel =
         Http ch ->
             "Http @ " ++ ch.url
 
-        Ref ch ->
-            "Ref(" ++ Data.ChannelType.asString ch.channelType ++ "/" ++ ch.id ++ ")"
+
+getRef : NotificationChannel -> NotificationChannelRef
+getRef channel =
+    fold
+        (\c -> NotificationChannelRef c.id c.channelType c.name)
+        (\c -> NotificationChannelRef c.id c.channelType c.name)
+        (\c -> NotificationChannelRef c.id c.channelType c.name)
+        (\c -> NotificationChannelRef c.id c.channelType c.name)
+        channel

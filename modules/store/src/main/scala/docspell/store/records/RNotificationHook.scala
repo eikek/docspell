@@ -7,7 +7,6 @@
 package docspell.store.records
 
 import cats.data.NonEmptyList
-import cats.implicits._
 
 import docspell.common._
 import docspell.jsonminiq.JsonMiniQuery
@@ -22,115 +21,18 @@ final case class RNotificationHook(
     id: Ident,
     uid: Ident,
     enabled: Boolean,
-    channelMail: Option[Ident],
-    channelGotify: Option[Ident],
-    channelMatrix: Option[Ident],
-    channelHttp: Option[Ident],
     allEvents: Boolean,
     eventFilter: Option[JsonMiniQuery],
     created: Timestamp
-) {
-  def channelId: Ident =
-    channelMail
-      .orElse(channelGotify)
-      .orElse(channelMatrix)
-      .orElse(channelHttp)
-      .getOrElse(
-        sys.error(s"Illegal internal state: notification hook has no channel: ${id.id}")
-      )
-}
+) {}
 
 object RNotificationHook {
-  def mail(
-      id: Ident,
-      uid: Ident,
-      enabled: Boolean,
-      channelMail: Ident,
-      created: Timestamp
-  ): RNotificationHook =
-    RNotificationHook(
-      id,
-      uid,
-      enabled,
-      channelMail.some,
-      None,
-      None,
-      None,
-      false,
-      None,
-      created
-    )
-
-  def gotify(
-      id: Ident,
-      uid: Ident,
-      enabled: Boolean,
-      channelGotify: Ident,
-      created: Timestamp
-  ): RNotificationHook =
-    RNotificationHook(
-      id,
-      uid,
-      enabled,
-      None,
-      channelGotify.some,
-      None,
-      None,
-      false,
-      None,
-      created
-    )
-
-  def matrix(
-      id: Ident,
-      uid: Ident,
-      enabled: Boolean,
-      channelMatrix: Ident,
-      created: Timestamp
-  ): RNotificationHook =
-    RNotificationHook(
-      id,
-      uid,
-      enabled,
-      None,
-      None,
-      channelMatrix.some,
-      None,
-      false,
-      None,
-      created
-    )
-
-  def http(
-      id: Ident,
-      uid: Ident,
-      enabled: Boolean,
-      channelHttp: Ident,
-      created: Timestamp
-  ): RNotificationHook =
-    RNotificationHook(
-      id,
-      uid,
-      enabled,
-      None,
-      None,
-      None,
-      channelHttp.some,
-      false,
-      None,
-      created
-    )
-
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "notification_hook"
 
     val id = Column[Ident]("id", this)
     val uid = Column[Ident]("uid", this)
     val enabled = Column[Boolean]("enabled", this)
-    val channelMail = Column[Ident]("channel_mail", this)
-    val channelGotify = Column[Ident]("channel_gotify", this)
-    val channelMatrix = Column[Ident]("channel_matrix", this)
-    val channelHttp = Column[Ident]("channel_http", this)
     val allEvents = Column[Boolean]("all_events", this)
     val eventFilter = Column[JsonMiniQuery]("event_filter", this)
     val created = Column[Timestamp]("created", this)
@@ -140,10 +42,6 @@ object RNotificationHook {
         id,
         uid,
         enabled,
-        channelMail,
-        channelGotify,
-        channelMatrix,
-        channelHttp,
         allEvents,
         eventFilter,
         created
@@ -157,7 +55,7 @@ object RNotificationHook {
     DML.insert(
       T,
       T.all,
-      sql"${r.id},${r.uid},${r.enabled},${r.channelMail},${r.channelGotify},${r.channelMatrix},${r.channelHttp},${r.allEvents},${r.eventFilter},${r.created}"
+      sql"${r.id},${r.uid},${r.enabled},${r.allEvents},${r.eventFilter},${r.created}"
     )
 
   def deleteByAccount(id: Ident, account: AccountId): ConnectionIO[Int] = {
@@ -174,10 +72,6 @@ object RNotificationHook {
       T.id === r.id && T.uid === r.uid,
       DML.set(
         T.enabled.setTo(r.enabled),
-        T.channelMail.setTo(r.channelMail),
-        T.channelGotify.setTo(r.channelGotify),
-        T.channelMatrix.setTo(r.channelMatrix),
-        T.channelHttp.setTo(r.channelHttp),
         T.allEvents.setTo(r.allEvents),
         T.eventFilter.setTo(r.eventFilter)
       )

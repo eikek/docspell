@@ -48,17 +48,11 @@ type alias HttpModel =
     }
 
 
-type alias RefModel =
-    { channelType : ChannelType
-    }
-
-
 type Model
     = Matrix MatrixModel
     | Gotify GotifyModel
     | Mail MailModel
     | Http HttpModel
-    | Ref RefModel
 
 
 type Msg
@@ -147,11 +141,6 @@ initWith flags channel =
             , Cmd.none
             )
 
-        Data.NotificationChannel.Ref m ->
-            ( Ref { channelType = m.channelType }
-            , Cmd.none
-            )
-
 
 channelType : Model -> ChannelType
 channelType model =
@@ -168,9 +157,6 @@ channelType model =
         Http _ ->
             Data.ChannelType.Http
 
-        Ref ref ->
-            ref.channelType
-
 
 getChannel : Model -> Maybe NotificationChannel
 getChannel model =
@@ -186,9 +172,6 @@ getChannel model =
 
         Http mm ->
             Maybe.map Data.NotificationChannel.Http mm.value
-
-        Ref _ ->
-            Nothing
 
 
 
@@ -269,12 +252,3 @@ view texts settings model =
         Http m ->
             Html.map HttpMsg
                 (Comp.NotificationHttpForm.view texts.httpForm m.form)
-
-        -- Note: currently when retrieving hooks, this is not
-        -- send from the server. The server always sends
-        -- concrete channel details. However, it is possible
-        -- to create hooks with a reference to an existing
-        -- channel, but this is not supported in this client.
-        -- So this channel is ignored here.
-        Ref _ ->
-            span [ class "hidden" ] []

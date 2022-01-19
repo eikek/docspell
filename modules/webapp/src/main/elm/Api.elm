@@ -23,6 +23,7 @@ module Api exposing
     , checkCalEvent
     , confirmMultiple
     , confirmOtp
+    , createChannel
     , createHook
     , createImapSettings
     , createMailSettings
@@ -34,6 +35,7 @@ module Api exposing
     , deleteAttachment
     , deleteAttachments
     , deleteBookmark
+    , deleteChannel
     , deleteCustomField
     , deleteCustomValue
     , deleteCustomValueMultiple
@@ -56,6 +58,8 @@ module Api exposing
     , fileURL
     , getAttachmentMeta
     , getBookmarks
+    , getChannels
+    , getChannelsIgnoreError
     , getClientSettings
     , getCollective
     , getCollectiveSettings
@@ -172,6 +176,7 @@ module Api exposing
     , twoFactor
     , unconfirmMultiple
     , updateBookmark
+    , updateChannel
     , updateHook
     , updateNotifyDueItems
     , updatePeriodicQuery
@@ -229,6 +234,7 @@ import Api.Model.MoveAttachment exposing (MoveAttachment)
 import Api.Model.NewCustomField exposing (NewCustomField)
 import Api.Model.NewFolder exposing (NewFolder)
 import Api.Model.NotificationChannelTestResult exposing (NotificationChannelTestResult)
+import Api.Model.NotificationHook exposing (NotificationHook)
 import Api.Model.NotificationSampleEventReq exposing (NotificationSampleEventReq)
 import Api.Model.OptionalDate exposing (OptionalDate)
 import Api.Model.OptionalId exposing (OptionalId)
@@ -239,6 +245,8 @@ import Api.Model.OtpConfirm exposing (OtpConfirm)
 import Api.Model.OtpResult exposing (OtpResult)
 import Api.Model.OtpState exposing (OtpState)
 import Api.Model.PasswordChange exposing (PasswordChange)
+import Api.Model.PeriodicDueItemsSettings exposing (PeriodicDueItemsSettings)
+import Api.Model.PeriodicQuerySettings exposing (PeriodicQuerySettings)
 import Api.Model.Person exposing (Person)
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
@@ -274,10 +282,8 @@ import Data.EquipmentOrder exposing (EquipmentOrder)
 import Data.EventType exposing (EventType)
 import Data.Flags exposing (Flags)
 import Data.FolderOrder exposing (FolderOrder)
-import Data.NotificationHook exposing (NotificationHook)
+import Data.NotificationChannel exposing (NotificationChannel)
 import Data.OrganizationOrder exposing (OrganizationOrder)
-import Data.PeriodicDueItemsSettings exposing (PeriodicDueItemsSettings)
-import Data.PeriodicQuerySettings exposing (PeriodicQuerySettings)
 import Data.PersonOrder exposing (PersonOrder)
 import Data.Priority exposing (Priority)
 import Data.TagOrder exposing (TagOrder)
@@ -604,7 +610,7 @@ startOnceNotifyDueItems flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems/startonce"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.PeriodicDueItemsSettings.encode settings)
+        , body = Http.jsonBody (Api.Model.PeriodicDueItemsSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -618,7 +624,7 @@ updateNotifyDueItems flags settings receive =
     Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.PeriodicDueItemsSettings.encode settings)
+        , body = Http.jsonBody (Api.Model.PeriodicDueItemsSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -632,7 +638,7 @@ createNotifyDueItems flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.PeriodicDueItemsSettings.encode settings)
+        , body = Http.jsonBody (Api.Model.PeriodicDueItemsSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -645,7 +651,7 @@ getNotifyDueItems flags receive =
     Http2.authGet
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
         , account = getAccount flags
-        , expect = Http.expectJson receive (JsonDecode.list Data.PeriodicDueItemsSettings.decoder)
+        , expect = Http.expectJson receive (JsonDecode.list Api.Model.PeriodicDueItemsSettings.decoder)
         }
 
 
@@ -658,7 +664,7 @@ submitNotifyDueItems flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/notifydueitems"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.PeriodicDueItemsSettings.encode settings)
+        , body = Http.jsonBody (Api.Model.PeriodicDueItemsSettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -689,7 +695,7 @@ startOncePeriodicQuery flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery/startonce"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.PeriodicQuerySettings.encode settings)
+        , body = Http.jsonBody (Api.Model.PeriodicQuerySettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -703,7 +709,7 @@ updatePeriodicQuery flags settings receive =
     Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.PeriodicQuerySettings.encode settings)
+        , body = Http.jsonBody (Api.Model.PeriodicQuerySettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -717,7 +723,7 @@ createPeriodicQuery flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.PeriodicQuerySettings.encode settings)
+        , body = Http.jsonBody (Api.Model.PeriodicQuerySettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -730,7 +736,7 @@ getPeriodicQuery flags receive =
     Http2.authGet
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery"
         , account = getAccount flags
-        , expect = Http.expectJson receive (JsonDecode.list Data.PeriodicQuerySettings.decoder)
+        , expect = Http.expectJson receive (JsonDecode.list Api.Model.PeriodicQuerySettings.decoder)
         }
 
 
@@ -743,7 +749,7 @@ submitPeriodicQuery flags settings receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/usertask/periodicquery"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.PeriodicQuerySettings.encode settings)
+        , body = Http.jsonBody (Api.Model.PeriodicQuerySettings.encode settings)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -2576,6 +2582,63 @@ shareFileURL attachId =
 
 
 
+--- NotificationChannel
+
+
+getChannelsTask : Flags -> Task.Task Http.Error (List NotificationChannel)
+getChannelsTask flags =
+    Http2.authTask
+        { method = "GET"
+        , url = flags.config.baseUrl ++ "/api/v1/sec/notification/channel"
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver (JsonDecode.list Data.NotificationChannel.decoder)
+        , headers = []
+        , timeout = Nothing
+        }
+
+
+getChannelsIgnoreError : Flags -> (List NotificationChannel -> msg) -> Cmd msg
+getChannelsIgnoreError flags tagger =
+    getChannelsTask flags
+        |> Task.attempt (Result.map tagger >> Result.withDefault (tagger []))
+
+
+getChannels : Flags -> (Result Http.Error (List NotificationChannel) -> msg) -> Cmd msg
+getChannels flags receive =
+    getChannelsTask flags |> Task.attempt receive
+
+
+deleteChannel : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteChannel flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/channel/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+createChannel : Flags -> NotificationChannel -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+createChannel flags hook receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/channel"
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.NotificationChannel.encode hook)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+updateChannel : Flags -> NotificationChannel -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+updateChannel flags hook receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/notification/channel"
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.NotificationChannel.encode hook)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+
 --- NotificationHook
 
 
@@ -2584,7 +2647,7 @@ getHooks flags receive =
     Http2.authGet
         { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook"
         , account = getAccount flags
-        , expect = Http.expectJson receive (JsonDecode.list Data.NotificationHook.decoder)
+        , expect = Http.expectJson receive (JsonDecode.list Api.Model.NotificationHook.decoder)
         }
 
 
@@ -2602,7 +2665,7 @@ createHook flags hook receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.NotificationHook.encode hook)
+        , body = Http.jsonBody (Api.Model.NotificationHook.encode hook)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -2612,7 +2675,7 @@ updateHook flags hook receive =
     Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.NotificationHook.encode hook)
+        , body = Http.jsonBody (Api.Model.NotificationHook.encode hook)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -2642,7 +2705,7 @@ testHook flags hook receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook/sendTestEvent"
         , account = getAccount flags
-        , body = Http.jsonBody (Data.NotificationHook.encode hook)
+        , body = Http.jsonBody (Api.Model.NotificationHook.encode hook)
         , expect = Http.expectJson receive Api.Model.NotificationChannelTestResult.decoder
         }
 

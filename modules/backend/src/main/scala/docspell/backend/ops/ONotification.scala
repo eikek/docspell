@@ -39,7 +39,10 @@ trait ONotification[F[_]] {
       userId: Ident
   ): F[Vector[NotificationChannel]]
 
-  def findNotificationChannel(ref: ChannelRef): F[Vector[NotificationChannel]]
+  def findNotificationChannel(
+      ref: ChannelRef,
+      account: AccountId
+  ): F[Vector[NotificationChannel]]
 
   def listChannels(account: AccountId): F[Vector[Channel]]
 
@@ -65,7 +68,7 @@ trait ONotification[F[_]] {
 
   def sendSampleEvent(
       evt: EventType,
-      channel: Channel,
+      channel: Nel[ChannelRef],
       account: AccountId,
       baseUrl: Option[LenientUri]
   ): F[ONotification.SendTestResult]
@@ -89,7 +92,7 @@ object ONotification {
           .getOrElse(UpdateResult.notFound)
 
       def offerEvents(ev: Iterable[Event]): F[Unit] =
-        ev.toList.traverse(notMod.offer(_)).as(())
+        ev.toList.traverse(notMod.offer).as(())
 
       def sendMessage(
           logger: Logger[F],
@@ -109,33 +112,27 @@ object ONotification {
 
       def sendSampleEvent(
           evt: EventType,
-          channel: Channel,
+          channels: Nel[ChannelRef],
           account: AccountId,
           baseUrl: Option[LenientUri]
-      ): F[SendTestResult] = {
-        def doCreate(userId: Ident) =
-          (for {
-            ev <- sampleEvent(evt, account, baseUrl)
-            logbuf <- Logger.buffer()
-            ch <- mkNotificationChannel(channel, userId)
-            _ <- notMod.send(logbuf._2.andThen(log), ev, ch)
-            logs <- logbuf._1.get
-            res = SendTestResult(true, logs)
-          } yield res).attempt
-            .map {
-              case Right(res) => res
-              case Left(ex) =>
-                val ps = new StringWriter()
-                ex.printStackTrace(new PrintWriter(ps))
-                SendTestResult(false, Vector(s"${ex.getMessage}\n$ps"))
-            }
-
-        OptionT(store.transact(RUser.findIdByAccount(account)))
-          .semiflatMap(doCreate)
-          .getOrElse(
-            SendTestResult(false, Vector(s"No user found in db for: ${account.asString}"))
+      ): F[SendTestResult] =
+        (for {
+          ev <- sampleEvent(evt, account, baseUrl)
+          logbuf <- Logger.buffer()
+          ch <- channels.toList.toVector.flatTraverse(
+            findNotificationChannel(_, account)
           )
-      }
+          _ <- notMod.send(logbuf._2.andThen(log), ev, ch)
+          logs <- logbuf._1.get
+          res = SendTestResult(true, logs)
+        } yield res).attempt
+          .map {
+            case Right(res) => res
+            case Left(ex) =>
+              val ps = new StringWriter()
+              ex.printStackTrace(new PrintWriter(ps))
+              SendTestResult(false, Vector(s"${ex.getMessage}\n$ps"))
+          }
 
       def listChannels(account: AccountId): F[Vector[Channel]] =
         store
@@ -153,7 +150,7 @@ object ONotification {
         (for {
           newId <- OptionT.liftF(Ident.randomId[F])
           userId <- OptionT(store.transact(RUser.findIdByAccount(account)))
-          r <- ChannelConv.makeRecord[F](store, log, Right(channel), newId, userId)
+          r <- ChannelConv.makeRecord[F](store, channel, newId, userId)
           _ <- OptionT.liftF(store.transact(RNotificationChannel.insert(r)))
           _ <- OptionT.liftF(log.debug(s"Created channel $r for $account"))
         } yield AddResult.Success)
@@ -162,7 +159,7 @@ object ONotification {
       def updateChannel(channel: Channel, account: AccountId): F[UpdateResult] =
         (for {
           userId <- OptionT(store.transact(RUser.findIdByAccount(account)))
-          r <- ChannelConv.makeRecord[F](store, log, Right(channel), channel.id, userId)
+          r <- ChannelConv.makeRecord[F](store, channel, channel.id, userId)
           n <- OptionT.liftF(store.transact(RNotificationChannel.update(r)))
         } yield UpdateResult.fromUpdateRows(n)).getOrElse(UpdateResult.notFound)
 
@@ -179,16 +176,14 @@ object ONotification {
       def createHook(hook: Hook, account: AccountId): F[AddResult] =
         (for {
           _ <- OptionT.liftF(log.debug(s"Creating new notification hook: $hook"))
-          channelId <- OptionT.liftF(Ident.randomId[F])
           userId <- OptionT(store.transact(RUser.findIdByAccount(account)))
-          r <- ChannelConv.makeRecord[F](store, log, hook.channel, channelId, userId)
+          hr <- OptionT.liftF(Hook.makeRecord(userId, hook))
           _ <- OptionT.liftF(
-            if (channelId == r.id) store.transact(RNotificationChannel.insert(r))
-            else ().pure[F]
+            store.transact(
+              RNotificationHook.insert(hr) *> RNotificationHookChannel
+                .updateAll(hr.id, hook.channels.toList)
+            )
           )
-          _ <- OptionT.liftF(log.debug(s"Created channel $r for $account"))
-          hr <- OptionT.liftF(Hook.makeRecord(r, userId, hook))
-          _ <- OptionT.liftF(store.transact(RNotificationHook.insert(hr)))
           _ <- OptionT.liftF(
             store.transact(RNotificationHookEvent.insertAll(hr.id, hook.events))
           )
@@ -203,31 +198,25 @@ object ONotification {
               .getOrElse(UpdateResult.notFound)
           )
 
-        def withChannel(
-            r: RNotificationHook
-        )(f: RNotificationChannel => F[UpdateResult]): F[UpdateResult] =
-          ChannelConv
-            .makeRecord(store, log, hook.channel, r.channelId, r.uid)
-            .semiflatMap(f)
-            .getOrElse(UpdateResult.notFound)
-
         def doUpdate(r: RNotificationHook): F[UpdateResult] =
-          withChannel(r) { ch =>
-            UpdateResult.fromUpdate(store.transact(for {
-              nc <- RNotificationChannel.update(ch)
-              ne <- RNotificationHookEvent.updateAll(
-                r.id,
-                if (hook.allEvents) Nil else hook.events
+          UpdateResult.fromUpdate(store.transact(for {
+            ne <- RNotificationHookEvent.updateAll(
+              r.id,
+              if (hook.allEvents) Nil else hook.events
+            )
+            nc <- RNotificationHookChannel.updateAll(
+              r.id,
+              hook.channels.toList
+            )
+            nr <- RNotificationHook.update(
+              r.copy(
+                enabled = hook.enabled,
+                allEvents = hook.allEvents,
+                eventFilter = hook.eventFilter
               )
-              nr <- RNotificationHook.update(
-                r.copy(
-                  enabled = hook.enabled,
-                  allEvents = hook.allEvents,
-                  eventFilter = hook.eventFilter
-                )
-              )
-            } yield nc + ne + nr))
-          }
+            )
+
+          } yield nc + ne + nr))
 
         withHook(doUpdate)
       }
@@ -238,13 +227,17 @@ object ONotification {
       ): F[Vector[NotificationChannel]] =
         (for {
           rec <- ChannelConv
-            .makeRecord(store, log, Right(channel), channel.id, userId)
+            .makeRecord(store, channel, channel.id, userId)
           ch <- OptionT.liftF(store.transact(QNotification.readChannel(rec)))
         } yield ch).getOrElse(Vector.empty)
 
-      def findNotificationChannel(ref: ChannelRef): F[Vector[NotificationChannel]] =
+      def findNotificationChannel(
+          ref: ChannelRef,
+          accountId: AccountId
+      ): F[Vector[NotificationChannel]] =
         (for {
-          rec <- OptionT(store.transact(RNotificationChannel.getByRef(ref)))
+          userId <- OptionT(store.transact(RUser.findIdByAccount(accountId)))
+          rec <- OptionT(store.transact(RNotificationChannel.getByRef(ref, userId)))
           ch <- OptionT.liftF(store.transact(QNotification.readChannel(rec)))
         } yield ch).getOrElse(Vector.empty)
     })
@@ -254,75 +247,40 @@ object ONotification {
     private[ops] def makeChannel(r: RNotificationChannel): Channel =
       r.fold(
         mail =>
-          Channel.Mail(mail.id, mail.connection, Nel.fromListUnsafe(mail.recipients)),
-        gotify => Channel.Gotify(r.id, gotify.url, gotify.appKey, gotify.priority),
+          Channel.Mail(
+            mail.id,
+            mail.name,
+            mail.connection,
+            Nel.fromListUnsafe(mail.recipients)
+          ),
+        gotify =>
+          Channel.Gotify(r.id, gotify.name, gotify.url, gotify.appKey, gotify.priority),
         matrix =>
-          Channel.Matrix(r.id, matrix.homeServer, matrix.roomId, matrix.accessToken),
-        http => Channel.Http(r.id, http.url)
+          Channel
+            .Matrix(
+              r.id,
+              matrix.name,
+              matrix.homeServer,
+              matrix.roomId,
+              matrix.accessToken
+            ),
+        http => Channel.Http(r.id, http.name, http.url)
       )
 
-    private[ops] def makeRecord[F[_]: Sync](
+    private[ops] def makeRecord[F[_]](
         store: Store[F],
-        logger: Logger[F],
-        channelIn: Either[ChannelRef, Channel],
+        channel: Channel,
         id: Ident,
         userId: Ident
     ): OptionT[F, RNotificationChannel] =
-      channelIn match {
-        case Left(ref) =>
-          OptionT.liftF(logger.debug(s"Loading channel for ref: ${ref}")) *>
-            OptionT(store.transact(RNotificationChannel.getByRef(ref)))
+      RNotificationChannel.fromChannel(channel, id, userId).mapK(store.transform)
 
-        case Right(channel) =>
-          for {
-            time <- OptionT.liftF(Timestamp.current[F])
-            r <-
-              channel match {
-                case Channel.Mail(_, conn, recipients) =>
-                  for {
-                    _ <- OptionT.liftF(
-                      logger.debug(
-                        s"Looking up user smtp for ${userId.id} and ${conn.id}"
-                      )
-                    )
-                    mailConn <- OptionT(
-                      store.transact(RUserEmail.getByUser(userId, conn))
-                    )
-                    rec = RNotificationChannelMail(
-                      id,
-                      userId,
-                      mailConn.id,
-                      recipients.toList,
-                      time
-                    ).vary
-                  } yield rec
-                case Channel.Gotify(_, url, appKey, prio) =>
-                  OptionT.pure[F](
-                    RNotificationChannelGotify(id, userId, url, appKey, prio, time).vary
-                  )
-                case Channel.Matrix(_, homeServer, roomId, accessToken) =>
-                  OptionT.pure[F](
-                    RNotificationChannelMatrix(
-                      id,
-                      userId,
-                      homeServer,
-                      roomId,
-                      accessToken,
-                      "m.text",
-                      time
-                    ).vary
-                  )
-                case Channel.Http(_, url) =>
-                  OptionT.pure[F](RNotificationChannelHttp(id, userId, url, time).vary)
-              }
-          } yield r
-      }
   }
 
   final case class Hook(
       id: Ident,
       enabled: Boolean,
-      channel: Either[ChannelRef, Channel],
+      channels: List[ChannelRef],
       allEvents: Boolean,
       eventFilter: Option[JsonMiniQuery],
       events: List[EventType]
@@ -335,14 +293,12 @@ object ONotification {
         r: RNotificationHook,
         events: List[EventType]
     ): ConnectionIO[Hook] =
-      RNotificationChannel
-        .getByHook(r)
-        .map(_.head)
-        .map(ChannelConv.makeChannel)
-        .map(ch => Hook(r.id, r.enabled, Right(ch), r.allEvents, r.eventFilter, events))
+      RNotificationHookChannel
+        .allOfNel(r.id)
+        .flatMap(rhcs => RNotificationHookChannel.resolveRefs(rhcs))
+        .map(refs => Hook(r.id, r.enabled, refs, r.allEvents, r.eventFilter, events))
 
     private[ops] def makeRecord[F[_]: Sync](
-        ch: RNotificationChannel,
         userId: Ident,
         hook: Hook
     ): F[RNotificationHook] =
@@ -353,10 +309,6 @@ object ONotification {
           id,
           userId,
           hook.enabled,
-          ch.fold(_.id.some, _ => None, _ => None, _ => None),
-          ch.fold(_ => None, _.id.some, _ => None, _ => None),
-          ch.fold(_ => None, _ => None, _.id.some, _ => None),
-          ch.fold(_ => None, _ => None, _ => None, _.id.some),
           hook.allEvents,
           hook.eventFilter,
           time

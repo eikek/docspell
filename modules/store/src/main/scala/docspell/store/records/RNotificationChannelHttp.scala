@@ -18,6 +18,7 @@ import doobie.implicits._
 final case class RNotificationChannelHttp(
     id: Ident,
     uid: Ident,
+    name: Option[String],
     url: LenientUri,
     created: Timestamp
 ) {
@@ -32,25 +33,32 @@ object RNotificationChannelHttp {
 
     val id = Column[Ident]("id", this)
     val uid = Column[Ident]("uid", this)
+    val name = Column[String]("name", this)
     val url = Column[LenientUri]("url", this)
     val created = Column[Timestamp]("created", this)
 
     val all: NonEmptyList[Column[_]] =
-      NonEmptyList.of(id, uid, url, created)
+      NonEmptyList.of(id, uid, name, url, created)
   }
 
   val T: Table = Table(None)
   def as(alias: String): Table =
     Table(Some(alias))
 
-  def getById(id: Ident): ConnectionIO[Option[RNotificationChannelHttp]] =
-    run(select(T.all), from(T), T.id === id).query[RNotificationChannelHttp].option
+  def getById(userId: Ident)(id: Ident): ConnectionIO[Option[RNotificationChannelHttp]] =
+    run(select(T.all), from(T), T.id === id && T.uid === userId)
+      .query[RNotificationChannelHttp]
+      .option
 
   def insert(r: RNotificationChannelHttp): ConnectionIO[Int] =
-    DML.insert(T, T.all, sql"${r.id},${r.uid},${r.url},${r.created}")
+    DML.insert(T, T.all, sql"${r.id},${r.uid},${r.name},${r.url},${r.created}")
 
   def update(r: RNotificationChannelHttp): ConnectionIO[Int] =
-    DML.update(T, T.id === r.id && T.uid === r.uid, DML.set(T.url.setTo(r.url)))
+    DML.update(
+      T,
+      T.id === r.id && T.uid === r.uid,
+      DML.set(T.url.setTo(r.url), T.name.setTo(r.name))
+    )
 
   def getByAccount(account: AccountId): ConnectionIO[Vector[RNotificationChannelHttp]] = {
     val user = RUser.as("u")

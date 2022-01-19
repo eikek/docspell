@@ -9,10 +9,10 @@ module Comp.NotificationTest exposing (Model, Msg, ViewConfig, init, update, vie
 
 import Api
 import Api.Model.NotificationChannelTestResult exposing (NotificationChannelTestResult)
+import Api.Model.NotificationHook exposing (NotificationHook)
 import Comp.Basic as B
 import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
-import Data.NotificationHook exposing (NotificationHook)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)

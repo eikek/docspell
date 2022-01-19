@@ -26,7 +26,6 @@ import docspell.store.queries.ListItem
 import docspell.store.queries.{QItem, Query}
 import docspell.store.records.RQueryBookmark
 import docspell.store.records.RShare
-import docspell.store.records.RUser
 
 object PeriodicQueryTask {
   val taskName = PeriodicQueryArgs.taskName
@@ -53,11 +52,7 @@ object PeriodicQueryTask {
   def withChannel[F[_]: Sync](ctx: Context[F, Args], ops: ONotification[F])(
       cont: Vector[NotificationChannel] => F[Unit]
   ): F[Unit] =
-    OptionT(ctx.store.transact(RUser.findIdByAccount(ctx.args.account)))
-      .semiflatMap(userId =>
-        TaskOperations.withChannel(ctx.logger, ctx.args.channel, userId, ops)(cont)
-      )
-      .getOrElse(())
+    TaskOperations.withChannel(ctx.logger, ctx.args.channels, ctx.args.account, ops)(cont)
 
   private def queryString(q: ItemQuery.Expr) =
     ItemQueryParser.asString(q)

@@ -11,6 +11,7 @@ import Comp.ChangePasswordForm
 import Comp.DueItemsTaskManage
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
+import Comp.NotificationChannelManage
 import Comp.NotificationHookManage
 import Comp.OtpSetup
 import Comp.PeriodicQueryTaskManage
@@ -71,8 +72,12 @@ update flags settings msg model =
                     }
 
                 NotificationWebhookTab ->
+                    let
+                        ( _, nc ) =
+                            Comp.NotificationHookManage.init flags
+                    in
                     { model = m
-                    , cmd = Cmd.none
+                    , cmd = Cmd.map NotificationHookMsg nc
                     , sub = Sub.none
                     , newSettings = Nothing
                     }
@@ -105,6 +110,9 @@ update flags settings msg model =
                     UpdateResult m Cmd.none Sub.none Nothing
 
                 OtpTab ->
+                    UpdateResult m Cmd.none Sub.none Nothing
+
+                ChannelTab ->
                     UpdateResult m Cmd.none Sub.none Nothing
 
         ChangePassMsg m ->
@@ -191,6 +199,17 @@ update flags settings msg model =
             in
             { model = { model | notificationHookModel = hm }
             , cmd = Cmd.map NotificationHookMsg hc
+            , sub = Sub.none
+            , newSettings = Nothing
+            }
+
+        ChannelMsg lm ->
+            let
+                ( cm, cc ) =
+                    Comp.NotificationChannelManage.update flags lm model.channelModel
+            in
+            { model = { model | channelModel = cm }
+            , cmd = Cmd.map ChannelMsg cc
             , sub = Sub.none
             , newSettings = Nothing
             }

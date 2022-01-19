@@ -27,7 +27,11 @@ object QNotification {
   def findChannelsForEvent(event: Event): ConnectionIO[Vector[HookChannel]] =
     for {
       hooks <- listHooks(event.account.collective, event.eventType)
-      chs <- hooks.traverse(readHookChannel)
+      chs <- hooks.traverse(h =>
+        listChannels(h.id)
+          .flatMap(_.flatTraverse(hc => readHookChannel(h.uid, hc)))
+          .map(c => HookChannel(h, c))
+      )
     } yield chs
 
   // --
@@ -50,21 +54,27 @@ object QNotification {
         )
     ).query[RNotificationHook].to[Vector]
 
+  def listChannels(hookId: Ident): ConnectionIO[Vector[RNotificationHookChannel]] =
+    RNotificationHookChannel.allOf(hookId)
+
   def readHookChannel(
-      hook: RNotificationHook
-  ): ConnectionIO[HookChannel] =
+      userId: Ident,
+      hook: RNotificationHookChannel
+  ): ConnectionIO[Vector[NotificationChannel]] =
     for {
-      c1 <- read(hook.channelMail)(RNotificationChannelMail.getById)(
+      c1 <- read(hook.channelMail)(RNotificationChannelMail.getById(userId))(
         ChannelMap.readMail
       )
-      c2 <- read(hook.channelGotify)(RNotificationChannelGotify.getById)(
+      c2 <- read(hook.channelGotify)(RNotificationChannelGotify.getById(userId))(
         ChannelMap.readGotify
       )
-      c3 <- read(hook.channelMatrix)(RNotificationChannelMatrix.getById)(
+      c3 <- read(hook.channelMatrix)(RNotificationChannelMatrix.getById(userId))(
         ChannelMap.readMatrix
       )
-      c4 <- read(hook.channelHttp)(RNotificationChannelHttp.getById)(ChannelMap.readHttp)
-    } yield HookChannel(hook, c1 ++ c2 ++ c3 ++ c4)
+      c4 <- read(hook.channelHttp)(RNotificationChannelHttp.getById(userId))(
+        ChannelMap.readHttp
+      )
+    } yield c1 ++ c2 ++ c3 ++ c4
 
   def readChannel(ch: RNotificationChannel): ConnectionIO[Vector[NotificationChannel]] =
     ch.fold(

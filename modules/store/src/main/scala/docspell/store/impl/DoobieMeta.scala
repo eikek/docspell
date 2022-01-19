@@ -12,7 +12,7 @@ import java.time.{Instant, LocalDate}
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.jsonminiq.JsonMiniQuery
-import docspell.notification.api.EventType
+import docspell.notification.api.{ChannelType, EventType}
 import docspell.query.{ItemQuery, ItemQueryParser}
 import docspell.totp.Key
 
@@ -156,6 +156,9 @@ trait DoobieMeta extends EmilDoobieMeta {
 
   implicit val metaJsonMiniQuery: Meta[JsonMiniQuery] =
     Meta[String].timap(JsonMiniQuery.unsafeParse)(_.unsafeAsString)
+
+  implicit val channelTypeRead: Read[ChannelType] =
+    Read[String].map(ChannelType.unsafeFromString)
 }
 
 object DoobieMeta extends DoobieMeta {

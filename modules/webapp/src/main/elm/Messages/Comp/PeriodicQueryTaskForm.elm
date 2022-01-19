@@ -11,14 +11,13 @@ module Messages.Comp.PeriodicQueryTaskForm exposing
     , gb
     )
 
-import Data.ChannelType exposing (ChannelType)
 import Http
 import Messages.Basics
 import Messages.Comp.BookmarkDropdown
 import Messages.Comp.CalEventInput
 import Messages.Comp.ChannelForm
+import Messages.Comp.ChannelRefInput
 import Messages.Comp.HttpError
-import Messages.Data.ChannelType
 
 
 type alias Texts =
@@ -26,6 +25,7 @@ type alias Texts =
     , calEventInput : Messages.Comp.CalEventInput.Texts
     , channelForm : Messages.Comp.ChannelForm.Texts
     , bookmarkDropdown : Messages.Comp.BookmarkDropdown.Texts
+    , channelRef : Messages.Comp.ChannelRefInput.Texts
     , httpError : Http.Error -> String
     , reallyDeleteTask : String
     , startOnce : String
@@ -41,7 +41,7 @@ type alias Texts =
     , invalidCalEvent : String
     , channelRequired : String
     , queryStringRequired : String
-    , channelHeader : ChannelType -> String
+    , channelHeader : String
     , messageContentTitle : String
     , messageContentLabel : String
     , messageContentInfo : String
@@ -56,6 +56,7 @@ gb =
     , channelForm = Messages.Comp.ChannelForm.gb
     , httpError = Messages.Comp.HttpError.gb
     , bookmarkDropdown = Messages.Comp.BookmarkDropdown.gb
+    , channelRef = Messages.Comp.ChannelRefInput.gb
     , reallyDeleteTask = "Really delete this notification task?"
     , startOnce = "Start Once"
     , startTaskNow = "Start this task now"
@@ -74,7 +75,7 @@ gb =
     , queryLabel = "Query"
     , channelRequired = "A valid channel must be given."
     , queryStringRequired = "A query string and/or bookmark must be supplied"
-    , channelHeader = \ct -> "Connection details for " ++ Messages.Data.ChannelType.gb ct
+    , channelHeader = "Channels"
     , messageContentTitle = "Customize message"
     , messageContentLabel = "Beginning of message"
     , messageContentInfo = "Insert text that is prependend to the generated message."
@@ -89,6 +90,7 @@ de =
     , channelForm = Messages.Comp.ChannelForm.de
     , httpError = Messages.Comp.HttpError.de
     , bookmarkDropdown = Messages.Comp.BookmarkDropdown.de
+    , channelRef = Messages.Comp.ChannelRefInput.de
     , reallyDeleteTask = "Diesen Benachrichtigungsauftrag wirklich löschen?"
     , startOnce = "Jetzt starten"
     , startTaskNow = "Starte den Auftrag sofort"
@@ -107,7 +109,7 @@ de =
     , queryLabel = "Abfrage"
     , channelRequired = "Ein Versandkanal muss angegeben werden."
     , queryStringRequired = "Eine Suchabfrage und/oder ein Bookmark muss angegeben werden."
-    , channelHeader = \ct -> "Details für " ++ Messages.Data.ChannelType.de ct
+    , channelHeader = "Kanäle"
     , messageContentTitle = "Nachricht anpassen"
     , messageContentLabel = "Anfang der Nachricht"
     , messageContentInfo = "Dieser Text wird an den Anfang der generierten Nachricht angefügt."

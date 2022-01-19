@@ -6,6 +6,7 @@
 
 package docspell.restserver.routes
 
+import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
 
@@ -14,10 +15,10 @@ import docspell.backend.auth.AuthToken
 import docspell.common._
 import docspell.joexapi.model.BasicResult
 import docspell.jsonminiq.JsonMiniQuery
-import docspell.notification.api.EventType
+import docspell.notification.api.{ChannelRef, EventType}
 import docspell.restapi.model._
 import docspell.restserver.Config
-import docspell.restserver.conv.Conversions
+import docspell.restserver.conv.{Conversions, NonEmptyListSupport}
 import docspell.restserver.http4s.ClientRequestInfo
 
 import org.http4s._
@@ -26,7 +27,7 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.Router
 
-object NotificationRoutes {
+object NotificationRoutes extends NonEmptyListSupport {
 
   def apply[F[_]: Async](
       cfg: Config,
@@ -126,17 +127,11 @@ object NotificationRoutes {
       case req @ POST -> Root / "sendTestEvent" =>
         for {
           input <- req.as[NotificationHook]
-          ch <- Sync[F]
-            .pure(
-              input.channel.left
-                .map(_ => new Exception(s"ChannelRefs not allowed for testing"))
-                .flatMap(NotificationChannel.convert)
-            )
-            .rethrow
+          ch <- requireNonEmpty(input.channels)
           baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
           res <- backend.notification.sendSampleEvent(
             input.events.headOption.getOrElse(EventType.all.head),
-            ch,
+            ch.map(r => ChannelRef(r.id, r.channelType, r.name)),
             user.account,
             baseUrl.some
           )
@@ -179,33 +174,26 @@ object NotificationRoutes {
       NotificationHook(
         h.id,
         h.enabled,
-        h.channel.map(NotificationChannel.convert),
+        h.channels.map(c => NotificationChannelRef(c.id, c.channelType, c.name)).toList,
         h.allEvents,
         h.eventFilter,
         h.events
       )
 
     def convertHook(h: NotificationHook): Either[Throwable, ONotification.Hook] =
-      h.channel match {
-        case Left(cref) =>
-          Right(
-            ONotification.Hook(
-              h.id,
-              h.enabled,
-              Left(cref),
-              h.allEvents,
-              h.eventFilter,
-              h.events
-            )
+      NonEmptyList
+        .fromList(h.channels)
+        .toRight(new IllegalArgumentException(s"Empty channels not allowed!"))
+        .map(_ =>
+          ONotification.Hook(
+            h.id,
+            h.enabled,
+            h.channels.map(c => ChannelRef(c.id, c.channelType, c.name)),
+            h.allEvents,
+            h.eventFilter,
+            h.events
           )
-        case Right(channel) =>
-          NotificationChannel
-            .convert(channel)
-            .map(ch =>
-              ONotification
-                .Hook(h.id, h.enabled, Right(ch), h.allEvents, h.eventFilter, h.events)
-            )
-      }
+        )
 
   }
 }

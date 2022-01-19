@@ -1739,7 +1739,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/extraSchemas/NotificationHook"
+                  $ref: "#/components/schemas/NotificationHook"
     post:
       operationId: "sec-notification-hook-post"
       tags: [ Notification ]
@@ -1753,7 +1753,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/extraSchemas/NotificationHook"
+              $ref: "#/components/schemas/NotificationHook"
       responses:
         422:
           description: BadRequest
@@ -1775,7 +1775,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/extraSchemas/NotificationHook"
+              $ref: "#/components/schemas/NotificationHook"
       responses:
         422:
           description: BadRequest
@@ -1821,7 +1821,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/extraSchemas/NotificationHook"
+              $ref: "#/components/schemas/NotificationHook"
       responses:
         422:
           description: BadRequest
@@ -4917,7 +4917,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/extraSchemas/PeriodicDueItemsSettings"
+                  $ref: "#/components/schemas/PeriodicDueItemsSettings"
     post:
       operationId: "sec-usertask-notify-new"
       tags: [ User Tasks ]
@@ -4931,7 +4931,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/extraSchemas/PeriodicDueItemsSettings"
+              $ref: "#/components/schemas/PeriodicDueItemsSettings"
       responses:
         422:
           description: BadRequest
@@ -4954,7 +4954,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/extraSchemas/PeriodicDueItemsSettings"
+              $ref: "#/components/schemas/PeriodicDueItemsSettings"
       responses:
         422:
           description: BadRequest
@@ -4984,7 +4984,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/extraSchemas/PeriodicDueItemsSettings"
+                $ref: "#/components/schemas/PeriodicDueItemsSettings"
     delete:
       operationId: "sec-usertask-notify-delete"
       tags: [ User Tasks ]
@@ -5018,7 +5018,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/extraSchemas/PeriodicDueItemsSettings"
+              $ref: "#/components/schemas/PeriodicDueItemsSettings"
       responses:
         422:
           description: BadRequest
@@ -5048,7 +5048,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/extraSchemas/PeriodicQuerySettings"
+                  $ref: "#/components/schemas/PeriodicQuerySettings"
     post:
       operationId: "sec-usertask-periodic-query-new"
       tags: [ User Tasks ]
@@ -5062,7 +5062,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/extraSchemas/PeriodicQuerySettings"
+              $ref: "#/components/schemas/PeriodicQuerySettings"
       responses:
         422:
           description: BadRequest
@@ -5085,7 +5085,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/extraSchemas/PeriodicQuerySettings"
+              $ref: "#/components/schemas/PeriodicQuerySettings"
       responses:
         422:
           description: BadRequest
@@ -5115,7 +5115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/extraSchemas/PeriodicQuerySettings"
+                $ref: "#/components/schemas/PeriodicQuerySettings"
     delete:
       operationId: "sec-usertask-periodic-query-delete"
       tags: [ User Tasks ]
@@ -5149,7 +5149,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/extraSchemas/PeriodicQuerySettings"
+              $ref: "#/components/schemas/PeriodicQuerySettings"
       responses:
         422:
           description: BadRequest
@@ -5467,7 +5467,10 @@ components:
             type: string
     NotificationChannelRef:
       description: |
-        A reference to a channel.
+        A reference to a channel. The `id` and `channelType` are
+        required to identify a channel. The `name` attribute is as a
+        descriptive name and is returned by the server if it is
+        specified for the corresponding channel.
       required:
         - id
         - channelType
@@ -5478,6 +5481,8 @@ components:
         channelType:
           type: string
           format: channeltype
+        name:
+          type: string
     NotificationMatrix:
       description: |
         A notification channel for matrix.
@@ -5491,6 +5496,8 @@ components:
         id:
           type: string
           format: ident
+        name:
+          type: string
         channelType:
           type: string
           format: channeltype
@@ -5514,6 +5521,8 @@ components:
         id:
           type: string
           format: ident
+        name:
+          type: string
         channelType:
           type: string
           format: channeltype
@@ -5539,6 +5548,8 @@ components:
         id:
           type: string
           format: ident
+        name:
+          type: string
         channelType:
           type: string
           format: channeltype
@@ -5557,6 +5568,8 @@ components:
         id:
           type: string
           format: ident
+        name:
+          type: string
         channelType:
           type: string
           format: channeltype
@@ -5568,6 +5581,136 @@ components:
           items:
             type: string
 
+    NotificationHook:
+      description: |
+        Describes a notifcation hook. There must be at least one
+        channel specified. When creating hooks, the channels must
+        provide the `ìd` and the `channelType` while their `name`
+        attribute is optional.
+      required:
+        - id
+        - enabled
+        - channel
+        - events
+        - allEvents
+      properties:
+        id:
+          type: string
+          format: ident
+        enabled:
+          type: boolean
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationChannelRef"
+        allEvents:
+          type: boolean
+        eventFilter:
+          type: string
+          format: jsonminiq
+          description: |
+            A filter expression that is applied to the event to be able
+            to ignore a subset of them. See its
+            [documentation](https://docspell.org/docs/jsonminiquery/).
+        events:
+          type: array
+          items:
+            type: string
+            format: eventtype
+            enum:
+              - tagsAdded
+              - tagsSet
+  
+    PeriodicQuerySettings:
+      description: |
+        Settings for the periodc-query task. At least one of `query`
+        and `bookmark` is required! There must be at least one channel
+        specified when creating settings. A channel must provide its
+        `id` and `channelType`, while its `name` is optional.
+      required:
+        - id
+        - enabled
+        - channel
+        - schedule
+      properties:
+        id:
+          type: string
+          format: ident
+        enabled:
+          type: boolean
+        summary:
+          type: string
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationChannelRef"
+        schedule:
+          type: string
+          format: calevent
+        query:
+          type: string
+          format: itemquery
+        bookmark:
+          type: string
+          description: |
+            Name or ID of bookmark to use.
+        contentStart:
+          type: string
+  
+    PeriodicDueItemsSettings:
+      description: |
+        Settings for notifying about due items. At least one of
+        `query` and `bookmark` is required! There must be at least one
+        channel specified when creating settings. A channel must
+        provide its `id` and `channelType`, while its `name` is
+        optional.
+      required:
+        - id
+        - enabled
+        - channel
+        - schedule
+        - remindDays
+        - capOverdue
+        - tagsInclude
+        - tagsExclude
+      properties:
+        id:
+          type: string
+          format: ident
+        enabled:
+          type: boolean
+        summary:
+          type: string
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationChannelRef"
+        schedule:
+          type: string
+          format: calevent
+        remindDays:
+          type: integer
+          format: int32
+          description: |
+            Used to restrict items by their due dates. All items with
+            a due date lower than (now + remindDays) are searched.
+        capOverdue:
+          type: boolean
+          description: |
+            If this is true, the search is also restricted to due
+            dates greater than `now - remindDays'. Otherwise, due date
+            are not restricted in that direction (only lower than `now
+            + remindDays' applies) and it is expected to restrict it
+            more using custom tags.
+        tagsInclude:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+        tagsExclude:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+  
     ShareSecret:
       description: |
         The secret (the share id + optional password) to access a
@@ -8001,137 +8144,3 @@ components:
       schema:
         type: string
         format: ident
-
-# sadly no generator support for these.
-# Changes here requires corresponding changes in:
-# - NotificationHook.elm
-# - routes.model.*
-extraSchemas:
-  NotificationHook:
-    description: |
-      Describes a notifcation hook. There must be exactly one channel
-      specified, so either use a `channelRef` or one `channel`.
-    required:
-      - id
-      - enabled
-      - channel
-      - events
-      - allEvents
-    properties:
-      id:
-        type: string
-        format: ident
-      enabled:
-        type: boolean
-      channel:
-        oneOf:
-          - $ref: "#/components/schemas/NotificationMail"
-          - $ref: "#/components/schemas/NotificationGotify"
-          - $ref: "#/components/schemas/NotificationMatrix"
-          - $ref: "#/components/schemas/NotificationHttp"
-          - $ref: "#/components/schemas/NotificationChannelRef"
-      allEvents:
-        type: boolean
-      eventFilter:
-        type: string
-        format: jsonminiq
-        description: |
-          A filter expression that is applied to the event to be able
-          to ignore a subset of them. See its
-          [documentation](https://docspell.org/docs/jsonminiquery/).
-      events:
-        type: array
-        items:
-          type: string
-          format: eventtype
-          enum:
-            - tagsAdded
-            - tagsSet
-
-  PeriodicQuerySettings:
-    description: |
-      Settings for the periodc-query task. At least one of `query` and
-      `bookmark` is required!
-    required:
-      - id
-      - enabled
-      - channel
-      - schedule
-    properties:
-      id:
-        type: string
-        format: ident
-      enabled:
-        type: boolean
-      summary:
-        type: string
-      channel:
-        oneOf:
-          - $ref: "#/components/schemas/NotificationMail"
-          - $ref: "#/components/schemas/NotificationGotify"
-          - $ref: "#/components/schemas/NotificationMatrix"
-          - $ref: "#/components/schemas/NotificationHttp"
-          - $ref: "#/components/schemas/NotificationChannelRef"
-      schedule:
-        type: string
-        format: calevent
-      query:
-        type: string
-        format: itemquery
-      bookmark:
-        type: string
-        description: |
-          Name or ID of bookmark to use. 
-
-  PeriodicDueItemsSettings:
-    description: |
-      Settings for notifying about due items.
-    required:
-      - id
-      - enabled
-      - channel
-      - schedule
-      - remindDays
-      - capOverdue
-      - tagsInclude
-      - tagsExclude
-    properties:
-      id:
-        type: string
-        format: ident
-      enabled:
-        type: boolean
-      summary:
-        type: string
-      channel:
-        oneOf:
-          - $ref: "#/components/schemas/NotificationMail"
-          - $ref: "#/components/schemas/NotificationGotify"
-          - $ref: "#/components/schemas/NotificationMatrix"
-          - $ref: "#/components/schemas/NotificationHttp"
-          - $ref: "#/components/schemas/NotificationChannelRef"
-      schedule:
-        type: string
-        format: calevent
-      remindDays:
-        type: integer
-        format: int32
-        description: |
-          Used to restrict items by their due dates. All items with
-          a due date lower than (now + remindDays) are searched.
-      capOverdue:
-        type: boolean
-        description: |
-          If this is true, the search is also restricted to due
-          dates greater than `now - remindDays'. Otherwise, due date
-          are not restricted in that direction (only lower than `now
-          + remindDays' applies) and it is expected to restrict it
-          more using custom tags.
-      tagsInclude:
-        type: array
-        items:
-          $ref: "#/components/schemas/Tag"
-      tagsExclude:
-        type: array
-        items:
-          $ref: "#/components/schemas/Tag"
