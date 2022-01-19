@@ -17,24 +17,25 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Messages.Comp.NotificationGotifyForm exposing (Texts)
 import Styles as S
+import Util.Maybe
 
 
 type alias Model =
-    { hook : NotificationGotify
+    { channel : NotificationGotify
     , prioModel : Comp.FixedDropdown.Model Int
     }
 
 
 init : Model
 init =
-    { hook = Data.NotificationChannel.setTypeGotify Api.Model.NotificationGotify.empty
+    { channel = Data.NotificationChannel.setTypeGotify Api.Model.NotificationGotify.empty
     , prioModel = Comp.FixedDropdown.init (List.range 0 10)
     }
 
 
 initWith : NotificationGotify -> Model
-initWith hook =
-    { hook = Data.NotificationChannel.setTypeGotify hook
+initWith channel =
+    { channel = Data.NotificationChannel.setTypeGotify channel
     , prioModel = Comp.FixedDropdown.init (List.range 0 10)
     }
 
@@ -42,6 +43,7 @@ initWith hook =
 type Msg
     = SetUrl String
     | SetAppKey String
+    | SetName String
     | PrioMsg (Comp.FixedDropdown.Msg Int)
 
 
@@ -52,30 +54,33 @@ type Msg
 update : Msg -> Model -> ( Model, Maybe NotificationGotify )
 update msg model =
     let
-        hook =
-            model.hook
+        channel =
+            model.channel
 
         newModel =
             case msg of
                 SetUrl s ->
-                    { model | hook = { hook | url = s } }
+                    { model | channel = { channel | url = s } }
 
                 SetAppKey s ->
-                    { model | hook = { hook | appKey = s } }
+                    { model | channel = { channel | appKey = s } }
+
+                SetName s ->
+                    { model | channel = { channel | name = Util.Maybe.fromString s } }
 
                 PrioMsg lm ->
                     let
                         ( m, sel ) =
                             Comp.FixedDropdown.update lm model.prioModel
                     in
-                    { model | hook = { hook | priority = sel }, prioModel = m }
+                    { model | channel = { channel | priority = sel }, prioModel = m }
     in
-    ( newModel, check newModel.hook )
+    ( newModel, check newModel.channel )
 
 
 check : NotificationGotify -> Maybe NotificationGotify
-check hook =
-    Just hook
+check channel =
+    Just channel
 
 
 
@@ -97,6 +102,25 @@ view texts model =
             [ class "mb-2"
             ]
             [ label
+                [ for "name"
+                , class S.inputLabel
+                ]
+                [ text texts.basics.name
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetName
+                , placeholder texts.basics.name
+                , value (Maybe.withDefault "" model.channel.name)
+                , name "name"
+                , class S.textInput
+                ]
+                []
+            ]
+        , div
+            [ class "mb-2"
+            ]
+            [ label
                 [ for "gotifyurl"
                 , class S.inputLabel
                 ]
@@ -107,7 +131,7 @@ view texts model =
                 [ type_ "text"
                 , onInput SetUrl
                 , placeholder texts.gotifyUrl
-                , value model.hook.url
+                , value model.channel.url
                 , name "gotifyurl"
                 , class S.textInput
                 ]
@@ -127,7 +151,7 @@ view texts model =
                 [ type_ "text"
                 , onInput SetAppKey
                 , placeholder texts.appKey
-                , value model.hook.appKey
+                , value model.channel.appKey
                 , name "appkey"
                 , class S.textInput
                 ]
@@ -142,7 +166,7 @@ view texts model =
                 ]
                 [ text texts.priority
                 ]
-            , Html.map PrioMsg (Comp.FixedDropdown.viewStyled2 cfg False model.hook.priority model.prioModel)
+            , Html.map PrioMsg (Comp.FixedDropdown.viewStyled2 cfg False model.channel.priority model.prioModel)
             , span [ class "text-sm opacity-75" ]
                 [ text texts.priorityInfo
                 ]

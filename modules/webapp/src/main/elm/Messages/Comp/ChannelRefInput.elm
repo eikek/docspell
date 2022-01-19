@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.DueItemsTaskList exposing
+module Messages.Comp.ChannelRefInput exposing
     ( Texts
     , de
     , gb
@@ -18,9 +18,8 @@ import Messages.Data.ChannelType
 type alias Texts =
     { basics : Messages.Basics.Texts
     , channelType : Messages.Data.ChannelType.Texts
-    , summary : String
-    , schedule : String
-    , connection : String
+    , placeholder : String
+    , noCategory : String
     }
 
 
@@ -28,9 +27,8 @@ gb : Texts
 gb =
     { basics = Messages.Basics.gb
     , channelType = Messages.Data.ChannelType.gb
-    , summary = "Summary"
-    , schedule = "Schedule"
-    , connection = "Channel"
+    , placeholder = "Choose…"
+    , noCategory = "No channel"
     }
 
 
@@ -38,7 +36,6 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , channelType = Messages.Data.ChannelType.de
-    , summary = "Kurzbeschreibung"
-    , schedule = "Zeitplan"
-    , connection = "Kanal"
+    , placeholder = "Wähle…"
+    , noCategory = "Kein Kanal"
     }

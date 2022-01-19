@@ -12,7 +12,7 @@ import cats.implicits._
 
 import docspell.backend.ops.ONotification
 import docspell.common._
-import docspell.notification.api.ChannelOrRef
+import docspell.notification.api.ChannelRef
 import docspell.notification.api.Event
 import docspell.notification.api.EventContext
 import docspell.notification.api.NotificationChannel
@@ -23,19 +23,18 @@ trait TaskOperations {
 
   def withChannel[F[_]: Sync](
       logger: Logger[F],
-      channel: ChannelOrRef,
-      userId: Ident,
+      channelsIn: NonEmptyList[ChannelRef],
+      accountId: AccountId,
       ops: ONotification[F]
   )(
       cont: Vector[NotificationChannel] => F[Unit]
   ): F[Unit] = {
-    val channels = channel match {
-      case Right(ch) => ops.mkNotificationChannel(ch, userId)
-      case Left(ref) => ops.findNotificationChannel(ref)
-    }
+    val channels =
+      channelsIn.toList.toVector.flatTraverse(ops.findNotificationChannel(_, accountId))
+
     channels.flatMap { ch =>
       if (ch.isEmpty)
-        logger.error(s"No channels found for the given data: ${channel}")
+        logger.error(s"No channels found for the given data: ${channelsIn}")
       else cont(ch)
     }
   }

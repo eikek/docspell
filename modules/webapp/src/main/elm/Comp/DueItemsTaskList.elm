@@ -14,15 +14,16 @@ module Comp.DueItemsTaskList exposing
     , view2
     )
 
+import Api.Model.PeriodicDueItemsSettings exposing (PeriodicDueItemsSettings)
 import Comp.Basic as B
+import Data.ChannelRef
 import Data.ChannelType
-import Data.NotificationChannel
-import Data.PeriodicDueItemsSettings exposing (PeriodicDueItemsSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Comp.DueItemsTaskList exposing (Texts)
 import Styles as S
 import Util.Html
+import Util.List
 
 
 type alias Model =
@@ -94,9 +95,7 @@ viewItem2 texts item =
                 ]
             ]
         , td [ class "text-left mr-2" ]
-            [ Data.NotificationChannel.channelType item.channel
-                |> Maybe.map Data.ChannelType.asString
-                |> Maybe.withDefault "-"
-                |> text
+            [ div [ class " space-x-1" ]
+                (Data.ChannelRef.asDivs texts.channelType [ class "inline" ] item.channels)
             ]
         ]

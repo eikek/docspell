@@ -11,7 +11,6 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
-import docspell.backend.MailAddressCodec._
 import docspell.common._
 import docspell.notification.api.PeriodicDueItemsArgs
 import docspell.notification.api.PeriodicQueryArgs

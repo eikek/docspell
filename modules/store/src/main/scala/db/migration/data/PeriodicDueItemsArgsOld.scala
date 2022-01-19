@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.notification.api
-
-import cats.data.NonEmptyList
+package db.migration.data
 
 import docspell.common._
 
+import emil.MailAddress
 import io.circe.generic.semiauto
 import io.circe.{Decoder, Encoder}
 
@@ -20,9 +19,9 @@ import io.circe.{Decoder, Encoder}
   * If the structure changes, there must be some database migration to update or remove
   * the json data of the corresponding task.
   */
-final case class PeriodicDueItemsArgs(
+final case class PeriodicDueItemsArgsOld(
     account: AccountId,
-    channels: NonEmptyList[ChannelRef],
+    channel: ChannelOrRef,
     remindDays: Int,
     daysBack: Option[Int],
     tagsInclude: List[Ident],
@@ -30,12 +29,20 @@ final case class PeriodicDueItemsArgs(
     baseUrl: Option[LenientUri]
 )
 
-object PeriodicDueItemsArgs {
-  val taskName = Ident.unsafe("periodic-due-items-notify2")
+object PeriodicDueItemsArgsOld {
+  val taskName = Ident.unsafe("periodic-due-items-notify")
 
-  implicit val jsonDecoder: Decoder[PeriodicDueItemsArgs] =
+  implicit def jsonDecoder(implicit
+      mc: Decoder[MailAddress]
+  ): Decoder[PeriodicDueItemsArgsOld] = {
+    implicit val x = ChannelOrRef.jsonDecoder
     semiauto.deriveDecoder
+  }
 
-  implicit val jsonEncoder: Encoder[PeriodicDueItemsArgs] =
+  implicit def jsonEncoder(implicit
+      mc: Encoder[MailAddress]
+  ): Encoder[PeriodicDueItemsArgsOld] = {
+    implicit val x = ChannelOrRef.jsonEncoder
     semiauto.deriveEncoder
+  }
 }

@@ -14,15 +14,13 @@ module Comp.NotificationHookTable exposing
     , view
     )
 
+import Api.Model.NotificationHook exposing (NotificationHook)
 import Comp.Basic as B
-import Data.ChannelType
+import Data.ChannelRef
 import Data.EventType
 import Data.Flags exposing (Flags)
-import Data.NotificationChannel
-import Data.NotificationHook exposing (NotificationHook)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Messages.Comp.NotificationHookTable exposing (Texts)
 import Styles as S
 import Util.Html
@@ -80,7 +78,7 @@ view texts model hooks =
 
 
 renderNotificationHookLine : Texts -> Model -> NotificationHook -> Html Msg
-renderNotificationHookLine texts model hook =
+renderNotificationHookLine texts _ hook =
     let
         eventName =
             texts.eventType >> .name
@@ -93,14 +91,17 @@ renderNotificationHookLine texts model hook =
             [ Util.Html.checkbox2 hook.enabled
             ]
         , td [ class "text-left py-4 md:py-2" ]
-            [ Data.NotificationChannel.channelType hook.channel
-                |> Maybe.map Data.ChannelType.asString
-                |> Maybe.withDefault "-"
-                |> text
+            [ div [ class "space-x-1" ]
+                (Data.ChannelRef.asDivs texts.channelType [ class "inline" ] hook.channels)
             ]
         , td [ class "text-left hidden sm:table-cell" ]
-            [ List.map eventName hook.events
-                |> String.join ", "
-                |> text
+            [ if hook.allEvents then
+                text texts.allEvents
+
+              else
+                List.filterMap Data.EventType.fromString hook.events
+                    |> List.map eventName
+                    |> String.join ", "
+                    |> text
             ]
         ]

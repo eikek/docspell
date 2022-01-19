@@ -15,6 +15,7 @@ import Messages.Comp.ChangePasswordForm
 import Messages.Comp.DueItemsTaskManage
 import Messages.Comp.EmailSettingsManage
 import Messages.Comp.ImapSettingsManage
+import Messages.Comp.NotificationChannelManage
 import Messages.Comp.NotificationHookManage
 import Messages.Comp.OtpSetup
 import Messages.Comp.PeriodicQueryTaskManage
@@ -31,6 +32,7 @@ type alias Texts =
     , scanMailboxManage : Messages.Comp.ScanMailboxManage.Texts
     , notificationHookManage : Messages.Comp.NotificationHookManage.Texts
     , periodicQueryTask : Messages.Comp.PeriodicQueryTaskManage.Texts
+    , channelManage : Messages.Comp.NotificationChannelManage.Texts
     , otpSetup : Messages.Comp.OtpSetup.Texts
     , userSettings : String
     , uiSettings : String
@@ -38,6 +40,7 @@ type alias Texts =
     , scanMailbox : String
     , emailSettingSmtp : String
     , emailSettingImap : String
+    , channelSettings : String
     , changePassword : String
     , uiSettingsInfo : String
     , scanMailboxInfo1 : String
@@ -50,6 +53,8 @@ type alias Texts =
     , webhookInfoText : String
     , dueItemsInfoText : String
     , periodicQueryInfoText : String
+    , channels : String
+    , channelInfoText : String
     }
 
 
@@ -63,6 +68,7 @@ gb =
     , scanMailboxManage = Messages.Comp.ScanMailboxManage.gb
     , notificationHookManage = Messages.Comp.NotificationHookManage.gb
     , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.gb
+    , channelManage = Messages.Comp.NotificationChannelManage.gb
     , otpSetup = Messages.Comp.OtpSetup.gb
     , userSettings = "User Settings"
     , uiSettings = "UI Settings"
@@ -71,6 +77,7 @@ gb =
     , emailSettingSmtp = "E-Mail Settings (SMTP)"
     , emailSettingImap = "E-Mail Settings (IMAP)"
     , changePassword = "Change Password"
+    , channelSettings = "Notification Channels"
     , uiSettingsInfo =
         "These settings only affect the web ui. They are stored in the browser, "
             ++ "so they are separated between browsers and devices."
@@ -103,14 +110,16 @@ its payload.
 Additionally, you can setup queries that are executed periodically.
 The results are send as a notification message.
 
-When creating a new notification task, choose first the communication
-channel.
+A notification setting needs at least one communication channel, which
+must be created before.
 
 """
     , webhookInfoText = """Webhooks execute http request upon certain events in docspell.
 """
     , dueItemsInfoText = """Docspell can notify you once the due dates of your items come closer.  """
     , periodicQueryInfoText = "You can define a custom query that gets executed periodically."
+    , channels = "Notification Channels"
+    , channelInfoText = "Channels are used to send notification messages."
     }
 
 
@@ -124,6 +133,7 @@ de =
     , scanMailboxManage = Messages.Comp.ScanMailboxManage.de
     , notificationHookManage = Messages.Comp.NotificationHookManage.de
     , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.de
+    , channelManage = Messages.Comp.NotificationChannelManage.de
     , otpSetup = Messages.Comp.OtpSetup.de
     , userSettings = "Benutzereinstellung"
     , uiSettings = "Oberfläche"
@@ -131,6 +141,7 @@ de =
     , scanMailbox = "E-Mail-Import"
     , emailSettingSmtp = "E-Mail-Einstellungen (SMTP)"
     , emailSettingImap = "E-Mail-Einstellungen (IMAP)"
+    , channelSettings = "Benachrichtigungskanäle"
     , changePassword = "Passwort ändern"
     , uiSettingsInfo =
         "Diese Einstellungen sind für die Web-Oberfläche."
@@ -161,15 +172,16 @@ Es kann aus diesen Versandkanälen gewählt werden:
 E-Mail. Zusätzlich kann das HTTP request direkt empfangen werden, was
 alle Details zu einem Ereignis enthält.
 
-
 Ausserdem können periodische Suchabfragen erstellt werden, dessen
 Ergebnis dann als Benachrichtigung versendet wird.
 
-Beim Erstellen eines neuen Auftrags muss zunächst der gewünschte
-Versandkanal gewählt werden.
+Für eine Notifikation ist ein Kommunikationskanal notwendig, der zuvor
+erstellt werden muss.
 
 """
     , webhookInfoText = """Webhooks versenden HTTP Requests wenn bestimmte Ereignisse in Docspell auftreten."""
     , dueItemsInfoText = """Docspell kann dich benachrichtigen, sobald das Fälligkeitsdatum von Dokumenten näher kommt. """
     , periodicQueryInfoText = "Hier können beliebige Abfragen definiert werden, welche regelmäßig ausgeführt werden."
+    , channels = "Benachrichtigungskanäle"
+    , channelInfoText = "Über Kanäle werden Notifizierungen versendet."
     }

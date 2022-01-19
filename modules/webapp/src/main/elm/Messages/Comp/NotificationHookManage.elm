@@ -11,7 +11,6 @@ module Messages.Comp.NotificationHookManage exposing
     , gb
     )
 
-import Html exposing (Html, text)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -27,9 +26,6 @@ type alias Texts =
     , httpError : Http.Error -> String
     , channelType : Messages.Data.ChannelType.Texts
     , newHook : String
-    , matrix : String
-    , gotify : String
-    , email : String
     , httpRequest : String
     , hookCreated : String
     , hookUpdated : String
@@ -39,12 +35,8 @@ type alias Texts =
     , reallyDeleteHook : String
     , formInvalid : String
     , invalidJsonFilter : String -> String
-    , integrate : String
-    , intoDocspell : String
-    , postRequestInfo : String
     , updateWebhook : String
     , addWebhook : String
-    , notifyEmailInfo : String
     }
 
 
@@ -56,9 +48,6 @@ gb =
     , httpError = Messages.Comp.HttpError.gb
     , channelType = Messages.Data.ChannelType.gb
     , newHook = "New Webhook"
-    , matrix = "Matrix"
-    , gotify = "Gotify"
-    , email = "E-Mail"
     , httpRequest = "HTTP Request"
     , hookCreated = "Webhook created"
     , hookUpdated = "Webhook updated"
@@ -68,12 +57,8 @@ gb =
     , reallyDeleteHook = "Really delete this webhook?"
     , formInvalid = "Please fill in all required fields"
     , invalidJsonFilter = \m -> "Event filter invalid: " ++ m
-    , integrate = "Integrate"
-    , intoDocspell = "into Docspell"
-    , postRequestInfo = "Docspell will send POST requests with JSON payload."
     , updateWebhook = "Update webhook"
     , addWebhook = "Add new webhook"
-    , notifyEmailInfo = "Get notified via e-mail."
     }
 
 
@@ -85,9 +70,6 @@ de =
     , httpError = Messages.Comp.HttpError.de
     , channelType = Messages.Data.ChannelType.de
     , newHook = "Neuer Webhook"
-    , matrix = "Matrix"
-    , gotify = "Gotify"
-    , email = "E-Mail"
     , httpRequest = "HTTP Request"
     , hookCreated = "Webhook erstellt"
     , hookUpdated = "Webhook aktualisiert"
@@ -97,10 +79,6 @@ de =
     , reallyDeleteHook = "Den webhook wirklich löschen?"
     , formInvalid = "Bitte alle erforderlichen Felder ausfüllen"
     , invalidJsonFilter = \m -> "Ereignisfilter ist falsch: " ++ m
-    , integrate = "Integriere"
-    , intoDocspell = "in Docspell"
-    , postRequestInfo = "Docspell wird JSON POST requests senden."
     , updateWebhook = "Webhook aktualisieren"
     , addWebhook = "Neuen Webhook hinzufügen"
-    , notifyEmailInfo = "Werde per E-Mail benachrichtigt."
     }

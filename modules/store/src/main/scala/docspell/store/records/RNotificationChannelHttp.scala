@@ -45,8 +45,10 @@ object RNotificationChannelHttp {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  def getById(id: Ident): ConnectionIO[Option[RNotificationChannelHttp]] =
-    run(select(T.all), from(T), T.id === id).query[RNotificationChannelHttp].option
+  def getById(userId: Ident)(id: Ident): ConnectionIO[Option[RNotificationChannelHttp]] =
+    run(select(T.all), from(T), T.id === id && T.uid === userId)
+      .query[RNotificationChannelHttp]
+      .option
 
   def insert(r: RNotificationChannelHttp): ConnectionIO[Int] =
     DML.insert(T, T.all, sql"${r.id},${r.uid},${r.name},${r.url},${r.created}")

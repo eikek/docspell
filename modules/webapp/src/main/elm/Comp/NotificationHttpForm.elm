@@ -15,29 +15,31 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Messages.Comp.NotificationHttpForm exposing (Texts)
 import Styles as S
+import Util.Maybe
 
 
 type alias Model =
-    { hook : NotificationHttp
+    { channel : NotificationHttp
     }
 
 
 init : Model
 init =
-    { hook =
+    { channel =
         Data.NotificationChannel.setTypeHttp
             Api.Model.NotificationHttp.empty
     }
 
 
 initWith : NotificationHttp -> Model
-initWith hook =
-    { hook = Data.NotificationChannel.setTypeHttp hook
+initWith channel =
+    { channel = Data.NotificationChannel.setTypeHttp channel
     }
 
 
 type Msg
     = SetUrl String
+    | SetName String
 
 
 
@@ -47,26 +49,29 @@ type Msg
 update : Msg -> Model -> ( Model, Maybe NotificationHttp )
 update msg model =
     let
-        newHook =
-            updateHook msg model.hook
+        newChannel =
+            updateChannel msg model.channel
     in
-    ( { model | hook = newHook }, check newHook )
+    ( { model | channel = newChannel }, check newChannel )
 
 
 check : NotificationHttp -> Maybe NotificationHttp
-check hook =
-    if hook.url == "" then
+check channel =
+    if channel.url == "" then
         Nothing
 
     else
-        Just hook
+        Just channel
 
 
-updateHook : Msg -> NotificationHttp -> NotificationHttp
-updateHook msg hook =
+updateChannel : Msg -> NotificationHttp -> NotificationHttp
+updateChannel msg channel =
     case msg of
         SetUrl s ->
-            { hook | url = s }
+            { channel | url = s }
+
+        SetName s ->
+            { channel | name = Util.Maybe.fromString s }
 
 
 
@@ -80,6 +85,25 @@ view texts model =
             [ class "mb-2"
             ]
             [ label
+                [ for "name"
+                , class S.inputLabel
+                ]
+                [ text texts.basics.name
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetName
+                , placeholder texts.basics.name
+                , value (Maybe.withDefault "" model.channel.name)
+                , name "name"
+                , class S.textInput
+                ]
+                []
+            ]
+        , div
+            [ class "mb-2"
+            ]
+            [ label
                 [ for "httpurl"
                 , class S.inputLabel
                 ]
@@ -90,7 +114,7 @@ view texts model =
                 [ type_ "text"
                 , onInput SetUrl
                 , placeholder texts.httpUrl
-                , value model.hook.url
+                , value model.channel.url
                 , name "httpurl"
                 , class S.textInput
                 ]

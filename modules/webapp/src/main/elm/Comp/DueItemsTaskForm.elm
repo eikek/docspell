@@ -16,22 +16,18 @@ module Comp.DueItemsTaskForm exposing
     )
 
 import Api
-import Api.Model.EmailSettingsList exposing (EmailSettingsList)
-import Api.Model.Tag exposing (Tag)
+import Api.Model.PeriodicDueItemsSettings exposing (PeriodicDueItemsSettings)
 import Api.Model.TagList exposing (TagList)
 import Comp.Basic as B
 import Comp.CalEventInput
-import Comp.ChannelForm
+import Comp.ChannelRefInput
 import Comp.IntField
 import Comp.MenuBar as MB
 import Comp.TagDropdown
 import Comp.YesNoDimmer
 import Data.CalEvent exposing (CalEvent)
-import Data.ChannelType exposing (ChannelType)
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
-import Data.NotificationChannel
-import Data.PeriodicDueItemsSettings exposing (PeriodicDueItemsSettings)
 import Data.TagOrder
 import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
@@ -43,13 +39,11 @@ import Markdown
 import Messages.Comp.DueItemsTaskForm exposing (Texts)
 import Styles as S
 import Util.Maybe
-import Util.Tag
-import Util.Update
 
 
 type alias Model =
     { settings : PeriodicDueItemsSettings
-    , channelModel : Comp.ChannelForm.Model
+    , channelModel : Comp.ChannelRefInput.Model
     , tagInclModel : Comp.TagDropdown.Model
     , tagExclModel : Comp.TagDropdown.Model
     , remindDays : Maybe Int
@@ -99,18 +93,14 @@ type Msg
     | RequestDelete
     | YesNoDeleteMsg Comp.YesNoDimmer.Msg
     | SetSummary String
-    | ChannelMsg Comp.ChannelForm.Msg
+    | ChannelMsg Comp.ChannelRefInput.Msg
 
 
 initWith : Flags -> PeriodicDueItemsSettings -> ( Model, Cmd Msg )
 initWith flags s =
     let
-        ct =
-            Data.NotificationChannel.channelType s.channel
-                |> Maybe.withDefault Data.ChannelType.Matrix
-
         ( im, ic ) =
-            init flags ct
+            init flags
 
         newSchedule =
             Data.CalEvent.fromEvent s.schedule
@@ -120,7 +110,7 @@ initWith flags s =
             Comp.CalEventInput.init flags newSchedule
 
         ( cfm, cfc ) =
-            Comp.ChannelForm.initWith flags s.channel
+            Comp.ChannelRefInput.initSelected flags s.channels
     in
     ( { im
         | settings = s
@@ -145,8 +135,8 @@ initWith flags s =
     )
 
 
-init : Flags -> ChannelType -> ( Model, Cmd Msg )
-init flags ct =
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     let
         initialSchedule =
             Data.CalEvent.everyMonth
@@ -155,9 +145,9 @@ init flags ct =
             Comp.CalEventInput.init flags initialSchedule
 
         ( cfm, cfc ) =
-            Comp.ChannelForm.init flags ct
+            Comp.ChannelRefInput.init flags
     in
-    ( { settings = Data.PeriodicDueItemsSettings.empty ct
+    ( { settings = Api.Model.PeriodicDueItemsSettings.empty
       , channelModel = cfm
       , tagInclModel = Comp.TagDropdown.initWith [] []
       , tagExclModel = Comp.TagDropdown.initWith [] []
@@ -203,11 +193,17 @@ makeSettings model =
                     Err ValidateCalEventInvalid
 
         channelM =
-            Result.fromMaybe
-                ValidateChannelRequired
-                (Comp.ChannelForm.getChannel model.channelModel)
+            let
+                list =
+                    Comp.ChannelRefInput.getSelected model.channelModel
+            in
+            if list == [] then
+                Err ValidateChannelRequired
 
-        make days timer channel =
+            else
+                Ok list
+
+        make days timer channels =
             { prev
                 | tagsInclude = Comp.TagDropdown.getSelected model.tagInclModel
                 , tagsExclude = Comp.TagDropdown.getSelected model.tagExclModel
@@ -216,7 +212,7 @@ makeSettings model =
                 , enabled = model.enabled
                 , schedule = Data.CalEvent.makeEvent timer
                 , summary = model.summary
-                , channel = channel
+                , channels = channels
             }
     in
     Result.map3 make
@@ -247,7 +243,7 @@ update flags msg model =
         ChannelMsg lm ->
             let
                 ( cfm, cfc ) =
-                    Comp.ChannelForm.update flags lm model.channelModel
+                    Comp.ChannelRefInput.update lm model.channelModel
             in
             ( { model | channelModel = cfm }
             , NoAction
@@ -538,9 +534,9 @@ view2 texts extraClasses settings model =
                 ]
             ]
         , div [ class "mb-4" ]
-            [ formHeader (texts.channelHeader (Comp.ChannelForm.channelType model.channelModel))
+            [ formHeader texts.channelHeader
             , Html.map ChannelMsg
-                (Comp.ChannelForm.view texts.channelForm settings model.channelModel)
+                (Comp.ChannelRefInput.view texts.channelRef settings model.channelModel)
             ]
         , formHeader texts.queryLabel
         , div [ class "mb-4" ]

@@ -23,13 +23,15 @@ import Html.Events exposing (onInput)
 import Http
 import Messages.Comp.NotificationMailForm exposing (Texts)
 import Styles as S
+import Util.Maybe
 
 
 type alias Model =
-    { hook : NotificationMail
+    { channel : NotificationMail
     , connectionModel : Comp.Dropdown.Model String
     , recipients : List String
     , recipientsModel : Comp.EmailInput.Model
+    , name : Maybe String
     , formState : FormState
     }
 
@@ -46,10 +48,11 @@ type ValidateError
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { hook = Data.NotificationChannel.setTypeMail Api.Model.NotificationMail.empty
+    ( { channel = Data.NotificationChannel.setTypeMail Api.Model.NotificationMail.empty
       , connectionModel = Comp.Dropdown.makeSingle
       , recipients = []
       , recipientsModel = Comp.EmailInput.init
+      , name = Nothing
       , formState = FormStateInitial
       }
     , Cmd.batch
@@ -59,17 +62,17 @@ init flags =
 
 
 initWith : Flags -> NotificationMail -> ( Model, Cmd Msg )
-initWith flags hook =
+initWith flags channel =
     let
         ( mm, mc ) =
             init flags
 
         ( cm, _ ) =
-            Comp.Dropdown.update (Comp.Dropdown.SetSelection [ hook.connection ]) mm.connectionModel
+            Comp.Dropdown.update (Comp.Dropdown.SetSelection [ channel.connection ]) mm.connectionModel
     in
     ( { mm
-        | hook = Data.NotificationChannel.setTypeMail hook
-        , recipients = hook.recipients
+        | channel = Data.NotificationChannel.setTypeMail channel
+        , recipients = channel.recipients
         , connectionModel = cm
       }
     , mc
@@ -80,6 +83,7 @@ type Msg
     = ConnResp (Result Http.Error EmailSettingsList)
     | ConnMsg (Comp.Dropdown.Msg String)
     | RecipientMsg Comp.EmailInput.Msg
+    | SetName String
 
 
 
@@ -108,12 +112,12 @@ check model =
                 |> List.head
 
         h =
-            model.hook
+            model.channel
 
-        makeHook _ rec conn =
-            { h | connection = conn, recipients = rec }
+        makeChannel _ rec conn =
+            { h | connection = conn, recipients = rec, name = model.name }
     in
-    Maybe.map3 makeHook formState recipients connection
+    Maybe.map3 makeChannel formState recipients connection
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe NotificationMail )
@@ -150,6 +154,16 @@ update flags msg model =
             ( { model | formState = FormStateHttpError err }
             , Cmd.none
             , Nothing
+            )
+
+        SetName s ->
+            let
+                model_ =
+                    { model | name = Util.Maybe.fromString s }
+            in
+            ( model_
+            , Cmd.none
+            , check model_
             )
 
         ConnMsg lm ->
@@ -201,7 +215,26 @@ view texts settings model =
             }
     in
     div []
-        [ div [ class "mb-4" ]
+        [ div
+            [ class "mb-2"
+            ]
+            [ label
+                [ for "name"
+                , class S.inputLabel
+                ]
+                [ text texts.basics.name
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetName
+                , placeholder texts.basics.name
+                , value (Maybe.withDefault "" model.name)
+                , name "name"
+                , class S.textInput
+                ]
+                []
+            ]
+        , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
                 [ text texts.sendVia
                 , B.inputRequired

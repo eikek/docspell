@@ -27,7 +27,7 @@ gb ct =
             "E-Mail"
 
         Data.ChannelType.Http ->
-            "HTTP request"
+            "JSON"
 
 
 de : Texts
@@ -43,4 +43,4 @@ de ct =
             "E-Mail"
 
         Data.ChannelType.Http ->
-            "HTTP Request"
+            "JSON"

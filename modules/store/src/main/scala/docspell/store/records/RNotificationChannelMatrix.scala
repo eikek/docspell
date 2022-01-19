@@ -77,8 +77,12 @@ object RNotificationChannelMatrix {
       )
     )
 
-  def getById(id: Ident): ConnectionIO[Option[RNotificationChannelMatrix]] =
-    run(select(T.all), from(T), T.id === id).query[RNotificationChannelMatrix].option
+  def getById(userId: Ident)(
+      id: Ident
+  ): ConnectionIO[Option[RNotificationChannelMatrix]] =
+    run(select(T.all), from(T), T.id === id && T.uid === userId)
+      .query[RNotificationChannelMatrix]
+      .option
 
   def getByAccount(
       account: AccountId

@@ -49,8 +49,12 @@ object RNotificationChannelGotify {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  def getById(id: Ident): ConnectionIO[Option[RNotificationChannelGotify]] =
-    run(select(T.all), from(T), T.id === id).query[RNotificationChannelGotify].option
+  def getById(
+      userId: Ident
+  )(id: Ident): ConnectionIO[Option[RNotificationChannelGotify]] =
+    run(select(T.all), from(T), T.id === id && T.uid === userId)
+      .query[RNotificationChannelGotify]
+      .option
 
   def insert(r: RNotificationChannelGotify): ConnectionIO[Int] =
     DML.insert(

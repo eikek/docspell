@@ -19,13 +19,14 @@ import io.circe.{Decoder, Encoder}
 sealed trait Channel {
   def id: Ident
   def channelType: ChannelType
+  def name: Option[String]
   def fold[A](
       f1: Channel.Mail => A,
       f2: Channel.Gotify => A,
       f3: Channel.Matrix => A,
       f4: Channel.Http => A
   ): A
-  def asRef: ChannelRef = ChannelRef(id, channelType)
+  def asRef: ChannelRef = ChannelRef(id, channelType, name)
 }
 
 object Channel {
@@ -98,7 +99,8 @@ object Channel {
     implicit val jsonEncoder: Encoder[Matrix] = deriveConfiguredEncoder
   }
 
-  final case class Http(id: Ident, name: Option[String], url: LenientUri) extends Channel {
+  final case class Http(id: Ident, name: Option[String], url: LenientUri)
+      extends Channel {
     val channelType = ChannelType.Http
     def fold[A](
         f1: Mail => A,

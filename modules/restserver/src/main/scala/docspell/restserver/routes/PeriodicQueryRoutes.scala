@@ -6,7 +6,7 @@
 
 package docspell.restserver.routes
 
-import cats.data.OptionT
+import cats.data.{NonEmptyList, OptionT}
 import cats.effect._
 import cats.implicits._
 
@@ -14,11 +14,11 @@ import docspell.backend.BackendApp
 import docspell.backend.MailAddressCodec
 import docspell.backend.auth.AuthToken
 import docspell.common._
-import docspell.notification.api.PeriodicQueryArgs
+import docspell.notification.api.{ChannelRef, PeriodicQueryArgs}
 import docspell.query.ItemQueryParser
 import docspell.restapi.model._
 import docspell.restserver.Config
-import docspell.restserver.conv.Conversions
+import docspell.restserver.conv.{Conversions, NonEmptyListSupport}
 import docspell.restserver.http4s.ClientRequestInfo
 import docspell.store.usertask._
 
@@ -27,7 +27,7 @@ import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 
-object PeriodicQueryRoutes extends MailAddressCodec {
+object PeriodicQueryRoutes extends MailAddressCodec with NonEmptyListSupport {
 
   def apply[F[_]: Async](
       cfg: Config,
@@ -116,7 +116,9 @@ object PeriodicQueryRoutes extends MailAddressCodec {
   ): F[UserTask[PeriodicQueryArgs]] =
     Sync[F]
       .pure(for {
-        ch <- NotificationChannel.convert(settings.channel)
+        ch <- NonEmptyList
+          .fromList(settings.channels)
+          .toRight(new Exception(s"No channels found for: ${settings.channels}"))
         qstr <- settings.query match {
           case Some(q) =>
             ItemQueryParser
@@ -132,7 +134,7 @@ object PeriodicQueryRoutes extends MailAddressCodec {
           else Left(new IllegalArgumentException("No query or bookmark provided"))
       } yield (ch, qstr.map(ItemQueryString.apply)))
       .rethrow
-      .map { case (channel, qstr) =>
+      .map { case (channels, qstr) =>
         UserTask(
           id,
           PeriodicQueryArgs.taskName,
@@ -141,7 +143,7 @@ object PeriodicQueryRoutes extends MailAddressCodec {
           settings.summary,
           PeriodicQueryArgs(
             user,
-            Right(channel),
+            channels.map(r => ChannelRef(r.id, r.channelType, r.name)),
             qstr,
             settings.bookmark,
             Some(baseUrl / "app" / "item"),
@@ -153,22 +155,18 @@ object PeriodicQueryRoutes extends MailAddressCodec {
   def taskToSettings[F[_]: Sync](
       task: UserTask[PeriodicQueryArgs]
   ): F[PeriodicQuerySettings] =
-    for {
-      ch <- task.args.channel match {
-        case Right(c) => NotificationChannel.convert(c).pure[F]
-        case Left(ref) =>
-          Sync[F].raiseError(
-            new IllegalStateException(s"ChannelRefs are not supported: $ref")
-          )
-      }
-    } yield PeriodicQuerySettings(
-      task.id,
-      task.summary,
-      task.enabled,
-      ch,
-      task.args.query.map(_.query).map(ItemQueryParser.parseUnsafe),
-      task.args.bookmark,
-      task.args.contentStart,
-      task.timer
+    Sync[F].pure(
+      PeriodicQuerySettings(
+        task.id,
+        task.enabled,
+        task.summary,
+        task.args.channels
+          .map(c => NotificationChannelRef(c.id, c.channelType, c.name))
+          .toList,
+        task.timer,
+        task.args.query.map(_.query).map(ItemQueryParser.parseUnsafe),
+        task.args.bookmark,
+        task.args.contentStart
+      )
     )
 }

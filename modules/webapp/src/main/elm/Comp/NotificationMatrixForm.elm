@@ -15,22 +15,23 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Messages.Comp.NotificationMatrixForm exposing (Texts)
 import Styles as S
+import Util.Maybe
 
 
 type alias Model =
-    { hook : NotificationMatrix
+    { channel : NotificationMatrix
     }
 
 
 init : Model
 init =
-    { hook = Data.NotificationChannel.setTypeMatrix Api.Model.NotificationMatrix.empty
+    { channel = Data.NotificationChannel.setTypeMatrix Api.Model.NotificationMatrix.empty
     }
 
 
 initWith : NotificationMatrix -> Model
-initWith hook =
-    { hook = Data.NotificationChannel.setTypeMatrix hook
+initWith channel =
+    { channel = Data.NotificationChannel.setTypeMatrix channel
     }
 
 
@@ -38,6 +39,7 @@ type Msg
     = SetHomeServer String
     | SetRoomId String
     | SetAccessKey String
+    | SetName String
 
 
 
@@ -47,28 +49,31 @@ type Msg
 update : Msg -> Model -> ( Model, Maybe NotificationMatrix )
 update msg model =
     let
-        newHook =
-            updateHook msg model.hook
+        newChannel =
+            updateChannel msg model.channel
     in
-    ( { model | hook = newHook }, check newHook )
+    ( { model | channel = newChannel }, check newChannel )
 
 
 check : NotificationMatrix -> Maybe NotificationMatrix
-check hook =
-    Just hook
+check channel =
+    Just channel
 
 
-updateHook : Msg -> NotificationMatrix -> NotificationMatrix
-updateHook msg hook =
+updateChannel : Msg -> NotificationMatrix -> NotificationMatrix
+updateChannel msg channel =
     case msg of
         SetHomeServer s ->
-            { hook | homeServer = s }
+            { channel | homeServer = s }
 
         SetRoomId s ->
-            { hook | roomId = s }
+            { channel | roomId = s }
 
         SetAccessKey s ->
-            { hook | accessToken = s }
+            { channel | accessToken = s }
+
+        SetName s ->
+            { channel | name = Util.Maybe.fromString s }
 
 
 
@@ -82,6 +87,25 @@ view texts model =
             [ class "mb-2"
             ]
             [ label
+                [ for "name"
+                , class S.inputLabel
+                ]
+                [ text texts.basics.name
+                ]
+            , input
+                [ type_ "text"
+                , onInput SetName
+                , placeholder texts.basics.name
+                , value (Maybe.withDefault "" model.channel.name)
+                , name "name"
+                , class S.textInput
+                ]
+                []
+            ]
+        , div
+            [ class "mb-2"
+            ]
+            [ label
                 [ for "homeserver"
                 , class S.inputLabel
                 ]
@@ -92,7 +116,7 @@ view texts model =
                 [ type_ "text"
                 , onInput SetHomeServer
                 , placeholder texts.homeServer
-                , value model.hook.homeServer
+                , value model.channel.homeServer
                 , name "homeserver"
                 , class S.textInput
                 ]
@@ -112,7 +136,7 @@ view texts model =
                 [ type_ "text"
                 , onInput SetRoomId
                 , placeholder texts.roomId
-                , value model.hook.roomId
+                , value model.channel.roomId
                 , name "roomid"
                 , class S.textInput
                 ]
@@ -131,7 +155,7 @@ view texts model =
             , textarea
                 [ onInput SetAccessKey
                 , placeholder texts.accessKey
-                , value model.hook.accessToken
+                , value model.channel.accessToken
                 , name "accesskey"
                 , class S.textAreaInput
                 ]

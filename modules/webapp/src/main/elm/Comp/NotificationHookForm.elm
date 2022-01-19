@@ -8,7 +8,6 @@
 module Comp.NotificationHookForm exposing
     ( Model
     , Msg(..)
-    , channelType
     , getHook
     , init
     , initWith
@@ -16,17 +15,16 @@ module Comp.NotificationHookForm exposing
     , view
     )
 
+import Api.Model.NotificationHook exposing (NotificationHook)
 import Comp.Basic as B
-import Comp.ChannelForm
+import Comp.ChannelRefInput
 import Comp.Dropdown
 import Comp.EventSample
 import Comp.MenuBar as MB
 import Comp.NotificationTest
-import Data.ChannelType exposing (ChannelType)
 import Data.DropdownStyle as DS
 import Data.EventType exposing (EventType)
 import Data.Flags exposing (Flags)
-import Data.NotificationHook exposing (NotificationHook)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -39,7 +37,7 @@ import Util.Maybe
 type alias Model =
     { hook : NotificationHook
     , enabled : Bool
-    , channelModel : Comp.ChannelForm.Model
+    , channelModel : Comp.ChannelRefInput.Model
     , eventsDropdown : Comp.Dropdown.Model EventType
     , eventSampleModel : Comp.EventSample.Model
     , testDeliveryModel : Comp.NotificationTest.Model
@@ -48,16 +46,16 @@ type alias Model =
     }
 
 
-init : Flags -> ChannelType -> ( Model, Cmd Msg )
-init flags ct =
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     let
         ( cm, cc ) =
-            Comp.ChannelForm.init flags ct
+            Comp.ChannelRefInput.init flags
 
         ( esm, esc ) =
             Comp.EventSample.initWith flags Data.EventType.TagsChanged
     in
-    ( { hook = Data.NotificationHook.empty ct
+    ( { hook = Api.Model.NotificationHook.empty
       , enabled = True
       , channelModel = cm
       , eventsDropdown =
@@ -81,7 +79,7 @@ initWith : Flags -> NotificationHook -> ( Model, Cmd Msg )
 initWith flags h =
     let
         ( cm, cc ) =
-            Comp.ChannelForm.initWith flags h.channel
+            Comp.ChannelRefInput.initSelected flags h.channels
 
         ( esm, esc ) =
             Comp.EventSample.initWith flags Data.EventType.TagsChanged
@@ -92,7 +90,7 @@ initWith flags h =
       , eventsDropdown =
             Comp.Dropdown.makeMultipleList
                 { options = Data.EventType.all
-                , selected = h.events
+                , selected = List.filterMap Data.EventType.fromString h.events
                 }
       , eventSampleModel = esm
       , testDeliveryModel = Comp.NotificationTest.init
@@ -104,11 +102,6 @@ initWith flags h =
         , Cmd.map EventSampleMsg esc
         ]
     )
-
-
-channelType : Model -> ChannelType
-channelType model =
-    Comp.ChannelForm.channelType model.channelModel
 
 
 getHook : Model -> Maybe NotificationHook
@@ -123,20 +116,28 @@ getHook model =
                 Nothing
 
             else
-                Just ev
+                Just (List.map Data.EventType.asString ev)
 
-        channel =
-            Comp.ChannelForm.getChannel model.channelModel
+        channels =
+            let
+                list =
+                    Comp.ChannelRefInput.getSelected model.channelModel
+            in
+            if list == [] then
+                Nothing
+
+            else
+                Just list
 
         mkHook ev ch =
             NotificationHook model.hook.id model.enabled ch model.allEvents model.eventFilter ev
     in
-    Maybe.map2 mkHook events channel
+    Maybe.map2 mkHook events channels
 
 
 type Msg
     = ToggleEnabled
-    | ChannelFormMsg Comp.ChannelForm.Msg
+    | ChannelFormMsg Comp.ChannelRefInput.Msg
     | EventMsg (Comp.Dropdown.Msg EventType)
     | EventSampleMsg Comp.EventSample.Msg
     | DeliveryTestMsg Comp.NotificationTest.Msg
@@ -163,7 +164,7 @@ update flags msg model =
         ChannelFormMsg lm ->
             let
                 ( cm, cc ) =
-                    Comp.ChannelForm.update flags lm model.channelModel
+                    Comp.ChannelRefInput.update lm model.channelModel
             in
             ( { model | channelModel = cm }, Cmd.map ChannelFormMsg cc )
 
@@ -229,9 +230,9 @@ view texts settings model =
                     }
             ]
         , div [ class "mb-4" ]
-            [ formHeader (texts.channelHeader (Comp.ChannelForm.channelType model.channelModel))
+            [ formHeader texts.channelHeader
             , Html.map ChannelFormMsg
-                (Comp.ChannelForm.view texts.channelForm settings model.channelModel)
+                (Comp.ChannelRefInput.view texts.channelRef settings model.channelModel)
             ]
         , div [ class "mb-4" ]
             [ formHeader texts.events
@@ -290,21 +291,21 @@ view texts settings model =
             ]
         , div
             [ class "mt-4"
-            , classList [ ( "hidden", channelType model /= Data.ChannelType.Http ) ]
-            ]
-            [ h3 [ class S.header3 ]
-                [ text texts.samplePayload
-                ]
-            , Html.map EventSampleMsg
-                (Comp.EventSample.viewJson texts.eventSample model.eventSampleModel)
-            ]
-        , div
-            [ class "mt-4"
-            , classList [ ( "hidden", channelType model == Data.ChannelType.Http ) ]
             ]
             [ formHeader texts.samplePayload
+            , div [ class "opacity-80 mb-1" ]
+                [ text texts.payloadInfo
+                ]
             , Html.map EventSampleMsg
-                (Comp.EventSample.viewMessage texts.eventSample model.eventSampleModel)
+                (Comp.EventSample.viewMessage texts.eventSample True model.eventSampleModel)
+            , div [ class "py-2 text-center text-sm" ]
+                [ text texts.jsonPayload
+                , i [ class "fa fa-arrow-down ml-1 mr-3" ] []
+                , i [ class "fa fa-arrow-up mr-1" ] []
+                , text texts.messagePayload
+                ]
+            , Html.map EventSampleMsg
+                (Comp.EventSample.viewJson texts.eventSample False model.eventSampleModel)
             ]
         , div [ class "mt-4" ]
             [ formHeader "Test Delviery"

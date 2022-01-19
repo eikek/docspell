@@ -7,27 +7,63 @@
 
 module Data.ChannelRef exposing (..)
 
+import Api.Model.NotificationChannelRef exposing (NotificationChannelRef)
 import Data.ChannelType exposing (ChannelType)
-import Json.Decode as D
-import Json.Encode as E
+import Html exposing (Attribute, Html, div, span, text)
+import Html.Attributes exposing (class)
+import Messages.Data.ChannelType as M
+import Util.List
 
 
-type alias ChannelRef =
-    { id : String
-    , channelType : ChannelType
-    }
+channelType : NotificationChannelRef -> Maybe ChannelType
+channelType ref =
+    Data.ChannelType.fromString ref.channelType
 
 
-decoder : D.Decoder ChannelRef
-decoder =
-    D.map2 ChannelRef
-        (D.field "id" D.string)
-        (D.field "channelType" Data.ChannelType.decoder)
+split : M.Texts -> NotificationChannelRef -> ( String, String )
+split texts ref =
+    let
+        chStr =
+            channelType ref
+                |> Maybe.map texts
+                |> Maybe.withDefault ref.channelType
+
+        name =
+            Maybe.withDefault (String.slice 0 6 ref.id) ref.name
+    in
+    ( chStr, name )
 
 
-encode : ChannelRef -> E.Value
-encode cref =
-    E.object
-        [ ( "id", E.string cref.id )
-        , ( "channelType", Data.ChannelType.encode cref.channelType )
+asString : M.Texts -> NotificationChannelRef -> String
+asString texts ref =
+    let
+        ( chStr, name ) =
+            split texts ref
+    in
+    chStr ++ " (" ++ name ++ ")"
+
+
+asDiv : List (Attribute msg) -> M.Texts -> NotificationChannelRef -> Html msg
+asDiv attrs texts ref =
+    let
+        ( chStr, name ) =
+            split texts ref
+    in
+    div attrs
+        [ text chStr
+        , span [ class "ml-1 text-xs opacity-75" ]
+            [ text ("(" ++ name ++ ")")
+            ]
         ]
+
+
+asStringJoined : M.Texts -> List NotificationChannelRef -> String
+asStringJoined texts refs =
+    List.map (asString texts) refs
+        |> Util.List.distinct
+        |> String.join ", "
+
+
+asDivs : M.Texts -> List (Attribute msg) -> List NotificationChannelRef -> List (Html msg)
+asDivs texts inner refs =
+    List.map (asDiv inner texts) refs

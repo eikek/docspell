@@ -5,7 +5,7 @@
 -}
 
 
-module Comp.NotificationHookManage exposing
+module Comp.NotificationChannelManage exposing
     ( Model
     , Msg
     , init
@@ -15,28 +15,31 @@ module Comp.NotificationHookManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
-import Api.Model.NotificationHook exposing (NotificationHook)
 import Comp.Basic as B
+import Comp.ChannelForm
+import Comp.ChannelMenu
 import Comp.MenuBar as MB
-import Comp.NotificationHookForm
-import Comp.NotificationHookTable
+import Comp.NotificationChannelTable
+import Data.ChannelType exposing (ChannelType)
 import Data.Flags exposing (Flags)
+import Data.NotificationChannel exposing (NotificationChannel)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Messages.Comp.NotificationHookManage exposing (Texts)
+import Messages.Comp.NotificationChannelManage exposing (Texts)
 import Styles as S
 
 
 type alias Model =
-    { listModel : Comp.NotificationHookTable.Model
-    , detailModel : Maybe Comp.NotificationHookForm.Model
-    , items : List NotificationHook
+    { listModel : Comp.NotificationChannelTable.Model
+    , detailModel : Maybe Comp.ChannelForm.Model
+    , items : List NotificationChannel
     , deleteConfirm : DeleteConfirm
     , loading : Bool
     , formState : FormState
+    , newChannelMenuOpen : Bool
     , jsonFilterError : Maybe String
     }
 
@@ -61,26 +64,27 @@ type FormState
 
 
 type Msg
-    = TableMsg Comp.NotificationHookTable.Msg
-    | DetailMsg Comp.NotificationHookForm.Msg
-    | GetDataResp (Result Http.Error (List NotificationHook))
+    = TableMsg Comp.NotificationChannelTable.Msg
+    | DetailMsg Comp.ChannelForm.Msg
+    | GetDataResp (Result Http.Error (List NotificationChannel))
+    | ToggleNewChannelMenu
     | SubmitResp SubmitType (Result Http.Error BasicResult)
-    | NewHookInit
+    | NewChannelInit ChannelType
     | BackToTable
     | Submit
     | RequestDelete
     | CancelDelete
-    | DeleteHookNow String
-    | VerifyFilterResp NotificationHook (Result Http.Error BasicResult)
+    | DeleteChannelNow String
 
 
 initModel : Model
 initModel =
-    { listModel = Comp.NotificationHookTable.init
+    { listModel = Comp.NotificationChannelTable.init
     , detailModel = Nothing
     , items = []
     , loading = False
     , formState = FormStateInitial
+    , newChannelMenuOpen = False
     , deleteConfirm = DeleteConfirmOff
     , jsonFilterError = Nothing
     }
@@ -88,7 +92,7 @@ initModel =
 
 initCmd : Flags -> Cmd Msg
 initCmd flags =
-    Api.getHooks flags GetDataResp
+    Api.getChannels flags GetDataResp
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -103,24 +107,6 @@ init flags =
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
-        VerifyFilterResp hook (Ok res) ->
-            if res.success then
-                postHook flags hook model
-
-            else
-                ( { model
-                    | loading = False
-                    , formState = FormErrorInvalid
-                    , jsonFilterError = Just res.message
-                  }
-                , Cmd.none
-                )
-
-        VerifyFilterResp _ (Err err) ->
-            ( { model | formState = FormErrorHttp err }
-            , Cmd.none
-            )
-
         GetDataResp (Ok res) ->
             ( { model
                 | items = res
@@ -137,17 +123,17 @@ update flags msg model =
         TableMsg lm ->
             let
                 ( mm, action ) =
-                    Comp.NotificationHookTable.update flags lm model.listModel
+                    Comp.NotificationChannelTable.update flags lm model.listModel
 
                 ( detail, cmd ) =
                     case action of
-                        Comp.NotificationHookTable.NoAction ->
+                        Comp.NotificationChannelTable.NoAction ->
                             ( Nothing, Cmd.none )
 
-                        Comp.NotificationHookTable.EditAction hook ->
+                        Comp.NotificationChannelTable.EditAction channel ->
                             let
                                 ( dm, dc ) =
-                                    Comp.NotificationHookForm.initWith flags hook
+                                    Comp.ChannelForm.initWith flags channel
                             in
                             ( Just dm, Cmd.map DetailMsg dc )
             in
@@ -163,7 +149,7 @@ update flags msg model =
                 Just dm ->
                     let
                         ( mm, mc ) =
-                            Comp.NotificationHookForm.update flags lm dm
+                            Comp.ChannelForm.update flags lm dm
                     in
                     ( { model | detailModel = Just mm }
                     , Cmd.map DetailMsg mc
@@ -171,6 +157,9 @@ update flags msg model =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        ToggleNewChannelMenu ->
+            ( { model | newChannelMenuOpen = not model.newChannelMenuOpen }, Cmd.none )
 
         SubmitResp submitType (Ok res) ->
             ( { model
@@ -200,12 +189,12 @@ update flags msg model =
             , Cmd.none
             )
 
-        NewHookInit ->
+        NewChannelInit ct ->
             let
                 ( mm, mc ) =
-                    Comp.NotificationHookForm.init flags
+                    Comp.ChannelForm.init flags ct
             in
-            ( { model | detailModel = Just mm }, Cmd.map DetailMsg mc )
+            ( { model | detailModel = Just mm, newChannelMenuOpen = False }, Cmd.map DetailMsg mc )
 
         BackToTable ->
             ( { model | detailModel = Nothing }, initCmd flags )
@@ -213,14 +202,9 @@ update flags msg model =
         Submit ->
             case model.detailModel of
                 Just dm ->
-                    case Comp.NotificationHookForm.getHook dm of
+                    case Comp.ChannelForm.getChannel dm of
                         Just data ->
-                            case data.eventFilter of
-                                Nothing ->
-                                    postHook flags data model
-
-                                Just jf ->
-                                    ( { model | loading = True }, Api.verifyJsonFilter flags jf (VerifyFilterResp data) )
+                            postChannel flags data model
 
                         Nothing ->
                             ( { model | formState = FormErrorInvalid }, Cmd.none )
@@ -234,19 +218,19 @@ update flags msg model =
         CancelDelete ->
             ( { model | deleteConfirm = DeleteConfirmOff }, Cmd.none )
 
-        DeleteHookNow id ->
+        DeleteChannelNow id ->
             ( { model | deleteConfirm = DeleteConfirmOff, loading = True }
-            , Api.deleteHook flags id (SubmitResp SubmitDelete)
+            , Api.deleteChannel flags id (SubmitResp SubmitDelete)
             )
 
 
-postHook : Flags -> NotificationHook -> Model -> ( Model, Cmd Msg )
-postHook flags hook model =
-    if hook.id == "" then
-        ( { model | loading = True }, Api.createHook flags hook (SubmitResp SubmitCreate) )
+postChannel : Flags -> NotificationChannel -> Model -> ( Model, Cmd Msg )
+postChannel flags channel model =
+    if (Data.NotificationChannel.getRef channel |> .id) == "" then
+        ( { model | loading = True }, Api.createChannel flags channel (SubmitResp SubmitCreate) )
 
     else
-        ( { model | loading = True }, Api.updateHook flags hook (SubmitResp SubmitUpdate) )
+        ( { model | loading = True }, Api.updateChannel flags channel (SubmitResp SubmitUpdate) )
 
 
 
@@ -280,13 +264,13 @@ viewState texts model =
                 text ""
 
             FormSubmitSuccessful SubmitCreate ->
-                text texts.hookCreated
+                text texts.channelCreated
 
             FormSubmitSuccessful SubmitUpdate ->
-                text texts.hookUpdated
+                text texts.channelUpdated
 
             FormSubmitSuccessful SubmitDelete ->
-                text texts.hookDeleted
+                text texts.channelDeleted
 
             FormErrorSubmit m ->
                 text m
@@ -295,12 +279,7 @@ viewState texts model =
                 text (texts.httpError err)
 
             FormErrorInvalid ->
-                case model.jsonFilterError of
-                    Just m ->
-                        text (texts.invalidJsonFilter m)
-
-                    Nothing ->
-                        text texts.formInvalid
+                text texts.formInvalid
         ]
 
 
@@ -314,18 +293,72 @@ isSuccess state =
             False
 
 
-viewForm : Texts -> UiSettings -> Model -> Comp.NotificationHookForm.Model -> List (Html Msg)
+viewForm : Texts -> UiSettings -> Model -> Comp.ChannelForm.Model -> List (Html Msg)
 viewForm texts settings outerModel model =
     let
-        newHook =
-            model.hook.id == ""
+        channelId =
+            Comp.ChannelForm.getChannel model
+                |> Maybe.map Data.NotificationChannel.getRef
+                |> Maybe.map .id
+
+        newChannel =
+            channelId |> (==) (Just "")
+
+        headline =
+            case Comp.ChannelForm.channelType model of
+                Data.ChannelType.Matrix ->
+                    span []
+                        [ text texts.integrate
+                        , a
+                            [ href "https://matrix.org"
+                            , target "_blank"
+                            , class S.link
+                            , class "mx-3"
+                            ]
+                            [ i [ class "fa fa-external-link-alt mr-1" ] []
+                            , text "Matrix"
+                            ]
+                        , text texts.intoDocspell
+                        ]
+
+                Data.ChannelType.Mail ->
+                    span []
+                        [ text texts.notifyEmailInfo
+                        ]
+
+                Data.ChannelType.Gotify ->
+                    span []
+                        [ text texts.integrate
+                        , a
+                            [ href "https://gotify.net"
+                            , target "_blank"
+                            , class S.link
+                            , class "mx-3"
+                            ]
+                            [ i [ class "fa fa-external-link-alt mr-1" ] []
+                            , text "Gotify"
+                            ]
+                        , text texts.intoDocspell
+                        ]
+
+                Data.ChannelType.Http ->
+                    span []
+                        [ text texts.postRequestInfo
+                        ]
     in
     [ h1 [ class S.header2 ]
-        [ if newHook then
-            text texts.addWebhook
+        [ Data.ChannelType.icon (Comp.ChannelForm.channelType model) "w-8 h-8 inline-block mr-2"
+        , if newChannel then
+            text texts.addChannel
 
           else
-            text texts.updateWebhook
+            text texts.updateChannel
+        , div [ class "text-xs opacity-50 font-mono" ]
+            [ Maybe.withDefault "" channelId |> text
+            ]
+        ]
+    , div [ class "pt-2 pb-4 font-medium" ]
+        [ headline
         ]
     , MB.view
         { start =
@@ -346,10 +379,10 @@ viewForm texts settings outerModel model =
                 }
             ]
         , end =
-            if not newHook then
+            if not newChannel then
                 [ MB.DeleteButton
                     { tagger = RequestDelete
-                    , title = texts.deleteThisHook
+                    , title = texts.deleteThisChannel
                     , icon = Just "fa fa-trash"
                     , label = texts.basics.delete
                     }
@@ -363,7 +396,7 @@ viewForm texts settings outerModel model =
         [ viewState texts outerModel
         ]
     , Html.map DetailMsg
-        (Comp.NotificationHookForm.view texts.notificationForm settings model)
+        (Comp.ChannelForm.view texts.notificationForm settings model)
     , B.loadingDimmer
         { active = outerModel.loading
         , label = texts.basics.loading
@@ -373,14 +406,14 @@ viewForm texts settings outerModel model =
         (div [ class "flex flex-col" ]
             [ div [ class "text-lg" ]
                 [ i [ class "fa fa-info-circle mr-2" ] []
-                , text texts.reallyDeleteHook
+                , text texts.reallyDeleteChannel
                 ]
             , div [ class "mt-4 flex flex-row items-center" ]
                 [ B.deleteButton
                     { label = texts.basics.yes
                     , icon = "fa fa-check"
                     , disabled = False
-                    , handler = onClick (DeleteHookNow model.hook.id)
+                    , handler = onClick (DeleteChannelNow (Maybe.withDefault "" channelId))
                     , attrs = [ href "#" ]
                     }
                 , B.secondaryButton
@@ -398,20 +431,23 @@ viewForm texts settings outerModel model =
 
 viewList : Texts -> Model -> List (Html Msg)
 viewList texts model =
+    let
+        menuModel =
+            { menuOpen = model.newChannelMenuOpen
+            , toggleMenu = ToggleNewChannelMenu
+            , menuLabel = texts.newChannel
+            , onItem = NewChannelInit
+            }
+    in
     [ MB.view
         { start = []
         , end =
-            [ MB.PrimaryButton
-                { tagger = NewHookInit
-                , title = texts.newHook
-                , icon = Just "fa fa-plus"
-                , label = texts.newHook
-                }
+            [ Comp.ChannelMenu.channelMenu texts.channelType menuModel
             ]
         , rootClasses = "mb-4"
         }
     , Html.map TableMsg
-        (Comp.NotificationHookTable.view texts.notificationTable
+        (Comp.NotificationChannelTable.view texts.notificationTable
             model.listModel
             model.items
         )

@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.notification
+package db.migration
+
+import docspell.notification.api._
 
 import emil.MailAddress
 import io.circe.{Decoder, Encoder}
 
-package object api {
-
+package object data {
   type ChannelOrRef = Either[ChannelRef, Channel]
 
   object ChannelOrRef {
@@ -25,5 +26,4 @@ package object api {
         cr.fold(_.channelType, _.channelType)
     }
   }
-
 }

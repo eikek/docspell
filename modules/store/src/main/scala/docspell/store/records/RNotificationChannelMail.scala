@@ -65,8 +65,10 @@ object RNotificationChannelMail {
       )
     )
 
-  def getById(id: Ident): ConnectionIO[Option[RNotificationChannelMail]] =
-    run(select(T.all), from(T), T.id === id).query[RNotificationChannelMail].option
+  def getById(userId: Ident)(id: Ident): ConnectionIO[Option[RNotificationChannelMail]] =
+    run(select(T.all), from(T), T.id === id && T.uid === userId)
+      .query[RNotificationChannelMail]
+      .option
 
   def getByAccount(account: AccountId): ConnectionIO[Vector[RNotificationChannelMail]] = {
     val user = RUser.as("u")
