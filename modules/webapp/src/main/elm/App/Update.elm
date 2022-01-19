@@ -232,7 +232,7 @@ updateWithSub msg model =
         NavRequest req ->
             case req of
                 Internal url ->
-                    if String.startsWith "/app" url.path then
+                    if String.contains "/app" url.path then
                         let
                             isCurrent =
                                 Page.fromUrl url

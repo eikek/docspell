@@ -39,10 +39,10 @@ object TemplateRoutes {
 
   def apply[F[_]: Async](cfg: Config): InnerRoutes[F] = {
     val indexTemplate = memo(
-      loadResource("/index.html").flatMap(loadTemplate(_))
+      loadResource(s"/index.html").flatMap(loadTemplate(_))
     )
-    val docTemplate = memo(loadResource("/doc.html").flatMap(loadTemplate(_)))
-    val swTemplate = memo(loadResource("/sw.js").flatMap(loadTemplate(_)))
+    val docTemplate = memo(loadResource(s"/doc.html").flatMap(loadTemplate(_)))
+    val swTemplate = memo(loadResource(s"/sw.js").flatMap(loadTemplate(_)))
 
     val dsl = new Http4sDsl[F] {}
     import dsl._
@@ -52,7 +52,7 @@ object TemplateRoutes {
           for {
             templ <- docTemplate
             resp <- Ok(
-              DocData().render(templ),
+              DocData(cfg).render(templ),
               `Content-Type`(textHtml, Charset.`UTF-8`)
             )
           } yield resp
@@ -108,10 +108,10 @@ object TemplateRoutes {
   case class DocData(swaggerRoot: String, openapiSpec: String)
   object DocData {
 
-    def apply(): DocData =
+    def apply(cfg: Config): DocData =
       DocData(
-        "/app/assets" + Webjars.swaggerui,
-        s"/app/assets/${BuildInfo.name}/${BuildInfo.version}/docspell-openapi.yml"
+        cfg.baseUrl.path.asString + "/app/assets" + Webjars.swaggerui,
+        s"${cfg.baseUrl.path.asString}/app/assets/${BuildInfo.name}/${BuildInfo.version}/docspell-openapi.yml"
       )
 
     implicit def yamuscaValueConverter: ValueConverter[DocData] =
@@ -133,19 +133,19 @@ object TemplateRoutes {
     def apply(cfg: Config): IndexData =
       IndexData(
         Flags(cfg, uiVersion),
-        chooseUi,
+        chooseUi(cfg),
         Seq(
-          "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
-          s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell-app.js",
-          s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell-query-opt.js"
+          cfg.baseUrl.path.asString + "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
+          s"${cfg.baseUrl.path.asString}/app/assets/docspell-webapp/${BuildInfo.version}/docspell-app.js",
+          s"${cfg.baseUrl.path.asString}/app/assets/docspell-webapp/${BuildInfo.version}/docspell-query-opt.js"
         ),
-        s"/app/assets/docspell-webapp/${BuildInfo.version}/favicon",
-        s"/app/assets/docspell-webapp/${BuildInfo.version}/docspell.js",
+        s"${cfg.baseUrl.path.asString}/app/assets/docspell-webapp/${BuildInfo.version}/favicon",
+        s"${cfg.baseUrl.path.asString}/app/assets/docspell-webapp/${BuildInfo.version}/docspell.js",
         Flags(cfg, uiVersion).asJson.spaces2
       )
 
-    private def chooseUi: Seq[String] =
-      Seq(s"/app/assets/docspell-webapp/${BuildInfo.version}/css/styles.css")
+    private def chooseUi(cfg: Config): Seq[String] =
+      Seq(s"${cfg.baseUrl.path.asString}/app/assets/docspell-webapp/${BuildInfo.version}/css/styles.css")
 
     implicit def yamuscaValueConverter: ValueConverter[IndexData] =
       ValueConverter.deriveConverter[IndexData]

@@ -229,8 +229,8 @@ flatten list =
 --- View
 
 
-view : Texts -> UiSettings -> Model -> Html Msg
-view texts settings model =
+view : Texts -> Flags -> UiSettings -> Model -> Html Msg
+view texts flags settings model =
     div [ class "px-2 mb-4" ]
         [ h1 [ class S.header1 ]
             [ text texts.title
@@ -275,15 +275,15 @@ view texts settings model =
             }
         , renderFormState texts model
         , div [ class "flex-col px-2" ]
-            (List.indexedMap (itemCard texts settings model) model.items)
+            (List.indexedMap (itemCard texts flags settings model) model.items)
         ]
 
 
-itemCard : Texts -> UiSettings -> Model -> Int -> ItemLight -> Html Msg
-itemCard texts settings model index item =
+itemCard : Texts -> Flags -> UiSettings -> Model -> Int -> ItemLight -> Html Msg
+itemCard texts flags settings model index item =
     let
         previewUrl =
-            Api.itemBasePreviewURL item.id
+            Api.itemBasePreviewURL flags item.id
 
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f

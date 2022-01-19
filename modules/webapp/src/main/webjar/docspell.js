@@ -153,7 +153,7 @@ function closeWS() {
 function initWS() {
     closeWS();
     var protocol = (window.location.protocol === 'https:') ? 'wss:' : 'ws:';
-    var url = protocol + '//' + window.location.host + '/api/v1/sec/ws';
+    var url = protocol + '//' + window.location.host + '/andy/api/v1/sec/ws';
     console.log("Initialize websocket at " + url);
     dsWebSocket = new WebSocket(url);
     dsWebSocket.addEventListener("message", function(event) {

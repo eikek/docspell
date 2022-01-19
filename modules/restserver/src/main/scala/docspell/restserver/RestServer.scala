@@ -104,30 +104,33 @@ object RestServer {
   )(
       wsB: WebSocketBuilder2[F]
   ) = {
+    val basePath = cfg.baseUrl.path.asString
     val templates = TemplateRoutes[F](cfg)
     val httpApp = Router(
-      "/internal" -> InternalHeader(internSettings.internalRouteKey) {
-        internalRoutes(pubSub)
-      },
-      "/api/info" -> routes.InfoRoutes(),
-      "/api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
-      "/api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
-        securedRoutes(cfg, restApp, wsB, topic, token)
-      },
-      "/api/v1/admin" -> AdminAuth(cfg.adminEndpoint) {
-        adminRoutes(cfg, restApp)
-      },
-      "/api/v1/share" -> ShareAuth(restApp.backend.share, cfg.auth) { token =>
-        shareRoutes(cfg, restApp, token)
-      },
-      "/api/doc" -> templates.doc,
-      "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F]),
-      "/app" -> EnvMiddleware(templates.app),
-      "/sw.js" -> EnvMiddleware(templates.serviceWorker),
-      "/" -> redirectTo("/app")
+      basePath -> Router(
+        "internal" -> InternalHeader(internSettings.internalRouteKey) {
+          internalRoutes(pubSub)
+        },
+        "api/info" -> routes.InfoRoutes(),
+        "api/v1/open/" -> openRoutes(cfg, httpClient, restApp),
+        "api/v1/sec/" -> Authenticate(restApp.backend.login, cfg.auth) { token =>
+          securedRoutes(cfg, restApp, wsB, topic, token)
+        },
+        "api/v1/admin" -> AdminAuth(cfg.adminEndpoint) {
+          adminRoutes(cfg, restApp)
+        },
+        "api/v1/share" -> ShareAuth(restApp.backend.share, cfg.auth) { token =>
+          shareRoutes(cfg, restApp, token)
+        },
+        "api/doc" -> templates.doc,
+        "app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F]),
+        "app" -> EnvMiddleware(templates.app),
+        "sw.js" -> EnvMiddleware(templates.serviceWorker),
+        "" -> redirectTo(basePath + "/app")
+      )
     ).orNotFound
 
-    Logger.httpApp(logHeaders = false, logBody = false)(httpApp)
+    Logger.httpApp(logHeaders = true, logBody = false)(httpApp)
   }
 
   def internalRoutes[F[_]: Async](pubSub: NaivePubSub[F]): HttpRoutes[F] =
@@ -156,7 +159,7 @@ object RestServer {
       "queue" -> JobQueueRoutes(restApp.backend, token),
       "item" -> ItemRoutes(cfg, restApp.backend, token),
       "items" -> ItemMultiRoutes(cfg, restApp.backend, token),
-      "attachment" -> AttachmentRoutes(restApp.backend, token),
+      "attachment" -> AttachmentRoutes(restApp.backend, cfg, token),
       "attachments" -> AttachmentMultiRoutes(restApp.backend, token),
       "upload" -> UploadRoutes.secured(restApp.backend, cfg, token),
       "checkfile" -> CheckFileRoutes.secured(restApp.backend, token),
@@ -212,7 +215,7 @@ object RestServer {
   ): HttpRoutes[F] =
     Router(
       "search" -> ShareSearchRoutes(restApp.backend, cfg, token),
-      "attachment" -> ShareAttachmentRoutes(restApp.backend, token),
+      "attachment" -> ShareAttachmentRoutes(restApp.backend, cfg, token),
       "item" -> ShareItemRoutes(restApp.backend, token)
     )
 

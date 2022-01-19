@@ -8,13 +8,11 @@
 module Comp.ItemDetail.ShowQrCode exposing (UrlId(..), qrCodeElementId, view, view1)
 
 import Api
-import Comp.Basic as B
 import Comp.ItemDetail.Model exposing (Model, Msg(..), isShowQrAttach, isShowQrItem)
 import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import QRCode
 import Styles as S
 import Svg.Attributes as SvgA
@@ -44,7 +42,7 @@ view1 flags classes urlId =
         docUrl =
             case urlId of
                 Attach str ->
-                    flags.config.baseUrl ++ Api.fileURL str
+                    flags.config.baseUrl ++ Api.fileURL flags str
 
                 Item str ->
                     flags.config.baseUrl ++ "/app/item/" ++ str

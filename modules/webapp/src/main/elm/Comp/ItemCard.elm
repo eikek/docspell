@@ -202,7 +202,7 @@ viewRow texts cfg settings flags model item =
 
         attachUrl =
             Maybe.map mkAttachUrl mainAttach
-                |> Maybe.withDefault "/api/v1/sec/attachment/none"
+                |> Maybe.withDefault "/andy/api/v1/sec/attachment/none"
 
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
@@ -844,7 +844,7 @@ previewMenu2 texts settings flags cfg model item mainAttach =
 
         attachUrl =
             Maybe.map mkAttachUrl mainAttach
-                |> Maybe.withDefault "/api/v1/sec/attachment/none"
+                |> Maybe.withDefault "/andy/api/v1/sec/attachment/none"
 
         dueDate =
             IT.render IT.dueDateShort (templateCtx texts) item

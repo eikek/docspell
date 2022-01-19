@@ -27,6 +27,7 @@ module Page exposing
     )
 
 import Browser.Navigation as Nav
+import Data.Flags exposing (Flags)
 import Html exposing (Attribute)
 import Html.Attributes as Attr
 import Url exposing (Url)
@@ -227,50 +228,51 @@ pageToString : Page -> String
 pageToString page =
     case page of
         HomePage ->
-            "/app/home"
+            "/andy" ++ "/app/home"
 
         LoginPage data ->
             case data.referrer of
                 Just (LoginPage _) ->
-                    "/app/login"
+                    "/andy" ++ "/app/login"
 
                 Just p ->
-                    "/app/login?r=" ++ pageToString p
+                    String.concat [ "/andy", "/app/login?r=", pageToString p ]
 
                 Nothing ->
-                    "/app/login"
+                    "/andy" ++ "/app/login"
 
         ManageDataPage ->
-            "/app/managedata"
+            "/andy" ++ "/app/managedata"
 
         CollectiveSettingPage ->
-            "/app/csettings"
+            "/andy" ++ "/app/csettings"
 
         UserSettingPage ->
-            "/app/usettings"
+            "/andy" ++ "/app/usettings"
 
         QueuePage ->
-            "/app/queue"
+            "/andy" ++ "/app/queue"
 
         RegisterPage ->
-            "/app/register"
+            "/andy" ++ "/app/register"
 
         UploadPage sourceId ->
             Maybe.map (\id -> "/" ++ id) sourceId
                 |> Maybe.withDefault ""
+                |> (++) "/andy"
                 |> (++) "/app/upload"
 
         NewInvitePage ->
-            "/app/newinvite"
+            "/andy" ++ "/app/newinvite"
 
         ItemDetailPage id ->
-            "/app/item/" ++ id
+            "/andy" ++ "/app/item/" ++ id
 
         SharePage id ->
-            "/app/share/" ++ id
+            "/andy" ++ "/app/share/" ++ id
 
         ShareDetailPage shareId itemId ->
-            "/app/share/" ++ shareId ++ "/" ++ itemId
+            "/andy" ++ "/app/share/" ++ shareId ++ "/" ++ itemId
 
 
 pageFromString : String -> Maybe Page
@@ -304,6 +306,11 @@ goto page =
     Nav.load (pageToString page)
 
 
+basePath : String
+basePath =
+    "andy"
+
+
 pathPrefix : String
 pathPrefix =
     "app"
@@ -315,21 +322,21 @@ parser =
         [ Parser.map HomePage
             (oneOf
                 [ Parser.top
-                , s pathPrefix </> s "home"
+                , s basePath </> s pathPrefix </> s "home"
                 ]
             )
-        , Parser.map LoginPage (s pathPrefix </> s "login" <?> loginPageParser)
-        , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
-        , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")
-        , Parser.map UserSettingPage (s pathPrefix </> s "usettings")
-        , Parser.map QueuePage (s pathPrefix </> s "queue")
-        , Parser.map RegisterPage (s pathPrefix </> s "register")
-        , Parser.map (\s -> UploadPage (Just s)) (s pathPrefix </> s "upload" </> string)
-        , Parser.map (UploadPage Nothing) (s pathPrefix </> s "upload")
-        , Parser.map NewInvitePage (s pathPrefix </> s "newinvite")
-        , Parser.map ItemDetailPage (s pathPrefix </> s "item" </> string)
-        , Parser.map ShareDetailPage (s pathPrefix </> s "share" </> string </> string)
-        , Parser.map SharePage (s pathPrefix </> s "share" </> string)
+        , Parser.map LoginPage (s basePath </> s pathPrefix </> s "login" <?> loginPageParser)
+        , Parser.map ManageDataPage (s basePath </> s pathPrefix </> s "managedata")
+        , Parser.map CollectiveSettingPage (s basePath </> s pathPrefix </> s "csettings")
+        , Parser.map UserSettingPage (s basePath </> s pathPrefix </> s "usettings")
+        , Parser.map QueuePage (s basePath </> s pathPrefix </> s "queue")
+        , Parser.map RegisterPage (s basePath </> s pathPrefix </> s "register")
+        , Parser.map (\s -> UploadPage (Just s)) (s basePath </> s pathPrefix </> s "upload" </> string)
+        , Parser.map (UploadPage Nothing) (s basePath </> s pathPrefix </> s "upload")
+        , Parser.map NewInvitePage (s basePath </> s pathPrefix </> s "newinvite")
+        , Parser.map ItemDetailPage (s basePath </> s pathPrefix </> s "item" </> string)
+        , Parser.map ShareDetailPage (s basePath </> s pathPrefix </> s "share" </> string </> string)
+        , Parser.map SharePage (s basePath </> s pathPrefix </> s "share" </> string)
         ]
 
 

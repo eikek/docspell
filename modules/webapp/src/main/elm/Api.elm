@@ -1969,19 +1969,19 @@ reprocessItem flags itemId attachIds receive =
         }
 
 
-attachmentPreviewURL : String -> String
-attachmentPreviewURL id =
-    "/api/v1/sec/attachment/" ++ id ++ "/preview?withFallback=true"
+attachmentPreviewURL : Flags -> String -> String
+attachmentPreviewURL flags id =
+    flags.config.baseUrl ++ "/api/v1/sec/attachment/" ++ id ++ "/preview?withFallback=true"
 
 
-itemBasePreviewURL : String -> String
-itemBasePreviewURL itemId =
-    "/api/v1/sec/item/" ++ itemId ++ "/preview?withFallback=true"
+itemBasePreviewURL : Flags -> String -> String
+itemBasePreviewURL flags itemId =
+    flags.config.baseUrl ++ "/api/v1/sec/item/" ++ itemId ++ "/preview?withFallback=true"
 
 
-fileURL : String -> String
-fileURL attachId =
-    "/api/v1/sec/attachment/" ++ attachId
+fileURL : Flags -> String -> String
+fileURL flags attachId =
+    flags.config.baseUrl ++ "/api/v1/sec/attachment/" ++ attachId
 
 
 setAttachmentName :

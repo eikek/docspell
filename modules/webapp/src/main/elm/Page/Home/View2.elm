@@ -75,7 +75,7 @@ mainView texts flags settings model =
                         MergeSelected ->
                             Just
                                 [ div [ class "sm:relative mb-2" ]
-                                    (itemMergeView texts settings svm)
+                                    (itemMergeView texts flags settings svm)
                                 ]
 
                         PublishSelected ->
@@ -128,15 +128,15 @@ itemPublishView texts settings flags svm =
     ]
 
 
-itemMergeView : Texts -> UiSettings -> SelectViewModel -> List (Html Msg)
-itemMergeView texts settings svm =
+itemMergeView : Texts -> Flags -> UiSettings -> SelectViewModel -> List (Html Msg)
+itemMergeView texts flags settings svm =
     [ Html.map MergeItemsMsg
-        (Comp.ItemMerge.view texts.itemMerge settings svm.mergeModel)
+        (Comp.ItemMerge.view texts.itemMerge flags settings svm.mergeModel)
     ]
 
 
 publishResults : Texts -> UiSettings -> Flags -> Model -> Comp.PublishItems.Model -> List (Html Msg)
-publishResults texts settings flags model pm =
+publishResults texts settings flags _ pm =
     [ Html.map PublishViewMsg
         (Comp.PublishItems.view texts.publishItems settings flags pm)
     ]
@@ -574,17 +574,17 @@ itemCardList : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
 itemCardList texts flags settings model =
     let
         previewUrl attach =
-            Api.attachmentPreviewURL attach.id
+            Api.attachmentPreviewURL flags attach.id
 
         previewUrlFallback item =
-            Api.itemBasePreviewURL item.id
+            Api.itemBasePreviewURL flags item.id
 
         viewCfg sel =
             { current = model.scrollToCard
             , selection = sel
             , previewUrl = previewUrl
             , previewUrlFallback = previewUrlFallback
-            , attachUrl = .id >> Api.fileURL
+            , attachUrl = .id >> Api.fileURL flags
             , detailPage = .id >> ItemDetailPage
             , arrange = settings.itemSearchArrange
             , showGroups = settings.itemSearchShowGroups
