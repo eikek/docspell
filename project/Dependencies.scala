@@ -34,6 +34,7 @@ object Dependencies {
   val MUnitCatsEffectVersion = "1.0.7"
   val OrganizeImportsVersion = "0.6.0"
   val PdfboxVersion = "2.0.25"
+  val PdfjsViewerVersion = "2.9.359"
   val PoiVersion = "4.1.2"
   val PostgresVersion = "42.3.1"
   val PureConfigVersion = "0.17.1"
@@ -47,7 +48,6 @@ object Dependencies {
   val TestContainerVersion = "0.39.12"
   val TwelveMonkeysVersion = "3.8.1"
   val JQueryVersion = "3.5.1"
-  val ViewerJSVersion = "0.5.9"
 
   val jwtScala = Seq(
     "com.github.jwt-scala" %% "jwt-circe" % JwtScalaVersion
@@ -310,8 +310,8 @@ object Dependencies {
 
   val webjars = Seq(
     "org.webjars" % "swagger-ui" % SwaggerUIVersion,
-    "org.webjars" % "viewerjs" % ViewerJSVersion,
-    "org.webjars" % "clipboard.js" % ClipboardJsVersion
+    "org.webjars" % "clipboard.js" % ClipboardJsVersion,
+    "org.webjars.npm" % "pdfjs-dist-viewer-min" % PdfjsViewerVersion
   )
 
   val icu4j = Seq(
