@@ -24,7 +24,7 @@ case class ScanMailboxArgs(
     // the configured imap connection
     imapConnection: Ident,
     // scan folders recursively
-    scanRecursively: Boolean,
+    scanRecursively: Option[Boolean],
     // what folders to search
     folders: List[String],
     // only select mails received since then

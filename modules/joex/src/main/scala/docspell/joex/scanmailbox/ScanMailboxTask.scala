@@ -98,7 +98,7 @@ object ScanMailboxTask {
       if (acc.noneLeft(name)) acc.pure[F]
       else
         mailer
-          .run(impl.handleFolder(theEmil.access, upload)(name, ctx.args.scanRecursively))
+          .run(impl.handleFolder(theEmil.access, upload)(name, ctx.args.scanRecursively.getOrElse(false)))
           .map(_ ++ acc)
 
     Stream
