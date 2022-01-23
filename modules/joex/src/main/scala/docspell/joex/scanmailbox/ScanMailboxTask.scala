@@ -24,6 +24,7 @@ import docspell.store.records._
 
 import _root_.io.circe.syntax._
 import emil.SearchQuery.{All, ReceivedDate}
+import emil.SearchResult.searchResultMonoid
 import emil.javamail.syntax._
 import emil.{MimeType => _, _}
 
@@ -98,7 +99,12 @@ object ScanMailboxTask {
       if (acc.noneLeft(name)) acc.pure[F]
       else
         mailer
-          .run(impl.handleFolder(theEmil.access, upload)(name, ctx.args.scanRecursively.getOrElse(false)))
+          .run(
+            impl.handleFolder(theEmil.access, upload)(
+              name,
+              ctx.args.scanRecursively.getOrElse(false)
+            )
+          )
           .map(_ ++ acc)
 
     Stream
@@ -183,13 +189,9 @@ object ScanMailboxTask {
     )(folder: MailFolder): MailOp[F, C, SearchResult[MailHeader]] =
       for {
         subFolders <- a.listFoldersRecursive(Some(folder))
-        search <- subFolders.foldLeft(searchMails(a)(folder)) { (result, folder) =>
-          for {
-            res <- result
-            search <- searchMails(a)(folder)
-          } yield SearchResult(res.mails ++ search.mails, res.count + search.count)
-        }
-      } yield search
+        foldersToSearch = Vector(folder) ++ subFolders
+        search <- foldersToSearch.traverse(searchMails(a))
+      } yield searchResultMonoid.combineAll(search)
 
     def searchMails[C](
         a: Access[F, C]
