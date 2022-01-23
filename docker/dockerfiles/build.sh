@@ -35,38 +35,40 @@ trap "{ docker buildx rm docspell-builder; }" EXIT
 platforms="linux/amd64,linux/aarch64,linux/arm/v7"
 docker buildx create --name docspell-builder --use
 
-if [[ $version == *SNAPSHOT* ]]; then
-    echo ">>>> Building nightly images for $version <<<<<"
-    url_base="https://github.com/eikek/docspell/releases/download/nightly"
+case $version in
+    *SNAPSHOT)
+        echo ">>>> Building nightly images for $version <<<<<"
+        url_base="https://github.com/eikek/docspell/releases/download/nightly"
 
-    echo "============ Building Restserver ============"
-    docker buildx build \
-           --platform="$platforms" $push \
-           --build-arg restserver_url="$url_base/docspell-restserver-$version.zip" \
-           --tag docspell/restserver:nightly \
-           -f restserver.dockerfile .
+        echo "============ Building Restserver ============"
+        docker buildx build \
+               --platform="$platforms" $push \
+               --build-arg restserver_url="$url_base/docspell-restserver-$version.zip" \
+               --tag docspell/restserver:nightly \
+               -f restserver.dockerfile .
 
-    echo "============ Building Joex ============"
-    docker buildx build \
-           --platform="$platforms" $push \
-           --build-arg joex_url="$url_base/docspell-joex-$version.zip" \
-           --tag docspell/joex:nightly \
-           -f joex.dockerfile .
-else
-    echo ">>>> Building release images for $version <<<<<"
-    echo "============ Building Restserver ============"
-    docker buildx build \
-           --platform="$platforms" $push \
-           --build-arg version=$version \
-           --tag docspell/restserver:v$version \
-           --tag docspell/restserver:latest \
-           -f restserver.dockerfile .
+        echo "============ Building Joex ============"
+        docker buildx build \
+               --platform="$platforms" $push \
+               --build-arg joex_url="$url_base/docspell-joex-$version.zip" \
+               --tag docspell/joex:nightly \
+               -f joex.dockerfile .
+        ;;
+    *)
+        echo ">>>> Building release images for $version <<<<<"
+        echo "============ Building Restserver ============"
+        docker buildx build \
+               --platform="$platforms" $push \
+               --build-arg version=$version \
+               --tag docspell/restserver:v$version \
+               --tag docspell/restserver:latest \
+               -f restserver.dockerfile .
 
-    echo "============ Building Joex ============"
-    docker buildx build \
-           --platform="$platforms" $push \
-           --build-arg version=$version \
-           --tag docspell/joex:v$version \
-           --tag docspell/joex:latest \
-           -f joex.dockerfile .
-fi
+        echo "============ Building Joex ============"
+        docker buildx build \
+               --platform="$platforms" $push \
+               --build-arg version=$version \
+               --tag docspell/joex:v$version \
+               --tag docspell/joex:latest \
+               -f joex.dockerfile .
+esac
