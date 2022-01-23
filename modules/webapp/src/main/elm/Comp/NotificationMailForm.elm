@@ -74,6 +74,7 @@ initWith flags channel =
         | channel = Data.NotificationChannel.setTypeMail channel
         , recipients = channel.recipients
         , connectionModel = cm
+        , name = channel.name
       }
     , mc
     )
