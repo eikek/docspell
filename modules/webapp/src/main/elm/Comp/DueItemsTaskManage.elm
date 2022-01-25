@@ -15,13 +15,11 @@ module Comp.DueItemsTaskManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
-import Comp.ChannelMenu
+import Api.Model.PeriodicDueItemsSettings exposing (PeriodicDueItemsSettings)
 import Comp.DueItemsTaskForm
 import Comp.DueItemsTaskList
 import Comp.MenuBar as MB
-import Data.ChannelType exposing (ChannelType)
 import Data.Flags exposing (Flags)
-import Data.PeriodicDueItemsSettings exposing (PeriodicDueItemsSettings)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -35,7 +33,6 @@ type alias Model =
     , detailModel : Maybe Comp.DueItemsTaskForm.Model
     , items : List PeriodicDueItemsSettings
     , formState : FormState
-    , channelMenuOpen : Bool
     }
 
 
@@ -57,9 +54,8 @@ type Msg
     = ListMsg Comp.DueItemsTaskList.Msg
     | DetailMsg Comp.DueItemsTaskForm.Msg
     | GetDataResp (Result Http.Error (List PeriodicDueItemsSettings))
-    | NewTaskInit ChannelType
+    | NewTaskInit
     | SubmitResp SubmitType (Result Http.Error BasicResult)
-    | ToggleChannelMenu
 
 
 initModel : Model
@@ -68,7 +64,6 @@ initModel =
     , detailModel = Nothing
     , items = []
     , formState = FormStateInitial
-    , channelMenuOpen = False
     }
 
 
@@ -89,11 +84,6 @@ init flags =
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
-        ToggleChannelMenu ->
-            ( { model | channelMenuOpen = not model.channelMenuOpen }
-            , Cmd.none
-            )
-
         GetDataResp (Ok items) ->
             ( { model
                 | items = items
@@ -194,12 +184,12 @@ update flags msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
-        NewTaskInit ct ->
+        NewTaskInit ->
             let
                 ( mm, mc ) =
-                    Comp.DueItemsTaskForm.init flags ct
+                    Comp.DueItemsTaskForm.init flags
             in
-            ( { model | detailModel = Just mm, channelMenuOpen = False }, Cmd.map DetailMsg mc )
+            ( { model | detailModel = Just mm }, Cmd.map DetailMsg mc )
 
         SubmitResp submitType (Ok res) ->
             ( { model
@@ -295,18 +285,15 @@ viewForm2 texts settings model =
 
 viewList2 : Texts -> Model -> List (Html Msg)
 viewList2 texts model =
-    let
-        menuModel =
-            { menuOpen = model.channelMenuOpen
-            , toggleMenu = ToggleChannelMenu
-            , menuLabel = texts.newTask
-            , onItem = NewTaskInit
-            }
-    in
     [ MB.view
         { start = []
         , end =
-            [ Comp.ChannelMenu.channelMenu texts.channelType menuModel
+            [ MB.PrimaryButton
+                { tagger = NewTaskInit
+                , title = texts.newTask
+                , icon = Just "fa fa-plus"
+                , label = texts.newTask
+                }
             ]
         , rootClasses = "mb-4"
         }

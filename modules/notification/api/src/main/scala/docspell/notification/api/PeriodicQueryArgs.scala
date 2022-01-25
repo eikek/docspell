@@ -6,15 +6,16 @@
 
 package docspell.notification.api
 
+import cats.data.NonEmptyList
+
 import docspell.common._
 
-import emil.MailAddress
 import io.circe.generic.semiauto
 import io.circe.{Decoder, Encoder}
 
 final case class PeriodicQueryArgs(
     account: AccountId,
-    channel: ChannelOrRef,
+    channels: NonEmptyList[ChannelRef],
     query: Option[ItemQueryString],
     bookmark: Option[String],
     baseUrl: Option[LenientUri],
@@ -22,19 +23,11 @@ final case class PeriodicQueryArgs(
 )
 
 object PeriodicQueryArgs {
-  val taskName = Ident.unsafe("periodic-query-notify")
+  val taskName = Ident.unsafe("periodic-query-notify2")
 
-  implicit def jsonDecoder(implicit
-      mc: Decoder[MailAddress]
-  ): Decoder[PeriodicQueryArgs] = {
-    implicit val x = ChannelOrRef.jsonDecoder
+  implicit val jsonDecoder: Decoder[PeriodicQueryArgs] =
     semiauto.deriveDecoder
-  }
 
-  implicit def jsonEncoder(implicit
-      mc: Encoder[MailAddress]
-  ): Encoder[PeriodicQueryArgs] = {
-    implicit val x = ChannelOrRef.jsonEncoder
+  implicit def jsonEncoder: Encoder[PeriodicQueryArgs] =
     semiauto.deriveEncoder
-  }
 }

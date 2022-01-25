@@ -16,16 +16,15 @@ module Comp.PeriodicQueryTaskForm exposing
     , view
     )
 
+import Api.Model.PeriodicQuerySettings exposing (PeriodicQuerySettings)
 import Comp.Basic as B
 import Comp.BookmarkDropdown
 import Comp.CalEventInput
-import Comp.ChannelForm
+import Comp.ChannelRefInput
 import Comp.MenuBar as MB
 import Comp.PowerSearchInput
 import Data.CalEvent exposing (CalEvent)
-import Data.ChannelType exposing (ChannelType)
 import Data.Flags exposing (Flags)
-import Data.PeriodicQuerySettings exposing (PeriodicQuerySettings)
 import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
@@ -44,7 +43,7 @@ type alias Model =
     , schedule : Maybe CalEvent
     , scheduleModel : Comp.CalEventInput.Model
     , queryModel : Comp.PowerSearchInput.Model
-    , channelModel : Comp.ChannelForm.Model
+    , channelModel : Comp.ChannelRefInput.Model
     , bookmarkDropdown : Comp.BookmarkDropdown.Model
     , contentStart : Maybe String
     , formState : FormState
@@ -78,7 +77,7 @@ type Msg
     | ToggleEnabled
     | CalEventMsg Comp.CalEventInput.Msg
     | QueryMsg Comp.PowerSearchInput.Msg
-    | ChannelMsg Comp.ChannelForm.Msg
+    | ChannelMsg Comp.ChannelRefInput.Msg
     | BookmarkMsg Comp.BookmarkDropdown.Msg
     | SetContentStart String
     | StartOnce
@@ -105,7 +104,7 @@ initWith flags s =
                 Comp.PowerSearchInput.init
 
         ( cfm, cfc ) =
-            Comp.ChannelForm.initWith flags s.channel
+            Comp.ChannelRefInput.initSelected flags s.channels
 
         ( bm, bc ) =
             Comp.BookmarkDropdown.init flags s.bookmark
@@ -117,7 +116,7 @@ initWith flags s =
       , queryModel = res.model
       , channelModel = cfm
       , bookmarkDropdown = bm
-      , contentStart = Nothing
+      , contentStart = s.contentStart
       , formState = FormStateInitial
       , loading = 0
       , summary = s.summary
@@ -132,8 +131,8 @@ initWith flags s =
     )
 
 
-init : Flags -> ChannelType -> ( Model, Cmd Msg )
-init flags ct =
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     let
         initialSchedule =
             Data.CalEvent.everyMonth
@@ -142,12 +141,12 @@ init flags ct =
             Comp.CalEventInput.init flags initialSchedule
 
         ( cfm, cfc ) =
-            Comp.ChannelForm.init flags ct
+            Comp.ChannelRefInput.init flags
 
         ( bm, bc ) =
             Comp.BookmarkDropdown.init flags Nothing
     in
-    ( { settings = Data.PeriodicQuerySettings.empty ct
+    ( { settings = Api.Model.PeriodicQuerySettings.empty
       , enabled = False
       , schedule = Just initialSchedule
       , scheduleModel = sm
@@ -210,16 +209,22 @@ makeSettings model =
                     Result.Ok ( qstr, bm )
 
         channelM =
-            Result.fromMaybe
-                ValidateChannelRequired
-                (Comp.ChannelForm.getChannel model.channelModel)
+            let
+                list =
+                    Comp.ChannelRefInput.getSelected model.channelModel
+            in
+            if list == [] then
+                Err ValidateChannelRequired
 
-        make timer channel q =
+            else
+                Ok list
+
+        make timer channels q =
             { prev
                 | enabled = model.enabled
                 , schedule = Data.CalEvent.makeEvent timer
                 , summary = model.summary
-                , channel = channel
+                , channels = channels
                 , query = Tuple.first q
                 , bookmark = Tuple.second q
                 , contentStart = model.contentStart
@@ -285,7 +290,7 @@ update flags msg model =
         ChannelMsg lm ->
             let
                 ( cfm, cfc ) =
-                    Comp.ChannelForm.update flags lm model.channelModel
+                    Comp.ChannelRefInput.update lm model.channelModel
             in
             { model = { model | channelModel = cfm }
             , action = NoAction
@@ -536,9 +541,9 @@ view texts extraClasses settings model =
                 ]
             ]
         , div [ class "mb-4" ]
-            [ formHeader (texts.channelHeader (Comp.ChannelForm.channelType model.channelModel)) False
+            [ formHeader texts.channelHeader True
             , Html.map ChannelMsg
-                (Comp.ChannelForm.view texts.channelForm settings model.channelModel)
+                (Comp.ChannelRefInput.view texts.channelRef settings model.channelModel)
             ]
         , div [ class "mb-4" ]
             [ formHeader texts.queryLabel True

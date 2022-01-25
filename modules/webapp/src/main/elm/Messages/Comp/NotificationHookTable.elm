@@ -13,15 +13,18 @@ module Messages.Comp.NotificationHookTable exposing
 
 import Data.EventType exposing (EventType)
 import Messages.Basics
+import Messages.Data.ChannelType
 import Messages.Data.EventType
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
     , eventType : EventType -> Messages.Data.EventType.Texts
+    , channelType : Messages.Data.ChannelType.Texts
     , enabled : String
     , channel : String
     , events : String
+    , allEvents : String
     }
 
 
@@ -29,9 +32,11 @@ gb : Texts
 gb =
     { basics = Messages.Basics.gb
     , eventType = Messages.Data.EventType.gb
+    , channelType = Messages.Data.ChannelType.gb
     , enabled = "Enabled"
     , channel = "Channel"
     , events = "Events"
+    , allEvents = "All"
     }
 
 
@@ -39,7 +44,9 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , eventType = Messages.Data.EventType.de
+    , channelType = Messages.Data.ChannelType.de
     , enabled = "Aktiv"
     , channel = "Kanal"
     , events = "Ereignisse"
+    , allEvents = "Alle"
     }

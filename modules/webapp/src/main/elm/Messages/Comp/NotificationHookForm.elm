@@ -13,18 +13,17 @@ module Messages.Comp.NotificationHookForm exposing
 
 import Data.EventType exposing (EventType)
 import Messages.Basics
-import Messages.Comp.ChannelForm
+import Messages.Comp.ChannelRefInput
 import Messages.Comp.EventSample
-import Messages.Data.ChannelType
 import Messages.Data.EventType
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
-    , channelForm : Messages.Comp.ChannelForm.Texts
+    , channelRef : Messages.Comp.ChannelRefInput.Texts
     , eventType : EventType -> Messages.Data.EventType.Texts
     , eventSample : Messages.Comp.EventSample.Texts
-    , channelHeader : Messages.Data.ChannelType.Texts
+    , channelHeader : String
     , enableDisable : String
     , eventsInfo : String
     , selectEvents : String
@@ -34,16 +33,19 @@ type alias Texts =
     , eventFilter : String
     , eventFilterInfo : String
     , eventFilterClickForHelp : String
+    , jsonPayload : String
+    , messagePayload : String
+    , payloadInfo : String
     }
 
 
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
-    , channelForm = Messages.Comp.ChannelForm.gb
+    , channelRef = Messages.Comp.ChannelRefInput.gb
     , eventType = Messages.Data.EventType.gb
     , eventSample = Messages.Comp.EventSample.gb
-    , channelHeader = Messages.Data.ChannelType.gb
+    , channelHeader = "Select channels"
     , enableDisable = "Enabled / Disabled"
     , eventsInfo = "Select events that trigger this webhook"
     , selectEvents = "Select…"
@@ -53,16 +55,19 @@ gb =
     , eventFilter = "Event Filter Expression"
     , eventFilterInfo = "Optional specify an expression to filter events based on their JSON structure."
     , eventFilterClickForHelp = "Click here for help"
+    , jsonPayload = "JSON"
+    , messagePayload = "Message"
+    , payloadInfo = "Message payloads are sent to gotify, email and matrix. The JSON is sent to http channel."
     }
 
 
 de : Texts
 de =
     { basics = Messages.Basics.de
-    , channelForm = Messages.Comp.ChannelForm.de
+    , channelRef = Messages.Comp.ChannelRefInput.de
     , eventType = Messages.Data.EventType.de
     , eventSample = Messages.Comp.EventSample.de
-    , channelHeader = Messages.Data.ChannelType.de
+    , channelHeader = "Kanäle"
     , enableDisable = "Aktiviert / Deaktivert"
     , eventsInfo = "Wähle die Ereignisse, die diesen webhook auslösen"
     , selectEvents = "Wähle…"
@@ -72,4 +77,7 @@ de =
     , eventFilter = "Ereignisfilter"
     , eventFilterInfo = "Optionaler Ausdruck zum filtern von Ereignissen auf Basis ihrer JSON Struktur."
     , eventFilterClickForHelp = "Klicke für Hilfe"
+    , jsonPayload = "JSON"
+    , messagePayload = "Nachricht"
+    , payloadInfo = "Es werden abhängig vom Kanal JSON oder Nachricht-Formate versendet. Der HTTP Kanal empfängt nur JSON, an die anderen wird das Nachrichtformat gesendet."
     }

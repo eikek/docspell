@@ -14,10 +14,10 @@ import docspell.backend.BackendApp
 import docspell.backend.MailAddressCodec
 import docspell.backend.auth.AuthToken
 import docspell.common._
-import docspell.notification.api.PeriodicDueItemsArgs
+import docspell.notification.api.{ChannelRef, PeriodicDueItemsArgs}
 import docspell.restapi.model._
 import docspell.restserver.Config
-import docspell.restserver.conv.Conversions
+import docspell.restserver.conv.{Conversions, NonEmptyListSupport}
 import docspell.restserver.http4s.ClientRequestInfo
 import docspell.store.usertask._
 
@@ -26,7 +26,7 @@ import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 
-object NotifyDueItemsRoutes extends MailAddressCodec {
+object NotifyDueItemsRoutes extends MailAddressCodec with NonEmptyListSupport {
 
   def apply[F[_]: Async](
       cfg: Config,
@@ -113,7 +113,7 @@ object NotifyDueItemsRoutes extends MailAddressCodec {
       user: AccountId,
       settings: PeriodicDueItemsSettings
   ): F[UserTask[PeriodicDueItemsArgs]] =
-    Sync[F].pure(NotificationChannel.convert(settings.channel)).rethrow.map { channel =>
+    requireNonEmpty(settings.channels).map { ch =>
       UserTask(
         id,
         PeriodicDueItemsArgs.taskName,
@@ -122,7 +122,7 @@ object NotifyDueItemsRoutes extends MailAddressCodec {
         settings.summary,
         PeriodicDueItemsArgs(
           user,
-          Right(channel),
+          ch.map(c => ChannelRef(c.id, c.channelType, c.name)),
           settings.remindDays,
           if (settings.capOverdue) Some(settings.remindDays)
           else None,
@@ -140,20 +140,13 @@ object NotifyDueItemsRoutes extends MailAddressCodec {
     for {
       tinc <- backend.tag.loadAll(task.args.tagsInclude)
       texc <- backend.tag.loadAll(task.args.tagsExclude)
-
-      ch <- task.args.channel match {
-        case Right(c) => NotificationChannel.convert(c).pure[F]
-        case Left(ref) =>
-          Sync[F].raiseError(
-            new IllegalStateException(s"ChannelRefs are not supported: $ref")
-          )
-      }
-
     } yield PeriodicDueItemsSettings(
       task.id,
       task.enabled,
       task.summary,
-      ch,
+      task.args.channels
+        .map(c => NotificationChannelRef(c.id, c.channelType, c.name))
+        .toList,
       task.timer,
       task.args.remindDays,
       task.args.daysBack.isDefined,

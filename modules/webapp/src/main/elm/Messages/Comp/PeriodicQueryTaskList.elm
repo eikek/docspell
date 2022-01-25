@@ -12,32 +12,33 @@ module Messages.Comp.PeriodicQueryTaskList exposing
     )
 
 import Messages.Basics
+import Messages.Data.ChannelType
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
+    , channelType : Messages.Data.ChannelType.Texts
     , summary : String
     , schedule : String
     , connection : String
-    , recipients : String
     }
 
 
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
+    , channelType = Messages.Data.ChannelType.gb
     , summary = "Summary"
     , schedule = "Schedule"
-    , connection = "Connection"
-    , recipients = "Recipients"
+    , connection = "Channel"
     }
 
 
 de : Texts
 de =
     { basics = Messages.Basics.de
+    , channelType = Messages.Data.ChannelType.de
     , summary = "Kurzbeschreibung"
     , schedule = "Zeitplan"
-    , connection = "Verbindung"
-    , recipients = "Empfänger"
+    , connection = "Kanal"
     }

@@ -12,7 +12,7 @@ import io.circe.Decoder
 import io.circe.Encoder
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
-final case class ChannelRef(id: Ident, channelType: ChannelType)
+final case class ChannelRef(id: Ident, channelType: ChannelType, name: Option[String])
 
 object ChannelRef {
 

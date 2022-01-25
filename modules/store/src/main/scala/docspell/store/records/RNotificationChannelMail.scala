@@ -19,6 +19,7 @@ import emil.MailAddress
 final case class RNotificationChannelMail(
     id: Ident,
     uid: Ident,
+    name: Option[String],
     connection: Ident,
     recipients: List[MailAddress],
     created: Timestamp
@@ -34,12 +35,13 @@ object RNotificationChannelMail {
 
     val id = Column[Ident]("id", this)
     val uid = Column[Ident]("uid", this)
+    val name = Column[String]("name", this)
     val connection = Column[Ident]("conn_id", this)
     val recipients = Column[List[MailAddress]]("recipients", this)
     val created = Column[Timestamp]("created", this)
 
     val all: NonEmptyList[Column[_]] =
-      NonEmptyList.of(id, uid, connection, recipients, created)
+      NonEmptyList.of(id, uid, name, connection, recipients, created)
   }
 
   val T: Table = Table(None)
@@ -49,7 +51,7 @@ object RNotificationChannelMail {
     DML.insert(
       T,
       T.all,
-      sql"${r.id},${r.uid},${r.connection},${r.recipients},${r.created}"
+      sql"${r.id},${r.uid},${r.name},${r.connection},${r.recipients},${r.created}"
     )
 
   def update(r: RNotificationChannelMail): ConnectionIO[Int] =
@@ -58,12 +60,15 @@ object RNotificationChannelMail {
       T.id === r.id && T.uid === r.uid,
       DML.set(
         T.connection.setTo(r.connection),
-        T.recipients.setTo(r.recipients.toList)
+        T.recipients.setTo(r.recipients.toList),
+        T.name.setTo(r.name)
       )
     )
 
-  def getById(id: Ident): ConnectionIO[Option[RNotificationChannelMail]] =
-    run(select(T.all), from(T), T.id === id).query[RNotificationChannelMail].option
+  def getById(userId: Ident)(id: Ident): ConnectionIO[Option[RNotificationChannelMail]] =
+    run(select(T.all), from(T), T.id === id && T.uid === userId)
+      .query[RNotificationChannelMail]
+      .option
 
   def getByAccount(account: AccountId): ConnectionIO[Vector[RNotificationChannelMail]] = {
     val user = RUser.as("u")

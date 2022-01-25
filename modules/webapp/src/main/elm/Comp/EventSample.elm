@@ -115,8 +115,8 @@ dropdownCfg texts =
     }
 
 
-viewJson : Texts -> Model -> Html Msg
-viewJson texts model =
+viewJson : Texts -> Bool -> Model -> Html Msg
+viewJson texts enableEventChooser model =
     let
         json =
             Result.withDefault ""
@@ -125,7 +125,10 @@ viewJson texts model =
     div
         [ class "flex flex-col w-full relative"
         ]
-        [ div [ class "flex inline-flex items-center absolute top-2 right-4" ]
+        [ div
+            [ class "flex inline-flex items-center absolute top-2 right-4"
+            , classList [ ( "hidden", not enableEventChooser ) ]
+            ]
             [ Html.map EventTypeMsg
                 (Comp.FixedDropdown.viewStyled2 (dropdownCfg texts)
                     False
@@ -144,8 +147,8 @@ viewJson texts model =
         ]
 
 
-viewMessage : Texts -> Model -> Html Msg
-viewMessage texts model =
+viewMessage : Texts -> Bool -> Model -> Html Msg
+viewMessage texts enableEventChooser model =
     let
         titleDecoder =
             D.at [ "message", "title" ] D.string
@@ -162,7 +165,10 @@ viewMessage texts model =
     div
         [ class "flex flex-col w-full relative"
         ]
-        [ div [ class "flex inline-flex items-center absolute top-2 right-4" ]
+        [ div
+            [ class "flex inline-flex items-center absolute top-2 right-4"
+            , classList [ ( "hidden", not enableEventChooser ) ]
+            ]
             [ Html.map EventTypeMsg
                 (Comp.FixedDropdown.viewStyled2 (dropdownCfg texts)
                     False

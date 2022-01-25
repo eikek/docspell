@@ -15,11 +15,11 @@ object Dependencies {
   val DoobieVersion = "1.0.0-RC2"
   val EmilVersion = "0.10.0"
   val FlexmarkVersion = "0.62.2"
-  val FlywayVersion = "8.4.1"
+  val FlywayVersion = "8.4.2"
   val Fs2Version = "3.2.4"
   val Fs2CronVersion = "0.7.1"
-  val H2Version = "2.1.210"
-  val Http4sVersion = "0.23.7"
+  val H2Version = "1.4.200"
+  val Http4sVersion = "0.23.8"
   val Icu4jVersion = "70.1"
   val JavaOtpVersion = "0.3.1"
   val JsoupVersion = "1.14.3"
@@ -29,25 +29,25 @@ object Dependencies {
   val LevigoJbig2Version = "2.0"
   val Log4sVersion = "1.10.0"
   val LogbackVersion = "1.2.10"
-  val MariaDbVersion = "2.7.4"
+  val MariaDbVersion = "2.7.5"
   val MUnitVersion = "0.7.29"
   val MUnitCatsEffectVersion = "1.0.7"
   val OrganizeImportsVersion = "0.6.0"
   val PdfboxVersion = "2.0.25"
+  val PdfjsViewerVersion = "2.9.359"
   val PoiVersion = "4.1.2"
   val PostgresVersion = "42.3.1"
   val PureConfigVersion = "0.17.1"
   val ScalaJavaTimeVersion = "2.3.0"
   val ScodecBitsVersion = "1.1.30"
-  val Slf4jVersion = "1.7.33"
-  val StanfordNlpVersion = "4.3.2"
+  val Slf4jVersion = "1.7.35"
+  val StanfordNlpVersion = "4.4.0"
   val TikaVersion = "2.2.1"
   val YamuscaVersion = "0.8.2"
-  val SwaggerUIVersion = "4.1.3-1"
+  val SwaggerUIVersion = "4.2.1"
   val TestContainerVersion = "0.39.12"
   val TwelveMonkeysVersion = "3.8.1"
   val JQueryVersion = "3.5.1"
-  val ViewerJSVersion = "0.5.9"
 
   val jwtScala = Seq(
     "com.github.jwt-scala" %% "jwt-circe" % JwtScalaVersion
@@ -310,8 +310,8 @@ object Dependencies {
 
   val webjars = Seq(
     "org.webjars" % "swagger-ui" % SwaggerUIVersion,
-    "org.webjars" % "viewerjs" % ViewerJSVersion,
-    "org.webjars" % "clipboard.js" % ClipboardJsVersion
+    "org.webjars" % "clipboard.js" % ClipboardJsVersion,
+    "org.webjars.npm" % "pdfjs-dist-viewer-min" % PdfjsViewerVersion
   )
 
   val icu4j = Seq(

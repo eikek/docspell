@@ -16,6 +16,7 @@ import Comp.ChangePasswordForm
 import Comp.DueItemsTaskManage
 import Comp.EmailSettingsManage
 import Comp.ImapSettingsManage
+import Comp.NotificationChannelManage
 import Comp.NotificationHookManage
 import Comp.OtpSetup
 import Comp.PeriodicQueryTaskManage
@@ -35,6 +36,7 @@ type alias Model =
     , uiSettingsModel : Comp.UiSettingsManage.Model
     , otpSetupModel : Comp.OtpSetup.Model
     , notificationHookModel : Comp.NotificationHookManage.Model
+    , channelModel : Comp.NotificationChannelManage.Model
     , periodicQueryModel : Comp.PeriodicQueryTaskManage.Model
     }
 
@@ -53,6 +55,9 @@ init flags settings =
 
         ( pqm, pqc ) =
             Comp.PeriodicQueryTaskManage.init flags
+
+        ( ncm, ncc ) =
+            Comp.NotificationChannelManage.init flags
     in
     ( { currentTab = Just UiSettingsTab
       , changePassModel = Comp.ChangePasswordForm.emptyModel
@@ -64,12 +69,14 @@ init flags settings =
       , otpSetupModel = otpm
       , notificationHookModel = nhm
       , periodicQueryModel = pqm
+      , channelModel = ncm
       }
     , Cmd.batch
         [ Cmd.map UiSettingsMsg uc
         , Cmd.map OtpSetupMsg otpc
         , Cmd.map NotificationHookMsg nhc
         , Cmd.map PeriodicQueryMsg pqc
+        , Cmd.map ChannelMsg ncc
         ]
     )
 
@@ -85,6 +92,7 @@ type Tab
     | ScanMailboxTab
     | UiSettingsTab
     | OtpTab
+    | ChannelTab
 
 
 type Msg
@@ -98,5 +106,6 @@ type Msg
     | OtpSetupMsg Comp.OtpSetup.Msg
     | NotificationHookMsg Comp.NotificationHookManage.Msg
     | PeriodicQueryMsg Comp.PeriodicQueryTaskManage.Msg
+    | ChannelMsg Comp.NotificationChannelManage.Msg
     | UpdateSettings
     | ReceiveBrowserSettings StoredUiSettings

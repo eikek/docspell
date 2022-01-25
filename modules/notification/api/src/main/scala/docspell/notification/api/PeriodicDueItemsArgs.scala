@@ -6,9 +6,10 @@
 
 package docspell.notification.api
 
+import cats.data.NonEmptyList
+
 import docspell.common._
 
-import emil.MailAddress
 import io.circe.generic.semiauto
 import io.circe.{Decoder, Encoder}
 
@@ -21,7 +22,7 @@ import io.circe.{Decoder, Encoder}
   */
 final case class PeriodicDueItemsArgs(
     account: AccountId,
-    channel: ChannelOrRef,
+    channels: NonEmptyList[ChannelRef],
     remindDays: Int,
     daysBack: Option[Int],
     tagsInclude: List[Ident],
@@ -30,19 +31,11 @@ final case class PeriodicDueItemsArgs(
 )
 
 object PeriodicDueItemsArgs {
-  val taskName = Ident.unsafe("periodic-due-items-notify")
+  val taskName = Ident.unsafe("periodic-due-items-notify2")
 
-  implicit def jsonDecoder(implicit
-      mc: Decoder[MailAddress]
-  ): Decoder[PeriodicDueItemsArgs] = {
-    implicit val x = ChannelOrRef.jsonDecoder
+  implicit val jsonDecoder: Decoder[PeriodicDueItemsArgs] =
     semiauto.deriveDecoder
-  }
 
-  implicit def jsonEncoder(implicit
-      mc: Encoder[MailAddress]
-  ): Encoder[PeriodicDueItemsArgs] = {
-    implicit val x = ChannelOrRef.jsonEncoder
+  implicit val jsonEncoder: Encoder[PeriodicDueItemsArgs] =
     semiauto.deriveEncoder
-  }
 }

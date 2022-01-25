@@ -15,6 +15,7 @@ import Http
 import Messages.Basics
 import Messages.Comp.CalEventInput
 import Messages.Comp.ChannelForm
+import Messages.Comp.ChannelRefInput
 import Messages.Comp.HttpError
 import Messages.Comp.TagDropdown
 import Messages.Data.ChannelType
@@ -26,6 +27,8 @@ type alias Texts =
     , httpError : Http.Error -> String
     , channelForm : Messages.Comp.ChannelForm.Texts
     , tagDropdown : Messages.Comp.TagDropdown.Texts
+    , channelType : Messages.Data.ChannelType.Texts
+    , channelRef : Messages.Comp.ChannelRefInput.Texts
     , reallyDeleteTask : String
     , startOnce : String
     , startTaskNow : String
@@ -50,7 +53,7 @@ type alias Texts =
     , recipientsRequired : String
     , queryLabel : String
     , channelRequired : String
-    , channelHeader : Messages.Data.ChannelType.Texts
+    , channelHeader : String
     }
 
 
@@ -61,6 +64,8 @@ gb =
     , httpError = Messages.Comp.HttpError.gb
     , channelForm = Messages.Comp.ChannelForm.gb
     , tagDropdown = Messages.Comp.TagDropdown.gb
+    , channelType = Messages.Data.ChannelType.gb
+    , channelRef = Messages.Comp.ChannelRefInput.gb
     , reallyDeleteTask = "Really delete this notification task?"
     , startOnce = "Start Once"
     , startTaskNow = "Start this task now"
@@ -89,7 +94,7 @@ gb =
     , recipientsRequired = "At least one recipient is required."
     , queryLabel = "Query"
     , channelRequired = "A valid channel must be given."
-    , channelHeader = \ct -> "Connection details for " ++ Messages.Data.ChannelType.gb ct
+    , channelHeader = "Channels"
     }
 
 
@@ -98,8 +103,10 @@ de =
     { basics = Messages.Basics.de
     , calEventInput = Messages.Comp.CalEventInput.de
     , httpError = Messages.Comp.HttpError.de
-    , channelForm = Messages.Comp.ChannelForm.gb
-    , tagDropdown = Messages.Comp.TagDropdown.gb
+    , channelForm = Messages.Comp.ChannelForm.de
+    , tagDropdown = Messages.Comp.TagDropdown.de
+    , channelType = Messages.Data.ChannelType.de
+    , channelRef = Messages.Comp.ChannelRefInput.de
     , reallyDeleteTask = "Diesen Benachrichtigungsauftrag wirklich löschen?"
     , startOnce = "Jetzt starten"
     , startTaskNow = "Starte den Auftrag sofort"
@@ -128,5 +135,5 @@ de =
     , recipientsRequired = "Mindestens ein Empfänger muss angegeben werden."
     , queryLabel = "Abfrage"
     , channelRequired = "Ein Versandkanal muss angegeben werden."
-    , channelHeader = \ct -> "Details für " ++ Messages.Data.ChannelType.de ct
+    , channelHeader = "Kanäle"
     }

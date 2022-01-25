@@ -15,14 +15,12 @@ module Comp.NotificationHookManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.NotificationHook exposing (NotificationHook)
 import Comp.Basic as B
-import Comp.ChannelMenu
 import Comp.MenuBar as MB
 import Comp.NotificationHookForm
 import Comp.NotificationHookTable
-import Data.ChannelType exposing (ChannelType)
 import Data.Flags exposing (Flags)
-import Data.NotificationHook exposing (NotificationHook)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -39,7 +37,6 @@ type alias Model =
     , deleteConfirm : DeleteConfirm
     , loading : Bool
     , formState : FormState
-    , newHookMenuOpen : Bool
     , jsonFilterError : Maybe String
     }
 
@@ -67,9 +64,8 @@ type Msg
     = TableMsg Comp.NotificationHookTable.Msg
     | DetailMsg Comp.NotificationHookForm.Msg
     | GetDataResp (Result Http.Error (List NotificationHook))
-    | ToggleNewHookMenu
     | SubmitResp SubmitType (Result Http.Error BasicResult)
-    | NewHookInit ChannelType
+    | NewHookInit
     | BackToTable
     | Submit
     | RequestDelete
@@ -85,7 +81,6 @@ initModel =
     , items = []
     , loading = False
     , formState = FormStateInitial
-    , newHookMenuOpen = False
     , deleteConfirm = DeleteConfirmOff
     , jsonFilterError = Nothing
     }
@@ -177,9 +172,6 @@ update flags msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
-        ToggleNewHookMenu ->
-            ( { model | newHookMenuOpen = not model.newHookMenuOpen }, Cmd.none )
-
         SubmitResp submitType (Ok res) ->
             ( { model
                 | formState =
@@ -208,12 +200,12 @@ update flags msg model =
             , Cmd.none
             )
 
-        NewHookInit ct ->
+        NewHookInit ->
             let
                 ( mm, mc ) =
-                    Comp.NotificationHookForm.init flags ct
+                    Comp.NotificationHookForm.init flags
             in
-            ( { model | detailModel = Just mm, newHookMenuOpen = False }, Cmd.map DetailMsg mc )
+            ( { model | detailModel = Just mm }, Cmd.map DetailMsg mc )
 
         BackToTable ->
             ( { model | detailModel = Nothing }, initCmd flags )
@@ -327,59 +319,13 @@ viewForm texts settings outerModel model =
     let
         newHook =
             model.hook.id == ""
-
-        headline =
-            case Comp.NotificationHookForm.channelType model of
-                Data.ChannelType.Matrix ->
-                    span []
-                        [ text texts.integrate
-                        , a
-                            [ href "https://matrix.org"
-                            , target "_blank"
-                            , class S.link
-                            , class "mx-3"
-                            ]
-                            [ i [ class "fa fa-external-link-alt mr-1" ] []
-                            , text "Matrix"
-                            ]
-                        , text texts.intoDocspell
-                        ]
-
-                Data.ChannelType.Mail ->
-                    span []
-                        [ text texts.notifyEmailInfo
-                        ]
-
-                Data.ChannelType.Gotify ->
-                    span []
-                        [ text texts.integrate
-                        , a
-                            [ href "https://gotify.net"
-                            , target "_blank"
-                            , class S.link
-                            , class "mx-3"
-                            ]
-                            [ i [ class "fa fa-external-link-alt mr-1" ] []
-                            , text "Gotify"
-                            ]
-                        , text texts.intoDocspell
-                        ]
-
-                Data.ChannelType.Http ->
-                    span []
-                        [ text texts.postRequestInfo
-                        ]
     in
     [ h1 [ class S.header2 ]
-        [ Data.ChannelType.icon (Comp.NotificationHookForm.channelType model) "w-8 h-8 inline-block mr-4"
-        , if newHook then
+        [ if newHook then
             text texts.addWebhook
 
           else
             text texts.updateWebhook
-        ]
-    , div [ class "pt-2 pb-4 font-medium" ]
-        [ headline
         ]
     , MB.view
         { start =
@@ -452,18 +398,15 @@ viewForm texts settings outerModel model =
 
 viewList : Texts -> Model -> List (Html Msg)
 viewList texts model =
-    let
-        menuModel =
-            { menuOpen = model.newHookMenuOpen
-            , toggleMenu = ToggleNewHookMenu
-            , menuLabel = texts.newHook
-            , onItem = NewHookInit
-            }
-    in
     [ MB.view
         { start = []
         , end =
-            [ Comp.ChannelMenu.channelMenu texts.channelType menuModel
+            [ MB.PrimaryButton
+                { tagger = NewHookInit
+                , title = texts.newHook
+                , icon = Just "fa fa-plus"
+                , label = texts.newHook
+                }
             ]
         , rootClasses = "mb-4"
         }
