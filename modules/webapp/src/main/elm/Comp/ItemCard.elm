@@ -418,7 +418,7 @@ viewRow texts cfg settings flags model item =
                             , class "hover:opacity-60"
                             , title texts.basics.folder
                             ]
-                            [ Icons.folderIcon2 "mr-2"
+                            [ Icons.folderIcon "mr-2"
                             , Comp.LinkTarget.makeFolderLink item
                                 [ ( "hover:opacity-60", True ) ]
                                 SetLinkTarget
@@ -592,7 +592,7 @@ metaDataContent2 texts settings item =
                 , class "hover:opacity-60"
                 , title texts.basics.folder
                 ]
-                [ Icons.folderIcon2 "mr-2"
+                [ Icons.folderIcon "mr-2"
                 , Comp.LinkTarget.makeFolderLink item
                     [ ( "hover:opacity-60", True ) ]
                     SetLinkTarget

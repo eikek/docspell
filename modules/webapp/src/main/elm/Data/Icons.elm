@@ -25,6 +25,7 @@ module Data.Icons exposing
     , customFieldTypeIcon
     , customFieldTypeIconString
     , customFieldTypeIconString2
+    , dashboardIcon
     , date
     , date2
     , dateIcon
@@ -33,6 +34,7 @@ module Data.Icons exposing
     , direction2
     , directionIcon
     , directionIcon2
+    , documentationIcon
     , dueDate
     , dueDate2
     , dueDateIcon
@@ -40,24 +42,22 @@ module Data.Icons exposing
     , editNotes
     , editNotesIcon
     , equipment
-    , equipment2
     , equipmentIcon
-    , equipmentIcon2
     , folder
-    , folder2
     , folderIcon
-    , folderIcon2
     , gotifyIcon
     , itemDatesIcon
     , matrixIcon
+    , metadata
+    , metadataIcon
+    , notificationHooks
+    , notificationHooksIcon
     , organization
-    , organization2
     , organizationIcon
-    , organizationIcon2
+    , periodicTasks
+    , periodicTasksIcon
     , person
-    , person2
     , personIcon
-    , personIcon2
     , search
     , searchIcon
     , share
@@ -67,11 +67,9 @@ module Data.Icons exposing
     , source2
     , sourceIcon2
     , tag
-    , tag2
     , tagIcon
-    , tagIcon2
-    , tags2
-    , tagsIcon2
+    , tags
+    , tagsIcon
     , trash
     , trashIcon
     )
@@ -81,6 +79,56 @@ import Html exposing (Html, i, img)
 import Html.Attributes exposing (class, src)
 import Svg
 import Svg.Attributes as SA
+
+
+documentation : String
+documentation =
+    "fa fa-question-circle"
+
+
+documentationIcon : String -> Html msg
+documentationIcon classes =
+    i [ class classes, class documentation ] []
+
+
+dashboard : String
+dashboard =
+    "fa fa-house-user"
+
+
+dashboardIcon : String -> Html msg
+dashboardIcon classes =
+    i [ class classes, class dashboard ] []
+
+
+periodicTasks : String
+periodicTasks =
+    "fa fa-history"
+
+
+periodicTasksIcon : String -> Html msg
+periodicTasksIcon classes =
+    i [ class classes, class periodicTasks ] []
+
+
+notificationHooks : String
+notificationHooks =
+    "fa fa-comment font-thin"
+
+
+notificationHooksIcon : String -> Html msg
+notificationHooksIcon classes =
+    i [ class classes, class notificationHooks ] []
+
+
+metadata : String
+metadata =
+    "fa fa-cubes"
+
+
+metadataIcon : String -> Html msg
+metadataIcon classes =
+    i [ class classes, class metadata ] []
 
 
 trash : String
@@ -203,7 +251,7 @@ customFieldIcon2 classes =
 
 search : String
 search =
-    "search icon"
+    "fa fa-search"
 
 
 searchIcon : String -> Html msg
@@ -213,22 +261,12 @@ searchIcon classes =
 
 folder : String
 folder =
-    "folder outline icon"
-
-
-folder2 : String
-folder2 =
     "fa fa-folder font-thin "
 
 
 folderIcon : String -> Html msg
 folderIcon classes =
     i [ class (folder ++ " " ++ classes) ] []
-
-
-folderIcon2 : String -> Html msg
-folderIcon2 classes =
-    i [ class (folder2 ++ " " ++ classes) ] []
 
 
 concerned : String
@@ -361,11 +399,6 @@ showQrIcon classes =
 
 tag : String
 tag =
-    "tag icon"
-
-
-tag2 : String
-tag2 =
     "fa fa-tag"
 
 
@@ -374,19 +407,14 @@ tagIcon classes =
     i [ class (tag ++ " " ++ classes) ] []
 
 
-tagIcon2 : String -> Html msg
-tagIcon2 classes =
-    i [ class (tag2 ++ " " ++ classes) ] []
-
-
-tags2 : String
-tags2 =
+tags : String
+tags =
     "fa fa-tags"
 
 
-tagsIcon2 : String -> Html msg
-tagsIcon2 classes =
-    i [ class (tags2 ++ " " ++ classes) ] []
+tagsIcon : String -> Html msg
+tagsIcon classes =
+    i [ class (tags ++ " " ++ classes) ] []
 
 
 direction : String
@@ -411,11 +439,6 @@ directionIcon2 classes =
 
 person : String
 person =
-    "user icon"
-
-
-person2 : String
-person2 =
     "fa fa-user"
 
 
@@ -424,18 +447,8 @@ personIcon classes =
     i [ class (person ++ " " ++ classes) ] []
 
 
-personIcon2 : String -> Html msg
-personIcon2 classes =
-    i [ class (person2 ++ " " ++ classes) ] []
-
-
 organization : String
 organization =
-    "factory icon"
-
-
-organization2 : String
-organization2 =
     "fa fa-industry"
 
 
@@ -444,29 +457,14 @@ organizationIcon classes =
     i [ class (organization ++ " " ++ classes) ] []
 
 
-organizationIcon2 : String -> Html msg
-organizationIcon2 classes =
-    i [ class (organization2 ++ " " ++ classes) ] []
-
-
 equipment : String
 equipment =
-    "box icon"
-
-
-equipment2 : String
-equipment2 =
     "fa fa-box"
 
 
 equipmentIcon : String -> Html msg
 equipmentIcon classes =
     i [ class (equipment ++ " " ++ classes) ] []
-
-
-equipmentIcon2 : String -> Html msg
-equipmentIcon2 classes =
-    i [ class (equipment2 ++ " " ++ classes) ] []
 
 
 matrixIcon : String -> Html msg

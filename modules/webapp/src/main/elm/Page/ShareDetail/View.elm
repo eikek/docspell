@@ -143,7 +143,7 @@ itemData texts flags model shareId itemId =
             ]
         , div [ class boxStyle ]
             [ div [ class headerStyle ]
-                [ Icons.tagsIcon2 "mr-2 ml-2"
+                [ Icons.tagsIcon "mr-2 ml-2"
                 , text texts.tagsAndFields
                 ]
             , div [ class "flex flex-row items-center flex-wrap font-medium my-1" ]

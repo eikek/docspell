@@ -98,7 +98,7 @@ view texts settings model =
                 [ class itemStyle
                 , title texts.basics.folder
                 ]
-                [ Icons.folderIcon2 "mr-2"
+                [ Icons.folderIcon "mr-2"
                 , Comp.LinkTarget.makeFolderLink model.item
                     [ ( linkStyle, True ) ]
                     SetLinkTarget

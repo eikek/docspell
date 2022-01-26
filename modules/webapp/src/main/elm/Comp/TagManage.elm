@@ -9,6 +9,7 @@ module Comp.TagManage exposing
     ( Model
     , Msg(..)
     , emptyModel
+    , init
     , update
     , view2
     )
@@ -71,6 +72,11 @@ emptyModel =
     , query = ""
     , order = Data.TagOrder.NameAsc
     }
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( emptyModel, Api.getTags flags emptyModel.query emptyModel.order (TagResp emptyModel.query) )
 
 
 type Msg

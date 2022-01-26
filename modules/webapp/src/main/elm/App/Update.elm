@@ -14,7 +14,7 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
-import Data.Flags exposing (Flags)
+import Data.Flags
 import Data.ServerEvent exposing (ServerEvent(..))
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme
@@ -160,7 +160,7 @@ updateWithSub msg model =
             updateItemDetail texts m model
 
         DashboardMsg m ->
-            updateDashboard m model
+            updateDashboard texts m model
 
         VersionResp (Ok info) ->
             ( { model | version = info }, Cmd.none, Sub.none )
@@ -371,15 +371,15 @@ applyClientSettings texts model settings =
         { model | uiSettings = settings }
 
 
-updateDashboard : Page.Dashboard.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-updateDashboard lmsg model =
+updateDashboard : Messages -> Page.Dashboard.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateDashboard texts lmsg model =
     let
-        ( dbm, dbc ) =
-            Page.Dashboard.Update.update model.flags lmsg model.dashboardModel
+        ( dbm, dbc, dbs ) =
+            Page.Dashboard.Update.update texts.dashboard model.flags lmsg model.dashboardModel
     in
     ( { model | dashboardModel = dbm }
     , Cmd.map DashboardMsg dbc
-    , Sub.none
+    , Sub.map DashboardMsg dbs
     )
 
 

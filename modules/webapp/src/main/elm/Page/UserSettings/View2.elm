@@ -18,6 +18,7 @@ import Comp.PeriodicQueryTaskManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
+import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -78,7 +79,7 @@ viewSidebar texts visible _ _ model =
                     , menuEntryActive model NotificationTab
                     , class S.sidebarLink
                     ]
-                    [ i [ class "fa fa-comment font-thin" ] []
+                    [ Icons.notificationHooksIcon ""
                     , span
                         [ class "ml-3" ]
                         [ text texts.notifications ]
@@ -422,7 +423,7 @@ viewNotificationInfo texts settings model =
                     , onClick (SetTab NotificationQueriesTab)
                     , class S.link
                     ]
-                    [ i [ class "fa fa-history" ] []
+                    [ Icons.periodicTasksIcon ""
                     , span
                         [ class "ml-3" ]
                         [ text texts.genericQueries ]

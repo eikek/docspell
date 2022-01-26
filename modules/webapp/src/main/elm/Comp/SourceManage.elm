@@ -69,6 +69,7 @@ init flags =
         [ Cmd.map FormMsg fc
         , Ports.initClipboard appClipboardData
         , Ports.initClipboard apiClipboardData
+        , Api.getSources flags SourceResp
         ]
     )
 

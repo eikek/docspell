@@ -11,6 +11,7 @@ import Api.Model.AuthResult exposing (AuthResult)
 import App.Data exposing (..)
 import Comp.Basic as B
 import Data.Flags
+import Data.Icons as Icons
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -299,7 +300,7 @@ dataMenu texts _ model =
             , dataPageLink model
                 SearchPage
                 []
-                [ i [ class "fa fa-search w-6" ] []
+                [ Icons.searchIcon "w-6"
                 , span [ class "ml-1" ]
                     [ text texts.items
                     ]
@@ -307,7 +308,7 @@ dataMenu texts _ model =
             , dataPageLink model
                 ManageDataPage
                 []
-                [ i [ class "fa fa-cubes w-6" ] []
+                [ Icons.metadataIcon "w-6"
                 , span [ class "ml-1" ]
                     [ text texts.manageData
                     ]
@@ -361,7 +362,7 @@ dataMenu texts _ model =
                 , target "_new"
                 , title "Opens https://docspell.org/docs"
                 ]
-                [ i [ class "fa fa-question-circle w-6" ] []
+                [ Icons.documentationIcon "w-6"
                 , span [ class "ml-1" ] [ text texts.help ]
                 , span [ class "float-right" ]
                     [ i [ class "fa fa-external-link-alt w-6" ] []

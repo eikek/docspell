@@ -9,6 +9,7 @@ module Comp.OrgManage exposing
     ( Model
     , Msg(..)
     , emptyModel
+    , init
     , update
     , view2
     )
@@ -69,6 +70,11 @@ emptyModel =
     , query = ""
     , order = Data.OrganizationOrder.NameAsc
     }
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( emptyModel, Api.getOrganizations flags emptyModel.query emptyModel.order OrgResp )
 
 
 type Msg
