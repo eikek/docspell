@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Page.HomeSideMenu exposing
+module Messages.Page.SearchSideMenu exposing
     ( Texts
     , de
     , gb

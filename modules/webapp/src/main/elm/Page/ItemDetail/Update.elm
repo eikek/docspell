@@ -60,7 +60,7 @@ update key flags inav settings msg model =
                             Cmd.none
 
                         _ ->
-                            Page.set key HomePage
+                            Page.set key (SearchPage Nothing)
             in
             { model = { model | detail = result.model }
             , cmd = Cmd.batch [ pageSwitch, Cmd.map ItemDetailMsg result.cmd ]

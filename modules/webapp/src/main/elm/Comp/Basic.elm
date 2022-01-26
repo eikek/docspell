@@ -207,7 +207,7 @@ loadingDimmer : { label : String, active : Bool } -> Html msg
 loadingDimmer cfg =
     let
         content =
-            div [ class "text-gray-200" ]
+            div [ class "text-gray-200 " ]
                 [ i [ class "fa fa-circle-notch animate-spin" ] []
                 , span [ class "ml-2" ]
                     [ text cfg.label

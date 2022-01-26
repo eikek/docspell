@@ -1,6 +1,6 @@
 +++
 title = "Uploads"
-weight = 0
+weight = 8
 +++
 
 This page describes, how files can get into docspell. Technically,

@@ -308,18 +308,27 @@ makeButton btnType model =
 
 makeCheckbox : CheckboxData msg -> Html msg
 makeCheckbox model =
+    let
+        withId list =
+            if model.id == "" then
+                list
+
+            else
+                id model.id :: list
+    in
     div [ class "" ]
         [ label
             [ class "inline-flex space-x-2 items-center"
             , for model.id
             ]
             [ input
-                [ type_ "checkbox"
-                , onCheck model.tagger
-                , checked model.value
-                , class S.checkboxInput
-                , id model.id
-                ]
+                (withId
+                    [ type_ "checkbox"
+                    , onCheck model.tagger
+                    , checked model.value
+                    , class S.checkboxInput
+                    ]
+                )
                 []
             , span [ class "truncate" ]
                 [ text model.label

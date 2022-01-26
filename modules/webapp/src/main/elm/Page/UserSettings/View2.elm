@@ -18,6 +18,7 @@ import Comp.PeriodicQueryTaskManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
 import Data.Flags exposing (Flags)
+import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -78,7 +79,7 @@ viewSidebar texts visible _ _ model =
                     , menuEntryActive model NotificationTab
                     , class S.sidebarLink
                     ]
-                    [ i [ class "fa fa-comment font-thin" ] []
+                    [ Icons.notificationHooksIcon ""
                     , span
                         [ class "ml-3" ]
                         [ text texts.notifications ]
@@ -96,7 +97,7 @@ viewSidebar texts visible _ _ model =
                         [ i [ class "fa fa-bell" ] []
                         , span
                             [ class "ml-3" ]
-                            [ text texts.webhooks ]
+                            [ text texts.basics.notificationHooks ]
                         ]
                     , a
                         [ href "#"
@@ -118,7 +119,7 @@ viewSidebar texts visible _ _ model =
                         [ i [ class "fa fa-history" ] []
                         , span
                             [ class "ml-3" ]
-                            [ text texts.genericQueries ]
+                            [ text texts.basics.periodicQueries ]
                         ]
                     ]
                 ]
@@ -395,7 +396,7 @@ viewNotificationInfo texts settings model =
                     [ i [ class "fa fa-bell" ] []
                     , span
                         [ class "ml-3" ]
-                        [ text texts.webhooks ]
+                        [ text texts.basics.notificationHooks ]
                     ]
                 , div [ class "ml-3 text-sm opacity-50" ]
                     [ text texts.webhookInfoText
@@ -422,10 +423,10 @@ viewNotificationInfo texts settings model =
                     , onClick (SetTab NotificationQueriesTab)
                     , class S.link
                     ]
-                    [ i [ class "fa fa-history" ] []
+                    [ Icons.periodicTasksIcon ""
                     , span
                         [ class "ml-3" ]
-                        [ text texts.genericQueries ]
+                        [ text texts.basics.periodicQueries ]
                     ]
                 , div [ class "ml-3 text-sm opacity-50" ]
                     [ text texts.periodicQueryInfoText
@@ -464,7 +465,7 @@ viewNotificationQueries texts settings model =
         ]
         [ i [ class "fa fa-history" ] []
         , div [ class "ml-3" ]
-            [ text texts.genericQueries
+            [ text texts.basics.periodicQueries
             ]
         ]
     , Markdown.toHtml [ class "opacity-80  text-lg mb-3 markdown-preview" ] texts.periodicQueryInfoText
@@ -484,7 +485,7 @@ viewNotificationHooks texts settings model =
         ]
         [ i [ class "fa fa-bell" ] []
         , div [ class "ml-3" ]
-            [ text texts.webhooks
+            [ text texts.basics.notificationHooks
             ]
         ]
     , Markdown.toHtml [ class "opacity-80  text-lg mb-3 markdown-preview" ] texts.webhookInfoText

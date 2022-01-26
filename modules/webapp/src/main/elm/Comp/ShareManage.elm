@@ -85,6 +85,7 @@ init flags =
     , Cmd.batch
         [ Cmd.map FormMsg fc
         , Cmd.map MailMsg mc
+        , Api.getShares flags "" True LoadSharesResp
         ]
     )
 

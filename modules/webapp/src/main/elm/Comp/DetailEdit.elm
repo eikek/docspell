@@ -712,10 +712,10 @@ formHeading texts classes model =
                 (\_ -> texts.addCustomFieldHeader)
 
         headIcon =
-            fold (\_ -> Icons.tagIcon2 "mr-2")
-                (\_ -> Icons.personIcon2 "mr-2")
-                (\_ -> Icons.organizationIcon2 "mr-2")
-                (\_ -> Icons.equipmentIcon2 "mt-2")
+            fold (\_ -> Icons.tagIcon "mr-2")
+                (\_ -> Icons.personIcon "mr-2")
+                (\_ -> Icons.organizationIcon "mr-2")
+                (\_ -> Icons.equipmentIcon "mt-2")
                 (\_ -> Icons.customFieldIcon2 "mr-2")
     in
     div [ class classes ]
@@ -738,10 +738,10 @@ viewModal2 texts settings mm =
                 (\_ -> texts.addCustomFieldHeader)
 
         headIcon =
-            fold (\_ -> Icons.tagIcon2 "mr-2")
-                (\_ -> Icons.personIcon2 "mr-2")
-                (\_ -> Icons.organizationIcon2 "mr-2")
-                (\_ -> Icons.equipmentIcon2 "mt-2")
+            fold (\_ -> Icons.tagIcon "mr-2")
+                (\_ -> Icons.personIcon "mr-2")
+                (\_ -> Icons.organizationIcon "mr-2")
+                (\_ -> Icons.equipmentIcon "mt-2")
                 (\_ -> Icons.customFieldIcon2 "mr-2")
     in
     div

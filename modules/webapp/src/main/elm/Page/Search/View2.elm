@@ -5,7 +5,7 @@
 -}
 
 
-module Page.Home.View2 exposing (viewContent, viewSidebar)
+module Page.Search.View2 exposing (viewContent, viewSidebar)
 
 import Api
 import Comp.Basic as B
@@ -27,10 +27,10 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages.Page.Home exposing (Texts)
+import Messages.Page.Search exposing (Texts)
 import Page exposing (Page(..))
-import Page.Home.Data exposing (..)
-import Page.Home.SideMenu
+import Page.Search.Data exposing (..)
+import Page.Search.SideMenu
 import Set
 import Styles as S
 import Util.Html
@@ -44,7 +44,7 @@ viewSidebar texts visible flags settings model =
         , class S.sidebarBg
         , classList [ ( "hidden", not visible ) ]
         ]
-        [ Page.Home.SideMenu.view texts.sideMenu flags settings model
+        [ Page.Search.SideMenu.view texts.sideMenu flags settings model
         ]
 
 
@@ -563,7 +563,7 @@ editMenuBar texts model svm =
 searchStats : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
 searchStats texts _ settings model =
     if settings.searchStatsVisible then
-        [ Comp.SearchStatsView.view2 texts.searchStatsView "my-2" model.searchStats
+        [ Comp.SearchStatsView.view texts.searchStatsView "my-2" model.searchStats
         ]
 
     else

@@ -298,7 +298,7 @@ formTabs texts flags settings model =
             [ optional [ Data.Fields.CorrOrg ] <|
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
-                        [ Icons.organizationIcon2 "mr-2"
+                        [ Icons.organizationIcon "mr-2"
                         , text texts.basics.organization
                         , addIconLink texts.addNewOrg StartCorrOrgModal
                         , editIconLink texts.editOrg model.corrOrgModel StartEditCorrOrgModal
@@ -314,7 +314,7 @@ formTabs texts flags settings model =
             , optional [ Data.Fields.CorrPerson ] <|
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
-                        [ Icons.personIcon2 "mr-2"
+                        [ Icons.personIcon "mr-2"
                         , text texts.basics.person
                         , addIconLink texts.addNewCorrespondentPerson StartCorrPersonModal
                         , editIconLink texts.editPerson
@@ -348,7 +348,7 @@ formTabs texts flags settings model =
             [ optional [ Data.Fields.ConcPerson ] <|
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
-                        [ Icons.personIcon2 "mr-2"
+                        [ Icons.personIcon "mr-2"
                         , text texts.basics.person
                         , addIconLink texts.addNewConcerningPerson StartConcPersonModal
                         , editIconLink texts.editPerson
@@ -366,7 +366,7 @@ formTabs texts flags settings model =
             , optional [ Data.Fields.ConcEquip ] <|
                 div [ class "mb-4" ]
                     [ label [ class S.inputLabel ]
-                        [ Icons.equipmentIcon2 "mr-2"
+                        [ Icons.equipmentIcon "mr-2"
                         , text texts.basics.equipment
                         , addIconLink texts.addNewEquipment StartEquipModal
                         , editIconLink texts.editEquipment

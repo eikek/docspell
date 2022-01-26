@@ -11,6 +11,7 @@ module Data.Bookmarks exposing
     , bookmarksDecoder
     , empty
     , exists
+    , findById
     , sort
     )
 
@@ -32,6 +33,12 @@ empty =
 
 type alias Bookmarks =
     List BookmarkedQuery
+
+
+findById : String -> Bookmarks -> Maybe BookmarkedQuery
+findById id all =
+    List.filter (\e -> e.id == id) all
+        |> List.head
 
 
 {-| Checks wether a bookmark of this name already exists.

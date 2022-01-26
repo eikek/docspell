@@ -14,7 +14,7 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
-import Data.Flags exposing (Flags)
+import Data.Flags
 import Data.ServerEvent exposing (ServerEvent(..))
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme
@@ -22,8 +22,8 @@ import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.CollectiveSettings.Update
-import Page.Home.Data
-import Page.Home.Update
+import Page.Dashboard.Data
+import Page.Dashboard.Update
 import Page.ItemDetail.Data
 import Page.ItemDetail.Update
 import Page.Login.Data
@@ -36,6 +36,8 @@ import Page.Queue.Data
 import Page.Queue.Update
 import Page.Register.Data
 import Page.Register.Update
+import Page.Search.Data
+import Page.Search.Update
 import Page.Share.Data
 import Page.Share.Update
 import Page.ShareDetail.Data
@@ -121,8 +123,8 @@ updateWithSub msg model =
         SetLanguage lang ->
             ( { model | anonymousUiLang = lang, langMenuOpen = False }, Cmd.none, Sub.none )
 
-        HomeMsg lm ->
-            updateHome texts lm model
+        SearchMsg lm ->
+            updateSearch texts lm model
 
         ShareMsg lm ->
             updateShare lm model
@@ -156,6 +158,9 @@ updateWithSub msg model =
 
         ItemDetailMsg m ->
             updateItemDetail texts m model
+
+        DashboardMsg m ->
+            updateDashboard texts m model
 
         VersionResp (Ok info) ->
             ( { model | version = info }, Cmd.none, Sub.none )
@@ -318,12 +323,15 @@ updateWithSub msg model =
 
                         newModel =
                             { model
-                                | showNewItemsArrived = isProcessItem && model.page /= HomePage
+                                | showNewItemsArrived = isProcessItem && not (Page.isSearchPage model.page)
                                 , jobsWaiting = max 0 (model.jobsWaiting - 1)
                             }
                     in
-                    if model.page == HomePage && isProcessItem then
-                        updateHome texts Page.Home.Data.RefreshView newModel
+                    if Page.isSearchPage model.page && isProcessItem then
+                        updateSearch texts Page.Search.Data.RefreshView newModel
+
+                    else if Page.isDashboardPage model.page && isProcessItem then
+                        updateDashboard texts Page.Dashboard.Data.reloadDashboardData newModel
 
                     else
                         ( newModel, Cmd.none, Sub.none )
@@ -359,11 +367,29 @@ applyClientSettings texts model settings =
             , setTheme
             , Sub.none
             )
+        , updateDashboard texts Page.Dashboard.Data.reloadUiSettings
         , updateUserSettings texts Page.UserSettings.Data.UpdateSettings
-        , updateHome texts Page.Home.Data.UiSettingsUpdated
+        , updateSearch texts Page.Search.Data.UiSettingsUpdated
         , updateItemDetail texts Page.ItemDetail.Data.UiSettingsUpdated
         ]
         { model | uiSettings = settings }
+
+
+updateDashboard : Messages -> Page.Dashboard.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateDashboard texts lmsg model =
+    let
+        ( dbm, dbc, dbs ) =
+            Page.Dashboard.Update.update texts.dashboard
+                model.uiSettings
+                model.key
+                model.flags
+                lmsg
+                model.dashboardModel
+    in
+    ( { model | dashboardModel = dbm }
+    , Cmd.map DashboardMsg dbc
+    , Sub.map DashboardMsg dbs
+    )
 
 
 updateShareDetail : Page.ShareDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -404,7 +430,7 @@ updateItemDetail : Messages -> Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd
 updateItemDetail texts lmsg model =
     let
         inav =
-            Page.Home.Data.itemNav model.itemDetailModel.detail.item.id model.homeModel
+            Page.Search.Data.itemNav model.itemDetailModel.detail.item.id model.searchModel
 
         result =
             Page.ItemDetail.Update.update
@@ -421,12 +447,12 @@ updateItemDetail texts lmsg model =
             }
 
         ( hm, hc, hs ) =
-            updateHome texts (Page.Home.Data.SetLinkTarget result.linkTarget) model_
+            updateSearch texts (Page.Search.Data.SetLinkTarget result.linkTarget) model_
 
         ( hm1, hc1, hs1 ) =
             case result.removedItem of
                 Just removedId ->
-                    updateHome texts (Page.Home.Data.RemoveItem removedId) hm
+                    updateSearch texts (Page.Search.Data.RemoveItem removedId) hm
 
                 Nothing ->
                     ( hm, hc, hs )
@@ -552,22 +578,22 @@ updateLogin lmsg model =
     )
 
 
-updateHome : Messages -> Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-updateHome texts lmsg model =
+updateSearch : Messages -> Page.Search.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateSearch texts lmsg model =
     let
-        mid =
+        ( mid, bmId ) =
             case model.page of
-                HomePage ->
-                    Util.Maybe.fromString model.itemDetailModel.detail.item.id
+                SearchPage bId ->
+                    ( Util.Maybe.fromString model.itemDetailModel.detail.item.id, bId )
 
                 _ ->
-                    Nothing
+                    ( Nothing, Nothing )
 
         result =
-            Page.Home.Update.update mid model.key model.flags texts.home model.uiSettings lmsg model.homeModel
+            Page.Search.Update.update bmId mid model.key model.flags texts.search model.uiSettings lmsg model.searchModel
 
         model_ =
-            { model | homeModel = result.model }
+            { model | searchModel = result.model }
 
         ( lm, lc, ls ) =
             case result.newSettings of
@@ -579,11 +605,11 @@ updateHome texts lmsg model =
     in
     ( lm
     , Cmd.batch
-        [ Cmd.map HomeMsg result.cmd
+        [ Cmd.map SearchMsg result.cmd
         , lc
         ]
     , Sub.batch
-        [ Sub.map HomeMsg result.sub
+        [ Sub.map SearchMsg result.sub
         , ls
         ]
     )
@@ -611,9 +637,9 @@ initPage model_ page =
             Messages.get <| App.Data.getUiLanguage model
     in
     case page of
-        HomePage ->
+        SearchPage _ ->
             Util.Update.andThen2
-                [ updateHome texts Page.Home.Data.Init
+                [ updateSearch texts Page.Search.Data.Init
                 , updateQueue Page.Queue.Data.StopRefresh
                 ]
                 model
@@ -646,7 +672,7 @@ initPage model_ page =
         UploadPage _ ->
             Util.Update.andThen2
                 [ updateQueue Page.Queue.Data.StopRefresh
-                , updateUpload Page.Upload.Data.Clear
+                , updateUpload Page.Upload.Data.reset
                 ]
                 model
 
@@ -685,3 +711,6 @@ initPage model_ page =
 
                 _ ->
                     ( model, Cmd.none, Sub.none )
+
+        DashboardPage ->
+            ( model, Cmd.map DashboardMsg (Page.Dashboard.Data.reinitCmd model.flags), Sub.none )

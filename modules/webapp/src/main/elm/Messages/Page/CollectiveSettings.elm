@@ -29,10 +29,8 @@ type alias Texts =
     , httpError : Http.Error -> String
     , collectiveSettings : String
     , insights : String
-    , sources : String
     , settings : String
     , users : String
-    , shares : String
     , user : String
     , collective : String
     , size : String
@@ -51,10 +49,8 @@ gb =
     , httpError = Messages.Comp.HttpError.gb
     , collectiveSettings = "Collective Settings"
     , insights = "Insights"
-    , sources = "Sources"
     , settings = "Settings"
     , users = "Users"
-    , shares = "Shares"
     , user = "User"
     , collective = "Collective"
     , size = "Size"
@@ -73,10 +69,8 @@ de =
     , httpError = Messages.Comp.HttpError.de
     , collectiveSettings = "Kollektiveinstellungen"
     , insights = "Statistiken"
-    , sources = "Quellen"
     , settings = "Einstellungen"
     , users = "Benutzer"
-    , shares = "Freigaben"
     , user = "Benutzer"
     , collective = "Kollektiv"
     , size = "Größe"

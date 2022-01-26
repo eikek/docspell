@@ -13,7 +13,9 @@ module Page exposing
     , goto
     , hasSidebar
     , href
+    , isDashboardPage
     , isOpen
+    , isSearchPage
     , isSecured
     , loginPage
     , loginPageReferrer
@@ -51,7 +53,7 @@ emptyLoginData =
 
 
 type Page
-    = HomePage
+    = SearchPage (Maybe String)
     | LoginPage LoginData
     | ManageDataPage
     | CollectiveSettingPage
@@ -63,12 +65,16 @@ type Page
     | ItemDetailPage String
     | SharePage String
     | ShareDetailPage String String
+    | DashboardPage
 
 
 isSecured : Page -> Bool
 isSecured page =
     case page of
-        HomePage ->
+        DashboardPage ->
+            True
+
+        SearchPage _ ->
             True
 
         LoginPage _ ->
@@ -138,11 +144,34 @@ loginPage p =
             LoginPage { emptyLoginData | referrer = Just p }
 
 
+isSearchPage : Page -> Bool
+isSearchPage page =
+    case page of
+        SearchPage _ ->
+            True
+
+        _ ->
+            False
+
+
+isDashboardPage : Page -> Bool
+isDashboardPage page =
+    case page of
+        DashboardPage ->
+            True
+
+        _ ->
+            False
+
+
 pageName : Page -> String
 pageName page =
     case page of
-        HomePage ->
-            "Home"
+        DashboardPage ->
+            "dashboard"
+
+        SearchPage _ ->
+            "Search"
 
         LoginPage _ ->
             "Login"
@@ -226,8 +255,16 @@ uploadId page =
 pageToString : Page -> String
 pageToString page =
     case page of
-        HomePage ->
-            "/app/home"
+        DashboardPage ->
+            "/app/dashboard"
+
+        SearchPage bmId ->
+            case bmId of
+                Just id ->
+                    "/app/search?bm=" ++ id
+
+                Nothing ->
+                    "/app/search"
 
         LoginPage data ->
             case data.referrer of
@@ -312,12 +349,14 @@ pathPrefix =
 parser : Parser (Page -> a) a
 parser =
     oneOf
-        [ Parser.map HomePage
+        [ Parser.map DashboardPage
             (oneOf
                 [ Parser.top
-                , s pathPrefix </> s "home"
+                , s pathPrefix
+                , s pathPrefix </> s "dashboard"
                 ]
             )
+        , Parser.map SearchPage (s pathPrefix </> s "search" <?> Query.string "bm")
         , Parser.map LoginPage (s pathPrefix </> s "login" <?> loginPageParser)
         , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
         , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")

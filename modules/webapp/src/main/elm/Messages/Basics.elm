@@ -45,6 +45,10 @@ type alias Texts =
     , customFields : String
     , direction : String
     , folderNotOwnerWarning : String
+    , shares : String
+    , sources : String
+    , periodicQueries : String
+    , notificationHooks : String
     }
 
 
@@ -87,6 +91,10 @@ You are **not a member** of this folder. This item will be **hidden**
 from any search now. Use a folder where you are a member of to make this
 item visible. This message will disappear then.
                       """
+    , shares = "Shares"
+    , sources = "Sources"
+    , periodicQueries = "Periodic Queries"
+    , notificationHooks = "Webhooks"
     }
 
 
@@ -130,4 +138,8 @@ URL hochgeladen werden, sind für dich in der Suche *nicht* sichtbar.
 Nutze lieber einen Ordner, dem Du als Mitglied zugeordnet bist. Diese
 Nachricht verschwindet dann.
                       """
+    , shares = "Freigaben"
+    , sources = "Quellen"
+    , periodicQueries = "Periodische Abfragen"
+    , notificationHooks = "Webhooks"
     }

@@ -5,7 +5,7 @@
 -}
 
 
-module Page.Home.Data exposing
+module Page.Search.Data exposing
     ( ConfirmModalValue(..)
     , Model
     , Msg(..)
@@ -48,7 +48,6 @@ import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
 import Set exposing (Set)
-import Throttle exposing (Throttle)
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
 
@@ -61,7 +60,6 @@ type alias Model =
     , searchOffset : Int
     , moreAvailable : Bool
     , moreInProgress : Bool
-    , throttle : Throttle Msg
     , searchTypeDropdownValue : SearchType
     , lastSearchType : SearchType
     , dragDropData : DD.DragDropData
@@ -129,7 +127,6 @@ init flags viewMode =
     , searchOffset = 0
     , moreAvailable = True
     , moreInProgress = False
-    , throttle = Throttle.create 1
     , searchTypeDropdownValue =
         if Comp.SearchMenu.isFulltextSearch searchMenuModel then
             ContentOnlySearch
@@ -199,6 +196,7 @@ editActive model =
 
 type Msg
     = Init
+    | DoNothing
     | SearchMenuMsg Comp.SearchMenu.Msg
     | ResetSearch
     | ItemCardListMsg Comp.ItemCardList.Msg
@@ -208,7 +206,6 @@ type Msg
     | ToggleSearchMenu
     | ToggleSelectView
     | LoadMore
-    | UpdateThrottle
     | SetBasicSearch String
     | ToggleSearchType
     | KeyUpSearchbarMsg (Maybe KeyCode)

@@ -11,6 +11,7 @@ module Comp.PowerSearchInput exposing
     , Msg
     , ViewSettings
     , init
+    , initWith
     , isValid
     , setSearchString
     , update
@@ -43,6 +44,15 @@ init =
     , result = Data.QueryParseResult.success
     , parseThrottle = Throttle.create 1
     }
+
+
+initWith : String -> ( Model, Cmd Msg, Sub Msg )
+initWith qstr =
+    let
+        result =
+            update (setSearchString qstr) init
+    in
+    ( result.model, result.cmd, result.subs )
 
 
 isValid : Model -> Bool

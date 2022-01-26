@@ -546,7 +546,7 @@ viewTagItem2 ddm settings model tag =
             Data.UiSettings.tagColorFg2 tag.tag settings
 
         icon =
-            getIcon2 state color I.tagIcon2
+            getIcon2 state color I.tagIcon
 
         dropActive =
             DD.getDropId ddm == Just (DD.Tag tag.tag.id)
@@ -587,7 +587,7 @@ viewCategoryItem2 settings model cat =
             Data.UiSettings.catColorFg2 settings cat.name
 
         icon =
-            getIcon2 state color I.tagsIcon2
+            getIcon2 state color I.tagsIcon
     in
     a
         [ class "flex flex-row items-center"

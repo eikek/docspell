@@ -247,7 +247,7 @@ de =
     , queue = Messages.Page.Queue.gb
     , userSettings = Messages.Page.UserSettings.gb
     , manageData = Messages.Page.ManageData.gb
-    , home = Messages.Page.Home.gb
+    , search = Messages.Page.Search.gb
     }
 ```
 
@@ -340,7 +340,7 @@ de =
     , queue = Messages.Page.Queue.gb
     , userSettings = Messages.Page.UserSettings.gb
     , manageData = Messages.Page.ManageData.gb
-    , home = Messages.Page.Home.gb
+    , search = Messages.Page.Search.gb
     }
 ```
 

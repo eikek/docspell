@@ -735,7 +735,7 @@ renderEditForm2 texts flags cfg settings model =
               , body =
                     [ div [ class "field" ]
                         [ label [ class S.inputLabel ]
-                            [ Icons.tagsIcon2 ""
+                            [ Icons.tagsIcon ""
                             , text texts.basics.tags
                             , a
                                 [ class "float-right"
@@ -841,7 +841,7 @@ renderEditForm2 texts flags cfg settings model =
                     [ optional [ Data.Fields.CorrOrg ] <|
                         div [ class "mb-4" ]
                             [ label [ class S.inputLabel ]
-                                [ Icons.organizationIcon2 ""
+                                [ Icons.organizationIcon ""
                                 , span [ class "ml-2" ]
                                     [ text texts.basics.organization
                                     ]
@@ -856,7 +856,7 @@ renderEditForm2 texts flags cfg settings model =
                     , optional [ Data.Fields.CorrPerson ] <|
                         div [ class "mb-4" ]
                             [ label [ class S.inputLabel ]
-                                [ Icons.personIcon2 ""
+                                [ Icons.personIcon ""
                                 , span [ class "ml-2" ]
                                     [ text texts.basics.person
                                     ]
@@ -878,7 +878,7 @@ renderEditForm2 texts flags cfg settings model =
                     [ optional [ Data.Fields.ConcPerson ] <|
                         div [ class "mb-4" ]
                             [ label [ class S.inputLabel ]
-                                [ Icons.personIcon2 ""
+                                [ Icons.personIcon ""
                                 , span [ class "ml-2" ]
                                     [ text texts.basics.person ]
                                 ]
@@ -887,7 +887,7 @@ renderEditForm2 texts flags cfg settings model =
                     , optional [ Data.Fields.ConcEquip ] <|
                         div [ class "mb-4" ]
                             [ label [ class S.inputLabel ]
-                                [ Icons.equipmentIcon2 ""
+                                [ Icons.equipmentIcon ""
                                 , span [ class "ml-2" ]
                                     [ text texts.basics.equipment ]
                                 ]
