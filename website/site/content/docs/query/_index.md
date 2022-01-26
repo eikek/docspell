@@ -10,7 +10,8 @@ mktoc = true
 
 Docspell uses a query language to provide a powerful way to search for
 your documents. It is targeted at "power users" and it needs to be
-enabled explicitely in your user settings.
+enabled explicitely in your user settings to be used on the search
+page.
 
 <div class="colums">
 
