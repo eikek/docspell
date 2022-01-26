@@ -7,6 +7,7 @@
 
 module Page.Dashboard.Update exposing (update)
 
+import Browser.Navigation as Nav
 import Comp.BookmarkChooser
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -19,11 +20,13 @@ import Comp.SourceManage
 import Comp.TagManage
 import Data.Flags exposing (Flags)
 import Messages.Page.Dashboard exposing (Texts)
+import Page exposing (Page(..))
 import Page.Dashboard.Data exposing (..)
+import Set
 
 
-update : Texts -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update texts flags msg model =
+update : Texts -> Nav.Key -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update texts navKey flags msg model =
     case msg of
         GetBookmarksResp list ->
             let
@@ -43,9 +46,12 @@ update texts flags msg model =
                         lm
                         sideMenu.bookmarkChooser
                         Comp.BookmarkChooser.emptySelection
+
+                bmId =
+                    Set.toList sel.bookmarks |> List.head
             in
             ( { model | sideMenu = { sideMenu | bookmarkChooser = bm } }
-            , Cmd.none
+            , Page.set navKey (SearchPage bmId)
             , Sub.none
             )
 

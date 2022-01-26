@@ -35,8 +35,6 @@ import Process
 import Scroll
 import Set exposing (Set)
 import Task
-import Throttle
-import Time
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
 import Util.Update
@@ -50,8 +48,8 @@ type alias UpdateResult =
     }
 
 
-update : Maybe String -> Nav.Key -> Flags -> Texts -> UiSettings -> Msg -> Model -> UpdateResult
-update mId key flags texts settings msg model =
+update : Maybe String -> Maybe String -> Nav.Key -> Flags -> Texts -> UiSettings -> Msg -> Model -> UpdateResult
+update bookmarkId mId key flags texts settings msg model =
     case msg of
         Init ->
             let
@@ -62,20 +60,28 @@ update mId key flags texts settings msg model =
                     , offset = 0
                     , scroll = True
                     }
+
+                setBookmark =
+                    Maybe.map (\bmId -> SearchMenuMsg <| Comp.SearchMenu.SetBookmark bmId) bookmarkId
+                        |> Maybe.withDefault DoNothing
             in
             makeResult <|
                 Util.Update.andThen3
-                    [ update mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.Init)
+                    [ update bookmarkId mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.Init)
+                    , update bookmarkId mId key flags texts settings setBookmark
                     , doSearch searchParam
                     ]
                     model
+
+        DoNothing ->
+            UpdateResult model Cmd.none Sub.none Nothing
 
         ResetSearch ->
             let
                 nm =
                     { model | searchOffset = 0, powerSearchInput = Comp.PowerSearchInput.init }
             in
-            update mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
+            update bookmarkId mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
         SearchMenuMsg m ->
             let
@@ -103,7 +109,7 @@ update mId key flags texts settings msg model =
                     }
 
                 result =
-                    if nextState.stateChange && not model.searchInProgress then
+                    if Debug.log "state" nextState.stateChange && not model.searchInProgress then
                         doSearch (SearchParam flags BasicSearch settings.itemSearchPageSize 0 False) newModel
 
                     else
@@ -121,7 +127,7 @@ update mId key flags texts settings msg model =
         SetLinkTarget lt ->
             case linkTargetMsg lt of
                 Just m ->
-                    update mId key flags texts settings m model
+                    update bookmarkId mId key flags texts settings m model
 
                 Nothing ->
                     makeResult ( model, Cmd.none, Sub.none )
@@ -193,7 +199,7 @@ update mId key flags texts settings msg model =
             in
             makeResult <|
                 Util.Update.andThen3
-                    [ update mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.SetResults list))
+                    [ update bookmarkId mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.SetResults list))
                     , if scroll then
                         scrollToCard mId
 
@@ -215,7 +221,7 @@ update mId key flags texts settings msg model =
                         , moreAvailable = list.groups /= []
                     }
             in
-            update mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
+            update bookmarkId mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
 
         ItemSearchAddResp (Err _) ->
             withSub
@@ -319,30 +325,23 @@ update mId key flags texts settings msg model =
             else
                 withSub ( model, Cmd.none )
 
-        UpdateThrottle ->
-            let
-                ( newThrottle, cmd ) =
-                    Throttle.update model.throttle
-            in
-            withSub ( { model | throttle = newThrottle }, cmd )
-
         SetBasicSearch str ->
             let
                 smMsg =
                     SearchMenuMsg (Comp.SearchMenu.SetTextSearch str)
             in
-            update mId key flags texts settings smMsg model
+            update bookmarkId mId key flags texts settings smMsg model
 
         ToggleSearchType ->
             case model.searchTypeDropdownValue of
                 BasicSearch ->
-                    update mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.SetFulltextSearch) model
+                    update bookmarkId mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.SetFulltextSearch) model
 
                 ContentOnlySearch ->
-                    update mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.SetNamesSearch) model
+                    update bookmarkId mId key flags texts settings (SearchMenuMsg Comp.SearchMenu.SetNamesSearch) model
 
         KeyUpSearchbarMsg (Just Enter) ->
-            update mId key flags texts settings (DoSearch model.searchTypeDropdownValue) model
+            update bookmarkId mId key flags texts settings (DoSearch model.searchTypeDropdownValue) model
 
         KeyUpSearchbarMsg _ ->
             withSub ( model, Cmd.none )
@@ -653,7 +652,8 @@ update mId key flags texts settings msg model =
                             { model | viewMode = nextView }
                     in
                     if result.outcome == Comp.ItemMerge.OutcomeMerged then
-                        update mId
+                        update bookmarkId
+                            mId
                             key
                             flags
                             texts
@@ -733,7 +733,8 @@ update mId key flags texts settings msg model =
                             { model | viewMode = nextView }
                     in
                     if result.outcome == Comp.PublishItems.OutcomeDone then
-                        update mId
+                        update bookmarkId
+                            mId
                             key
                             flags
                             texts
@@ -853,7 +854,7 @@ update mId key flags texts settings msg model =
                 model_ =
                     { model | viewMode = viewMode }
             in
-            update mId key flags texts settings (DoSearch model.lastSearchType) model_
+            update bookmarkId mId key flags texts settings (DoSearch model.lastSearchType) model_
 
         SearchStatsResp result ->
             let
@@ -863,7 +864,7 @@ update mId key flags texts settings msg model =
                 stats =
                     Result.withDefault model.searchStats result
             in
-            update mId key flags texts settings lm { model | searchStats = stats }
+            update bookmarkId mId key flags texts settings lm { model | searchStats = stats }
 
         TogglePreviewFullWidth ->
             let
@@ -905,16 +906,16 @@ update mId key flags texts settings msg model =
                     makeResult ( model_, cmd_, Sub.map PowerSearchMsg result.subs )
 
                 Comp.PowerSearchInput.SubmitSearch ->
-                    update mId key flags texts settings (DoSearch model_.searchTypeDropdownValue) model_
+                    update bookmarkId mId key flags texts settings (DoSearch model_.searchTypeDropdownValue) model_
 
         KeyUpPowerSearchbarMsg (Just Enter) ->
-            update mId key flags texts settings (DoSearch model.searchTypeDropdownValue) model
+            update bookmarkId mId key flags texts settings (DoSearch model.searchTypeDropdownValue) model
 
         KeyUpPowerSearchbarMsg _ ->
             withSub ( model, Cmd.none )
 
         RemoveItem id ->
-            update mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
+            update bookmarkId mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
 
         TogglePublishCurrentQueryView ->
             case createQuery model of
@@ -1146,18 +1147,14 @@ doSearch param model =
 
         searchCmd =
             doSearchCmd param_ model
-
-        ( newThrottle, cmd ) =
-            Throttle.try searchCmd model.throttle
     in
     withSub
         ( { model
-            | searchInProgress = cmd /= Cmd.none
+            | searchInProgress = True
             , searchOffset = 0
-            , throttle = newThrottle
             , lastSearchType = param.searchType
           }
-        , cmd
+        , searchCmd
         )
 
 
@@ -1190,9 +1187,7 @@ withSub ( m, c ) =
     makeResult
         ( m
         , c
-        , Throttle.ifNeeded
-            (Time.every 500 (\_ -> UpdateThrottle))
-            m.throttle
+        , Sub.none
         )
 
 

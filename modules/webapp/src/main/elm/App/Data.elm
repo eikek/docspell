@@ -209,7 +209,7 @@ type Msg
 
 defaultPage : Flags -> Page
 defaultPage _ =
-    SearchPage
+    DashboardPage
 
 
 getUiLanguage : Model -> UiLanguage

@@ -78,7 +78,7 @@ topNavUser auth model =
                 [ class S.infoMessageBase
                 , class "my-2 px-1 py-1 rounded-lg inline-block hover:opacity-50"
                 , classList [ ( "hidden", not model.showNewItemsArrived ) ]
-                , Page.href SearchPage
+                , Page.href (SearchPage Nothing)
                 , onClick ToggleShowNewItemsArrived
                 ]
                 [ i [ class "fa fa-exclamation-circle mr-1" ] []
@@ -165,8 +165,8 @@ mainContent model =
             DashboardPage ->
                 viewDashboard texts model
 
-            SearchPage ->
-                viewSearch texts model
+            SearchPage bmId ->
+                viewSearch texts bmId model
 
             CollectiveSettingPage ->
                 viewCollectiveSettings texts model
@@ -298,7 +298,7 @@ dataMenu texts _ model =
                 ]
             , div [ class "py-1" ] [ hr [ class S.border ] [] ]
             , dataPageLink model
-                SearchPage
+                (SearchPage Nothing)
                 []
                 [ Icons.searchIcon "w-6"
                 , span [ class "ml-1" ]
@@ -541,8 +541,8 @@ viewShareDetail texts shareId itemId model =
     ]
 
 
-viewSearch : Messages -> Model -> List (Html Msg)
-viewSearch texts model =
+viewSearch : Messages -> Maybe String -> Model -> List (Html Msg)
+viewSearch texts bmId model =
     [ Html.map SearchMsg
         (Search.viewSidebar texts.search
             model.sidebarVisible

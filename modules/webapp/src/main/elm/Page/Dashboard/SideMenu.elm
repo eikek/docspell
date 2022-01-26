@@ -17,7 +17,7 @@ view texts _ model =
     div [ class "flex flex-col" ]
         [ div [ class "mt-2" ]
             [ menuLink [ onClick InitDashboard, href "#" ] (Icons.dashboardIcon "") "Dashboard"
-            , menuLink [ Page.href SearchPage ] (Icons.searchIcon "") "Items"
+            , menuLink [ Page.href (SearchPage Nothing) ] (Icons.searchIcon "") "Items"
             ]
         , h3
             [ class S.header3

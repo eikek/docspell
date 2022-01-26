@@ -195,7 +195,7 @@ renderSuccessMsg texts public model =
                     [ text texts.successBox.line1
                     , a
                         [ class S.successMessageLink
-                        , Page.href SearchPage
+                        , Page.href (SearchPage Nothing)
                         ]
                         [ text texts.successBox.itemsPage
                         ]

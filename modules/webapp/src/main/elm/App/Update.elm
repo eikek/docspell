@@ -323,11 +323,11 @@ updateWithSub msg model =
 
                         newModel =
                             { model
-                                | showNewItemsArrived = isProcessItem && model.page /= SearchPage
+                                | showNewItemsArrived = isProcessItem && not (Page.isSearchPage model.page)
                                 , jobsWaiting = max 0 (model.jobsWaiting - 1)
                             }
                     in
-                    if model.page == SearchPage && isProcessItem then
+                    if Page.isSearchPage model.page && isProcessItem then
                         updateSearch texts Page.Search.Data.RefreshView newModel
 
                     else
@@ -375,7 +375,7 @@ updateDashboard : Messages -> Page.Dashboard.Data.Msg -> Model -> ( Model, Cmd M
 updateDashboard texts lmsg model =
     let
         ( dbm, dbc, dbs ) =
-            Page.Dashboard.Update.update texts.dashboard model.flags lmsg model.dashboardModel
+            Page.Dashboard.Update.update texts.dashboard model.key model.flags lmsg model.dashboardModel
     in
     ( { model | dashboardModel = dbm }
     , Cmd.map DashboardMsg dbc
@@ -572,16 +572,16 @@ updateLogin lmsg model =
 updateSearch : Messages -> Page.Search.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateSearch texts lmsg model =
     let
-        mid =
+        ( mid, bmId ) =
             case model.page of
-                SearchPage ->
-                    Util.Maybe.fromString model.itemDetailModel.detail.item.id
+                SearchPage bId ->
+                    ( Util.Maybe.fromString model.itemDetailModel.detail.item.id, bId )
 
                 _ ->
-                    Nothing
+                    ( Nothing, Nothing )
 
         result =
-            Page.Search.Update.update mid model.key model.flags texts.search model.uiSettings lmsg model.searchModel
+            Page.Search.Update.update bmId mid model.key model.flags texts.search model.uiSettings lmsg model.searchModel
 
         model_ =
             { model | searchModel = result.model }
@@ -628,7 +628,7 @@ initPage model_ page =
             Messages.get <| App.Data.getUiLanguage model
     in
     case page of
-        SearchPage ->
+        SearchPage _ ->
             Util.Update.andThen2
                 [ updateSearch texts Page.Search.Data.Init
                 , updateQueue Page.Queue.Data.StopRefresh

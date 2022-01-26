@@ -14,6 +14,7 @@ module Page exposing
     , hasSidebar
     , href
     , isOpen
+    , isSearchPage
     , isSecured
     , loginPage
     , loginPageReferrer
@@ -51,7 +52,7 @@ emptyLoginData =
 
 
 type Page
-    = SearchPage
+    = SearchPage (Maybe String)
     | LoginPage LoginData
     | ManageDataPage
     | CollectiveSettingPage
@@ -72,7 +73,7 @@ isSecured page =
         DashboardPage ->
             True
 
-        SearchPage ->
+        SearchPage _ ->
             True
 
         LoginPage _ ->
@@ -142,13 +143,23 @@ loginPage p =
             LoginPage { emptyLoginData | referrer = Just p }
 
 
+isSearchPage : Page -> Bool
+isSearchPage page =
+    case page of
+        SearchPage _ ->
+            True
+
+        _ ->
+            False
+
+
 pageName : Page -> String
 pageName page =
     case page of
         DashboardPage ->
             "dashboard"
 
-        SearchPage ->
+        SearchPage _ ->
             "Search"
 
         LoginPage _ ->
@@ -236,8 +247,13 @@ pageToString page =
         DashboardPage ->
             "/app/dashboard"
 
-        SearchPage ->
-            "/app/search"
+        SearchPage bmId ->
+            case bmId of
+                Just id ->
+                    "/app/search?bm=" ++ id
+
+                Nothing ->
+                    "/app/search"
 
         LoginPage data ->
             case data.referrer of
@@ -329,7 +345,7 @@ parser =
                 , s pathPrefix </> s "dashboard"
                 ]
             )
-        , Parser.map SearchPage (s pathPrefix </> s "search")
+        , Parser.map SearchPage (s pathPrefix </> s "search" <?> Query.string "bm")
         , Parser.map LoginPage (s pathPrefix </> s "login" <?> loginPageParser)
         , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
         , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")

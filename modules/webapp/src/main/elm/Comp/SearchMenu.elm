@@ -59,7 +59,7 @@ import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onInput)
 import Http
 import Messages.Comp.SearchMenu exposing (Texts)
 import Set exposing (Set)
@@ -385,6 +385,7 @@ type Msg
     | SetConcEquip IdName
     | SetFolder IdName
     | SetTag String
+    | SetBookmark String
     | SetCustomField ItemFieldValue
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
     | SetSource String
@@ -431,6 +432,9 @@ linkTargetMsg linkTarget =
 
         Comp.LinkTarget.LinkSource str ->
             Just <| ResetToSource str
+
+        Comp.LinkTarget.LinkBookmark id ->
+            Just <| SetBookmark id
 
 
 type alias NextState =
@@ -555,6 +559,22 @@ updateDrop ddm flags settings msg model =
 
         SetTag id ->
             resetAndSet (TagSelectMsg (Comp.TagSelect.toggleTag id))
+
+        SetBookmark id ->
+            let
+                nextModel =
+                    resetModel model
+
+                sel =
+                    { bookmarks = Set.singleton id
+                    , shares = Set.empty
+                    }
+            in
+            { model = { nextModel | selectedBookmarks = sel }
+            , cmd = Cmd.none
+            , stateChange = sel /= model.selectedBookmarks
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
 
         GetAllTagsResp (Ok stats) ->
             let
@@ -1064,7 +1084,7 @@ updateDrop ddm flags settings msg model =
         AllBookmarksResp (Ok bm) ->
             { model = { model | allBookmarks = Comp.BookmarkChooser.init bm }
             , cmd = Cmd.none
-            , stateChange = False
+            , stateChange = model.allBookmarks /= Comp.BookmarkChooser.init bm
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
@@ -1082,7 +1102,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | allBookmarks = next, selectedBookmarks = sel }
             , cmd = Cmd.none
-            , stateChange = sel /= model.selectedBookmarks
+            , stateChange = sel /= model.selectedBookmarks || model.allBookmarks /= next
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
