@@ -48,7 +48,7 @@ viewContent texts flags settings model =
         [ case model.content of
             Home m ->
                 Html.map DashboardMsg
-                    (Comp.DashboardView.view m)
+                    (Comp.DashboardView.view texts.dashboard m)
 
             Webhook m ->
                 viewHookManage texts settings m

@@ -1961,7 +1961,7 @@ paths:
       - $ref: "#/components/parameters/bookmarkId"
     delete:
       operationId: "sec-querybookmark-delete"
-      tags: [Query Bookmark]
+      tags: [Query Bookmarks]
       summary: Delete a bookmark.
       description: |
         Deletes a bookmarks by its id.

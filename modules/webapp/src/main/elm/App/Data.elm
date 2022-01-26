@@ -18,15 +18,18 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
+import Data.Dashboard exposing (Dashboard)
 import Data.Flags exposing (Flags)
 import Data.ServerEvent exposing (ServerEvent)
 import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import Data.UiTheme exposing (UiTheme)
 import Http
+import Messages
 import Messages.UiLanguage exposing (UiLanguage)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.Dashboard.Data
+import Page.Dashboard.DefaultDashboard
 import Page.ItemDetail.Data
 import Page.Login.Data
 import Page.ManageData.Data
@@ -102,6 +105,7 @@ init key url flags_ settings =
 
         ( dbm, dbc ) =
             Page.Dashboard.Data.init flags
+                (Page.Dashboard.DefaultDashboard.getDefaultDashboard flags settings)
 
         searchViewMode =
             if settings.searchMenuVisible then
@@ -214,9 +218,4 @@ defaultPage _ =
 
 getUiLanguage : Model -> UiLanguage
 getUiLanguage model =
-    case model.flags.account of
-        Just _ ->
-            model.uiSettings.uiLang
-
-        Nothing ->
-            model.anonymousUiLang
+    Data.UiSettings.getUiLanguage model.flags model.uiSettings model.anonymousUiLang

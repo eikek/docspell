@@ -10,6 +10,7 @@ module Messages.DateFormat exposing
     , formatDateLong
     , formatDateShort
     , formatDateTimeLong
+    , formatDateTimeShort
     )
 
 import DateFormat exposing (Token)
@@ -66,6 +67,11 @@ formatDateLong lang millis =
 formatDateShort : UiLanguage -> Int -> String
 formatDateShort lang millis =
     format lang .dateShort millis
+
+
+formatDateTimeShort : UiLanguage -> Int -> String
+formatDateTimeShort lang millis =
+    format lang .dateTimeShort millis
 
 
 

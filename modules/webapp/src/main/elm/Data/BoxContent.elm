@@ -1,10 +1,17 @@
-module Data.BoxContent exposing (BoxContent(..), MessageData, QueryData, SummaryData)
+module Data.BoxContent exposing
+    ( BoxContent(..)
+    , MessageData
+    , QueryData
+    , SearchQuery(..)
+    , SummaryData
+    , SummaryShow(..)
+    )
 
-import Data.ItemArrange exposing (ItemArrange)
+import Data.ItemTemplate exposing (ItemTemplate)
 
 
 type BoxContent
-    = BoxUpload
+    = BoxUpload (Maybe String)
     | BoxMessage MessageData
     | BoxQuery QueryData
     | BoxSummary SummaryData
@@ -17,11 +24,25 @@ type alias MessageData =
 
 
 type alias QueryData =
-    { query : String
-    , view : ItemArrange
+    { query : SearchQuery
+    , limit : Int
+    , details : Bool
+    , header : List String
+    , columns : List ItemTemplate
     }
 
 
 type alias SummaryData =
-    { query : String
+    { query : SearchQuery
+    , show : SummaryShow
     }
+
+
+type SummaryShow
+    = SummaryShowFields Bool
+    | SummaryShowGeneral
+
+
+type SearchQuery
+    = SearchQueryString String
+    | SearchQueryBookmark String

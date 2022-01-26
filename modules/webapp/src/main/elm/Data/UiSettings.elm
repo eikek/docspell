@@ -18,6 +18,7 @@ module Data.UiSettings exposing
     , defaults
     , fieldHidden
     , fieldVisible
+    , getUiLanguage
     , merge
     , mergeDefaults
     , pdfUrl
@@ -442,6 +443,16 @@ pdfUrl settings flags originalUrl =
 
         Data.Pdf.Server ->
             Data.Pdf.serverUrl originalUrl
+
+
+getUiLanguage : Flags -> UiSettings -> UiLanguage -> UiLanguage
+getUiLanguage flags settings default =
+    case flags.account of
+        Just _ ->
+            settings.uiLang
+
+        Nothing ->
+            default
 
 
 

@@ -563,7 +563,7 @@ editMenuBar texts model svm =
 searchStats : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
 searchStats texts _ settings model =
     if settings.searchStatsVisible then
-        [ Comp.SearchStatsView.view2 texts.searchStatsView "my-2" model.searchStats
+        [ Comp.SearchStatsView.view texts.searchStatsView "my-2" model.searchStats
         ]
 
     else

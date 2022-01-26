@@ -20,6 +20,7 @@ import Comp.ShareManage
 import Comp.SourceManage
 import Comp.TagManage
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Messages.Page.Dashboard exposing (Texts)
 import Page exposing (Page(..))
 import Page.Dashboard.Data exposing (..)
@@ -27,8 +28,8 @@ import Page.Dashboard.DefaultDashboard
 import Set
 
 
-update : Texts -> Nav.Key -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update texts navKey flags msg model =
+update : Texts -> UiSettings -> Nav.Key -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update texts settings navKey flags msg model =
     case msg of
         GetBookmarksResp list ->
             let
@@ -59,8 +60,11 @@ update texts navKey flags msg model =
 
         InitDashboard ->
             let
+                board =
+                    Page.Dashboard.DefaultDashboard.getDefaultDashboard flags settings
+
                 ( dm, dc ) =
-                    Comp.DashboardView.init flags Page.Dashboard.DefaultDashboard.value
+                    Comp.DashboardView.init flags board
             in
             ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
 
@@ -242,7 +246,16 @@ update texts navKey flags msg model =
                     unit model
 
         DashboardMsg lm ->
-            unit model
+            case model.content of
+                Home m ->
+                    let
+                        ( dm, dc ) =
+                            Comp.DashboardView.update lm m
+                    in
+                    ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
+
+                _ ->
+                    unit model
 
 
 unit : Model -> ( Model, Cmd Msg, Sub Msg )

@@ -101,7 +101,9 @@ module Api exposing
     , itemDetailShare
     , itemIndexSearch
     , itemSearch
+    , itemSearchBookmark
     , itemSearchStats
+    , itemSearchStatsBookmark
     , login
     , loginSession
     , logout
@@ -2028,24 +2030,70 @@ itemIndexSearch flags query receive =
         }
 
 
-itemSearch : Flags -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
-itemSearch flags search receive =
-    Http2.authPost
+itemSearchTask : Flags -> ItemQuery -> Task.Task Http.Error ItemLightList
+itemSearchTask flags search =
+    Http2.authTask
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/search"
+        , method = "POST"
+        , headers = []
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
-        , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
+        , resolver = Http2.jsonResolver Api.Model.ItemLightList.decoder
+        , timeout = Nothing
+        }
+
+
+itemSearch : Flags -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
+itemSearch flags search receive =
+    itemSearchTask flags search |> Task.attempt receive
+
+
+{-| Same as `itemSearch` but interprets the `query` field as a bookmark id.
+-}
+itemSearchBookmark : Flags -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
+itemSearchBookmark flags bmSearch receive =
+    let
+        getBookmark =
+            getBookmarkByIdTask flags bmSearch.query
+                |> Task.map (\bm -> { bmSearch | query = bm.query })
+
+        search q =
+            itemSearchTask flags q
+    in
+    Task.andThen search getBookmark
+        |> Task.attempt receive
+
+
+itemSearchStatsTask : Flags -> ItemQuery -> Task.Task Http.Error SearchStats
+itemSearchStatsTask flags search =
+    Http2.authTask
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchStats"
+        , method = "POST"
+        , headers = []
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
+        , resolver = Http2.jsonResolver Api.Model.SearchStats.decoder
+        , timeout = Nothing
         }
 
 
 itemSearchStats : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
 itemSearchStats flags search receive =
-    Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchStats"
-        , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
-        , expect = Http.expectJson receive Api.Model.SearchStats.decoder
-        }
+    itemSearchStatsTask flags search |> Task.attempt receive
+
+
+itemSearchStatsBookmark : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+itemSearchStatsBookmark flags search receive =
+    let
+        getBookmark =
+            getBookmarkByIdTask flags search.query
+                |> Task.map (\bm -> { search | query = bm.query })
+
+        getStats q =
+            itemSearchStatsTask flags q
+    in
+    Task.andThen getStats getBookmark
+        |> Task.attempt receive
 
 
 itemDetail : Flags -> String -> (Result Http.Error ItemDetail -> msg) -> Cmd msg
@@ -2333,6 +2381,21 @@ getBookmarksTask flags =
         , headers = []
         , timeout = Nothing
         }
+
+
+getBookmarkByIdTask : Flags -> String -> Task.Task Http.Error BookmarkedQuery
+getBookmarkByIdTask flags id =
+    let
+        findBm all =
+            Data.Bookmarks.findById id all
+
+        mapNotFound maybeBookmark =
+            Maybe.map Task.succeed maybeBookmark
+                |> Maybe.withDefault (Task.fail (Http.BadStatus 404))
+    in
+    getBookmarksTask flags
+        |> Task.map findBm
+        |> Task.andThen mapNotFound
 
 
 getBookmarks : Flags -> (Result Http.Error AllBookmarks -> msg) -> Cmd msg

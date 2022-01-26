@@ -1,4 +1,4 @@
-module Comp.DashboardView exposing (Model, Msg, init, view, viewBox)
+module Comp.DashboardView exposing (Model, Msg, init, update, view, viewBox)
 
 import Comp.BoxView
 import Data.Box exposing (Box)
@@ -7,16 +7,17 @@ import Data.Flags exposing (Flags)
 import Dict exposing (Dict)
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
+import Messages.Comp.DashboardView exposing (Texts)
 
 
 type alias Model =
     { dashboard : Dashboard
-    , boxModels : List Comp.BoxView.Model
+    , boxModels : Dict Int Comp.BoxView.Model
     }
 
 
 type Msg
-    = BoxMsg Comp.BoxView.Msg
+    = BoxMsg Int Comp.BoxView.Msg
 
 
 init : Flags -> Dashboard -> ( Model, Cmd Msg )
@@ -24,32 +25,61 @@ init flags db =
     let
         ( boxModels, cmds ) =
             List.map (Comp.BoxView.init flags) db.boxes
-                |> List.map (Tuple.mapSecond <| Cmd.map BoxMsg)
+                |> List.indexedMap (\a -> \( bm, bc ) -> ( bm, Cmd.map (BoxMsg a) bc ))
                 |> List.unzip
     in
     ( { dashboard = db
-      , boxModels = boxModels
+      , boxModels =
+            List.indexedMap Tuple.pair boxModels
+                |> Dict.fromList
       }
     , Cmd.batch cmds
     )
 
 
 
+--- Update
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        BoxMsg index lm ->
+            case Dict.get index model.boxModels of
+                Just bm ->
+                    let
+                        ( cm, cc ) =
+                            Comp.BoxView.update lm bm
+                    in
+                    ( { model | boxModels = Dict.insert index cm model.boxModels }
+                    , Cmd.map (BoxMsg index) cc
+                    )
+
+                Nothing ->
+                    unit model
+
+
+unit : Model -> ( Model, Cmd Msg )
+unit model =
+    ( model, Cmd.none )
+
+
+
 --- View
 
 
-view : Model -> Html Msg
-view model =
+view : Texts -> Model -> Html Msg
+view texts model =
     div
         [ class (gridStyle model.dashboard)
         ]
-        (List.map viewBox model.boxModels)
+        (List.indexedMap (viewBox texts) <| Dict.values model.boxModels)
 
 
-viewBox : Comp.BoxView.Model -> Html Msg
-viewBox box =
-    Html.map BoxMsg
-        (Comp.BoxView.view box)
+viewBox : Texts -> Int -> Comp.BoxView.Model -> Html Msg
+viewBox texts index box =
+    Html.map (BoxMsg index)
+        (Comp.BoxView.view texts.boxView box)
 
 
 

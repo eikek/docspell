@@ -11,6 +11,8 @@ module Page.Dashboard.Data exposing
     , Msg(..)
     , SideMenuModel
     , init
+    , reloadDashboard
+    , reloadUiSettings
     )
 
 import Api
@@ -26,8 +28,8 @@ import Comp.ShareManage
 import Comp.SourceManage
 import Comp.TagManage
 import Data.Bookmarks exposing (AllBookmarks)
+import Data.Dashboard exposing (Dashboard)
 import Data.Flags exposing (Flags)
-import Page.Dashboard.DefaultDashboard as DefaultDashboard
 
 
 type alias SideMenuModel =
@@ -41,11 +43,11 @@ type alias Model =
     }
 
 
-init : Flags -> ( Model, Cmd Msg )
-init flags =
+init : Flags -> Dashboard -> ( Model, Cmd Msg )
+init flags db =
     let
         ( dm, dc ) =
-            Comp.DashboardView.init flags DefaultDashboard.value
+            Comp.DashboardView.init flags db
     in
     ( { sideMenu =
             { bookmarkChooser = Comp.BookmarkChooser.init Data.Bookmarks.empty
@@ -67,6 +69,16 @@ initCmd flags =
                 |> GetBookmarksResp
     in
     Api.getBookmarks flags ignoreBookmarkError
+
+
+reloadDashboard : Msg
+reloadDashboard =
+    InitDashboard
+
+
+reloadUiSettings : Msg
+reloadUiSettings =
+    InitDashboard
 
 
 type Msg

@@ -364,6 +364,7 @@ applyClientSettings texts model settings =
             , setTheme
             , Sub.none
             )
+        , updateDashboard texts Page.Dashboard.Data.reloadUiSettings
         , updateUserSettings texts Page.UserSettings.Data.UpdateSettings
         , updateSearch texts Page.Search.Data.UiSettingsUpdated
         , updateItemDetail texts Page.ItemDetail.Data.UiSettingsUpdated
@@ -375,7 +376,12 @@ updateDashboard : Messages -> Page.Dashboard.Data.Msg -> Model -> ( Model, Cmd M
 updateDashboard texts lmsg model =
     let
         ( dbm, dbc, dbs ) =
-            Page.Dashboard.Update.update texts.dashboard model.key model.flags lmsg model.dashboardModel
+            Page.Dashboard.Update.update texts.dashboard
+                model.uiSettings
+                model.key
+                model.flags
+                lmsg
+                model.dashboardModel
     in
     ( { model | dashboardModel = dbm }
     , Cmd.map DashboardMsg dbc

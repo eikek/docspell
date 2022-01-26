@@ -1,6 +1,7 @@
 module Messages.Page.Dashboard exposing (Texts, de, gb)
 
 import Messages.Comp.BookmarkChooser
+import Messages.Comp.DashboardView
 import Messages.Comp.EquipmentManage
 import Messages.Comp.FolderManage
 import Messages.Comp.NotificationHookManage
@@ -10,6 +11,7 @@ import Messages.Comp.PersonManage
 import Messages.Comp.ShareManage
 import Messages.Comp.SourceManage
 import Messages.Comp.TagManage
+import Messages.Page.DefaultDashboard
 
 
 type alias Texts =
@@ -23,6 +25,8 @@ type alias Texts =
     , equipManage : Messages.Comp.EquipmentManage.Texts
     , tagManage : Messages.Comp.TagManage.Texts
     , folderManage : Messages.Comp.FolderManage.Texts
+    , dashboard : Messages.Comp.DashboardView.Texts
+    , defaultDashboard : Messages.Page.DefaultDashboard.Texts
     }
 
 
@@ -38,6 +42,8 @@ gb =
     , equipManage = Messages.Comp.EquipmentManage.gb
     , tagManage = Messages.Comp.TagManage.gb
     , folderManage = Messages.Comp.FolderManage.gb
+    , dashboard = Messages.Comp.DashboardView.gb
+    , defaultDashboard = Messages.Page.DefaultDashboard.gb
     }
 
 
@@ -53,4 +59,6 @@ de =
     , equipManage = Messages.Comp.EquipmentManage.de
     , tagManage = Messages.Comp.TagManage.de
     , folderManage = Messages.Comp.FolderManage.de
+    , dashboard = Messages.Comp.DashboardView.de
+    , defaultDashboard = Messages.Page.DefaultDashboard.de
     }
