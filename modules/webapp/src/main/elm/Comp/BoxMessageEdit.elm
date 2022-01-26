@@ -1,3 +1,10 @@
+{-
+   Copyright 2020 Eike K. & Contributors
+
+   SPDX-License-Identifier: AGPL-3.0-or-later
+-}
+
+
 module Comp.BoxMessageEdit exposing (Model, Msg, init, update, view)
 
 import Data.BoxContent exposing (MessageData)

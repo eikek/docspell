@@ -1,3 +1,10 @@
+{-
+   Copyright 2020 Eike K. & Contributors
+
+   SPDX-License-Identifier: AGPL-3.0-or-later
+-}
+
+
 module Comp.DashboardEdit exposing (Model, Msg, getBoard, init, update, view, viewBox)
 
 import Comp.Basic as B

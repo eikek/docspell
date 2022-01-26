@@ -1,3 +1,10 @@
+{-
+   Copyright 2020 Eike K. & Contributors
+
+   SPDX-License-Identifier: AGPL-3.0-or-later
+-}
+
+
 module Comp.DashboardView exposing (Model, Msg, init, reloadData, update, view, viewBox)
 
 import Comp.BoxView
