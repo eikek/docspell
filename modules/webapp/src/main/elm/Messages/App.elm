@@ -24,6 +24,7 @@ type alias Texts =
     , newInvites : String
     , help : String
     , newItemsArrived : String
+    , dashboard : String
     }
 
 
@@ -40,6 +41,7 @@ gb =
     , newInvites = "New Invites"
     , help = "Help"
     , newItemsArrived = "New items arrived!"
+    , dashboard = "Dashboard"
     }
 
 
@@ -56,4 +58,5 @@ de =
     , newInvites = "Neue Einladung"
     , help = "Hilfe (English)"
     , newItemsArrived = "Neue Dokumente eingetroffen!"
+    , dashboard = "Dashboard"
     }

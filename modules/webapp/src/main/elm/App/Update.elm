@@ -22,6 +22,8 @@ import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.CollectiveSettings.Update
+import Page.Dashboard.Data
+import Page.Dashboard.Update
 import Page.ItemDetail.Data
 import Page.ItemDetail.Update
 import Page.Login.Data
@@ -156,6 +158,9 @@ updateWithSub msg model =
 
         ItemDetailMsg m ->
             updateItemDetail texts m model
+
+        DashboardMsg m ->
+            updateDashboard m model
 
         VersionResp (Ok info) ->
             ( { model | version = info }, Cmd.none, Sub.none )
@@ -364,6 +369,18 @@ applyClientSettings texts model settings =
         , updateItemDetail texts Page.ItemDetail.Data.UiSettingsUpdated
         ]
         { model | uiSettings = settings }
+
+
+updateDashboard : Page.Dashboard.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateDashboard lmsg model =
+    let
+        ( dbm, dbc ) =
+            Page.Dashboard.Update.update model.flags lmsg model.dashboardModel
+    in
+    ( { model | dashboardModel = dbm }
+    , Cmd.map DashboardMsg dbc
+    , Sub.none
+    )
 
 
 updateShareDetail : Page.ShareDetail.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -685,3 +702,6 @@ initPage model_ page =
 
                 _ ->
                     ( model, Cmd.none, Sub.none )
+
+        DashboardPage ->
+            ( model, Cmd.none, Sub.none )

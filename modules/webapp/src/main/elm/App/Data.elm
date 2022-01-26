@@ -26,6 +26,7 @@ import Http
 import Messages.UiLanguage exposing (UiLanguage)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
+import Page.Dashboard.Data
 import Page.ItemDetail.Data
 import Page.Login.Data
 import Page.ManageData.Data
@@ -57,6 +58,7 @@ type alias Model =
     , itemDetailModel : Page.ItemDetail.Data.Model
     , shareModel : Page.Share.Data.Model
     , shareDetailModel : Page.ShareDetail.Data.Model
+    , dashboardModel : Page.Dashboard.Data.Model
     , navMenuOpen : Bool
     , userMenuOpen : Bool
     , subs : Sub Msg
@@ -98,6 +100,9 @@ init key url flags_ settings =
         ( sdm, sdc ) =
             Page.ShareDetail.Data.init (Page.pageShareDetail page) flags
 
+        ( dbm, dbc ) =
+            Page.Dashboard.Data.init flags
+
         searchViewMode =
             if settings.searchMenuVisible then
                 Page.Search.Data.SearchView
@@ -121,6 +126,7 @@ init key url flags_ settings =
       , itemDetailModel = Page.ItemDetail.Data.emptyModel
       , shareModel = shm
       , shareDetailModel = sdm
+      , dashboardModel = dbm
       , navMenuOpen = False
       , userMenuOpen = False
       , subs = Sub.none
@@ -133,7 +139,8 @@ init key url flags_ settings =
       , jobsWaiting = 0
       }
     , Cmd.batch
-        [ Cmd.map UserSettingsMsg uc
+        [ Cmd.map DashboardMsg dbc
+        , Cmd.map UserSettingsMsg uc
         , Cmd.map ManageDataMsg mdc
         , Cmd.map CollSettingsMsg csc
         , Cmd.map LoginMsg loginc
@@ -183,6 +190,7 @@ type Msg
     | ItemDetailMsg Page.ItemDetail.Data.Msg
     | ShareMsg Page.Share.Data.Msg
     | ShareDetailMsg Page.ShareDetail.Data.Msg
+    | DashboardMsg Page.Dashboard.Data.Msg
     | Logout
     | LogoutResp (Result Http.Error ())
     | SessionCheckResp (Result Http.Error AuthResult)

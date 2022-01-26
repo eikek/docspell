@@ -53,7 +53,7 @@ update loginData flags msg model =
         AuthResp (Ok lr) ->
             let
                 gotoRef =
-                    Maybe.withDefault SearchPage loginData.referrer |> Page.goto
+                    Maybe.withDefault DashboardPage loginData.referrer |> Page.goto
             in
             if lr.success && not lr.requireSecondFactor then
                 ( { model | formState = AuthSuccess lr, password = "" }

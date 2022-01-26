@@ -19,6 +19,7 @@ import Messages.App exposing (Texts)
 import Messages.UiLanguage
 import Page exposing (Page(..))
 import Page.CollectiveSettings.View2 as CollectiveSettings
+import Page.Dashboard.View as Dashboard
 import Page.ItemDetail.View2 as ItemDetail
 import Page.Login.View2 as Login
 import Page.ManageData.View2 as ManageData
@@ -133,7 +134,7 @@ headerNavItem authenticated model =
         [ class "inline-flex font-bold items-center px-4"
         , classList [ ( "hover:bg-blue-200 dark:hover:bg-slate-800", authenticated ) ]
         , if authenticated then
-            Page.href SearchPage
+            Page.href DashboardPage
 
           else
             href "#"
@@ -160,6 +161,9 @@ mainContent model =
         , class styleMain
         ]
         (case model.page of
+            DashboardPage ->
+                viewDashboard texts model
+
             SearchPage ->
                 viewSearch texts model
 
@@ -280,7 +284,7 @@ dataMenu texts _ model =
             , classList [ ( "hidden", not model.navMenuOpen ) ]
             ]
             [ dataPageLink model
-                SearchPage
+                DashboardPage
                 []
                 [ img
                     [ class "w-4 inline-block"
@@ -288,10 +292,18 @@ dataMenu texts _ model =
                     ]
                     []
                 , div [ class "inline-block ml-2" ]
-                    [ text texts.items
+                    [ text texts.dashboard
                     ]
                 ]
             , div [ class "py-1" ] [ hr [ class S.border ] [] ]
+            , dataPageLink model
+                SearchPage
+                []
+                [ i [ class "fa fa-search w-6" ] []
+                , span [ class "ml-1" ]
+                    [ text texts.items
+                    ]
+                ]
             , dataPageLink model
                 ManageDataPage
                 []
@@ -465,6 +477,24 @@ dropdownHeadItem =
 dropdownMenu : String
 dropdownMenu =
     " absolute right-0 bg-white dark:bg-slate-800 border dark:border-slate-700 dark:text-slate-300 shadow-lg opacity-1 transition duration-200 min-w-max "
+
+
+viewDashboard : Messages -> Model -> List (Html Msg)
+viewDashboard texts model =
+    [ Html.map DashboardMsg
+        (Dashboard.viewSidebar texts.dashboard
+            model.sidebarVisible
+            model.flags
+            model.uiSettings
+            model.dashboardModel
+        )
+    , Html.map DashboardMsg
+        (Dashboard.viewContent texts.dashboard
+            model.flags
+            model.uiSettings
+            model.dashboardModel
+        )
+    ]
 
 
 viewShare : Messages -> String -> Model -> List (Html Msg)

@@ -14,6 +14,7 @@ module Messages exposing
 
 import Messages.App
 import Messages.Page.CollectiveSettings
+import Messages.Page.Dashboard
 import Messages.Page.ItemDetail
 import Messages.Page.Login
 import Messages.Page.ManageData
@@ -48,6 +49,7 @@ type alias Messages =
     , search : Messages.Page.Search.Texts
     , share : Messages.Page.Share.Texts
     , shareDetail : Messages.Page.ShareDetail.Texts
+    , dashboard : Messages.Page.Dashboard.Texts
     }
 
 
@@ -115,6 +117,7 @@ gb =
     , search = Messages.Page.Search.gb
     , share = Messages.Page.Share.gb
     , shareDetail = Messages.Page.ShareDetail.gb
+    , dashboard = Messages.Page.Dashboard.gb
     }
 
 
@@ -137,4 +140,5 @@ de =
     , search = Messages.Page.Search.de
     , share = Messages.Page.Share.de
     , shareDetail = Messages.Page.ShareDetail.de
+    , dashboard = Messages.Page.Dashboard.de
     }

@@ -63,11 +63,15 @@ type Page
     | ItemDetailPage String
     | SharePage String
     | ShareDetailPage String String
+    | DashboardPage
 
 
 isSecured : Page -> Bool
 isSecured page =
     case page of
+        DashboardPage ->
+            True
+
         SearchPage ->
             True
 
@@ -141,6 +145,9 @@ loginPage p =
 pageName : Page -> String
 pageName page =
     case page of
+        DashboardPage ->
+            "dashboard"
+
         SearchPage ->
             "Search"
 
@@ -226,6 +233,9 @@ uploadId page =
 pageToString : Page -> String
 pageToString page =
     case page of
+        DashboardPage ->
+            "/app/dashboard"
+
         SearchPage ->
             "/app/search"
 
@@ -312,12 +322,14 @@ pathPrefix =
 parser : Parser (Page -> a) a
 parser =
     oneOf
-        [ Parser.map SearchPage
+        [ Parser.map DashboardPage
             (oneOf
                 [ Parser.top
-                , s pathPrefix </> s "search"
+                , s pathPrefix
+                , s pathPrefix </> s "dashboard"
                 ]
             )
+        , Parser.map SearchPage (s pathPrefix </> s "search")
         , Parser.map LoginPage (s pathPrefix </> s "login" <?> loginPageParser)
         , Parser.map ManageDataPage (s pathPrefix </> s "managedata")
         , Parser.map CollectiveSettingPage (s pathPrefix </> s "csettings")
