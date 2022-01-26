@@ -22,8 +22,6 @@ import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.CollectiveSettings.Update
-import Page.Home.Data
-import Page.Home.Update
 import Page.ItemDetail.Data
 import Page.ItemDetail.Update
 import Page.Login.Data
@@ -36,6 +34,8 @@ import Page.Queue.Data
 import Page.Queue.Update
 import Page.Register.Data
 import Page.Register.Update
+import Page.Search.Data
+import Page.Search.Update
 import Page.Share.Data
 import Page.Share.Update
 import Page.ShareDetail.Data
@@ -121,8 +121,8 @@ updateWithSub msg model =
         SetLanguage lang ->
             ( { model | anonymousUiLang = lang, langMenuOpen = False }, Cmd.none, Sub.none )
 
-        HomeMsg lm ->
-            updateHome texts lm model
+        SearchMsg lm ->
+            updateSearch texts lm model
 
         ShareMsg lm ->
             updateShare lm model
@@ -318,12 +318,12 @@ updateWithSub msg model =
 
                         newModel =
                             { model
-                                | showNewItemsArrived = isProcessItem && model.page /= HomePage
+                                | showNewItemsArrived = isProcessItem && model.page /= SearchPage
                                 , jobsWaiting = max 0 (model.jobsWaiting - 1)
                             }
                     in
-                    if model.page == HomePage && isProcessItem then
-                        updateHome texts Page.Home.Data.RefreshView newModel
+                    if model.page == SearchPage && isProcessItem then
+                        updateSearch texts Page.Search.Data.RefreshView newModel
 
                     else
                         ( newModel, Cmd.none, Sub.none )
@@ -360,7 +360,7 @@ applyClientSettings texts model settings =
             , Sub.none
             )
         , updateUserSettings texts Page.UserSettings.Data.UpdateSettings
-        , updateHome texts Page.Home.Data.UiSettingsUpdated
+        , updateSearch texts Page.Search.Data.UiSettingsUpdated
         , updateItemDetail texts Page.ItemDetail.Data.UiSettingsUpdated
         ]
         { model | uiSettings = settings }
@@ -404,7 +404,7 @@ updateItemDetail : Messages -> Page.ItemDetail.Data.Msg -> Model -> ( Model, Cmd
 updateItemDetail texts lmsg model =
     let
         inav =
-            Page.Home.Data.itemNav model.itemDetailModel.detail.item.id model.homeModel
+            Page.Search.Data.itemNav model.itemDetailModel.detail.item.id model.searchModel
 
         result =
             Page.ItemDetail.Update.update
@@ -421,12 +421,12 @@ updateItemDetail texts lmsg model =
             }
 
         ( hm, hc, hs ) =
-            updateHome texts (Page.Home.Data.SetLinkTarget result.linkTarget) model_
+            updateSearch texts (Page.Search.Data.SetLinkTarget result.linkTarget) model_
 
         ( hm1, hc1, hs1 ) =
             case result.removedItem of
                 Just removedId ->
-                    updateHome texts (Page.Home.Data.RemoveItem removedId) hm
+                    updateSearch texts (Page.Search.Data.RemoveItem removedId) hm
 
                 Nothing ->
                     ( hm, hc, hs )
@@ -552,22 +552,22 @@ updateLogin lmsg model =
     )
 
 
-updateHome : Messages -> Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-updateHome texts lmsg model =
+updateSearch : Messages -> Page.Search.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+updateSearch texts lmsg model =
     let
         mid =
             case model.page of
-                HomePage ->
+                SearchPage ->
                     Util.Maybe.fromString model.itemDetailModel.detail.item.id
 
                 _ ->
                     Nothing
 
         result =
-            Page.Home.Update.update mid model.key model.flags texts.home model.uiSettings lmsg model.homeModel
+            Page.Search.Update.update mid model.key model.flags texts.search model.uiSettings lmsg model.searchModel
 
         model_ =
-            { model | homeModel = result.model }
+            { model | searchModel = result.model }
 
         ( lm, lc, ls ) =
             case result.newSettings of
@@ -579,11 +579,11 @@ updateHome texts lmsg model =
     in
     ( lm
     , Cmd.batch
-        [ Cmd.map HomeMsg result.cmd
+        [ Cmd.map SearchMsg result.cmd
         , lc
         ]
     , Sub.batch
-        [ Sub.map HomeMsg result.sub
+        [ Sub.map SearchMsg result.sub
         , ls
         ]
     )
@@ -611,9 +611,9 @@ initPage model_ page =
             Messages.get <| App.Data.getUiLanguage model
     in
     case page of
-        HomePage ->
+        SearchPage ->
             Util.Update.andThen2
-                [ updateHome texts Page.Home.Data.Init
+                [ updateSearch texts Page.Search.Data.Init
                 , updateQueue Page.Queue.Data.StopRefresh
                 ]
                 model

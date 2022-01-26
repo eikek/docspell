@@ -741,7 +741,7 @@ update key flags inav settings msg model =
                                 resultModelCmd ( model, Page.set key (ItemDetailPage id) )
 
                             Nothing ->
-                                resultModelCmd ( model, Page.set key HomePage )
+                                resultModelCmd ( model, Page.set key SearchPage )
                 in
                 { result_ | removedItem = Just removedId }
 

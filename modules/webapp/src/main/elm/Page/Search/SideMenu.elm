@@ -5,7 +5,7 @@
 -}
 
 
-module Page.Home.SideMenu exposing (view)
+module Page.Search.SideMenu exposing (view)
 
 import Comp.Basic as B
 import Comp.ItemDetail.MultiEditMenu
@@ -16,8 +16,8 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.Page.HomeSideMenu exposing (Texts)
-import Page.Home.Data exposing (..)
+import Messages.Page.SearchSideMenu exposing (Texts)
+import Page.Search.Data exposing (..)
 import Set
 import Styles as S
 

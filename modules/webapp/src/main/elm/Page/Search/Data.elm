@@ -5,7 +5,7 @@
 -}
 
 
-module Page.Home.Data exposing
+module Page.Search.Data exposing
     ( ConfirmModalValue(..)
     , Model
     , Msg(..)

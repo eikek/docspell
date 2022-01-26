@@ -19,7 +19,7 @@ import Comp.SharePasswordForm
 import Data.Flags exposing (Flags)
 import Data.ItemArrange exposing (ItemArrange)
 import Http
-import Page.Home.Data exposing (Msg(..))
+import Page.Search.Data exposing (Msg(..))
 import Set exposing (Set)
 import Util.Html exposing (KeyCode)
 

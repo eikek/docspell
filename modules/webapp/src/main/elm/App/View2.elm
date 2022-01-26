@@ -19,14 +19,14 @@ import Messages.App exposing (Texts)
 import Messages.UiLanguage
 import Page exposing (Page(..))
 import Page.CollectiveSettings.View2 as CollectiveSettings
-import Page.Home.Data
-import Page.Home.View2 as Home
 import Page.ItemDetail.View2 as ItemDetail
 import Page.Login.View2 as Login
 import Page.ManageData.View2 as ManageData
 import Page.NewInvite.View2 as NewInvite
 import Page.Queue.View2 as Queue
 import Page.Register.View2 as Register
+import Page.Search.Data
+import Page.Search.View2 as Search
 import Page.Share.View as Share
 import Page.ShareDetail.View as ShareDetail
 import Page.Upload.View2 as Upload
@@ -76,7 +76,7 @@ topNavUser auth model =
                 [ class S.infoMessageBase
                 , class "my-2 px-1 py-1 rounded-lg inline-block hover:opacity-50"
                 , classList [ ( "hidden", not model.showNewItemsArrived ) ]
-                , Page.href HomePage
+                , Page.href SearchPage
                 , onClick ToggleShowNewItemsArrived
                 ]
                 [ i [ class "fa fa-exclamation-circle mr-1" ] []
@@ -133,7 +133,7 @@ headerNavItem authenticated model =
         [ class "inline-flex font-bold items-center px-4"
         , classList [ ( "hover:bg-blue-200 dark:hover:bg-slate-800", authenticated ) ]
         , if authenticated then
-            Page.href HomePage
+            Page.href SearchPage
 
           else
             href "#"
@@ -160,8 +160,8 @@ mainContent model =
         , class styleMain
         ]
         (case model.page of
-            HomePage ->
-                viewHome texts model
+            SearchPage ->
+                viewSearch texts model
 
             CollectiveSettingPage ->
                 viewCollectiveSettings texts model
@@ -280,7 +280,7 @@ dataMenu texts _ model =
             , classList [ ( "hidden", not model.navMenuOpen ) ]
             ]
             [ dataPageLink model
-                HomePage
+                SearchPage
                 []
                 [ img
                     [ class "w-4 inline-block"
@@ -510,20 +510,20 @@ viewShareDetail texts shareId itemId model =
     ]
 
 
-viewHome : Messages -> Model -> List (Html Msg)
-viewHome texts model =
-    [ Html.map HomeMsg
-        (Home.viewSidebar texts.home
+viewSearch : Messages -> Model -> List (Html Msg)
+viewSearch texts model =
+    [ Html.map SearchMsg
+        (Search.viewSidebar texts.search
             model.sidebarVisible
             model.flags
             model.uiSettings
-            model.homeModel
+            model.searchModel
         )
-    , Html.map HomeMsg
-        (Home.viewContent texts.home
+    , Html.map SearchMsg
+        (Search.viewContent texts.search
             model.flags
             model.uiSettings
-            model.homeModel
+            model.searchModel
         )
     ]
 
@@ -647,7 +647,7 @@ viewItemDetail : Messages -> String -> Model -> List (Html Msg)
 viewItemDetail texts id model =
     let
         inav =
-            Page.Home.Data.itemNav id model.homeModel
+            Page.Search.Data.itemNav id model.searchModel
     in
     [ Html.map ItemDetailMsg
         (ItemDetail.viewSidebar texts.itemDetail

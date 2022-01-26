@@ -26,13 +26,13 @@ import Http
 import Messages.UiLanguage exposing (UiLanguage)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
-import Page.Home.Data
 import Page.ItemDetail.Data
 import Page.Login.Data
 import Page.ManageData.Data
 import Page.NewInvite.Data
 import Page.Queue.Data
 import Page.Register.Data
+import Page.Search.Data
 import Page.Share.Data
 import Page.ShareDetail.Data
 import Page.Upload.Data
@@ -45,7 +45,7 @@ type alias Model =
     , key : Key
     , page : Page
     , version : VersionInfo
-    , homeModel : Page.Home.Data.Model
+    , searchModel : Page.Search.Data.Model
     , loginModel : Page.Login.Data.Model
     , manageDataModel : Page.ManageData.Data.Model
     , collSettingsModel : Page.CollectiveSettings.Data.Model
@@ -98,18 +98,18 @@ init key url flags_ settings =
         ( sdm, sdc ) =
             Page.ShareDetail.Data.init (Page.pageShareDetail page) flags
 
-        homeViewMode =
+        searchViewMode =
             if settings.searchMenuVisible then
-                Page.Home.Data.SearchView
+                Page.Search.Data.SearchView
 
             else
-                Page.Home.Data.SimpleView
+                Page.Search.Data.SimpleView
     in
     ( { flags = flags
       , key = key
       , page = page
       , version = Api.Model.VersionInfo.empty
-      , homeModel = Page.Home.Data.init flags homeViewMode
+      , searchModel = Page.Search.Data.init flags searchViewMode
       , loginModel = loginm
       , manageDataModel = mdm
       , collSettingsModel = csm
@@ -171,7 +171,7 @@ type Msg
     = NavRequest UrlRequest
     | NavChange Url
     | VersionResp (Result Http.Error VersionInfo)
-    | HomeMsg Page.Home.Data.Msg
+    | SearchMsg Page.Search.Data.Msg
     | LoginMsg Page.Login.Data.Msg
     | ManageDataMsg Page.ManageData.Data.Msg
     | CollSettingsMsg Page.CollectiveSettings.Data.Msg
@@ -201,7 +201,7 @@ type Msg
 
 defaultPage : Flags -> Page
 defaultPage _ =
-    HomePage
+    SearchPage
 
 
 getUiLanguage : Model -> UiLanguage

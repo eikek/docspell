@@ -51,7 +51,7 @@ emptyLoginData =
 
 
 type Page
-    = HomePage
+    = SearchPage
     | LoginPage LoginData
     | ManageDataPage
     | CollectiveSettingPage
@@ -68,7 +68,7 @@ type Page
 isSecured : Page -> Bool
 isSecured page =
     case page of
-        HomePage ->
+        SearchPage ->
             True
 
         LoginPage _ ->
@@ -141,8 +141,8 @@ loginPage p =
 pageName : Page -> String
 pageName page =
     case page of
-        HomePage ->
-            "Home"
+        SearchPage ->
+            "Search"
 
         LoginPage _ ->
             "Login"
@@ -226,8 +226,8 @@ uploadId page =
 pageToString : Page -> String
 pageToString page =
     case page of
-        HomePage ->
-            "/app/home"
+        SearchPage ->
+            "/app/search"
 
         LoginPage data ->
             case data.referrer of
@@ -312,10 +312,10 @@ pathPrefix =
 parser : Parser (Page -> a) a
 parser =
     oneOf
-        [ Parser.map HomePage
+        [ Parser.map SearchPage
             (oneOf
                 [ Parser.top
-                , s pathPrefix </> s "home"
+                , s pathPrefix </> s "search"
                 ]
             )
         , Parser.map LoginPage (s pathPrefix </> s "login" <?> loginPageParser)

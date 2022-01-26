@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Page.Home exposing
+module Messages.Page.Search exposing
     ( Texts
     , de
     , gb
@@ -17,14 +17,14 @@ import Messages.Comp.ItemCardList
 import Messages.Comp.ItemMerge
 import Messages.Comp.PublishItems
 import Messages.Comp.SearchStatsView
-import Messages.Page.HomeSideMenu
+import Messages.Page.SearchSideMenu
 
 
 type alias Texts =
     { basics : Messages.Basics.Texts
     , itemCardList : Messages.Comp.ItemCardList.Texts
     , searchStatsView : Messages.Comp.SearchStatsView.Texts
-    , sideMenu : Messages.Page.HomeSideMenu.Texts
+    , sideMenu : Messages.Page.SearchSideMenu.Texts
     , itemMerge : Messages.Comp.ItemMerge.Texts
     , publishItems : Messages.Comp.PublishItems.Texts
     , bookmarkManage : Messages.Comp.BookmarkQueryManage.Texts
@@ -66,7 +66,7 @@ gb =
     { basics = Messages.Basics.gb
     , itemCardList = Messages.Comp.ItemCardList.gb
     , searchStatsView = Messages.Comp.SearchStatsView.gb
-    , sideMenu = Messages.Page.HomeSideMenu.gb
+    , sideMenu = Messages.Page.SearchSideMenu.gb
     , itemMerge = Messages.Comp.ItemMerge.gb
     , publishItems = Messages.Comp.PublishItems.gb
     , bookmarkManage = Messages.Comp.BookmarkQueryManage.gb
@@ -108,7 +108,7 @@ de =
     { basics = Messages.Basics.de
     , itemCardList = Messages.Comp.ItemCardList.de
     , searchStatsView = Messages.Comp.SearchStatsView.de
-    , sideMenu = Messages.Page.HomeSideMenu.de
+    , sideMenu = Messages.Page.SearchSideMenu.de
     , itemMerge = Messages.Comp.ItemMerge.de
     , publishItems = Messages.Comp.PublishItems.de
     , bookmarkManage = Messages.Comp.BookmarkQueryManage.de

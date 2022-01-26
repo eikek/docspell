@@ -5,7 +5,7 @@
 -}
 
 
-module Page.Home.Update exposing
+module Page.Search.Update exposing
     ( UpdateResult
     , update
     )
@@ -28,9 +28,9 @@ import Data.ItemSelection
 import Data.Items
 import Data.SearchMode exposing (SearchMode)
 import Data.UiSettings exposing (UiSettings)
-import Messages.Page.Home exposing (Texts)
+import Messages.Page.Search exposing (Texts)
 import Page exposing (Page(..))
-import Page.Home.Data exposing (..)
+import Page.Search.Data exposing (..)
 import Process
 import Scroll
 import Set exposing (Set)
