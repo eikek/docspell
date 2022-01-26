@@ -713,4 +713,4 @@ initPage model_ page =
                     ( model, Cmd.none, Sub.none )
 
         DashboardPage ->
-            ( model, Cmd.none, Sub.none )
+            ( model, Cmd.map DashboardMsg (Page.Dashboard.Data.reinitCmd model.flags), Sub.none )

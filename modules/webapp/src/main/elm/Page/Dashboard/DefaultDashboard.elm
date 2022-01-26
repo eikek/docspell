@@ -14,7 +14,7 @@ import Messages.UiLanguage
 value : Texts -> Dashboard
 value texts =
     { name = texts.default
-    , columns = 2
+    , columns = 4
     , gap = 2
     , boxes =
         [ messageBox texts
@@ -48,7 +48,7 @@ messageBox texts =
     { name = texts.welcomeName
     , visible = True
     , decoration = False
-    , colspan = 2
+    , colspan = 4
     , content =
         BoxMessage
             { title = texts.welcomeTitle
@@ -62,7 +62,7 @@ newDocuments texts =
     { name = texts.newDocsName
     , visible = True
     , decoration = True
-    , colspan = 1
+    , colspan = 2
     , content =
         BoxQuery
             { query = SearchQueryString "inbox:yes"
@@ -79,7 +79,7 @@ dueDocuments texts =
     { name = texts.dueInDays 10
     , visible = True
     , decoration = True
-    , colspan = 1
+    , colspan = 2
     , content =
         BoxQuery
             { query = SearchQueryString "due>today;-10d due<today;+10d"
@@ -113,8 +113,8 @@ fieldStats : Box
 fieldStats =
     { name = ""
     , visible = True
-    , decoration = True
-    , colspan = 2
+    , decoration = False
+    , colspan = 4
     , content =
         BoxStats
             { query = SearchQueryString ""
@@ -128,7 +128,7 @@ upload =
     { name = ""
     , visible = True
     , decoration = True
-    , colspan = 1
+    , colspan = 3
     , content =
         BoxUpload
             { sourceId = Nothing

@@ -128,10 +128,10 @@ viewGeneral texts stats =
             List.length stats.concEquipStats
 
         mklabel name =
-            div [ class "py-1 text-lg" ] [ text name ]
+            div [ class "py-0.5 text-lg" ] [ text name ]
 
         value num =
-            div [ class "py-1 font-mono text-lg" ] [ text <| String.fromInt num ]
+            div [ class "py-0.5 font-mono text-lg" ] [ text <| String.fromInt num ]
     in
     div [ class "opacity-90" ]
         [ div [ class "flex flex-row" ]

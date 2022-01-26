@@ -75,7 +75,7 @@ gb =
     , uploadFiles = "Upload documents"
     , editDashboard = "Edit Dashboard"
     , dashboards = "Dashboards"
-    , predefinedMessage = "This dashboard is predefined one that cannot be deleted."
+    , predefinedMessage = "This dashboard is predefined one that cannot be deleted. It is replaced with the first one you save."
     }
 
 
@@ -106,5 +106,5 @@ de =
     , uploadFiles = "Dokumente hochladen"
     , editDashboard = "Dashboard ändern"
     , dashboards = "Dashboards"
-    , predefinedMessage = "Dieses Dashboard ist vordefiniert und kann nicht entfernt werden."
+    , predefinedMessage = "Dieses Dashboard ist vordefiniert und kann nicht entfernt werden. Es wird durch ein gespeichertes ersetzt."
     }

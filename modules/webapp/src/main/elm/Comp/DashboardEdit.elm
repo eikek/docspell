@@ -17,6 +17,7 @@ import Html.Events exposing (onCheck, onClick, onInput)
 import Html5.DragDrop as DD
 import Messages.Comp.DashboardEdit exposing (Texts)
 import Styles as S
+import Util.Maybe
 
 
 type alias Model =
@@ -145,7 +146,12 @@ update flags msg model =
                 db_ =
                     { db | columns = Maybe.withDefault db.columns value }
             in
-            unit { model | columnsValue = value, columnsModel = cm, dashboard = db_ }
+            unit
+                { model
+                    | columnsValue = Util.Maybe.or [ value, model.columnsValue ]
+                    , columnsModel = cm
+                    , dashboard = db_
+                }
 
         GapMsg lm ->
             let
@@ -158,7 +164,12 @@ update flags msg model =
                 db_ =
                     { db | gap = Maybe.withDefault db.gap value }
             in
-            unit { model | gapModel = gm, gapValue = value, dashboard = db_ }
+            unit
+                { model
+                    | gapModel = gm
+                    , gapValue = Util.Maybe.or [ value, model.gapValue ]
+                    , dashboard = db_
+                }
 
         ToggleNewBoxMenu ->
             unit { model | newBoxMenuOpen = not model.newBoxMenuOpen }

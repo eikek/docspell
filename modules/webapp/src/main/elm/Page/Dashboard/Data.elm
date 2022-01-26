@@ -15,6 +15,7 @@ module Page.Dashboard.Data exposing
     , isDashboardDefault
     , isDashboardVisible
     , isHomeContent
+    , reinitCmd
     , reloadDashboardData
     , reloadUiSettings
     )
@@ -111,6 +112,16 @@ init flags =
 
 initCmd : Flags -> Cmd Msg
 initCmd flags =
+    makeInitCmd flags SetDefaultDashboard
+
+
+reinitCmd : Flags -> Cmd Msg
+reinitCmd flags =
+    makeInitCmd flags ReloadDashboardData
+
+
+makeInitCmd : Flags -> Msg -> Cmd Msg
+makeInitCmd flags nextMsg =
     let
         ignoreBookmarkError r =
             Result.withDefault Data.Bookmarks.empty r
@@ -118,7 +129,7 @@ initCmd flags =
     in
     Cmd.batch
         [ Api.getBookmarks flags ignoreBookmarkError
-        , Api.getAllDashboards flags (GetAllDashboardsResp (Just SetDefaultDashboard))
+        , Api.getAllDashboards flags (GetAllDashboardsResp (Just nextMsg))
         ]
 
 

@@ -95,6 +95,9 @@ storedUiSettingsDecoder =
 
         maybeString =
             Decode.maybe Decode.string
+
+        def =
+            defaults
     in
     Decode.succeed StoredUiSettings
         |> P.optional "itemSearchPageSize" maybeInt Nothing
@@ -106,19 +109,19 @@ storedUiSettingsDecoder =
         |> P.optional "searchMenuTagCount" maybeInt Nothing
         |> P.optional "searchMenuTagCatCount" maybeInt Nothing
         |> P.optional "formFields" (Decode.maybe <| Decode.list Decode.string) Nothing
-        |> P.optional "itemDetailShortcuts" Decode.bool False
-        |> P.optional "searchMenuVisible" Decode.bool False
-        |> P.optional "editMenuVisible" Decode.bool False
+        |> P.optional "itemDetailShortcuts" Decode.bool def.itemDetailShortcuts
+        |> P.optional "searchMenuVisible" Decode.bool def.searchMenuVisible
+        |> P.optional "editMenuVisible" Decode.bool def.editMenuVisible
         |> P.optional "cardPreviewSize" maybeString Nothing
         |> P.optional "cardTitleTemplate" maybeString Nothing
         |> P.optional "cardSubtitleTemplate" maybeString Nothing
-        |> P.optional "searchStatsVisible" Decode.bool False
-        |> P.optional "cardPreviewFullWidth" Decode.bool False
+        |> P.optional "searchStatsVisible" Decode.bool def.searchStatsVisible
+        |> P.optional "cardPreviewFullWidth" Decode.bool def.cardPreviewFullWidth
         |> P.optional "uiTheme" maybeString Nothing
-        |> P.optional "sideMenuVisible" Decode.bool False
-        |> P.optional "powerSearchEnabled" Decode.bool False
+        |> P.optional "sideMenuVisible" Decode.bool def.sideMenuVisible
+        |> P.optional "powerSearchEnabled" Decode.bool def.powerSearchEnabled
         |> P.optional "uiLang" maybeString Nothing
-        |> P.optional "itemSearchShowGroups" Decode.bool True
+        |> P.optional "itemSearchShowGroups" Decode.bool def.itemSearchShowGroups
         |> P.optional "itemSearchArrange" maybeString Nothing
 
 

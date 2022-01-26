@@ -307,11 +307,10 @@ doSearchDefaultCmd param model =
 
 createQuery : Model -> Maybe Q.ItemQuery
 createQuery model =
-    Debug.log "query" <|
-        Q.and
-            [ Comp.SearchMenu.getItemQuery model.searchMenuModel
-            , Maybe.map Q.Fragment model.powerSearchInput.input
-            ]
+    Q.and
+        [ Comp.SearchMenu.getItemQuery model.searchMenuModel
+        , Maybe.map Q.Fragment model.powerSearchInput.input
+        ]
 
 
 resultsBelowLimit : UiSettings -> Model -> Bool

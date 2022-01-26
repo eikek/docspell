@@ -107,19 +107,23 @@ viewItems texts settings meta list =
         items =
             Data.Items.flatten list
     in
-    table [ class "w-full divide-y dark:divide-slate-500" ]
-        (viewItemHead texts meta ++ [ tbody [] <| List.map (viewItemRow texts settings meta) items ])
+    table [ class "w-full divide-y divide-y-2 dark:divide-slate-500" ]
+        (viewItemHead texts meta ++ [ tbody [ class "divide-y divide-dotted dark:divide-slate-500" ] <| List.map (viewItemRow texts settings meta) items ])
 
 
 viewItemHead : Texts -> QueryData -> List (Html Msg)
 viewItemHead texts meta =
-    if not meta.showHeaders || meta.columns == [] then
+    let
+        ( col1, cols ) =
+            getColumns meta
+    in
+    if not meta.showHeaders then
         []
 
     else
         [ thead []
             [ tr []
-                (List.map texts.itemColumn.header meta.columns
+                (List.map texts.itemColumn.header (col1 :: cols)
                     |> List.map (\n -> th [ class "text-left text-sm" ] [ text n ])
                 )
             ]

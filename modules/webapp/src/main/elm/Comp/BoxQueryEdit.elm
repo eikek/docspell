@@ -107,7 +107,7 @@ update flags msg model =
                     Comp.ItemColumnDropdown.update lm model.columnModel
 
                 selection =
-                    Comp.ItemColumnDropdown.getSelected model.columnModel
+                    Comp.ItemColumnDropdown.getSelected cm
 
                 data =
                     model.data

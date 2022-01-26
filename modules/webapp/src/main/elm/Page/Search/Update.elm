@@ -109,7 +109,7 @@ update bookmarkId mId key flags texts settings msg model =
                     }
 
                 result =
-                    if Debug.log "state" nextState.stateChange && not model.searchInProgress then
+                    if nextState.stateChange && not model.searchInProgress then
                         doSearch (SearchParam flags BasicSearch settings.itemSearchPageSize 0 False) newModel
 
                     else
