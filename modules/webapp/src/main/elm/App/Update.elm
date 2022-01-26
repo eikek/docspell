@@ -669,7 +669,7 @@ initPage model_ page =
         UploadPage _ ->
             Util.Update.andThen2
                 [ updateQueue Page.Queue.Data.StopRefresh
-                , updateUpload Page.Upload.Data.Clear
+                , updateUpload Page.Upload.Data.reset
                 ]
                 model
 
