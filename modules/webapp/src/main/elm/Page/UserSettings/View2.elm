@@ -97,7 +97,7 @@ viewSidebar texts visible _ _ model =
                         [ i [ class "fa fa-bell" ] []
                         , span
                             [ class "ml-3" ]
-                            [ text texts.webhooks ]
+                            [ text texts.basics.notificationHooks ]
                         ]
                     , a
                         [ href "#"
@@ -119,7 +119,7 @@ viewSidebar texts visible _ _ model =
                         [ i [ class "fa fa-history" ] []
                         , span
                             [ class "ml-3" ]
-                            [ text texts.genericQueries ]
+                            [ text texts.basics.periodicQueries ]
                         ]
                     ]
                 ]
@@ -396,7 +396,7 @@ viewNotificationInfo texts settings model =
                     [ i [ class "fa fa-bell" ] []
                     , span
                         [ class "ml-3" ]
-                        [ text texts.webhooks ]
+                        [ text texts.basics.notificationHooks ]
                     ]
                 , div [ class "ml-3 text-sm opacity-50" ]
                     [ text texts.webhookInfoText
@@ -426,7 +426,7 @@ viewNotificationInfo texts settings model =
                     [ Icons.periodicTasksIcon ""
                     , span
                         [ class "ml-3" ]
-                        [ text texts.genericQueries ]
+                        [ text texts.basics.periodicQueries ]
                     ]
                 , div [ class "ml-3 text-sm opacity-50" ]
                     [ text texts.periodicQueryInfoText
@@ -465,7 +465,7 @@ viewNotificationQueries texts settings model =
         ]
         [ i [ class "fa fa-history" ] []
         , div [ class "ml-3" ]
-            [ text texts.genericQueries
+            [ text texts.basics.periodicQueries
             ]
         ]
     , Markdown.toHtml [ class "opacity-80  text-lg mb-3 markdown-preview" ] texts.periodicQueryInfoText
@@ -485,7 +485,7 @@ viewNotificationHooks texts settings model =
         ]
         [ i [ class "fa fa-bell" ] []
         , div [ class "ml-3" ]
-            [ text texts.webhooks
+            [ text texts.basics.notificationHooks
             ]
         ]
     , Markdown.toHtml [ class "opacity-80  text-lg mb-3 markdown-preview" ] texts.webhookInfoText

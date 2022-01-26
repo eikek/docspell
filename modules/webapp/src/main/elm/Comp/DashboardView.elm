@@ -1,13 +1,15 @@
-module Comp.DashboardView exposing (Model, Msg, init, update, view, viewBox)
+module Comp.DashboardView exposing (Model, Msg, init, reloadData, update, view, viewBox)
 
 import Comp.BoxView
 import Data.Box exposing (Box)
 import Data.Dashboard exposing (Dashboard)
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Dict exposing (Dict)
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Messages.Comp.DashboardView exposing (Texts)
+import Util.Update
 
 
 type alias Model =
@@ -18,6 +20,7 @@ type alias Model =
 
 type Msg
     = BoxMsg Int Comp.BoxView.Msg
+    | ReloadData
 
 
 init : Flags -> Dashboard -> ( Model, Cmd Msg )
@@ -37,49 +40,64 @@ init flags db =
     )
 
 
+reloadData : Msg
+reloadData =
+    ReloadData
+
+
 
 --- Update
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update flags msg model =
     case msg of
         BoxMsg index lm ->
             case Dict.get index model.boxModels of
                 Just bm ->
                     let
-                        ( cm, cc ) =
-                            Comp.BoxView.update lm bm
+                        ( cm, cc, cs ) =
+                            Comp.BoxView.update flags lm bm
                     in
                     ( { model | boxModels = Dict.insert index cm model.boxModels }
                     , Cmd.map (BoxMsg index) cc
+                    , Sub.map (BoxMsg index) cs
                     )
 
                 Nothing ->
                     unit model
 
+        ReloadData ->
+            let
+                updateAll =
+                    List.map (\index -> BoxMsg index Comp.BoxView.reloadData) (Dict.keys model.boxModels)
+                        |> List.map (\m -> update flags m)
+                        |> Util.Update.andThen2
+            in
+            updateAll model
 
-unit : Model -> ( Model, Cmd Msg )
+
+unit : Model -> ( Model, Cmd Msg, Sub Msg )
 unit model =
-    ( model, Cmd.none )
+    ( model, Cmd.none, Sub.none )
 
 
 
 --- View
 
 
-view : Texts -> Model -> Html Msg
-view texts model =
+view : Texts -> Flags -> UiSettings -> Model -> Html Msg
+view texts flags settings model =
     div
         [ class (gridStyle model.dashboard)
         ]
-        (List.indexedMap (viewBox texts) <| Dict.values model.boxModels)
+        (List.indexedMap (viewBox texts flags settings) <| Dict.values model.boxModels)
 
 
-viewBox : Texts -> Int -> Comp.BoxView.Model -> Html Msg
-viewBox texts index box =
+viewBox : Texts -> Flags -> UiSettings -> Int -> Comp.BoxView.Model -> Html Msg
+viewBox texts flags settings index box =
     Html.map (BoxMsg index)
-        (Comp.BoxView.view texts.boxView box)
+        (Comp.BoxView.view texts.boxView flags settings box)
 
 
 

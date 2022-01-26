@@ -13,6 +13,7 @@ module Page exposing
     , goto
     , hasSidebar
     , href
+    , isDashboardPage
     , isOpen
     , isSearchPage
     , isSecured
@@ -147,6 +148,16 @@ isSearchPage : Page -> Bool
 isSearchPage page =
     case page of
         SearchPage _ ->
+            True
+
+        _ ->
+            False
+
+
+isDashboardPage : Page -> Bool
+isDashboardPage page =
+    case page of
+        DashboardPage ->
             True
 
         _ ->

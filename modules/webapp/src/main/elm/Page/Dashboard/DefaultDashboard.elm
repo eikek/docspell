@@ -17,9 +17,10 @@ value texts =
     , columns = 2
     , boxes =
         [ messageBox texts
-        , summary2
+        , fieldStats
         , newDocuments texts
         , dueDocuments texts
+        , upload
         , summary texts
         ]
     }
@@ -107,8 +108,8 @@ summary texts =
     }
 
 
-summary2 : Box
-summary2 =
+fieldStats : Box
+fieldStats =
     { name = ""
     , visible = True
     , decoration = True
@@ -118,4 +119,15 @@ summary2 =
             { query = SearchQueryString ""
             , show = SummaryShowFields False
             }
+    }
+
+
+upload : Box
+upload =
+    { name = ""
+    , visible = True
+    , decoration = True
+    , colspan = 1
+    , content =
+        BoxUpload Nothing
     }

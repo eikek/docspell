@@ -1,4 +1,4 @@
-module Comp.BoxQueryView exposing (..)
+module Comp.BoxQueryView exposing (Model, Msg, init, reloadData, update, view)
 
 import Api
 import Api.Model.ItemLight exposing (ItemLight)
@@ -32,6 +32,7 @@ type ViewResult
 
 type Msg
     = ItemsResp (Result Http.Error ItemLightList)
+    | ReloadData
 
 
 init : Flags -> QueryData -> ( Model, Cmd Msg )
@@ -39,27 +40,30 @@ init flags data =
     ( { results = Loading
       , meta = data
       }
-    , case data.query of
-        SearchQueryString q ->
-            Api.itemSearch flags (mkQuery q data) ItemsResp
-
-        SearchQueryBookmark bmId ->
-            Api.itemSearchBookmark flags (mkQuery bmId data) ItemsResp
+    , dataCmd flags data
     )
+
+
+reloadData : Msg
+reloadData =
+    ReloadData
 
 
 
 --- Update
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Bool )
+update flags msg model =
     case msg of
         ItemsResp (Ok list) ->
-            ( { model | results = Loaded list }, Cmd.none )
+            ( { model | results = Loaded list }, Cmd.none, False )
 
         ItemsResp (Err err) ->
-            ( { model | results = Failed err }, Cmd.none )
+            ( { model | results = Failed err }, Cmd.none, False )
+
+        ReloadData ->
+            ( model, dataCmd flags model.meta, True )
 
 
 
@@ -154,7 +158,7 @@ viewEmpty : Texts -> Html Msg
 viewEmpty texts =
     div [ class "flex justify-center items-center h-full" ]
         [ div [ class "px-4 py-4 text-center align-middle text-lg" ]
-            [ i [ class "fa fa-eraser mr-2" ] []
+            [ i [ class "fa fa-smile font-thin mr-2" ] []
             , text texts.noResults
             ]
         ]
@@ -182,3 +186,13 @@ mkQuery q meta =
     , searchMode = Just <| Data.SearchMode.asString Data.SearchMode.Normal
     , withDetails = Just meta.details
     }
+
+
+dataCmd : Flags -> QueryData -> Cmd Msg
+dataCmd flags data =
+    case data.query of
+        SearchQueryString q ->
+            Api.itemSearch flags (mkQuery q data) ItemsResp
+
+        SearchQueryBookmark bmId ->
+            Api.itemSearchBookmark flags (mkQuery bmId data) ItemsResp

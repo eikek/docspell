@@ -1,6 +1,8 @@
 module Messages.Page.DefaultDashboard exposing (Texts, de, gb)
 
+import Data.Fields exposing (Field)
 import Messages.Basics
+import Messages.Data.Fields
 
 
 type alias Texts =
@@ -29,7 +31,7 @@ gb =
     , welcomeBody = "Docspell keeps your documents organized."
     , summaryName = "Summary"
     , dueInDays = \n -> "Due in " ++ String.fromInt n ++ " days"
-    , dueHeaderColumns = dueHeaderCols b
+    , dueHeaderColumns = dueHeaderCols b Messages.Data.Fields.gb
     , newDocsName = "New Documents"
     }
 
@@ -48,10 +50,10 @@ de =
     , summaryName = "Zahlen"
     , dueInDays = \n -> "Fällig in " ++ String.fromInt n ++ " Tagen"
     , newDocsName = "Neue Dokumente"
-    , dueHeaderColumns = dueHeaderCols b
+    , dueHeaderColumns = dueHeaderCols b Messages.Data.Fields.de
     }
 
 
-dueHeaderCols : Messages.Basics.Texts -> List String
-dueHeaderCols b =
-    [ b.name, b.correspondent, b.date ]
+dueHeaderCols : Messages.Basics.Texts -> (Field -> String) -> List String
+dueHeaderCols b d =
+    [ b.name, b.correspondent, d Data.Fields.DueDate ]

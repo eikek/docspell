@@ -2,10 +2,12 @@ module Comp.BoxView exposing (..)
 
 import Comp.BoxQueryView
 import Comp.BoxSummaryView
+import Comp.BoxUploadView
 import Data.Box exposing (Box)
 import Data.BoxContent exposing (BoxContent(..), MessageData)
 import Data.Flags exposing (Flags)
-import Html exposing (Html, div, text)
+import Data.UiSettings exposing (UiSettings)
+import Html exposing (Html, div, i, text)
 import Html.Attributes exposing (class, classList)
 import Markdown
 import Messages.Comp.BoxView exposing (Texts)
@@ -15,12 +17,13 @@ import Styles as S
 type alias Model =
     { box : Box
     , content : ContentModel
+    , reloading : Bool
     }
 
 
 type ContentModel
     = ContentMessage Data.BoxContent.MessageData
-    | ContentUpload (Maybe String)
+    | ContentUpload Comp.BoxUploadView.Model
     | ContentQuery Comp.BoxQueryView.Model
     | ContentSummary Comp.BoxSummaryView.Model
 
@@ -28,6 +31,8 @@ type ContentModel
 type Msg
     = QueryMsg Comp.BoxQueryView.Msg
     | SummaryMsg Comp.BoxSummaryView.Msg
+    | UploadMsg Comp.BoxUploadView.Msg
+    | ReloadData
 
 
 init : Flags -> Box -> ( Model, Cmd Msg )
@@ -38,9 +43,15 @@ init flags box =
     in
     ( { box = box
       , content = cm
+      , reloading = False
       }
     , cc
     )
+
+
+reloadData : Msg
+reloadData =
+    ReloadData
 
 
 contentInit : Flags -> BoxContent -> ( ContentModel, Cmd Msg )
@@ -50,7 +61,11 @@ contentInit flags content =
             ( ContentMessage data, Cmd.none )
 
         BoxUpload source ->
-            ( ContentUpload source, Cmd.none )
+            let
+                qm =
+                    Comp.BoxUploadView.init source
+            in
+            ( ContentUpload qm, Cmd.none )
 
         BoxQuery data ->
             let
@@ -71,17 +86,20 @@ contentInit flags content =
 --- Update
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update flags msg model =
     case msg of
         QueryMsg lm ->
             case model.content of
                 ContentQuery qm ->
                     let
-                        ( cm, cc ) =
-                            Comp.BoxQueryView.update lm qm
+                        ( cm, cc, reloading ) =
+                            Comp.BoxQueryView.update flags lm qm
                     in
-                    ( { model | content = ContentQuery cm }, Cmd.map QueryMsg cc )
+                    ( { model | content = ContentQuery cm, reloading = reloading }
+                    , Cmd.map QueryMsg cc
+                    , Sub.none
+                    )
 
                 _ ->
                     unit model
@@ -90,43 +108,84 @@ update msg model =
             case model.content of
                 ContentSummary qm ->
                     let
-                        ( cm, cc ) =
-                            Comp.BoxSummaryView.update lm qm
+                        ( cm, cc, reloading ) =
+                            Comp.BoxSummaryView.update flags lm qm
                     in
-                    ( { model | content = ContentSummary cm }, Cmd.map SummaryMsg cc )
+                    ( { model | content = ContentSummary cm, reloading = reloading }
+                    , Cmd.map SummaryMsg cc
+                    , Sub.none
+                    )
+
+                _ ->
+                    unit model
+
+        UploadMsg lm ->
+            case model.content of
+                ContentUpload qm ->
+                    let
+                        ( cm, cc, cs ) =
+                            Comp.BoxUploadView.update flags lm qm
+                    in
+                    ( { model | content = ContentUpload cm }
+                    , Cmd.map UploadMsg cc
+                    , Sub.map UploadMsg cs
+                    )
+
+                _ ->
+                    unit model
+
+        ReloadData ->
+            case model.content of
+                ContentQuery _ ->
+                    update flags (QueryMsg Comp.BoxQueryView.reloadData) model
+
+                ContentSummary _ ->
+                    update flags (SummaryMsg Comp.BoxSummaryView.reloadData) model
 
                 _ ->
                     unit model
 
 
-unit : Model -> ( Model, Cmd Msg )
+unit : Model -> ( Model, Cmd Msg, Sub Msg )
 unit model =
-    ( model, Cmd.none )
+    ( model, Cmd.none, Sub.none )
 
 
 
 --- View
 
 
-view : Texts -> Model -> Html Msg
-view texts model =
+view : Texts -> Flags -> UiSettings -> Model -> Html Msg
+view texts flags settings model =
     div
         [ classList [ ( S.box ++ "rounded", model.box.decoration ) ]
         , class (spanStyle model.box)
         , class "relative h-full"
         , classList [ ( "hidden", not model.box.visible ) ]
         ]
-        [ boxHeader model
+        [ boxLoading model
+        , boxHeader model
         , div [ class "px-2 py-1 h-5/6" ]
-            [ boxContent texts model
+            [ boxContent texts flags settings model
             ]
         ]
+
+
+boxLoading : Model -> Html Msg
+boxLoading model =
+    if not model.reloading then
+        div [ class "hidden" ] []
+
+    else
+        div [ class "absolute right-0 top-1 h-6 w-6" ]
+            [ i [ class "fa fa-spinner animate-spin" ] []
+            ]
 
 
 boxHeader : Model -> Html Msg
 boxHeader model =
     div
-        [ class "border-b dark:border-slate-500 flex flex-row py-1 bg-blue-50 dark:bg-slate-700 rounded-t"
+        [ class "flex flex-row py-1 bg-blue-50 dark:bg-slate-700 rounded-t"
         , classList [ ( "hidden", not model.box.decoration || model.box.name == "" ) ]
         ]
         [ div [ class "flex text-lg tracking-medium italic px-2" ]
@@ -135,14 +194,15 @@ boxHeader model =
         ]
 
 
-boxContent : Texts -> Model -> Html Msg
-boxContent texts model =
+boxContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
+boxContent texts flags settings model =
     case model.content of
         ContentMessage m ->
             messageContent m
 
-        ContentUpload sourceId ->
-            Debug.todo "not implemented"
+        ContentUpload qm ->
+            Html.map UploadMsg
+                (Comp.BoxUploadView.view texts.uploadView flags settings qm)
 
         ContentQuery qm ->
             Html.map QueryMsg

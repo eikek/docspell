@@ -59,7 +59,7 @@ viewSidebar texts visible _ _ model =
                 [ Icons.sourceIcon2 ""
                 , span
                     [ class "ml-3" ]
-                    [ text texts.sources ]
+                    [ text texts.basics.sources ]
                 ]
             , a
                 [ href "#"
@@ -70,7 +70,7 @@ viewSidebar texts visible _ _ model =
                 [ Icons.shareIcon ""
                 , span
                     [ class "ml-3" ]
-                    [ text texts.shares ]
+                    [ text texts.basics.shares ]
                 ]
             , a
                 [ href "#"
@@ -238,7 +238,7 @@ viewSources texts flags settings model =
         ]
         [ Icons.sourceIcon2 ""
         , div [ class "ml-3" ]
-            [ text texts.sources
+            [ text texts.basics.sources
             ]
         ]
     , Html.map SourceMsg (Comp.SourceManage.view2 texts.sourceManage flags settings model.sourceModel)
@@ -253,7 +253,7 @@ viewShares texts settings flags model =
         ]
         [ Icons.shareIcon ""
         , div [ class "ml-3" ]
-            [ text texts.shares
+            [ text texts.basics.shares
             ]
         ]
     , Html.map ShareMsg (Comp.ShareManage.view texts.shareManage settings flags model.shareModel)

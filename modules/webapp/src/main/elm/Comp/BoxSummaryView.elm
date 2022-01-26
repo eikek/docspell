@@ -1,4 +1,4 @@
-module Comp.BoxSummaryView exposing (..)
+module Comp.BoxSummaryView exposing (Model, Msg, init, reloadData, update, view)
 
 import Api
 import Api.Model.ItemQuery exposing (ItemQuery)
@@ -17,7 +17,7 @@ import Util.List
 
 type alias Model =
     { results : ViewResult
-    , show : SummaryShow
+    , meta : SummaryData
     }
 
 
@@ -29,34 +29,38 @@ type ViewResult
 
 type Msg
     = StatsResp (Result Http.Error SearchStats)
+    | ReloadData
 
 
 init : Flags -> SummaryData -> ( Model, Cmd Msg )
 init flags data =
     ( { results = Loading
-      , show = data.show
+      , meta = data
       }
-    , case data.query of
-        SearchQueryString q ->
-            Api.itemSearchStats flags (mkQuery q) StatsResp
-
-        SearchQueryBookmark bmId ->
-            Api.itemSearchStatsBookmark flags (mkQuery bmId) StatsResp
+    , dataCmd flags data
     )
+
+
+reloadData : Msg
+reloadData =
+    ReloadData
 
 
 
 --- Update
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Bool )
+update flags msg model =
     case msg of
         StatsResp (Ok stats) ->
-            ( { model | results = Loaded stats }, Cmd.none )
+            ( { model | results = Loaded stats }, Cmd.none, False )
 
         StatsResp (Err err) ->
-            ( { model | results = Failed err }, Cmd.none )
+            ( { model | results = Failed err }, Cmd.none, False )
+
+        ReloadData ->
+            ( model, dataCmd flags model.meta, True )
 
 
 
@@ -85,16 +89,21 @@ view texts model =
                 ]
 
         Loaded stats ->
-            case model.show of
-                Data.BoxContent.SummaryShowFields flag ->
-                    Comp.SearchStatsView.view2
-                        texts.statsView
-                        flag
-                        ""
-                        stats
+            viewStats texts model stats
 
-                SummaryShowGeneral ->
-                    viewGeneral texts stats
+
+viewStats : Texts -> Model -> SearchStats -> Html Msg
+viewStats texts model stats =
+    case model.meta.show of
+        SummaryShowFields flag ->
+            Comp.SearchStatsView.view2
+                texts.statsView
+                flag
+                ""
+                stats
+
+        SummaryShowGeneral ->
+            viewGeneral texts stats
 
 
 viewGeneral : Texts -> SearchStats -> Html Msg
@@ -158,3 +167,13 @@ mkQuery query =
     , searchMode = Nothing
     , withDetails = Nothing
     }
+
+
+dataCmd : Flags -> SummaryData -> Cmd Msg
+dataCmd flags data =
+    case data.query of
+        SearchQueryString q ->
+            Api.itemSearchStats flags (mkQuery q) StatsResp
+
+        SearchQueryBookmark bmId ->
+            Api.itemSearchStatsBookmark flags (mkQuery bmId) StatsResp

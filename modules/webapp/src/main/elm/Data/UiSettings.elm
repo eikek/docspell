@@ -16,6 +16,7 @@ module Data.UiSettings exposing
     , catColorFg2
     , catColorString2
     , defaults
+    , documentationSite
     , fieldHidden
     , fieldVisible
     , getUiLanguage
@@ -453,6 +454,11 @@ getUiLanguage flags settings default =
 
         Nothing ->
             default
+
+
+documentationSite : String
+documentationSite =
+    "https://docspell.org/docs"
 
 
 

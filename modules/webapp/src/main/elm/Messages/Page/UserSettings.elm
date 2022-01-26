@@ -11,6 +11,7 @@ module Messages.Page.UserSettings exposing
     , gb
     )
 
+import Messages.Basics
 import Messages.Comp.ChangePasswordForm
 import Messages.Comp.DueItemsTaskManage
 import Messages.Comp.EmailSettingsManage
@@ -24,7 +25,8 @@ import Messages.Comp.UiSettingsManage
 
 
 type alias Texts =
-    { changePasswordForm : Messages.Comp.ChangePasswordForm.Texts
+    { basics : Messages.Basics.Texts
+    , changePasswordForm : Messages.Comp.ChangePasswordForm.Texts
     , uiSettingsManage : Messages.Comp.UiSettingsManage.Texts
     , emailSettingsManage : Messages.Comp.EmailSettingsManage.Texts
     , imapSettingsManage : Messages.Comp.ImapSettingsManage.Texts
@@ -46,8 +48,6 @@ type alias Texts =
     , scanMailboxInfo1 : String
     , scanMailboxInfo2 : String
     , otpMenu : String
-    , webhooks : String
-    , genericQueries : String
     , dueItems : String
     , notificationInfoText : String
     , webhookInfoText : String
@@ -60,7 +60,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { changePasswordForm = Messages.Comp.ChangePasswordForm.gb
+    { basics = Messages.Basics.gb
+    , changePasswordForm = Messages.Comp.ChangePasswordForm.gb
     , uiSettingsManage = Messages.Comp.UiSettingsManage.gb
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.gb
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.gb
@@ -96,8 +97,6 @@ gb =
             adjust the schedule to avoid reading over the same mails
             again."""
     , otpMenu = "Two Factor Authentication"
-    , webhooks = "Webhooks"
-    , genericQueries = "Generic Queries"
     , dueItems = "Due Items Query"
     , notificationInfoText = """
 
@@ -125,7 +124,8 @@ must be created before.
 
 de : Texts
 de =
-    { changePasswordForm = Messages.Comp.ChangePasswordForm.de
+    { basics = Messages.Basics.de
+    , changePasswordForm = Messages.Comp.ChangePasswordForm.de
     , uiSettingsManage = Messages.Comp.UiSettingsManage.de
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.de
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.de
@@ -161,8 +161,6 @@ E-Mail-Einstellungen (IMAP) notwendig."""
             gleichen E-Mails möglichst nicht noch einmal eingelesen
             werden."""
     , otpMenu = "Zwei-Faktor-Authentifizierung"
-    , webhooks = "Webhooks"
-    , genericQueries = "Periodische Abfragen"
     , dueItems = "Fällige Dokumente"
     , notificationInfoText = """
 

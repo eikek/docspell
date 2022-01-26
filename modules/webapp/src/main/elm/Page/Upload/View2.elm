@@ -15,6 +15,7 @@ import Html.Attributes exposing (..)
 import Messages.Page.Upload exposing (Texts)
 import Page exposing (Page(..))
 import Page.Upload.Data exposing (..)
+import Styles
 
 
 viewSidebar : Maybe String -> Bool -> Flags -> UiSettings -> Model -> Html Msg
@@ -28,5 +29,18 @@ viewSidebar _ _ _ _ _ =
 
 viewContent : Texts -> Maybe String -> Flags -> UiSettings -> Model -> Html Msg
 viewContent texts sourceId flags settings model =
-    Html.map UploadMsg
-        (Comp.UploadForm.view texts.uploadForm sourceId flags settings model.uploadForm)
+    let
+        viewCfg =
+            { sourceId = sourceId
+            , showForm = True
+            , lightForm = False
+            }
+    in
+    div
+        [ id "content"
+        , class Styles.content
+        , class "mt-4"
+        ]
+        [ Html.map UploadMsg
+            (Comp.UploadForm.view texts.uploadForm viewCfg flags settings model.uploadForm)
+        ]

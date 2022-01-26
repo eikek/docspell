@@ -12,6 +12,7 @@ import App.Data exposing (..)
 import Comp.Basic as B
 import Data.Flags
 import Data.Icons as Icons
+import Data.UiSettings
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -78,7 +79,11 @@ topNavUser auth model =
                 [ class S.infoMessageBase
                 , class "my-2 px-1 py-1 rounded-lg inline-block hover:opacity-50"
                 , classList [ ( "hidden", not model.showNewItemsArrived ) ]
-                , Page.href (SearchPage Nothing)
+                , if Page.isSearchPage model.page || Page.isDashboardPage model.page then
+                    href "#"
+
+                  else
+                    Page.href (SearchPage Nothing)
                 , onClick ToggleShowNewItemsArrived
                 ]
                 [ i [ class "fa fa-exclamation-circle mr-1" ] []
@@ -317,7 +322,7 @@ dataMenu texts _ model =
             , dataPageLink model
                 (UploadPage Nothing)
                 []
-                [ i [ class "fa fa-upload w-6" ] []
+                [ Icons.fileUploadIcon "w-6"
                 , span [ class "ml-1" ]
                     [ text texts.uploadFiles
                     ]
@@ -358,9 +363,9 @@ dataMenu texts _ model =
                 ]
             , a
                 [ class dropdownItem
-                , href "https://docspell.org/docs"
+                , href Data.UiSettings.documentationSite
                 , target "_new"
-                , title "Opens https://docspell.org/docs"
+                , title ("Opens " ++ Data.UiSettings.documentationSite)
                 ]
                 [ Icons.documentationIcon "w-6"
                 , span [ class "ml-1" ] [ text texts.help ]
@@ -486,6 +491,7 @@ viewDashboard texts model =
         (Dashboard.viewSidebar texts.dashboard
             model.sidebarVisible
             model.flags
+            model.version
             model.uiSettings
             model.dashboardModel
         )

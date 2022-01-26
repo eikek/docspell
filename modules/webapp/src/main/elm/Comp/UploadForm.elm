@@ -294,47 +294,57 @@ setErrored model fileid =
 --- View
 
 
-view : Texts -> Maybe String -> Flags -> UiSettings -> Model -> Html Msg
-view texts mid _ _ model =
-    div
-        [ id "content"
-        , class Styles.content
-        ]
-        [ div [ class "container mx-auto" ]
-            [ div [ class "px-0 flex flex-col" ]
-                [ div [ class "py-4" ]
-                    [ if mid == Nothing then
-                        renderForm texts model
+type alias ViewSettings =
+    { showForm : Bool
+    , sourceId : Maybe String
+    , lightForm : Bool
+    }
 
-                      else
-                        span [ class "hidden" ] []
+
+view : Texts -> ViewSettings -> Flags -> UiSettings -> Model -> Html Msg
+view texts viewCfg _ _ model =
+    let
+        showForm =
+            viewCfg.sourceId == Nothing && viewCfg.showForm
+
+        dropzoneCfg =
+            { light = viewCfg.lightForm
+            }
+    in
+    div [ class "mx-auto" ]
+        [ div [ class "px-0 flex flex-col" ]
+            [ if showForm then
+                div [ class "mb-4" ]
+                    [ renderForm texts model
                     ]
-                , div [ class "py-0" ]
-                    [ Html.map DropzoneMsg
-                        (Comp.Dropzone.view2 texts.dropzone model.dropzone)
+
+              else
+                span [ class "hidden" ] []
+            , div [ class "py-0" ]
+                [ Html.map DropzoneMsg
+                    (Comp.Dropzone.view2 texts.dropzone dropzoneCfg model.dropzone)
+                ]
+            , div [ class "py-4" ]
+                [ a
+                    [ class Styles.primaryButton
+                    , href "#"
+                    , onClick SubmitUpload
                     ]
-                , div [ class "py-4" ]
-                    [ a
-                        [ class Styles.primaryButton
-                        , href "#"
-                        , onClick SubmitUpload
-                        ]
-                        [ text texts.basics.submit
-                        ]
-                    , a
-                        [ class Styles.secondaryButton
-                        , class "ml-2"
-                        , href "#"
-                        , onClick Clear
-                        ]
-                        [ text texts.reset
-                        ]
+                    [ text texts.basics.submit
+                    ]
+                , a
+                    [ class Styles.secondaryButton
+                    , class "ml-2"
+                    , href "#"
+                    , onClick Clear
+                    ]
+                    [ text texts.reset
                     ]
                 ]
-            , renderErrorMsg texts model
-            , renderSuccessMsg texts (Util.Maybe.nonEmpty mid) model
-            , renderUploads texts model
             ]
+        , renderErrorMsg texts model
+        , renderSuccessMsg texts (Util.Maybe.nonEmpty viewCfg.sourceId) model
+        , renderUploads texts model
         ]
 
 

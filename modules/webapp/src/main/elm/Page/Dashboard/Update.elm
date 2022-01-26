@@ -19,6 +19,7 @@ import Comp.PersonManage
 import Comp.ShareManage
 import Comp.SourceManage
 import Comp.TagManage
+import Comp.UploadForm
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Messages.Page.Dashboard exposing (Texts)
@@ -26,6 +27,7 @@ import Page exposing (Page(..))
 import Page.Dashboard.Data exposing (..)
 import Page.Dashboard.DefaultDashboard
 import Set
+import Styles exposing (content)
 
 
 update : Texts -> UiSettings -> Nav.Key -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -59,14 +61,19 @@ update texts settings navKey flags msg model =
             )
 
         InitDashboard ->
-            let
-                board =
-                    Page.Dashboard.DefaultDashboard.getDefaultDashboard flags settings
+            case model.content of
+                Home _ ->
+                    update texts settings navKey flags ReloadDashboardData model
 
-                ( dm, dc ) =
-                    Comp.DashboardView.init flags board
-            in
-            ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
+                _ ->
+                    let
+                        board =
+                            Page.Dashboard.DefaultDashboard.getDefaultDashboard flags settings
+
+                        ( dm, dc ) =
+                            Comp.DashboardView.init flags board
+                    in
+                    ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
 
         InitNotificationHook ->
             let
@@ -130,6 +137,13 @@ update texts settings navKey flags msg model =
                     Comp.FolderManage.init flags
             in
             ( { model | content = Folder fm }, Cmd.map FolderMsg fc, Sub.none )
+
+        InitUpload ->
+            let
+                um =
+                    Comp.UploadForm.init
+            in
+            ( { model | content = Upload um }, Cmd.none, Sub.none )
 
         NotificationHookMsg lm ->
             case model.content of
@@ -245,17 +259,36 @@ update texts settings navKey flags msg model =
                 _ ->
                     unit model
 
+        UploadMsg lm ->
+            case model.content of
+                Upload m ->
+                    let
+                        ( um, uc, us ) =
+                            Comp.UploadForm.update Nothing flags lm m
+                    in
+                    ( { model | content = Upload um }, Cmd.map UploadMsg uc, Sub.map UploadMsg us )
+
+                _ ->
+                    unit model
+
         DashboardMsg lm ->
             case model.content of
                 Home m ->
                     let
-                        ( dm, dc ) =
-                            Comp.DashboardView.update lm m
+                        ( dm, dc, ds ) =
+                            Comp.DashboardView.update flags lm m
                     in
-                    ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
+                    ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.map DashboardMsg ds )
 
                 _ ->
                     unit model
+
+        ReloadDashboardData ->
+            let
+                lm =
+                    DashboardMsg Comp.DashboardView.reloadData
+            in
+            update texts settings navKey flags lm model
 
 
 unit : Model -> ( Model, Cmd Msg, Sub Msg )

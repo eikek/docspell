@@ -1,6 +1,8 @@
 module Page.Dashboard.SideMenu exposing (view)
 
+import Api.Model.VersionInfo exposing (VersionInfo)
 import Comp.BookmarkChooser
+import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (Attribute, Html, a, div, h3, span, text)
@@ -12,18 +14,18 @@ import Page.Dashboard.Data exposing (Msg(..), SideMenuModel)
 import Styles as S
 
 
-view : Texts -> UiSettings -> SideMenuModel -> Html Msg
-view texts _ model =
-    div [ class "flex flex-col" ]
+view : Texts -> VersionInfo -> UiSettings -> SideMenuModel -> Html Msg
+view texts versionInfo _ model =
+    div [ class "flex flex-col flex-grow" ]
         [ div [ class "mt-2" ]
-            [ menuLink [ onClick InitDashboard, href "#" ] (Icons.dashboardIcon "") "Dashboard"
-            , menuLink [ Page.href (SearchPage Nothing) ] (Icons.searchIcon "") "Items"
+            [ menuLink [ onClick InitDashboard, href "#" ] (Icons.dashboardIcon "") texts.dashboardLink
+            , menuLink [ Page.href (SearchPage Nothing) ] (Icons.searchIcon "") texts.basics.items
             ]
         , h3
             [ class S.header3
             , class "italic mt-3"
             ]
-            [ text "Bookmarks"
+            [ text texts.bookmarks
             ]
         , div [ class "ml-2" ]
             [ Html.map BookmarkMsg
@@ -38,29 +40,44 @@ view texts _ model =
             [ class S.header3
             , class "italic mt-3"
             ]
-            [ text "Manage"
+            [ text texts.settings
             ]
         , div [ class "ml-2 mb-2" ]
-            [ menuLink [ onClick InitOrganization, href "#" ] (Icons.organizationIcon "") "Organization"
-            , menuLink [ onClick InitPerson, href "#" ] (Icons.personIcon "") "Person"
-            , menuLink [ onClick InitEquipment, href "#" ] (Icons.equipmentIcon "") "Equipment"
-            , menuLink [ onClick InitTags, href "#" ] (Icons.tagsIcon "") "Tags"
-            , menuLink [ onClick InitFolder, href "#" ] (Icons.folderIcon "") "Folder"
-            ]
-        , div [ class "ml-2" ]
-            [ menuLink [ onClick InitNotificationHook, href "#" ] (Icons.notificationHooksIcon "") "Webhooks"
-            , menuLink [ onClick InitPeriodicQuery, href "#" ] (Icons.periodicTasksIcon "") "Periodic Queries"
-            , menuLink [ onClick InitSource, href "#" ] (Icons.sourceIcon2 "") "Sources"
-            , menuLink [ onClick InitShare, href "#" ] (Icons.shareIcon "") "Shares"
+            [ menuLink [ onClick InitNotificationHook, href "#" ] (Icons.notificationHooksIcon "") texts.basics.notificationHooks
+            , menuLink [ onClick InitPeriodicQuery, href "#" ] (Icons.periodicTasksIcon "") texts.basics.periodicQueries
+            , menuLink [ onClick InitSource, href "#" ] (Icons.sourceIcon2 "") texts.basics.sources
+            , menuLink [ onClick InitShare, href "#" ] (Icons.shareIcon "") texts.basics.shares
             ]
         , h3
             [ class S.header3
             , class "italic mt-3"
             ]
-            [ text "Misc"
+            [ text texts.manage
+            ]
+        , div [ class "ml-2 mb-2" ]
+            [ menuLink [ onClick InitOrganization, href "#" ] (Icons.organizationIcon "") texts.basics.organization
+            , menuLink [ onClick InitPerson, href "#" ] (Icons.personIcon "") texts.basics.person
+            , menuLink [ onClick InitEquipment, href "#" ] (Icons.equipmentIcon "") texts.basics.equipment
+            , menuLink [ onClick InitTags, href "#" ] (Icons.tagsIcon "") texts.basics.tags
+            , menuLink [ onClick InitFolder, href "#" ] (Icons.folderIcon "") texts.basics.folder
+            ]
+        , h3
+            [ class S.header3
+            , class "italic mt-3"
+            ]
+            [ text texts.misc
             ]
         , div [ class "ml-2" ]
-            [ menuLink [ href "#", target "_blank" ] (Icons.documentationIcon "") "Documentation"
+            [ menuLink [ onClick InitUpload, href "#" ] (Icons.fileUploadIcon "") texts.uploadFiles
+            ]
+        , div [ class "mt-2 opacity-75" ]
+            [ menuLink [ href Data.UiSettings.documentationSite, target "_blank" ] (Icons.documentationIcon "") texts.documentation
+            ]
+        , div [ class "flex flex-grow items-end" ]
+            [ div [ class "text-center text-xs w-full opacity-50" ]
+                [ text "Docspell "
+                , text versionInfo.version
+                ]
             ]
         ]
 

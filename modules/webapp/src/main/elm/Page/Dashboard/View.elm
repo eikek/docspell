@@ -7,6 +7,7 @@
 
 module Page.Dashboard.View exposing (viewContent, viewSidebar)
 
+import Api.Model.VersionInfo exposing (VersionInfo)
 import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -17,6 +18,7 @@ import Comp.PersonManage
 import Comp.ShareManage
 import Comp.SourceManage
 import Comp.TagManage
+import Comp.UploadForm
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -27,15 +29,15 @@ import Page.Dashboard.SideMenu as SideMenu
 import Styles as S
 
 
-viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar texts visible _ settings model =
+viewSidebar : Texts -> Bool -> Flags -> VersionInfo -> UiSettings -> Model -> Html Msg
+viewSidebar texts visible flags versionInfo settings model =
     div
         [ id "sidebar"
         , class S.sidebar
         , class S.sidebarBg
         , classList [ ( "hidden", not visible ) ]
         ]
-        [ SideMenu.view texts settings model.sideMenu
+        [ SideMenu.view texts versionInfo settings model.sideMenu
         ]
 
 
@@ -48,7 +50,7 @@ viewContent texts flags settings model =
         [ case model.content of
             Home m ->
                 Html.map DashboardMsg
-                    (Comp.DashboardView.view texts.dashboard m)
+                    (Comp.DashboardView.view texts.dashboard flags settings m)
 
             Webhook m ->
                 viewHookManage texts settings m
@@ -76,6 +78,9 @@ viewContent texts flags settings model =
 
             Folder m ->
                 viewFolder texts flags m
+
+            Upload m ->
+                viewUplod texts flags settings m
         ]
 
 
@@ -83,11 +88,29 @@ viewContent texts flags settings model =
 --- Helpers
 
 
+viewUplod : Texts -> Flags -> UiSettings -> Comp.UploadForm.Model -> Html Msg
+viewUplod texts flags settings model =
+    let
+        viewCfg =
+            { showForm = True
+            , sourceId = Nothing
+            , lightForm = False
+            }
+    in
+    div []
+        [ h1 [ class S.header1 ]
+            [ text texts.uploadFiles
+            ]
+        , Html.map UploadMsg <|
+            Comp.UploadForm.view texts.uploadForm viewCfg flags settings model
+        ]
+
+
 viewFolder : Texts -> Flags -> Comp.FolderManage.Model -> Html Msg
 viewFolder texts flags model =
     div []
         [ h1 [ class S.header1 ]
-            [ text "Folder"
+            [ text texts.basics.folder
             ]
         , Html.map FolderMsg <|
             Comp.FolderManage.view2 texts.folderManage flags model
@@ -98,7 +121,7 @@ viewTags : Texts -> UiSettings -> Comp.TagManage.Model -> Html Msg
 viewTags texts settings model =
     div []
         [ h1 [ class S.header1 ]
-            [ text "Tags"
+            [ text texts.basics.tags
             ]
         , Html.map TagMsg <|
             Comp.TagManage.view2 texts.tagManage settings model
@@ -109,7 +132,7 @@ viewEquipment : Texts -> Comp.EquipmentManage.Model -> Html Msg
 viewEquipment texts model =
     div []
         [ h1 [ class S.header1 ]
-            [ text "Equipment"
+            [ text texts.basics.equipment
             ]
         , Html.map EquipmentMsg <|
             Comp.EquipmentManage.view2 texts.equipManage model
@@ -120,7 +143,7 @@ viewPerson : Texts -> UiSettings -> Comp.PersonManage.Model -> Html Msg
 viewPerson texts settings model =
     div []
         [ h1 [ class S.header1 ]
-            [ text "Person"
+            [ text texts.basics.person
             ]
         , Html.map PersonMsg <|
             Comp.PersonManage.view2 texts.personManage settings model
@@ -131,7 +154,7 @@ viewOrganization : Texts -> UiSettings -> Comp.OrgManage.Model -> Html Msg
 viewOrganization texts settings model =
     div []
         [ h1 [ class S.header1 ]
-            [ text "Organizations"
+            [ text texts.basics.organization
             ]
         , Html.map OrganizationMsg <|
             Comp.OrgManage.view2 texts.organizationManage settings model
@@ -142,7 +165,7 @@ viewShare : Texts -> Flags -> UiSettings -> Comp.ShareManage.Model -> Html Msg
 viewShare texts flags settings model =
     div []
         [ h1 [ class S.header1 ]
-            [ text "Shares"
+            [ text texts.basics.shares
             ]
         , Html.map ShareMsg <|
             Comp.ShareManage.view texts.shareManage settings flags model
@@ -153,7 +176,7 @@ viewSource : Texts -> Flags -> UiSettings -> Comp.SourceManage.Model -> Html Msg
 viewSource texts flags settings model =
     div []
         [ h1 [ class S.header1 ]
-            [ text "Sources"
+            [ text texts.basics.sources
             ]
         , Html.map SourceMsg <|
             Comp.SourceManage.view2 texts.sourceManage flags settings model
@@ -164,7 +187,7 @@ viewPeriodicQuery : Texts -> UiSettings -> Comp.PeriodicQueryTaskManage.Model ->
 viewPeriodicQuery texts settings model =
     div []
         [ h1 [ class S.header1 ]
-            [ text "Periodic Queries"
+            [ text texts.basics.periodicQueries
             ]
         , Html.map PeriodicQueryMsg <|
             Comp.PeriodicQueryTaskManage.view texts.periodicQueryManage settings model
@@ -175,7 +198,7 @@ viewHookManage : Texts -> UiSettings -> Comp.NotificationHookManage.Model -> Htm
 viewHookManage texts settings model =
     div []
         [ h1 [ class S.header1 ]
-            [ text "Notification Hooks"
+            [ text texts.basics.notificationHooks
             ]
         , Html.map NotificationHookMsg <|
             Comp.NotificationHookManage.view texts.notificationHookManage settings model

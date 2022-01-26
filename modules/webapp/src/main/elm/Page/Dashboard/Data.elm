@@ -27,6 +27,7 @@ import Comp.PersonManage
 import Comp.ShareManage
 import Comp.SourceManage
 import Comp.TagManage
+import Comp.UploadForm
 import Data.Bookmarks exposing (AllBookmarks)
 import Data.Dashboard exposing (Dashboard)
 import Data.Flags exposing (Flags)
@@ -73,7 +74,7 @@ initCmd flags =
 
 reloadDashboard : Msg
 reloadDashboard =
-    InitDashboard
+    ReloadDashboardData
 
 
 reloadUiSettings : Msg
@@ -93,6 +94,7 @@ type Msg
     | EquipmentMsg Comp.EquipmentManage.Msg
     | TagMsg Comp.TagManage.Msg
     | FolderMsg Comp.FolderManage.Msg
+    | UploadMsg Comp.UploadForm.Msg
     | DashboardMsg Comp.DashboardView.Msg
     | InitNotificationHook
     | InitDashboard
@@ -104,6 +106,8 @@ type Msg
     | InitEquipment
     | InitTags
     | InitFolder
+    | InitUpload
+    | ReloadDashboardData
 
 
 type Content
@@ -117,3 +121,4 @@ type Content
     | Equipment Comp.EquipmentManage.Model
     | Tags Comp.TagManage.Model
     | Folder Comp.FolderManage.Model
+    | Upload Comp.UploadForm.Model

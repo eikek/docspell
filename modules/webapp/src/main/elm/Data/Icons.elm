@@ -43,6 +43,7 @@ module Data.Icons exposing
     , editNotesIcon
     , equipment
     , equipmentIcon
+    , fileUploadIcon
     , folder
     , folderIcon
     , gotifyIcon
@@ -158,6 +159,16 @@ shareIcon classes =
 source2 : String
 source2 =
     "fa fa-upload"
+
+
+fileUpload : String
+fileUpload =
+    "fa fa-file-upload"
+
+
+fileUploadIcon : String -> Html msg
+fileUploadIcon classes =
+    i [ class classes, class fileUpload ] []
 
 
 sourceIcon2 : String -> Html msg
