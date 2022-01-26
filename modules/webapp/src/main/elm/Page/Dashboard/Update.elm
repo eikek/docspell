@@ -9,6 +9,7 @@ module Page.Dashboard.Update exposing (update)
 
 import Browser.Navigation as Nav
 import Comp.BookmarkChooser
+import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
 import Comp.NotificationHookManage
@@ -22,6 +23,7 @@ import Data.Flags exposing (Flags)
 import Messages.Page.Dashboard exposing (Texts)
 import Page exposing (Page(..))
 import Page.Dashboard.Data exposing (..)
+import Page.Dashboard.DefaultDashboard
 import Set
 
 
@@ -56,7 +58,11 @@ update texts navKey flags msg model =
             )
 
         InitDashboard ->
-            ( { model | content = NoContent }, Cmd.none, Sub.none )
+            let
+                ( dm, dc ) =
+                    Comp.DashboardView.init flags Page.Dashboard.DefaultDashboard.value
+            in
+            ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
 
         InitNotificationHook ->
             let
@@ -234,6 +240,9 @@ update texts navKey flags msg model =
 
                 _ ->
                     unit model
+
+        DashboardMsg lm ->
+            unit model
 
 
 unit : Model -> ( Model, Cmd Msg, Sub Msg )

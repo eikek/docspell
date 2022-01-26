@@ -7,6 +7,7 @@
 
 module Page.Dashboard.View exposing (viewContent, viewSidebar)
 
+import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
 import Comp.NotificationHookManage
@@ -20,7 +21,6 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Messages.Page.Dashboard exposing (Texts)
 import Page.Dashboard.Data exposing (..)
 import Page.Dashboard.SideMenu as SideMenu
@@ -46,8 +46,9 @@ viewContent texts flags settings model =
         , class S.content
         ]
         [ case model.content of
-            NoContent ->
-                div [] []
+            Home m ->
+                Html.map DashboardMsg
+                    (Comp.DashboardView.view m)
 
             Webhook m ->
                 viewHookManage texts settings m

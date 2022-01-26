@@ -15,6 +15,7 @@ module Page.Dashboard.Data exposing
 
 import Api
 import Comp.BookmarkChooser
+import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
 import Comp.NotificationHookManage
@@ -26,6 +27,7 @@ import Comp.SourceManage
 import Comp.TagManage
 import Data.Bookmarks exposing (AllBookmarks)
 import Data.Flags exposing (Flags)
+import Page.Dashboard.DefaultDashboard as DefaultDashboard
 
 
 type alias SideMenuModel =
@@ -41,12 +43,19 @@ type alias Model =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
+    let
+        ( dm, dc ) =
+            Comp.DashboardView.init flags DefaultDashboard.value
+    in
     ( { sideMenu =
             { bookmarkChooser = Comp.BookmarkChooser.init Data.Bookmarks.empty
             }
-      , content = NoContent
+      , content = Home dm
       }
-    , initCmd flags
+    , Cmd.batch
+        [ initCmd flags
+        , Cmd.map DashboardMsg dc
+        ]
     )
 
 
@@ -72,6 +81,7 @@ type Msg
     | EquipmentMsg Comp.EquipmentManage.Msg
     | TagMsg Comp.TagManage.Msg
     | FolderMsg Comp.FolderManage.Msg
+    | DashboardMsg Comp.DashboardView.Msg
     | InitNotificationHook
     | InitDashboard
     | InitPeriodicQuery
@@ -85,7 +95,7 @@ type Msg
 
 
 type Content
-    = NoContent
+    = Home Comp.DashboardView.Model
     | Webhook Comp.NotificationHookManage.Model
     | PeriodicQuery Comp.PeriodicQueryTaskManage.Model
     | Source Comp.SourceManage.Model
