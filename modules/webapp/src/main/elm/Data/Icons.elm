@@ -39,8 +39,7 @@ module Data.Icons exposing
     , dueDate2
     , dueDateIcon
     , dueDateIcon2
-    , editNotes
-    , editNotesIcon
+    , editIcon
     , equipment
     , equipmentIcon
     , fileUploadIcon
@@ -378,14 +377,14 @@ dueDateIcon2 classes =
     i [ class (dueDate2 ++ " " ++ classes) ] []
 
 
-editNotes : String
-editNotes =
-    "comment alternate outline icon"
+edit : String
+edit =
+    "fa fa-edit font-thin"
 
 
-editNotesIcon : Html msg
-editNotesIcon =
-    i [ class editNotes ] []
+editIcon : String -> Html msg
+editIcon classes =
+    i [ class edit, class classes ] []
 
 
 addFiles2 : String

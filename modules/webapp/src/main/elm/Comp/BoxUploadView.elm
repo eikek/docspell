@@ -1,6 +1,7 @@
 module Comp.BoxUploadView exposing (..)
 
 import Comp.UploadForm
+import Data.BoxContent exposing (UploadData)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (Html, div)
@@ -18,10 +19,10 @@ type Msg
     = UploadMsg Comp.UploadForm.Msg
 
 
-init : Maybe String -> Model
-init sourceId =
+init : UploadData -> Model
+init data =
     { uploadForm = Comp.UploadForm.init
-    , sourceId = sourceId
+    , sourceId = data.sourceId
     }
 
 

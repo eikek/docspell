@@ -4,7 +4,7 @@ import Data.Box exposing (Box)
 import Data.BoxContent exposing (BoxContent(..), SearchQuery(..), SummaryShow(..))
 import Data.Dashboard exposing (Dashboard)
 import Data.Flags exposing (Flags)
-import Data.ItemTemplate as IT
+import Data.ItemColumn as IC
 import Data.UiSettings exposing (UiSettings)
 import Messages
 import Messages.Page.DefaultDashboard exposing (Texts)
@@ -67,7 +67,7 @@ newDocuments texts =
             { query = SearchQueryString "inbox:yes"
             , limit = 5
             , details = True
-            , header = []
+            , showHeaders = False
             , columns = []
             }
     }
@@ -84,11 +84,11 @@ dueDocuments texts =
             { query = SearchQueryString "due>today;-10d due<today;+10d"
             , limit = 5
             , details = True
-            , header = texts.dueHeaderColumns
+            , showHeaders = True
             , columns =
-                [ IT.name
-                , IT.correspondent
-                , IT.dueDateShort
+                [ IC.Name
+                , IC.Correspondent
+                , IC.DueDateShort
                 ]
             }
     }
@@ -101,7 +101,7 @@ summary texts =
     , decoration = True
     , colspan = 1
     , content =
-        BoxSummary
+        BoxStats
             { query = SearchQueryString ""
             , show = SummaryShowGeneral
             }
@@ -115,7 +115,7 @@ fieldStats =
     , decoration = True
     , colspan = 2
     , content =
-        BoxSummary
+        BoxStats
             { query = SearchQueryString ""
             , show = SummaryShowFields False
             }
@@ -129,5 +129,7 @@ upload =
     , decoration = True
     , colspan = 1
     , content =
-        BoxUpload Nothing
+        BoxUpload
+            { sourceId = Nothing
+            }
     }

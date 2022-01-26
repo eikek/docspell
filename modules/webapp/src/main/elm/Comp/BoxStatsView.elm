@@ -1,23 +1,23 @@
-module Comp.BoxSummaryView exposing (Model, Msg, init, reloadData, update, view)
+module Comp.BoxStatsView exposing (Model, Msg, init, reloadData, update, view)
 
 import Api
 import Api.Model.ItemQuery exposing (ItemQuery)
 import Api.Model.SearchStats exposing (SearchStats)
 import Comp.Basic
 import Comp.SearchStatsView
-import Data.BoxContent exposing (SearchQuery(..), SummaryData, SummaryShow(..))
+import Data.BoxContent exposing (SearchQuery(..), StatsData, SummaryShow(..))
 import Data.Flags exposing (Flags)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Http
-import Messages.Comp.BoxSummaryView exposing (Texts)
+import Messages.Comp.BoxStatsView exposing (Texts)
 import Styles
 import Util.List
 
 
 type alias Model =
     { results : ViewResult
-    , meta : SummaryData
+    , meta : StatsData
     }
 
 
@@ -32,7 +32,7 @@ type Msg
     | ReloadData
 
 
-init : Flags -> SummaryData -> ( Model, Cmd Msg )
+init : Flags -> StatsData -> ( Model, Cmd Msg )
 init flags data =
     ( { results = Loading
       , meta = data
@@ -169,7 +169,7 @@ mkQuery query =
     }
 
 
-dataCmd : Flags -> SummaryData -> Cmd Msg
+dataCmd : Flags -> StatsData -> Cmd Msg
 dataCmd flags data =
     case data.query of
         SearchQueryString q ->

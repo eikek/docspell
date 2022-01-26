@@ -6,15 +6,15 @@ import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (Attribute, Html, a, div, h3, span, text)
-import Html.Attributes exposing (class, href, target)
+import Html.Attributes exposing (class, classList, href, target)
 import Html.Events exposing (onClick)
 import Messages.Page.Dashboard exposing (Texts)
 import Page exposing (Page(..))
-import Page.Dashboard.Data exposing (Msg(..), SideMenuModel)
+import Page.Dashboard.Data exposing (Model, Msg(..), isHomeContent)
 import Styles as S
 
 
-view : Texts -> VersionInfo -> UiSettings -> SideMenuModel -> Html Msg
+view : Texts -> VersionInfo -> UiSettings -> Model -> Html Msg
 view texts versionInfo _ model =
     div [ class "flex flex-col flex-grow" ]
         [ div [ class "mt-2" ]
@@ -32,7 +32,7 @@ view texts versionInfo _ model =
                 (Comp.BookmarkChooser.viewWith
                     { showUser = True, showCollective = True, showShares = False }
                     texts.bookmarkChooser
-                    model.bookmarkChooser
+                    model.sideMenu.bookmarkChooser
                     Comp.BookmarkChooser.emptySelection
                 )
             ]
@@ -69,6 +69,13 @@ view texts versionInfo _ model =
             ]
         , div [ class "ml-2" ]
             [ menuLink [ onClick InitUpload, href "#" ] (Icons.fileUploadIcon "") texts.uploadFiles
+            , menuLink
+                [ onClick InitEditDashboard
+                , classList [ ( "hidden", not (isHomeContent model.content) ) ]
+                , href "#"
+                ]
+                (Icons.editIcon "")
+                texts.editDashboard
             ]
         , div [ class "mt-2 opacity-75" ]
             [ menuLink [ href Data.UiSettings.documentationSite, target "_blank" ] (Icons.documentationIcon "") texts.documentation

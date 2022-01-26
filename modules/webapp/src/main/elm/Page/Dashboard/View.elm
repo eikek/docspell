@@ -8,6 +8,7 @@
 module Page.Dashboard.View exposing (viewContent, viewSidebar)
 
 import Api.Model.VersionInfo exposing (VersionInfo)
+import Comp.DashboardEdit
 import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -37,7 +38,7 @@ viewSidebar texts visible flags versionInfo settings model =
         , class S.sidebarBg
         , classList [ ( "hidden", not visible ) ]
         ]
-        [ SideMenu.view texts versionInfo settings model.sideMenu
+        [ SideMenu.view texts versionInfo settings model
         ]
 
 
@@ -51,6 +52,10 @@ viewContent texts flags settings model =
             Home m ->
                 Html.map DashboardMsg
                     (Comp.DashboardView.view texts.dashboard flags settings m)
+
+            Edit m ->
+                Html.map DashboardEditMsg
+                    (Comp.DashboardEdit.view texts.dashboardEdit flags settings m)
 
             Webhook m ->
                 viewHookManage texts settings m

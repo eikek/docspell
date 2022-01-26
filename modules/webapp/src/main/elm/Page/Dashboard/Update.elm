@@ -9,6 +9,7 @@ module Page.Dashboard.Update exposing (update)
 
 import Browser.Navigation as Nav
 import Comp.BookmarkChooser
+import Comp.DashboardEdit
 import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -27,7 +28,6 @@ import Page exposing (Page(..))
 import Page.Dashboard.Data exposing (..)
 import Page.Dashboard.DefaultDashboard
 import Set
-import Styles exposing (content)
 
 
 update : Texts -> UiSettings -> Nav.Key -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -66,14 +66,17 @@ update texts settings navKey flags msg model =
                     update texts settings navKey flags ReloadDashboardData model
 
                 _ ->
-                    let
-                        board =
-                            Page.Dashboard.DefaultDashboard.getDefaultDashboard flags settings
+                    update texts settings navKey flags ReloadDashboard model
 
-                        ( dm, dc ) =
-                            Comp.DashboardView.init flags board
-                    in
-                    ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
+        ReloadDashboard ->
+            let
+                board =
+                    Page.Dashboard.DefaultDashboard.getDefaultDashboard flags settings
+
+                ( dm, dc ) =
+                    Comp.DashboardView.init flags board
+            in
+            ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
 
         InitNotificationHook ->
             let
@@ -144,6 +147,21 @@ update texts settings navKey flags msg model =
                     Comp.UploadForm.init
             in
             ( { model | content = Upload um }, Cmd.none, Sub.none )
+
+        InitEditDashboard ->
+            case model.content of
+                Home m ->
+                    let
+                        ( dm, dc, ds ) =
+                            Comp.DashboardEdit.init flags m.dashboard
+                    in
+                    ( { model | content = Edit dm }
+                    , Cmd.map DashboardEditMsg dc
+                    , Sub.map DashboardEditMsg ds
+                    )
+
+                _ ->
+                    unit model
 
         NotificationHookMsg lm ->
             case model.content of
@@ -279,6 +297,39 @@ update texts settings navKey flags msg model =
                             Comp.DashboardView.update flags lm m
                     in
                     ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.map DashboardMsg ds )
+
+                _ ->
+                    unit model
+
+        DashboardEditMsg lm ->
+            case model.content of
+                Edit m ->
+                    let
+                        result =
+                            Comp.DashboardEdit.update flags lm m
+                    in
+                    case result.action of
+                        Comp.DashboardEdit.SubmitNone ->
+                            ( { model | content = Edit result.model }
+                            , Cmd.map DashboardEditMsg result.cmd
+                            , Sub.map DashboardEditMsg result.sub
+                            )
+
+                        Comp.DashboardEdit.SubmitSave board ->
+                            let
+                                ( dm, dc ) =
+                                    Comp.DashboardView.init flags board
+                            in
+                            ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
+
+                        Comp.DashboardEdit.SubmitCancel ->
+                            update texts settings navKey flags ReloadDashboard model
+
+                        Comp.DashboardEdit.SubmitDelete _ ->
+                            ( { model | content = Edit result.model }
+                            , Cmd.map DashboardEditMsg result.cmd
+                            , Sub.map DashboardEditMsg result.sub
+                            )
 
                 _ ->
                     unit model

@@ -11,12 +11,14 @@ module Page.Dashboard.Data exposing
     , Msg(..)
     , SideMenuModel
     , init
-    , reloadDashboard
+    , isHomeContent
+    , reloadDashboardData
     , reloadUiSettings
     )
 
 import Api
 import Comp.BookmarkChooser
+import Comp.DashboardEdit
 import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -72,14 +74,14 @@ initCmd flags =
     Api.getBookmarks flags ignoreBookmarkError
 
 
-reloadDashboard : Msg
-reloadDashboard =
+reloadDashboardData : Msg
+reloadDashboardData =
     ReloadDashboardData
 
 
 reloadUiSettings : Msg
 reloadUiSettings =
-    InitDashboard
+    ReloadDashboard
 
 
 type Msg
@@ -96,6 +98,7 @@ type Msg
     | FolderMsg Comp.FolderManage.Msg
     | UploadMsg Comp.UploadForm.Msg
     | DashboardMsg Comp.DashboardView.Msg
+    | DashboardEditMsg Comp.DashboardEdit.Msg
     | InitNotificationHook
     | InitDashboard
     | InitPeriodicQuery
@@ -107,7 +110,9 @@ type Msg
     | InitTags
     | InitFolder
     | InitUpload
+    | InitEditDashboard
     | ReloadDashboardData
+    | ReloadDashboard
 
 
 type Content
@@ -122,3 +127,14 @@ type Content
     | Tags Comp.TagManage.Model
     | Folder Comp.FolderManage.Model
     | Upload Comp.UploadForm.Model
+    | Edit Comp.DashboardEdit.Model
+
+
+isHomeContent : Content -> Bool
+isHomeContent cnt =
+    case cnt of
+        Home _ ->
+            True
+
+        _ ->
+            False

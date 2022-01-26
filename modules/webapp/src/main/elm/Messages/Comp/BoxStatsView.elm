@@ -1,4 +1,4 @@
-module Messages.Comp.BoxSummaryView exposing (Texts, de, gb)
+module Messages.Comp.BoxStatsView exposing (Texts, de, gb)
 
 import Http
 import Messages.Basics

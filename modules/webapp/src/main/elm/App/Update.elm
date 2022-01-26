@@ -331,7 +331,7 @@ updateWithSub msg model =
                         updateSearch texts Page.Search.Data.RefreshView newModel
 
                     else if Page.isDashboardPage model.page && isProcessItem then
-                        updateDashboard texts Page.Dashboard.Data.reloadDashboard newModel
+                        updateDashboard texts Page.Dashboard.Data.reloadDashboardData newModel
 
                     else
                         ( newModel, Cmd.none, Sub.none )

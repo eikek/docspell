@@ -5,11 +5,13 @@ import Api.Model.ItemLight exposing (ItemLight)
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.ItemQuery exposing (ItemQuery)
 import Comp.Basic
+import Comp.ItemColumnView
 import Data.BoxContent exposing (QueryData, SearchQuery(..))
 import Data.Flags exposing (Flags)
-import Data.ItemTemplate as IT
+import Data.ItemColumn as IC exposing (ItemColumn)
 import Data.Items
 import Data.SearchMode
+import Data.UiSettings exposing (UiSettings)
 import Html exposing (Html, a, div, i, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (class, classList)
 import Http
@@ -70,8 +72,8 @@ update flags msg model =
 --- View
 
 
-view : Texts -> Model -> Html Msg
-view texts model =
+view : Texts -> UiSettings -> Model -> Html Msg
+view texts settings model =
     case model.results of
         Loading ->
             div [ class "h-24 " ]
@@ -96,41 +98,42 @@ view texts model =
                 viewEmpty texts
 
             else
-                viewItems texts model.meta list
+                viewItems texts settings model.meta list
 
 
-viewItems : Texts -> QueryData -> ItemLightList -> Html Msg
-viewItems texts meta list =
+viewItems : Texts -> UiSettings -> QueryData -> ItemLightList -> Html Msg
+viewItems texts settings meta list =
     let
         items =
             Data.Items.flatten list
     in
     table [ class "w-full divide-y dark:divide-slate-500" ]
-        (viewItemHead meta ++ [ tbody [] <| List.map (viewItemRow texts meta) items ])
+        (viewItemHead texts meta ++ [ tbody [] <| List.map (viewItemRow texts settings meta) items ])
 
 
-viewItemHead : QueryData -> List (Html Msg)
-viewItemHead meta =
-    case meta.header of
-        [] ->
-            []
+viewItemHead : Texts -> QueryData -> List (Html Msg)
+viewItemHead texts meta =
+    if not meta.showHeaders || meta.columns == [] then
+        []
 
-        labels ->
-            [ thead []
-                [ tr []
-                    (List.map (\n -> th [ class "text-left text-sm" ] [ text n ]) labels)
-                ]
+    else
+        [ thead []
+            [ tr []
+                (List.map texts.itemColumn.header meta.columns
+                    |> List.map (\n -> th [ class "text-left text-sm" ] [ text n ])
+                )
             ]
+        ]
 
 
-viewItemRow : Texts -> QueryData -> ItemLight -> Html Msg
-viewItemRow texts meta item =
+viewItemRow : Texts -> UiSettings -> QueryData -> ItemLight -> Html Msg
+viewItemRow texts settings meta item =
     let
         ( col1, cols ) =
             getColumns meta
 
-        render tpl =
-            IT.render tpl texts.templateCtx item
+        render col =
+            Comp.ItemColumnView.renderDiv texts.templateCtx settings col [ class "flex flex-row space-x-1" ] item
 
         td1 =
             td [ class "py-2 px-1" ]
@@ -138,7 +141,7 @@ viewItemRow texts meta item =
                     [ class Styles.link
                     , Page.href (ItemDetailPage item.id)
                     ]
-                    [ text (render col1)
+                    [ render col1
                     ]
                 ]
 
@@ -147,7 +150,7 @@ viewItemRow texts meta item =
                 [ class "py-2 px-1"
                 , classList [ ( "hidden md:table-cell", index > 1 ) ]
                 ]
-                [ text (render col)
+                [ render col
                 ]
     in
     tr []
@@ -168,14 +171,14 @@ viewEmpty texts =
 --- Helpers
 
 
-getColumns : QueryData -> ( IT.ItemTemplate, List IT.ItemTemplate )
+getColumns : QueryData -> ( ItemColumn, List ItemColumn )
 getColumns meta =
     case meta.columns of
         x :: xs ->
             ( x, xs )
 
         [] ->
-            ( IT.name, [ IT.correspondent, IT.dateShort ] )
+            ( IC.Name, [ IC.Correspondent, IC.DateShort ] )
 
 
 mkQuery : String -> QueryData -> ItemQuery

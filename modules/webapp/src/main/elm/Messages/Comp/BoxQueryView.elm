@@ -5,6 +5,7 @@ import Http
 import Messages.Basics
 import Messages.Comp.HttpError
 import Messages.Data.Direction
+import Messages.Data.ItemColumn
 import Messages.DateFormat as DF
 import Messages.UiLanguage
 
@@ -15,6 +16,7 @@ type alias Texts =
     , basics : Messages.Basics.Texts
     , noResults : String
     , templateCtx : IT.TemplateContext
+    , itemColumn : Messages.Data.ItemColumn.Texts
     }
 
 
@@ -29,6 +31,7 @@ gb =
         , dateFormatShort = DF.formatDateShort Messages.UiLanguage.English
         , directionLabel = Messages.Data.Direction.gb
         }
+    , itemColumn = Messages.Data.ItemColumn.gb
     }
 
 
@@ -43,4 +46,5 @@ de =
         , dateFormatShort = DF.formatDateShort Messages.UiLanguage.German
         , directionLabel = Messages.Data.Direction.de
         }
+    , itemColumn = Messages.Data.ItemColumn.de
     }

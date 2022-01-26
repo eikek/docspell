@@ -1,7 +1,7 @@
 module Comp.BoxView exposing (..)
 
 import Comp.BoxQueryView
-import Comp.BoxSummaryView
+import Comp.BoxStatsView
 import Comp.BoxUploadView
 import Data.Box exposing (Box)
 import Data.BoxContent exposing (BoxContent(..), MessageData)
@@ -25,12 +25,12 @@ type ContentModel
     = ContentMessage Data.BoxContent.MessageData
     | ContentUpload Comp.BoxUploadView.Model
     | ContentQuery Comp.BoxQueryView.Model
-    | ContentSummary Comp.BoxSummaryView.Model
+    | ContentStats Comp.BoxStatsView.Model
 
 
 type Msg
     = QueryMsg Comp.BoxQueryView.Msg
-    | SummaryMsg Comp.BoxSummaryView.Msg
+    | StatsMsg Comp.BoxStatsView.Msg
     | UploadMsg Comp.BoxUploadView.Msg
     | ReloadData
 
@@ -60,10 +60,10 @@ contentInit flags content =
         BoxMessage data ->
             ( ContentMessage data, Cmd.none )
 
-        BoxUpload source ->
+        BoxUpload data ->
             let
                 qm =
-                    Comp.BoxUploadView.init source
+                    Comp.BoxUploadView.init data
             in
             ( ContentUpload qm, Cmd.none )
 
@@ -74,12 +74,12 @@ contentInit flags content =
             in
             ( ContentQuery qm, Cmd.map QueryMsg qc )
 
-        BoxSummary data ->
+        BoxStats data ->
             let
                 ( sm, sc ) =
-                    Comp.BoxSummaryView.init flags data
+                    Comp.BoxStatsView.init flags data
             in
-            ( ContentSummary sm, Cmd.map SummaryMsg sc )
+            ( ContentStats sm, Cmd.map StatsMsg sc )
 
 
 
@@ -104,15 +104,15 @@ update flags msg model =
                 _ ->
                     unit model
 
-        SummaryMsg lm ->
+        StatsMsg lm ->
             case model.content of
-                ContentSummary qm ->
+                ContentStats qm ->
                     let
                         ( cm, cc, reloading ) =
-                            Comp.BoxSummaryView.update flags lm qm
+                            Comp.BoxStatsView.update flags lm qm
                     in
-                    ( { model | content = ContentSummary cm, reloading = reloading }
-                    , Cmd.map SummaryMsg cc
+                    ( { model | content = ContentStats cm, reloading = reloading }
+                    , Cmd.map StatsMsg cc
                     , Sub.none
                     )
 
@@ -139,8 +139,8 @@ update flags msg model =
                 ContentQuery _ ->
                     update flags (QueryMsg Comp.BoxQueryView.reloadData) model
 
-                ContentSummary _ ->
-                    update flags (SummaryMsg Comp.BoxSummaryView.reloadData) model
+                ContentStats _ ->
+                    update flags (StatsMsg Comp.BoxStatsView.reloadData) model
 
                 _ ->
                     unit model
@@ -206,11 +206,11 @@ boxContent texts flags settings model =
 
         ContentQuery qm ->
             Html.map QueryMsg
-                (Comp.BoxQueryView.view texts.queryView qm)
+                (Comp.BoxQueryView.view texts.queryView settings qm)
 
-        ContentSummary qm ->
-            Html.map SummaryMsg
-                (Comp.BoxSummaryView.view texts.summaryView qm)
+        ContentStats qm ->
+            Html.map StatsMsg
+                (Comp.BoxStatsView.view texts.statsView qm)
 
 
 spanStyle : Box -> String

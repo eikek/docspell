@@ -1,7 +1,6 @@
 module Comp.DashboardView exposing (Model, Msg, init, reloadData, update, view, viewBox)
 
 import Comp.BoxView
-import Data.Box exposing (Box)
 import Data.Dashboard exposing (Dashboard)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)

@@ -3,18 +3,24 @@ module Data.BoxContent exposing
     , MessageData
     , QueryData
     , SearchQuery(..)
-    , SummaryData
+    , StatsData
     , SummaryShow(..)
+    , UploadData
+    , boxContentIcon
+    , emptyMessageData
+    , emptyQueryData
+    , emptyStatsData
+    , emptyUploadData
     )
 
-import Data.ItemTemplate exposing (ItemTemplate)
+import Data.ItemColumn exposing (ItemColumn)
 
 
 type BoxContent
-    = BoxUpload (Maybe String)
+    = BoxUpload UploadData
     | BoxMessage MessageData
     | BoxQuery QueryData
-    | BoxSummary SummaryData
+    | BoxStats StatsData
 
 
 type alias MessageData =
@@ -23,18 +29,53 @@ type alias MessageData =
     }
 
 
+emptyMessageData : MessageData
+emptyMessageData =
+    { title = ""
+    , body = ""
+    }
+
+
+type alias UploadData =
+    { sourceId : Maybe String
+    }
+
+
+emptyUploadData : UploadData
+emptyUploadData =
+    { sourceId = Nothing
+    }
+
+
 type alias QueryData =
     { query : SearchQuery
     , limit : Int
     , details : Bool
-    , header : List String
-    , columns : List ItemTemplate
+    , columns : List ItemColumn
+    , showHeaders : Bool
     }
 
 
-type alias SummaryData =
+emptyQueryData : QueryData
+emptyQueryData =
+    { query = SearchQueryString ""
+    , limit = 5
+    , details = True
+    , columns = []
+    , showHeaders = True
+    }
+
+
+type alias StatsData =
     { query : SearchQuery
     , show : SummaryShow
+    }
+
+
+emptyStatsData : StatsData
+emptyStatsData =
+    { query = SearchQueryString ""
+    , show = SummaryShowGeneral
     }
 
 
@@ -46,3 +87,19 @@ type SummaryShow
 type SearchQuery
     = SearchQueryString String
     | SearchQueryBookmark String
+
+
+boxContentIcon : BoxContent -> String
+boxContentIcon content =
+    case content of
+        BoxMessage _ ->
+            "fa fa-comment-alt font-thin"
+
+        BoxUpload _ ->
+            "fa fa-file-upload"
+
+        BoxQuery _ ->
+            "fa fa-search"
+
+        BoxStats _ ->
+            "fa fa-chart-bar font-thin"
