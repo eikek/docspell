@@ -15,6 +15,7 @@ value : Texts -> Dashboard
 value texts =
     { name = texts.default
     , columns = 2
+    , gap = 2
     , boxes =
         [ messageBox texts
         , fieldStats

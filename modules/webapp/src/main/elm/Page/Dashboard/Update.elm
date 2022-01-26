@@ -7,9 +7,10 @@
 
 module Page.Dashboard.Update exposing (update)
 
+import Api
 import Browser.Navigation as Nav
 import Comp.BookmarkChooser
-import Comp.DashboardEdit
+import Comp.DashboardManage
 import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -21,6 +22,8 @@ import Comp.ShareManage
 import Comp.SourceManage
 import Comp.TagManage
 import Comp.UploadForm
+import Data.AccountScope
+import Data.Dashboards
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Messages.Page.Dashboard exposing (Texts)
@@ -32,6 +35,13 @@ import Set
 
 update : Texts -> UiSettings -> Nav.Key -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 update texts settings navKey flags msg model =
+    let
+        nextRun amsg =
+            nextRunModel amsg model
+
+        nextRunModel amsg amodel =
+            update texts settings navKey flags amsg amodel
+    in
     case msg of
         GetBookmarksResp list ->
             let
@@ -40,6 +50,31 @@ update texts settings navKey flags msg model =
             in
             unit
                 { model | sideMenu = { sideMenu | bookmarkChooser = Comp.BookmarkChooser.init list } }
+
+        GetAllDashboardsResp next (Ok boards) ->
+            let
+                nextModel =
+                    if Data.Dashboards.isEmptyAll boards then
+                        { model
+                            | dashboards =
+                                Data.Dashboards.singletonAll <|
+                                    Page.Dashboard.DefaultDashboard.value texts.defaultDashboard
+                            , isPredefined = True
+                            , pageError = Nothing
+                        }
+
+                    else
+                        { model | dashboards = boards, isPredefined = False, pageError = Nothing }
+            in
+            case next of
+                Just nextMsg ->
+                    nextRunModel nextMsg nextModel
+
+                Nothing ->
+                    unit nextModel
+
+        GetAllDashboardsResp _ (Err err) ->
+            unit { model | pageError = Just <| PageErrorHttp err }
 
         BookmarkMsg lm ->
             let
@@ -60,23 +95,66 @@ update texts settings navKey flags msg model =
             , Sub.none
             )
 
-        InitDashboard ->
+        ReloadDashboardData ->
+            let
+                lm =
+                    DashboardMsg Comp.DashboardView.reloadData
+            in
+            update texts settings navKey flags lm model
+
+        HardReloadDashboard ->
             case model.content of
-                Home _ ->
-                    update texts settings navKey flags ReloadDashboardData model
+                Home dm ->
+                    let
+                        board =
+                            dm.dashboard
+
+                        ( dm_, dc ) =
+                            Comp.DashboardView.init flags board
+                    in
+                    ( { model | content = Home dm_ }, Cmd.map DashboardMsg dc, Sub.none )
 
                 _ ->
-                    update texts settings navKey flags ReloadDashboard model
+                    unit model
 
-        ReloadDashboard ->
+        SetDashboard db ->
             let
-                board =
-                    Page.Dashboard.DefaultDashboard.getDefaultDashboard flags settings
+                isVisible =
+                    case model.content of
+                        Home dm ->
+                            dm.dashboard.name == db.name
 
-                ( dm, dc ) =
-                    Comp.DashboardView.init flags board
+                        _ ->
+                            False
             in
-            ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
+            if isVisible then
+                update texts settings navKey flags ReloadDashboardData model
+
+            else
+                let
+                    ( dbm, dbc ) =
+                        Comp.DashboardView.init flags db
+                in
+                ( { model | content = Home dbm, pageError = Nothing }
+                , Cmd.map DashboardMsg dbc
+                , Sub.none
+                )
+
+        SetDefaultDashboard ->
+            case Data.Dashboards.getAllDefault model.dashboards of
+                Just db ->
+                    nextRun (SetDashboard db)
+
+                Nothing ->
+                    unit model
+
+        SetDashboardByName name ->
+            case Data.Dashboards.findInAll name model.dashboards of
+                Just db ->
+                    nextRun (SetDashboard db)
+
+                Nothing ->
+                    unit model
 
         InitNotificationHook ->
             let
@@ -152,12 +230,24 @@ update texts settings navKey flags msg model =
             case model.content of
                 Home m ->
                     let
+                        default =
+                            Data.Dashboards.isDefaultAll m.dashboard.name model.dashboards
+
+                        scope =
+                            Data.Dashboards.getScope m.dashboard.name model.dashboards
+                                |> Maybe.withDefault Data.AccountScope.User
+
                         ( dm, dc, ds ) =
-                            Comp.DashboardEdit.init flags m.dashboard
+                            Comp.DashboardManage.init
+                                { flags = flags
+                                , dashboard = m.dashboard
+                                , scope = scope
+                                , isDefault = default
+                                }
                     in
                     ( { model | content = Edit dm }
-                    , Cmd.map DashboardEditMsg dc
-                    , Sub.map DashboardEditMsg ds
+                    , Cmd.map DashboardManageMsg dc
+                    , Sub.map DashboardManageMsg ds
                     )
 
                 _ ->
@@ -301,47 +391,61 @@ update texts settings navKey flags msg model =
                 _ ->
                     unit model
 
-        DashboardEditMsg lm ->
+        DashboardManageMsg lm ->
             case model.content of
                 Edit m ->
                     let
+                        nameExists name =
+                            Data.Dashboards.existsAll name model.dashboards
+
                         result =
-                            Comp.DashboardEdit.update flags lm m
+                            Comp.DashboardManage.update flags nameExists lm m
                     in
                     case result.action of
-                        Comp.DashboardEdit.SubmitNone ->
+                        Comp.DashboardManage.SubmitNone ->
                             ( { model | content = Edit result.model }
-                            , Cmd.map DashboardEditMsg result.cmd
-                            , Sub.map DashboardEditMsg result.sub
+                            , Cmd.map DashboardManageMsg result.cmd
+                            , Sub.map DashboardManageMsg result.sub
                             )
 
-                        Comp.DashboardEdit.SubmitSave board ->
-                            let
-                                ( dm, dc ) =
-                                    Comp.DashboardView.init flags board
-                            in
-                            ( { model | content = Home dm }, Cmd.map DashboardMsg dc, Sub.none )
-
-                        Comp.DashboardEdit.SubmitCancel ->
-                            update texts settings navKey flags ReloadDashboard model
-
-                        Comp.DashboardEdit.SubmitDelete _ ->
+                        Comp.DashboardManage.SubmitSaved name ->
                             ( { model | content = Edit result.model }
-                            , Cmd.map DashboardEditMsg result.cmd
-                            , Sub.map DashboardEditMsg result.sub
+                            , Cmd.batch
+                                [ Cmd.map DashboardManageMsg result.cmd
+                                , getDashboards flags (Just <| SetDashboardByName name)
+                                ]
+                            , Sub.map DashboardManageMsg result.sub
+                            )
+
+                        Comp.DashboardManage.SubmitCancel name ->
+                            case Data.Dashboards.findInAll name model.dashboards of
+                                Just db ->
+                                    update texts settings navKey flags (SetDashboard db) model
+
+                                Nothing ->
+                                    ( { model | content = Edit result.model }
+                                    , Cmd.map DashboardManageMsg result.cmd
+                                    , Sub.map DashboardManageMsg result.sub
+                                    )
+
+                        Comp.DashboardManage.SubmitDeleted ->
+                            ( { model | content = Edit result.model }
+                            , Cmd.batch
+                                [ Cmd.map DashboardManageMsg result.cmd
+                                , getDashboards flags (Just SetDefaultDashboard)
+                                ]
+                            , Sub.map DashboardManageMsg result.sub
                             )
 
                 _ ->
                     unit model
 
-        ReloadDashboardData ->
-            let
-                lm =
-                    DashboardMsg Comp.DashboardView.reloadData
-            in
-            update texts settings navKey flags lm model
-
 
 unit : Model -> ( Model, Cmd Msg, Sub Msg )
 unit m =
     ( m, Cmd.none, Sub.none )
+
+
+getDashboards : Flags -> Maybe Msg -> Cmd Msg
+getDashboards flags nextMsg =
+    Api.getAllDashboards flags (GetAllDashboardsResp nextMsg)

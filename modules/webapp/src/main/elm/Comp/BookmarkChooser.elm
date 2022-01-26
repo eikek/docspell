@@ -144,8 +144,6 @@ titleDiv : String -> Html msg
 titleDiv label =
     div [ class "text-sm opacity-75 py-0.5 italic" ]
         [ text label
-
-        --, text " ──"
         ]
 
 

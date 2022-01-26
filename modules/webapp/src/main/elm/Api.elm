@@ -11,6 +11,7 @@ module Api exposing
     , addConcPerson
     , addCorrOrg
     , addCorrPerson
+    , addDashboard
     , addMember
     , addShare
     , addTag
@@ -39,6 +40,7 @@ module Api exposing
     , deleteCustomField
     , deleteCustomValue
     , deleteCustomValueMultiple
+    , deleteDashboard
     , deleteEquip
     , deleteFolder
     , deleteHook
@@ -56,6 +58,7 @@ module Api exposing
     , deleteUser
     , disableOtp
     , fileURL
+    , getAllDashboards
     , getAttachmentMeta
     , getBookmarks
     , getChannels
@@ -126,6 +129,7 @@ module Api exposing
     , register
     , removeMember
     , removeTagsMultiple
+    , replaceDashboard
     , reprocessItem
     , reprocessMultiple
     , restoreAllItems
@@ -277,9 +281,12 @@ import Api.Model.User exposing (User)
 import Api.Model.UserList exposing (UserList)
 import Api.Model.UserPass exposing (UserPass)
 import Api.Model.VersionInfo exposing (VersionInfo)
+import Data.AccountScope exposing (AccountScope)
 import Data.Bookmarks exposing (AllBookmarks, Bookmarks)
 import Data.ContactType exposing (ContactType)
 import Data.CustomFieldOrder exposing (CustomFieldOrder)
+import Data.Dashboard exposing (Dashboard)
+import Data.Dashboards exposing (AllDashboards, Dashboards)
 import Data.EquipmentOrder exposing (EquipmentOrder)
 import Data.EventType exposing (EventType)
 import Data.Flags exposing (Flags)
@@ -299,6 +306,7 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+import Util.Result
 
 
 
@@ -2359,6 +2367,132 @@ saveClientSettings flags settings receive =
         , body = Http.jsonBody encode
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
+
+
+
+--- Dashboards
+
+
+dashboardsUrl : Flags -> AccountScope -> String
+dashboardsUrl flags scope =
+    let
+        part =
+            Data.AccountScope.fold "user" "collective" scope
+    in
+    flags.config.baseUrl ++ "/api/v1/sec/clientSettings/" ++ part ++ "/webClientDashboards"
+
+
+getDashboardsScopeTask : Flags -> AccountScope -> Task.Task Http.Error Dashboards
+getDashboardsScopeTask flags scope =
+    Http2.authTask
+        { method = "GET"
+        , url = dashboardsUrl flags scope
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver Data.Dashboards.decoder
+        , headers = []
+        , timeout = Nothing
+        }
+
+
+pushDashbordsScopeTask : Flags -> AccountScope -> Dashboards -> Task.Task Http.Error BasicResult
+pushDashbordsScopeTask flags scope boards =
+    Http2.authTask
+        { method = "PUT"
+        , url = dashboardsUrl flags scope
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.Dashboards.encode boards)
+        , resolver = Http2.jsonResolver Api.Model.BasicResult.decoder
+        , headers = []
+        , timeout = Nothing
+        }
+
+
+getAllDashboardsTask : Flags -> Task.Task Http.Error AllDashboards
+getAllDashboardsTask flags =
+    let
+        coll =
+            getDashboardsScopeTask flags Data.AccountScope.Collective
+
+        user =
+            getDashboardsScopeTask flags Data.AccountScope.User
+    in
+    Task.map2 AllDashboards coll user
+
+
+getAllDashboards : Flags -> (Result Http.Error AllDashboards -> msg) -> Cmd msg
+getAllDashboards flags receive =
+    getAllDashboardsTask flags |> Task.attempt receive
+
+
+saveDashboardTask : Flags -> String -> Dashboard -> AccountScope -> Bool -> Task.Task Http.Error BasicResult
+saveDashboardTask flags original board scope isDefault =
+    let
+        boardsTask =
+            getAllDashboardsTask flags
+
+        setDefault all =
+            if isDefault then
+                Data.Dashboards.setDefaultAll board.name all
+
+            else
+                Data.Dashboards.unsetDefaultAll board.name all
+
+        removeOriginal boards =
+            Data.Dashboards.removeFromAll original boards
+
+        insert all =
+            Data.Dashboards.insertIn scope board all
+
+        update all =
+            let
+                next =
+                    (removeOriginal >> insert >> setDefault) all
+
+                saveU =
+                    if all.user == next.user then
+                        Task.succeed (BasicResult True "")
+
+                    else
+                        pushDashbordsScopeTask flags Data.AccountScope.User next.user
+
+                saveC =
+                    if all.collective == next.collective then
+                        Task.succeed (BasicResult True "")
+
+                    else
+                        pushDashbordsScopeTask flags Data.AccountScope.Collective next.collective
+            in
+            Task.map2 Util.Result.combine saveU saveC
+    in
+    Task.andThen update boardsTask
+
+
+addDashboard : Flags -> Dashboard -> AccountScope -> Bool -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addDashboard flags board scope isDefault receive =
+    saveDashboardTask flags board.name board scope isDefault |> Task.attempt receive
+
+
+replaceDashboard : Flags -> String -> Dashboard -> AccountScope -> Bool -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+replaceDashboard flags originalName board scope isDefault receive =
+    saveDashboardTask flags originalName board scope isDefault |> Task.attempt receive
+
+
+deleteDashboardTask : Flags -> String -> AccountScope -> Task.Task Http.Error BasicResult
+deleteDashboardTask flags name scope =
+    let
+        boardsTask =
+            getDashboardsScopeTask flags scope
+
+        remove boards =
+            Data.Dashboards.remove name boards
+    in
+    Task.andThen (remove >> pushDashbordsScopeTask flags scope) boardsTask
+
+
+deleteDashboard : Flags -> String -> AccountScope -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteDashboard flags name scope receive =
+    deleteDashboardTask flags name scope |> Task.attempt receive
 
 
 

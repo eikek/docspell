@@ -1,6 +1,8 @@
-module Data.Box exposing (Box, boxIcon, empty, messageBox, queryBox, statsBox, uploadBox)
+module Data.Box exposing (Box, boxIcon, decoder, empty, encode, messageBox, queryBox, statsBox, uploadBox)
 
 import Data.BoxContent exposing (BoxContent(..))
+import Json.Decode as D
+import Json.Encode as E
 
 
 type alias Box =
@@ -45,3 +47,28 @@ messageBox =
 uploadBox : Box
 uploadBox =
     empty (BoxUpload Data.BoxContent.emptyUploadData)
+
+
+
+--- JSON
+
+
+decoder : D.Decoder Box
+decoder =
+    D.map5 Box
+        (D.field "name" D.string)
+        (D.field "visible" D.bool)
+        (D.field "decoration" D.bool)
+        (D.field "colspan" D.int)
+        (D.field "content" Data.BoxContent.boxContentDecoder)
+
+
+encode : Box -> E.Value
+encode box =
+    E.object
+        [ ( "name", E.string box.name )
+        , ( "visible", E.bool box.visible )
+        , ( "decoration", E.bool box.decoration )
+        , ( "colspan", E.int box.colspan )
+        , ( "content", Data.BoxContent.boxContentEncode box.content )
+        ]

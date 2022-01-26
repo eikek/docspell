@@ -2,7 +2,7 @@ module Messages.Page.Dashboard exposing (Texts, de, gb)
 
 import Messages.Basics
 import Messages.Comp.BookmarkChooser
-import Messages.Comp.DashboardEdit
+import Messages.Comp.DashboardManage
 import Messages.Comp.DashboardView
 import Messages.Comp.EquipmentManage
 import Messages.Comp.FolderManage
@@ -14,6 +14,7 @@ import Messages.Comp.ShareManage
 import Messages.Comp.SourceManage
 import Messages.Comp.TagManage
 import Messages.Comp.UploadForm
+import Messages.Data.AccountScope
 import Messages.Page.DefaultDashboard
 
 
@@ -31,8 +32,9 @@ type alias Texts =
     , folderManage : Messages.Comp.FolderManage.Texts
     , uploadForm : Messages.Comp.UploadForm.Texts
     , dashboard : Messages.Comp.DashboardView.Texts
-    , dashboardEdit : Messages.Comp.DashboardEdit.Texts
+    , dashboardManage : Messages.Comp.DashboardManage.Texts
     , defaultDashboard : Messages.Page.DefaultDashboard.Texts
+    , accountScope : Messages.Data.AccountScope.Texts
     , manage : String
     , dashboardLink : String
     , bookmarks : String
@@ -41,6 +43,8 @@ type alias Texts =
     , documentation : String
     , uploadFiles : String
     , editDashboard : String
+    , dashboards : String
+    , predefinedMessage : String
     }
 
 
@@ -59,8 +63,9 @@ gb =
     , folderManage = Messages.Comp.FolderManage.gb
     , uploadForm = Messages.Comp.UploadForm.gb
     , dashboard = Messages.Comp.DashboardView.gb
-    , dashboardEdit = Messages.Comp.DashboardEdit.gb
+    , dashboardManage = Messages.Comp.DashboardManage.gb
     , defaultDashboard = Messages.Page.DefaultDashboard.gb
+    , accountScope = Messages.Data.AccountScope.gb
     , manage = "Manage"
     , dashboardLink = "Dasbhoard"
     , bookmarks = "Bookmarks"
@@ -69,6 +74,8 @@ gb =
     , documentation = "Documentation"
     , uploadFiles = "Upload documents"
     , editDashboard = "Edit Dashboard"
+    , dashboards = "Dashboards"
+    , predefinedMessage = "This dashboard is predefined one that cannot be deleted."
     }
 
 
@@ -87,8 +94,9 @@ de =
     , folderManage = Messages.Comp.FolderManage.de
     , uploadForm = Messages.Comp.UploadForm.de
     , dashboard = Messages.Comp.DashboardView.de
-    , dashboardEdit = Messages.Comp.DashboardEdit.de
+    , dashboardManage = Messages.Comp.DashboardManage.de
     , defaultDashboard = Messages.Page.DefaultDashboard.de
+    , accountScope = Messages.Data.AccountScope.de
     , manage = "Verwalten"
     , dashboardLink = "Dasbhoard"
     , bookmarks = "Bookmarks"
@@ -97,4 +105,6 @@ de =
     , documentation = "Dokumentation"
     , uploadFiles = "Dokumente hochladen"
     , editDashboard = "Dashboard ändern"
+    , dashboards = "Dashboards"
+    , predefinedMessage = "Dieses Dashboard ist vordefiniert und kann nicht entfernt werden."
     }

@@ -1,30 +1,34 @@
-module Comp.DashboardEdit exposing (Model, Msg, SubmitAction(..), init, update, view, viewBox)
+module Comp.DashboardEdit exposing (Model, Msg, getBoard, init, update, view, viewBox)
 
+import Comp.Basic as B
 import Comp.BoxEdit
 import Comp.FixedDropdown
 import Comp.MenuBar as MB
+import Data.AccountScope exposing (AccountScope)
 import Data.Box exposing (Box)
 import Data.Dashboard exposing (Dashboard)
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Dict exposing (Dict)
-import Html exposing (Html, div, i, input, label, text)
-import Html.Attributes exposing (class, classList, href, placeholder, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html exposing (Html, div, i, input, label, span, text)
+import Html.Attributes exposing (checked, class, classList, href, placeholder, type_, value)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Html5.DragDrop as DD
 import Messages.Comp.DashboardEdit exposing (Texts)
 import Styles as S
-import Util.Maybe
 
 
 type alias Model =
     { dashboard : Dashboard
-    , originalName : String
     , boxModels : Dict Int Comp.BoxEdit.Model
-    , nameValue : Maybe String
+    , nameValue : String
     , columnsModel : Comp.FixedDropdown.Model Int
     , columnsValue : Maybe Int
+    , gapModel : Comp.FixedDropdown.Model Int
+    , gapValue : Maybe Int
+    , defaultDashboard : Bool
+    , scope : AccountScope
     , newBoxMenuOpen : Bool
     , boxDragDrop : DD.Model Int Int
     }
@@ -32,25 +36,18 @@ type alias Model =
 
 type Msg
     = BoxMsg Int Comp.BoxEdit.Msg
-    | SaveDashboard
-    | Cancel
-    | RequestDelete
     | SetName String
     | ColumnsMsg (Comp.FixedDropdown.Msg Int)
+    | GapMsg (Comp.FixedDropdown.Msg Int)
     | ToggleNewBoxMenu
+    | SetScope AccountScope
+    | ToggleDefault
     | PrependNew Box
     | DragDropMsg (DD.Msg Int Int)
 
 
-type SubmitAction
-    = SubmitSave Dashboard
-    | SubmitCancel
-    | SubmitDelete String
-    | SubmitNone
-
-
-init : Flags -> Dashboard -> ( Model, Cmd Msg, Sub Msg )
-init flags db =
+init : Flags -> Dashboard -> AccountScope -> Bool -> ( Model, Cmd Msg, Sub Msg )
+init flags db scope default =
     let
         ( boxModels, cmdsAndSubs ) =
             List.map (Comp.BoxEdit.init flags) db.boxes
@@ -65,10 +62,13 @@ init flags db =
             List.unzip cmdsAndSubs
     in
     ( { dashboard = db
-      , originalName = db.name
-      , nameValue = Just db.name
+      , nameValue = db.name
       , columnsModel = Comp.FixedDropdown.init [ 1, 2, 3, 4, 5 ]
       , columnsValue = Just db.columns
+      , gapModel = Comp.FixedDropdown.init (List.range 0 12)
+      , gapValue = Just db.gap
+      , defaultDashboard = default
+      , scope = scope
       , newBoxMenuOpen = False
       , boxModels =
             List.indexedMap Tuple.pair boxModels
@@ -80,6 +80,11 @@ init flags db =
     )
 
 
+getBoard : Model -> ( Dashboard, AccountScope, Bool )
+getBoard model =
+    ( model.dashboard, model.scope, model.defaultDashboard )
+
+
 
 --- Update
 
@@ -88,7 +93,6 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , sub : Sub Msg
-    , action : SubmitAction
     }
 
 
@@ -115,26 +119,20 @@ update flags msg model =
                     { model = { model | boxModels = newBoxes, dashboard = db_ }
                     , cmd = Cmd.map (BoxMsg index) result.cmd
                     , sub = Sub.map (BoxMsg index) result.sub
-                    , action = SubmitNone
                     }
 
                 Nothing ->
                     unit model
 
         SetName str ->
-            case Util.Maybe.fromString str of
-                Just s ->
-                    let
-                        db =
-                            model.dashboard
+            let
+                db =
+                    model.dashboard
 
-                        db_ =
-                            { db | name = s }
-                    in
-                    unit { model | dashboard = db_, nameValue = Just s }
-
-                Nothing ->
-                    unit { model | nameValue = Nothing }
+                db_ =
+                    { db | name = String.trim str }
+            in
+            unit { model | dashboard = db_, nameValue = str }
 
         ColumnsMsg lm ->
             let
@@ -149,14 +147,18 @@ update flags msg model =
             in
             unit { model | columnsValue = value, columnsModel = cm, dashboard = db_ }
 
-        SaveDashboard ->
-            UpdateResult model Cmd.none Sub.none (SubmitSave model.dashboard)
+        GapMsg lm ->
+            let
+                ( gm, value ) =
+                    Comp.FixedDropdown.update lm model.gapModel
 
-        Cancel ->
-            UpdateResult model Cmd.none Sub.none SubmitCancel
+                db =
+                    model.dashboard
 
-        RequestDelete ->
-            UpdateResult model Cmd.none Sub.none (SubmitDelete model.originalName)
+                db_ =
+                    { db | gap = Maybe.withDefault db.gap value }
+            in
+            unit { model | gapModel = gm, gapValue = value, dashboard = db_ }
 
         ToggleNewBoxMenu ->
             unit { model | newBoxMenuOpen = not model.newBoxMenuOpen }
@@ -186,7 +188,6 @@ update flags msg model =
             { model = { model | boxModels = newBoxes, dashboard = db_, newBoxMenuOpen = False }
             , cmd = Cmd.map (BoxMsg index) bc
             , sub = Sub.map (BoxMsg index) bs
-            , action = SubmitNone
             }
 
         DragDropMsg lm ->
@@ -207,10 +208,16 @@ update flags msg model =
             in
             unit nextModel
 
+        SetScope s ->
+            unit { model | scope = s }
+
+        ToggleDefault ->
+            unit { model | defaultDashboard = not model.defaultDashboard }
+
 
 unit : Model -> UpdateResult
 unit model =
-    UpdateResult model Cmd.none Sub.none SubmitNone
+    UpdateResult model Cmd.none Sub.none
 
 
 applyBoxAction :
@@ -365,34 +372,18 @@ viewMain texts _ _ model =
             }
     in
     div [ class "my-2 " ]
-        [ MB.view
-            { start =
-                [ MB.PrimaryButton
-                    { tagger = SaveDashboard
-                    , title = texts.basics.submitThisForm
-                    , icon = Just "fa fa-save"
-                    , label = texts.basics.submit
-                    }
-                , MB.SecondaryButton
-                    { tagger = Cancel
-                    , title = texts.basics.cancel
-                    , icon = Just "fa fa-times"
-                    , label = texts.basics.cancel
-                    }
-                ]
-            , end = []
-            , rootClasses = ""
-            }
-        , div [ class "flex flex-col" ]
+        [ div [ class "flex flex-col" ]
             [ div [ class "mt-2" ]
                 [ label [ class S.inputLabel ]
                     [ text texts.basics.name
+                    , B.inputRequired
                     ]
                 , input
                     [ type_ "text"
                     , placeholder texts.namePlaceholder
                     , class S.textInput
-                    , value (Maybe.withDefault "" model.nameValue)
+                    , classList [ ( S.inputErrorBorder, String.trim model.nameValue == "" ) ]
+                    , value model.nameValue
                     , onInput SetName
                     ]
                     []
@@ -401,13 +392,58 @@ viewMain texts _ _ model =
                 [ label [ class S.inputLabel ]
                     [ text texts.columns
                     ]
+                , Html.map ColumnsMsg
+                    (Comp.FixedDropdown.viewStyled2 columnsSettings
+                        False
+                        model.columnsValue
+                        model.columnsModel
+                    )
                 ]
-            , Html.map ColumnsMsg
-                (Comp.FixedDropdown.viewStyled2 columnsSettings
-                    False
-                    model.columnsValue
-                    model.columnsModel
-                )
+            , div [ class "mt-2" ]
+                [ label [ class S.inputLabel ]
+                    [ text texts.gap
+                    ]
+                , Html.map GapMsg
+                    (Comp.FixedDropdown.viewStyled2 columnsSettings
+                        False
+                        model.gapValue
+                        model.gapModel
+                    )
+                ]
+            , div [ class "mt-2" ]
+                [ div [ class "flex flex-row space-x-4" ]
+                    [ label [ class "inline-flex items-center" ]
+                        [ input
+                            [ type_ "radio"
+                            , checked (Data.AccountScope.isUser model.scope)
+                            , onCheck (\_ -> SetScope Data.AccountScope.User)
+                            , class S.radioInput
+                            ]
+                            []
+                        , span [ class "ml-2" ] [ text <| texts.accountScope Data.AccountScope.User ]
+                        ]
+                    , label [ class "inline-flex items-center" ]
+                        [ input
+                            [ type_ "radio"
+                            , checked (Data.AccountScope.isCollective model.scope)
+                            , onCheck (\_ -> SetScope Data.AccountScope.Collective)
+                            , class S.radioInput
+                            ]
+                            []
+                        , span [ class "ml-2" ]
+                            [ text <| texts.accountScope Data.AccountScope.Collective ]
+                        ]
+                    ]
+                ]
+            , div [ class "mt-2" ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { tagger = \_ -> ToggleDefault
+                        , label = texts.defaultDashboard
+                        , id = ""
+                        , value = model.defaultDashboard
+                        }
+                ]
             ]
         ]
 

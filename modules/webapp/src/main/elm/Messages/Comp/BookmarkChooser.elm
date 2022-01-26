@@ -11,7 +11,9 @@ module Messages.Comp.BookmarkChooser exposing
     , gb
     )
 
+import Data.AccountScope exposing (AccountScope(..))
 import Messages.Basics
+import Messages.Data.AccountScope
 
 
 type alias Texts =
@@ -25,8 +27,8 @@ type alias Texts =
 gb : Texts
 gb =
     { basics = Messages.Basics.gb
-    , userLabel = "Personal"
-    , collectiveLabel = "Collective"
+    , userLabel = Messages.Data.AccountScope.gb User
+    , collectiveLabel = Messages.Data.AccountScope.gb Collective
     , shareLabel = "Shares"
     }
 
@@ -34,7 +36,7 @@ gb =
 de : Texts
 de =
     { basics = Messages.Basics.de
-    , userLabel = "Persönlich"
-    , collectiveLabel = "Kollektiv"
+    , userLabel = Messages.Data.AccountScope.de User
+    , collectiveLabel = Messages.Data.AccountScope.de Collective
     , shareLabel = "Freigaben"
     }

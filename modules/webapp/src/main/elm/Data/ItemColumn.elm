@@ -2,6 +2,8 @@ module Data.ItemColumn exposing (..)
 
 import Api.Model.ItemLight exposing (ItemLight)
 import Data.ItemTemplate as IT exposing (TemplateContext)
+import Json.Decode as D
+import Json.Encode as E
 
 
 type ItemColumn
@@ -75,7 +77,7 @@ asString col =
             "folder"
 
         Correspondent ->
-            "correspodnent"
+            "correspondent"
 
         Concerning ->
             "concerning"
@@ -105,7 +107,7 @@ fromString str =
         "folder" ->
             Just Folder
 
-        "correspodnent" ->
+        "correspondent" ->
             Just Correspondent
 
         "concerning" ->
@@ -116,3 +118,22 @@ fromString str =
 
         _ ->
             Nothing
+
+
+encode : ItemColumn -> E.Value
+encode col =
+    asString col |> E.string
+
+
+decode : D.Decoder ItemColumn
+decode =
+    let
+        from str =
+            case fromString str of
+                Just col ->
+                    D.succeed col
+
+                Nothing ->
+                    D.fail ("Invalid column: " ++ str)
+    in
+    D.andThen from D.string

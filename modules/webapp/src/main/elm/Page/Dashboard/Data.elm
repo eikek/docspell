@@ -9,8 +9,11 @@ module Page.Dashboard.Data exposing
     ( Content(..)
     , Model
     , Msg(..)
+    , PageError(..)
     , SideMenuModel
     , init
+    , isDashboardDefault
+    , isDashboardVisible
     , isHomeContent
     , reloadDashboardData
     , reloadUiSettings
@@ -18,7 +21,7 @@ module Page.Dashboard.Data exposing
 
 import Api
 import Comp.BookmarkChooser
-import Comp.DashboardEdit
+import Comp.DashboardManage
 import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -32,7 +35,9 @@ import Comp.TagManage
 import Comp.UploadForm
 import Data.Bookmarks exposing (AllBookmarks)
 import Data.Dashboard exposing (Dashboard)
+import Data.Dashboards exposing (AllDashboards)
 import Data.Flags exposing (Flags)
+import Http
 
 
 type alias SideMenuModel =
@@ -43,19 +48,59 @@ type alias SideMenuModel =
 type alias Model =
     { sideMenu : SideMenuModel
     , content : Content
+    , pageError : Maybe PageError
+    , dashboards : AllDashboards
+    , isPredefined : Bool
     }
 
 
-init : Flags -> Dashboard -> ( Model, Cmd Msg )
-init flags db =
+type Msg
+    = GetBookmarksResp AllBookmarks
+    | GetAllDashboardsResp (Maybe Msg) (Result Http.Error AllDashboards)
+    | BookmarkMsg Comp.BookmarkChooser.Msg
+    | NotificationHookMsg Comp.NotificationHookManage.Msg
+    | PeriodicQueryMsg Comp.PeriodicQueryTaskManage.Msg
+    | SourceMsg Comp.SourceManage.Msg
+    | ShareMsg Comp.ShareManage.Msg
+    | OrganizationMsg Comp.OrgManage.Msg
+    | PersonMsg Comp.PersonManage.Msg
+    | EquipmentMsg Comp.EquipmentManage.Msg
+    | TagMsg Comp.TagManage.Msg
+    | FolderMsg Comp.FolderManage.Msg
+    | UploadMsg Comp.UploadForm.Msg
+    | DashboardMsg Comp.DashboardView.Msg
+    | DashboardManageMsg Comp.DashboardManage.Msg
+    | InitNotificationHook
+    | InitPeriodicQuery
+    | InitSource
+    | InitShare
+    | InitOrganization
+    | InitPerson
+    | InitEquipment
+    | InitTags
+    | InitFolder
+    | InitUpload
+    | InitEditDashboard
+    | ReloadDashboardData
+    | HardReloadDashboard
+    | SetDashboard Dashboard
+    | SetDashboardByName String
+    | SetDefaultDashboard
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     let
         ( dm, dc ) =
-            Comp.DashboardView.init flags db
+            Comp.DashboardView.init flags Data.Dashboard.empty
     in
     ( { sideMenu =
             { bookmarkChooser = Comp.BookmarkChooser.init Data.Bookmarks.empty
             }
       , content = Home dm
+      , pageError = Nothing
+      , dashboards = Data.Dashboards.emptyAll
+      , isPredefined = True
       }
     , Cmd.batch
         [ initCmd flags
@@ -71,7 +116,10 @@ initCmd flags =
             Result.withDefault Data.Bookmarks.empty r
                 |> GetBookmarksResp
     in
-    Api.getBookmarks flags ignoreBookmarkError
+    Cmd.batch
+        [ Api.getBookmarks flags ignoreBookmarkError
+        , Api.getAllDashboards flags (GetAllDashboardsResp (Just SetDefaultDashboard))
+        ]
 
 
 reloadDashboardData : Msg
@@ -81,38 +129,11 @@ reloadDashboardData =
 
 reloadUiSettings : Msg
 reloadUiSettings =
-    ReloadDashboard
+    HardReloadDashboard
 
 
-type Msg
-    = GetBookmarksResp AllBookmarks
-    | BookmarkMsg Comp.BookmarkChooser.Msg
-    | NotificationHookMsg Comp.NotificationHookManage.Msg
-    | PeriodicQueryMsg Comp.PeriodicQueryTaskManage.Msg
-    | SourceMsg Comp.SourceManage.Msg
-    | ShareMsg Comp.ShareManage.Msg
-    | OrganizationMsg Comp.OrgManage.Msg
-    | PersonMsg Comp.PersonManage.Msg
-    | EquipmentMsg Comp.EquipmentManage.Msg
-    | TagMsg Comp.TagManage.Msg
-    | FolderMsg Comp.FolderManage.Msg
-    | UploadMsg Comp.UploadForm.Msg
-    | DashboardMsg Comp.DashboardView.Msg
-    | DashboardEditMsg Comp.DashboardEdit.Msg
-    | InitNotificationHook
-    | InitDashboard
-    | InitPeriodicQuery
-    | InitSource
-    | InitShare
-    | InitOrganization
-    | InitPerson
-    | InitEquipment
-    | InitTags
-    | InitFolder
-    | InitUpload
-    | InitEditDashboard
-    | ReloadDashboardData
-    | ReloadDashboard
+
+--- Content
 
 
 type Content
@@ -127,7 +148,7 @@ type Content
     | Tags Comp.TagManage.Model
     | Folder Comp.FolderManage.Model
     | Upload Comp.UploadForm.Model
-    | Edit Comp.DashboardEdit.Model
+    | Edit Comp.DashboardManage.Model
 
 
 isHomeContent : Content -> Bool
@@ -138,3 +159,31 @@ isHomeContent cnt =
 
         _ ->
             False
+
+
+isDashboardVisible : Model -> String -> Bool
+isDashboardVisible model name =
+    case model.content of
+        Home m ->
+            m.dashboard.name == name
+
+        Edit m ->
+            m.initData.dashboard.name == name
+
+        _ ->
+            False
+
+
+isDashboardDefault : Model -> String -> Bool
+isDashboardDefault model name =
+    Data.Dashboards.isDefaultAll name model.dashboards
+
+
+
+--- Errors
+
+
+type PageError
+    = PageErrorHttp Http.Error
+    | PageErrorNoDashboard
+    | PageErrorInvalid String

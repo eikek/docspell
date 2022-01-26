@@ -105,7 +105,6 @@ init key url flags_ settings =
 
         ( dbm, dbc ) =
             Page.Dashboard.Data.init flags
-                (Page.Dashboard.DefaultDashboard.getDefaultDashboard flags settings)
 
         searchViewMode =
             if settings.searchMenuVisible then

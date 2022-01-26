@@ -8,7 +8,7 @@
 module Page.Dashboard.View exposing (viewContent, viewSidebar)
 
 import Api.Model.VersionInfo exposing (VersionInfo)
-import Comp.DashboardEdit
+import Comp.DashboardManage
 import Comp.DashboardView
 import Comp.EquipmentManage
 import Comp.FolderManage
@@ -31,7 +31,7 @@ import Styles as S
 
 
 viewSidebar : Texts -> Bool -> Flags -> VersionInfo -> UiSettings -> Model -> Html Msg
-viewSidebar texts visible flags versionInfo settings model =
+viewSidebar texts visible _ versionInfo settings model =
     div
         [ id "sidebar"
         , class S.sidebar
@@ -44,18 +44,34 @@ viewSidebar texts visible flags versionInfo settings model =
 
 viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
 viewContent texts flags settings model =
+    let
+        editSettings =
+            { showDeleteButton = not model.isPredefined
+            , showCopyButton = not model.isPredefined
+            }
+    in
     div
         [ id "content"
         , class S.content
         ]
         [ case model.content of
             Home m ->
-                Html.map DashboardMsg
-                    (Comp.DashboardView.view texts.dashboard flags settings m)
+                div [ class "mt-1" ]
+                    [ Html.map DashboardMsg
+                        (Comp.DashboardView.view texts.dashboard flags settings m)
+                    ]
 
             Edit m ->
-                Html.map DashboardEditMsg
-                    (Comp.DashboardEdit.view texts.dashboardEdit flags settings m)
+                div [ class "mt-1" ]
+                    [ div
+                        [ class S.infoMessage
+                        , class "my-1"
+                        , classList [ ( "hidden", not model.isPredefined ) ]
+                        ]
+                        [ text texts.predefinedMessage ]
+                    , Html.map DashboardManageMsg
+                        (Comp.DashboardManage.view texts.dashboardManage flags editSettings settings m)
+                    ]
 
             Webhook m ->
                 viewHookManage texts settings m

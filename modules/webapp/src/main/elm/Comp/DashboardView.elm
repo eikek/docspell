@@ -103,24 +103,28 @@ viewBox texts flags settings index box =
 --- Helpers
 
 
+{-| note due to tailwinds purging css that is not found in source
+files, need to spell them out somewhere - which is done it keep.txt in
+this case.
+-}
 gridStyle : Dashboard -> String
 gridStyle db =
     let
+        cappedGap =
+            min db.gap 12
+
+        cappedCol =
+            min db.columns 12
+
+        gapStyle =
+            " gap-" ++ String.fromInt cappedGap ++ " "
+
         colStyle =
             case db.columns of
                 1 ->
                     ""
 
-                2 ->
-                    "md:grid-cols-2"
-
-                3 ->
-                    "md:grid-cols-3"
-
-                4 ->
-                    "md:grid-cols-4"
-
                 _ ->
-                    "md:grid-cols-5"
+                    " md:grid-cols-" ++ String.fromInt cappedCol ++ " "
     in
-    "grid gap-4 grid-cols-1 " ++ colStyle
+    "grid grid-cols-1 " ++ gapStyle ++ colStyle
