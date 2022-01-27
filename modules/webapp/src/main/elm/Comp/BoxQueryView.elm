@@ -144,7 +144,7 @@ viewItemRow texts settings meta item =
             getColumns meta
 
         render col =
-            Comp.ItemColumnView.renderDiv texts.templateCtx settings col [ class "flex flex-row space-x-1" ] item
+            Comp.ItemColumnView.renderDiv texts.templateCtx settings col [ class "flex flex-row flex-wrap space-x-1" ] item
 
         td1 =
             td [ class "py-2 px-1" ]
