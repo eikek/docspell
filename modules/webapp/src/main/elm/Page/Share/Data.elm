@@ -106,7 +106,7 @@ initCmd shareId flags =
 type Msg
     = VerifyResp (Result Http.Error ShareVerifyResult)
     | SearchResp (Result Http.Error ItemLightList)
-    | StatsResp (Result Http.Error SearchStats)
+    | StatsResp Bool (Result Http.Error SearchStats)
     | PasswordMsg Comp.SharePasswordForm.Msg
     | SearchMenuMsg Comp.SearchMenu.Msg
     | PowerSearchMsg Comp.PowerSearchInput.Msg
