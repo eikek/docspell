@@ -6,6 +6,4 @@ insert_anchor_links = "right"
 template = "pages.html"
 redirect_to = "docs/tools/cli/"
 sort_by = "weight"
-[extra]
-mktoc = false
 +++

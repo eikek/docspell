@@ -1,0 +1,63 @@
+@layer base {
+    .content {
+        @apply leading-relaxed text-left;
+    }
+
+    .content h1:not(.no-default) {
+        @apply text-4xl font-serif font-bold mt-6 mb-3 py-1 border-b dark:border-stone-800 text-stone-700 dark:text-stone-200;
+    }
+    .content h2:not(.no-default) {
+        @apply text-3xl font-serif font-semibold mt-6 py-1  text-stone-700 dark:text-stone-200;
+    }
+    .content h3:not(.no-default) {
+        @apply text-2xl font-medium mt-3 py-1 text-stone-700 dark:text-stone-200 ;
+    }
+
+    .content p:not(.no-default) {
+        @apply mt-1 mb-2;
+    }
+
+    .content ul:not(.no-default) {
+      @apply list-disc list-outside pl-6;
+    }
+    .content ol:not(.no-default) {
+      @apply list-decimal list-outside pl-6;
+    }
+    .content :not(li) > ul:not(.no-default) {
+      @apply my-4;
+    }
+    .content :not(li) > ol:not(.no-default) {
+      @apply my-4;
+    }
+
+    .content pre:not(.no-default) {
+        @apply font-mono py-4 px-4 rounded overflow-auto max-w-full;
+    }
+    .content :not(li) > pre:not(.no-default) {
+        @apply my-4;
+    }
+
+    .content a:not(.no-default) {
+        @apply dark:text-cyan-400 dark:hover:text-cyan-300 text-indigo-400 hover:text-indigo-500 font-medium;
+    }
+
+    .content .box-shadow {
+        @apply shadow dark:shadow-stone-700;
+    }
+
+    .content figure:not(.no-default) {
+        @apply outline outline-stone-200 dark:outline-stone-500 rounded mx-6 my-4 shadow dark:shadow-stone-600;
+    }
+
+    .content figure > img:not(.no-default) {
+        @apply rounded block w-full;
+    }
+
+    .content :not(pre) > code:not(.no-default) {
+        @apply bg-stone-100 dark:bg-black my-1 mx-1 px-1 text-stone-800 dark:text-stone-100;
+    }
+
+    .content .button1 {
+        @apply  px-6 py-3 rounded cursor-pointer border text-center text-indigo-50 bg-indigo-400 hover:bg-indigo-500 dark:bg-cyan-400 dark:bg-opacity-20 dark:border-cyan-400 dark:text-cyan-400 dark:hover:bg-opacity-80 dark:hover:text-stone-900;
+    }
+}

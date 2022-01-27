@@ -10,17 +10,22 @@ There is a simple Android App available to conveniently upload files
 from your android devices. Combined with a scanner app, this allows to
 very quickly scan single page documents like receipts.
 
-<div class="columns is-vcentered is-centered">
-    <div class="column">
+<div class="grid grid-cols-2 gap-8 divide-x ">
+    <div class="flex items-center justify-center">
         <a href="https://f-droid.org/packages/org.docspell.docspellshare">
             <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
                  alt="Get it on F-Droid"
-                 style="height:120px;"/>
+                 class="w-56"
+                 />
         </a>
     </div>
-    <div class="column">
-    Download the APK from <a href="https://github.com/docspell/android-client/releases/latest">here</a>
+    <div class="flex items-center justify-center text-xl">
+        <i class="fa fa-download mr-2"></i>
+        <span>
+           <a href="https://github.com/docspell/android-client/releases/latest">Download the APK</a>
+        </span>
     </div>
+
 </div>
 
 
@@ -43,32 +48,30 @@ The app is very simple:
 - You can now either select an URL from the app, or the upload begins
   immediatly if you set a default URL.
 
-<div class="columns">
-  <div class="column">
+<div class="grid grid-cols-3 gap-4 mx-6 my-4">
+  <div class="shadow dark:shadow-stone-600">
   {{ imgnormal(file="screenshot-create.jpg", width="") }}
-  <p class="has-text-centered subtitle"> (A) </p>
+  <p class="text-center font-mono"> (A) </p>
   </div>
-  <div class="column">
+  <div class="box-shadow">
   {{ imgnormal(file="screenshot-choose.jpg", width="") }}
-  <p class="has-text-centered subtitle"> (B) </p>
+  <p class="text-center font-mono"> (B) </p>
   </div>
-  <div class="column">
+  <div class="box-shadow">
   {{ imgnormal(file="screenshot-options.jpg", width="") }}
-  <p class="has-text-centered subtitle"> (C) </p>
+  <p class="text-center font-mono"> (C) </p>
   </div>
-</div>
-<div class="columns">
-  <div class="column">
+  <div class="box-shadow">
   {{ imgnormal(file="screenshot-default.jpg", width="") }}
-  <p class="has-text-centered subtitle"> (D) </p>
+  <p class="text-center font-mono"> (D) </p>
   </div>
-  <div class="column">
+  <div class="box-shadow">
   {{ imgnormal(file="screenshot-share.jpg", width="") }}
-  <p class="has-text-centered subtitle"> (E) </p>
+  <p class="text-center font-mono"> (E) </p>
   </div>
-  <div class="column">
+  <div class="box-shadow">
   {{ imgnormal(file="screenshot-uploading.jpg", width="") }}
-  <p class="has-text-centered subtitle"> (F) </p>
+  <p class="text-center font-mono"> (F) </p>
   </div>
 </div>
 

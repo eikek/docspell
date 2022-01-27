@@ -7,10 +7,14 @@ elm-stuff
 result
 _site/
 *.qcow2
-/website/site/content/docs/changelog/
+/website/site/content/docs/install/changelog.md
 /website/site/public/
 /website/site/static/openapi/
 /website/site/static/js/bundle.js
+/website/site/static/styles.css
+/website/site/static/syntax-*.css
+/website/site/static/webfonts/
+/website/site/static/files/*.woff*
 /website/site/templates/shortcodes/server.conf
 /website/site/templates/shortcodes/sample-exim.conf
 /website/site/templates/shortcodes/joex.conf

@@ -1,0 +1,10 @@
+<div class="my-3 rounded border border-yellow-300 bg-yellow-200 bg-opacity-40 text-yellow-600 shadow shadow-yellow-200  dark:bg-amber-500 dark:bg-opacity-30 dark:text-amber-100 dark:border-amber-700 dark:shadow-none">
+    <div class="px-1 py-1 border-b border-yellow-300 text-yellow-600 dark:text-amber-300 font-medium w-full bg-yellow-300 bg-opacity-50 dark:bg-amber-700 dark:border-amber-700">
+        <i class="fa fa-info mx-2" ></i>
+        {{ title }}
+    </div>
+
+    <div class="px-2">
+        {{ body | markdown | safe }}
+    </div>
+</div>

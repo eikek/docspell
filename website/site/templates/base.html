@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+{% if section is defined %}
+{% set currentTitle =  section.title %}
+{% set currentToc = section.toc %}
+{% set relative_path = section.relative_path %}
+{% endif %}
+{%if page is defined %}
+{% set currentTitle = page.title %}
+{% set currentToc = page.toc %}
+{% set relative_path = page.relative_path %}
+{% endif %}
+
+<html lang="en">
+    <head>
+        {% include "parts/meta.html" %}
+
+        <title>{% block title %}{% endblock title %}</title>
+        <link rel="stylesheet" href="/styles.css">
+
+        {% include "parts/search-head.html" %}
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
+    </head>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
+
+        {% include "parts/topnav.html" %}
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            {% block sidebar %}
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
+                {% block sidebarItems %}{% endblock sidebarItems %}
+
+            </div>
+            {% endblock sidebar %}
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        {% block mainContent %}{% endblock mainContent %}
+                    </div>
+
+                    {% include "parts/footer.html" %}
+                </div>
+
+                {% block rightToc %}
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4 {% if currentToc | length == 0 %} hidden {% else %} lg:flex {% endif %}">
+
+                    {% for header in currentToc %}
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="{{ header.permalink }}" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            {{ header.title }}
+                        </a>
+                        {% if header.children | length > 0 %}
+                        <div class="pl-4 opacity-75">
+                            {% for subhead in header.children %}
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="{{ subhead.permalink }}" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    {{ subhead.title }}
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% endfor %}
+                </div>
+                {% endblock rightToc %}
+            </div>
+        </div>
+        {% include "parts/search-part.html" %}
+        {% include "parts/fathom.html" %}
+    </body>
+
+</html>

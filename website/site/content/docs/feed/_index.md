@@ -1,11 +1,14 @@
 +++
 title = "Feed Data into Docspell"
-weight = 5
+weight = 8
 description = "Shows several ways for getting data into Docspell."
 insert_anchor_links = "right"
+template = "docs.html"
 [extra]
 mktoc = true
 +++
+
+# Documents → Docspell
 
 One of the main goals is to stow documents away quickly.
 
@@ -20,19 +23,19 @@ So the idea is to have most flexibility – that is, it is up to you how
 documents arrive. Of course, there is something prepared:
 
 
-# Upload in Webapp
+## Upload in Webapp
 
 This is the simplest way, but also the least flexible. You can just
 login and go to the upload page to submit files.
 
 
-{{ figure(file="web-upload.png") }}
+{{ figure2(light="web-upload.png", dark="web-upload_dark.png") }}
 
 This requires to login at the webapp. Since this is complicated from
 other applications, you can create custom hard-to-guess endpoints to
 use with the following options.
 
-# Scanners / Watch Directories
+## Scanners / Watch Directories
 
 If you have a (document) scanner (or think about getting one), it can
 usually be configured to place scanned documents as image or PDF files
@@ -54,10 +57,10 @@ your scanner is connected to your computer. This can create nice pdf
 files from scanners with ADF, applying corrections and sending them to
 docspell.
 
-{{ buttonright(classes="is-primary ", href="/docs/tools/cli#watch-a-directory", text="More") }}
+{{ buttonright(href="/docs/tools/cli#watch-a-directory", text="More") }}
 
 
-# Android
+## Android
 
 There is an [android
 client](https://github.com/docspell/android-client) provided that lets
@@ -71,42 +74,40 @@ into the Share-With menu and uploads the file to Docspell.
 This is especially useful to quickly upload small things like shopping
 receipts.
 
-<div class="columns is-centered">
-  <div class="column is-one-third">
-    <img src="/docs/tools/screenshot-share.jpg">
-  </div>
-  <div class="column is-one-third">
-    <img src="/docs/tools/screenshot-uploading.jpg">
-  </div>
-</div>
-<div class="columns is-vcentered is-centered">
-    <div class="column is-one-third">
+<div class="grid grid-cols-2 gap-8 divide-x ">
+    <div class="flex items-center justify-center">
         <a href="https://f-droid.org/packages/org.docspell.docspellshare">
             <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-                 alt="Get it on F-Droid"/>
+                 alt="Get it on F-Droid"
+                 class="w-56"
+                 />
         </a>
     </div>
-    <div class="column is-one-third">
-    Download the APK from <a href="https://github.com/docspell/android-client/releases/latest">here</a>
+    <div class="flex items-center justify-center text-xl">
+        <i class="fa fa-download mr-2"></i>
+        <span>
+           <a href="https://github.com/docspell/android-client/releases/latest">Download the APK</a>
+        </span>
     </div>
+
 </div>
 
-{{ buttonright(classes="is-primary ", href="/docs/tools/android", text="More") }}
+{{ buttonright(href="/docs/tools/android", text="More") }}
 
 
-# Poll E-Mails
+## Poll E-Mails
 
 Your mailbox can be polled periodically to import mails. For example,
 create a dedicated folder in your e-mail client and move mails in
 there that you want to push to Docspell. You can then define a
 recurring job, that looks into this folders and imports the mails.
 
-{{ figure(file="scanmailbox.png") }}
+{{ figure2(light="scanmailbox.png", dark="scanmailbox_dark.png") }}
 
-{{ buttonright(classes="is-primary ", href="/docs/webapp/scanmailbox", text="More") }}
+{{ buttonright(href="/docs/webapp/scanmailbox", text="More") }}
 
 
-# E-Mail Server
+## E-Mail Server
 
 This is a little more involved, but can be quite nice. A SMTP server
 can be setup that simply uploads incoming mails to Docspell (using
@@ -120,29 +121,18 @@ part in Docspell to upload the files to the correct account.
 There is a docker container prepared to get started. Click below to
 read more.
 
-{{ buttonright(classes="is-primary ", href="/docs/tools/smtpgateway", text="More") }}
+{{ buttonright(href="/docs/tools/smtpgateway", text="More") }}
 
 
-# Command-Line
+## Command-Line
 
 I like to use the command line, and so there is a cli that can be used
 for some tasks, for example uploading files. Below is a quick demo, it
 supports many more options, see the link below for details.
 
-<div class="columns is-centered is-full-width">
-  <div class="column">
-    <script id="asciicast-427679" src="https://asciinema.org/a/427679.js" async></script>
-  </div>
-</div>
+<figure>
+  <script id="asciicast-427679" src="https://asciinema.org/a/427679.js" async></script>
+</figure>
 
 
-{{ buttonright(classes="is-primary ", href="/docs/tools/cli", text="More") }}
-
-
-# Browser Extension
-
-For Firefox, there is a browser extension that creates a context-menu
-entry if you right-click on a link. It then downloads the file to your
-disk and uploads it to Docspell.
-
-{{ buttonright(classes="is-primary ", href="/docs/tools/browserext", text="More") }}
+{{ buttonright(href="/docs/tools/cli", text="More") }}

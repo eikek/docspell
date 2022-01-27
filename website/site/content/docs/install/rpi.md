@@ -1,7 +1,9 @@
 +++
-title = "Raspberry-Pi and Similiar"
+title = "Raspberry-Pi"
 weight = 40
 +++
+
+# Raspberry Pi
 
 Both components can run next to each other on a raspberry pi or
 similiar device.

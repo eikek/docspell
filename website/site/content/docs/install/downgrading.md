@@ -3,7 +3,9 @@ title = "Downgrading"
 weight = 37
 +++
 
-{% infobubble(mode="info", title="⚠ Please note") %}
+# Downgrading
+
+{% warningbubble(title="Note") %}
 Downgrading is currently not supported!
 
 It is not safe to install a previous version, because the database

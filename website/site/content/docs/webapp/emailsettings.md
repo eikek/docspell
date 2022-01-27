@@ -5,6 +5,8 @@ weight = 40
 mktoc = true
 +++
 
+# E-Mail Settings
+
 Docspell has a good integration for E-Mail. You can send e-mails
 related to an item and you can import e-mails from your mailbox into
 docspell.
@@ -24,7 +26,7 @@ your e-mail account to send mails on behalf of you and receive your
 mails.*
 
 
-# SMTP Settings
+## SMTP Settings
 
 For sending mail, you need to provide information to connect to a SMTP
 server. Every e-mail provider has this information somewhere
@@ -32,7 +34,7 @@ available.
 
 Configure this in *User Settings -> E-Mail Settings (SMTP)*:
 
-{{ figure(file="mail-settings-1.png") }}
+{{ figure2(light="mail-settings-1.png", dark="mail-settings-1_dark.png") }}
 
 First, you need to provide some name that is used to recognize this
 account. This name is also used in URLs to docspell and so it must not
@@ -61,7 +63,7 @@ possible to set up these settings for multiple providers, so you can
 choose from which account you want to send mails.
 
 
-# IMAP Settings
+## IMAP Settings
 
 For receiving e-mails, you need to provide information to connect to
 an IMAP server. Your e-mail provider should have this information
@@ -69,7 +71,7 @@ somewhere available.
 
 Configure this in *User Settings -> E-Mail Settings (IMAP)*:
 
-{{ figure(file="mail-settings-2.png") }}
+{{ figure2(light="mail-settings-2.png", dark="mail-settings-2_dark.png") }}
 
 First you need to define a *Name* to recognize this connection inside
 docspell. This name is also used in URLs to docspell and so it must

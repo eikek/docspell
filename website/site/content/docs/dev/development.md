@@ -3,7 +3,9 @@ title = "Tips & Setup"
 weight = 20
 +++
 
-# Starting Servers with `reStart`
+# Setup / Tips
+
+## Starting Servers with `reStart`
 
 When developing, it's very convenient to use the [revolver sbt
 plugin](https://github.com/spray/sbt-revolver). Start the sbt console
@@ -29,7 +31,7 @@ sbt:docspell-root> reStart
 ```
 
 
-# Custom config file
+## Custom config file
 
 The sbt build is setup such that a file `dev.conf` in the directory
 `local` (at root of the source tree) is picked up as config file, if

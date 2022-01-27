@@ -3,6 +3,8 @@ title = "Prerequisites"
 weight = 10
 +++
 
+# Prerequisites
+
 The two components have one prerequisite in common: they both require
 Java to run. While this is the only requirement for the *REST server*,
 the *Joex* components requires some more external programs.
@@ -10,7 +12,7 @@ the *Joex* components requires some more external programs.
 The rest server and joex components are not required to "see" each
 other, though it is recommended.
 
-# Java
+## Java
 
 Very often, Java is already installed. You can check this by opening a
 terminal and typing `java -version`. Otherwise install Java using your
@@ -28,7 +30,7 @@ works on newer java versions. The provided docker images use JDK11.
 The next tools are only required on machines running the *Joex*
 component.
 
-# External Programs for Joex
+## External Programs for Joex
 
 - [Ghostscript](http://pages.cs.wisc.edu/~ghost/) (the `gs` command)
   is used to extract/convert PDF files into images that are then fed
@@ -57,7 +59,7 @@ The performance of `unoconv` can be improved by starting `unoconv -l`
 in a separate process. This runs a libreoffice/openoffice listener and
 therefore avoids starting one each time `unoconv` is called.
 
-## Example Debian
+### Example Debian
 
 On Debian this should install all joex requirements:
 

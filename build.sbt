@@ -840,19 +840,17 @@ val website = project
     }.taskValue,
     Compile / resourceGenerators += Def.task {
       val changelog = (LocalRootProject / baseDirectory).value / "Changelog.md"
-      val targetDir = baseDirectory.value / "site" / "content" / "docs" / "changelog"
+      val targetDir = baseDirectory.value / "site" / "content" / "docs" / "install"
       IO.createDirectory(targetDir)
-      val target = targetDir / "_index.md"
+      val target = targetDir / "changelog.md"
 
       IO.write(
         target,
         """|+++
            |title = "Changelog"
            |description = "See what changed between releases."
-           |weight = 10
+           |weight = 10000
            |insert_anchor_links = "right"
-           |[extra]
-           |maketoc = false
            |+++
            |""".stripMargin
       )

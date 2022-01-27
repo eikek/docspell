@@ -3,9 +3,9 @@ title = "Api Introduction"
 description = "Api Basics"
 weight = 10
 insert_anchor_links = "right"
-[extra]
-mktoc = true
 +++
+
+# Api
 
 Docspell is designed as a REST server that uses JSON to exchange
 data. The REST api can be used to integrate docspell into your

@@ -7,6 +7,8 @@ insert_anchor_links = "right"
 mktoc = true
 +++
 
+# File Processing
+
 When uploading a file, it is only saved to the database together with
 the given meta information as a "job". The file is not visible in the
 ui yet. Then joex takes the next such job and starts processing it.
@@ -319,7 +321,7 @@ docspell.joex {
 }
 ```
 
-{% infobubble(mode="warning", title="Please note") %}
+{% warningbubble(title="Please note") %}
 
 When this is changed, you must re-generate all preview images. Check
 the api for this, there is an endpoint to regenerate all preview

@@ -5,12 +5,14 @@ weight = 100
 mktoc = true
 +++
 
+# Merge Items
+
 Merging multiple items into one lets you transfer metadata and
 attachments from multiple items into a single one. The items that have
 been merged are removed afterwards.
 
-# Usage
-## Select items to merge
+## Usage
+### Select items to merge
 
 Multiple items can be merged where all metadata is copied into the
 target item. This can be done by selecting multiple items to merge via
@@ -19,26 +21,26 @@ the multi selection tool as described
 
 Then select some items (at least 2) and click the merge tool button.
 
-{{ figure(file="merge-01.png") }}
+{{ figure2(light="merge-01.png", dark="merge-01_dark.png") }}
 
 
-## Edit order of items
+### Edit order of items
 
 This opens the merge view, where you can change the order of the
 selected items.
 
-{{ figure(file="merge-02.png") }}
+{{ figure2(light="merge-02.png", dark="merge-02_dark.png") }}
 
 The order of this list can matter when merging (see below). You can
 move items via drag and drop or the buttons on the right.
 
 
-## Click merge
+### Click merge
 
 Once you clicke the *Merge* button, the items are merged and you will
 be taken to the search view.
 
-{{ figure(file="merge-04.png") }}
+{{ figure2(light="merge-04.png", dark="merge-04_dark.png") }}
 
 As you can see, tags are all combined. Custom fields of same name are
 also merged, where possible. For text fields, the values are

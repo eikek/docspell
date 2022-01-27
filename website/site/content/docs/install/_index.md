@@ -1,9 +1,10 @@
 +++
-title = "Installation and Deployment"
+title = "Installation"
 description = "There are multiple ways to install Docspell. This section contains detailed instructions."
-weight = 30
+weight = 5
 sort_by = "weight"
 insert_anchor_links = "right"
-template = "pages.html"
+template = "docs.html"
+page_template = "docs.html"
 redirect_to = "/docs/install/quickstart"
 +++

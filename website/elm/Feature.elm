@@ -14,38 +14,66 @@ type alias Feature =
 
 featureBox : Int -> Feature -> Html msg
 featureBox index f =
-    case isOdd index of
-        False ->
-            div [ class "columns is-vcentered box mb-5" ]
-                [ div [ class "column is-three-quarter" ]
-                    [ figure [ class "image is-2by1 feature-image" ]
-                        [ img [ src f.image ] []
-                        ]
-                    ]
-                , div [ class "column" ]
-                    [ h2 [ class "title" ]
-                        [ text f.header
-                        ]
-                    , Markdown.toHtml []
-                        f.description
-                    ]
-                ]
+    let
+        titleCss =
+            "text-3xl font-bold font-serif mb-3"
 
-        True ->
-            div [ class "columns is-vcentered box mb-5" ]
-                [ div [ class "column is-three-quarter" ]
-                    [ h2 [ class "title" ]
-                        [ text f.header
+        boxCss =
+            [ class "flex-col space-y-2"
+            , class "sm:flex-row sm:space-y-0 sm-space-x-4"
+            , class "flex px-8 py-8 border rounded mb-5 shadow-lg mx-2 sm:mx-8"
+            ]
+
+        descrCss =
+            "flex flex-col text-xl "
+    in
+    if isOdd index then
+        div boxCss
+            [ div [ class "sm:w-1/2" ]
+                [ figure [ class "block my-auto" ]
+                    [ img
+                        [ src f.image
+                        , class "w-full"
+                        , style "min-width" "4rem"
                         ]
-                    , Markdown.toHtml []
-                        f.description
-                    ]
-                , div [ class "column" ]
-                    [ figure [ class "image is-2by1 feature-image" ]
-                        [ img [ src f.image ] []
-                        ]
+                        []
                     ]
                 ]
+            , div
+                [ class descrCss
+                , class "pl-4 sm:w-1/2"
+                ]
+                [ h2 [ class titleCss ]
+                    [ text f.header
+                    ]
+                , Markdown.toHtml []
+                    f.description
+                ]
+            ]
+
+    else
+        div
+            boxCss
+            [ div
+                [ class descrCss
+                , class "pr-4 sm:w-1/2"
+                ]
+                [ h2 [ class titleCss ]
+                    [ text f.header
+                    ]
+                , Markdown.toHtml []
+                    f.description
+                ]
+            , div [ class "sm:w-1/2" ]
+                [ figure [ class "block my-auto " ]
+                    [ img
+                        [ src f.image
+                        , class "w-full"
+                        ]
+                        []
+                    ]
+                ]
+            ]
 
 
 features : List Feature
@@ -105,7 +133,7 @@ Users can define IMAP settings so that docspell can import their e-mails. This c
     , { image = "img/notify-feature.png"
       , header = "Notifications"
       , description = """
-Users can be notified by e-mail for documents whose due-date comes closer.
+Users can be notified by e-mail, Matrix or Gotify with documents resulting from a query that is executed periodically. Notifications can also be configured for specific events.
 """
       }
     ]

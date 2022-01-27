@@ -3,9 +3,10 @@ title = "Configuration"
 insert_anchor_links = "right"
 description = "Describes the configuration file and shows all default settings."
 weight = 40
-[extra]
-mktoc = true
+template = "docs.html"
 +++
+
+# Configuration
 
 Docspell's executables (restserver and joex) can take one argument – a
 configuration file. If that is not given, the defaults are used,

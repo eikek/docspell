@@ -3,6 +3,7 @@ title = "Translating Web-UI"
 weight = 10
 +++
 
+# UI Translation
 
 Help with translating the web-ui is greatly appreciated. I can only
 provide translations for English and German, and these may be wrong -
@@ -16,7 +17,7 @@ messages.
 
 This guide assumes no knowledge about Elm at all.
 
-# TL;DR
+## TL;DR
 
 If you are already familiar with Elm, here is the TL;DR:
 
@@ -92,7 +93,7 @@ sbt:docspell-root> make
 This will take a while, you need to wait until this is finished.
 
 
-## Start the application
+### Start the application
 
 If sbt is not started, start sbt from within the source root. Also
 export the `DOCSPELL_ENV` variable *before* starting sbt:

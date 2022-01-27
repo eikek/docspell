@@ -3,6 +3,7 @@ title = "Nix / NixOS"
 weight = 24
 +++
 
+# Nix
 
 ## Install via Nix
 
@@ -73,7 +74,7 @@ back to the previous version.
 When using the provided nix setup, the `currentPkg` always points to
 the latest release. Thus it is enough to run `nix-build`.
 
-## Docspell on NixOS {#nixos}
+# Docspell on NixOS {#nixos}
 
 If you are running [NixOS](https://nixos.org), there is a module
 definition for installing Docspell as a service using systemd.
@@ -141,7 +142,7 @@ The modules files are only applicable to the newest version of
 Docspell. If you really need an older version, checkout the
 appropriate commit.
 
-### NixOS Example
+## NixOS Example
 
 This is a example system configuration that installs docspell with a
 postgres database. This snippet can be used to create a vm (using
