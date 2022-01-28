@@ -30,6 +30,13 @@ object CollectiveRoutes {
     import dsl._
 
     HttpRoutes.of {
+      case GET -> Root =>
+        for {
+          collDb <- backend.collective.find(user.account.collective)
+          coll = collDb.map(c => Collective(c.id, c.state, c.created))
+          resp <- coll.toResponse()
+        } yield resp
+
       case GET -> Root / "insights" =>
         for {
           ins <- backend.collective.insights(user.account.collective)
@@ -121,13 +128,6 @@ object CollectiveRoutes {
             EmptyTrashArgs(user.account.collective, data.minAge)
           )
           resp <- Ok(BasicResult(true, "Task submitted"))
-        } yield resp
-
-      case GET -> Root =>
-        for {
-          collDb <- backend.collective.find(user.account.collective)
-          coll = collDb.map(c => Collective(c.id, c.state, c.created))
-          resp <- coll.toResponse()
         } yield resp
     }
   }

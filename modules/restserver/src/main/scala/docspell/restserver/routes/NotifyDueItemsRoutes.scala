@@ -38,6 +38,13 @@ object NotifyDueItemsRoutes extends MailAddressCodec with NonEmptyListSupport {
     import dsl._
 
     HttpRoutes.of {
+      case GET -> Root =>
+        ut.getNotifyDueItems(UserTaskScope(user.account))
+          .evalMap(task => taskToSettings(backend, task))
+          .compile
+          .toVector
+          .flatMap(Ok(_))
+
       case GET -> Root / Ident(id) =>
         (for {
           task <- ut.findNotifyDueItems(id, UserTaskScope(user.account))
@@ -94,13 +101,6 @@ object NotifyDueItemsRoutes extends MailAddressCodec with NonEmptyListSupport {
               .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)
         } yield resp
-
-      case GET -> Root =>
-        ut.getNotifyDueItems(UserTaskScope(user.account))
-          .evalMap(task => taskToSettings(backend, task))
-          .compile
-          .toVector
-          .flatMap(Ok(_))
     }
   }
 

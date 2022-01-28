@@ -38,7 +38,14 @@ object PeriodicQueryRoutes extends MailAddressCodec with NonEmptyListSupport {
     val ut = backend.userTask
     import dsl._
 
-    HttpRoutes.of {
+    HttpRoutes.strict {
+      case GET -> Root =>
+        ut.getPeriodicQuery(UserTaskScope(user.account))
+          .evalMap(task => taskToSettings(task))
+          .compile
+          .toVector
+          .flatMap(Ok(_))
+
       case GET -> Root / Ident(id) =>
         (for {
           task <- ut.findPeriodicQuery(id, UserTaskScope(user.account))
@@ -96,12 +103,6 @@ object PeriodicQueryRoutes extends MailAddressCodec with NonEmptyListSupport {
           resp <- Ok(res)
         } yield resp
 
-      case GET -> Root =>
-        ut.getPeriodicQuery(UserTaskScope(user.account))
-          .evalMap(task => taskToSettings(task))
-          .compile
-          .toVector
-          .flatMap(Ok(_))
     }
   }
 
