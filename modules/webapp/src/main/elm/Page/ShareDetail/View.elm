@@ -16,7 +16,7 @@ import Comp.UrlCopy
 import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
-import Data.ItemTemplate as IT exposing (ItemTemplate)
+import Data.ItemTemplate as IT
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -33,7 +33,7 @@ import Util.String
 
 
 viewSidebar : Texts -> Bool -> Flags -> UiSettings -> String -> String -> Model -> Html Msg
-viewSidebar texts visible flags settings shareId itemId model =
+viewSidebar texts visible flags _ shareId itemId model =
     div
         [ id "sidebar"
         , classList [ ( "hidden", not visible || model.viewMode /= ViewNormal ) ]
@@ -103,6 +103,7 @@ itemData texts flags model shareId itemId =
             div
                 [ class "flex ml-2 mt-1 font-semibold hover:opacity-75"
                 , class S.basicLabel
+                , class (Data.UiSettings.tagColorString2 tag model.uiSettings)
                 ]
                 [ i [ class "fa fa-tag mr-2" ] []
                 , text tag.name
@@ -143,7 +144,7 @@ itemData texts flags model shareId itemId =
             ]
         , div [ class boxStyle ]
             [ div [ class headerStyle ]
-                [ Icons.tagsIcon2 "mr-2 ml-2"
+                [ Icons.tagsIcon "mr-2 ml-2"
                 , text texts.tagsAndFields
                 ]
             , div [ class "flex flex-row items-center flex-wrap font-medium my-1" ]

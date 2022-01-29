@@ -42,10 +42,7 @@ import Comp.ItemDetail.Model
         , UpdateResult
         , ViewMode(..)
         , initSelectViewModel
-        , initShowQrModel
         , isEditNotes
-        , isShowQrAttach
-        , isShowQrItem
         , resultModel
         , resultModelCmd
         , resultModelCmdSub
@@ -741,7 +738,7 @@ update key flags inav settings msg model =
                                 resultModelCmd ( model, Page.set key (ItemDetailPage id) )
 
                             Nothing ->
-                                resultModelCmd ( model, Page.set key HomePage )
+                                resultModelCmd ( model, Page.set key (SearchPage Nothing) )
                 in
                 { result_ | removedItem = Just removedId }
 
@@ -1414,7 +1411,7 @@ update key flags inav settings msg model =
             let
                 model_ =
                     { model
-                        | menuOpen = settings.editMenuVisible
+                        | menuOpen = settings.sideMenuVisible
                     }
             in
             resultModel model_

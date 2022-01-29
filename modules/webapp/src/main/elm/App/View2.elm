@@ -11,6 +11,8 @@ import Api.Model.AuthResult exposing (AuthResult)
 import App.Data exposing (..)
 import Comp.Basic as B
 import Data.Flags
+import Data.Icons as Icons
+import Data.UiSettings
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -19,14 +21,15 @@ import Messages.App exposing (Texts)
 import Messages.UiLanguage
 import Page exposing (Page(..))
 import Page.CollectiveSettings.View2 as CollectiveSettings
-import Page.Home.Data
-import Page.Home.View2 as Home
+import Page.Dashboard.View as Dashboard
 import Page.ItemDetail.View2 as ItemDetail
 import Page.Login.View2 as Login
 import Page.ManageData.View2 as ManageData
 import Page.NewInvite.View2 as NewInvite
 import Page.Queue.View2 as Queue
 import Page.Register.View2 as Register
+import Page.Search.Data
+import Page.Search.View2 as Search
 import Page.Share.View as Share
 import Page.ShareDetail.View as ShareDetail
 import Page.Upload.View2 as Upload
@@ -76,7 +79,11 @@ topNavUser auth model =
                 [ class S.infoMessageBase
                 , class "my-2 px-1 py-1 rounded-lg inline-block hover:opacity-50"
                 , classList [ ( "hidden", not model.showNewItemsArrived ) ]
-                , Page.href HomePage
+                , if Page.isSearchPage model.page || Page.isDashboardPage model.page then
+                    href "#"
+
+                  else
+                    Page.href (SearchPage Nothing)
                 , onClick ToggleShowNewItemsArrived
                 ]
                 [ i [ class "fa fa-exclamation-circle mr-1" ] []
@@ -133,7 +140,7 @@ headerNavItem authenticated model =
         [ class "inline-flex font-bold items-center px-4"
         , classList [ ( "hover:bg-blue-200 dark:hover:bg-slate-800", authenticated ) ]
         , if authenticated then
-            Page.href HomePage
+            Page.href DashboardPage
 
           else
             href "#"
@@ -160,8 +167,11 @@ mainContent model =
         , class styleMain
         ]
         (case model.page of
-            HomePage ->
-                viewHome texts model
+            DashboardPage ->
+                viewDashboard texts model
+
+            SearchPage bmId ->
+                viewSearch texts bmId model
 
             CollectiveSettingPage ->
                 viewCollectiveSettings texts model
@@ -280,7 +290,7 @@ dataMenu texts _ model =
             , classList [ ( "hidden", not model.navMenuOpen ) ]
             ]
             [ dataPageLink model
-                HomePage
+                DashboardPage
                 []
                 [ img
                     [ class "w-4 inline-block"
@@ -288,14 +298,22 @@ dataMenu texts _ model =
                     ]
                     []
                 , div [ class "inline-block ml-2" ]
-                    [ text texts.items
+                    [ text texts.dashboard
                     ]
                 ]
             , div [ class "py-1" ] [ hr [ class S.border ] [] ]
             , dataPageLink model
+                (SearchPage Nothing)
+                []
+                [ Icons.searchIcon "w-6"
+                , span [ class "ml-1" ]
+                    [ text texts.items
+                    ]
+                ]
+            , dataPageLink model
                 ManageDataPage
                 []
-                [ i [ class "fa fa-cubes w-6" ] []
+                [ Icons.metadataIcon "w-6"
                 , span [ class "ml-1" ]
                     [ text texts.manageData
                     ]
@@ -304,7 +322,7 @@ dataMenu texts _ model =
             , dataPageLink model
                 (UploadPage Nothing)
                 []
-                [ i [ class "fa fa-upload w-6" ] []
+                [ Icons.fileUploadIcon "w-6"
                 , span [ class "ml-1" ]
                     [ text texts.uploadFiles
                     ]
@@ -345,11 +363,11 @@ dataMenu texts _ model =
                 ]
             , a
                 [ class dropdownItem
-                , href "https://docspell.org/docs"
+                , href Data.UiSettings.documentationSite
                 , target "_new"
-                , title "Opens https://docspell.org/docs"
+                , title ("Opens " ++ Data.UiSettings.documentationSite)
                 ]
-                [ i [ class "fa fa-question-circle w-6" ] []
+                [ Icons.documentationIcon "w-6"
                 , span [ class "ml-1" ] [ text texts.help ]
                 , span [ class "float-right" ]
                     [ i [ class "fa fa-external-link-alt w-6" ] []
@@ -467,6 +485,25 @@ dropdownMenu =
     " absolute right-0 bg-white dark:bg-slate-800 border dark:border-slate-700 dark:text-slate-300 shadow-lg opacity-1 transition duration-200 min-w-max "
 
 
+viewDashboard : Messages -> Model -> List (Html Msg)
+viewDashboard texts model =
+    [ Html.map DashboardMsg
+        (Dashboard.viewSidebar texts.dashboard
+            model.sidebarVisible
+            model.flags
+            model.version
+            model.uiSettings
+            model.dashboardModel
+        )
+    , Html.map DashboardMsg
+        (Dashboard.viewContent texts.dashboard
+            model.flags
+            model.uiSettings
+            model.dashboardModel
+        )
+    ]
+
+
 viewShare : Messages -> String -> Model -> List (Html Msg)
 viewShare texts shareId model =
     [ Html.map ShareMsg
@@ -510,20 +547,20 @@ viewShareDetail texts shareId itemId model =
     ]
 
 
-viewHome : Messages -> Model -> List (Html Msg)
-viewHome texts model =
-    [ Html.map HomeMsg
-        (Home.viewSidebar texts.home
+viewSearch : Messages -> Maybe String -> Model -> List (Html Msg)
+viewSearch texts bmId model =
+    [ Html.map SearchMsg
+        (Search.viewSidebar texts.search
             model.sidebarVisible
             model.flags
             model.uiSettings
-            model.homeModel
+            model.searchModel
         )
-    , Html.map HomeMsg
-        (Home.viewContent texts.home
+    , Html.map SearchMsg
+        (Search.viewContent texts.search
             model.flags
             model.uiSettings
-            model.homeModel
+            model.searchModel
         )
     ]
 
@@ -647,7 +684,7 @@ viewItemDetail : Messages -> String -> Model -> List (Html Msg)
 viewItemDetail texts id model =
     let
         inav =
-            Page.Home.Data.itemNav id model.homeModel
+            Page.Search.Data.itemNav id model.searchModel
     in
     [ Html.map ItemDetailMsg
         (ItemDetail.viewSidebar texts.itemDetail

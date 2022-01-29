@@ -18,8 +18,9 @@ import Comp.SearchMenu
 import Comp.SharePasswordForm
 import Data.Flags exposing (Flags)
 import Data.ItemArrange exposing (ItemArrange)
+import Data.UiSettings exposing (UiSettings)
 import Http
-import Page.Home.Data exposing (Msg(..))
+import Page.Search.Data exposing (Msg(..))
 import Set exposing (Set)
 import Util.Html exposing (KeyCode)
 
@@ -53,6 +54,7 @@ type alias Model =
     , initialized : Bool
     , contentSearch : Maybe String
     , searchMode : SearchBarMode
+    , uiSettings : UiSettings
     , viewMode :
         { menuOpen : Bool
         , showGroups : Bool
@@ -75,6 +77,7 @@ emptyModel flags =
     , initialized = False
     , contentSearch = Nothing
     , searchMode = SearchBarContent
+    , uiSettings = Data.UiSettings.defaults
     , viewMode =
         { menuOpen = False
         , showGroups = True
@@ -106,7 +109,8 @@ initCmd shareId flags =
 type Msg
     = VerifyResp (Result Http.Error ShareVerifyResult)
     | SearchResp (Result Http.Error ItemLightList)
-    | StatsResp (Result Http.Error SearchStats)
+    | StatsResp Bool (Result Http.Error SearchStats)
+    | UiSettingsResp (Result Http.Error UiSettings)
     | PasswordMsg Comp.SharePasswordForm.Msg
     | SearchMenuMsg Comp.SearchMenu.Msg
     | PowerSearchMsg Comp.PowerSearchInput.Msg

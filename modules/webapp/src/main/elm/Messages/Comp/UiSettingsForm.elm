@@ -56,6 +56,7 @@ type alias Texts =
     , fieldLabel : Field -> String
     , templateHelpMessage : String
     , pdfMode : PdfMode -> String
+    , resetLabel : String
     }
 
 
@@ -131,6 +132,7 @@ and if that is not present the person. If both are absent a dash `-`
 is rendered.
 """
     , pdfMode = Messages.Data.PdfMode.gb
+    , resetLabel = "Reset"
     }
 
 
@@ -208,4 +210,5 @@ oder, wenn diese leer ist, die Person. Sind beide leer wird ein `-`
 dargestellt.
 """
     , pdfMode = Messages.Data.PdfMode.de
+    , resetLabel = "Zurücksetzen"
     }

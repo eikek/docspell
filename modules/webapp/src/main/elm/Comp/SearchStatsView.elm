@@ -8,6 +8,7 @@
 module Comp.SearchStatsView exposing
     ( nameOrLabel
     , sortFields
+    , view
     , view2
     )
 
@@ -36,8 +37,13 @@ sortFields fields =
 --- View2
 
 
-view2 : Texts -> String -> SearchStats -> Html msg
-view2 texts classes stats =
+view : Texts -> String -> SearchStats -> Html msg
+view texts classes stats =
+    view2 texts True classes stats
+
+
+view2 : Texts -> Bool -> String -> SearchStats -> Html msg
+view2 texts showCount classes stats =
     let
         isNumField f =
             f.sum > 0
@@ -78,7 +84,10 @@ view2 texts classes stats =
     in
     div [ class classes ]
         [ div [ class "flex flex-col md:flex-row" ]
-            [ div [ class "px-8 py-4" ]
+            [ div
+                [ class "px-8 py-4"
+                , classList [ ( "hidden", not showCount ) ]
+                ]
                 [ B.stats
                     { rootClass = ""
                     , valueClass = "text-4xl"

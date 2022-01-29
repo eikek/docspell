@@ -9,6 +9,7 @@ module Comp.PersonManage exposing
     ( Model
     , Msg(..)
     , emptyModel
+    , init
     , update
     , view2
     )
@@ -70,6 +71,11 @@ emptyModel =
     , query = ""
     , order = Data.PersonOrder.NameAsc
     }
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( emptyModel, Api.getPersons flags emptyModel.query emptyModel.order PersonResp )
 
 
 type Msg

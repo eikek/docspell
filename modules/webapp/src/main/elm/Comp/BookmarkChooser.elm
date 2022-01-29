@@ -16,6 +16,7 @@ module Comp.BookmarkChooser exposing
     , isEmptySelection
     , update
     , view
+    , viewWith
     )
 
 import Api.Model.BookmarkedQuery exposing (BookmarkedQuery)
@@ -114,33 +115,43 @@ update msg model current =
 --- View
 
 
-view : Texts -> Model -> Selection -> Html Msg
-view texts model selection =
+type alias ViewSettings =
+    { showUser : Bool
+    , showCollective : Bool
+    , showShares : Bool
+    }
+
+
+viewWith : ViewSettings -> Texts -> Model -> Selection -> Html Msg
+viewWith cfg texts model selection =
     let
         ( user, coll ) =
             List.partition .personal model.all.bookmarks
     in
     div [ class "flex flex-col" ]
-        [ userBookmarks texts user selection
-        , collBookmarks texts coll selection
-        , shares texts model selection
+        [ userBookmarks cfg.showUser texts user selection
+        , collBookmarks cfg.showCollective texts coll selection
+        , shares cfg.showShares texts model selection
         ]
+
+
+view : Texts -> Model -> Selection -> Html Msg
+view =
+    viewWith { showUser = True, showCollective = True, showShares = True }
 
 
 titleDiv : String -> Html msg
 titleDiv label =
     div [ class "text-sm opacity-75 py-0.5 italic" ]
         [ text label
-
-        --, text " ──"
         ]
 
 
-userBookmarks : Texts -> List BookmarkedQuery -> Selection -> Html Msg
-userBookmarks texts model sel =
+userBookmarks : Bool -> Texts -> List BookmarkedQuery -> Selection -> Html Msg
+userBookmarks visible texts model sel =
     div
         [ class "mb-2"
-        , classList [ ( "hidden", model == [] ) ]
+        , classList [ ( "hidden", model == [] || not visible ) ]
         ]
         [ titleDiv texts.userLabel
         , div [ class "flex flex-col space-y-2 md:space-y-1" ]
@@ -148,11 +159,11 @@ userBookmarks texts model sel =
         ]
 
 
-collBookmarks : Texts -> List BookmarkedQuery -> Selection -> Html Msg
-collBookmarks texts model sel =
+collBookmarks : Bool -> Texts -> List BookmarkedQuery -> Selection -> Html Msg
+collBookmarks visible texts model sel =
     div
         [ class "mb-2"
-        , classList [ ( "hidden", [] == model ) ]
+        , classList [ ( "hidden", [] == model || not visible ) ]
         ]
         [ titleDiv texts.collectiveLabel
         , div [ class "flex flex-col space-y-2 md:space-y-1" ]
@@ -160,15 +171,15 @@ collBookmarks texts model sel =
         ]
 
 
-shares : Texts -> Model -> Selection -> Html Msg
-shares texts model sel =
+shares : Bool -> Texts -> Model -> Selection -> Html Msg
+shares visible texts model sel =
     let
         bms =
             List.map shareToBookmark model.all.shares
     in
     div
         [ class ""
-        , classList [ ( "hidden", List.isEmpty bms ) ]
+        , classList [ ( "hidden", List.isEmpty bms || not visible ) ]
         ]
         [ titleDiv texts.shareLabel
         , div [ class "flex flex-col space-y-2 md:space-y-1" ]

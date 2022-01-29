@@ -33,6 +33,14 @@ object ScanMailboxRoutes {
     import dsl._
 
     HttpRoutes.of {
+      case GET -> Root =>
+        ut.getScanMailbox(UserTaskScope(user.account))
+          .evalMap(task => taskToSettings(user.account, backend, task))
+          .compile
+          .toVector
+          .map(v => ScanMailboxSettingsList(v.toList))
+          .flatMap(Ok(_))
+
       case GET -> Root / Ident(id) =>
         (for {
           task <- ut.findScanMailbox(id, UserTaskScope(user.account))
@@ -89,14 +97,6 @@ object ScanMailboxRoutes {
               .map(Conversions.basicResult(_, "Saved successfully."))
           resp <- Ok(res)
         } yield resp
-
-      case GET -> Root =>
-        ut.getScanMailbox(UserTaskScope(user.account))
-          .evalMap(task => taskToSettings(user.account, backend, task))
-          .compile
-          .toVector
-          .map(v => ScanMailboxSettingsList(v.toList))
-          .flatMap(Ok(_))
     }
   }
 

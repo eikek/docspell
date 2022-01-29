@@ -9,6 +9,7 @@ module Comp.EquipmentManage exposing
     ( Model
     , Msg(..)
     , emptyModel
+    , init
     , update
     , view2
     )
@@ -68,6 +69,11 @@ emptyModel =
     , query = ""
     , order = Data.EquipmentOrder.NameAsc
     }
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( emptyModel, Api.getEquipments flags emptyModel.query emptyModel.order EquipmentResp )
 
 
 type Msg

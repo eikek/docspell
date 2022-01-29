@@ -10,7 +10,6 @@ module Page.Share.Sidebar exposing (..)
 import Comp.SearchMenu
 import Comp.Tabs
 import Data.Flags exposing (Flags)
-import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Page.Share exposing (Texts)
@@ -18,8 +17,8 @@ import Page.Share.Data exposing (Model, Msg(..))
 import Util.ItemDragDrop
 
 
-view : Texts -> Flags -> UiSettings -> Model -> Html Msg
-view texts flags settings model =
+view : Texts -> Flags -> Model -> Html Msg
+view texts flags model =
     let
         hideTrashTab tab default =
             case tab of
@@ -41,7 +40,7 @@ view texts flags settings model =
                 ddDummy
                 flags
                 searchMenuCfg
-                settings
+                model.uiSettings
                 model.searchMenuModel
             )
         ]

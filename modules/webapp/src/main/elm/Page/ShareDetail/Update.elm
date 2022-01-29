@@ -25,7 +25,10 @@ update shareId itemId flags msg model =
                     , viewMode = ViewLoading
                     , verifyResult = res
                   }
-                , Api.itemDetailShare flags res.token itemId GetItemResp
+                , Cmd.batch
+                    [ Api.itemDetailShare flags res.token itemId GetItemResp
+                    , Api.clientSettingsShare flags res.token UiSettingsResp
+                    ]
                 )
 
             else if res.passwordRequired then
@@ -93,3 +96,9 @@ update shareId itemId flags msg model =
                     Comp.UrlCopy.update lm
             in
             ( model, cmd )
+
+        UiSettingsResp (Ok s) ->
+            ( { model | uiSettings = s }, Cmd.none )
+
+        UiSettingsResp (Err _) ->
+            ( model, Cmd.none )

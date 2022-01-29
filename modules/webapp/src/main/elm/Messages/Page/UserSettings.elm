@@ -11,6 +11,7 @@ module Messages.Page.UserSettings exposing
     , gb
     )
 
+import Messages.Basics
 import Messages.Comp.ChangePasswordForm
 import Messages.Comp.DueItemsTaskManage
 import Messages.Comp.EmailSettingsManage
@@ -24,7 +25,8 @@ import Messages.Comp.UiSettingsManage
 
 
 type alias Texts =
-    { changePasswordForm : Messages.Comp.ChangePasswordForm.Texts
+    { basics : Messages.Basics.Texts
+    , changePasswordForm : Messages.Comp.ChangePasswordForm.Texts
     , uiSettingsManage : Messages.Comp.UiSettingsManage.Texts
     , emailSettingsManage : Messages.Comp.EmailSettingsManage.Texts
     , imapSettingsManage : Messages.Comp.ImapSettingsManage.Texts
@@ -46,8 +48,6 @@ type alias Texts =
     , scanMailboxInfo1 : String
     , scanMailboxInfo2 : String
     , otpMenu : String
-    , webhooks : String
-    , genericQueries : String
     , dueItems : String
     , notificationInfoText : String
     , webhookInfoText : String
@@ -60,7 +60,8 @@ type alias Texts =
 
 gb : Texts
 gb =
-    { changePasswordForm = Messages.Comp.ChangePasswordForm.gb
+    { basics = Messages.Basics.gb
+    , changePasswordForm = Messages.Comp.ChangePasswordForm.gb
     , uiSettingsManage = Messages.Comp.UiSettingsManage.gb
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.gb
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.gb
@@ -79,8 +80,7 @@ gb =
     , changePassword = "Change Password"
     , channelSettings = "Notification Channels"
     , uiSettingsInfo =
-        "These settings only affect the web ui. They are stored in the browser, "
-            ++ "so they are separated between browsers and devices."
+        "These settings only affect the web ui. Settings can be stored to the collective or to your personal user. Personal settings are prefered when both values exist."
     , scanMailboxInfo1 =
         "Docspell can scan folders of your mailbox to import your mails. "
             ++ "You need to provide a connection in "
@@ -96,8 +96,6 @@ gb =
             adjust the schedule to avoid reading over the same mails
             again."""
     , otpMenu = "Two Factor Authentication"
-    , webhooks = "Webhooks"
-    , genericQueries = "Generic Queries"
     , dueItems = "Due Items Query"
     , notificationInfoText = """
 
@@ -125,7 +123,8 @@ must be created before.
 
 de : Texts
 de =
-    { changePasswordForm = Messages.Comp.ChangePasswordForm.de
+    { basics = Messages.Basics.de
+    , changePasswordForm = Messages.Comp.ChangePasswordForm.de
     , uiSettingsManage = Messages.Comp.UiSettingsManage.de
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.de
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.de
@@ -144,7 +143,7 @@ de =
     , channelSettings = "Benachrichtigungskanäle"
     , changePassword = "Passwort ändern"
     , uiSettingsInfo =
-        "Diese Einstellungen sind für die Web-Oberfläche."
+        "Diese Einstellungen sind für die Web-Oberfläche. Es kann entweder für das ganze Kollektiv Einstellungen gemacht werden oder persönliche. Die persönlichen Einstellungen werden bevorzugt, falls beide gesetzt sind."
     , scanMailboxInfo1 =
         """Docspell kann Postfächer durchsuchen und E-Mails importieren. Dafür sind
 E-Mail-Einstellungen (IMAP) notwendig."""
@@ -161,8 +160,6 @@ E-Mail-Einstellungen (IMAP) notwendig."""
             gleichen E-Mails möglichst nicht noch einmal eingelesen
             werden."""
     , otpMenu = "Zwei-Faktor-Authentifizierung"
-    , webhooks = "Webhooks"
-    , genericQueries = "Periodische Abfragen"
     , dueItems = "Fällige Dokumente"
     , notificationInfoText = """
 

@@ -16,24 +16,42 @@ module Comp.UiSettingsManage exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Comp.Basic
 import Comp.MenuBar as MB
 import Comp.UiSettingsForm
-import Comp.UiSettingsMigrate
+import Data.AccountScope exposing (AccountScope)
+import Data.AppEvent exposing (AppEvent(..))
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
 import Messages.Comp.UiSettingsManage exposing (Texts)
+import Page.Search.Data exposing (Msg(..))
+import Process
 import Styles as S
+import Task
 
 
 type alias Model =
-    { formModel : Comp.UiSettingsForm.Model
-    , settings : Maybe UiSettings
+    { formModel : FormView
     , formResult : FormResult
-    , settingsMigrate : Comp.UiSettingsMigrate.Model
+    , formData : Maybe FormData
     }
+
+
+type alias FormData =
+    { userSettings : StoredUiSettings
+    , userModel : Comp.UiSettingsForm.Model
+    , collSettings : StoredUiSettings
+    , collModel : Comp.UiSettingsForm.Model
+    }
+
+
+type FormView
+    = ViewLoading
+    | ViewUser
+    | ViewCollective
 
 
 type FormResult
@@ -45,33 +63,38 @@ type FormResult
 
 
 type Msg
-    = UiSettingsFormMsg Comp.UiSettingsForm.Msg
-    | UiSettingsMigrateMsg Comp.UiSettingsMigrate.Msg
+    = UiFormMsg AccountScope Comp.UiSettingsForm.Msg
     | Submit
-    | UpdateSettings
-    | SaveSettingsResp UiSettings (Result Http.Error BasicResult)
-    | ReceiveBrowserSettings StoredUiSettings
+    | SaveSettingsResp (Result Http.Error BasicResult)
+    | ReceiveServerSettings (Result Http.Error ( StoredUiSettings, StoredUiSettings ))
+    | ToggleExpandCollapse
+    | SwitchForm AccountScope
+    | ResetFormState
 
 
-init : Flags -> UiSettings -> ( Model, Cmd Msg )
-init flags settings =
-    let
-        ( fm, fc ) =
-            Comp.UiSettingsForm.init flags settings
-
-        ( mm, mc ) =
-            Comp.UiSettingsMigrate.init flags
-    in
-    ( { formModel = fm
-      , settings = Nothing
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    ( { formModel = ViewLoading
+      , formData = Nothing
       , formResult = FormInit
-      , settingsMigrate = mm
       }
     , Cmd.batch
-        [ Cmd.map UiSettingsFormMsg fc
-        , Cmd.map UiSettingsMigrateMsg mc
+        [ Api.getClientSettingsRaw flags ReceiveServerSettings
         ]
     )
+
+
+getViewScope : Model -> AccountScope
+getViewScope model =
+    case model.formModel of
+        ViewCollective ->
+            Data.AccountScope.Collective
+
+        ViewUser ->
+            Data.AccountScope.User
+
+        _ ->
+            Data.AccountScope.User
 
 
 
@@ -82,108 +105,177 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , sub : Sub Msg
-    , newSettings : Maybe UiSettings
+    , appEvent : AppEvent
     }
+
+
+unit : Model -> UpdateResult
+unit model =
+    UpdateResult model Cmd.none Sub.none AppNothing
 
 
 update : Flags -> UiSettings -> Msg -> Model -> UpdateResult
 update flags settings msg model =
     case msg of
-        UiSettingsFormMsg lm ->
+        UiFormMsg scope lm ->
+            case model.formData of
+                Nothing ->
+                    unit model
+
+                Just data ->
+                    case scope of
+                        Data.AccountScope.Collective ->
+                            let
+                                ( m_, sett ) =
+                                    Comp.UiSettingsForm.update flags data.collSettings lm data.collModel
+                            in
+                            unit
+                                { model
+                                    | formData =
+                                        Just
+                                            { data
+                                                | collSettings = Maybe.withDefault data.collSettings sett
+                                                , collModel = m_
+                                            }
+                                }
+
+                        Data.AccountScope.User ->
+                            let
+                                ( m_, sett ) =
+                                    Comp.UiSettingsForm.update flags data.userSettings lm data.userModel
+                            in
+                            unit
+                                { model
+                                    | formData =
+                                        Just
+                                            { data
+                                                | userSettings = Maybe.withDefault data.userSettings sett
+                                                , userModel = m_
+                                            }
+                                }
+
+        Submit ->
+            case ( model.formModel, model.formData ) of
+                ( ViewCollective, Just data ) ->
+                    { model = { model | formResult = FormInit }
+                    , cmd =
+                        Api.saveClientSettings flags
+                            data.collSettings
+                            Data.AccountScope.Collective
+                            SaveSettingsResp
+                    , sub = Sub.none
+                    , appEvent = AppNothing
+                    }
+
+                ( ViewUser, Just data ) ->
+                    { model = { model | formResult = FormInit }
+                    , cmd =
+                        Api.saveClientSettings flags
+                            data.userSettings
+                            Data.AccountScope.User
+                            SaveSettingsResp
+                    , sub = Sub.none
+                    , appEvent = AppNothing
+                    }
+
+                _ ->
+                    unit model
+
+        SaveSettingsResp (Ok res) ->
+            case ( res.success, model.formData ) of
+                ( True, Just data ) ->
+                    let
+                        result =
+                            update flags
+                                settings
+                                (ReceiveServerSettings (Ok ( data.collSettings, data.userSettings )))
+                                { model | formResult = FormSaved }
+
+                        cmd =
+                            Process.sleep 2000
+                                |> Task.perform (\_ -> ResetFormState)
+                    in
+                    { result | appEvent = AppReloadUiSettings, cmd = Cmd.batch [ cmd, result.cmd ] }
+
+                _ ->
+                    unit { model | formResult = FormUnknownError }
+
+        SaveSettingsResp (Err err) ->
+            UpdateResult { model | formResult = FormHttpError err } Cmd.none Sub.none AppNothing
+
+        ReceiveServerSettings (Ok ( coll, user )) ->
             let
-                inSettings =
-                    Maybe.withDefault settings model.settings
+                collDefaults =
+                    Data.UiSettings.defaults
 
-                ( m_, sett ) =
-                    Comp.UiSettingsForm.update inSettings lm model.formModel
+                userDefaults =
+                    Data.UiSettings.merge coll collDefaults
+
+                ( ( um, uc ), ( cm, cc ) ) =
+                    case model.formData of
+                        Just data ->
+                            ( Comp.UiSettingsForm.initData flags user userDefaults data.userModel
+                            , Comp.UiSettingsForm.initData flags coll collDefaults data.collModel
+                            )
+
+                        Nothing ->
+                            ( Comp.UiSettingsForm.init flags user userDefaults
+                            , Comp.UiSettingsForm.init flags coll collDefaults
+                            )
+
+                model_ =
+                    { model
+                        | formData =
+                            Just
+                                { userSettings = user
+                                , userModel = um
+                                , collSettings = coll
+                                , collModel = cm
+                                }
+                        , formModel =
+                            case model.formModel of
+                                ViewLoading ->
+                                    ViewUser
+
+                                _ ->
+                                    model.formModel
+                    }
+
+                cmds =
+                    Cmd.batch
+                        [ Cmd.map (UiFormMsg Data.AccountScope.User) uc
+                        , Cmd.map (UiFormMsg Data.AccountScope.Collective) cc
+                        ]
             in
-            { model =
-                { model
-                    | formModel = m_
-                    , settings =
-                        if sett == Nothing then
-                            model.settings
+            UpdateResult model_ cmds Sub.none AppNothing
 
-                        else
-                            sett
-                    , formResult =
-                        if sett /= Nothing then
-                            FormInit
+        ReceiveServerSettings (Err err) ->
+            unit { model | formResult = FormHttpError err }
 
-                        else
-                            model.formResult
-                }
-            , cmd = Cmd.none
-            , sub = Sub.none
-            , newSettings = Nothing
-            }
-
-        UiSettingsMigrateMsg lm ->
-            let
-                result =
-                    Comp.UiSettingsMigrate.update flags lm model.settingsMigrate
-            in
-            { model = { model | settingsMigrate = result.model }
-            , cmd = Cmd.map UiSettingsMigrateMsg result.cmd
-            , sub = Sub.map UiSettingsMigrateMsg result.sub
-            , newSettings = result.newSettings
-            }
-
-        ReceiveBrowserSettings sett ->
+        ToggleExpandCollapse ->
             let
                 lm =
-                    UiSettingsMigrateMsg (Comp.UiSettingsMigrate.receiveBrowserSettings sett)
+                    UiFormMsg (getViewScope model) Comp.UiSettingsForm.toggleAllTabs
             in
             update flags settings lm model
 
-        Submit ->
-            case model.settings of
-                Just s ->
-                    { model = { model | formResult = FormInit }
-                    , cmd = Api.saveClientSettings flags s (SaveSettingsResp s)
-                    , sub = Sub.none
-                    , newSettings = Nothing
-                    }
-
-                Nothing ->
-                    { model = { model | formResult = FormUnchanged }
-                    , cmd = Cmd.none
-                    , sub = Sub.none
-                    , newSettings = Nothing
-                    }
-
-        SaveSettingsResp newSettings (Ok res) ->
-            if res.success then
-                { model = { model | formResult = FormSaved }
-                , cmd = Cmd.none
-                , sub = Sub.none
-                , newSettings = Just newSettings
-                }
-
-            else
-                { model = { model | formResult = FormUnknownError }
-                , cmd = Cmd.none
-                , sub = Sub.none
-                , newSettings = Nothing
-                }
-
-        SaveSettingsResp _ (Err err) ->
-            UpdateResult { model | formResult = FormHttpError err } Cmd.none Sub.none Nothing
-
-        UpdateSettings ->
+        SwitchForm scope ->
             let
-                ( fm, fc ) =
-                    Comp.UiSettingsForm.init flags settings
+                forUser =
+                    unit { model | formModel = ViewUser }
+
+                forColl =
+                    unit { model | formModel = ViewCollective }
             in
-            { model = { model | formModel = fm }
-            , cmd = Cmd.map UiSettingsFormMsg fc
-            , sub = Sub.none
-            , newSettings = Nothing
-            }
+            Data.AccountScope.fold forUser forColl scope
 
+        ResetFormState ->
+            case model.formResult of
+                FormSaved ->
+                    unit { model | formResult = FormInit }
 
-
---- View2
+                _ ->
+                    unit model
 
 
 isError : Model -> Bool
@@ -211,7 +303,11 @@ isSuccess model =
 
 
 view2 : Texts -> Flags -> UiSettings -> String -> Model -> Html Msg
-view2 texts flags settings classes model =
+view2 texts flags _ classes model =
+    let
+        scope =
+            getViewScope model
+    in
     div [ class classes ]
         [ MB.view
             { start =
@@ -221,14 +317,29 @@ view2 texts flags settings classes model =
                     , title = texts.saveSettings
                     , icon = Just "fa fa-save"
                     }
+                , MB.SecondaryButton
+                    { tagger = ToggleExpandCollapse
+                    , label = ""
+                    , title = texts.expandCollapse
+                    , icon = Just "fa fa-compress"
+                    }
                 ]
-            , end = []
+            , end =
+                [ MB.RadioButton
+                    { tagger = \_ -> SwitchForm Data.AccountScope.User
+                    , label = texts.accountScope Data.AccountScope.User
+                    , value = Data.AccountScope.fold True False scope
+                    , id = "ui-settings-chooser-user"
+                    }
+                , MB.RadioButton
+                    { tagger = \_ -> SwitchForm Data.AccountScope.Collective
+                    , label = texts.accountScope Data.AccountScope.Collective
+                    , value = Data.AccountScope.fold False True scope
+                    , id = "ui-settings-chooser-collective"
+                    }
+                ]
             , rootClasses = "mb-4"
             }
-        , div []
-            [ Html.map UiSettingsMigrateMsg
-                (Comp.UiSettingsMigrate.view model.settingsMigrate)
-            ]
         , div
             [ classList
                 [ ( S.successMessage, isSuccess model )
@@ -252,11 +363,55 @@ view2 texts flags settings classes model =
                 FormUnknownError ->
                     text texts.unknownSaveError
             ]
-        , Html.map UiSettingsFormMsg
-            (Comp.UiSettingsForm.view2
-                texts.uiSettingsForm
-                flags
-                settings
-                model.formModel
-            )
+        , case model.formModel of
+            ViewLoading ->
+                div [ class "h-24 md:relative" ]
+                    [ Comp.Basic.loadingDimmer
+                        { label = ""
+                        , active = True
+                        }
+                    ]
+
+            ViewCollective ->
+                case model.formData of
+                    Just data ->
+                        div []
+                            [ h2 [ class S.header2 ]
+                                [ text texts.collectiveHeader
+                                ]
+                            , div [ class "py-1 opacity-80" ]
+                                [ text texts.collectiveInfo
+                                ]
+                            , Html.map (UiFormMsg scope)
+                                (Comp.UiSettingsForm.view2
+                                    texts.uiSettingsForm
+                                    flags
+                                    data.collSettings
+                                    data.collModel
+                                )
+                            ]
+
+                    Nothing ->
+                        span [ class "hidden" ] []
+
+            ViewUser ->
+                case model.formData of
+                    Just data ->
+                        div []
+                            [ h2 [ class S.header2 ]
+                                [ text texts.userHeader
+                                ]
+                            , div [ class "py-1 opacity-80" ]
+                                [ text texts.userInfo
+                                ]
+                            , Html.map (UiFormMsg scope)
+                                (Comp.UiSettingsForm.view2 texts.uiSettingsForm
+                                    flags
+                                    data.userSettings
+                                    data.userModel
+                                )
+                            ]
+
+                    Nothing ->
+                        span [ class "hidden" ] []
         ]

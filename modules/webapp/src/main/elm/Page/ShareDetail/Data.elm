@@ -14,6 +14,7 @@ import Api.Model.ShareVerifyResult exposing (ShareVerifyResult)
 import Comp.SharePasswordForm
 import Comp.UrlCopy
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Http
 
 
@@ -37,12 +38,14 @@ type alias Model =
     , pageError : PageError
     , attachMenuOpen : Bool
     , visibleAttach : Int
+    , uiSettings : UiSettings
     }
 
 
 type Msg
     = VerifyResp (Result Http.Error ShareVerifyResult)
     | GetItemResp (Result Http.Error ItemDetail)
+    | UiSettingsResp (Result Http.Error UiSettings)
     | PasswordMsg Comp.SharePasswordForm.Msg
     | SelectActiveAttachment Int
     | ToggleSelectAttach
@@ -58,6 +61,7 @@ emptyModel vm =
     , pageError = PageErrorNone
     , attachMenuOpen = False
     , visibleAttach = 0
+    , uiSettings = Data.UiSettings.defaults
     }
 
 

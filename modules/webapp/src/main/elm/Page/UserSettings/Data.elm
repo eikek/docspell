@@ -42,10 +42,10 @@ type alias Model =
 
 
 init : Flags -> UiSettings -> ( Model, Cmd Msg )
-init flags settings =
+init flags _ =
     let
         ( um, uc ) =
-            Comp.UiSettingsManage.init flags settings
+            Comp.UiSettingsManage.init flags
 
         ( otpm, otpc ) =
             Comp.OtpSetup.init flags
@@ -107,5 +107,3 @@ type Msg
     | NotificationHookMsg Comp.NotificationHookManage.Msg
     | PeriodicQueryMsg Comp.PeriodicQueryTaskManage.Msg
     | ChannelMsg Comp.NotificationChannelManage.Msg
-    | UpdateSettings
-    | ReceiveBrowserSettings StoredUiSettings

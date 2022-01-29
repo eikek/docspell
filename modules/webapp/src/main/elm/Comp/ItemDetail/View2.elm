@@ -80,7 +80,7 @@ menuBar texts inav settings model =
             [ MB.CustomElement <|
                 a
                     [ class S.secondaryBasicButton
-                    , Page.href HomePage
+                    , Page.href (SearchPage Nothing)
                     , title texts.backToSearchResults
                     ]
                     [ i [ class "fa fa-arrow-left" ] []

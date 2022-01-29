@@ -5,7 +5,7 @@
 -}
 
 
-module Page.Home.Data exposing
+module Page.Search.Data exposing
     ( ConfirmModalValue(..)
     , Model
     , Msg(..)
@@ -48,7 +48,6 @@ import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Http
 import Set exposing (Set)
-import Throttle exposing (Throttle)
 import Util.Html exposing (KeyCode(..))
 import Util.ItemDragDrop as DD
 
@@ -61,7 +60,6 @@ type alias Model =
     , searchOffset : Int
     , moreAvailable : Bool
     , moreInProgress : Bool
-    , throttle : Throttle Msg
     , searchTypeDropdownValue : SearchType
     , lastSearchType : SearchType
     , dragDropData : DD.DragDropData
@@ -111,8 +109,7 @@ initSelectViewModel flags =
 
 
 type ViewMode
-    = SimpleView
-    | SearchView
+    = SearchView
     | SelectView SelectViewModel
     | PublishView Comp.PublishItems.Model
 
@@ -129,7 +126,6 @@ init flags viewMode =
     , searchOffset = 0
     , moreAvailable = True
     , moreInProgress = False
-    , throttle = Throttle.create 1
     , searchTypeDropdownValue =
         if Comp.SearchMenu.isFulltextSearch searchMenuModel then
             ContentOnlySearch
@@ -152,9 +148,6 @@ init flags viewMode =
 menuCollapsed : Model -> Bool
 menuCollapsed model =
     case model.viewMode of
-        SimpleView ->
-            True
-
         SearchView ->
             False
 
@@ -168,9 +161,6 @@ menuCollapsed model =
 selectActive : Model -> Bool
 selectActive model =
     case model.viewMode of
-        SimpleView ->
-            False
-
         SearchView ->
             False
 
@@ -184,9 +174,6 @@ selectActive model =
 editActive : Model -> Bool
 editActive model =
     case model.viewMode of
-        SimpleView ->
-            False
-
         SearchView ->
             False
 
@@ -199,16 +186,15 @@ editActive model =
 
 type Msg
     = Init
+    | DoNothing
     | SearchMenuMsg Comp.SearchMenu.Msg
     | ResetSearch
     | ItemCardListMsg Comp.ItemCardList.Msg
     | ItemSearchResp Bool (Result Http.Error ItemLightList)
     | ItemSearchAddResp (Result Http.Error ItemLightList)
     | DoSearch SearchType
-    | ToggleSearchMenu
     | ToggleSelectView
     | LoadMore
-    | UpdateThrottle
     | SetBasicSearch String
     | ToggleSearchType
     | KeyUpSearchbarMsg (Maybe KeyCode)
@@ -234,7 +220,7 @@ type Msg
     | KeyUpPowerSearchbarMsg (Maybe KeyCode)
     | RequestReprocessSelected
     | ReprocessSelectedConfirmed
-    | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
+    | ClientSettingsSaveResp (Result Http.Error BasicResult)
     | RemoveItem String
     | MergeSelectedItems
     | MergeItemsMsg Comp.ItemMerge.Msg

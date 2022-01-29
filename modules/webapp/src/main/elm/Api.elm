@@ -11,6 +11,7 @@ module Api exposing
     , addConcPerson
     , addCorrOrg
     , addCorrPerson
+    , addDashboard
     , addMember
     , addShare
     , addTag
@@ -21,6 +22,7 @@ module Api exposing
     , changeFolderName
     , changePassword
     , checkCalEvent
+    , clientSettingsShare
     , confirmMultiple
     , confirmOtp
     , createChannel
@@ -39,6 +41,7 @@ module Api exposing
     , deleteCustomField
     , deleteCustomValue
     , deleteCustomValueMultiple
+    , deleteDashboard
     , deleteEquip
     , deleteFolder
     , deleteHook
@@ -56,11 +59,13 @@ module Api exposing
     , deleteUser
     , disableOtp
     , fileURL
+    , getAllDashboards
     , getAttachmentMeta
     , getBookmarks
     , getChannels
     , getChannelsIgnoreError
     , getClientSettings
+    , getClientSettingsRaw
     , getCollective
     , getCollectiveSettings
     , getContacts
@@ -101,7 +106,9 @@ module Api exposing
     , itemDetailShare
     , itemIndexSearch
     , itemSearch
+    , itemSearchBookmark
     , itemSearchStats
+    , itemSearchStatsBookmark
     , login
     , loginSession
     , logout
@@ -124,12 +131,14 @@ module Api exposing
     , register
     , removeMember
     , removeTagsMultiple
+    , replaceDashboard
     , reprocessItem
     , reprocessMultiple
     , restoreAllItems
     , restoreItem
     , sampleEvent
     , saveClientSettings
+    , saveUserClientSettingsBy
     , searchShare
     , searchShareStats
     , sendMail
@@ -275,9 +284,12 @@ import Api.Model.User exposing (User)
 import Api.Model.UserList exposing (UserList)
 import Api.Model.UserPass exposing (UserPass)
 import Api.Model.VersionInfo exposing (VersionInfo)
+import Data.AccountScope exposing (AccountScope)
 import Data.Bookmarks exposing (AllBookmarks, Bookmarks)
 import Data.ContactType exposing (ContactType)
 import Data.CustomFieldOrder exposing (CustomFieldOrder)
+import Data.Dashboard exposing (Dashboard)
+import Data.Dashboards exposing (AllDashboards, Dashboards)
 import Data.EquipmentOrder exposing (EquipmentOrder)
 import Data.EventType exposing (EventType)
 import Data.Flags exposing (Flags)
@@ -287,7 +299,7 @@ import Data.OrganizationOrder exposing (OrganizationOrder)
 import Data.PersonOrder exposing (PersonOrder)
 import Data.Priority exposing (Priority)
 import Data.TagOrder exposing (TagOrder)
-import Data.UiSettings exposing (UiSettings)
+import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import File exposing (File)
 import Http
 import Json.Decode as JsonDecode
@@ -297,6 +309,7 @@ import Task
 import Url
 import Util.File
 import Util.Http as Http2
+import Util.Result
 
 
 
@@ -2028,24 +2041,70 @@ itemIndexSearch flags query receive =
         }
 
 
-itemSearch : Flags -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
-itemSearch flags search receive =
-    Http2.authPost
+itemSearchTask : Flags -> ItemQuery -> Task.Task Http.Error ItemLightList
+itemSearchTask flags search =
+    Http2.authTask
         { url = flags.config.baseUrl ++ "/api/v1/sec/item/search"
+        , method = "POST"
+        , headers = []
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
-        , expect = Http.expectJson receive Api.Model.ItemLightList.decoder
+        , resolver = Http2.jsonResolver Api.Model.ItemLightList.decoder
+        , timeout = Nothing
+        }
+
+
+itemSearch : Flags -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
+itemSearch flags search receive =
+    itemSearchTask flags search |> Task.attempt receive
+
+
+{-| Same as `itemSearch` but interprets the `query` field as a bookmark id.
+-}
+itemSearchBookmark : Flags -> ItemQuery -> (Result Http.Error ItemLightList -> msg) -> Cmd msg
+itemSearchBookmark flags bmSearch receive =
+    let
+        getBookmark =
+            getBookmarkByIdTask flags bmSearch.query
+                |> Task.map (\bm -> { bmSearch | query = bm.query })
+
+        search q =
+            itemSearchTask flags q
+    in
+    Task.andThen search getBookmark
+        |> Task.attempt receive
+
+
+itemSearchStatsTask : Flags -> ItemQuery -> Task.Task Http.Error SearchStats
+itemSearchStatsTask flags search =
+    Http2.authTask
+        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchStats"
+        , method = "POST"
+        , headers = []
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
+        , resolver = Http2.jsonResolver Api.Model.SearchStats.decoder
+        , timeout = Nothing
         }
 
 
 itemSearchStats : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
 itemSearchStats flags search receive =
-    Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchStats"
-        , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.ItemQuery.encode search)
-        , expect = Http.expectJson receive Api.Model.SearchStats.decoder
-        }
+    itemSearchStatsTask flags search |> Task.attempt receive
+
+
+itemSearchStatsBookmark : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+itemSearchStatsBookmark flags search receive =
+    let
+        getBookmark =
+            getBookmarkByIdTask flags search.query
+                |> Task.map (\bm -> { search | query = bm.query })
+
+        getStats q =
+            itemSearchStatsTask flags q
+    in
+    Task.andThen getStats getBookmark
+        |> Task.attempt receive
 
 
 itemDetail : Flags -> String -> (Result Http.Error ItemDetail -> msg) -> Cmd msg
@@ -2279,6 +2338,13 @@ getItemProposals flags item receive =
 --- Client Settings
 
 
+uiSettingsPath : AccountScope -> String
+uiSettingsPath scope =
+    Data.AccountScope.fold "/api/v1/sec/clientSettings/user/webClient"
+        "/api/v1/sec/clientSettings/collective/webClient"
+        scope
+
+
 getClientSettings : Flags -> (Result Http.Error UiSettings -> msg) -> Cmd msg
 getClientSettings flags receive =
     let
@@ -2290,27 +2356,215 @@ getClientSettings flags receive =
                 Data.UiSettings.storedUiSettingsDecoder
     in
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/user/webClient"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/webClient"
         , account = getAccount flags
         , expect = Http.expectJson receive decoder
         }
 
 
-saveClientSettings : Flags -> UiSettings -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-saveClientSettings flags settings receive =
+getClientSettingsTaskFor : Flags -> AccountScope -> Task.Task Http.Error StoredUiSettings
+getClientSettingsTaskFor flags scope =
     let
-        storedSettings =
-            Data.UiSettings.toStoredUiSettings settings
-
-        encode =
-            Data.UiSettings.storedUiSettingsEncode storedSettings
+        path =
+            uiSettingsPath scope
     in
-    Http2.authPut
-        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/user/webClient"
+    Http2.authTask
+        { method = "GET"
+        , url = flags.config.baseUrl ++ path
         , account = getAccount flags
-        , body = Http.jsonBody encode
-        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver Data.UiSettings.storedUiSettingsDecoder
+        , headers = []
+        , timeout = Nothing
         }
+
+
+getClientSettingsRaw : Flags -> (Result Http.Error ( StoredUiSettings, StoredUiSettings ) -> msg) -> Cmd msg
+getClientSettingsRaw flags receive =
+    let
+        coll =
+            getClientSettingsTaskFor flags Data.AccountScope.Collective
+
+        user =
+            getClientSettingsTaskFor flags Data.AccountScope.User
+    in
+    Task.map2 Tuple.pair coll user |> Task.attempt receive
+
+
+saveClientSettingsTask :
+    Flags
+    -> StoredUiSettings
+    -> AccountScope
+    -> Task.Task Http.Error BasicResult
+saveClientSettingsTask flags settings scope =
+    let
+        encoded =
+            Data.UiSettings.storedUiSettingsEncode settings
+
+        path =
+            uiSettingsPath scope
+    in
+    Http2.authTask
+        { method = "PUT"
+        , url = flags.config.baseUrl ++ path
+        , account = getAccount flags
+        , body = Http.jsonBody encoded
+        , resolver = Http2.jsonResolver Api.Model.BasicResult.decoder
+        , headers = []
+        , timeout = Nothing
+        }
+
+
+saveClientSettings :
+    Flags
+    -> StoredUiSettings
+    -> AccountScope
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+saveClientSettings flags settings scope receive =
+    saveClientSettingsTask flags settings scope |> Task.attempt receive
+
+
+saveUserClientSettingsBy :
+    Flags
+    -> (StoredUiSettings -> StoredUiSettings)
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+saveUserClientSettingsBy flags modify receive =
+    let
+        readTask =
+            getClientSettingsTaskFor flags Data.AccountScope.User
+
+        save s =
+            saveClientSettingsTask flags s Data.AccountScope.User
+    in
+    Task.andThen (modify >> save) readTask |> Task.attempt receive
+
+
+
+--- Dashboards
+
+
+dashboardsUrl : Flags -> AccountScope -> String
+dashboardsUrl flags scope =
+    let
+        part =
+            Data.AccountScope.fold "user" "collective" scope
+    in
+    flags.config.baseUrl ++ "/api/v1/sec/clientSettings/" ++ part ++ "/webClientDashboards"
+
+
+getDashboardsScopeTask : Flags -> AccountScope -> Task.Task Http.Error Dashboards
+getDashboardsScopeTask flags scope =
+    Http2.authTask
+        { method = "GET"
+        , url = dashboardsUrl flags scope
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver Data.Dashboards.decoder
+        , headers = []
+        , timeout = Nothing
+        }
+
+
+pushDashbordsScopeTask : Flags -> AccountScope -> Dashboards -> Task.Task Http.Error BasicResult
+pushDashbordsScopeTask flags scope boards =
+    Http2.authTask
+        { method = "PUT"
+        , url = dashboardsUrl flags scope
+        , account = getAccount flags
+        , body = Http.jsonBody (Data.Dashboards.encode boards)
+        , resolver = Http2.jsonResolver Api.Model.BasicResult.decoder
+        , headers = []
+        , timeout = Nothing
+        }
+
+
+getAllDashboardsTask : Flags -> Task.Task Http.Error AllDashboards
+getAllDashboardsTask flags =
+    let
+        coll =
+            getDashboardsScopeTask flags Data.AccountScope.Collective
+
+        user =
+            getDashboardsScopeTask flags Data.AccountScope.User
+    in
+    Task.map2 AllDashboards coll user
+
+
+getAllDashboards : Flags -> (Result Http.Error AllDashboards -> msg) -> Cmd msg
+getAllDashboards flags receive =
+    getAllDashboardsTask flags |> Task.attempt receive
+
+
+saveDashboardTask : Flags -> String -> Dashboard -> AccountScope -> Bool -> Task.Task Http.Error BasicResult
+saveDashboardTask flags original board scope isDefault =
+    let
+        boardsTask =
+            getAllDashboardsTask flags
+
+        setDefault all =
+            if isDefault then
+                Data.Dashboards.setDefaultAll board.name all
+
+            else
+                Data.Dashboards.unsetDefaultAll board.name all
+
+        removeOriginal boards =
+            Data.Dashboards.removeFromAll original boards
+
+        insert all =
+            Data.Dashboards.insertIn scope board all
+
+        update all =
+            let
+                next =
+                    (removeOriginal >> insert >> setDefault) all
+
+                saveU =
+                    if all.user == next.user then
+                        Task.succeed (BasicResult True "")
+
+                    else
+                        pushDashbordsScopeTask flags Data.AccountScope.User next.user
+
+                saveC =
+                    if all.collective == next.collective then
+                        Task.succeed (BasicResult True "")
+
+                    else
+                        pushDashbordsScopeTask flags Data.AccountScope.Collective next.collective
+            in
+            Task.map2 Util.Result.combine saveU saveC
+    in
+    Task.andThen update boardsTask
+
+
+addDashboard : Flags -> Dashboard -> AccountScope -> Bool -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addDashboard flags board scope isDefault receive =
+    saveDashboardTask flags board.name board scope isDefault |> Task.attempt receive
+
+
+replaceDashboard : Flags -> String -> Dashboard -> AccountScope -> Bool -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+replaceDashboard flags originalName board scope isDefault receive =
+    saveDashboardTask flags originalName board scope isDefault |> Task.attempt receive
+
+
+deleteDashboardTask : Flags -> String -> AccountScope -> Task.Task Http.Error BasicResult
+deleteDashboardTask flags name scope =
+    let
+        boardsTask =
+            getDashboardsScopeTask flags scope
+
+        remove boards =
+            Data.Dashboards.remove name boards
+    in
+    Task.andThen (remove >> pushDashbordsScopeTask flags scope) boardsTask
+
+
+deleteDashboard : Flags -> String -> AccountScope -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteDashboard flags name scope receive =
+    deleteDashboardTask flags name scope |> Task.attempt receive
 
 
 
@@ -2333,6 +2587,21 @@ getBookmarksTask flags =
         , headers = []
         , timeout = Nothing
         }
+
+
+getBookmarkByIdTask : Flags -> String -> Task.Task Http.Error BookmarkedQuery
+getBookmarkByIdTask flags id =
+    let
+        findBm all =
+            Data.Bookmarks.findById id all
+
+        mapNotFound maybeBookmark =
+            Maybe.map Task.succeed maybeBookmark
+                |> Maybe.withDefault (Task.fail (Http.BadStatus 404))
+    in
+    getBookmarksTask flags
+        |> Task.map findBm
+        |> Task.andThen mapNotFound
 
 
 getBookmarks : Flags -> (Result Http.Error AllBookmarks -> msg) -> Cmd msg
@@ -2549,6 +2818,23 @@ itemDetailShare flags token itemId receive =
         { url = flags.config.baseUrl ++ "/api/v1/share/item/" ++ itemId
         , token = token
         , expect = Http.expectJson receive Api.Model.ItemDetail.decoder
+        }
+
+
+clientSettingsShare : Flags -> String -> (Result Http.Error UiSettings -> msg) -> Cmd msg
+clientSettingsShare flags token receive =
+    let
+        defaults =
+            Data.UiSettings.defaults
+
+        decoder =
+            JsonDecode.map (\s -> Data.UiSettings.merge s defaults)
+                Data.UiSettings.storedUiSettingsDecoder
+    in
+    Http2.shareGet
+        { url = flags.config.baseUrl ++ "/api/v1/share/clientSettings/webClient"
+        , token = token
+        , expect = Http.expectJson receive decoder
         }
 
 

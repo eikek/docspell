@@ -26,6 +26,7 @@ import Styles as S
 type Item msg
     = TextInput (TextInputData msg)
     | Checkbox (CheckboxData msg)
+    | RadioButton (CheckboxData msg)
     | PrimaryButton (ButtonData msg)
     | SecondaryButton (ButtonData msg)
     | DeleteButton (ButtonData msg)
@@ -119,7 +120,7 @@ view1 classes mb =
                 (List.map viewItem mb.start)
 
         right =
-            div [ class "flex-grow flex-row flex justify-end space-x-2 w-full" ]
+            div [ class "flex-grow flex-row items-center flex justify-end space-x-2 w-full" ]
                 (List.map viewItem mb.end)
     in
     div
@@ -139,7 +140,10 @@ viewItem item =
             makeInput model
 
         Checkbox model ->
-            makeCheckbox model
+            makeCheckbox False model
+
+        RadioButton model ->
+            makeCheckbox True model
 
         PrimaryButton model ->
             makeButton [ ( S.primaryButton, True ) ] model
@@ -306,20 +310,36 @@ makeButton btnType model =
         (icon ++ label)
 
 
-makeCheckbox : CheckboxData msg -> Html msg
-makeCheckbox model =
+makeCheckbox : Bool -> CheckboxData msg -> Html msg
+makeCheckbox radio model =
+    let
+        withId list =
+            if model.id == "" then
+                list
+
+            else
+                id model.id :: list
+
+        fold rd ck =
+            if radio then
+                rd
+
+            else
+                ck
+    in
     div [ class "" ]
         [ label
             [ class "inline-flex space-x-2 items-center"
             , for model.id
             ]
             [ input
-                [ type_ "checkbox"
-                , onCheck model.tagger
-                , checked model.value
-                , class S.checkboxInput
-                , id model.id
-                ]
+                (withId
+                    [ type_ (fold "radio" "checkbox")
+                    , onCheck model.tagger
+                    , checked model.value
+                    , class (fold S.radioInput S.checkboxInput)
+                    ]
+                )
                 []
             , span [ class "truncate" ]
                 [ text model.label

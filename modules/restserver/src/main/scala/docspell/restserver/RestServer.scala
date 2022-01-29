@@ -213,7 +213,8 @@ object RestServer {
     Router(
       "search" -> ShareSearchRoutes(restApp.backend, cfg, token),
       "attachment" -> ShareAttachmentRoutes(restApp.backend, token),
-      "item" -> ShareItemRoutes(restApp.backend, token)
+      "item" -> ShareItemRoutes(restApp.backend, token),
+      "clientSettings" -> ClientSettingsRoutes.share(restApp.backend, token)
     )
 
   def redirectTo[F[_]: Async](path: String): HttpRoutes[F] = {

@@ -20,19 +20,20 @@ import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
 import Data.ServerEvent exposing (ServerEvent)
-import Data.UiSettings exposing (StoredUiSettings, UiSettings)
+import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme exposing (UiTheme)
 import Http
 import Messages.UiLanguage exposing (UiLanguage)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
-import Page.Home.Data
+import Page.Dashboard.Data
 import Page.ItemDetail.Data
 import Page.Login.Data
 import Page.ManageData.Data
 import Page.NewInvite.Data
 import Page.Queue.Data
 import Page.Register.Data
+import Page.Search.Data
 import Page.Share.Data
 import Page.ShareDetail.Data
 import Page.Upload.Data
@@ -45,7 +46,7 @@ type alias Model =
     , key : Key
     , page : Page
     , version : VersionInfo
-    , homeModel : Page.Home.Data.Model
+    , searchModel : Page.Search.Data.Model
     , loginModel : Page.Login.Data.Model
     , manageDataModel : Page.ManageData.Data.Model
     , collSettingsModel : Page.CollectiveSettings.Data.Model
@@ -57,6 +58,7 @@ type alias Model =
     , itemDetailModel : Page.ItemDetail.Data.Model
     , shareModel : Page.Share.Data.Model
     , shareDetailModel : Page.ShareDetail.Data.Model
+    , dashboardModel : Page.Dashboard.Data.Model
     , navMenuOpen : Bool
     , userMenuOpen : Bool
     , subs : Sub Msg
@@ -98,18 +100,17 @@ init key url flags_ settings =
         ( sdm, sdc ) =
             Page.ShareDetail.Data.init (Page.pageShareDetail page) flags
 
-        homeViewMode =
-            if settings.searchMenuVisible then
-                Page.Home.Data.SearchView
+        ( dbm, dbc ) =
+            Page.Dashboard.Data.init flags
 
-            else
-                Page.Home.Data.SimpleView
+        searchViewMode =
+            Page.Search.Data.SearchView
     in
     ( { flags = flags
       , key = key
       , page = page
       , version = Api.Model.VersionInfo.empty
-      , homeModel = Page.Home.Data.init flags homeViewMode
+      , searchModel = Page.Search.Data.init flags searchViewMode
       , loginModel = loginm
       , manageDataModel = mdm
       , collSettingsModel = csm
@@ -121,6 +122,7 @@ init key url flags_ settings =
       , itemDetailModel = Page.ItemDetail.Data.emptyModel
       , shareModel = shm
       , shareDetailModel = sdm
+      , dashboardModel = dbm
       , navMenuOpen = False
       , userMenuOpen = False
       , subs = Sub.none
@@ -133,7 +135,8 @@ init key url flags_ settings =
       , jobsWaiting = 0
       }
     , Cmd.batch
-        [ Cmd.map UserSettingsMsg uc
+        [ Cmd.map DashboardMsg dbc
+        , Cmd.map UserSettingsMsg uc
         , Cmd.map ManageDataMsg mdc
         , Cmd.map CollSettingsMsg csc
         , Cmd.map LoginMsg loginc
@@ -171,7 +174,7 @@ type Msg
     = NavRequest UrlRequest
     | NavChange Url
     | VersionResp (Result Http.Error VersionInfo)
-    | HomeMsg Page.Home.Data.Msg
+    | SearchMsg Page.Search.Data.Msg
     | LoginMsg Page.Login.Data.Msg
     | ManageDataMsg Page.ManageData.Data.Msg
     | CollSettingsMsg Page.CollectiveSettings.Data.Msg
@@ -183,6 +186,7 @@ type Msg
     | ItemDetailMsg Page.ItemDetail.Data.Msg
     | ShareMsg Page.Share.Data.Msg
     | ShareDetailMsg Page.ShareDetail.Data.Msg
+    | DashboardMsg Page.Dashboard.Data.Msg
     | Logout
     | LogoutResp (Result Http.Error ())
     | SessionCheckResp (Result Http.Error AuthResult)
@@ -193,22 +197,16 @@ type Msg
     | ToggleDarkMode
     | ToggleLangMenu
     | SetLanguage UiLanguage
-    | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
-    | ReceiveBrowserSettings StoredUiSettings
+    | ClientSettingsSaveResp (Result Http.Error BasicResult)
     | ReceiveWsMessage (Result String ServerEvent)
     | ToggleShowNewItemsArrived
 
 
 defaultPage : Flags -> Page
 defaultPage _ =
-    HomePage
+    DashboardPage
 
 
 getUiLanguage : Model -> UiLanguage
 getUiLanguage model =
-    case model.flags.account of
-        Just _ ->
-            model.uiSettings.uiLang
-
-        Nothing ->
-            model.anonymousUiLang
+    Data.UiSettings.getUiLanguage model.flags model.uiSettings model.anonymousUiLang

@@ -7,7 +7,6 @@
 
 module Data.UiSettings exposing
     ( ItemPattern
-    , Pos(..)
     , StoredUiSettings
     , UiSettings
     , cardPreviewSize
@@ -15,20 +14,21 @@ module Data.UiSettings exposing
     , catColor
     , catColorFg2
     , catColorString2
+    , convert
     , defaults
+    , documentationSite
+    , emptyStoredSettings
     , fieldHidden
     , fieldVisible
+    , getUiLanguage
     , merge
     , mergeDefaults
     , pdfUrl
-    , posFromString
-    , posToString
     , storedUiSettingsDecoder
     , storedUiSettingsEncode
     , tagColor
     , tagColorFg2
     , tagColorString2
-    , toStoredUiSettings
     )
 
 import Api.Model.Tag exposing (Tag)
@@ -60,28 +60,50 @@ force default settings.
 -}
 type alias StoredUiSettings =
     { itemSearchPageSize : Maybe Int
-    , tagCategoryColors : List ( String, String )
+    , tagCategoryColors : Maybe (List ( String, String ))
     , pdfMode : Maybe String
     , itemSearchNoteLength : Maybe Int
-    , itemDetailNotesPosition : Maybe String
     , searchMenuFolderCount : Maybe Int
     , searchMenuTagCount : Maybe Int
     , searchMenuTagCatCount : Maybe Int
     , formFields : Maybe (List String)
-    , itemDetailShortcuts : Bool
-    , searchMenuVisible : Bool
-    , editMenuVisible : Bool
+    , itemDetailShortcuts : Maybe Bool
     , cardPreviewSize : Maybe String
     , cardTitleTemplate : Maybe String
     , cardSubtitleTemplate : Maybe String
-    , searchStatsVisible : Bool
-    , cardPreviewFullWidth : Bool
+    , searchStatsVisible : Maybe Bool
+    , cardPreviewFullWidth : Maybe Bool
     , uiTheme : Maybe String
-    , sideMenuVisible : Bool
-    , powerSearchEnabled : Bool
+    , sideMenuVisible : Maybe Bool
+    , powerSearchEnabled : Maybe Bool
     , uiLang : Maybe String
-    , itemSearchShowGroups : Bool
+    , itemSearchShowGroups : Maybe Bool
     , itemSearchArrange : Maybe String
+    }
+
+
+emptyStoredSettings : StoredUiSettings
+emptyStoredSettings =
+    { itemSearchPageSize = Nothing
+    , tagCategoryColors = Nothing
+    , pdfMode = Nothing
+    , itemSearchNoteLength = Nothing
+    , searchMenuFolderCount = Nothing
+    , searchMenuTagCount = Nothing
+    , searchMenuTagCatCount = Nothing
+    , formFields = Nothing
+    , itemDetailShortcuts = Nothing
+    , cardPreviewSize = Nothing
+    , cardTitleTemplate = Nothing
+    , cardSubtitleTemplate = Nothing
+    , searchStatsVisible = Nothing
+    , cardPreviewFullWidth = Nothing
+    , uiTheme = Nothing
+    , sideMenuVisible = Nothing
+    , powerSearchEnabled = Nothing
+    , uiLang = Nothing
+    , itemSearchShowGroups = Nothing
+    , itemSearchArrange = Nothing
     }
 
 
@@ -93,64 +115,64 @@ storedUiSettingsDecoder =
 
         maybeString =
             Decode.maybe Decode.string
+
+        maybeBool =
+            Decode.maybe Decode.bool
     in
     Decode.succeed StoredUiSettings
         |> P.optional "itemSearchPageSize" maybeInt Nothing
-        |> P.optional "tagCategoryColors" (Decode.keyValuePairs Decode.string) []
+        |> P.optional "tagCategoryColors" (Decode.maybe <| Decode.keyValuePairs Decode.string) Nothing
         |> P.optional "pdfMode" maybeString Nothing
         |> P.optional "itemSearchNoteLength" maybeInt Nothing
-        |> P.optional "itemDetailNotesPosition" maybeString Nothing
         |> P.optional "searchMenuFolderCount" maybeInt Nothing
         |> P.optional "searchMenuTagCount" maybeInt Nothing
         |> P.optional "searchMenuTagCatCount" maybeInt Nothing
         |> P.optional "formFields" (Decode.maybe <| Decode.list Decode.string) Nothing
-        |> P.optional "itemDetailShortcuts" Decode.bool False
-        |> P.optional "searchMenuVisible" Decode.bool False
-        |> P.optional "editMenuVisible" Decode.bool False
+        |> P.optional "itemDetailShortcuts" maybeBool Nothing
         |> P.optional "cardPreviewSize" maybeString Nothing
         |> P.optional "cardTitleTemplate" maybeString Nothing
         |> P.optional "cardSubtitleTemplate" maybeString Nothing
-        |> P.optional "searchStatsVisible" Decode.bool False
-        |> P.optional "cardPreviewFullWidth" Decode.bool False
+        |> P.optional "searchStatsVisible" maybeBool Nothing
+        |> P.optional "cardPreviewFullWidth" maybeBool Nothing
         |> P.optional "uiTheme" maybeString Nothing
-        |> P.optional "sideMenuVisible" Decode.bool False
-        |> P.optional "powerSearchEnabled" Decode.bool False
+        |> P.optional "sideMenuVisible" maybeBool Nothing
+        |> P.optional "powerSearchEnabled" maybeBool Nothing
         |> P.optional "uiLang" maybeString Nothing
-        |> P.optional "itemSearchShowGroups" Decode.bool True
+        |> P.optional "itemSearchShowGroups" maybeBool Nothing
         |> P.optional "itemSearchArrange" maybeString Nothing
 
 
 storedUiSettingsEncode : StoredUiSettings -> Encode.Value
 storedUiSettingsEncode value =
     let
-        maybeEnc enca ma =
-            Maybe.map enca ma |> Maybe.withDefault Encode.null
+        maybeEnc field enca ma =
+            Maybe.map (\a -> ( field, enca a )) ma
     in
-    Encode.object
-        [ ( "itemSearchPageSize", maybeEnc Encode.int value.itemSearchPageSize )
-        , ( "tagCategoryColors", Encode.dict identity Encode.string (Dict.fromList value.tagCategoryColors) )
-        , ( "pdfMode", maybeEnc Encode.string value.pdfMode )
-        , ( "itemSearchNoteLength", maybeEnc Encode.int value.itemSearchNoteLength )
-        , ( "itemDetailNotesPosition", maybeEnc Encode.string value.itemDetailNotesPosition )
-        , ( "searchMenuFolderCount", maybeEnc Encode.int value.searchMenuFolderCount )
-        , ( "searchMenuTagCount", maybeEnc Encode.int value.searchMenuTagCount )
-        , ( "searchMenuTagCatCount", maybeEnc Encode.int value.searchMenuTagCatCount )
-        , ( "formFields", maybeEnc (Encode.list Encode.string) value.formFields )
-        , ( "itemDetailShortcuts", Encode.bool value.itemDetailShortcuts )
-        , ( "searchMenuVisible", Encode.bool value.searchMenuVisible )
-        , ( "editMenuVisible", Encode.bool value.editMenuVisible )
-        , ( "cardPreviewSize", maybeEnc Encode.string value.cardPreviewSize )
-        , ( "cardTitleTemplate", maybeEnc Encode.string value.cardTitleTemplate )
-        , ( "cardSubtitleTemplate", maybeEnc Encode.string value.cardSubtitleTemplate )
-        , ( "searchStatsVisible", Encode.bool value.searchStatsVisible )
-        , ( "cardPreviewFullWidth", Encode.bool value.cardPreviewFullWidth )
-        , ( "uiTheme", maybeEnc Encode.string value.uiTheme )
-        , ( "sideMenuVisible", Encode.bool value.sideMenuVisible )
-        , ( "powerSearchEnabled", Encode.bool value.powerSearchEnabled )
-        , ( "uiLang", maybeEnc Encode.string value.uiLang )
-        , ( "itemSearchShowGroups", Encode.bool value.itemSearchShowGroups )
-        , ( "itemSearchArrange", maybeEnc Encode.string value.itemSearchArrange )
-        ]
+    Encode.object <|
+        List.filterMap identity
+            [ maybeEnc "itemSearchPageSize" Encode.int value.itemSearchPageSize
+            , maybeEnc "tagCategoryColors"
+                (Encode.dict identity Encode.string)
+                (Maybe.map Dict.fromList value.tagCategoryColors)
+            , maybeEnc "pdfMode" Encode.string value.pdfMode
+            , maybeEnc "itemSearchNoteLength" Encode.int value.itemSearchNoteLength
+            , maybeEnc "searchMenuFolderCount" Encode.int value.searchMenuFolderCount
+            , maybeEnc "searchMenuTagCount" Encode.int value.searchMenuTagCount
+            , maybeEnc "searchMenuTagCatCount" Encode.int value.searchMenuTagCatCount
+            , maybeEnc "formFields" (Encode.list Encode.string) value.formFields
+            , maybeEnc "itemDetailShortcuts" Encode.bool value.itemDetailShortcuts
+            , maybeEnc "cardPreviewSize" Encode.string value.cardPreviewSize
+            , maybeEnc "cardTitleTemplate" Encode.string value.cardTitleTemplate
+            , maybeEnc "cardSubtitleTemplate" Encode.string value.cardSubtitleTemplate
+            , maybeEnc "searchStatsVisible" Encode.bool value.searchStatsVisible
+            , maybeEnc "cardPreviewFullWidth" Encode.bool value.cardPreviewFullWidth
+            , maybeEnc "uiTheme" Encode.string value.uiTheme
+            , maybeEnc "sideMenuVisible" Encode.bool value.sideMenuVisible
+            , maybeEnc "powerSearchEnabled" Encode.bool value.powerSearchEnabled
+            , maybeEnc "uiLang" Encode.string value.uiLang
+            , maybeEnc "itemSearchShowGroups" Encode.bool value.itemSearchShowGroups
+            , maybeEnc "itemSearchArrange" Encode.string value.itemSearchArrange
+            ]
 
 
 {-| Settings for the web ui. These fields are all mandatory, since
@@ -166,14 +188,11 @@ type alias UiSettings =
     , tagCategoryColors : Dict String Color
     , pdfMode : PdfMode
     , itemSearchNoteLength : Int
-    , itemDetailNotesPosition : Pos
     , searchMenuFolderCount : Int
     , searchMenuTagCount : Int
     , searchMenuTagCatCount : Int
     , formFields : List Field
     , itemDetailShortcuts : Bool
-    , searchMenuVisible : Bool
-    , editMenuVisible : Bool
     , cardPreviewSize : BasicSize
     , cardTitleTemplate : ItemPattern
     , cardSubtitleTemplate : ItemPattern
@@ -200,48 +219,17 @@ readPattern str =
         |> Maybe.map (ItemPattern str)
 
 
-type Pos
-    = Top
-    | Bottom
-
-
-posToString : Pos -> String
-posToString pos =
-    case pos of
-        Top ->
-            "top"
-
-        Bottom ->
-            "bottom"
-
-
-posFromString : String -> Maybe Pos
-posFromString str =
-    case str of
-        "top" ->
-            Just Top
-
-        "bottom" ->
-            Just Bottom
-
-        _ ->
-            Nothing
-
-
 defaults : UiSettings
 defaults =
     { itemSearchPageSize = 60
     , tagCategoryColors = Dict.empty
     , pdfMode = Data.Pdf.Detect
     , itemSearchNoteLength = 0
-    , itemDetailNotesPosition = Bottom
     , searchMenuFolderCount = 3
     , searchMenuTagCount = 6
     , searchMenuTagCatCount = 3
     , formFields = Data.Fields.all
     , itemDetailShortcuts = False
-    , searchMenuVisible = False
-    , editMenuVisible = False
     , cardPreviewSize = Data.BasicSize.Medium
     , cardTitleTemplate =
         { template = Data.ItemTemplate.name
@@ -268,7 +256,8 @@ merge given fallback =
         choose given.itemSearchPageSize fallback.itemSearchPageSize
     , tagCategoryColors =
         Dict.union
-            (Dict.fromList given.tagCategoryColors
+            (Maybe.map Dict.fromList given.tagCategoryColors
+                |> Maybe.withDefault Dict.empty
                 |> Dict.map (\_ -> Data.Color.fromString)
                 |> Dict.filter (\_ -> \mc -> mc /= Nothing)
                 |> Dict.map (\_ -> Maybe.withDefault Data.Color.Grey)
@@ -280,9 +269,6 @@ merge given fallback =
             |> Maybe.withDefault fallback.pdfMode
     , itemSearchNoteLength =
         choose given.itemSearchNoteLength fallback.itemSearchNoteLength
-    , itemDetailNotesPosition =
-        choose (Maybe.andThen posFromString given.itemDetailNotesPosition)
-            fallback.itemDetailNotesPosition
     , searchMenuFolderCount =
         choose given.searchMenuFolderCount
             fallback.searchMenuFolderCount
@@ -294,9 +280,7 @@ merge given fallback =
         choose
             (Maybe.map Data.Fields.fromList given.formFields)
             fallback.formFields
-    , itemDetailShortcuts = given.itemDetailShortcuts
-    , searchMenuVisible = given.searchMenuVisible
-    , editMenuVisible = given.editMenuVisible
+    , itemDetailShortcuts = choose given.itemDetailShortcuts fallback.itemDetailShortcuts
     , cardPreviewSize =
         given.cardPreviewSize
             |> Maybe.andThen Data.BasicSize.fromString
@@ -307,17 +291,17 @@ merge given fallback =
     , cardSubtitleTemplate =
         Maybe.andThen readPattern given.cardSubtitleTemplate
             |> Maybe.withDefault fallback.cardSubtitleTemplate
-    , searchStatsVisible = given.searchStatsVisible
-    , cardPreviewFullWidth = given.cardPreviewFullWidth
+    , searchStatsVisible = choose given.searchStatsVisible fallback.searchStatsVisible
+    , cardPreviewFullWidth = choose given.cardPreviewFullWidth fallback.cardPreviewFullWidth
     , uiTheme =
         Maybe.andThen Data.UiTheme.fromString given.uiTheme
             |> Maybe.withDefault fallback.uiTheme
-    , sideMenuVisible = given.sideMenuVisible
-    , powerSearchEnabled = given.powerSearchEnabled
+    , sideMenuVisible = choose given.sideMenuVisible fallback.sideMenuVisible
+    , powerSearchEnabled = choose given.powerSearchEnabled fallback.powerSearchEnabled
     , uiLang =
         Maybe.map Messages.fromIso2 given.uiLang
-            |> Maybe.withDefault Messages.UiLanguage.English
-    , itemSearchShowGroups = given.itemSearchShowGroups
+            |> Maybe.withDefault fallback.uiLang
+    , itemSearchShowGroups = choose given.itemSearchShowGroups fallback.itemSearchShowGroups
     , itemSearchArrange =
         Maybe.andThen Data.ItemArrange.fromString given.itemSearchArrange
             |> Maybe.withDefault fallback.itemSearchArrange
@@ -329,37 +313,35 @@ mergeDefaults given =
     merge given defaults
 
 
-toStoredUiSettings : UiSettings -> StoredUiSettings
-toStoredUiSettings settings =
+convert : UiSettings -> StoredUiSettings
+convert settings =
     { itemSearchPageSize = Just settings.itemSearchPageSize
     , tagCategoryColors =
         Dict.map (\_ -> Data.Color.toString) settings.tagCategoryColors
             |> Dict.toList
+            |> Just
     , pdfMode = Just (Data.Pdf.asString settings.pdfMode)
     , itemSearchNoteLength = Just settings.itemSearchNoteLength
-    , itemDetailNotesPosition = Just (posToString settings.itemDetailNotesPosition)
     , searchMenuFolderCount = Just settings.searchMenuFolderCount
     , searchMenuTagCount = Just settings.searchMenuTagCount
     , searchMenuTagCatCount = Just settings.searchMenuTagCatCount
     , formFields =
         List.map Data.Fields.toString settings.formFields
             |> Just
-    , itemDetailShortcuts = settings.itemDetailShortcuts
-    , searchMenuVisible = settings.searchMenuVisible
-    , editMenuVisible = settings.editMenuVisible
+    , itemDetailShortcuts = Just settings.itemDetailShortcuts
     , cardPreviewSize =
         settings.cardPreviewSize
             |> Data.BasicSize.asString
             |> Just
     , cardTitleTemplate = settings.cardTitleTemplate.pattern |> Just
     , cardSubtitleTemplate = settings.cardSubtitleTemplate.pattern |> Just
-    , searchStatsVisible = settings.searchStatsVisible
-    , cardPreviewFullWidth = settings.cardPreviewFullWidth
+    , searchStatsVisible = Just settings.searchStatsVisible
+    , cardPreviewFullWidth = Just settings.cardPreviewFullWidth
     , uiTheme = Just (Data.UiTheme.toString settings.uiTheme)
-    , sideMenuVisible = settings.sideMenuVisible
-    , powerSearchEnabled = settings.powerSearchEnabled
+    , sideMenuVisible = Just settings.sideMenuVisible
+    , powerSearchEnabled = Just settings.powerSearchEnabled
     , uiLang = Just <| Messages.toIso2 settings.uiLang
-    , itemSearchShowGroups = settings.itemSearchShowGroups
+    , itemSearchShowGroups = Just settings.itemSearchShowGroups
     , itemSearchArrange = Data.ItemArrange.asString settings.itemSearchArrange |> Just
     }
 
@@ -442,6 +424,21 @@ pdfUrl settings flags originalUrl =
 
         Data.Pdf.Server ->
             Data.Pdf.serverUrl originalUrl
+
+
+getUiLanguage : Flags -> UiSettings -> UiLanguage -> UiLanguage
+getUiLanguage flags settings default =
+    case flags.account of
+        Just _ ->
+            settings.uiLang
+
+        Nothing ->
+            default
+
+
+documentationSite : String
+documentationSite =
+    "https://docspell.org/docs"
 
 
 

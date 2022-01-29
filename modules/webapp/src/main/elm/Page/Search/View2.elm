@@ -5,7 +5,7 @@
 -}
 
 
-module Page.Home.View2 exposing (viewContent, viewSidebar)
+module Page.Search.View2 exposing (viewContent, viewSidebar)
 
 import Api
 import Comp.Basic as B
@@ -27,10 +27,10 @@ import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages.Page.Home exposing (Texts)
+import Messages.Page.Search exposing (Texts)
 import Page exposing (Page(..))
-import Page.Home.Data exposing (..)
-import Page.Home.SideMenu
+import Page.Search.Data exposing (..)
+import Page.Search.SideMenu
 import Set
 import Styles as S
 import Util.Html
@@ -44,7 +44,7 @@ viewSidebar texts visible flags settings model =
         , class S.sidebarBg
         , classList [ ( "hidden", not visible ) ]
         ]
-        [ Page.Home.SideMenu.view texts.sideMenu flags settings model
+        [ Page.Search.SideMenu.view texts.sideMenu flags settings model
         ]
 
 
@@ -93,9 +93,6 @@ mainView texts flags settings model =
                             (publishResults texts settings flags model pm)
                         ]
 
-                SimpleView ->
-                    Nothing
-
                 SearchView ->
                     Nothing
     in
@@ -109,7 +106,7 @@ mainView texts flags settings model =
 
 
 bookmarkQueryWidget : Texts -> UiSettings -> Flags -> Model -> List (Html Msg)
-bookmarkQueryWidget texts settings flags model =
+bookmarkQueryWidget texts _ _ model =
     case model.topWidgetModel of
         BookmarkQuery m ->
             [ div [ class "px-2 mb-4 border-l border-r border-b dark:border-slate-600" ]
@@ -136,7 +133,7 @@ itemMergeView texts settings svm =
 
 
 publishResults : Texts -> UiSettings -> Flags -> Model -> Comp.PublishItems.Model -> List (Html Msg)
-publishResults texts settings flags model pm =
+publishResults texts settings flags _ pm =
     [ Html.map PublishViewMsg
         (Comp.PublishItems.view texts.publishItems settings flags pm)
     ]
@@ -188,9 +185,6 @@ confirmModal texts model =
 itemsBar : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
 itemsBar texts flags settings model =
     case model.viewMode of
-        SimpleView ->
-            [ defaultMenuBar texts flags settings model ]
-
         SearchView ->
             [ defaultMenuBar texts flags settings model ]
 
@@ -563,7 +557,7 @@ editMenuBar texts model svm =
 searchStats : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
 searchStats texts _ settings model =
     if settings.searchStatsVisible then
-        [ Comp.SearchStatsView.view2 texts.searchStatsView "my-2" model.searchStats
+        [ Comp.SearchStatsView.view texts.searchStatsView "my-2" model.searchStats
         ]
 
     else

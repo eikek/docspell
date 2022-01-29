@@ -46,7 +46,7 @@ viewSidebar texts visible _ settings model =
                 , class S.sidebarLink
                 , menuEntryActive model TagTab
                 ]
-                [ Icons.tagIcon2 ""
+                [ Icons.tagIcon ""
                 , span
                     [ class "ml-3" ]
                     [ text texts.basics.tags
@@ -58,7 +58,7 @@ viewSidebar texts visible _ settings model =
                 , menuEntryActive model EquipTab
                 , class S.sidebarLink
                 ]
-                [ Icons.equipmentIcon2 ""
+                [ Icons.equipmentIcon ""
                 , span
                     [ class "ml-3" ]
                     [ text texts.basics.equipment
@@ -70,7 +70,7 @@ viewSidebar texts visible _ settings model =
                 , menuEntryActive model OrgTab
                 , class S.sidebarLink
                 ]
-                [ Icons.organizationIcon2 ""
+                [ Icons.organizationIcon ""
                 , span
                     [ class "ml-3" ]
                     [ text texts.basics.organization
@@ -82,7 +82,7 @@ viewSidebar texts visible _ settings model =
                 , menuEntryActive model PersonTab
                 , class S.sidebarLink
                 ]
-                [ Icons.personIcon2 ""
+                [ Icons.personIcon ""
                 , span
                     [ class "ml-3" ]
                     [ text texts.basics.person
@@ -99,7 +99,7 @@ viewSidebar texts visible _ settings model =
                 , menuEntryActive model FolderTab
                 , class S.sidebarLink
                 ]
-                [ Icons.folderIcon2 ""
+                [ Icons.folderIcon ""
                 , span
                     [ class "ml-3" ]
                     [ text texts.basics.folder
@@ -186,7 +186,7 @@ viewTags texts settings model =
         [ class S.header1
         , class "inline-flex items-center"
         ]
-        [ Icons.tagIcon2 ""
+        [ Icons.tagIcon ""
         , div [ class "ml-2" ]
             [ text texts.basics.tags
             ]
@@ -206,7 +206,7 @@ viewEquip texts model =
         [ class S.header1
         , class "inline-flex items-center"
         ]
-        [ Icons.equipmentIcon2 ""
+        [ Icons.equipmentIcon ""
         , div [ class "ml-2" ]
             [ text texts.basics.equipment
             ]
@@ -224,7 +224,7 @@ viewOrg texts settings model =
         [ class S.header1
         , class "inline-flex items-center"
         ]
-        [ Icons.organizationIcon2 ""
+        [ Icons.organizationIcon ""
         , div [ class "ml-2" ]
             [ text texts.basics.organization
             ]
@@ -243,7 +243,7 @@ viewPerson texts settings model =
         [ class S.header1
         , class "inline-flex items-center"
         ]
-        [ Icons.personIcon2 ""
+        [ Icons.personIcon ""
         , div [ class "ml-2" ]
             [ text texts.basics.person
             ]
@@ -262,7 +262,7 @@ viewFolder texts flags _ model =
         [ class S.header1
         , class "inline-flex items-center"
         ]
-        [ Icons.folderIcon2 ""
+        [ Icons.folderIcon ""
         , div
             [ class "ml-2"
             ]

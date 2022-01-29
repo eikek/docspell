@@ -48,6 +48,8 @@ trait OShare[F[_]] {
 
   // ---
 
+  def findActiveById(id: Ident): OptionT[F, ShareData]
+
   /** Verifies the given id and password and returns a authorization token on success. */
   def verify(key: ByteVector)(id: Ident, password: Option[Password]): F[VerifyResult]
 
@@ -276,6 +278,9 @@ object OShare {
             logger.debug(s"Invalid session token: $err") *>
               VerifyResult.invalidToken.pure[F]
         }
+
+      def findActiveById(id: Ident): OptionT[F, ShareData] =
+        RShare.findCurrentActive(id).mapK(store.transform).map(ShareData.tupled)
 
       def findShareQuery(id: Ident): OptionT[F, ShareQuery] =
         RShare

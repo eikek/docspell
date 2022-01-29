@@ -13,6 +13,7 @@ module Comp.SearchMenu exposing
     , TextSearchModel
     , getItemQuery
     , init
+    , initFromStats
     , isFulltextSearch
     , isNamesSearch
     , linkTargetMsg
@@ -59,7 +60,7 @@ import Data.UiSettings exposing (UiSettings)
 import DatePicker exposing (DatePicker)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onInput)
 import Http
 import Messages.Comp.SearchMenu exposing (Texts)
 import Set exposing (Set)
@@ -113,7 +114,7 @@ type TextSearchModel
 
 init : Flags -> Model
 init flags =
-    { tagSelectModel = Comp.TagSelect.init [] [] [] []
+    { tagSelectModel = Comp.TagSelect.init [] []
     , tagSelection = Comp.TagSelect.emptySelection
     , directionModel =
         Comp.Dropdown.makeSingleList
@@ -257,13 +258,13 @@ getItemQuery model =
     in
     Q.and
         [ when model.inboxCheckbox (Q.Inbox True)
-        , whenNotEmpty (model.tagSelection.includeTags |> List.map (.tag >> .id))
+        , whenNotEmpty (model.tagSelection.includeTags |> Set.toList)
             (Q.TagIds Q.AllMatch)
-        , whenNotEmpty (model.tagSelection.excludeTags |> List.map (.tag >> .id))
+        , whenNotEmpty (model.tagSelection.excludeTags |> Set.toList)
             (\ids -> Q.Not (Q.TagIds Q.AnyMatch ids))
-        , whenNotEmpty (model.tagSelection.includeCats |> List.map .name)
+        , whenNotEmpty (model.tagSelection.includeCats |> Set.toList)
             (Q.CatNames Q.AllMatch)
-        , whenNotEmpty (model.tagSelection.excludeCats |> List.map .name)
+        , whenNotEmpty (model.tagSelection.excludeCats |> Set.toList)
             (\ids -> Q.Not <| Q.CatNames Q.AnyMatch ids)
         , model.selectedFolder |> Maybe.map .id |> Maybe.map (Q.FolderId Q.Eq)
         , Comp.Dropdown.getSelected model.orgModel
@@ -385,6 +386,7 @@ type Msg
     | SetConcEquip IdName
     | SetFolder IdName
     | SetTag String
+    | SetBookmark String
     | SetCustomField ItemFieldValue
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
     | SetSource String
@@ -400,6 +402,11 @@ type Msg
 setFromStats : SearchStats -> Msg
 setFromStats stats =
     GetStatsResp (Ok stats)
+
+
+initFromStats : SearchStats -> Msg
+initFromStats stats =
+    GetAllTagsResp (Ok stats)
 
 
 linkTargetMsg : LinkTarget -> Maybe Msg
@@ -431,6 +438,9 @@ linkTargetMsg linkTarget =
 
         Comp.LinkTarget.LinkSource str ->
             Just <| ResetToSource str
+
+        Comp.LinkTarget.LinkBookmark id ->
+            Just <| SetBookmark id
 
 
 type alias NextState =
@@ -556,10 +566,26 @@ updateDrop ddm flags settings msg model =
         SetTag id ->
             resetAndSet (TagSelectMsg (Comp.TagSelect.toggleTag id))
 
+        SetBookmark id ->
+            let
+                nextModel =
+                    resetModel model
+
+                sel =
+                    { bookmarks = Set.singleton id
+                    , shares = Set.empty
+                    }
+            in
+            { model = { nextModel | selectedBookmarks = sel }
+            , cmd = Cmd.none
+            , stateChange = sel /= model.selectedBookmarks
+            , dragDrop = DD.DragDropData ddm Nothing
+            }
+
         GetAllTagsResp (Ok stats) ->
             let
                 tagSel =
-                    Comp.TagSelect.modifyAll stats.tagCloud.items
+                    Comp.TagSelect.initAll stats.tagCloud.items
                         stats.tagCategoryCloud.items
                         model.tagSelectModel
             in
@@ -585,7 +611,7 @@ updateDrop ddm flags settings msg model =
                     List.sortBy .count stats.tagCategoryCloud.items
 
                 selectModel =
-                    Comp.TagSelect.modifyCountKeepExisting model.tagSelectModel tagCount catCount
+                    Comp.TagSelect.initCounts tagCount catCount model.tagSelectModel
 
                 orgOpts =
                     Comp.Dropdown.update (Comp.Dropdown.SetOptions (List.map .ref stats.corrOrgStats))
@@ -715,7 +741,7 @@ updateDrop ddm flags settings msg model =
         TagSelectMsg m ->
             let
                 ( m_, sel, ddd ) =
-                    Comp.TagSelect.updateDrop ddm model.tagSelection m model.tagSelectModel
+                    Comp.TagSelect.update ddm model.tagSelection m model.tagSelectModel
             in
             { model =
                 { model
@@ -1064,7 +1090,7 @@ updateDrop ddm flags settings msg model =
         AllBookmarksResp (Ok bm) ->
             { model = { model | allBookmarks = Comp.BookmarkChooser.init bm }
             , cmd = Cmd.none
-            , stateChange = False
+            , stateChange = model.allBookmarks /= Comp.BookmarkChooser.init bm
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
@@ -1082,7 +1108,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | allBookmarks = next, selectedBookmarks = sel }
             , cmd = Cmd.none
-            , stateChange = sel /= model.selectedBookmarks
+            , stateChange = sel /= model.selectedBookmarks || model.allBookmarks /= next
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
@@ -1258,6 +1284,13 @@ tabLook settings model tab =
             else
                 Comp.Tabs.Active
 
+        activeWhenNotEmptySet list1 list2 =
+            if Set.isEmpty list1 && Set.isEmpty list2 then
+                Comp.Tabs.Normal
+
+            else
+                Comp.Tabs.Active
+
         activeWhenJust mx =
             if mx == Nothing then
                 Comp.Tabs.Normal
@@ -1281,11 +1314,11 @@ tabLook settings model tab =
 
         TabTags ->
             hiddenOr [ Data.Fields.Tag ]
-                (activeWhenNotEmpty model.tagSelection.includeTags model.tagSelection.excludeTags)
+                (activeWhenNotEmptySet model.tagSelection.includeTags model.tagSelection.excludeTags)
 
         TabTagCategories ->
             hiddenOr [ Data.Fields.Tag ]
-                (activeWhenNotEmpty model.tagSelection.includeCats model.tagSelection.excludeCats)
+                (activeWhenNotEmptySet model.tagSelection.includeCats model.tagSelection.excludeCats)
 
         TabFolder ->
             hiddenOr [ Data.Fields.Folder ]
@@ -1353,9 +1386,6 @@ searchTabs texts ddd flags settings model =
         isHidden f =
             Data.UiSettings.fieldHidden settings f
 
-        tagSelectWM =
-            Comp.TagSelect.makeWorkModel model.tagSelection model.tagSelectModel
-
         directionCfg =
             { makeOption =
                 \entry ->
@@ -1410,11 +1440,11 @@ searchTabs texts ddd flags settings model =
       , info = Nothing
       , body =
             List.map (Html.map TagSelectMsg)
-                (Comp.TagSelect.viewTagsDrop2
+                (Comp.TagSelect.viewTags
                     texts.tagSelect
                     ddd.model
-                    tagSelectWM
                     settings
+                    model.tagSelection
                     model.tagSelectModel
                 )
       }
@@ -1424,10 +1454,10 @@ searchTabs texts ddd flags settings model =
       , info = Nothing
       , body =
             [ Html.map TagSelectMsg
-                (Comp.TagSelect.viewCats2
+                (Comp.TagSelect.viewCats
                     texts.tagSelect
                     settings
-                    tagSelectWM
+                    model.tagSelection
                     model.tagSelectModel
                 )
             ]

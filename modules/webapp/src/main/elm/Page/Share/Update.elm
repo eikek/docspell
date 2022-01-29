@@ -8,7 +8,6 @@
 module Page.Share.Update exposing (UpdateResult, update)
 
 import Api
-import Api.Model.ItemQuery
 import Comp.ItemCardList
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
@@ -37,13 +36,6 @@ update flags settings shareId msg model =
     case msg of
         VerifyResp (Ok res) ->
             if res.success then
-                let
-                    eq =
-                        Api.Model.ItemQuery.empty
-
-                    iq =
-                        { eq | withDetails = Just True }
-                in
                 noSub
                     ( { model
                         | pageError = PageErrorNone
@@ -51,7 +43,10 @@ update flags settings shareId msg model =
                         , verifyResult = res
                         , searchInProgress = True
                       }
-                    , makeSearchCmd flags model
+                    , Cmd.batch
+                        [ makeSearchCmd flags True model
+                        , Api.clientSettingsShare flags res.token UiSettingsResp
+                        ]
                     )
 
             else if res.passwordRequired then
@@ -82,14 +77,22 @@ update flags settings shareId msg model =
         SearchResp (Err err) ->
             noSub ( { model | pageError = PageErrorHttp err, searchInProgress = False }, Cmd.none )
 
-        StatsResp (Ok stats) ->
+        StatsResp doInit (Ok stats) ->
+            let
+                lm =
+                    if doInit then
+                        Comp.SearchMenu.initFromStats stats
+
+                    else
+                        Comp.SearchMenu.setFromStats stats
+            in
             update flags
                 settings
                 shareId
-                (SearchMenuMsg (Comp.SearchMenu.setFromStats stats))
+                (SearchMenuMsg lm)
                 model
 
-        StatsResp (Err err) ->
+        StatsResp _ (Err err) ->
             noSub ( { model | pageError = PageErrorHttp err }, Cmd.none )
 
         PasswordMsg lmsg ->
@@ -118,7 +121,7 @@ update flags settings shareId msg model =
 
                 ( initSearch, searchCmd ) =
                     if res.stateChange && not model.searchInProgress then
-                        ( True, makeSearchCmd flags nextModel )
+                        ( True, makeSearchCmd flags False nextModel )
 
                     else
                         ( False, Cmd.none )
@@ -142,7 +145,7 @@ update flags settings shareId msg model =
                             ( False, Cmd.none )
 
                         Comp.PowerSearchInput.SubmitSearch ->
-                            ( True, makeSearchCmd flags nextModel )
+                            ( True, makeSearchCmd flags False nextModel )
             in
             { model = { nextModel | searchInProgress = initSearch }
             , cmd = Cmd.batch [ Cmd.map PowerSearchMsg res.cmd, searchCmd ]
@@ -207,7 +210,7 @@ update flags settings shareId msg model =
             noSub ( { model | contentSearch = Util.Maybe.fromString q }, Cmd.none )
 
         ContentSearchKey (Just Util.Html.Enter) ->
-            noSub ( model, makeSearchCmd flags model )
+            noSub ( model, makeSearchCmd flags False model )
 
         ContentSearchKey _ ->
             noSub ( model, Cmd.none )
@@ -242,14 +245,20 @@ update flags settings shareId msg model =
             in
             noSub ( { model | viewMode = next }, Cmd.none )
 
+        UiSettingsResp (Ok s) ->
+            noSub ( { model | uiSettings = s }, Cmd.none )
+
+        UiSettingsResp (Err _) ->
+            noSub ( model, Cmd.none )
+
 
 noSub : ( Model, Cmd Msg ) -> UpdateResult
 noSub ( m, c ) =
     UpdateResult m c Sub.none
 
 
-makeSearchCmd : Flags -> Model -> Cmd Msg
-makeSearchCmd flags model =
+makeSearchCmd : Flags -> Bool -> Model -> Cmd Msg
+makeSearchCmd flags doInit model =
     let
         xq =
             Q.and
@@ -279,7 +288,7 @@ makeSearchCmd flags model =
             Api.searchShare flags model.verifyResult.token (request xq) SearchResp
 
         statsCmd =
-            Api.searchShareStats flags model.verifyResult.token (request xq) StatsResp
+            Api.searchShareStats flags model.verifyResult.token (request xq) (StatsResp doInit)
     in
     Cmd.batch [ searchCmd, statsCmd ]
 

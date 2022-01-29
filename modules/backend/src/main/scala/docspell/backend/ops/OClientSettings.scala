@@ -6,6 +6,7 @@
 
 package docspell.backend.ops
 
+import cats.Semigroup
 import cats.data.OptionT
 import cats.effect.{Async, Resource}
 import cats.implicits._
@@ -32,6 +33,7 @@ trait OClientSettings[F[_]] {
       account: AccountId
   ): F[Option[RClientSettingsCollective]]
 
+  def loadMerged(clientId: Ident, account: AccountId): F[Option[Json]]
 }
 
 object OClientSettings {
@@ -108,5 +110,14 @@ object OClientSettings {
           data <- OptionT(store.transact(RClientSettingsUser.find(clientId, userId)))
         } yield data).value
 
+      def loadMerged(clientId: Ident, account: AccountId) =
+        for {
+          collData <- loadCollective(clientId, account)
+          userData <- loadUser(clientId, account)
+          mergedData = collData.map(_.settingsData) |+| userData.map(_.settingsData)
+        } yield mergedData
+
+      implicit def jsonSemigroup: Semigroup[Json] =
+        Semigroup.instance((a1, a2) => a1.deepMerge(a2))
     })
 }

@@ -11,9 +11,7 @@ port module Ports exposing
     , printElement
     , receiveCheckQueryResult
     , receiveServerEvent
-    , receiveUiSettings
     , removeAccount
-    , requestUiSettings
     , setAccount
     , setUiTheme
     )
@@ -21,7 +19,6 @@ port module Ports exposing
 import Api.Model.AuthResult exposing (AuthResult)
 import Data.QueryParseResult exposing (QueryParseResult)
 import Data.ServerEvent exposing (ServerEvent)
-import Data.UiSettings exposing (StoredUiSettings)
 import Data.UiTheme exposing (UiTheme)
 import Json.Decode as D
 
@@ -44,12 +41,6 @@ port receiveCheckQueryResult : (QueryParseResult -> msg) -> Sub msg
 
 
 port initClipboard : ( String, String ) -> Cmd msg
-
-
-port receiveUiSettings : (StoredUiSettings -> msg) -> Sub msg
-
-
-port requestUiSettings : AuthResult -> Cmd msg
 
 
 {-| Creates a new window/tab, writes the contents of the given element

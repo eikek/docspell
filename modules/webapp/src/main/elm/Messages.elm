@@ -14,13 +14,14 @@ module Messages exposing
 
 import Messages.App
 import Messages.Page.CollectiveSettings
-import Messages.Page.Home
+import Messages.Page.Dashboard
 import Messages.Page.ItemDetail
 import Messages.Page.Login
 import Messages.Page.ManageData
 import Messages.Page.NewInvite
 import Messages.Page.Queue
 import Messages.Page.Register
+import Messages.Page.Search
 import Messages.Page.Share
 import Messages.Page.ShareDetail
 import Messages.Page.Upload
@@ -45,9 +46,10 @@ type alias Messages =
     , queue : Messages.Page.Queue.Texts
     , userSettings : Messages.Page.UserSettings.Texts
     , manageData : Messages.Page.ManageData.Texts
-    , home : Messages.Page.Home.Texts
+    , search : Messages.Page.Search.Texts
     , share : Messages.Page.Share.Texts
     , shareDetail : Messages.Page.ShareDetail.Texts
+    , dashboard : Messages.Page.Dashboard.Texts
     }
 
 
@@ -112,9 +114,10 @@ gb =
     , queue = Messages.Page.Queue.gb
     , userSettings = Messages.Page.UserSettings.gb
     , manageData = Messages.Page.ManageData.gb
-    , home = Messages.Page.Home.gb
+    , search = Messages.Page.Search.gb
     , share = Messages.Page.Share.gb
     , shareDetail = Messages.Page.ShareDetail.gb
+    , dashboard = Messages.Page.Dashboard.gb
     }
 
 
@@ -134,7 +137,8 @@ de =
     , queue = Messages.Page.Queue.de
     , userSettings = Messages.Page.UserSettings.de
     , manageData = Messages.Page.ManageData.de
-    , home = Messages.Page.Home.de
+    , search = Messages.Page.Search.de
     , share = Messages.Page.Share.de
     , shareDetail = Messages.Page.ShareDetail.de
+    , dashboard = Messages.Page.Dashboard.de
     }
