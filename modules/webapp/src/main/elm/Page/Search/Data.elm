@@ -109,8 +109,7 @@ initSelectViewModel flags =
 
 
 type ViewMode
-    = SimpleView
-    | SearchView
+    = SearchView
     | SelectView SelectViewModel
     | PublishView Comp.PublishItems.Model
 
@@ -149,9 +148,6 @@ init flags viewMode =
 menuCollapsed : Model -> Bool
 menuCollapsed model =
     case model.viewMode of
-        SimpleView ->
-            True
-
         SearchView ->
             False
 
@@ -165,9 +161,6 @@ menuCollapsed model =
 selectActive : Model -> Bool
 selectActive model =
     case model.viewMode of
-        SimpleView ->
-            False
-
         SearchView ->
             False
 
@@ -181,9 +174,6 @@ selectActive model =
 editActive : Model -> Bool
 editActive model =
     case model.viewMode of
-        SimpleView ->
-            False
-
         SearchView ->
             False
 
@@ -203,7 +193,6 @@ type Msg
     | ItemSearchResp Bool (Result Http.Error ItemLightList)
     | ItemSearchAddResp (Result Http.Error ItemLightList)
     | DoSearch SearchType
-    | ToggleSearchMenu
     | ToggleSelectView
     | LoadMore
     | SetBasicSearch String

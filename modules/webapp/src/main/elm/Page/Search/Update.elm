@@ -276,34 +276,10 @@ update bookmarkId mId key flags texts settings msg model =
             else
                 doSearch param model
 
-        ToggleSearchMenu ->
-            let
-                nextView =
-                    case model.viewMode of
-                        SimpleView ->
-                            SearchView
-
-                        SearchView ->
-                            SimpleView
-
-                        SelectView _ ->
-                            SimpleView
-
-                        PublishView q ->
-                            PublishView q
-            in
-            withSub
-                ( { model | viewMode = nextView }
-                , Cmd.none
-                )
-
         ToggleSelectView ->
             let
                 ( nextView, cmd ) =
                     case model.viewMode of
-                        SimpleView ->
-                            ( SelectView <| initSelectViewModel flags, loadEditModel flags )
-
                         SearchView ->
                             ( SelectView <| initSelectViewModel flags, loadEditModel flags )
 
@@ -644,11 +620,7 @@ update bookmarkId mId key flags texts settings msg model =
                                     SelectView { svm | mergeModel = result.model }
 
                                 Comp.ItemMerge.OutcomeMerged ->
-                                    if settings.sideMenuVisible then
-                                        SearchView
-
-                                    else
-                                        SimpleView
+                                    SearchView
 
                         model_ =
                             { model | viewMode = nextView }
@@ -836,17 +808,10 @@ update bookmarkId mId key flags texts settings msg model =
         UiSettingsUpdated ->
             let
                 defaultViewMode =
-                    if settings.sideMenuVisible then
-                        SearchView
-
-                    else
-                        SimpleView
+                    SearchView
 
                 viewMode =
                     case model.viewMode of
-                        SimpleView ->
-                            defaultViewMode
-
                         SearchView ->
                             defaultViewMode
 

@@ -104,11 +104,7 @@ init key url flags_ settings =
             Page.Dashboard.Data.init flags
 
         searchViewMode =
-            if settings.sideMenuVisible then
-                Page.Search.Data.SearchView
-
-            else
-                Page.Search.Data.SimpleView
+            Page.Search.Data.SearchView
     in
     ( { flags = flags
       , key = key
