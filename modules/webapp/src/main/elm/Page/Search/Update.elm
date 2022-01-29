@@ -22,7 +22,9 @@ import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
 import Comp.PublishItems
 import Comp.SearchMenu
+import Data.AppEvent exposing (AppEvent(..))
 import Data.Flags exposing (Flags)
+import Data.ItemArrange
 import Data.ItemQuery as Q
 import Data.ItemSelection
 import Data.Items
@@ -44,7 +46,7 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , sub : Sub Msg
-    , newSettings : Maybe UiSettings
+    , appEvent : AppEvent
     }
 
 
@@ -74,7 +76,7 @@ update bookmarkId mId key flags texts settings msg model =
                     model
 
         DoNothing ->
-            UpdateResult model Cmd.none Sub.none Nothing
+            UpdateResult model Cmd.none Sub.none AppNothing
 
         ResetSearch ->
             let
@@ -868,26 +870,26 @@ update bookmarkId mId key flags texts settings msg model =
 
         TogglePreviewFullWidth ->
             let
-                newSettings =
-                    { settings | cardPreviewFullWidth = not settings.cardPreviewFullWidth }
+                newSettings s =
+                    { s | cardPreviewFullWidth = Just (not settings.cardPreviewFullWidth) }
 
                 cmd =
-                    Api.saveClientSettings flags newSettings (ClientSettingsSaveResp newSettings)
+                    Api.saveUserClientSettingsBy flags newSettings ClientSettingsSaveResp
             in
             noSub ( { model | viewMenuOpen = False }, cmd )
 
-        ClientSettingsSaveResp newSettings (Ok res) ->
+        ClientSettingsSaveResp (Ok res) ->
             if res.success then
                 { model = model
                 , cmd = Cmd.none
                 , sub = Sub.none
-                , newSettings = Just newSettings
+                , appEvent = AppReloadUiSettings
                 }
 
             else
                 noSub ( model, Cmd.none )
 
-        ClientSettingsSaveResp _ (Err _) ->
+        ClientSettingsSaveResp (Err _) ->
             noSub ( model, Cmd.none )
 
         PowerSearchMsg lm ->
@@ -1015,21 +1017,21 @@ update bookmarkId mId key flags texts settings msg model =
 
         ToggleShowGroups ->
             let
-                newSettings =
-                    { settings | itemSearchShowGroups = not settings.itemSearchShowGroups }
+                newSettings s =
+                    { s | itemSearchShowGroups = Just (not settings.itemSearchShowGroups) }
 
                 cmd =
-                    Api.saveClientSettings flags newSettings (ClientSettingsSaveResp newSettings)
+                    Api.saveUserClientSettingsBy flags newSettings ClientSettingsSaveResp
             in
             noSub ( { model | viewMenuOpen = False }, cmd )
 
         ToggleArrange am ->
             let
-                newSettings =
-                    { settings | itemSearchArrange = am }
+                newSettings s =
+                    { s | itemSearchArrange = Data.ItemArrange.asString am |> Just }
 
                 cmd =
-                    Api.saveClientSettings flags newSettings (ClientSettingsSaveResp newSettings)
+                    Api.saveUserClientSettingsBy flags newSettings ClientSettingsSaveResp
             in
             noSub ( { model | viewMenuOpen = False }, cmd )
 
@@ -1201,5 +1203,5 @@ makeResult ( m, c, s ) =
     { model = m
     , cmd = c
     , sub = s
-    , newSettings = Nothing
+    , appEvent = AppNothing
     }

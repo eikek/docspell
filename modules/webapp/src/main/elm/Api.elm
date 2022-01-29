@@ -64,6 +64,7 @@ module Api exposing
     , getChannels
     , getChannelsIgnoreError
     , getClientSettings
+    , getClientSettingsRaw
     , getCollective
     , getCollectiveSettings
     , getContacts
@@ -136,6 +137,7 @@ module Api exposing
     , restoreItem
     , sampleEvent
     , saveClientSettings
+    , saveUserClientSettingsBy
     , searchShare
     , searchShareStats
     , sendMail
@@ -296,7 +298,7 @@ import Data.OrganizationOrder exposing (OrganizationOrder)
 import Data.PersonOrder exposing (PersonOrder)
 import Data.Priority exposing (Priority)
 import Data.TagOrder exposing (TagOrder)
-import Data.UiSettings exposing (UiSettings)
+import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import File exposing (File)
 import Http
 import Json.Decode as JsonDecode
@@ -2335,6 +2337,13 @@ getItemProposals flags item receive =
 --- Client Settings
 
 
+uiSettingsPath : AccountScope -> String
+uiSettingsPath scope =
+    Data.AccountScope.fold "/api/v1/sec/clientSettings/user/webClient"
+        "/api/v1/sec/clientSettings/collective/webClient"
+        scope
+
+
 getClientSettings : Flags -> (Result Http.Error UiSettings -> msg) -> Cmd msg
 getClientSettings flags receive =
     let
@@ -2346,27 +2355,89 @@ getClientSettings flags receive =
                 Data.UiSettings.storedUiSettingsDecoder
     in
     Http2.authGet
-        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/user/webClient"
+        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/webClient"
         , account = getAccount flags
         , expect = Http.expectJson receive decoder
         }
 
 
-saveClientSettings : Flags -> UiSettings -> (Result Http.Error BasicResult -> msg) -> Cmd msg
-saveClientSettings flags settings receive =
+getClientSettingsTaskFor : Flags -> AccountScope -> Task.Task Http.Error StoredUiSettings
+getClientSettingsTaskFor flags scope =
     let
-        storedSettings =
-            Data.UiSettings.toStoredUiSettings settings
-
-        encode =
-            Data.UiSettings.storedUiSettingsEncode storedSettings
+        path =
+            uiSettingsPath scope
     in
-    Http2.authPut
-        { url = flags.config.baseUrl ++ "/api/v1/sec/clientSettings/user/webClient"
+    Http2.authTask
+        { method = "GET"
+        , url = flags.config.baseUrl ++ path
         , account = getAccount flags
-        , body = Http.jsonBody encode
-        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        , body = Http.emptyBody
+        , resolver = Http2.jsonResolver Data.UiSettings.storedUiSettingsDecoder
+        , headers = []
+        , timeout = Nothing
         }
+
+
+getClientSettingsRaw : Flags -> (Result Http.Error ( StoredUiSettings, StoredUiSettings ) -> msg) -> Cmd msg
+getClientSettingsRaw flags receive =
+    let
+        coll =
+            getClientSettingsTaskFor flags Data.AccountScope.Collective
+
+        user =
+            getClientSettingsTaskFor flags Data.AccountScope.User
+    in
+    Task.map2 Tuple.pair coll user |> Task.attempt receive
+
+
+saveClientSettingsTask :
+    Flags
+    -> StoredUiSettings
+    -> AccountScope
+    -> Task.Task Http.Error BasicResult
+saveClientSettingsTask flags settings scope =
+    let
+        encoded =
+            Data.UiSettings.storedUiSettingsEncode settings
+
+        path =
+            uiSettingsPath scope
+    in
+    Http2.authTask
+        { method = "PUT"
+        , url = flags.config.baseUrl ++ path
+        , account = getAccount flags
+        , body = Http.jsonBody encoded
+        , resolver = Http2.jsonResolver Api.Model.BasicResult.decoder
+        , headers = []
+        , timeout = Nothing
+        }
+
+
+saveClientSettings :
+    Flags
+    -> StoredUiSettings
+    -> AccountScope
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+saveClientSettings flags settings scope receive =
+    saveClientSettingsTask flags settings scope |> Task.attempt receive
+
+
+saveUserClientSettingsBy :
+    Flags
+    -> (StoredUiSettings -> StoredUiSettings)
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+saveUserClientSettingsBy flags modify receive =
+    let
+        readTask =
+            getClientSettingsTaskFor flags Data.AccountScope.User
+
+        save s =
+            saveClientSettingsTask flags s Data.AccountScope.User
+    in
+    Task.andThen (modify >> save) readTask |> Task.attempt receive
 
 
 

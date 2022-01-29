@@ -80,8 +80,7 @@ gb =
     , changePassword = "Change Password"
     , channelSettings = "Notification Channels"
     , uiSettingsInfo =
-        "These settings only affect the web ui. They are stored in the browser, "
-            ++ "so they are separated between browsers and devices."
+        "These settings only affect the web ui. Settings can be stored to the collective or to your personal user. Personal settings are prefered when both values exist."
     , scanMailboxInfo1 =
         "Docspell can scan folders of your mailbox to import your mails. "
             ++ "You need to provide a connection in "
@@ -144,7 +143,7 @@ de =
     , channelSettings = "Benachrichtigungskanäle"
     , changePassword = "Passwort ändern"
     , uiSettingsInfo =
-        "Diese Einstellungen sind für die Web-Oberfläche."
+        "Diese Einstellungen sind für die Web-Oberfläche. Es kann entweder für das ganze Kollektiv Einstellungen gemacht werden oder persönliche. Die persönlichen Einstellungen werden bevorzugt, falls beide gesetzt sind."
     , scanMailboxInfo1 =
         """Docspell kann Postfächer durchsuchen und E-Mails importieren. Dafür sind
 E-Mail-Einstellungen (IMAP) notwendig."""

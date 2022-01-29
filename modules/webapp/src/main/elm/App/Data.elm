@@ -204,8 +204,7 @@ type Msg
     | ToggleDarkMode
     | ToggleLangMenu
     | SetLanguage UiLanguage
-    | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
-    | ReceiveBrowserSettings StoredUiSettings
+    | ClientSettingsSaveResp (Result Http.Error BasicResult)
     | ReceiveWsMessage (Result String ServerEvent)
     | ToggleShowNewItemsArrived
 

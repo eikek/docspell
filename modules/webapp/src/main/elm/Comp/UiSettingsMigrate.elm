@@ -17,6 +17,7 @@ module Comp.UiSettingsMigrate exposing
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Data.AccountScope
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (StoredUiSettings, UiSettings)
 import Html exposing (..)
@@ -132,7 +133,10 @@ update flags msg model =
                     Data.UiSettings.merge settings Data.UiSettings.defaults
 
                 cmd =
-                    Api.saveClientSettings flags uiSettings (SaveSettingsResp uiSettings)
+                    Api.saveClientSettings flags
+                        (Data.UiSettings.convert uiSettings)
+                        Data.AccountScope.Collective
+                        (SaveSettingsResp uiSettings)
             in
             { empty | model = MigrateRequestRunning, cmd = cmd }
 

@@ -231,7 +231,7 @@ type Msg
     | KeyUpPowerSearchbarMsg (Maybe KeyCode)
     | RequestReprocessSelected
     | ReprocessSelectedConfirmed
-    | ClientSettingsSaveResp UiSettings (Result Http.Error BasicResult)
+    | ClientSettingsSaveResp (Result Http.Error BasicResult)
     | RemoveItem String
     | MergeSelectedItems
     | MergeItemsMsg Comp.ItemMerge.Msg

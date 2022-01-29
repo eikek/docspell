@@ -9,6 +9,7 @@ module Comp.UiSettingsForm exposing
     ( Model
     , Msg
     , init
+    , toggleAllTabs
     , update
     , view2
     )
@@ -30,7 +31,7 @@ import Data.Flags exposing (Flags)
 import Data.ItemTemplate as IT exposing (ItemTemplate)
 import Data.Pdf exposing (PdfMode)
 import Data.TagOrder
-import Data.UiSettings exposing (ItemPattern, Pos(..), UiSettings)
+import Data.UiSettings exposing (ItemPattern, Pos(..), StoredUiSettings, UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -73,6 +74,7 @@ type alias Model =
     , uiLangModel : Comp.FixedDropdown.Model UiLanguage
     , uiLang : UiLanguage
     , openTabs : Set String
+    , defaults : UiSettings
     }
 
 
@@ -111,61 +113,69 @@ updatePatternModel pm str =
     }
 
 
-init : Flags -> UiSettings -> ( Model, Cmd Msg )
-init flags settings =
-    ( { itemSearchPageSize = Just settings.itemSearchPageSize
-      , searchPageSizeModel =
-            Comp.IntField.init
-                (Just 10)
-                (Just flags.config.maxPageSize)
-                False
-      , tagColors = settings.tagCategoryColors
-      , tagColorModel =
-            Comp.ColorTagger.init
-                []
-                Data.Color.all
-      , pdfMode = settings.pdfMode
-      , pdfModeModel = Comp.FixedDropdown.init Data.Pdf.allModes
-      , itemSearchNoteLength = Just settings.itemSearchNoteLength
-      , searchNoteLengthModel =
-            Comp.IntField.init
-                (Just 0)
-                (Just flags.config.maxNoteLength)
-                False
-      , searchMenuFolderCount = Just settings.searchMenuFolderCount
-      , searchMenuFolderCountModel =
-            Comp.IntField.init
-                (Just 0)
-                (Just 2000)
-                False
-      , searchMenuTagCount = Just settings.searchMenuTagCount
-      , searchMenuTagCountModel =
-            Comp.IntField.init
-                (Just 0)
-                (Just 2000)
-                False
-      , searchMenuTagCatCount = Just settings.searchMenuTagCatCount
-      , searchMenuTagCatCountModel =
-            Comp.IntField.init
-                (Just 0)
-                (Just 2000)
-                False
-      , formFields = settings.formFields
-      , itemDetailShortcuts = settings.itemDetailShortcuts
-      , cardPreviewSize = settings.cardPreviewSize
-      , cardTitlePattern = initPatternModel settings.cardTitleTemplate
-      , cardSubtitlePattern = initPatternModel settings.cardSubtitleTemplate
-      , showPatternHelp = False
-      , searchStatsVisible = settings.searchStatsVisible
-      , sideMenuVisible = settings.sideMenuVisible
-      , powerSearchEnabled = settings.powerSearchEnabled
-      , uiLang = settings.uiLang
-      , uiLangModel =
-            Comp.FixedDropdown.init Messages.UiLanguage.all
-      , openTabs = Set.empty
-      }
-    , Api.getTags flags "" Data.TagOrder.NameAsc GetTagsResp
-    )
+initModel : Flags -> StoredUiSettings -> UiSettings -> Model
+initModel flags storedSettings defaults =
+    let
+        settings =
+            Data.UiSettings.merge storedSettings defaults
+    in
+    { itemSearchPageSize = Just settings.itemSearchPageSize
+    , searchPageSizeModel =
+        Comp.IntField.init
+            (Just 10)
+            (Just flags.config.maxPageSize)
+            False
+    , tagColors = settings.tagCategoryColors
+    , tagColorModel =
+        Comp.ColorTagger.init
+            []
+            Data.Color.all
+    , pdfMode = settings.pdfMode
+    , pdfModeModel = Comp.FixedDropdown.init Data.Pdf.allModes
+    , itemSearchNoteLength = Just settings.itemSearchNoteLength
+    , searchNoteLengthModel =
+        Comp.IntField.init
+            (Just 0)
+            (Just flags.config.maxNoteLength)
+            False
+    , searchMenuFolderCount = Just settings.searchMenuFolderCount
+    , searchMenuFolderCountModel =
+        Comp.IntField.init
+            (Just 0)
+            (Just 2000)
+            False
+    , searchMenuTagCount = Just settings.searchMenuTagCount
+    , searchMenuTagCountModel =
+        Comp.IntField.init
+            (Just 0)
+            (Just 2000)
+            False
+    , searchMenuTagCatCount = Just settings.searchMenuTagCatCount
+    , searchMenuTagCatCountModel =
+        Comp.IntField.init
+            (Just 0)
+            (Just 2000)
+            False
+    , formFields = settings.formFields
+    , itemDetailShortcuts = settings.itemDetailShortcuts
+    , cardPreviewSize = settings.cardPreviewSize
+    , cardTitlePattern = initPatternModel settings.cardTitleTemplate
+    , cardSubtitlePattern = initPatternModel settings.cardSubtitleTemplate
+    , showPatternHelp = False
+    , searchStatsVisible = settings.searchStatsVisible
+    , sideMenuVisible = settings.sideMenuVisible
+    , powerSearchEnabled = settings.powerSearchEnabled
+    , uiLang = settings.uiLang
+    , uiLangModel =
+        Comp.FixedDropdown.init Messages.UiLanguage.all
+    , openTabs = Set.empty
+    , defaults = defaults
+    }
+
+
+init : Flags -> StoredUiSettings -> UiSettings -> ( Model, Cmd Msg )
+init flags storedSettings defaults =
+    ( initModel flags storedSettings defaults, Api.getTags flags "" Data.TagOrder.NameAsc GetTagsResp )
 
 
 type Msg
@@ -188,14 +198,61 @@ type Msg
     | TogglePowerSearch
     | UiLangMsg (Comp.FixedDropdown.Msg UiLanguage)
     | PdfModeMsg (Comp.FixedDropdown.Msg PdfMode)
+    | ToggleAllTabs
+    | ResetTab AkkordionTab
+
+
+toggleAllTabs : Msg
+toggleAllTabs =
+    ToggleAllTabs
+
+
+type AkkordionTab
+    = GeneralTab
+    | SearchTab
+    | CardsTab
+    | SearchMenuTab
+    | DetailTab
+    | TagsTab
+    | FieldsTab
+
+
+allTabs : List AkkordionTab
+allTabs =
+    [ GeneralTab, SearchTab, CardsTab, SearchMenuTab, DetailTab, TagsTab, FieldsTab ]
+
+
+akkordionTabName : AkkordionTab -> String
+akkordionTabName tab =
+    case tab of
+        GeneralTab ->
+            "general"
+
+        SearchTab ->
+            "search"
+
+        CardsTab ->
+            "item-cards"
+
+        SearchMenuTab ->
+            "search-menu"
+
+        DetailTab ->
+            "item-detail"
+
+        TagsTab ->
+            "tags"
+
+        FieldsTab ->
+            "fields"
 
 
 
 --- Update
 
 
-update : UiSettings -> Msg -> Model -> ( Model, Maybe UiSettings )
-update sett msg model =
+update : Flags -> StoredUiSettings -> Msg -> Model -> ( Model, Maybe StoredUiSettings )
+update flags sett msg model =
     case msg of
         SearchPageSizeMsg lm ->
             let
@@ -203,7 +260,7 @@ update sett msg model =
                     Comp.IntField.update lm model.searchPageSizeModel
 
                 nextSettings =
-                    Maybe.map (\sz -> { sett | itemSearchPageSize = sz }) n
+                    Maybe.map (\sz -> { sett | itemSearchPageSize = Just sz }) n
 
                 model_ =
                     { model
@@ -219,7 +276,7 @@ update sett msg model =
                     Comp.IntField.update lm model.searchNoteLengthModel
 
                 nextSettings =
-                    Maybe.map (\len -> { sett | itemSearchNoteLength = len }) n
+                    Maybe.map (\len -> { sett | itemSearchNoteLength = Just len }) n
 
                 model_ =
                     { model
@@ -235,7 +292,7 @@ update sett msg model =
                     Comp.IntField.update lm model.searchMenuFolderCountModel
 
                 nextSettings =
-                    Maybe.map (\len -> { sett | searchMenuFolderCount = len }) n
+                    Maybe.map (\len -> { sett | searchMenuFolderCount = Just len }) n
 
                 model_ =
                     { model
@@ -251,7 +308,7 @@ update sett msg model =
                     Comp.IntField.update lm model.searchMenuTagCountModel
 
                 nextSettings =
-                    Maybe.map (\len -> { sett | searchMenuTagCount = len }) n
+                    Maybe.map (\len -> { sett | searchMenuTagCount = Just len }) n
 
                 model_ =
                     { model
@@ -267,7 +324,7 @@ update sett msg model =
                     Comp.IntField.update lm model.searchMenuTagCatCountModel
 
                 nextSettings =
-                    Maybe.map (\len -> { sett | searchMenuTagCatCount = len }) n
+                    Maybe.map (\len -> { sett | searchMenuTagCatCount = Just len }) n
 
                 model_ =
                     { model
@@ -282,8 +339,13 @@ update sett msg model =
                 ( m_, d_ ) =
                     Comp.ColorTagger.update lm model.tagColorModel
 
+                colors dict =
+                    Dict.map (\_ -> Data.Color.toString) dict
+                        |> Dict.toList
+                        |> Just
+
                 nextSettings =
-                    Maybe.map (\tc -> { sett | tagCategoryColors = tc }) d_
+                    Maybe.map (\tc -> { sett | tagCategoryColors = colors tc }) d_
 
                 model_ =
                     { model
@@ -316,7 +378,11 @@ update sett msg model =
                     Comp.FieldListSelect.update lm model.formFields
 
                 newSettings =
-                    { sett | formFields = selected }
+                    { sett
+                        | formFields =
+                            List.map Data.Fields.toString selected
+                                |> Just
+                    }
             in
             ( { model | formFields = selected }
             , if selected /= model.formFields then
@@ -332,7 +398,7 @@ update sett msg model =
                     not model.itemDetailShortcuts
             in
             ( { model | itemDetailShortcuts = flag }
-            , Just { sett | itemDetailShortcuts = flag }
+            , Just { sett | itemDetailShortcuts = Just flag }
             )
 
         CardPreviewSizeMsg lm ->
@@ -343,7 +409,13 @@ update sett msg model =
 
                 newSettings =
                     if next /= model.cardPreviewSize then
-                        Just { sett | cardPreviewSize = next }
+                        Just
+                            { sett
+                                | cardPreviewSize =
+                                    next
+                                        |> Data.BasicSize.asString
+                                        |> Just
+                            }
 
                     else
                         Nothing
@@ -361,14 +433,8 @@ update sett msg model =
                     updatePatternModel pm str
 
                 newSettings =
-                    if pm_.pattern /= Just sett.cardTitleTemplate.pattern then
-                        Just
-                            { sett
-                                | cardTitleTemplate =
-                                    ItemPattern
-                                        (Maybe.withDefault "" pm_.pattern)
-                                        pm_.current
-                            }
+                    if pm_.pattern /= sett.cardTitleTemplate then
+                        Just { sett | cardTitleTemplate = pm_.pattern }
 
                     else
                         Nothing
@@ -384,14 +450,8 @@ update sett msg model =
                     updatePatternModel pm str
 
                 newSettings =
-                    if pm_.pattern /= Just sett.cardSubtitleTemplate.pattern then
-                        Just
-                            { sett
-                                | cardSubtitleTemplate =
-                                    ItemPattern
-                                        (Maybe.withDefault "" pm_.pattern)
-                                        pm_.current
-                            }
+                    if pm_.pattern /= sett.cardSubtitleTemplate then
+                        Just { sett | cardSubtitleTemplate = pm_.pattern }
 
                     else
                         Nothing
@@ -407,8 +467,20 @@ update sett msg model =
                     not model.searchStatsVisible
             in
             ( { model | searchStatsVisible = flag }
-            , Just { sett | searchStatsVisible = flag }
+            , Just { sett | searchStatsVisible = Just flag }
             )
+
+        ToggleAllTabs ->
+            let
+                tabs =
+                    if Set.isEmpty model.openTabs then
+                        List.map akkordionTabName allTabs
+                            |> Set.fromList
+
+                    else
+                        Set.empty
+            in
+            ( { model | openTabs = tabs }, Nothing )
 
         ToggleAkkordionTab name ->
             let
@@ -429,7 +501,7 @@ update sett msg model =
                     not model.sideMenuVisible
             in
             ( { model | sideMenuVisible = next }
-            , Just { sett | sideMenuVisible = next }
+            , Just { sett | sideMenuVisible = Just next }
             )
 
         TogglePowerSearch ->
@@ -438,7 +510,7 @@ update sett msg model =
                     not model.powerSearchEnabled
             in
             ( { model | powerSearchEnabled = next }
-            , Just { sett | powerSearchEnabled = next }
+            , Just { sett | powerSearchEnabled = Just next }
             )
 
         UiLangMsg lm ->
@@ -454,7 +526,7 @@ update sett msg model =
                 Nothing
 
               else
-                Just { sett | uiLang = newLang }
+                Just { sett | uiLang = Just (Messages.toIso2 newLang) }
             )
 
         PdfModeMsg lm ->
@@ -470,8 +542,52 @@ update sett msg model =
                 Nothing
 
               else
-                Just { sett | pdfMode = newMode }
+                Just { sett | pdfMode = Just (Data.Pdf.asString newMode) }
             )
+
+        ResetTab tab ->
+            let
+                newSettings =
+                    case tab of
+                        GeneralTab ->
+                            { sett | uiLang = Nothing, sideMenuVisible = Nothing }
+
+                        SearchTab ->
+                            { sett
+                                | itemSearchPageSize = Nothing
+                                , searchStatsVisible = Nothing
+                                , powerSearchEnabled = Nothing
+                            }
+
+                        CardsTab ->
+                            { sett
+                                | itemSearchNoteLength = Nothing
+                                , cardPreviewSize = Nothing
+                                , cardTitleTemplate = Nothing
+                                , cardSubtitleTemplate = Nothing
+                            }
+
+                        SearchMenuTab ->
+                            { sett
+                                | searchMenuTagCount = Nothing
+                                , searchMenuTagCatCount = Nothing
+                                , searchMenuFolderCount = Nothing
+                            }
+
+                        DetailTab ->
+                            { sett | pdfMode = Nothing, itemDetailShortcuts = Nothing }
+
+                        TagsTab ->
+                            { sett | tagCategoryColors = Nothing }
+
+                        -- no reset here
+                        FieldsTab ->
+                            { sett | formFields = Nothing }
+
+                nm =
+                    initModel flags newSettings model.defaults
+            in
+            ( { nm | openTabs = model.openTabs }, Just newSettings )
 
 
 
@@ -495,7 +611,7 @@ tagColorViewOpts2 texts =
     }
 
 
-view2 : Texts -> Flags -> UiSettings -> Model -> Html Msg
+view2 : Texts -> Flags -> StoredUiSettings -> Model -> Html Msg
 view2 texts flags settings model =
     let
         state tab =
@@ -517,7 +633,7 @@ view2 texts flags settings model =
         ]
 
 
-settingFormTabs : Texts -> Flags -> UiSettings -> Model -> List (Comp.Tabs.Tab Msg)
+settingFormTabs : Texts -> Flags -> StoredUiSettings -> Model -> List (Comp.Tabs.Tab Msg)
 settingFormTabs texts flags _ model =
     let
         langCfg =
@@ -533,10 +649,21 @@ settingFormTabs texts flags _ model =
             , style = DS.mainStyle
             , selectPlaceholder = texts.basics.selectPlaceholder
             }
+
+        resetLink tab =
+            a
+                [ href "#"
+                , class S.link
+                , class "text-sm"
+                , onClick (ResetTab tab)
+                ]
+                [ i [ class "fa fa-eraser mr-1" ] []
+                , text "Reset"
+                ]
     in
-    [ { name = "general"
+    [ { name = akkordionTabName GeneralTab
       , title = texts.general
-      , titleRight = []
+      , titleRight = [ resetLink GeneralTab ]
       , info = Nothing
       , body =
             [ div [ class "mb-4 " ]
@@ -560,9 +687,9 @@ settingFormTabs texts flags _ model =
                 ]
             ]
       }
-    , { name = "item-search"
+    , { name = akkordionTabName SearchTab
       , title = texts.itemSearch
-      , titleRight = []
+      , titleRight = [ resetLink SearchTab ]
       , info = Nothing
       , body =
             [ Html.map SearchPageSizeMsg
@@ -594,9 +721,9 @@ settingFormTabs texts flags _ model =
                 ]
             ]
       }
-    , { name = "item-cards"
+    , { name = akkordionTabName CardsTab
       , title = texts.itemCards
-      , titleRight = []
+      , titleRight = [ resetLink CardsTab ]
       , info = Nothing
       , body =
             [ Html.map NoteLengthMsg
@@ -666,9 +793,9 @@ settingFormTabs texts flags _ model =
                 texts.templateHelpMessage
             ]
       }
-    , { name = "search-menu"
+    , { name = akkordionTabName SearchMenuTab
       , title = texts.searchMenu
-      , titleRight = []
+      , titleRight = [ resetLink SearchMenuTab ]
       , info = Nothing
       , body =
             [ Html.map SearchMenuTagMsg
@@ -700,9 +827,9 @@ settingFormTabs texts flags _ model =
                 )
             ]
       }
-    , { name = "item-detail"
+    , { name = akkordionTabName DetailTab
       , title = texts.itemDetail
-      , titleRight = []
+      , titleRight = [ resetLink DetailTab ]
       , info = Nothing
       , body =
             [ div [ class "mb-4" ]
@@ -726,9 +853,9 @@ settingFormTabs texts flags _ model =
                 ]
             ]
       }
-    , { name = "tag-category-colors"
+    , { name = akkordionTabName TagsTab
       , title = texts.tagCategoryColors
-      , titleRight = []
+      , titleRight = [ resetLink TagsTab ]
       , info = Nothing
       , body =
             [ Html.map TagColorMsg
@@ -739,9 +866,9 @@ settingFormTabs texts flags _ model =
                 )
             ]
       }
-    , { name = "fields"
+    , { name = akkordionTabName FieldsTab
       , title = texts.fields
-      , titleRight = []
+      , titleRight = [ resetLink FieldsTab ]
       , info = Nothing
       , body =
             [ span [ class "opacity-50 text-sm" ]
