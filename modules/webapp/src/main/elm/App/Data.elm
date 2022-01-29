@@ -18,18 +18,15 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
-import Data.Dashboard exposing (Dashboard)
 import Data.Flags exposing (Flags)
 import Data.ServerEvent exposing (ServerEvent)
-import Data.UiSettings exposing (StoredUiSettings, UiSettings)
+import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme exposing (UiTheme)
 import Http
-import Messages
 import Messages.UiLanguage exposing (UiLanguage)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
 import Page.Dashboard.Data
-import Page.Dashboard.DefaultDashboard
 import Page.ItemDetail.Data
 import Page.Login.Data
 import Page.ManageData.Data
@@ -107,7 +104,7 @@ init key url flags_ settings =
             Page.Dashboard.Data.init flags
 
         searchViewMode =
-            if settings.searchMenuVisible then
+            if settings.sideMenuVisible then
                 Page.Search.Data.SearchView
 
             else

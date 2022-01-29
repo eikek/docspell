@@ -31,7 +31,7 @@ import Data.Flags exposing (Flags)
 import Data.ItemTemplate as IT exposing (ItemTemplate)
 import Data.Pdf exposing (PdfMode)
 import Data.TagOrder
-import Data.UiSettings exposing (ItemPattern, Pos(..), StoredUiSettings, UiSettings)
+import Data.UiSettings exposing (ItemPattern, StoredUiSettings, UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)

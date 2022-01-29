@@ -644,7 +644,7 @@ update bookmarkId mId key flags texts settings msg model =
                                     SelectView { svm | mergeModel = result.model }
 
                                 Comp.ItemMerge.OutcomeMerged ->
-                                    if settings.searchMenuVisible then
+                                    if settings.sideMenuVisible then
                                         SearchView
 
                                     else
@@ -836,7 +836,7 @@ update bookmarkId mId key flags texts settings msg model =
         UiSettingsUpdated ->
             let
                 defaultViewMode =
-                    if settings.searchMenuVisible then
+                    if settings.sideMenuVisible then
                         SearchView
 
                     else

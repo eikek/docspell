@@ -7,7 +7,6 @@
 
 module Data.UiSettings exposing
     ( ItemPattern
-    , Pos(..)
     , StoredUiSettings
     , UiSettings
     , cardPreviewSize
@@ -25,8 +24,6 @@ module Data.UiSettings exposing
     , merge
     , mergeDefaults
     , pdfUrl
-    , posFromString
-    , posToString
     , storedUiSettingsDecoder
     , storedUiSettingsEncode
     , tagColor
@@ -66,14 +63,11 @@ type alias StoredUiSettings =
     , tagCategoryColors : Maybe (List ( String, String ))
     , pdfMode : Maybe String
     , itemSearchNoteLength : Maybe Int
-    , itemDetailNotesPosition : Maybe String
     , searchMenuFolderCount : Maybe Int
     , searchMenuTagCount : Maybe Int
     , searchMenuTagCatCount : Maybe Int
     , formFields : Maybe (List String)
     , itemDetailShortcuts : Maybe Bool
-    , searchMenuVisible : Maybe Bool
-    , editMenuVisible : Maybe Bool
     , cardPreviewSize : Maybe String
     , cardTitleTemplate : Maybe String
     , cardSubtitleTemplate : Maybe String
@@ -94,14 +88,11 @@ emptyStoredSettings =
     , tagCategoryColors = Nothing
     , pdfMode = Nothing
     , itemSearchNoteLength = Nothing
-    , itemDetailNotesPosition = Nothing
     , searchMenuFolderCount = Nothing
     , searchMenuTagCount = Nothing
     , searchMenuTagCatCount = Nothing
     , formFields = Nothing
     , itemDetailShortcuts = Nothing
-    , searchMenuVisible = Nothing
-    , editMenuVisible = Nothing
     , cardPreviewSize = Nothing
     , cardTitleTemplate = Nothing
     , cardSubtitleTemplate = Nothing
@@ -133,14 +124,11 @@ storedUiSettingsDecoder =
         |> P.optional "tagCategoryColors" (Decode.maybe <| Decode.keyValuePairs Decode.string) Nothing
         |> P.optional "pdfMode" maybeString Nothing
         |> P.optional "itemSearchNoteLength" maybeInt Nothing
-        |> P.optional "itemDetailNotesPosition" maybeString Nothing
         |> P.optional "searchMenuFolderCount" maybeInt Nothing
         |> P.optional "searchMenuTagCount" maybeInt Nothing
         |> P.optional "searchMenuTagCatCount" maybeInt Nothing
         |> P.optional "formFields" (Decode.maybe <| Decode.list Decode.string) Nothing
         |> P.optional "itemDetailShortcuts" maybeBool Nothing
-        |> P.optional "searchMenuVisible" maybeBool Nothing
-        |> P.optional "editMenuVisible" maybeBool Nothing
         |> P.optional "cardPreviewSize" maybeString Nothing
         |> P.optional "cardTitleTemplate" maybeString Nothing
         |> P.optional "cardSubtitleTemplate" maybeString Nothing
@@ -168,14 +156,11 @@ storedUiSettingsEncode value =
                 (Maybe.map Dict.fromList value.tagCategoryColors)
             , maybeEnc "pdfMode" Encode.string value.pdfMode
             , maybeEnc "itemSearchNoteLength" Encode.int value.itemSearchNoteLength
-            , maybeEnc "itemDetailNotesPosition" Encode.string value.itemDetailNotesPosition
             , maybeEnc "searchMenuFolderCount" Encode.int value.searchMenuFolderCount
             , maybeEnc "searchMenuTagCount" Encode.int value.searchMenuTagCount
             , maybeEnc "searchMenuTagCatCount" Encode.int value.searchMenuTagCatCount
             , maybeEnc "formFields" (Encode.list Encode.string) value.formFields
             , maybeEnc "itemDetailShortcuts" Encode.bool value.itemDetailShortcuts
-            , maybeEnc "searchMenuVisible" Encode.bool value.searchMenuVisible
-            , maybeEnc "editMenuVisible" Encode.bool value.editMenuVisible
             , maybeEnc "cardPreviewSize" Encode.string value.cardPreviewSize
             , maybeEnc "cardTitleTemplate" Encode.string value.cardTitleTemplate
             , maybeEnc "cardSubtitleTemplate" Encode.string value.cardSubtitleTemplate
@@ -203,14 +188,11 @@ type alias UiSettings =
     , tagCategoryColors : Dict String Color
     , pdfMode : PdfMode
     , itemSearchNoteLength : Int
-    , itemDetailNotesPosition : Pos
     , searchMenuFolderCount : Int
     , searchMenuTagCount : Int
     , searchMenuTagCatCount : Int
     , formFields : List Field
     , itemDetailShortcuts : Bool
-    , searchMenuVisible : Bool
-    , editMenuVisible : Bool
     , cardPreviewSize : BasicSize
     , cardTitleTemplate : ItemPattern
     , cardSubtitleTemplate : ItemPattern
@@ -237,48 +219,17 @@ readPattern str =
         |> Maybe.map (ItemPattern str)
 
 
-type Pos
-    = Top
-    | Bottom
-
-
-posToString : Pos -> String
-posToString pos =
-    case pos of
-        Top ->
-            "top"
-
-        Bottom ->
-            "bottom"
-
-
-posFromString : String -> Maybe Pos
-posFromString str =
-    case str of
-        "top" ->
-            Just Top
-
-        "bottom" ->
-            Just Bottom
-
-        _ ->
-            Nothing
-
-
 defaults : UiSettings
 defaults =
     { itemSearchPageSize = 60
     , tagCategoryColors = Dict.empty
     , pdfMode = Data.Pdf.Detect
     , itemSearchNoteLength = 0
-    , itemDetailNotesPosition = Bottom
     , searchMenuFolderCount = 3
     , searchMenuTagCount = 6
     , searchMenuTagCatCount = 3
     , formFields = Data.Fields.all
     , itemDetailShortcuts = False
-    , searchMenuVisible = False
-    , editMenuVisible = False
     , cardPreviewSize = Data.BasicSize.Medium
     , cardTitleTemplate =
         { template = Data.ItemTemplate.name
@@ -318,9 +269,6 @@ merge given fallback =
             |> Maybe.withDefault fallback.pdfMode
     , itemSearchNoteLength =
         choose given.itemSearchNoteLength fallback.itemSearchNoteLength
-    , itemDetailNotesPosition =
-        choose (Maybe.andThen posFromString given.itemDetailNotesPosition)
-            fallback.itemDetailNotesPosition
     , searchMenuFolderCount =
         choose given.searchMenuFolderCount
             fallback.searchMenuFolderCount
@@ -333,8 +281,6 @@ merge given fallback =
             (Maybe.map Data.Fields.fromList given.formFields)
             fallback.formFields
     , itemDetailShortcuts = choose given.itemDetailShortcuts fallback.itemDetailShortcuts
-    , searchMenuVisible = choose given.searchMenuVisible fallback.searchMenuVisible
-    , editMenuVisible = choose given.editMenuVisible fallback.editMenuVisible
     , cardPreviewSize =
         given.cardPreviewSize
             |> Maybe.andThen Data.BasicSize.fromString
@@ -376,7 +322,6 @@ convert settings =
             |> Just
     , pdfMode = Just (Data.Pdf.asString settings.pdfMode)
     , itemSearchNoteLength = Just settings.itemSearchNoteLength
-    , itemDetailNotesPosition = Just (posToString settings.itemDetailNotesPosition)
     , searchMenuFolderCount = Just settings.searchMenuFolderCount
     , searchMenuTagCount = Just settings.searchMenuTagCount
     , searchMenuTagCatCount = Just settings.searchMenuTagCatCount
@@ -384,8 +329,6 @@ convert settings =
         List.map Data.Fields.toString settings.formFields
             |> Just
     , itemDetailShortcuts = Just settings.itemDetailShortcuts
-    , searchMenuVisible = Just settings.searchMenuVisible
-    , editMenuVisible = Just settings.editMenuVisible
     , cardPreviewSize =
         settings.cardPreviewSize
             |> Data.BasicSize.asString
