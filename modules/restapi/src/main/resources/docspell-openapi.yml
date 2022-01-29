@@ -2356,13 +2356,7 @@ paths:
       summary: Return the client settings of current user
       description: |
         Returns the settings for the share. This is the settings of
-        the user who created the share. It is created by merging the
-        client settings for the collective and the user's own client
-        settings into one json structure.
-
-        Null, Array, Boolean, String and Number are treated as values,
-        and values from the users settings completely replace values
-        from the collective's settings.
+        the collective that belongs to the share.
         
         The `clientId` is an identifier to a client application. It
         returns a JSON structure. The server doesn't care about the

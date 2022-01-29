@@ -28,7 +28,9 @@ import Html.Attributes exposing (..)
 import Http
 import Messages.Comp.UiSettingsManage exposing (Texts)
 import Page.Search.Data exposing (Msg(..))
+import Process
 import Styles as S
+import Task
 
 
 type alias Model =
@@ -67,6 +69,7 @@ type Msg
     | ReceiveServerSettings (Result Http.Error ( StoredUiSettings, StoredUiSettings ))
     | ToggleExpandCollapse
     | SwitchForm AccountScope
+    | ResetFormState
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -134,12 +137,6 @@ update flags settings msg model =
                                                 | collSettings = Maybe.withDefault data.collSettings sett
                                                 , collModel = m_
                                             }
-                                    , formResult =
-                                        if sett /= Nothing then
-                                            FormInit
-
-                                        else
-                                            model.formResult
                                 }
 
                         Data.AccountScope.User ->
@@ -155,12 +152,6 @@ update flags settings msg model =
                                                 | userSettings = Maybe.withDefault data.userSettings sett
                                                 , userModel = m_
                                             }
-                                    , formResult =
-                                        if sett /= Nothing then
-                                            FormInit
-
-                                        else
-                                            model.formResult
                                 }
 
         Submit ->
@@ -198,9 +189,13 @@ update flags settings msg model =
                             update flags
                                 settings
                                 (ReceiveServerSettings (Ok ( data.collSettings, data.userSettings )))
-                                model
+                                { model | formResult = FormSaved }
+
+                        cmd =
+                            Process.sleep 2000
+                                |> Task.perform (\_ -> ResetFormState)
                     in
-                    { result | appEvent = AppReloadUiSettings }
+                    { result | appEvent = AppReloadUiSettings, cmd = Cmd.batch [ cmd, result.cmd ] }
 
                 _ ->
                     unit { model | formResult = FormUnknownError }
@@ -231,7 +226,13 @@ update flags settings msg model =
                                 , collSettings = coll
                                 , collModel = cm
                                 }
-                        , formModel = ViewUser
+                        , formModel =
+                            case model.formModel of
+                                ViewLoading ->
+                                    ViewUser
+
+                                _ ->
+                                    model.formModel
                     }
 
                 cmds =
@@ -261,6 +262,14 @@ update flags settings msg model =
                     unit { model | formModel = ViewCollective }
             in
             Data.AccountScope.fold forUser forColl scope
+
+        ResetFormState ->
+            case model.formResult of
+                FormSaved ->
+                    unit { model | formResult = FormInit }
+
+                _ ->
+                    unit model
 
 
 isError : Model -> Bool
@@ -363,6 +372,9 @@ view2 texts flags _ classes model =
                         div []
                             [ h2 [ class S.header2 ]
                                 [ text texts.collectiveHeader
+                                ]
+                            , div [ class "py-1 opacity-80" ]
+                                [ text texts.collectiveInfo
                                 ]
                             , Html.map (UiFormMsg scope)
                                 (Comp.UiSettingsForm.view2

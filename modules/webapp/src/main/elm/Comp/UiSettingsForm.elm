@@ -580,7 +580,6 @@ update flags sett msg model =
                         TagsTab ->
                             { sett | tagCategoryColors = Nothing }
 
-                        -- no reset here
                         FieldsTab ->
                             { sett | formFields = Nothing }
 
@@ -658,7 +657,7 @@ settingFormTabs texts flags _ model =
                 , onClick (ResetTab tab)
                 ]
                 [ i [ class "fa fa-eraser mr-1" ] []
-                , text "Reset"
+                , text texts.resetLabel
                 ]
     in
     [ { name = akkordionTabName GeneralTab

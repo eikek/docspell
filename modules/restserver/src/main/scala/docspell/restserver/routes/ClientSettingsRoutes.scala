@@ -6,10 +6,9 @@
 
 package docspell.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.{Monad, Semigroup}
-import cats.data.OptionT
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.{AuthToken, ShareToken}
@@ -33,17 +32,15 @@ object ClientSettingsRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    HttpRoutes.of {
-      case GET -> Root / Ident(clientId) =>
-        (for {
-          _ <- OptionT.liftF(logger.debug(s"Get client settings for share ${token.id}"))
-          share <- backend.share.findActiveById(token.id)
-          merged <- OptionT.liftF(getMergedSettings(backend, share.user.accountId, clientId))
-          res <- OptionT.liftF(merged match {
-            case Some(j) => Ok(j)
-            case None    => NotFound()
-          })
-        } yield res)
+    HttpRoutes.of { case GET -> Root / Ident(clientId) =>
+      (for {
+        _ <- OptionT.liftF(logger.debug(s"Get client settings for share ${token.id}"))
+        share <- backend.share.findActiveById(token.id)
+        sett <- OptionT(
+          backend.clientSettings.loadCollective(clientId, share.user.accountId)
+        )
+        res <- OptionT.liftF(Ok(sett.settingsData))
+      } yield res)
         .getOrElseF(Ok(Map.empty[String, String]))
     }
   }
@@ -55,11 +52,10 @@ object ClientSettingsRoutes {
     HttpRoutes.of {
       case GET -> Root / Ident(clientId) =>
         for {
-          mergedData <- getMergedSettings(backend, user.account, clientId)
-
+          mergedData <- backend.clientSettings.loadMerged(clientId, user.account)
           res <- mergedData match {
             case Some(j) => Ok(j)
-            case None    => NotFound()
+            case None    => Ok(Map.empty[String, String])
           }
         } yield res
 
@@ -118,17 +114,4 @@ object ClientSettingsRoutes {
         } yield res
     }
   }
-
-
-  def getMergedSettings[F[_]: Monad](backend:BackendApp[F], account: AccountId, clientId: Ident) =
-    for {
-      collData <- backend.clientSettings.loadCollective(clientId, account)
-      userData <- backend.clientSettings.loadUser(clientId, account)
-
-      mergedData = collData.map(_.settingsData) |+| userData.map(_.settingsData)
-    } yield mergedData
-
-
-  implicit def jsonSemigroup: Semigroup[Json] =
-    Semigroup.instance((a1, a2) => a1.deepMerge(a2))
 }
