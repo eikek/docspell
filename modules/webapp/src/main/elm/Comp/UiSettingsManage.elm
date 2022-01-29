@@ -211,11 +211,17 @@ update flags settings msg model =
                 userDefaults =
                     Data.UiSettings.merge coll collDefaults
 
-                ( um, uc ) =
-                    Comp.UiSettingsForm.init flags user userDefaults
+                ( ( um, uc ), ( cm, cc ) ) =
+                    case model.formData of
+                        Just data ->
+                            ( Comp.UiSettingsForm.initData flags user userDefaults data.userModel
+                            , Comp.UiSettingsForm.initData flags coll collDefaults data.collModel
+                            )
 
-                ( cm, cc ) =
-                    Comp.UiSettingsForm.init flags coll collDefaults
+                        Nothing ->
+                            ( Comp.UiSettingsForm.init flags user userDefaults
+                            , Comp.UiSettingsForm.init flags coll collDefaults
+                            )
 
                 model_ =
                     { model

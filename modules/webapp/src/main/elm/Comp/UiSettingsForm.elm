@@ -9,6 +9,7 @@ module Comp.UiSettingsForm exposing
     ( Model
     , Msg
     , init
+    , initData
     , toggleAllTabs
     , update
     , view2
@@ -176,6 +177,15 @@ initModel flags storedSettings defaults =
 init : Flags -> StoredUiSettings -> UiSettings -> ( Model, Cmd Msg )
 init flags storedSettings defaults =
     ( initModel flags storedSettings defaults, Api.getTags flags "" Data.TagOrder.NameAsc GetTagsResp )
+
+
+initData : Flags -> StoredUiSettings -> UiSettings -> Model -> ( Model, Cmd Msg )
+initData flags storedSettings defaults model =
+    let
+        ( m, c ) =
+            init flags storedSettings defaults
+    in
+    ( { m | openTabs = model.openTabs }, c )
 
 
 type Msg
