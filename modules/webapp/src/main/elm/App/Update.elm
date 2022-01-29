@@ -14,6 +14,7 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
+import Data.AppEvent exposing (AppEvent(..))
 import Data.Flags
 import Data.ServerEvent exposing (ServerEvent(..))
 import Data.UiSettings exposing (UiSettings)
@@ -81,15 +82,15 @@ updateWithSub msg model =
                         next =
                             Data.UiTheme.cycle settings.uiTheme
 
-                        newSettings =
-                            { settings | uiTheme = next }
+                        newSettings s =
+                            { s | uiTheme = Just (Data.UiTheme.toString next) }
                     in
                     -- when authenticated, store it in settings only
                     -- once new settings are successfully saved (the
                     -- response is arrived), the ui is updated. so it
                     -- is also updated on page refresh
                     ( { model | userMenuOpen = False }
-                    , Api.saveClientSettings model.flags newSettings (ClientSettingsSaveResp newSettings)
+                    , Api.saveUserClientSettingsBy model.flags newSettings ClientSettingsSaveResp
                     , Sub.none
                     )
 
@@ -104,14 +105,14 @@ updateWithSub msg model =
                     , Sub.none
                     )
 
-        ClientSettingsSaveResp settings (Ok res) ->
+        ClientSettingsSaveResp (Ok res) ->
             if res.success then
-                applyClientSettings texts model settings
+                ( model, Api.getClientSettings model.flags GetUiSettings, Sub.none )
 
             else
                 ( model, Cmd.none, Sub.none )
 
-        ClientSettingsSaveResp _ (Err _) ->
+        ClientSettingsSaveResp (Err _) ->
             ( model, Cmd.none, Sub.none )
 
         ToggleLangMenu ->
@@ -307,13 +308,6 @@ updateWithSub msg model =
         GetUiSettings (Err _) ->
             ( model, Cmd.none, Sub.none )
 
-        ReceiveBrowserSettings sett ->
-            let
-                lm =
-                    Page.UserSettings.Data.ReceiveBrowserSettings sett
-            in
-            updateUserSettings texts lm model
-
         ReceiveWsMessage data ->
             case data of
                 Ok (JobDone task) ->
@@ -342,7 +336,7 @@ updateWithSub msg model =
                 Ok (JobsWaiting n) ->
                     ( { model | jobsWaiting = max 0 n }, Cmd.none, Sub.none )
 
-                Err err ->
+                Err _ ->
                     ( model, Cmd.none, Sub.none )
 
         ToggleShowNewItemsArrived ->
@@ -368,7 +362,6 @@ applyClientSettings texts model settings =
             , Sub.none
             )
         , updateDashboard texts Page.Dashboard.Data.reloadUiSettings
-        , updateUserSettings texts Page.UserSettings.Data.UpdateSettings
         , updateSearch texts Page.Search.Data.UiSettingsUpdated
         , updateItemDetail texts Page.ItemDetail.Data.UiSettingsUpdated
         ]
@@ -524,22 +517,21 @@ updateUserSettings texts lmsg model =
         model_ =
             { model | userSettingsModel = result.model }
 
-        ( lm2, lc2, s2 ) =
-            case result.newSettings of
-                Just sett ->
-                    applyClientSettings texts model_ sett
+        lc =
+            case result.appEvent of
+                AppReloadUiSettings ->
+                    Api.getClientSettings model.flags GetUiSettings
 
-                Nothing ->
-                    ( model_, Cmd.none, Sub.none )
+                AppNothing ->
+                    Cmd.none
     in
-    ( lm2
+    ( model_
     , Cmd.batch
         [ Cmd.map UserSettingsMsg result.cmd
-        , lc2
+        , lc
         ]
     , Sub.batch
         [ Sub.map UserSettingsMsg result.sub
-        , s2
         ]
     )
 
@@ -595,22 +587,21 @@ updateSearch texts lmsg model =
         model_ =
             { model | searchModel = result.model }
 
-        ( lm, lc, ls ) =
-            case result.newSettings of
-                Just sett ->
-                    applyClientSettings texts model_ sett
+        lc =
+            case result.appEvent of
+                AppReloadUiSettings ->
+                    Api.getClientSettings model.flags GetUiSettings
 
-                Nothing ->
-                    ( model_, Cmd.none, Sub.none )
+                AppNothing ->
+                    Cmd.none
     in
-    ( lm
+    ( model_
     , Cmd.batch
         [ Cmd.map SearchMsg result.cmd
         , lc
         ]
     , Sub.batch
         [ Sub.map SearchMsg result.sub
-        , ls
         ]
     )
 

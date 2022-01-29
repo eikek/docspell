@@ -144,7 +144,12 @@ viewItemRow texts settings meta item =
             getColumns meta
 
         render col =
-            Comp.ItemColumnView.renderDiv texts.templateCtx settings col [ class "flex flex-row flex-wrap space-x-1" ] item
+            Comp.ItemColumnView.renderDiv
+                texts.templateCtx
+                settings
+                col
+                [ class "flex flex-row flex-wrap space-x-1 space-y-1" ]
+                item
 
         td1 =
             td [ class "py-2 px-1" ]
@@ -158,7 +163,7 @@ viewItemRow texts settings meta item =
 
         tdRem index col =
             td
-                [ class "py-2 px-1"
+                [ class "py-1 px-1"
                 , classList [ ( "hidden md:table-cell", index > 1 ) ]
                 ]
                 [ render col

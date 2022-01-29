@@ -17,6 +17,7 @@ import Comp.OtpSetup
 import Comp.PeriodicQueryTaskManage
 import Comp.ScanMailboxManage
 import Comp.UiSettingsManage
+import Data.AppEvent exposing (AppEvent(..))
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Page.UserSettings.Data exposing (..)
@@ -26,8 +27,13 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , sub : Sub Msg
-    , newSettings : Maybe UiSettings
+    , appEvent : AppEvent
     }
+
+
+unit : Model -> UpdateResult
+unit model =
+    UpdateResult model Cmd.none Sub.none AppNothing
 
 
 update : Flags -> UiSettings -> Msg -> Model -> UpdateResult
@@ -47,7 +53,7 @@ update flags settings msg model =
                     { model = { m | emailSettingsModel = em }
                     , cmd = Cmd.map EmailSettingsMsg c
                     , sub = Sub.none
-                    , newSettings = Nothing
+                    , appEvent = AppNothing
                     }
 
                 ImapSettingsTab ->
@@ -58,18 +64,14 @@ update flags settings msg model =
                     { model = { m | imapSettingsModel = em }
                     , cmd = Cmd.map ImapSettingsMsg c
                     , sub = Sub.none
-                    , newSettings = Nothing
+                    , appEvent = AppNothing
                     }
 
                 ChangePassTab ->
-                    UpdateResult m Cmd.none Sub.none Nothing
+                    unit m
 
                 NotificationTab ->
-                    { model = m
-                    , cmd = Cmd.none
-                    , sub = Sub.none
-                    , newSettings = Nothing
-                    }
+                    unit m
 
                 NotificationWebhookTab ->
                     let
@@ -79,7 +81,7 @@ update flags settings msg model =
                     { model = m
                     , cmd = Cmd.map NotificationHookMsg nc
                     , sub = Sub.none
-                    , newSettings = Nothing
+                    , appEvent = AppNothing
                     }
 
                 NotificationQueriesTab ->
@@ -88,7 +90,7 @@ update flags settings msg model =
                             Cmd.map NotificationMsg
                                 (Tuple.second (Comp.DueItemsTaskManage.init flags))
                     in
-                    UpdateResult m initCmd Sub.none Nothing
+                    UpdateResult m initCmd Sub.none AppNothing
 
                 NotificationDueItemsTab ->
                     let
@@ -96,7 +98,7 @@ update flags settings msg model =
                             Cmd.map NotificationMsg
                                 (Tuple.second (Comp.DueItemsTaskManage.init flags))
                     in
-                    UpdateResult m initCmd Sub.none Nothing
+                    UpdateResult m initCmd Sub.none AppNothing
 
                 ScanMailboxTab ->
                     let
@@ -104,16 +106,24 @@ update flags settings msg model =
                             Cmd.map ScanMailboxMsg
                                 (Tuple.second (Comp.ScanMailboxManage.init flags))
                     in
-                    UpdateResult m initCmd Sub.none Nothing
+                    UpdateResult m initCmd Sub.none AppNothing
 
                 UiSettingsTab ->
-                    UpdateResult m Cmd.none Sub.none Nothing
+                    let
+                        ( um, uc ) =
+                            Comp.UiSettingsManage.init flags
+                    in
+                    { model = { m | uiSettingsModel = um }
+                    , cmd = Cmd.map UiSettingsMsg uc
+                    , sub = Sub.none
+                    , appEvent = AppNothing
+                    }
 
                 OtpTab ->
-                    UpdateResult m Cmd.none Sub.none Nothing
+                    unit m
 
                 ChannelTab ->
-                    UpdateResult m Cmd.none Sub.none Nothing
+                    unit m
 
         ChangePassMsg m ->
             let
@@ -123,7 +133,7 @@ update flags settings msg model =
             { model = { model | changePassModel = m2 }
             , cmd = Cmd.map ChangePassMsg c2
             , sub = Sub.none
-            , newSettings = Nothing
+            , appEvent = AppNothing
             }
 
         EmailSettingsMsg m ->
@@ -134,7 +144,7 @@ update flags settings msg model =
             { model = { model | emailSettingsModel = m2 }
             , cmd = Cmd.map EmailSettingsMsg c2
             , sub = Sub.none
-            , newSettings = Nothing
+            , appEvent = AppNothing
             }
 
         ImapSettingsMsg m ->
@@ -145,7 +155,7 @@ update flags settings msg model =
             { model = { model | imapSettingsModel = m2 }
             , cmd = Cmd.map ImapSettingsMsg c2
             , sub = Sub.none
-            , newSettings = Nothing
+            , appEvent = AppNothing
             }
 
         NotificationMsg lm ->
@@ -156,7 +166,7 @@ update flags settings msg model =
             { model = { model | notificationModel = m2 }
             , cmd = Cmd.map NotificationMsg c2
             , sub = Sub.none
-            , newSettings = Nothing
+            , appEvent = AppNothing
             }
 
         ScanMailboxMsg lm ->
@@ -167,7 +177,7 @@ update flags settings msg model =
             { model = { model | scanMailboxModel = m2 }
             , cmd = Cmd.map ScanMailboxMsg c2
             , sub = Sub.none
-            , newSettings = Nothing
+            , appEvent = AppNothing
             }
 
         UiSettingsMsg lm ->
@@ -178,7 +188,7 @@ update flags settings msg model =
             { model = { model | uiSettingsModel = res.model }
             , cmd = Cmd.map UiSettingsMsg res.cmd
             , sub = Sub.map UiSettingsMsg res.sub
-            , newSettings = res.newSettings
+            , appEvent = res.appEvent
             }
 
         OtpSetupMsg lm ->
@@ -189,7 +199,7 @@ update flags settings msg model =
             { model = { model | otpSetupModel = otpm }
             , cmd = Cmd.map OtpSetupMsg otpc
             , sub = Sub.none
-            , newSettings = Nothing
+            , appEvent = AppNothing
             }
 
         NotificationHookMsg lm ->
@@ -200,7 +210,7 @@ update flags settings msg model =
             { model = { model | notificationHookModel = hm }
             , cmd = Cmd.map NotificationHookMsg hc
             , sub = Sub.none
-            , newSettings = Nothing
+            , appEvent = AppNothing
             }
 
         ChannelMsg lm ->
@@ -211,21 +221,8 @@ update flags settings msg model =
             { model = { model | channelModel = cm }
             , cmd = Cmd.map ChannelMsg cc
             , sub = Sub.none
-            , newSettings = Nothing
+            , appEvent = AppNothing
             }
-
-        UpdateSettings ->
-            update flags
-                settings
-                (UiSettingsMsg Comp.UiSettingsManage.UpdateSettings)
-                model
-
-        ReceiveBrowserSettings sett ->
-            let
-                lm =
-                    Comp.UiSettingsManage.ReceiveBrowserSettings sett
-            in
-            update flags settings (UiSettingsMsg lm) model
 
         PeriodicQueryMsg lm ->
             let
@@ -235,5 +232,5 @@ update flags settings msg model =
             { model = { model | periodicQueryModel = pqm }
             , cmd = Cmd.map PeriodicQueryMsg pqc
             , sub = Sub.map PeriodicQueryMsg pqs
-            , newSettings = Nothing
+            , appEvent = AppNothing
             }

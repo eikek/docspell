@@ -93,9 +93,6 @@ mainView texts flags settings model =
                             (publishResults texts settings flags model pm)
                         ]
 
-                SimpleView ->
-                    Nothing
-
                 SearchView ->
                     Nothing
     in
@@ -109,7 +106,7 @@ mainView texts flags settings model =
 
 
 bookmarkQueryWidget : Texts -> UiSettings -> Flags -> Model -> List (Html Msg)
-bookmarkQueryWidget texts settings flags model =
+bookmarkQueryWidget texts _ _ model =
     case model.topWidgetModel of
         BookmarkQuery m ->
             [ div [ class "px-2 mb-4 border-l border-r border-b dark:border-slate-600" ]
@@ -136,7 +133,7 @@ itemMergeView texts settings svm =
 
 
 publishResults : Texts -> UiSettings -> Flags -> Model -> Comp.PublishItems.Model -> List (Html Msg)
-publishResults texts settings flags model pm =
+publishResults texts settings flags _ pm =
     [ Html.map PublishViewMsg
         (Comp.PublishItems.view texts.publishItems settings flags pm)
     ]
@@ -188,9 +185,6 @@ confirmModal texts model =
 itemsBar : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
 itemsBar texts flags settings model =
     case model.viewMode of
-        SimpleView ->
-            [ defaultMenuBar texts flags settings model ]
-
         SearchView ->
             [ defaultMenuBar texts flags settings model ]
 

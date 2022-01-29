@@ -23,6 +23,11 @@ fold user coll scope =
             coll
 
 
+all : List AccountScope
+all =
+    [ Collective, User ]
+
+
 isUser : AccountScope -> Bool
 isUser scope =
     fold True False scope

@@ -2304,7 +2304,7 @@ paths:
   /share/attachment/{id}/preview:
     head:
       operationId: "share-attach-check-preview"
-      tags: [ Attachment ]
+      tags: [ Share ]
       summary: Get the headers to a preview image of an attachment file.
       description: |
         Checks if an image file showing a preview of the attachment is
@@ -2320,7 +2320,7 @@ paths:
           description: NotFound
     get:
       operationId: "share-attach-get-preview"
-      tags: [ Attachment ]
+      tags: [ Share ]
       summary: Get a preview image of an attachment file.
       description: |
         Gets a image file showing a preview of the attachment. Usually
@@ -2347,6 +2347,31 @@ paths:
               schema:
                 type: string
                 format: binary
+  /share/clientSettings/{clientId}:
+    parameters:
+      - $ref: "#/components/parameters/clientId"
+    get:
+      operationId: "share-clientsettings-get"
+      tags: [ Share ]
+      summary: Return the client settings of current user
+      description: |
+        Returns the settings for the share. This is the settings of
+        the collective that belongs to the share.
+        
+        The `clientId` is an identifier to a client application. It
+        returns a JSON structure. The server doesn't care about the
+        actual data, since it is meant to be interpreted by clients.
+      security:
+        - shareTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema: {}
+
 
   /admin/user/resetPassword:
     post:

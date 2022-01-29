@@ -55,25 +55,6 @@ elmApp.ports.removeAccount.subscribe(function() {
     closeWS();
 });
 
-elmApp.ports.requestUiSettings.subscribe(function(args) {
-    console.log("Requesting ui settings");
-    var account = args;
-    var collective = account ? account.collective : null;
-    var user = account ? account.user : null;
-    if (collective && user) {
-        var key = collective + "/" + user + "/uiSettings";
-        var settings = localStorage.getItem(key);
-        try {
-            var data = settings ? JSON.parse(settings) : null;
-            if (data) {
-                console.log("Sending browser ui settings");
-                elmApp.ports.receiveUiSettings.send(data);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-});
 
 var docspell_clipboards = {};
 

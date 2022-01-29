@@ -1411,7 +1411,7 @@ update key flags inav settings msg model =
             let
                 model_ =
                     { model
-                        | menuOpen = settings.editMenuVisible
+                        | menuOpen = settings.sideMenuVisible
                     }
             in
             resultModel model_

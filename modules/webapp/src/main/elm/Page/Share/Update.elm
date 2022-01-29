@@ -43,7 +43,10 @@ update flags settings shareId msg model =
                         , verifyResult = res
                         , searchInProgress = True
                       }
-                    , makeSearchCmd flags True model
+                    , Cmd.batch
+                        [ makeSearchCmd flags True model
+                        , Api.clientSettingsShare flags res.token UiSettingsResp
+                        ]
                     )
 
             else if res.passwordRequired then
@@ -241,6 +244,12 @@ update flags settings shareId msg model =
                     { vm | arrange = am, menuOpen = False }
             in
             noSub ( { model | viewMode = next }, Cmd.none )
+
+        UiSettingsResp (Ok s) ->
+            noSub ( { model | uiSettings = s }, Cmd.none )
+
+        UiSettingsResp (Err _) ->
+            noSub ( model, Cmd.none )
 
 
 noSub : ( Model, Cmd Msg ) -> UpdateResult

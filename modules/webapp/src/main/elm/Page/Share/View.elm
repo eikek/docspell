@@ -11,11 +11,9 @@ import Api.Model.VersionInfo exposing (VersionInfo)
 import Comp.Basic as B
 import Comp.SharePasswordForm
 import Data.Flags exposing (Flags)
-import Data.Items
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onSubmit)
 import Messages.Page.Share exposing (Texts)
 import Page.Share.Data exposing (..)
 import Page.Share.Menubar as Menubar
@@ -25,19 +23,19 @@ import Styles as S
 
 
 viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar texts visible flags settings model =
+viewSidebar texts visible flags _ model =
     div
         [ id "sidebar"
         , class S.sidebar
         , class S.sidebarBg
         , classList [ ( "hidden", not visible || model.mode /= ModeShare ) ]
         ]
-        [ Sidebar.view texts flags settings model
+        [ Sidebar.view texts flags model
         ]
 
 
 viewContent : Texts -> Flags -> VersionInfo -> UiSettings -> String -> Model -> Html Msg
-viewContent texts flags versionInfo uiSettings shareId model =
+viewContent texts flags versionInfo _ shareId model =
     case model.mode of
         ModeInitial ->
             div
@@ -60,15 +58,15 @@ viewContent texts flags versionInfo uiSettings shareId model =
             passwordContent texts flags versionInfo model
 
         ModeShare ->
-            mainContent texts flags uiSettings shareId model
+            mainContent texts flags shareId model
 
 
 
 --- Helpers
 
 
-mainContent : Texts -> Flags -> UiSettings -> String -> Model -> Html Msg
-mainContent texts flags settings shareId model =
+mainContent : Texts -> Flags -> String -> Model -> Html Msg
+mainContent texts flags shareId model =
     div
         [ id "content"
         , class "h-full flex flex-col"
@@ -82,7 +80,7 @@ mainContent texts flags settings shareId model =
             ]
         , Menubar.view texts flags model
         , errorMessage texts model
-        , Results.view texts settings flags shareId model
+        , Results.view texts model.uiSettings flags shareId model
         ]
 
 
