@@ -19,6 +19,7 @@ import docspell.notification.api.EventContext
 import docspell.notification.api.NotificationChannel
 import docspell.notification.api.PeriodicQueryArgs
 import docspell.query.ItemQuery
+import docspell.query.ItemQuery.Expr
 import docspell.query.ItemQuery.Expr.AndExpr
 import docspell.query.ItemQueryParser
 import docspell.store.qb.Batch
@@ -81,7 +82,11 @@ object PeriodicQueryTask {
       ItemQueryParser.parse(str) match {
         case Right(q) =>
           val expr = bm.map(b => AndExpr(Nel.of(b.expr, q.expr))).getOrElse(q.expr)
-          val query = Query(Query.Fix(ctx.args.account, Some(expr), None))
+          val query = Query
+            .all(ctx.args.account)
+            .withFix(_.copy(query = Expr.ValidItemStates.some))
+            .withCond(_ => Query.QueryExpr(expr))
+
           ctx.logger.debug(s"Running query: ${queryString(expr)}") *> cont(query)
 
         case Left(err) =>
