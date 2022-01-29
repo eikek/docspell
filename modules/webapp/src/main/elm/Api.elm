@@ -22,6 +22,7 @@ module Api exposing
     , changeFolderName
     , changePassword
     , checkCalEvent
+    , clientSettingsShare
     , confirmMultiple
     , confirmOtp
     , createChannel
@@ -2817,6 +2818,23 @@ itemDetailShare flags token itemId receive =
         { url = flags.config.baseUrl ++ "/api/v1/share/item/" ++ itemId
         , token = token
         , expect = Http.expectJson receive Api.Model.ItemDetail.decoder
+        }
+
+
+clientSettingsShare : Flags -> String -> (Result Http.Error UiSettings -> msg) -> Cmd msg
+clientSettingsShare flags token receive =
+    let
+        defaults =
+            Data.UiSettings.defaults
+
+        decoder =
+            JsonDecode.map (\s -> Data.UiSettings.merge s defaults)
+                Data.UiSettings.storedUiSettingsDecoder
+    in
+    Http2.shareGet
+        { url = flags.config.baseUrl ++ "/api/v1/share/clientSettings/webClient"
+        , token = token
+        , expect = Http.expectJson receive decoder
         }
 
 
