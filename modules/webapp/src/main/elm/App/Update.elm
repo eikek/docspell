@@ -499,8 +499,11 @@ updateRegister lmsg model =
 updateQueue : Page.Queue.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateQueue lmsg model =
     let
+        notQueuePage =
+            model.page /= QueuePage
+
         ( lm, lc ) =
-            Page.Queue.Update.update model.flags lmsg model.queueModel
+            Page.Queue.Update.update model.flags notQueuePage lmsg model.queueModel
     in
     ( { model | queueModel = lm }
     , Cmd.map QueueMsg lc
@@ -509,7 +512,7 @@ updateQueue lmsg model =
 
 
 updateUserSettings : Messages -> Page.UserSettings.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-updateUserSettings texts lmsg model =
+updateUserSettings _ lmsg model =
     let
         result =
             Page.UserSettings.Update.update model.flags model.uiSettings lmsg model.userSettingsModel
@@ -626,54 +629,50 @@ initPage model_ page =
 
         texts =
             Messages.get <| App.Data.getUiLanguage model
+
+        noop =
+            ( model, Cmd.none, Sub.none )
     in
     case page of
         SearchPage _ ->
             Util.Update.andThen2
                 [ updateSearch texts Page.Search.Data.Init
-                , updateQueue Page.Queue.Data.StopRefresh
                 ]
                 model
 
         LoginPage _ ->
-            updateQueue Page.Queue.Data.StopRefresh model
+            noop
 
         ManageDataPage ->
-            updateQueue Page.Queue.Data.StopRefresh model
+            noop
 
         CollectiveSettingPage ->
             Util.Update.andThen2
-                [ updateQueue Page.Queue.Data.StopRefresh
-                , updateCollSettings texts Page.CollectiveSettings.Data.Init
+                [ updateCollSettings texts Page.CollectiveSettings.Data.Init
                 ]
                 model
 
         UserSettingPage ->
-            Util.Update.andThen2
-                [ updateQueue Page.Queue.Data.StopRefresh
-                ]
-                model
+            noop
 
         QueuePage ->
             updateQueue Page.Queue.Data.Init model
 
         RegisterPage ->
-            updateQueue Page.Queue.Data.StopRefresh model
+            noop
 
         UploadPage _ ->
             Util.Update.andThen2
-                [ updateQueue Page.Queue.Data.StopRefresh
-                , updateUpload Page.Upload.Data.reset
+                [ updateUpload Page.Upload.Data.reset
                 ]
                 model
 
         NewInvitePage ->
-            updateQueue Page.Queue.Data.StopRefresh model
+            noop
 
         ItemDetailPage id ->
             Util.Update.andThen2
                 [ updateItemDetail texts (Page.ItemDetail.Data.Init id)
-                , updateQueue Page.Queue.Data.StopRefresh
                 ]
                 model
 

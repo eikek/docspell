@@ -9,6 +9,7 @@ package docspell.store.records
 import cats.data.NonEmptyList
 
 import docspell.common._
+import docspell.notification.api.ChannelType
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
@@ -106,4 +107,11 @@ object RNotificationChannelMatrix {
       T.id === id && T.uid.in(Select(select(u.uid), from(u), u.isAccount(account)))
     )
   }
+
+  def findRefs(ids: NonEmptyList[Ident]): Select =
+    Select(
+      select(T.id.s, const(ChannelType.Matrix.name), T.name.s),
+      from(T),
+      T.id.in(ids)
+    )
 }
