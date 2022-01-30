@@ -56,6 +56,9 @@ trait DSL extends DoobieMeta {
   def union(s1: Select, sn: Select*): Select =
     Select.Union(s1, sn.toVector)
 
+  def union(selects: Nel[Select]): Select =
+    Select.Union(selects.head, selects.tail.toVector)
+
   def intersect(s1: Select, sn: Select*): Select =
     Select.Intersect(s1, sn.toVector)
 

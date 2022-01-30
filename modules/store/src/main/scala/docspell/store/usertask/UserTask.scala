@@ -29,6 +29,11 @@ case class UserTask[A](
   def encode(implicit E: Encoder[A]): UserTask[String] =
     copy(args = E(args).noSpaces)
 
+  def withArgs[B](newArgs: B): UserTask[B] =
+    copy(args = newArgs)
+
+  def mapArgs[B](f: A => B): UserTask[B] =
+    withArgs(f(args))
 }
 
 object UserTask {
