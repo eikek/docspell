@@ -11,7 +11,13 @@ default_language = "en"
 
 [markdown]
 highlight_code = true
-highlight_theme = "gruvbox-dark"
+#light: ayu-light, OneHalfLight, base16-ocean-light
+highlight_theme = "css"
+
+highlight_themes_css = [
+  { theme = "gruvbox-dark", filename = "syntax-dark.css" },
+  { theme = "base16-ocean-light", filename = "syntax-light.css" }
+]
 
 [link_checker]
 skip_prefixes = [

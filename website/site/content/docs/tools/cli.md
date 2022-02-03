@@ -4,7 +4,8 @@ description = "A command line interface to."
 weight = 5
 +++
 
-# Introduction
+# Docspell CLI
+## Introduction
 
 The **d**oc**s**pell **c**lient, short
 [dsc](https://github.com/docspell/dsc), is a tool to use
@@ -17,7 +18,7 @@ directory.
 It is a work in progress; eventually most of the
 [api](@/docs/api/_index.md) will be covered.
 
-# Usage
+## Usage
 
 Download the binary for your architecture from the [release
 page](https://github.com/docspell/dsc/releases/latest) and rename it
@@ -86,11 +87,9 @@ you need to `login` again.
 
 ## Demo
 
-<div class="columns is-centered is-full-width">
-  <div class="column">
-    <script id="asciicast-427679" src="https://asciinema.org/a/427679.js" async></script>
-  </div>
-</div>
+<figure>
+  <script id="asciicast-427679" src="https://asciinema.org/a/427679.js" async></script>
+</figure>
 
 
 # Use Cases / Examples

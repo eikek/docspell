@@ -3,8 +3,8 @@ title = "FAQ"
 weight = 100
 description = "Frequently asked questions."
 insert_anchor_links = "right"
+template = "docs.html"
 [extra]
-mktoc = true
 +++
 
 # FAQ

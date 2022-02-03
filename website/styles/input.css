@@ -1,0 +1,41 @@
+@import "@fontsource/spectral";
+@import "@fontsource/spectral/latin";
+
+@import "@fontsource/montserrat";
+@import "@fontsource/montserrat/latin";
+
+@import "@fontsource/source-code-pro";
+
+@import "@fortawesome/fontawesome-free/css/all";
+
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import "./custom-components.css";
+@import "./custom-utilities.css";
+@import "./content.css";
+
+a.zola-anchor {
+    padding-left: 0.75rem;
+    display: none;
+    font-family: mono;
+    font-size: smaller;
+}
+
+h1:hover a.zola-anchor {
+    display: inline;
+}
+
+h2:hover a.zola-anchor {
+    display: inline
+}
+
+h3:hover a.zola-anchor {
+    display: inline
+}
+
+h4:hover a.zola-anchor {
+  display: inline
+}

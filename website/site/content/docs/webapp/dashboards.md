@@ -5,18 +5,20 @@ weight = 5
 mktoc = true
 +++
 
+# Dashboards
+
 The main page shows a dashboard that can be configured to show some
 aspects of your documents. The following shows the default dashboard
 that is bundled in the application:
 
-{{ figure(file="dashboards-01.png") }}
+{{ figure2(light="dashboards-01.png", dark="dashboards-01_dark.png") }}
 
 It shows a predefined set of information, which can be customized. You
 can create multiple dashboards and switch between them, you can also
 define one as the "default" which is shown when the page loads.
 
 
-# Side menu
+## Side menu
 
 The side menu contains a list of useful links. The first loads the
 default dashboard. All others (and more) are available through the
@@ -29,7 +31,7 @@ The _Settings_ section contains some links to useful settings and the
 _Manage_ section has links to metadata that can be managed separately.
 These links are fixed and cannot be changed.
 
-# Dasbhoard properties
+## Dasbhoard properties
 
 The main component on this page is the "dashboard". A dashboard has
 the following properties (all required):
@@ -57,7 +59,7 @@ removing boxes and the dashboard properties.
 
 After clicking _Edit Dashboard_ the dashboard changes into a form:
 
-{{ figure(file="dashboards-02.png") }}
+{{ figure2(light="dashboards-02.png", dark="dashboards-02_dark.png") }}
 
 Note the message on the top: it indicates that this dashboard is the
 bundled one that is used only if there are no custom ones available.
@@ -72,19 +74,19 @@ reorder the boxes using the arrow buttons or drag and drop. When
 satisfied, click _Submit_. In the example, the last two boxes are
 removed and box decorations are enabled for the field overview box.
 
-{{ figure(file="dashboards-03.png") }}
+{{ figure2(light="dashboards-03.png", dark="dashboards-03_dark.png") }}
 
 When you now edit this dasbhoard again, the message is gone and you
 can change the dashboard and also delete it. You can also create a new
 dashboard or copy the current one.
 
-{{ figure(file="dashboards-04.png") }}
+{{ figure2(light="dashboards-04.png", dark="dashboards-04_dark.png") }}
 
 In this example, the dashboard was copied, then the message was
 changed and it was set to the default dashboard. This is how it looks
 now:
 
-{{ figure(file="dashboards-05.png") }}
+{{ figure2(light="dashboards-05.png", dark="dashboards-05_dark.png") }}
 
 When there is more than one dashboard, the side menu shows all of
 them. The little house icon indicates whether this is the default

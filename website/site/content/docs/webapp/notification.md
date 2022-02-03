@@ -5,6 +5,8 @@ weight = 60
 mktoc = true
 +++
 
+# Notifications
+
 Docspell can notify on specific events and it can run queries
 periodically and notify about the result.
 
@@ -16,11 +18,10 @@ item. Periodic queries can be used for running queries regularly and
 get the result sent as message.
 
 Both require to first select a channel, for how the message should be
-sent.
+sent. This can be done in *User profile → Notification Channels*.
 
-{{ imgnormal(file="notification-01.png", width="250px") }}
 
-# Channels
+## Channels
 
 Channels are means to deliver a message. Currently, docspell supports
 these channels:
@@ -32,7 +33,12 @@ these channels:
 - [Matrix](https://matrix.org)
 - [Gotify](https://gotify.net)
 
-## Matrix
+<div class="justify-center flex">
+{{ imgnormal2(light="notification-01.png", dark="notification-01_dark.png", width="250px") }}
+</div>
+
+
+### Matrix
 
 Matrix is an open network for secure and decentralized communication.
 It relies on open standards and can be self-hosted.
@@ -45,9 +51,9 @@ You can find the room id in your room settings under "Advanced" in
 Element. The access key is in your user settings under tab "Help &
 About" in Element.
 
-{{ figure(file="notification-02.png") }}
+{{ figure2(light="notification-02.png", dark="notification-02_dark.png") }}
 
-## Gotify
+### Gotify
 
 Gotify is a simple application for receiving messages to be notified
 on several clients via websockets. It is great for connecting
@@ -55,10 +61,10 @@ applications to your devices.
 
 It requires only your gotify url and the application secret.
 
-{{ figure(file="notification-03.png") }}
+{{ figure2(light="notification-03.png", dark="notification-03_dark.png") }}
 
 
-## E-Mail
+### E-Mail
 
 E-Mails are sent using one of your configured [SMTP
 connections](@/docs/webapp/emailsettings.md#smtp-settings).
@@ -66,22 +72,22 @@ connections](@/docs/webapp/emailsettings.md#smtp-settings).
 The part `docspell.joex.send-mail.list-id` in joex' configuration file
 can be used to add a `List-Id` mail header to every notification mail.
 
-## HTTP Request
+### HTTP Request
 
 The most generic form is the channel *HTTP Request*. This just sends a
 POST request to a configured endpoint. The requests contains a JSON
 body with the event details.
 
-# Webhooks
+## Webhooks
 
 Webhooks are http requests that are generated on specific events in
 Docspell.
 
-## Events
+### Events
 
 You need to choose which events you are interested in.
 
-{{ figure(file="notification-04.png") }}
+{{ figure2(light="notification-04.png", dark="notification-04_dark.png") }}
 
 You can do so by selecting multiple event types or by clicking the
 *Notify on all events* checkbox.
@@ -93,7 +99,9 @@ a message from it.
 Additionally, it is possible to filter the events using an expression
 that is applied to the event data JSON structure.
 
-## Testing
+Events can be send to multiple channels.
+
+### Testing
 
 The webhook form allows you to look at some sample events. These
 events are generated from random data and show how the message would
@@ -105,7 +113,7 @@ event of the first of the selected event (or some chosen one, if
 *Notify on all events* is active) and sends it via the current
 channel.
 
-## JSON filter expression
+### JSON filter expression
 
 This filter allows to further constrain the events that trigger a
 notification. For example, it can be used to be notified only when
@@ -117,7 +125,7 @@ good way is to look at the sample events for the *HTTP Request*
 channel. These show the exact JSON structure that this filter is
 applied to (that applies to every channel).
 
-{{ figure(file="notification-05.png") }}
+{{ figure2(light="notification-05.png", dark="notification-05_dark.png") }}
 
 As an example: Choose the event *TagsChanged* and this filter
 expression: `content.added,removed.category=document_type` to be
@@ -127,12 +135,10 @@ notified whenever a tag is added or removed whose category is
 Please see [this page](@/docs/jsonminiquery/_index.md) for details
 about it.
 
-{% infobubble(mode="info", title="⚠ Please note") %}
-
+{% infobubble(title="Note") %}
 The webhook feature is still experimental. It starts out with only a
 few events to choose from and the JSON structure of events might
 change in next versions.
-
 {% end %}
 
 # Periodic Queries
@@ -146,7 +152,7 @@ items tagged *Todo* etc.
 
 ## Due Items Task
 
-{{ figure(file="notification-06.png") }}
+{{ figure2(light="notification-06.png", dark="notification-06_dark.png") }}
 
 The settings allow to customize the query for searching items. You can
 choose to only include items that have one or more tags (these are
@@ -180,9 +186,9 @@ selecting the items via form elements, you can define a custom
 [query](@/docs/query/_index.md) and optionally in combination with a
 [bookmark](@/docs/webapp/bookmarks.md).
 
-{{ figure(file="notification-07.png") }}
+{{ figure2(light="notification-07.png", dark="notification-07_dark.png") }}
 
-## Schedule
+### Schedule
 
 Both tasks have a *Schedule* field to specify the periodicity of the
 task. The syntax is similiar to a date-time string, like `2019-09-15

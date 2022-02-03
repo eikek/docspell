@@ -1,9 +1,9 @@
 +++
 title = "Customize Item Card"
 weight = 39
-[extra]
-mktoc = true
 +++
+
+# Customize item card
 
 The search view or list view displays the search results as a list of
 item cards. Each cards represents one item.
@@ -12,7 +12,7 @@ The item card can be customized a bit in the user settings. In the
 user menu (the user icon, top right), choose _User Profile_ and then
 _UI Settings_. Among other things, there is a _Item Cards_ section:
 
-{{ figure(file="itemcard-customize-01.png") }}
+{{ figure2(light="itemcard-customize-01.png", dark="itemcard-customize-01_dark.png") }}
 
 ### Max Note Length
 
@@ -33,14 +33,14 @@ specified via this setting. A _small_ preview uses about 80px width, a
 _medium_ one 160px and _large_ means to use the available space in the
 card.
 
-<div class="columns">
-    <div class="column">
+<div class="grid grid-cols-3 gap-4">
+    <div class="">
       {{ imgnormal(file="itemcard-customize-04.png", width="300")}}
     </div>
-    <div class="column">
+    <div class="">
       {{ imgnormal(file="itemcard-customize-03.png", width="300")}}
     </div>
-    <div class="column">
+    <div class="">
       {{ imgnormal(file="itemcard-customize-02.png", width="300")}}
     </div>
 </div>

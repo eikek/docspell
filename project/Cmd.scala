@@ -15,6 +15,7 @@ object Cmd {
   }
 
   def run(cmd: Seq[String], wd: File, logger: Logger): Unit = {
+    logger.info(s"Running ${cmd.mkString(" ")}")
     val res = Cmd.exec(cmd, Some(wd))
     logger.info(res.out)
     logger.error(res.err)

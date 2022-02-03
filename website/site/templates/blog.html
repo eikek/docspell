@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Docspell Blog{% endblock title %}
+
+{% block sidebar %}
+{% endblock sidebar %}
+{% block rightToc %}
+{% endblock rightToc %}
+
+{% block mainContent %}
+{{ section.content | safe }}
+
+<div class="flex flex-col space-y-4 mt-4">
+    {% for p in section.pages %}
+    {% if not p.extra.hidden %}
+    {% set author = "Unknown" %}
+    {% if p.extra.author is defined %}
+    {% set author = p.extra.author %}
+    {% endif %}
+    <div id="{{ p.slug }}"
+         class="px-4 py-4 box-shadow rounded mx-2 sm:mx-4 hover:ring ring-indigo-400 ring-opacity-50 dark:ring-cyan-400 dark:ring-opacity-50">
+        <div class="border-b pb-2 dark:border-stone-700 opacity-80 ">
+            <h3 class="no-default text-xl font-semibold hidden">
+                {{ p.title }}
+            </h3>
+            <div class="flex flex-row space-x-4 text-sm">
+                <div class="" title="Created on {{ p.date }}">
+                    <i class="fa fa-calendar-alt mr-1"></i>
+                    {{ p.date }}
+                </div>
+                <div class="" title="{{ p.word_count }} words">
+                    <i class="fa fa-pen-fancy mr-1"></i>
+                    {{ p.word_count }}
+                </div>
+                <div class="" title="by {{ author }}">
+                    <i class="fa fa-user mr-1"></i>
+                    {% if p.extra.authorLink is defined %}
+                    <a href="{{ p.extra.authorLink }}">{{ author }}</a>
+                    {% else %}
+                    {{ author }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="italic mt-3 font-light">
+            {{ p.summary | safe }}
+        </div>
+
+        <div class="flex flex-row justify-end">
+            <a class="no-default button1" href="{{ p.permalink }}#continue-reading">Continue Reading</a>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock mainContent %}

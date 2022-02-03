@@ -1,0 +1,74 @@
+@layer components {
+  .label {
+      @apply flex flex-row items-center px-2 py-0.5 rounded border;
+  }
+
+  .button {
+      @apply  px-6 py-3 rounded text-center ;
+  }
+
+  .info {
+      @apply bg-blue-800 hover:bg-blue-700;
+  }
+
+  .primary {
+      @apply bg-red-800 hover:bg-red-700;
+  }
+
+  .hero-header {
+      @apply py-4 sm:py-10 px-8 text-4xl bg-gradient-to-r from-yellow-800 to-yellow-900 text-gray-100 font-bold;
+  }
+
+  .link {
+      @apply text-blue-600 hover:text-blue-800;
+  }
+
+  .blue-message {
+      @apply px-4 py-4 bg-blue-50 text-blue-500 border rounded border-blue-100;
+  }
+  .green-message {
+      @apply border border-green-600 bg-green-50 text-green-600 px-4 py-2 rounded;
+  }
+  .green-message a {
+      @apply underline;
+  }
+
+
+  .markdown-view pre {
+      @apply font-mono py-4 px-4 bg-zinc-600 text-gray-100;
+  }
+  .markdown-view ul {
+      @apply list-disc list-outside;
+  }
+  .markdown-view ol {
+      @apply list-decimal list-outside;
+  }
+  .markdown-view a {
+      @apply link;
+  }
+  .markdown-view li {
+      @apply my-2;
+  }
+  .markdown-view p code {
+      @apply font-mono pl-1 pr-1 bg-gray-100 text-black;
+  }
+
+  .footer {
+      @apply py-12 bg-gray-100 mt-1 bg-opacity-60;
+  }
+
+  /*
+//josh-rose-trYl7JYATH0-unsplash
+//tersius-van-rhyn-xcQWMPm9fG8-unsplash
+//cassie-boca-x-tbVqkfQCU-unsplash
+//jf-martin-Ofs3LjEUcrk-unsplash
+  //  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)), url(img/jf-martin-Ofs3LjEUcrk-unsplash.jpg)
+//jesse-gardner-EqdpXeemf58-unsplash
+*/
+  .main-background {
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 1)), url('img/jf-martin-Ofs3LjEUcrk-unsplash.jpg');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+  }
+
+}

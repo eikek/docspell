@@ -1,6 +1,8 @@
 name: CI
 on:
   pull_request:
+    branches:
+      - master
 jobs:
   ci-matrix:
     runs-on: ubuntu-20.04

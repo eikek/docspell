@@ -5,6 +5,7 @@ weight = 90
 mktoc = true
 +++
 
+# Auto-Tagging
 
 Auto-Tagging must be enabled in the collective profile. Docspell can
 go through your items periodically and learn from your existing tags.
@@ -20,7 +21,7 @@ determined by looking at the text of the document. It would mean that
 Docspell could learn relationships that are not correct and then tag
 the next incoming items with `Done`.
 
-{{ figure(file="collective-settings-autotag.png") }}
+{{ figure2(light="collective-settings-autotag.png", dark="collective-settings-autotag_dark.png") }}
 
 That is why you need to specify what tags to learn. This is done by
 defining whitelist or a blacklist of tag categories. When defining a
