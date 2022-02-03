@@ -3,7 +3,7 @@ title = "Docker"
 weight = 20
 +++
 
-## Docker Images
+# Docker Images
 
 The docker images are at
 [hub.docker.com](https://hub.docker.com/u/docspell). The `latest` tag
@@ -29,7 +29,7 @@ release page. The images contain all the necessary
   is used to watch a directory for uploading files. This runs the `dsc
   watch` command.
 
-### Examples
+## Examples
 
 These examples use `docker run` to start the restserver and
 jobexecutor. Both must be connected to the same database. For this
@@ -127,7 +127,7 @@ fulltext search. For a more sophisticated docker setup, use
 appropriate tools, for example `docker-compose` which is explained
 below.
 
-## Docker Compose
+# Docker Compose
 
 There is a [docker-compose](https://docs.docker.com/compose/) setup
 available in the `/docker/docker-compose` folder. This setup is
@@ -135,8 +135,8 @@ similiar to the example above, but adding fulltext search and a
 PostgreSQL database by using just one command. It's only a few steps
 to get started.
 
-### Start Docspell
-#### 1. Get the docker-compose files
+## Start Docspell
+### 1. Get the docker-compose files
 
 There are two options. You can clone the whole repository:
 
@@ -159,7 +159,7 @@ You can choose any directory instead of
 make the rest of the guide work for both ways of obtaining the
 docker-compose file.
 
-#### 2. Run `docker-compose up`
+### 2. Run `docker-compose up`
 
 Change into the new `docker-compose` directory, for example:
 
@@ -210,7 +210,7 @@ command:
 to the service definition (or add it to an existing `command:`
 section).
 
-### Override this setup
+## Override this setup
 
 If you want to change this setup, you can simply use your own compose
 file or add a `docker-compose.override.yml` that allows to amend
@@ -251,7 +251,7 @@ volumes:
 ```
 
 
-### Upgrading
+## Upgrading
 
 Since [downgrading](@/docs/install/downgrading.md) is not supported,
 it is recommended to backup your database before upgrading. Should
@@ -267,7 +267,7 @@ $ docker-compose pull
 $ docker-compose up --force-recreate --build -d
 ```
 
-### Backups
+## Backups
 
 When running the docker compose setup, you can use the following to
 backup the database.

@@ -6,7 +6,7 @@ import Html.Attributes exposing (..)
 
 copyright : Html msg
 copyright =
-    img [ src "icons/copyright-40.svg" ] []
+    i [ class "fa fa-copyright font-thin" ] []
 
 
 infoSquared : Html msg
@@ -36,19 +36,24 @@ logoWidth w =
 
 home : Html msg
 home =
-    img [ src "icons/home-40.svg" ] []
+    i [ class "fa fa-home" ] []
 
 
 docs : Html msg
 docs =
-    img [ src "icons/notes-40.svg" ] []
+    i [ class "fa fa-book" ] []
 
 
 github : Html msg
 github =
-    img [ src "/icons/github-40.svg" ] []
+    i [ class "fab fa-github-alt" ] []
 
 
 githubGreen : Html msg
 githubGreen =
     img [ src "/icons/github-40-green.svg" ] []
+
+
+blog : Html msg
+blog =
+    i [ class "fa fa-blog" ] []

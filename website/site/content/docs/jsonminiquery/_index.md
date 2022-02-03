@@ -1,9 +1,14 @@
 +++
 title = "JSON (mini) query"
+weight = 58
+template = "docs.html"
+page_template = "docs.html"
+
 [extra]
-mktoc = true
 hidden = true
 +++
+
+# JSON Miniquery
 
 A "JSON mini query" is a simple expression that evaluates to `true` or
 `false` for any given JSON value.

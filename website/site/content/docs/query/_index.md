@@ -3,15 +3,14 @@ title = "Query Language"
 weight = 55
 description = "The query language is a powerful way to search for documents."
 insert_anchor_links = "right"
-[extra]
-mktoc = true
+template = "docs.html"
 +++
 
+# Query Language
 
 Docspell uses a query language to provide a powerful way to search for
-your documents. It is targeted at "power users" and it needs to be
-enabled explicitely in your user settings to be used on the search
-page.
+your documents. It currently needs to be enabled explicitely in your
+user settings to be used on the search page.
 
 <div class="colums">
 

@@ -14,25 +14,21 @@ type alias Demo =
 
 demo : Demo -> Html msg
 demo data =
-    div [ class "columns is-vcentered box mb-5" ]
-        [ div [ class "column" ]
-            [ h2 [ class "title" ]
-                [ text data.title
-                ]
-            , if data.info == "" then
-                span [] []
+    div [ class "px-4 py-4 mx-2 sm:mx-8 rounded border shadow-lg flex flex-col" ]
+        [ h2 [ class "text-3xl font-bold py-2 font-serif" ]
+            [ text data.title
+            ]
+        , if data.info == "" then
+            span [] []
 
-              else
-                p []
-                    [ Markdown.toHtml [] data.info
-                    ]
-            , div [ class "mt-5 columns is-centered" ]
-                [ video
-                    [ src data.url
-                    , controls True
-                    ]
-                    []
+          else
+            Markdown.toHtml [ class "text-lg" ] data.info
+        , div [ class "mt-6 self-center" ]
+            [ video
+                [ src data.url
+                , controls True
                 ]
+                []
             ]
         ]
 

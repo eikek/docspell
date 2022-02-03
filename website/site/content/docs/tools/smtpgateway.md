@@ -4,6 +4,8 @@ description = "Start a SMTP server that forwards all mails to docspell."
 weight = 50
 +++
 
+# SMTP Gateway with Exim
+
 One possible use case for the [integration
 endpoint](@/docs/api/upload.md#integration-endpoint) is a SMTP server
 that forwards all local mail to docspell. This way there is no

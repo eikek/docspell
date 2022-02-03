@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{{ currentTitle }} - Docspell Blog{% endblock title %}
+
+{% block sidebar %}
+{% endblock sidebar %}
+
+{% block mainContent %}
+<div class="flex flex-row space-x-2 -mb-6 mt-6 text-sm opacity-70 font-medium">
+    {% set author = "Unkown" %}
+    {% if page.extra.author is defined %}
+    {% set author = page.extra.author %}
+    {% endif %}
+    <div class="" title="by {{ author }}">
+        by
+        {% if page.extra.authorLink is defined %}
+        <a href="{{ page.extra.authorLink }}">{{ author }}</a>
+        {% else %}
+        {{ author }}
+        {% endif %}
+    </div>
+    <div class="" title="Created on {{ page.date }}">
+        on
+        {{ page.date }}
+    </div>
+</div>
+
+{{ page.content | safe }}
+
+<div class="grid grid-cols-1 sm:grid-cols-2 items-center pt-6 mt-14 border-t dark:border-stone-700">
+
+    <div class="flex items-center flex-col sm:flex-row" title="Previous post">
+        {% if page.earlier and not page.earlier.extra.hidden %}
+        {% set p = page.earlier %}
+        <a class="no-default button1 my-auto" href="{{ p.permalink }}">
+            <i class="fa fa-chevron-left"></i>
+        </a>
+        <div class="italic my-2 ml-2"> {{ p.title }} </div>
+        {% endif %}
+    </div>
+
+    <div class="flex items-center flex-col sm:flex-row justify-end"  title="Next post">
+        {% if page.later and not page.later.extra.hidden %}
+        {% set p = page.later %}
+        <div class="italic my-2 mr-2"> {{ p.title }} </div>
+        <a class="no-default button1 my-auto" href="{{ p.permalink }}">
+            <i class="fa fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock mainContent %}

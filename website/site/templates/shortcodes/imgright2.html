@@ -1,0 +1,4 @@
+{% set len = page.components | length %}
+{% set p = page.components | slice(end=len - 1) | join(sep='/') %}
+<img class="light-block" style="float:right; padding-left:0.25em;" src="{{ get_url(path=p  ~ "/" ~ light) }}">
+<img class="dark-block" style="float:right; padding-left:0.25em;" src="{{ get_url(path=p  ~ "/" ~ dark) }}">

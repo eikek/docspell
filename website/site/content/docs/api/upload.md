@@ -3,9 +3,9 @@ title = "Upload Request"
 description = "Describes the upload request"
 weight = 20
 insert_anchor_links = "right"
-[extra]
-mktoc = true
 +++
+
+# Upload Request
 
 Uploads of files to docspell are always processed the same way, no
 matter if coming from a source, the integration endpoint or from the

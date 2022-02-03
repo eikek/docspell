@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ currentTitle }} - Docspell Documentatios{% endblock title %}
+
+{% block sidebarItems %}
+  <div class="flex flex-col mt-2">
+    {% set topSection = get_section(path="docs/_index.md") %}
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 {% if current_path == topSection.path %} dark:bg-stone-800 {% endif %} ">
+        <a href="{{topSection.permalink | safe}}"
+           title="{{ topSection.description }}"
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            {{ topSection.title | title }}
+        </a>
+    </div>
+
+    {% for subs in topSection.subsections %}
+    {% set sect = get_section(path=subs) %}
+    {% if not sect.extra.hidden %}
+
+    {# Use the first page of a section with sub pages as the section link target. #}
+    {% if sect.pages | length > 0 %}
+    {% set permlink = sect.pages[0].permalink %}
+    {% else %}
+    {% set permlink = sect.permalink %}
+    {% endif %}
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 {% if current_path == sect.path %} dark:bg-stone-800 {% endif %}">
+        <a href="{{ permlink }}"
+           title="{{ sect.description }}"
+           class="block w-full"
+        >
+            {{ sect.title | title }}
+        </a>
+    </div>
+    {% if sect.pages | length > 0 %}
+    <div class="mb-2">
+        {% for subpage in sect.pages %}
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 {% if current_path == subpage.path %} dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 {% else %} border-l dark:border-stone-700 {% endif %}">
+            <a href="{{subpage.permalink | safe}}" class="w-full block">
+                {{ subpage.title | title }}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock sidebarItems %}
+
+{% block mainContent %}
+  {% if section is defined %}
+  {{ section.content | safe }}
+  {% endif %}
+  {%if page is defined %}
+  {{ page.content | safe }}
+  {% endif %}
+
+{% if section is defined and section.extra.page_list %}
+<ul>
+    {% for p in section.pages %}
+    <li><a href="{{ p.permalink }}">{{ p.title }}</a>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock mainContent %}

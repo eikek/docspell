@@ -8,61 +8,61 @@ The website is created using [zola](https://github.com/getzola/zola)
 static site generator. The (very minimal) dynamic parts are written in
 Elm.
 
-The `build.sh` script builds the site.
+Sbt is used to build the site.
 
 
 ## Development
 
 Install things by running `yarn install`.
 
-Open two terminals. In first run:
+Open terminal for each script below:
 
-``` shell
-nix-shell --run ./run-elm.sh
-```
-
-and in the second
-
-``` shell
-nix-shell --run "cd site && zola serve"
-```
+1. Starting the server
+   ``` shell
+   nix-shell --run "cd site && zola serve"
+   ```
+2. Building the stylesheet
+   ``` shell
+   nix-shell --run ./scripts/run-styles.sh
+   ```
+3. Building some javascript files
+   ``` shell
+   nix-shell --run ./scripts/run-elm.sh
+   ```
 
 Open browser at `localhost:1111`.
 
 
 ## Publishing
 
+The above is great when editing, but doesn't fully reflect what will
+be finally deployed. To see this, start sbt and change into the
+website project.
+
 ``` shell
 nix-shell website/shell.nix --run sbt
 sbt> project website
 ```
 
-### Check Links
+Build everything and check for dead links:
 
 ``` scala
-sbt> zolaBuild
+sbt> zolaBuildTest
 sbt> zolaCheck
 ```
 
 ### Testing
 
 ``` scala
-sbt> zolaBuildTest
 sbt> ghpagesSynchLocal
 ```
 
-Other terminal:
+The final site is now generated and a simple http server can be used
+to see how it will look when deployed.
 
 ``` shell
 cd ~/.sbt/ghpages/<some-hash>/com.github.eikek/docspell-website
-python -m SimpleHTTPServer 1234
+python -m http.server 1234
 ```
 
 Open http://localhost:1234 in a browser.
-
-### Publish
-
-``` scala
-sbt> zolaBuild
-sbt> ghpagesPushSite
-```

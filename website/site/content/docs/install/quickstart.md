@@ -1,7 +1,9 @@
 +++
-title = "Quickstart"
+title = "Getting started"
 weight = 0
 +++
+
+# Getting started
 
 To get started, here are some quick links:
 
@@ -28,7 +30,7 @@ To get started, here are some quick links:
   thread](https://forums.unraid.net/topic/103425-docspell-hilfe/) in
   the German Unraid forum. Thanks for providing these!
 
-Every [component](@/docs/intro/_index.md#components) (restserver,
+Every [component](@/docs/_index.md#components) (restserver,
 joex, dsc watch) can run on different machines and multiple times.
 Most of the time running all on one machine is sufficient and also for
 simplicity, the docker-compose setup reflects this variant.
@@ -39,7 +41,7 @@ file](@/docs/configure/_index.md). If this is not given, the default
 is used, which gets you started on a single machine, but it is very
 likely you want to change these to match your use-case/setup.
 
-{% infobubble(mode="info", title="⚠ Please note") %}
+{% infobubble(title="Note") %}
 
 Please have a look at the [configuration page](/docs/configure/) page,
 before making docspell publicly available. By default, everyone can

@@ -3,24 +3,23 @@ title = "Download & Run"
 weight = 22
 +++
 
+# Download and Run
+
 You can install via zip or deb archives. Please see the
 [prerequisites](@/docs/install/prereq.md) first.
 
 ## Using zip files
 
-You need to download the two files:
-
-- [docspell-restserver-{{version()}}.zip](https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-restserver-{{version()}}.zip)
-- [docspell-joex-{{version()}}.zip](https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-joex-{{version()}}.zip)
-
-
-1. Unzip both files:
+1. Download the two files:
+   - <a href="https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-restserver-{{version()}}.zip">docspell-restserver-{{version()}}.zip</a>
+   - <a href="https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-joex-{{version()}}.zip">docspell-joex-{{version()}}.zip</a>
+2. Unzip both files:
    ``` bash
    $ unzip docspell-*.zip
    ```
-2. Open two terminal windows and navigate to the the directory
+3. Open two terminal windows and navigate to the the directory
    containing the zip files.
-3. Start both components executing:
+4. Start both components executing:
    ``` bash
    $ ./docspell-restserver*/bin/docspell-restserver
    ```
@@ -29,8 +28,8 @@ You need to download the two files:
    $ ./docspell-joex*/bin/docspell-joex
    ```
    in the other.
-4. Point your browser to: <http://localhost:7880/app>
-5. Register a new account, sign in and try it.
+5. Point your browser to: <http://localhost:7880/app>
+6. Register a new account, sign in and try it.
 
 Note, that this setup doesn't include watching a directory nor
 fulltext search. Using zip/deb files requires to take care of the
@@ -64,7 +63,7 @@ extracted and installed manually somewhere in your `$PATH`. There are
 no deb files provided.
 
 
-## Running
+# Running
 
 Run the start script (in the corresponding `bin/` directory when using
 the zip files):

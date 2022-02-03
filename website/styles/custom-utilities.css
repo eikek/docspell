@@ -1,0 +1,19 @@
+@layer utilities {
+    .disabled {
+        @apply opacity-50 cursor-not-allowed;
+    }
+    .h-screen-12 {
+        height: calc(100vh - 3rem);
+    }
+    .max-h-screen-12 {
+        max-height: calc(100vh - 3rem);
+    }
+
+    .dark-block {
+        @apply hidden dark:block;
+    }
+    .light-block {
+        @apply block dark:hidden;
+    }
+
+}

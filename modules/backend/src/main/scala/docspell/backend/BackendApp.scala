@@ -81,7 +81,7 @@ object BackendApp {
       itemSearchImpl <- OItemSearch(store)
       fulltextImpl <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
       mailImpl <- OMail(store, javaEmil)
-      userTaskImpl <- OUserTask(utStore, queue, joexImpl)
+      userTaskImpl <- OUserTask(utStore, store, queue, joexImpl)
       folderImpl <- OFolder(store)
       customFieldsImpl <- OCustomFields(store)
       simpleSearchImpl = OSimpleSearch(fulltextImpl, itemSearchImpl)

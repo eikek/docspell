@@ -6,6 +6,7 @@
 
 package docspell.notification.api
 
+import cats.Order
 import cats.data.{NonEmptyList => Nel}
 
 import io.circe.Decoder
@@ -43,4 +44,7 @@ object ChannelType {
     Decoder.decodeString.emap(fromString)
   implicit val jsonEncoder: Encoder[ChannelType] =
     Encoder.encodeString.contramap(_.name)
+
+  implicit val order: Order[ChannelType] =
+    Order.by(_.name)
 }

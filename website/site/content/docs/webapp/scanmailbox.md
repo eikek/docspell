@@ -5,6 +5,8 @@ weight = 70
 mktoc = true
 +++
 
+# Scan Mailboxes
+
 User that provide valid email (imap) settings, can import mails from
 their mailbox into docspell periodically.
 
@@ -16,14 +18,14 @@ tasks that connects to your mailbox and import mails into docspell. It
 is possible to define multiple tasks, for example, if you have
 multiple e-mail accounts you want to import periodically.
 
-{{ figure(file="scanmailbox-list.png") }}
+{{ figure2(light="scanmailbox-list.png", dark="scanmailbox-list_dark.png") }}
 
 
-# Details
+## Details
 
-## General
+### General
 
-{{ figure(file="scanmailbox-detail-01.png") }}
+{{ figure2(light="scanmailbox-detail-01.png", dark="scanmailbox-detail-01_dark.png") }}
 
 You can enable or disable this task. A disabled task will not run
 periodically. You can still choose to run it manually if you click the
@@ -33,9 +35,9 @@ Then you need to specify which [IMAP
 connection](@/docs/webapp/emailsettings.md#imap-settings) to use.
 
 
-## Processing
+### Processing
 
-{{ figure(file="scanmailbox-detail-02.png") }}
+{{ figure2(light="scanmailbox-detail-02.png", dark="scanmailbox-detail-02_dark.png") }}
 
 A list of folders is required. Docspell will only look into these
 folders. You can specify multiple folders. The "Inbox" folder is a
@@ -56,9 +58,9 @@ run this task all 6 hours and read mails from 8 hours back. This
 setting is used to query the mail server.
 
 
-## Additional Filter
+### Additional Filter
 
-{{ figure(file="scanmailbox-detail-03.png") }}
+{{ figure2(light="scanmailbox-detail-03.png", dark="scanmailbox-detail-03_dark.png") }}
 
 The following properties allow to filter those downloaded mails that
 should be imported.
@@ -77,9 +79,9 @@ pattern. For example, if your scanner mails to you with a certain
 subject like _"Scanned Document 214"_, you could include those via a
 `Scanned Document*` pattern.
 
-## Post Processing
+### Post Processing
 
-{{ figure(file="scanmailbox-detail-04.png") }}
+{{ figure2(light="scanmailbox-detail-04.png", dark="scanmailbox-detail-04_dark.png") }}
 
 The next settings tell docspell what to do once a mail has been read
 by docspell. It can be moved into another folder in your mail account.
@@ -103,9 +105,9 @@ mails*.
 
 
 
-## Metadata
+### Metadata
 
-{{ figure(file="scanmailbox-detail-05.png") }}
+{{ figure2(light="scanmailbox-detail-05.png", dark="scanmailbox-detail-05_dark.png") }}
 
 These properties allow to specify some metadata that are automatically
 attached to the items being created.
@@ -131,9 +133,9 @@ The *Language* setting is applied when processing the mails. If not
 set, the default language of the collective is used.
 
 
-## Schedule
+### Schedule
 
-{{ figure(file="scanmailbox-detail-06.png") }}
+{{ figure2(light="scanmailbox-detail-06.png", dark="scanmailbox-detail-06_dark.png") }}
 
 At last the *Schedule* defines when and how often this task should
 run. The syntax is similiar to a date-time string, like `2019-09-15

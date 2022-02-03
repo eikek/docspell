@@ -3,11 +3,13 @@ title = "Uploads"
 weight = 8
 +++
 
+# File Uploads
+
 This page describes, how files can get into docspell. Technically,
 there is just one way: via http multipart/form-data requests.
 
 
-# Authenticated Upload
+## Authenticated Upload
 
 From within the web application there is the "Upload Files"
 page. There you can select multiple files to upload. You can also
@@ -25,7 +27,7 @@ This obviously requires an authenticated user. While this is handy for
 ad-hoc uploads, it is very inconvenient for automating it by custom
 scripts. For this the next variant exists.
 
-# Anonymous Upload
+## Anonymous Upload
 
 It is also possible to upload files without authentication. This
 should make tools that interact with docspell much easier to write.
@@ -43,7 +45,7 @@ username is not visible.
 
 Example screenshot:
 
-{{ figure(file="sources-edit.png") }}
+{{ figure2(light="uploading-01.png", dark="uploading-01_dark.png") }}
 
 This example shows a source with name "test". Besides a description
 and a name that is only used for displaying purposes, a priority and a
@@ -60,7 +62,7 @@ The source endpoint defines two urls:
 - `/app/upload/<id>`
 - `/api/v1/open/upload/item/<id>`
 
-{{ figure(file="sources-form.png") }}
+{{ figure2(light="uploading-02.png", dark="uploading-02_dark.png") }}
 
 The first points to a web page where everyone could upload files into
 your account. You could give this url to people for sending files
@@ -92,7 +94,7 @@ docspell count the files uploaded through the web interface, just
 create a source (can be inactive) with that name (`webapp`).
 
 
-# Other options
+## Other options
 
 More details about the actual http request and other upload options
 can be found [here](@/docs/api/upload.md).

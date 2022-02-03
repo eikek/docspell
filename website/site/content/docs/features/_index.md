@@ -1,8 +1,9 @@
 +++
 title = "Features and Limitations"
-weight = 10
+weight = 9
 insert_anchor_links = "right"
 description = "A list of features and limitations."
+template = "docs.html"
 +++
 
 # Features
@@ -20,7 +21,7 @@ description = "A list of features and limitations."
 - A powerful [query language](@/docs/query/_index.md) to find
   documents
 - use [bookmarks](@/docs/webapp/bookmarks.md) to save more complex queries
-- customizable [dashboads](@/docs/webapp/dashboards.md) as the main page
+- customizable [dashboards](@/docs/webapp/dashboards.md) as the main page
 - Non-destructive: all your uploaded files are never modified and can
   always be downloaded untouched
 - Organize files using tags, folders, [Custom
@@ -80,8 +81,6 @@ description = "A list of features and limitations."
     files, watch folders and many more!
   - [Android App](@/docs/tools/android.md) to quickly upload files
     from your android devices
-  - [Firefox plugin](@/docs/tools/browserext.md): right click on a
-    link and send the file to docspell
   - [SMTP Gateway](@/docs/tools/smtpgateway.md): Setup a SMTP server
     that delivers mails directly to docspell.
 - License: AGPLv3

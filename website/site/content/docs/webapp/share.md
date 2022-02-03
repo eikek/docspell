@@ -5,21 +5,21 @@ weight = 120
 mktoc = true
 +++
 
+# Shares
+
 Docspell has a thought-out share feature that allows you to create
 read-only views to a subset of your documents and create a public but
 not-guessable link to it.
 
-# Concept
+## Concept
 
 A share is a cryptic *share id* that maps to a
 [query](@/docs/query/_index.md). A share can be accessed via a public
 link that contains the share id.
 
-{% infobubble(mode="warning", title="Please note") %}
-
+{% warningbubble(title="Please note") %}
 Everyone who has this link can access all documents resulting from the
 query and their metadata.
-
 {% end %}
 
 To further protect this link, a password can be specified which should
@@ -90,7 +90,7 @@ you want to publish. In the screenshot below all items with tag
 `Manual` are selected. Then click the *Share Results* item in the
 menu.
 
-{{ figure(file="share-01.png") }}
+{{ figure2(light="share-01.png", dark="share-01_dark.png") }}
 
 A form appears that lets you edit the query and set some properties.
 The query is taken from the search page and may look a bit strange. It
@@ -104,7 +104,7 @@ shares. Then a password and the *Publish Until* date can be set. The
 *Publish Until* date is mandatory. You can set it to something very
 far away to have shares exist "forever".
 
-{{ figure(file="share-02.png") }}
+{{ figure2(light="share-02.png", dark="share-02_dark.png") }}
 
 Clicking *Cancel* brings you back to the search results. If you are
 satifsied, click *Publish*. The next screen allows you to inspect your
@@ -112,7 +112,7 @@ new share and to copy the url and/or send an e-mail. The email form is
 prefilled with some template that contains the link, so you don't need
 to copy it.
 
-{{ figure(file="share-03.png") }}
+{{ figure2(light="share-03.png", dark="share-03_dark.png") }}
 
 When typing in an e-mail address, there are completion proposals
 provided from your address book. If you type in an arbitrary address
@@ -130,7 +130,7 @@ Creating a share for a hand picked set of items is almost the same as
 the above. In the search page, go to *Select Mode* and select some
 items.
 
-{{ figure(file="share-04.png") }}
+{{ figure2(light="share-04.png", dark="share-04_dark.png") }}
 
 Then click the *Share* button and follow the same process as described
 above. The query selects now exactly the picked items like in
@@ -145,7 +145,7 @@ be filled manually (there is some syntax help). It is the same query
 as in the "power search" bar, as described
 [here](@/docs/query/_index.md).
 
-{{ figure(file="share-12.png") }}
+{{ figure2(light="share-12.png", dark="share-12_dark.png") }}
 
 ## Managing Shares
 
@@ -153,7 +153,7 @@ Go to *Collective Profile -> Shares* to see all the shares of your
 collective. You can also look into shares that were created by other
 users.
 
-{{ figure(file="share-06.png") }}
+{{ figure2(light="share-06.png", dark="share-06_dark.png") }}
 
 To not make it too easy to look into private folders, you cannot
 change attributes of shares that were created by another user.
@@ -166,11 +166,11 @@ allowed.
 
 If you edit your own share, you can change its properties.
 
-{{ figure(file="share-07.png") }}
+{{ figure2(light="share-07.png", dark="share-07_dark.png") }}
 
 If you are not the owner, the form is hidden:
 
-{{ figure(file="share-08.png") }}
+{{ figure2(light="share-08.png", dark="share-08_dark.png") }}
 
 
 # Accessing a share
@@ -178,7 +178,7 @@ If you are not the owner, the form is hidden:
 Pasting the share link into a browser shows you the results of the
 query:
 
-{{ figure(file="share-09.png") }}
+{{ figure2(light="share-09.png", dark="share-09_dark.png") }}
 
 The search input allows to do a fulltext search and the search menu to
 the left can be used to further constrain the results. The search will
@@ -192,7 +192,7 @@ search results will be available to select. Other data is not leaked.
 Clicking the search icon next to the search input, switches the input
 to be the "power search" input:
 
-{{ figure(file="share-11.png") }}
+{{ figure2(light="share-11.png", dark="share-11_dark.png") }}
 
 There is a link below the input field that opens a new tab with the
 [query documentation page](@/docs/query/_index.md).
@@ -202,7 +202,7 @@ will populate the corresponding section in the search menu, just like
 the default search view. You can click on an item card to go to the
 detail view:
 
-{{ figure(file="share-10.png") }}
+{{ figure2(light="share-10.png", dark="share-10_dark.png") }}
 
 This link to a single item is also bookmarkable. You can copy it via
 the QR code or by clicking the *Copy* button. In the detail view you

@@ -1,10 +1,12 @@
 +++
-title = "Processing Queue"
+title = "Job Queue"
 weight = 80
 [extra]
 mktoc = true
 +++
 
+
+# Job Queue
 
 The page *Processing Queue* shows the current state of document
 processing for your uploads. The page currently only shows at most the

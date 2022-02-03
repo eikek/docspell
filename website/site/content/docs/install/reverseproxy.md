@@ -3,6 +3,8 @@ title = "Reverse Proxy"
 weight = 50
 +++
 
+# Reverse Proxy
+
 This contains examples for how to use docspell behind a reverse proxy.
 
 For the examples below, assume the following:

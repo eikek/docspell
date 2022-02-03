@@ -3,6 +3,7 @@ title = "Building Docspell"
 weight = 0
 +++
 
+# Building
 
 You must install [sbt](https://scala-sbt.org),
 [nodejs](https://www.npmjs.com/get-npm) (for the `npm` command) and

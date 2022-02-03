@@ -31,7 +31,6 @@ type alias Model =
     , formState : FormState
     , pollingInterval : Float
     , init : Bool
-    , stopRefresh : Bool
     , currentMillis : Int
     , showLog : Maybe JobDetail
     , deleteConfirm : Comp.YesNoDimmer.Model
@@ -60,7 +59,6 @@ emptyModel =
     , formState = InitialForm
     , pollingInterval = 1200
     , init = False
-    , stopRefresh = False
     , currentMillis = 0
     , showLog = Nothing
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
@@ -72,7 +70,6 @@ emptyModel =
 type Msg
     = Init
     | StateResp (Result Http.Error JobQueueState)
-    | StopRefresh
     | NewTime Time.Posix
     | ShowLog JobDetail
     | QuitShowLog

@@ -6,11 +6,12 @@
 
 package docspell.store.records
 
-import cats.data.OptionT
+import cats.data.{NonEmptyList => Nel, OptionT}
 import cats.implicits._
 
 import docspell.common._
 import docspell.notification.api.{Channel, ChannelRef, ChannelType}
+import docspell.store.qb.DSL._
 
 import doobie._
 
@@ -129,6 +130,22 @@ object RNotificationChannel {
       case ChannelType.Http =>
         RNotificationChannelHttp.getById(userId)(ref.id).map(_.map(Http.apply))
     }
+
+  def resolveRefs(refs: Nel[ChannelRef]): ConnectionIO[List[ChannelRef]] = {
+    val byType = refs.groupByNem(_.channelType)
+    val queries = byType.toNel
+      .map {
+        case (ChannelType.Mail, refs) =>
+          RNotificationChannelMail.findRefs(refs.map(_.id))
+        case (ChannelType.Matrix, refs) =>
+          RNotificationChannelMatrix.findRefs(refs.map(_.id))
+        case (ChannelType.Gotify, refs) =>
+          RNotificationChannelGotify.findRefs(refs.map(_.id))
+        case (ChannelType.Http, refs) =>
+          RNotificationChannelHttp.findRefs(refs.map(_.id))
+      }
+    union(queries).build.query[ChannelRef].to[List]
+  }
 
   def getByHook(hook: RNotificationHook): ConnectionIO[Vector[RNotificationChannel]] = {
     def opt(id: Option[Ident]): OptionT[ConnectionIO, Ident] =

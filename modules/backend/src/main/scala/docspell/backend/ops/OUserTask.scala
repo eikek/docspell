@@ -6,15 +6,16 @@
 
 package docspell.backend.ops
 
-import cats.data.OptionT
+import cats.data.{NonEmptyList, OptionT}
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
-import docspell.notification.api.PeriodicDueItemsArgs
-import docspell.notification.api.PeriodicQueryArgs
+import docspell.notification.api.{ChannelRef, PeriodicDueItemsArgs, PeriodicQueryArgs}
+import docspell.store.Store
 import docspell.store.queue.JobQueue
+import docspell.store.records.RNotificationChannel
 import docspell.store.usertask._
 
 import io.circe.Encoder
@@ -83,7 +84,8 @@ trait OUserTask[F[_]] {
 object OUserTask {
 
   def apply[F[_]: Async](
-      store: UserTaskStore[F],
+      taskStore: UserTaskStore[F],
+      store: Store[F],
       queue: JobQueue[F],
       joex: OJoex[F]
   ): Resource[F, OUserTask[F]] =
@@ -100,7 +102,7 @@ object OUserTask {
         } yield ()
 
       def getScanMailbox(scope: UserTaskScope): Stream[F, UserTask[ScanMailboxArgs]] =
-        store
+        taskStore
           .getByName[ScanMailboxArgs](scope, ScanMailboxArgs.taskName)
 
       def findScanMailbox(
@@ -111,8 +113,8 @@ object OUserTask {
 
       def deleteTask(scope: UserTaskScope, id: Ident): F[Unit] =
         (for {
-          _ <- store.getByIdRaw(scope, id)
-          _ <- OptionT.liftF(store.deleteTask(scope, id))
+          _ <- taskStore.getByIdRaw(scope, id)
+          _ <- OptionT.liftF(taskStore.deleteTask(scope, id))
         } yield ()).getOrElse(())
 
       def submitScanMailbox(
@@ -121,21 +123,28 @@ object OUserTask {
           task: UserTask[ScanMailboxArgs]
       ): F[Unit] =
         for {
-          _ <- store.updateTask[ScanMailboxArgs](scope, subject, task)
+          _ <- taskStore.updateTask[ScanMailboxArgs](scope, subject, task)
           _ <- joex.notifyAllNodes
         } yield ()
 
       def getNotifyDueItems(
           scope: UserTaskScope
       ): Stream[F, UserTask[PeriodicDueItemsArgs]] =
-        store
+        taskStore
           .getByName[PeriodicDueItemsArgs](scope, PeriodicDueItemsArgs.taskName)
+          .evalMap(ut =>
+            resolveChannels(ut.args.channels)
+              .map(chs => ut.mapArgs(_.copy(channels = chs)))
+          )
 
       def findNotifyDueItems(
           id: Ident,
           scope: UserTaskScope
       ): OptionT[F, UserTask[PeriodicDueItemsArgs]] =
         OptionT(getNotifyDueItems(scope).find(_.id == id).compile.last)
+          .semiflatMap(ut =>
+            resolveChannels(ut.args.channels).map(ch => ut.mapArgs(_.copy(channels = ch)))
+          )
 
       def submitNotifyDueItems(
           scope: UserTaskScope,
@@ -143,18 +152,26 @@ object OUserTask {
           task: UserTask[PeriodicDueItemsArgs]
       ): F[Unit] =
         for {
-          _ <- store.updateTask[PeriodicDueItemsArgs](scope, subject, task)
+          _ <- taskStore.updateTask[PeriodicDueItemsArgs](scope, subject, task)
           _ <- joex.notifyAllNodes
         } yield ()
 
       def getPeriodicQuery(scope: UserTaskScope): Stream[F, UserTask[PeriodicQueryArgs]] =
-        store.getByName[PeriodicQueryArgs](scope, PeriodicQueryArgs.taskName)
+        taskStore
+          .getByName[PeriodicQueryArgs](scope, PeriodicQueryArgs.taskName)
+          .evalMap(ut =>
+            resolveChannels(ut.args.channels)
+              .map(chs => ut.mapArgs(_.copy(channels = chs)))
+          )
 
       def findPeriodicQuery(
           id: Ident,
           scope: UserTaskScope
       ): OptionT[F, UserTask[PeriodicQueryArgs]] =
         OptionT(getPeriodicQuery(scope).find(_.id == id).compile.last)
+          .semiflatMap(ut =>
+            resolveChannels(ut.args.channels).map(ch => ut.mapArgs(_.copy(channels = ch)))
+          )
 
       def submitPeriodicQuery(
           scope: UserTaskScope,
@@ -162,9 +179,18 @@ object OUserTask {
           task: UserTask[PeriodicQueryArgs]
       ): F[Unit] =
         for {
-          _ <- store.updateTask[PeriodicQueryArgs](scope, subject, task)
+          _ <- taskStore.updateTask[PeriodicQueryArgs](scope, subject, task)
           _ <- joex.notifyAllNodes
         } yield ()
-    })
 
+      // When retrieving arguments containing channel references, we must update
+      // details because they could have changed in the db. There are no separate
+      // database models for each user task, so rather a hacky compromise
+      private def resolveChannels(
+          refs: NonEmptyList[ChannelRef]
+      ): F[NonEmptyList[ChannelRef]] =
+        store.transact(RNotificationChannel.resolveRefs(refs)).map { resolved =>
+          NonEmptyList.fromList(resolved).getOrElse(refs)
+        }
+    })
 }
