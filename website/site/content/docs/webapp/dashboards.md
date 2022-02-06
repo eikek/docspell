@@ -7,22 +7,23 @@ mktoc = true
 
 # Dashboards
 
-The main page shows a dashboard that can be configured to show some
-aspects of your documents. The following shows the default dashboard
-that is bundled in the application:
+The main page shows a dashboard displaying some aspects of your
+documents. The following is the default dashboard that is bundled in
+the application:
 
 {{ figure2(light="dashboards-01.png", dark="dashboards-01_dark.png") }}
 
-It shows a predefined set of information, which can be customized. You
-can create multiple dashboards and switch between them, you can also
-define one as the "default" which is shown when the page loads.
+The dashboard can be customized. You can create multiple dashboards
+and switch between them. One dashboard is always the "default" which
+is shown when the page loads. It either is a custom one or the
+predefined one above.
 
 
 ## Side menu
 
 The side menu contains a list of useful links. The first loads the
-default dashboard. All others (and more) are available through the
-top-right menus as well.
+default dashboard. All others links (and more) are available through
+the top-right menus as well.
 
 The _Bookmarks_ section shows all your bookmarks and a click takes you
 directly to the search page with the corresponding bookmark active.
