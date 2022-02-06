@@ -1038,5 +1038,5 @@ addCommandAlias(
   "fix",
   "headerCreateAll; Compile/scalafix; Test/scalafix; scalafmtSbt; scalafmtAll"
 )
-addCommandAlias("make-website", ";website/clean ;website/zolaBuild ;website/zolaCheck")
+addCommandAlias("make-website", ";website/clean ;website/zolaBuild")
 addCommandAlias("publish-website", "website/publishToGitHubPages")
