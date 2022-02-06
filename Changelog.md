@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.32.0
+
+*Feb 06, 2022*
+
+- Dashboards: There is a new starting page showing a dashboard.
+  Dashboards can be customized (#1294)
+- UI-settings can be specified per collective and then be overriden by
+  user settings (#838)
+- Managing notifications channels: Instead of giving channel data with
+  each notification hook, they can now be managed separately. This is
+  more convenient, because they can be reused for different
+  notification hooks and periodic queries. Notifications can be
+  associated to multiple channels. (#1293)
+  - Please note that some (small) manual effort is recommended when
+    upgrading: The channel data from all your current notifications is
+    copied into a separate data set. This can create duplicates if you
+    had notifications with equal channel data. In order to remove
+    these duplicates, first change all notifications to a known
+    channel and afterwards you can delete the obsolete ones.
+- Replace bundled pdf viewer with pdfjs default viewer. (#1304)
+- Fixes the query used in a periodic query, that had returned trashed
+  items (#1323)
+- Fixes UI bugs where some data was not initialized in the view
+  (#1324)
+- Fix sorting tags in search menu (#1318)
+- Reworked website using tailwindcss
+
 ## v0.31.0
 
 *Jan 16, 2022*
