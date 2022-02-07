@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.X.E === region.ac.E)
+	if (region.Y.D === region.ad.D)
 	{
-		return 'on line ' + region.X.E;
+		return 'on line ' + region.Y.D;
 	}
-	return 'on lines ' + region.X.E + ' through ' + region.ac.E;
+	return 'on lines ' + region.Y.D + ' through ' + region.ad.D;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aM,
-		impl.aW,
-		impl.aU,
+		impl.aN,
+		impl.aX,
+		impl.aV,
 		function() { return function() {} }
 	);
 });
@@ -2705,8 +2705,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		r: func(record.r),
-		Y: record.Y,
-		U: record.U
+		Z: record.Z,
+		V: record.V
 	}
 });
 
@@ -2975,10 +2975,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.r;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Y;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Z;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.U) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.V) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3928,11 +3928,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aM,
-		impl.aW,
-		impl.aU,
+		impl.aN,
+		impl.aX,
+		impl.aV,
 		function(sendToApp, initialModel) {
-			var view = impl.aX;
+			var view = impl.aY;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3964,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aM,
-		impl.aW,
-		impl.aU,
+		impl.aN,
+		impl.aX,
+		impl.aV,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.W && impl.W(sendToApp)
-			var view = impl.aX;
+			var divertHrefToApp = impl.X && impl.X(sendToApp)
+			var view = impl.aY;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3977,12 +3977,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.R);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.S);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.O) && (_VirtualDom_doc.title = title = doc.O);
+				(title !== doc.P) && (_VirtualDom_doc.title = title = doc.P);
 			});
 		}
 	);
@@ -4038,12 +4038,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aO;
-	var onUrlRequest = impl.aP;
+	var onUrlChange = impl.aP;
+	var onUrlRequest = impl.aQ;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		W: function(sendToApp)
+		X: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4059,9 +4059,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.aq === next.aq
-							&& curr.ag === next.ag
-							&& curr.an.a === next.an.a
+							&& curr.ar === next.ar
+							&& curr.ah === next.ah
+							&& curr.ao.a === next.ao.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4069,13 +4069,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aM: function(flags)
+		aN: function(flags)
 		{
-			return A3(impl.aM, flags, _Browser_getUrl(), key);
+			return A3(impl.aN, flags, _Browser_getUrl(), key);
 		},
+		aY: impl.aY,
 		aX: impl.aX,
-		aW: impl.aW,
-		aU: impl.aU
+		aV: impl.aV
 	});
 }
 
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aK: 'hidden', aF: 'visibilitychange' }
+		? { aL: 'hidden', aG: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aK: 'mozHidden', aF: 'mozvisibilitychange' }
+		? { aL: 'mozHidden', aG: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aK: 'msHidden', aF: 'msvisibilitychange' }
+		? { aL: 'msHidden', aG: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aK: 'webkitHidden', aF: 'webkitvisibilitychange' }
-		: { aK: 'hidden', aF: 'visibilitychange' };
+		? { aL: 'webkitHidden', aG: 'webkitvisibilitychange' }
+		: { aL: 'hidden', aG: 'visibilitychange' };
 }
 
 
@@ -4232,12 +4232,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		au: _Browser_getScene(),
-		ay: {
-			aA: _Browser_window.pageXOffset,
-			aB: _Browser_window.pageYOffset,
-			az: _Browser_doc.documentElement.clientWidth,
-			af: _Browser_doc.documentElement.clientHeight
+		av: _Browser_getScene(),
+		az: {
+			aB: _Browser_window.pageXOffset,
+			aC: _Browser_window.pageYOffset,
+			aA: _Browser_doc.documentElement.clientWidth,
+			ag: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4247,8 +4247,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		az: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		af: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		aA: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		ag: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4271,15 +4271,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			au: {
-				az: node.scrollWidth,
-				af: node.scrollHeight
+			av: {
+				aA: node.scrollWidth,
+				ag: node.scrollHeight
 			},
-			ay: {
-				aA: node.scrollLeft,
-				aB: node.scrollTop,
-				az: node.clientWidth,
-				af: node.clientHeight
+			az: {
+				aB: node.scrollLeft,
+				aC: node.scrollTop,
+				aA: node.clientWidth,
+				ag: node.clientHeight
 			}
 		};
 	});
@@ -4309,18 +4309,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			au: _Browser_getScene(),
-			ay: {
-				aA: x,
-				aB: y,
-				az: _Browser_doc.documentElement.clientWidth,
-				af: _Browser_doc.documentElement.clientHeight
+			av: _Browser_getScene(),
+			az: {
+				aB: x,
+				aC: y,
+				aA: _Browser_doc.documentElement.clientWidth,
+				ag: _Browser_doc.documentElement.clientHeight
 			},
-			aH: {
-				aA: x + rect.left,
-				aB: y + rect.top,
-				az: rect.width,
-				af: rect.height
+			aI: {
+				aB: x + rect.left,
+				aC: y + rect.top,
+				aA: rect.width,
+				ag: rect.height
 			}
 		};
 	});
@@ -4430,9 +4430,9 @@ function _Markdown_formatOptions(options)
 {
 	function toHighlight(code, lang)
 	{
-		if (!lang && $elm$core$Maybe$isJust(options.ab))
+		if (!lang && $elm$core$Maybe$isJust(options.ac))
 		{
-			lang = options.ab.a;
+			lang = options.ac.a;
 		}
 
 		if (typeof hljs !== 'undefined' && lang && hljs.listLanguages().indexOf(lang) >= 0)
@@ -4443,15 +4443,15 @@ function _Markdown_formatOptions(options)
 		return code;
 	}
 
-	var gfm = options.aJ.a;
+	var gfm = options.aK.a;
 
 	return {
 		highlight: toHighlight,
 		gfm: gfm,
-		tables: gfm && gfm.aV,
-		breaks: gfm && gfm.aE,
-		sanitize: options.aS,
-		smartypants: options.aT
+		tables: gfm && gfm.aW,
+		breaks: gfm && gfm.aF,
+		sanitize: options.aT,
+		smartypants: options.aU
 	};
 }
 
@@ -5041,7 +5041,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {ae: fragment, ag: host, al: path, an: port_, aq: protocol, ar: query};
+		return {af: fragment, ah: host, am: path, ao: port_, ar: protocol, as: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5320,15 +5320,16 @@ var $elm$core$Task$perform = F2(
 			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Search$Initial = {$: 0};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Search$init = function (flags) {
 	return _Utils_Tuple2(
-		{N: _List_Nil, F: ''},
+		{O: $author$project$Search$Initial, E: '', F: false},
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Search$GetSearchResults = function (a) {
-	return {$: 2, a: a};
+	return {$: 3, a: a};
 };
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$field = _Json_decodeField;
@@ -5348,7 +5349,7 @@ var $author$project$Search$receiveSearch = _Platform_incomingPort(
 							$elm$json$Json$Decode$andThen,
 							function (doc) {
 								return $elm$json$Json$Decode$succeed(
-									{K: doc, V: ref, av: score});
+									{K: doc, W: ref, aw: score});
 							},
 							A2(
 								$elm$json$Json$Decode$field,
@@ -5363,7 +5364,7 @@ var $author$project$Search$receiveSearch = _Platform_incomingPort(
 													$elm$json$Json$Decode$andThen,
 													function (body) {
 														return $elm$json$Json$Decode$succeed(
-															{R: body, ah: id, O: title});
+															{S: body, ai: id, P: title});
 													},
 													A2($elm$json$Json$Decode$field, 'body', $elm$json$Json$Decode$string));
 											},
@@ -5377,8 +5378,12 @@ var $author$project$Search$receiveSearch = _Platform_incomingPort(
 var $author$project$Search$subscriptions = function (_v0) {
 	return $author$project$Search$receiveSearch($author$project$Search$GetSearchResults);
 };
+var $author$project$Search$Found = function (a) {
+	return {$: 1, a: a};
+};
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Search$doSearch = _Platform_outgoingPort('doSearch', $elm$json$Json$Encode$string);
+var $elm$core$Basics$not = _Basics_not;
 var $elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
 		takeReverse:
@@ -5508,24 +5513,31 @@ var $elm$core$List$take = F2(
 var $author$project$Search$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
+			case 1:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{F: !model.F}),
+					$elm$core$Platform$Cmd$none);
 			case 0:
 				var str = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{F: str}),
+						{E: str}),
 					$elm$core$Platform$Cmd$none);
-			case 1:
+			case 2:
 				return _Utils_Tuple2(
 					model,
-					$author$project$Search$doSearch(model.F));
+					$author$project$Search$doSearch(model.E));
 			default:
 				var list = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							N: A2($elm$core$List$take, 8, list)
+							O: $author$project$Search$Found(
+								A2($elm$core$List$take, 20, list))
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -5533,8 +5545,18 @@ var $author$project$Search$update = F2(
 var $author$project$Search$SetSearch = function (a) {
 	return {$: 0, a: a};
 };
-var $author$project$Search$SubmitSearch = {$: 1};
-var $elm$html$Html$button = _VirtualDom_node('button');
+var $author$project$Search$SubmitSearch = {$: 2};
+var $author$project$Search$ToggleBar = {$: 1};
+var $elm$html$Html$a = _VirtualDom_node('a');
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$autofocus = $elm$html$Html$Attributes$boolProperty('autofocus');
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -5543,6 +5565,31 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
+var $elm$html$Html$Attributes$classList = function (classes) {
+	return $elm$html$Html$Attributes$class(
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$elm$core$Tuple$first,
+				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
+};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$form = _VirtualDom_node('form');
 var $elm$html$Html$Attributes$href = function (url) {
@@ -5551,7 +5598,7 @@ var $elm$html$Html$Attributes$href = function (url) {
 		'href',
 		_VirtualDom_noJavaScriptUri(url));
 };
-var $elm$html$Html$img = _VirtualDom_node('img');
+var $elm$html$Html$i = _VirtualDom_node('i');
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
@@ -5624,66 +5671,17 @@ var $elm$html$Html$Events$onSubmit = function (msg) {
 			$elm$json$Json$Decode$succeed(msg)));
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
-var $elm$core$Tuple$second = function (_v0) {
-	var y = _v0.b;
-	return y;
-};
-var $elm$html$Html$Attributes$classList = function (classes) {
-	return $elm$html$Html$Attributes$class(
-		A2(
-			$elm$core$String$join,
-			' ',
-			A2(
-				$elm$core$List$map,
-				$elm$core$Tuple$first,
-				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
-};
-var $elm$core$List$intersperse = F2(
-	function (sep, xs) {
-		if (!xs.b) {
-			return _List_Nil;
-		} else {
-			var hd = xs.a;
-			var tl = xs.b;
-			var step = F2(
-				function (x, rest) {
-					return A2(
-						$elm$core$List$cons,
-						sep,
-						A2($elm$core$List$cons, x, rest));
-				});
-			var spersed = A3($elm$core$List$foldr, step, _List_Nil, tl);
-			return A2($elm$core$List$cons, hd, spersed);
-		}
-	});
-var $elm$html$Html$a = _VirtualDom_node('a');
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm_explorations$markdown$Markdown$defaultOptions = {
-	ab: $elm$core$Maybe$Nothing,
-	aJ: $elm$core$Maybe$Just(
-		{aE: false, aV: false}),
-	aS: true,
-	aT: false
+	ac: $elm$core$Maybe$Nothing,
+	aK: $elm$core$Maybe$Just(
+		{aF: false, aW: false}),
+	aT: true,
+	aU: false
 };
 var $elm$core$Maybe$isJust = function (maybe) {
 	if (!maybe.$) {
@@ -5699,7 +5697,7 @@ var $author$project$Search$viewResult = function (result) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('dropdown-item')
+				$elm$html$Html$Attributes$class('py-2 content')
 			]),
 		_List_fromArray(
 			[
@@ -5707,12 +5705,12 @@ var $author$project$Search$viewResult = function (result) {
 				$elm$html$Html$a,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('is-size-5'),
-						$elm$html$Html$Attributes$href(result.V)
+						$elm$html$Html$Attributes$class('text-lg font-semibold'),
+						$elm$html$Html$Attributes$href(result.W)
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(result.K.O)
+						$elm$html$Html$text(result.K.P)
 					])),
 				A2(
 				$elm_explorations$markdown$Markdown$toHtml,
@@ -5720,58 +5718,25 @@ var $author$project$Search$viewResult = function (result) {
 					[
 						$elm$html$Html$Attributes$class('content')
 					]),
-				result.K.R)
+				result.K.S)
 			]));
 };
-var $author$project$Search$viewResults = function (entries) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$classList(
-				_List_fromArray(
-					[
-						_Utils_Tuple2('dropdown-menu', true),
-						_Utils_Tuple2(
-						'is-hidden',
-						_Utils_eq(entries, _List_Nil))
-					]))
-			]),
-		_List_fromArray(
-			[
-				A2(
+var $author$project$Search$viewResults = function (state) {
+	if (!state.$) {
+		return A2(
+			$elm$html$Html$span,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('hidden')
+				]),
+			_List_Nil);
+	} else {
+		if (!state.a.b) {
+			return A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('dropdown-content')
-					]),
-				A2(
-					$elm$core$List$intersperse,
-					A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('dropdown-divider')
-							]),
-						_List_Nil),
-					A2($elm$core$List$map, $author$project$Search$viewResult, entries)))
-			]));
-};
-var $author$project$Search$view = function (model) {
-	return A2(
-		$elm$html$Html$form,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('form'),
-				$elm$html$Html$Events$onSubmit($author$project$Search$SubmitSearch)
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('dropdown field is-active is-fullwidth has-addons')
+						$elm$html$Html$Attributes$class('bg-white dark:bg-stone-800 mt-2 w-full')
 					]),
 				_List_fromArray(
 					[
@@ -5779,7 +5744,86 @@ var $author$project$Search$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('control is-fullwidth')
+								$elm$html$Html$Attributes$class('flex flex-row items-center h-14 justify-center text-xl')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$i,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('fa fa-meh font-thin mr-2')
+									]),
+								_List_Nil),
+								$elm$html$Html$text('No results.')
+							]))
+					]));
+		} else {
+			var entries = state.a;
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('bg-white dark:bg-stone-800 mt-2 w-screen sm:w-full h-screen-12 md:h-fit md:max-h-96 overflow-auto shadow-lg border-l border-r border-b dark:border-stone-700')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('px-2 pt-2 pb-1 flex flex-col divide-y dark:divide-stone-700 ')
+							]),
+						A2($elm$core$List$map, $author$project$Search$viewResult, entries))
+					]));
+		}
+	}
+};
+var $author$project$Search$view = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class(' inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$a,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$href('#'),
+						$elm$html$Html$Attributes$class('h-full w-full inline-flex items-center'),
+						$elm$html$Html$Events$onClick($author$project$Search$ToggleBar)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$i,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('fa fa-search')
+							]),
+						_List_Nil)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('absolute px-2 mx-2 right-0 max-w-screen-md rounded top-12 w-full border-l border-r border-b bg-white h-12 dark:bg-stone-800 dark:border-stone-700'),
+						$elm$html$Html$Attributes$classList(
+						_List_fromArray(
+							[
+								_Utils_Tuple2('hidden', !model.F)
+							]))
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$form,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onSubmit($author$project$Search$SubmitSearch)
 							]),
 						_List_fromArray(
 							[
@@ -5787,47 +5831,21 @@ var $author$project$Search$view = function (model) {
 								$elm$html$Html$input,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('input'),
 										$elm$html$Html$Attributes$type_('text'),
-										$elm$html$Html$Attributes$placeholder('Search docs…'),
-										$elm$html$Html$Events$onInput($author$project$Search$SetSearch),
-										$elm$html$Html$Attributes$value(model.F)
+										$elm$html$Html$Attributes$value(model.E),
+										$elm$html$Html$Attributes$autofocus(true),
+										$elm$html$Html$Attributes$placeholder('Search …'),
+										$elm$html$Html$Attributes$class('w-full block h-8 border-0 border-b border-stone-400 mt-2 focus:ring-0 focus:border-indigo-500 dark:bg-stone-800 dark:focus:border-cyan-400'),
+										$elm$html$Html$Events$onInput($author$project$Search$SetSearch)
 									]),
 								_List_Nil)
 							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('control')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$button,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('button is-primary'),
-										$elm$html$Html$Attributes$href('#'),
-										$elm$html$Html$Events$onClick($author$project$Search$SubmitSearch)
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$img,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$src('/icons/search-white-20.svg')
-											]),
-										_List_Nil)
-									]))
-							])),
-						$author$project$Search$viewResults(model.N)
+						$author$project$Search$viewResults(model.O)
 					]))
 			]));
 };
 var $author$project$Search$main = $elm$browser$Browser$element(
-	{aM: $author$project$Search$init, aU: $author$project$Search$subscriptions, aW: $author$project$Search$update, aX: $author$project$Search$view});
+	{aN: $author$project$Search$init, aV: $author$project$Search$subscriptions, aX: $author$project$Search$update, aY: $author$project$Search$view});
 var $author$project$Feature$features = _List_fromArray(
 	[
 		{g: '\nEach account (a *collective*) can have multiple users that share the\nsame files. For example, everyone in your family can work with your\nfiles while using their own account with their own settings.\n', j: 'Multi-User per Account', k: 'img/user-feature.png'},
@@ -5838,7 +5856,7 @@ var $author$project$Feature$features = _List_fromArray(
 		{g: '\nThe extracted text of all files and some properties, like names and notes, are available for full-text search. Full-text search can also be used to further constrain the results of the search-menu where you can search by tags, correspondent, etc.\n', j: 'Full-Text Search', k: 'img/fts-feature.png'},
 		{g: '\n\nUsers can define SMTP settings in the app and are then able to send items out via E-Mail. This is often useful to share with other people. There is e-mail-address completion from your address book, of course.\n\n', j: 'Send via E-Mail', k: 'img/sendmail-feature.png'},
 		{g: '\nUsers can define IMAP settings so that docspell can import their e-mails. This can be done periodically based on a schedule. Imported mails can be moved away into another folder or deleted.\n', j: 'Import Mailboxes', k: 'img/scanmailbox-feature.png'},
-		{g: '\nUsers can be notified by e-mail for documents whose due-date comes closer.\n', j: 'Notifications', k: 'img/notify-feature.png'}
+		{g: '\nUsers can be notified by e-mail, Matrix or Gotify with documents resulting from a query that is executed periodically. Notifications can also be configured for specific events.\n', j: 'Notifications', k: 'img/notify-feature.png'}
 	]);
 var $author$project$Main$viewFeatureCount = 10;
 var $author$project$Main$init = function (flags) {
@@ -5846,7 +5864,7 @@ var $author$project$Main$init = function (flags) {
 		{
 			L: A2($elm$core$List$take, $author$project$Main$viewFeatureCount, $author$project$Feature$features),
 			M: flags,
-			z: false
+			N: false
 		},
 		$elm$core$Platform$Cmd$none);
 };
@@ -5855,7 +5873,6 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
-var $elm$core$Basics$not = _Basics_not;
 var $author$project$Main$ListShuffled = function (a) {
 	return {$: 2, a: a};
 };
@@ -6374,7 +6391,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{z: !model.z}),
+						{N: !model.N}),
 					$elm$core$Platform$Cmd$none);
 			case 1:
 				return _Utils_Tuple2(model, $author$project$Main$shuffleFeatures);
@@ -6387,97 +6404,127 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $elm$json$Json$Encode$bool = _Json_wrap;
-var $elm$html$Html$Attributes$boolProperty = F2(
-	function (key, bool) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$bool(bool));
-	});
 var $elm$html$Html$Attributes$controls = $elm$html$Html$Attributes$boolProperty('controls');
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
-var $elm$html$Html$p = _VirtualDom_node('p');
-var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
 var $elm$html$Html$video = _VirtualDom_node('video');
 var $author$project$Demo$demo = function (data) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('columns is-vcentered box mb-5')
+				$elm$html$Html$Attributes$class('px-4 py-4 mx-2 sm:mx-8 rounded border shadow-lg flex flex-col')
 			]),
 		_List_fromArray(
 			[
 				A2(
+				$elm$html$Html$h2,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('text-3xl font-bold py-2 font-serif')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(data.P)
+					])),
+				(data.C === '') ? A2($elm$html$Html$span, _List_Nil, _List_Nil) : A2(
+				$elm_explorations$markdown$Markdown$toHtml,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('text-lg')
+					]),
+				data.C),
+				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('column')
+						$elm$html$Html$Attributes$class('mt-6 self-center')
 					]),
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$h2,
+						$elm$html$Html$video,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('title')
+								$elm$html$Html$Attributes$src(data.Q),
+								$elm$html$Html$Attributes$controls(true)
 							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text(data.O)
-							])),
-						(data.D === '') ? A2($elm$html$Html$span, _List_Nil, _List_Nil) : A2(
-						$elm$html$Html$p,
-						_List_Nil,
-						_List_fromArray(
-							[
-								A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, data.D)
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('mt-5 columns is-centered')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$video,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$src(data.P),
-										$elm$html$Html$Attributes$controls(true)
-									]),
-								_List_Nil)
-							]))
+						_List_Nil)
 					]))
 			]));
 };
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $elm$html$Html$section = _VirtualDom_node('section');
-var $author$project$Main$demoHero = A2(
-	$elm$html$Html$section,
+var $author$project$Main$demoHeader = A2(
+	$elm$html$Html$h2,
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$id('demos'),
-			$elm$html$Html$Attributes$class('hero is-info is-bold')
+			$elm$html$Html$Attributes$class('hero-header'),
+			$elm$html$Html$Attributes$id('demos')
 		]),
 	_List_fromArray(
 		[
-			A2(
+			$elm$html$Html$text('Screencasts')
+		]));
+var $elm$html$Html$figure = _VirtualDom_node('figure');
+var $elm$html$Html$img = _VirtualDom_node('img');
+var $author$project$Feature$isOdd = function (num) {
+	return A2($elm$core$Basics$modBy, 2, num) === 1;
+};
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $author$project$Feature$featureBox = F2(
+	function (index, f) {
+		var titleCss = 'text-3xl font-bold font-serif mb-3';
+		var descrCss = 'flex flex-col text-xl ';
+		var boxCss = _List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('flex-col space-y-2'),
+				$elm$html$Html$Attributes$class('sm:flex-row sm:space-y-0 sm-space-x-4'),
+				$elm$html$Html$Attributes$class('flex px-8 py-8 border rounded mb-5 shadow-lg mx-2 sm:mx-8')
+			]);
+		return $author$project$Feature$isOdd(index) ? A2(
 			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('hero-body')
-				]),
+			boxCss,
 			_List_fromArray(
 				[
 					A2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('container')
+							$elm$html$Html$Attributes$class('sm:w-1/2')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$figure,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('block my-auto')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$img,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$src(f.k),
+											$elm$html$Html$Attributes$class('w-full'),
+											A2($elm$html$Html$Attributes$style, 'min-width', '4rem')
+										]),
+									_List_Nil)
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class(descrCss),
+							$elm$html$Html$Attributes$class('pl-4 sm:w-1/2')
 						]),
 					_List_fromArray(
 						[
@@ -6485,172 +6532,79 @@ var $author$project$Main$demoHero = A2(
 							$elm$html$Html$h2,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('title')
+									$elm$html$Html$Attributes$class(titleCss)
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Screencasts')
+									$elm$html$Html$text(f.j)
+								])),
+							A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, f.g)
+						]))
+				])) : A2(
+			$elm$html$Html$div,
+			boxCss,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class(descrCss),
+							$elm$html$Html$Attributes$class('pr-4 sm:w-1/2')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$h2,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class(titleCss)
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(f.j)
+								])),
+							A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, f.g)
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('sm:w-1/2')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$figure,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('block my-auto ')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$img,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$src(f.k),
+											$elm$html$Html$Attributes$class('w-full')
+										]),
+									_List_Nil)
 								]))
 						]))
-				]))
-		]));
-var $elm$html$Html$figure = _VirtualDom_node('figure');
-var $author$project$Feature$isOdd = function (num) {
-	return A2($elm$core$Basics$modBy, 2, num) === 1;
-};
-var $author$project$Feature$featureBox = F2(
-	function (index, f) {
-		var _v0 = $author$project$Feature$isOdd(index);
-		if (!_v0) {
-			return A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('columns is-vcentered box mb-5')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('column is-three-quarter')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$figure,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('image is-2by1 feature-image')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$img,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$src(f.k)
-											]),
-										_List_Nil)
-									]))
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('column')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$h2,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('title')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text(f.j)
-									])),
-								A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, f.g)
-							]))
-					]));
-		} else {
-			return A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('columns is-vcentered box mb-5')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('column is-three-quarter')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$h2,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('title')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text(f.j)
-									])),
-								A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, f.g)
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('column')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$figure,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('image is-2by1 feature-image')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$img,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$src(f.k)
-											]),
-										_List_Nil)
-									]))
-							]))
-					]));
-		}
+				]));
 	});
-var $author$project$Main$featureHero = function (model) {
+var $author$project$Main$featureHeader = function (_v0) {
 	return A2(
-		$elm$html$Html$section,
+		$elm$html$Html$h2,
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$id('feature-selection'),
-				$elm$html$Html$Attributes$class('hero is-info is-bold')
+				$elm$html$Html$Attributes$class('hero-header')
 			]),
 		_List_fromArray(
 			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('hero-body')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('container')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$h2,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('title')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Feature Selection')
-									]))
-							]))
-					]))
+				$elm$html$Html$text('Feature Selection')
 			]));
 };
 var $elm$html$Html$footer = _VirtualDom_node('footer');
@@ -6669,7 +6623,7 @@ var $author$project$Main$footHero = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('has-text-centered')
+						$elm$html$Html$Attributes$class('text-center')
 					]),
 				_List_fromArray(
 					[
@@ -6678,7 +6632,7 @@ var $author$project$Main$footHero = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Docspell, ' + model.M.Q)
+								$elm$html$Html$text('Docspell, ' + model.M.R)
 							])),
 						A2(
 						$elm$html$Html$span,
@@ -6695,7 +6649,8 @@ var $author$project$Main$footHero = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$href('https://spdx.org/licenses/AGPL-3.0-or-later.html'),
-								$elm$html$Html$Attributes$target('_blank')
+								$elm$html$Html$Attributes$target('_blank'),
+								$elm$html$Html$Attributes$class('link')
 							]),
 						_List_fromArray(
 							[
@@ -6716,7 +6671,8 @@ var $author$project$Main$footHero = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$href('https://github.com/eikek/docspell'),
-								$elm$html$Html$Attributes$target('_blank')
+								$elm$html$Html$Attributes$target('_blank'),
+								$elm$html$Html$Attributes$class('link')
 							]),
 						_List_fromArray(
 							[
@@ -6742,7 +6698,8 @@ var $author$project$Main$footHero = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$href('https://gitter.im/eikek/docspell'),
-										$elm$html$Html$Attributes$target('_blank')
+										$elm$html$Html$Attributes$target('_blank'),
+										$elm$html$Html$Attributes$class('link')
 									]),
 								_List_fromArray(
 									[
@@ -6755,270 +6712,185 @@ var $author$project$Main$footHero = function (model) {
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $author$project$GetStarted$getStarted = function (version) {
-	return _List_fromArray(
-		[
-			A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('content container')
-				]),
-			_List_fromArray(
-				[
-					A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, 'Docspell consists of several components. The easiest way to get started is probably to use docker and\n[docker-compose](https://docs.docker.com/compose/).'),
-					A2($elm_explorations$markdown$Markdown$toHtml, _List_Nil, '1. Clone the github repository\n   ```bash\n   $ git clone https://github.com/eikek/docspell\n   ```\n   Alternatively, [download](https://github.com/eikek/docspell/archive/master.zip) the sources and extract the zip file.\n2. Change into the `docker` directory:\n   ```bash\n   $ cd docspell/docker/docker-compose\n   ```\n3. Run `docker-compose up`:\n\n   ```bash\n   $ docker-compose up -d\n   ```\n4. Goto <http://localhost:7880>, signup and login. When signing up,\n   choose the same name for collective and user. Then login\n   with this name and the password.\n\n5. (Optional) Create a folder `./docs/<collective-name>` (the name you\n   chose for the collective at registration) and place files in there\n   for importing them.\n\nThe `docker-compose.yml` file defines some environment variables to\nconfigure docspell. You can [modify](docs/configure) them as needed.\n    ')
-				])),
-			A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('content container')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('notification is-info is-light')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('If you don\'t use docker, there are other ways that are '),
-							$elm$html$Html$text('described in the relevant '),
-							A2(
-							$elm$html$Html$a,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$href('/docs/install')
-								]),
-							_List_fromArray(
-								[
-									$elm$html$Html$text('documentation page')
-								]))
-						]))
-				])),
-			A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('content container')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('notification is-success is-light')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('content is-medium')
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$h3,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('title')
-										]),
-									_List_fromArray(
-										[
-											$elm$html$Html$text('Where to go from here?')
-										])),
-									A2(
-									$elm$html$Html$ul,
-									_List_Nil,
-									_List_fromArray(
-										[
-											A2(
-											$elm$html$Html$li,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text('Find out '),
-													A2(
-													$elm$html$Html$a,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$href('/docs/feed')
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text('how files can get into Docspell.')
-														]))
-												])),
-											A2(
-											$elm$html$Html$li,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text('The '),
-													A2(
-													$elm$html$Html$a,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$href('/docs/intro')
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text('introduction')
-														])),
-													$elm$html$Html$text(' writes about the goals and basic idea.')
-												])),
-											A2(
-											$elm$html$Html$li,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text('There is a comprehensive '),
-													A2(
-													$elm$html$Html$a,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$href('/docs')
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text('documentation')
-														])),
-													$elm$html$Html$text(' available.')
-												])),
-											A2(
-											$elm$html$Html$li,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text('The source code is hosted on '),
-													A2(
-													$elm$html$Html$a,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$href('https://github.com/eikek/docspell')
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text('github')
-														])),
-													$elm$html$Html$text('.')
-												])),
-											A2(
-											$elm$html$Html$li,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text('Chat on '),
-													A2(
-													$elm$html$Html$a,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$href('https://gitter.im/eikek/docspell')
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text('Gitter')
-														])),
-													$elm$html$Html$text(' for questions and feedback.')
-												]))
-										]))
-								]))
-						]))
-				]))
-		]);
-};
-var $author$project$Main$getStartedHero = function (_v0) {
+var $author$project$GetStarted$getStarted = function (_v0) {
 	return A2(
-		$elm$html$Html$section,
+		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$id('get-started'),
-				$elm$html$Html$Attributes$class('hero is-primary is-bold')
+				$elm$html$Html$Attributes$class('container max-w-screen-lg mx-auto text-xl px-10 lg:px-0 leading-relaxed min-h-screen')
 			]),
 		_List_fromArray(
 			[
 				A2(
+				$elm_explorations$markdown$Markdown$toHtml,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('my-4 markdown-view')
+					]),
+				'Docspell consists of several components. The easiest way to get started is probably to use docker and\n[docker-compose](https://docs.docker.com/compose/).'),
+				A2(
+				$elm_explorations$markdown$Markdown$toHtml,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('my-4 markdown-view ')
+					]),
+				'1. Clone the github repository\n   ```bash\n   $ git clone https://github.com/eikek/docspell\n   ```\n   Alternatively, [download](https://github.com/eikek/docspell/archive/master.zip) the sources and extract the zip file.\n2. Change into the `docker-compose` directory:\n   ```bash\n   $ cd docspell/docker/docker-compose\n   ```\n3. Run `docker-compose up`:\n   ```bash\n   $ docker-compose up -d\n   ```\n4. Goto <http://localhost:7880>, signup and login. When signing up,\n   choose the same name for collective and user. Then login\n   with this name and the password.\n5. (Optional) Create a folder `./docs/<collective-name>` (the name you\n   chose for the collective at registration) and place files in there\n   for importing them.\n\nThe `docker-compose.yml` file defines some environment variables to\nconfigure docspell. You can [modify](docs/configure) them as needed.\n    '),
+				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('hero-body')
+						$elm$html$Html$Attributes$class('blue-message')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('If you don\'t use docker, there are other ways that are '),
+						$elm$html$Html$text('described in the relevant '),
+						A2(
+						$elm$html$Html$a,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$href('/docs/install'),
+								$elm$html$Html$Attributes$class('link')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('documentation page')
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('green-message mt-4 ')
 					]),
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$div,
+						$elm$html$Html$h3,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('container')
+								$elm$html$Html$Attributes$class('text-4xl font-bold font-serif py-2 mb-2')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Where to go from here?')
+							])),
+						A2(
+						$elm$html$Html$ul,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('list-disc list-inside ')
 							]),
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$h2,
+								$elm$html$Html$li,
+								_List_Nil,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('title')
-									]),
+										$elm$html$Html$text('Find out '),
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$href('/docs/feed')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('how files can get into Docspell.')
+											]))
+									])),
+								A2(
+								$elm$html$Html$li,
+								_List_Nil,
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Get Started')
+										$elm$html$Html$text('The '),
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$href('/docs/intro')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('introduction')
+											])),
+										$elm$html$Html$text(' writes about the goals and basic idea.')
+									])),
+								A2(
+								$elm$html$Html$li,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('There is a comprehensive '),
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$href('/docs')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('documentation')
+											])),
+										$elm$html$Html$text(' available.')
+									])),
+								A2(
+								$elm$html$Html$li,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('The source code is hosted on '),
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$href('https://github.com/eikek/docspell')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('github')
+											])),
+										$elm$html$Html$text('.')
+									])),
+								A2(
+								$elm$html$Html$li,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Chat on '),
+										A2(
+										$elm$html$Html$a,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$href('https://gitter.im/eikek/docspell')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Gitter')
+											])),
+										$elm$html$Html$text(' for questions and feedback.')
 									]))
 							]))
 					]))
 			]));
 };
-var $author$project$Main$ToggleNavbarMenu = {$: 0};
-var $elm$virtual_dom$VirtualDom$attribute = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_attribute,
-			_VirtualDom_noOnOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlUri(value));
-	});
-var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
-var $author$project$ExtraAttr$ariaExpanded = function (flag) {
+var $elm$html$Html$section = _VirtualDom_node('section');
+var $author$project$Main$getStartedHeader = function (_v0) {
 	return A2(
-		$elm$html$Html$Attributes$attribute,
-		'aria-expanded',
-		flag ? 'true' : 'false');
+		$elm$html$Html$section,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id('get-started'),
+				$elm$html$Html$Attributes$class('hero-header')
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text('Get Started')
+			]));
 };
-var $author$project$ExtraAttr$ariaHidden = function (flag) {
-	return A2(
-		$elm$html$Html$Attributes$attribute,
-		'aria-hidden',
-		flag ? 'true' : 'false');
-};
-var $author$project$ExtraAttr$ariaLabel = function (name) {
-	return A2($elm$html$Html$Attributes$attribute, 'aria-label', name);
-};
-var $author$project$Icons$docs = A2(
-	$elm$html$Html$img,
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$src('icons/notes-40.svg')
-		]),
-	_List_Nil);
-var $author$project$Icons$github = A2(
-	$elm$html$Html$img,
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$src('/icons/github-40.svg')
-		]),
-	_List_Nil);
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $author$project$Icons$logo = A2(
-	$elm$html$Html$img,
-	_List_fromArray(
-		[
-			$elm$html$Html$Attributes$src('icons/logo-only-36.svg')
-		]),
-	_List_Nil);
 var $elm$html$Html$Attributes$width = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -7035,184 +6907,71 @@ var $author$project$Icons$logoWidth = function (w) {
 			]),
 		_List_Nil);
 };
+var $author$project$Main$ToggleNavbarMenu = {$: 0};
+var $author$project$Icons$blog = A2(
+	$elm$html$Html$i,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('fa fa-blog')
+		]),
+	_List_Nil);
+var $author$project$Icons$docs = A2(
+	$elm$html$Html$i,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('fa fa-book')
+		]),
+	_List_Nil);
+var $author$project$Icons$github = A2(
+	$elm$html$Html$i,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('fab fa-github-alt')
+		]),
+	_List_Nil);
+var $author$project$Icons$logo = A2(
+	$elm$html$Html$img,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$src('icons/logo-only-36.svg')
+		]),
+	_List_Nil);
 var $elm$html$Html$nav = _VirtualDom_node('nav');
-var $author$project$ExtraAttr$role = function (name) {
-	return A2($elm$html$Html$Attributes$attribute, 'role', name);
-};
-var $author$project$Main$mainHero = function (model) {
+var $author$project$Main$navBar = function (classes) {
 	return A2(
-		$elm$html$Html$section,
+		$elm$html$Html$nav,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$id('hero-main'),
-				$elm$html$Html$Attributes$class('hero is-fullheight is-primary')
+				$elm$html$Html$Attributes$id('top-nav'),
+				$elm$html$Html$Attributes$class('top-0 z-50 w-full flex flex-row justify-start shadow-sm h-14 antialiased '),
+				$elm$html$Html$Attributes$class(classes)
 			]),
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$div,
+				$elm$html$Html$a,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('hero-head')
+						$elm$html$Html$Events$onClick($author$project$Main$ToggleNavbarMenu),
+						$elm$html$Html$Attributes$href('#'),
+						$elm$html$Html$Attributes$class('font-bold inline-flex items-center px-4 w-10 sm:hidden ')
 					]),
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$nav,
+						$elm$html$Html$i,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('navbar')
+								$elm$html$Html$Attributes$class('fa fa-bars')
 							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('navbar-brand')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$a,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('navbar-item'),
-												$elm$html$Html$Attributes$href('/')
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$elm$html$Html$span,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('icon is-large')
-													]),
-												_List_fromArray(
-													[$author$project$Icons$logo])),
-												$elm$html$Html$text('Docspell')
-											])),
-										A2(
-										$elm$html$Html$a,
-										_List_fromArray(
-											[
-												$author$project$ExtraAttr$role('button'),
-												$elm$html$Html$Events$onClick($author$project$Main$ToggleNavbarMenu),
-												$elm$html$Html$Attributes$classList(
-												_List_fromArray(
-													[
-														_Utils_Tuple2('navbar-burger', true),
-														_Utils_Tuple2('is-active', model.z)
-													])),
-												$author$project$ExtraAttr$ariaLabel('menu'),
-												$author$project$ExtraAttr$ariaExpanded(false)
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$elm$html$Html$span,
-												_List_fromArray(
-													[
-														$author$project$ExtraAttr$ariaHidden(true)
-													]),
-												_List_Nil),
-												A2(
-												$elm$html$Html$span,
-												_List_fromArray(
-													[
-														$author$project$ExtraAttr$ariaHidden(true)
-													]),
-												_List_Nil),
-												A2(
-												$elm$html$Html$span,
-												_List_fromArray(
-													[
-														$author$project$ExtraAttr$ariaHidden(true)
-													]),
-												_List_Nil)
-											]))
-									])),
-								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$classList(
-										_List_fromArray(
-											[
-												_Utils_Tuple2('navbar-menu', true),
-												_Utils_Tuple2('is-active', model.z)
-											]))
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('navbar-start')
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$elm$html$Html$a,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$href('docs/'),
-														$elm$html$Html$Attributes$class('navbar-item')
-													]),
-												_List_fromArray(
-													[
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('icon')
-															]),
-														_List_fromArray(
-															[$author$project$Icons$docs])),
-														A2(
-														$elm$html$Html$span,
-														_List_Nil,
-														_List_fromArray(
-															[
-																$elm$html$Html$text('Documentation')
-															]))
-													])),
-												A2(
-												$elm$html$Html$a,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$target('_blank'),
-														$elm$html$Html$Attributes$href('https://github.com/eikek/docspell'),
-														$elm$html$Html$Attributes$class('navbar-item')
-													]),
-												_List_fromArray(
-													[
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('icon')
-															]),
-														_List_fromArray(
-															[$author$project$Icons$github])),
-														A2(
-														$elm$html$Html$span,
-														_List_Nil,
-														_List_fromArray(
-															[
-																$elm$html$Html$text('Github')
-															]))
-													]))
-											]))
-									]))
-							]))
+						_List_Nil)
 					])),
 				A2(
-				$elm$html$Html$div,
+				$elm$html$Html$a,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('hero-body')
+						$elm$html$Html$Attributes$class('inline-flex px-4 items-center hover:bg-gray-50 hover:bg-opacity-20'),
+						$elm$html$Html$Attributes$href('/')
 					]),
 				_List_fromArray(
 					[
@@ -7220,84 +6979,184 @@ var $author$project$Main$mainHero = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('container has-text-centered')
+								$elm$html$Html$Attributes$class('')
+							]),
+						_List_fromArray(
+							[$author$project$Icons$logo])),
+						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('ml-1 text-2xl font-semibold font-serif')
 							]),
 						_List_fromArray(
 							[
-								$author$project$Icons$logoWidth(112),
+								$elm$html$Html$text('Docspell')
+							]))
+					])),
+				A2(
+				$elm$html$Html$a,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$href('docs/'),
+						$elm$html$Html$Attributes$class('px-4 flex items-center hover:bg-gray-50 hover:bg-opacity-20'),
+						$elm$html$Html$Attributes$class(' text-xl')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Icons$docs,
+						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('ml-2 tracking-wide')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Documentation')
+							]))
+					])),
+				A2(
+				$elm$html$Html$a,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$href('blog/'),
+						$elm$html$Html$Attributes$class('px-4 flex items-center hover:bg-gray-50 hover:bg-opacity-20'),
+						$elm$html$Html$Attributes$class(' text-xl')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Icons$blog,
+						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('ml-2 tracking-wide')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Blog')
+							]))
+					])),
+				A2(
+				$elm$html$Html$a,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$target('_blank'),
+						$elm$html$Html$Attributes$href('https://github.com/eikek/docspell'),
+						$elm$html$Html$Attributes$class('px-4 flex items-center hover:bg-gray-50 hover:bg-opacity-20'),
+						$elm$html$Html$Attributes$class(' text-xl')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Icons$github,
+						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('ml-2 tracking-wide')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Github')
+							]))
+					]))
+			]));
+};
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $author$project$Main$mainHero = function (_v0) {
+	return A2(
+		$elm$html$Html$section,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id('hero-main'),
+				$elm$html$Html$Attributes$class('min-h-screen text-white flex flex-col items-center main-background')
+			]),
+		_List_fromArray(
+			[
+				$author$project$Main$navBar(' text-white'),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('flex-grow flex flex-col items-center justify-center w-full')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Icons$logoWidth(112),
+						A2(
+						$elm$html$Html$h1,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('text-6xl font-semibold shadow font-serif')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Docspell')
+							])),
+						A2(
+						$elm$html$Html$h2,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('text-3xl font-madium tracking-wide mt-2 mb-4 ')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Simple document organizer')
+							])),
+						A2(
+						$elm$html$Html$p,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('px-2 text-center text-xl font-light shadow max-w-prose font-sans')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Docspell assists in organizing your piles of '),
+								$elm$html$Html$text('digital documents, resulting from scanners, e-mails '),
+								$elm$html$Html$text('and other sources with miminal effort.')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('mt-4 flex flex-col space-y-2 text-2xl'),
+								$elm$html$Html$Attributes$class('sm:items-center sm:flex-row sm:space-y-0 sm:space-x-4')
+							]),
+						_List_fromArray(
+							[
 								A2(
-								$elm$html$Html$h1,
+								$elm$html$Html$a,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('title main-title is-2')
+										$elm$html$Html$Attributes$class('button info'),
+										$elm$html$Html$Attributes$href('#demos')
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Docspell')
+										$elm$html$Html$text('Screencasts')
 									])),
 								A2(
-								$elm$html$Html$h2,
+								$elm$html$Html$a,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('subtitle is-3')
+										$elm$html$Html$Attributes$class('button info'),
+										$elm$html$Html$Attributes$href('#feature-selection')
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Simple document organizer')
+										$elm$html$Html$text('Features')
 									])),
 								A2(
-								$elm$html$Html$p,
+								$elm$html$Html$a,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('content is-medium narrow-center')
+										$elm$html$Html$Attributes$class('button primary'),
+										$elm$html$Html$Attributes$href('#get-started')
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Docspell assists in organizing your piles of '),
-										$elm$html$Html$text('digital documents, resulting from scanners, e-mails '),
-										$elm$html$Html$text('and other sources with miminal effort.')
-									])),
-								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class(' buttons is-centered')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$a,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('button is-info is-medium'),
-												$elm$html$Html$Attributes$href('#demos')
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Screencasts')
-											])),
-										A2(
-										$elm$html$Html$a,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('button is-info is-medium'),
-												$elm$html$Html$Attributes$href('#feature-selection')
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Features')
-											])),
-										A2(
-										$elm$html$Html$a,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('button is-primary is-medium'),
-												$elm$html$Html$Attributes$href('#get-started')
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Get Started')
-											]))
+										$elm$html$Html$text('Get Started')
 									]))
 							]))
 					])),
@@ -7305,7 +7164,7 @@ var $author$project$Main$mainHero = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('hero-foot')
+						$elm$html$Html$Attributes$class('text-right w-full')
 					]),
 				_List_fromArray(
 					[
@@ -7313,10 +7172,17 @@ var $author$project$Main$mainHero = function (model) {
 						$elm$html$Html$span,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('unsplash-credit')
+								$elm$html$Html$Attributes$class('opacity-40 text-xs')
 							]),
 						_List_fromArray(
 							[
+								A2(
+								$elm$html$Html$i,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('fab fa-unsplash mr-1')
+									]),
+								_List_Nil),
 								$elm$html$Html$text('Photo by '),
 								A2(
 								$elm$html$Html$a,
@@ -7333,27 +7199,30 @@ var $author$project$Main$mainHero = function (model) {
 					]))
 			]));
 };
-var $author$project$Demo$navigateDemo = {D: 'Shows basic navigation through documents using tags and tag categories.', O: 'Navigation', P: '/videos/docspell-navigate-2021-02-19.mp4'};
+var $author$project$Demo$navigateDemo = {C: 'Shows basic navigation through documents using tags and tag categories.', P: 'Navigation', Q: '/videos/docspell-navigate-2021-02-19.mp4'};
 var $elm$virtual_dom$VirtualDom$node = function (tag) {
 	return _VirtualDom_node(
 		_VirtualDom_noScript(tag));
 };
 var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
-var $author$project$Demo$processDemo = {D: 'Presents the basic idea: maintain an address book and let docspell find matches for new uploaded documents and attach them automatically.', O: 'Processing', P: '/videos/docspell-process-2021-02-19-dark.mp4'};
+var $author$project$Demo$processDemo = {C: 'Presents the basic idea: maintain an address book and let docspell find matches for new uploaded documents and attach them automatically.', P: 'Processing', Q: '/videos/docspell-process-2021-02-19-dark.mp4'};
 var $author$project$Main$view = function (model) {
 	return A3(
 		$elm$html$Html$node,
 		'body',
-		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('text-gray-700')
+			]),
 		_List_fromArray(
 			[
 				$author$project$Main$mainHero(model),
-				$author$project$Main$demoHero,
+				$author$project$Main$demoHeader,
 				A2(
 				$elm$html$Html$section,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('section')
+						$elm$html$Html$Attributes$class('container max-w-screen-xl mx-auto mb-2')
 					]),
 				_List_fromArray(
 					[
@@ -7361,7 +7230,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('container')
+								$elm$html$Html$Attributes$class('mt-3 flex flex-col space-y-4')
 							]),
 						_List_fromArray(
 							[
@@ -7369,85 +7238,64 @@ var $author$project$Main$view = function (model) {
 								$author$project$Demo$demo($author$project$Demo$navigateDemo)
 							]))
 					])),
-				$author$project$Main$featureHero(model),
+				$author$project$Main$featureHeader(model),
 				A2(
 				$elm$html$Html$section,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('section')
+						$elm$html$Html$Attributes$class('mx-auto max-w-screen-xl  mb-2 mt-4')
 					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('container')
-							]),
-						_Utils_ap(
-							A2($elm$core$List$indexedMap, $author$project$Feature$featureBox, model.L),
+				_Utils_ap(
+					A2($elm$core$List$indexedMap, $author$project$Feature$featureBox, model.L),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('flex px-8 py-8 border rounded mb-5 shadow-lg text-2xl'),
+									$elm$html$Html$Attributes$class('sm:flex-row sm:space-y-0 sm-space-x-4'),
+									$elm$html$Html$Attributes$class('mx-2 sm:mx-8')
+								]),
 							_List_fromArray(
 								[
 									A2(
 									$elm$html$Html$div,
 									_List_fromArray(
 										[
-											$elm$html$Html$Attributes$class('columns box')
+											$elm$html$Html$Attributes$class('text-center w-full')
 										]),
 									_List_fromArray(
 										[
+											$elm$html$Html$text('A more complete list can be found in '),
 											A2(
-											$elm$html$Html$div,
+											$elm$html$Html$a,
 											_List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('column is-full')
+													$elm$html$Html$Attributes$href('/docs/features'),
+													$elm$html$Html$Attributes$class('link')
 												]),
 											_List_fromArray(
 												[
-													A2(
-													$elm$html$Html$div,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$class('content has-text-centered is-medium')
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text('A more complete list can be found in '),
-															A2(
-															$elm$html$Html$a,
-															_List_fromArray(
-																[
-																	$elm$html$Html$Attributes$href('/docs/features')
-																]),
-															_List_fromArray(
-																[
-																	$elm$html$Html$text('here')
-																])),
-															$elm$html$Html$text('.')
-														]))
-												]))
+													$elm$html$Html$text('here')
+												])),
+											$elm$html$Html$text('.')
 										]))
-								])))
-					])),
-				$author$project$Main$getStartedHero(model),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('section')
-					]),
-				$author$project$GetStarted$getStarted(model.M.Q)),
+								]))
+						]))),
+				$author$project$Main$getStartedHeader(model),
+				$author$project$GetStarted$getStarted(model.M.R),
 				$author$project$Main$footHero(model)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
-	{aM: $author$project$Main$init, aU: $author$project$Main$subscriptions, aW: $author$project$Main$update, aX: $author$project$Main$view});
+	{aN: $author$project$Main$init, aV: $author$project$Main$subscriptions, aX: $author$project$Main$update, aY: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	A2(
 		$elm$json$Json$Decode$andThen,
 		function (version) {
 			return $elm$json$Json$Decode$succeed(
-				{Q: version});
+				{R: version});
 		},
 		A2($elm$json$Json$Decode$field, 'version', $elm$json$Json$Decode$string)))(0)},'Search':{'init':$author$project$Search$main(
 	$elm$json$Json$Decode$succeed(

@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,251 +32,611 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>CLI – Docspell Documentation</title>
+
+        <title>CLI - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            CLI
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <id id="search"></id>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;">Tools</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;">CLI</a>
-                </li>
-            </ul>
-        </nav>
 
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            
+            <div class="flex-grow place-items-end">
 
-                            <p class="menu-label">
-                                Tools
-                            </p>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/cli/"
-                                   class="is-active">
-                                    Cli
-                                </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#introduction">
-                                            Introduction
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#usage">
-                                            Usage
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#configuration">
-                                                    Configuration
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#output-format">
-                                                    Output format
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#login">
-                                                    Login
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#demo">
-                                                    Demo
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#use-cases-examples">
-                                            Use Cases &#x2F; Examples
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#uploads-files">
-                                                    Uploads files
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#upload-by-traversing-a-directory">
-                                                    Upload by traversing a directory
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#watch-a-directory">
-                                                    Watch a directory
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#download-files">
-                                                    Download files
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#export-data">
-                                                    Export data
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#admin-commands">
-                                                    Admin commands
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#search-for-items">
-                                                    Search for items
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#docker">
-                                            Docker
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/android/"
-                                   >
-                                    Android Client
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/browserext/"
-                                   >
-                                    Browser Extension (Firefox)
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/smtpgateway/"
-                                   >
-                                    Smtp Gateway With Exim
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/tools/paperless-import/"
-                                   >
-                                    Paperless Import
-                                </a>
-                                
-                            </li>
-                            
-                        </ul>
-                    </div>
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
                 </div>
+            </div>
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <h1 id="introduction">Introduction<a class="zola-anchor" href="#introduction" aria-label="Anchor link for: introduction">🔗</a></h1>
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
+                
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  
+  <h1 id="docspell-cli">Docspell CLI<a class="zola-anchor" href="#docspell-cli" aria-label="Anchor link for: docspell-cli">🔗</a></h1>
+<h2 id="introduction">Introduction<a class="zola-anchor" href="#introduction" aria-label="Anchor link for: introduction">🔗</a></h2>
 <p>The <strong>d</strong>oc<strong>s</strong>pell <strong>c</strong>lient, short
 <a href="https://github.com/docspell/dsc">dsc</a>, is a tool to use
 docspell through the command line. It is also aims to be useful for
@@ -278,7 +645,7 @@ your own scripts and programs.</p>
 directory.</p>
 <p>It is a work in progress; eventually most of the
 <a href="https://docspell.org/docs/api/">api</a> will be covered.</p>
-<h1 id="usage">Usage<a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">🔗</a></h1>
+<h2 id="usage">Usage<a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">🔗</a></h2>
 <p>Download the binary for your architecture from the <a href="https://github.com/docspell/dsc/releases/latest">release
 page</a> and rename it
 to <code>dsc</code>. Then run <code>dsc help</code> to see an overview of all commands. The
@@ -294,12 +661,12 @@ page</a> for more info.</p>
 example the docspell url, the admin secret etc. They can be overriden
 by specifying them as options.</p>
 <p>The config looks like this:</p>
-<pre data-lang="toml" style="background-color:#282828;color:#fdf4c1aa;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="font-weight:bold;color:#8ec07c;">docspell_url </span><span>= </span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
-</span><span style="font-weight:bold;color:#8ec07c;">default_format </span><span>= </span><span style="color:#b8bb26;">&quot;Tabular&quot;
-</span><span style="font-weight:bold;color:#8ec07c;">admin_secret </span><span>= </span><span style="color:#b8bb26;">&quot;admin123&quot;
-</span><span style="font-weight:bold;color:#8ec07c;">default_account </span><span>= </span><span style="color:#b8bb26;">&quot;demo&quot;
-</span><span style="font-weight:bold;color:#8ec07c;">pdf_viewer </span><span>= [</span><span style="color:#b8bb26;">&quot;zathura&quot;</span><span>, </span><span style="color:#b8bb26;">&quot;{}&quot;</span><span>]
-</span><span style="font-style:italic;color:#928374;">#pass_entry = &quot;my/entry&quot;
+<pre data-lang="toml" class="language-toml z-code"><code class="language-toml" data-lang="toml"><span class="z-source z-toml"><span class="z-meta z-tag z-key z-toml"><span class="z-entity z-name z-tag z-toml">docspell_url</span></span> <span class="z-punctuation z-definition z-key-value z-toml">=</span> <span class="z-string z-quoted z-double z-basic z-toml"><span class="z-punctuation z-definition z-string z-begin z-toml">&quot;</span>http://localhost:7880<span class="z-punctuation z-definition z-string z-end z-toml">&quot;</span></span>
+<span class="z-meta z-tag z-key z-toml"><span class="z-entity z-name z-tag z-toml">default_format</span></span> <span class="z-punctuation z-definition z-key-value z-toml">=</span> <span class="z-string z-quoted z-double z-basic z-toml"><span class="z-punctuation z-definition z-string z-begin z-toml">&quot;</span>Tabular<span class="z-punctuation z-definition z-string z-end z-toml">&quot;</span></span>
+<span class="z-meta z-tag z-key z-toml"><span class="z-entity z-name z-tag z-toml">admin_secret</span></span> <span class="z-punctuation z-definition z-key-value z-toml">=</span> <span class="z-string z-quoted z-double z-basic z-toml"><span class="z-punctuation z-definition z-string z-begin z-toml">&quot;</span>admin123<span class="z-punctuation z-definition z-string z-end z-toml">&quot;</span></span>
+<span class="z-meta z-tag z-key z-toml"><span class="z-entity z-name z-tag z-toml">default_account</span></span> <span class="z-punctuation z-definition z-key-value z-toml">=</span> <span class="z-string z-quoted z-double z-basic z-toml"><span class="z-punctuation z-definition z-string z-begin z-toml">&quot;</span>demo<span class="z-punctuation z-definition z-string z-end z-toml">&quot;</span></span>
+<span class="z-meta z-tag z-key z-toml"><span class="z-entity z-name z-tag z-toml">pdf_viewer</span></span> <span class="z-punctuation z-definition z-key-value z-toml">=</span> <span class="z-punctuation z-definition z-array z-begin z-toml">[</span><span class="z-string z-quoted z-double z-basic z-toml"><span class="z-punctuation z-definition z-string z-begin z-toml">&quot;</span>zathura<span class="z-punctuation z-definition z-string z-end z-toml">&quot;</span></span><span class="z-punctuation z-separator z-array z-toml">,</span> <span class="z-string z-quoted z-double z-basic z-toml"><span class="z-punctuation z-definition z-string z-begin z-toml">&quot;</span>{}<span class="z-punctuation z-definition z-string z-end z-toml">&quot;</span></span><span class="z-punctuation z-definition z-array z-end z-toml">]</span>
+<span class="z-comment z-line z-number-sign z-toml"><span class="z-punctuation z-definition z-comment z-toml">#</span>pass_entry = &quot;my/entry&quot;</span>
 </span></code></pre>
 <p>For linuxes, the default location is <code>~/.config/dsc/config.toml</code>. You
 can give a config file explicitly via an option or the environment
@@ -326,11 +693,9 @@ values in the config file.</p>
 renewed if expiry is near. If you don't issue any commands for a while
 you need to <code>login</code> again.</p>
 <h2 id="demo">Demo<a class="zola-anchor" href="#demo" aria-label="Anchor link for: demo">🔗</a></h2>
-<div class="columns is-centered is-full-width">
-  <div class="column">
-    <script id="asciicast-427679" src="https://asciinema.org/a/427679.js" async></script>
-  </div>
-</div>
+<figure>
+  <script id="asciicast-427679" src="https://asciinema.org/a/427679.js" async></script>
+</figure>
 <h1 id="use-cases-examples">Use Cases / Examples<a class="zola-anchor" href="#use-cases-examples" aria-label="Anchor link for: use-cases-examples">🔗</a></h1>
 <p>These are some examples. Each command has a good help explaining all
 the options. Run <code>dsc [subcommand] --help</code> to see it.</p>
@@ -343,15 +708,15 @@ command doesn't require to be logged in, it can also upload via a
 <a href="https://docspell.org/docs/api/upload/#integration-endpoint">integration endpoint</a>.</p>
 <p>A source id can be given in the config file, then there are no
 additional options required. The simplest form is this:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc upload *.pdf
-</span><span>File already in Docspell: article-velo.pdf
-</span><span>Adding to request: test-ocr.pdf
-</span><span>Sending request …
-</span><span>┌─────────┬──────────────────┐
-</span><span>│ success │ message          │
-</span><span>├─────────┼──────────────────┤
-</span><span>│ true    │ Files submitted. │
-</span><span>└─────────┴──────────────────┘
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc upload *.pdf
+File already in Docspell: article-velo.pdf
+Adding to request: test-ocr.pdf
+Sending request …
+┌─────────┬──────────────────┐
+│ success │ message          │
+├─────────┼──────────────────┤
+│ true    │ Files submitted. │
+└─────────┴──────────────────┘
 </span></code></pre>
 <p>By default, duplicate files are detected and not uploaded. This
 uploads all files in one single request. By default, each file results
@@ -365,20 +730,20 @@ and upload all files in them. In this mode, each file will be uploaded
 in a separate request, so the <code>--single-item</code> option cannot be used.</p>
 <p>There are options to exclude/include files based on a <a href="https://docs.rs/glob/0.3.0/glob/struct.Pattern.html">glob
 pattern</a>.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc upload --traverse .
-</span><span>File already in Docspell: article-velo.pdf
-</span><span>File already in Docspell: demo/dirc/scan.21-03-12.15-50-54.pdf
-</span><span>File already in Docspell: demo/dirc/test-stamp.pdf
-</span><span>File already in Docspell: demo/letter-de.pdf
-</span><span>Uploading eike/keywords.pdf
-</span><span>File already in Docspell: eike/large-file.pdf
-</span><span>Uploading eike/letter-en.pdf
-</span><span>File already in Docspell: test-ocr.pdf
-</span><span>┌─────────┬────────────┐
-</span><span>│ success │ message    │
-</span><span>├─────────┼────────────┤
-</span><span>│ true    │ Uploaded 2 │
-</span><span>└─────────┴────────────┘
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc upload --traverse .
+File already in Docspell: article-velo.pdf
+File already in Docspell: demo/dirc/scan.21-03-12.15-50-54.pdf
+File already in Docspell: demo/dirc/test-stamp.pdf
+File already in Docspell: demo/letter-de.pdf
+Uploading eike/keywords.pdf
+File already in Docspell: eike/large-file.pdf
+Uploading eike/letter-en.pdf
+File already in Docspell: test-ocr.pdf
+┌─────────┬────────────┐
+│ success │ message    │
+├─────────┼────────────┤
+│ true    │ Uploaded 2 │
+└─────────┴────────────┘
 </span></code></pre>
 <p>The <code>--poll</code> option allows to periodically traverse and upload
 directories.</p>
@@ -391,14 +756,14 @@ upload via a source url, the integration endpoint or a valid session
 <p>It detects file creations and skips a rename within a watched folder.
 The flag <code>-r</code> or <code>--recursive</code> is required to recursively watch a
 directory.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc watch -r .
-</span><span>Watching directory (Recursive): .
-</span><span>Press Ctrl-C to quit.
-</span><span>------------------------------------------------------------------------------
-</span><span>Got: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
-</span><span>Adding to request: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
-</span><span>Sending request …
-</span><span>Server: Files submitted.
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc watch -r .
+Watching directory (Recursive): .
+Press Ctrl-C to quit.
+------------------------------------------------------------------------------
+Got: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
+Adding to request: /home/eike/workspace/projects/dsc/local/files/./demo/letter-de.pdf
+Sending request …
+Server: Files submitted.
 </span></code></pre>
 <p>The <code>--matches</code> option allows to define a pattern for files to include.</p>
 <p>If watching a directory is not possible due to system constraints
@@ -412,17 +777,17 @@ potentially a secret if the endpoint is protected with a secret.</p>
 query. It is possible to download them all flat into some directory or
 directly into a zip file. For example, download all files that are
 tagged with <code>todo</code> into a zip file:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc download --zip &#39;tag:todo&#39;
-</span><span>Zipping 2 attachments into docspell-files.zip
-</span><span>Downloading DOC-20191223-155707.jpg.pdf …
-</span><span>Downloading DOC-20200803-174448.jpg.pdf …
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc download --zip &#39;tag:todo&#39;
+Zipping 2 attachments into docspell-files.zip
+Downloading DOC-20191223-155707.jpg.pdf …
+Downloading DOC-20200803-174448.jpg.pdf …
 </span></code></pre>
 <p>It downloads the converted PDF files by default, which can be changed
 via some options.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc download --zip --original &#39;tag:todo&#39;
-</span><span>Zipping original files of 2 attachments into docspell-files.zip
-</span><span>Downloading DOC-20191223-155707.jpg …
-</span><span>Downloading DOC-20200803-174448.jpg …
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc download --zip --original &#39;tag:todo&#39;
+Zipping original files of 2 attachments into docspell-files.zip
+Downloading DOC-20191223-155707.jpg …
+Downloading DOC-20200803-174448.jpg …
 </span></code></pre>
 <h2 id="export-data">Export data<a class="zola-anchor" href="#export-data" aria-label="Anchor link for: export-data">🔗</a></h2>
 <p>The <code>export</code> command allows to download all items with metadata and
@@ -435,39 +800,39 @@ stored. So you don't loose the tags and correspondents that are
 carefully maintained with each item.</p>
 <p>It expects one directory where it will create a specfific directory
 structure as follows:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>exports/
-</span><span>├── by_date
-</span><span>│   ├── 2019-07
-</span><span>│   ├── 2020-08
-</span><span>|       ├── BV2po65mAFU-…-bqUiwjz8f2W -&gt; ../../items/BV/BV2po65mAFU-…-bqUiwjz8f2W
-</span><span>|       └── FTUnhZ3AE1H-…-RQ9KhtRi486 -&gt; ../../items/FT/FTUnhZ3AE1H-…-RQ9KhtRi486
-</span><span>│   ├── …
-</span><span>│   └── 2021-07
-</span><span>├── by_folder
-</span><span>│   ├── Finance
-</span><span>|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
-</span><span>|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
-</span><span>|   │   ├── Bank
-</span><span>|   │   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
-</span><span>|   │   │   ├── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
-</span><span>├── by_tag
-</span><span>│   ├── Contract
-</span><span>│   ├── Important
-</span><span>│   ├── Invoice
-</span><span>|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
-</span><span>|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
-</span><span>|   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
-</span><span>|   │   └── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
-</span><span>│   ├── …
-</span><span>│   └── Todo
-</span><span>└── items
-</span><span>    ├── 45
-</span><span>    |   └── 455h3cQNdna-w8oTEw9wtpE-G7bCJbVpZPw-t6dF7NjAuDm
-</span><span>    |       ├── files
-</span><span>    |       │   └── DOC-20200803-174448.jpg
-</span><span>    |       └── metadata.json
-</span><span>    ├── …
-</span><span>    └── Hb
+<pre class="z-code"><code><span class="z-text z-plain">exports/
+├── by_date
+│   ├── 2019-07
+│   ├── 2020-08
+|       ├── BV2po65mAFU-…-bqUiwjz8f2W -&gt; ../../items/BV/BV2po65mAFU-…-bqUiwjz8f2W
+|       └── FTUnhZ3AE1H-…-RQ9KhtRi486 -&gt; ../../items/FT/FTUnhZ3AE1H-…-RQ9KhtRi486
+│   ├── …
+│   └── 2021-07
+├── by_folder
+│   ├── Finance
+|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
+|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
+|   │   ├── Bank
+|   │   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
+|   │   │   ├── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
+├── by_tag
+│   ├── Contract
+│   ├── Important
+│   ├── Invoice
+|   │   ├── 455h3cQNdna-…-t6dF7NjAuDm -&gt; ../../items/45/455h3cQNdna-…-t6dF7NjAuDm
+|   │   ├── 5yQ95tQ4khY-…-S9KrxcbRkZR -&gt; ../../items/5y/5yQ95tQ4khY-…-S9KrxcbRkZR
+|   │   ├── 7xoiE4XdwgD-…-Eb2S3BCSd38 -&gt; ../../items/7x/7xoiE4XdwgD-…-Eb2S3BCSd38
+|   │   └── 93npVoA73Cx-…-BnxYNsf4Qvi -&gt; ../../items/93/93npVoA73Cx-…-BnxYNsf4Qvi
+│   ├── …
+│   └── Todo
+└── items
+    ├── 45
+    |   └── 455h3cQNdna-w8oTEw9wtpE-G7bCJbVpZPw-t6dF7NjAuDm
+    |       ├── files
+    |       │   └── DOC-20200803-174448.jpg
+    |       └── metadata.json
+    ├── …
+    └── Hb
 </span></code></pre>
 <p>All your items are stored below the <code>items</code> directory. It contains
 subdirectories that are created from the first two characters of the
@@ -488,23 +853,23 @@ into recursive paths (as shown in the example output above) using the
 <code>--folder-delimiter &quot;/&quot;</code> option. Otherwise, the name would be sanitized
 resulting in <code>Finance-Institute</code>.</p>
 <p>Example run (producing output shown above):</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc export --all --date-links --folder-links --folder-delimiter &quot;/&quot; --tag-links --target exports
-</span><span>Exported item: test3.zip
-</span><span>Exported item: README.md
-</span><span>Exported item: LICENSE.txt
-</span><span>Exported item: TestRMarkdown.pdf
-</span><span>Exported item: DOC-20191223-155729.jpg
-</span><span>Exported item: DOC-20191223-155707.jpg
-</span><span>Exported item: DOC-20200808-154204.jpg
-</span><span>Exported item: DOC-20200807-115654.jpg
-</span><span>Exported item: DOC-20200803-174448.jpg
-</span><span>Exported item: DOC-20200803-174448.jpg
-</span><span>Exported item: DOC-20200803-174448.jpg
-</span><span>Exported item: DOC-20200803-174448.jpg
-</span><span>Exported item: DOC-20200804-132305.jpg
-</span><span>Exported item: DOC-20191223-155707.jpg
-</span><span>Exported item: keyweb.eml
-</span><span>Exported 15 items.
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc export --all --date-links --folder-links --folder-delimiter &quot;/&quot; --tag-links --target exports
+Exported item: test3.zip
+Exported item: README.md
+Exported item: LICENSE.txt
+Exported item: TestRMarkdown.pdf
+Exported item: DOC-20191223-155729.jpg
+Exported item: DOC-20191223-155707.jpg
+Exported item: DOC-20200808-154204.jpg
+Exported item: DOC-20200807-115654.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200803-174448.jpg
+Exported item: DOC-20200804-132305.jpg
+Exported item: DOC-20191223-155707.jpg
+Exported item: keyweb.eml
+Exported 15 items.
 </span></code></pre>
 <p>With output format <code>json</code> or <code>lisp</code> each item is printed instead in
 full detail.</p>
@@ -515,38 +880,38 @@ commands require the <a href="https://docspell.org/docs/configure/#admin-endpoin
 secret</a> either in the
 config file or as an argument.</p>
 <h3 id="reset-user-password">Reset user password<a class="zola-anchor" href="#reset-user-password" aria-label="Anchor link for: reset-user-password">🔗</a></h3>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc admin reset-password --account demo
-</span><span>┌─────────┬──────────────┬──────────────────┐
-</span><span>│ success │ new password │ message          │
-</span><span>├─────────┼──────────────┼──────────────────┤
-</span><span>│ true    │ 2q2UeCVvMYg  │ Password updated │
-</span><span>└─────────┴──────────────┴──────────────────┘
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc admin reset-password --account demo
+┌─────────┬──────────────┬──────────────────┐
+│ success │ new password │ message          │
+├─────────┼──────────────┼──────────────────┤
+│ true    │ 2q2UeCVvMYg  │ Password updated │
+└─────────┴──────────────┴──────────────────┘
 </span></code></pre>
 <h3 id="recreate-fulltext-index">Recreate fulltext index<a class="zola-anchor" href="#recreate-fulltext-index" aria-label="Anchor link for: recreate-fulltext-index">🔗</a></h3>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc admin --admin-secret admin123 recreate-index
-</span><span>┌─────────┬─────────────────────────────────────┐
-</span><span>│ success │ message                             │
-</span><span>├─────────┼─────────────────────────────────────┤
-</span><span>│ true    │ Full-text index will be re-created. │
-</span><span>└─────────┴─────────────────────────────────────┘
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc admin --admin-secret admin123 recreate-index
+┌─────────┬─────────────────────────────────────┐
+│ success │ message                             │
+├─────────┼─────────────────────────────────────┤
+│ true    │ Full-text index will be re-created. │
+└─────────┴─────────────────────────────────────┘
 </span></code></pre>
 <h3 id="convert-all-files-to-pdf">Convert all files to PDF<a class="zola-anchor" href="#convert-all-files-to-pdf" aria-label="Anchor link for: convert-all-files-to-pdf">🔗</a></h3>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc admin --admin-secret admin123 convert-all-pdf
-</span><span>┌─────────┬─────────────────────────────────┐
-</span><span>│ success │ message                         │
-</span><span>├─────────┼─────────────────────────────────┤
-</span><span>│ true    │ Convert all PDFs task submitted │
-</span><span>└─────────┴─────────────────────────────────┘
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc admin --admin-secret admin123 convert-all-pdf
+┌─────────┬─────────────────────────────────┐
+│ success │ message                         │
+├─────────┼─────────────────────────────────┤
+│ true    │ Convert all PDFs task submitted │
+└─────────┴─────────────────────────────────┘
 </span></code></pre>
 <p>This may be necessary if you disabled pdf conversion before and are
 enabling it now.</p>
 <h3 id="regenerate-preview-images">Regenerate preview images<a class="zola-anchor" href="#regenerate-preview-images" aria-label="Anchor link for: regenerate-preview-images">🔗</a></h3>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc admin --admin-secret admin123 convert-all-pdf
-</span><span>┌─────────┬───────────────────────────────────────┐
-</span><span>│ success │ message                               │
-</span><span>├─────────┼───────────────────────────────────────┤
-</span><span>│ true    │ Generate all previews task submitted. │
-</span><span>└─────────┴───────────────────────────────────────┘
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc admin --admin-secret admin123 convert-all-pdf
+┌─────────┬───────────────────────────────────────┐
+│ success │ message                               │
+├─────────┼───────────────────────────────────────┤
+│ true    │ Generate all previews task submitted. │
+└─────────┴───────────────────────────────────────┘
 </span></code></pre>
 <p>This submits tasks to (re)generate preview images of all files. This
 is necessary if you changed the <code>preview.dpi</code> setting in joex'
@@ -554,30 +919,30 @@ config.</p>
 <h2 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h2>
 <p>The <code>search</code> command takes a <a href="https://docspell.org/docs/query/">query</a> and
 prints the results.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc search &#39;corr:*&#39;
-</span><span>┌──────────┬────────────────────────────┬───────────┬────────────┬─────┬───────────────────────────┬───────────────┬────────┬─────────────┬────────────┬───────┐
-</span><span>│ id       │ name                       │ state     │ date       │ due │ correspondent             │ concerning    │ folder │ tags        │ fields     │ files │
-</span><span>├──────────┼────────────────────────────┼───────────┼────────────┼─────┼───────────────────────────┼───────────────┼────────┼─────────────┼────────────┼───────┤
-</span><span>│ HVK7JuCF │ test-ocr.pdf               │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Certificate │            │ 1     │
-</span><span>│ 3odNawKE │ letter-en.pdf              │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
-</span><span>│ 3MA5NdhS │ large-file.pdf             │ confirmed │ 2021-07-18 │     │ Axa                       │               │        │ Certificate │            │ 1     │
-</span><span>│ HDumXkRm │ keywords.pdf               │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
-</span><span>│ 733gM656 │ test-stamp.pdf             │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Contract    │            │ 1     │
-</span><span>│ 8LiciitB │ scan.21-03-12.15-50-54.pdf │ confirmed │ 2021-07-18 │     │ Supermarket               │               │        │ Receipt     │ CHF 89.44  │ 1     │
-</span><span>│ 8nFt2z7T │ article-velo.pdf           │ confirmed │ 2021-07-18 │     │ Supermarket/Rudolf Müller │ Rudolf Müller │        │ invoice     │ CHF 123.11 │ 1     │
-</span><span>│ kfugGdXU │ letter-de.pdf              │ created   │ 2021-07-18 │     │ Axa                       │ Rudolf Müller │        │ invoice     │            │ 1     │
-</span><span>└──────────┴────────────────────────────┴───────────┴────────────┴─────┴───────────────────────────┴───────────────┴────────┴─────────────┴────────────┴───────┘
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc search &#39;corr:*&#39;
+┌──────────┬────────────────────────────┬───────────┬────────────┬─────┬───────────────────────────┬───────────────┬────────┬─────────────┬────────────┬───────┐
+│ id       │ name                       │ state     │ date       │ due │ correspondent             │ concerning    │ folder │ tags        │ fields     │ files │
+├──────────┼────────────────────────────┼───────────┼────────────┼─────┼───────────────────────────┼───────────────┼────────┼─────────────┼────────────┼───────┤
+│ HVK7JuCF │ test-ocr.pdf               │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Certificate │            │ 1     │
+│ 3odNawKE │ letter-en.pdf              │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
+│ 3MA5NdhS │ large-file.pdf             │ confirmed │ 2021-07-18 │     │ Axa                       │               │        │ Certificate │            │ 1     │
+│ HDumXkRm │ keywords.pdf               │ confirmed │ 2021-07-18 │     │ Pancake Company           │               │        │ invoice     │            │ 1     │
+│ 733gM656 │ test-stamp.pdf             │ created   │ 2021-07-18 │     │ Pancake Company           │               │        │ Contract    │            │ 1     │
+│ 8LiciitB │ scan.21-03-12.15-50-54.pdf │ confirmed │ 2021-07-18 │     │ Supermarket               │               │        │ Receipt     │ CHF 89.44  │ 1     │
+│ 8nFt2z7T │ article-velo.pdf           │ confirmed │ 2021-07-18 │     │ Supermarket/Rudolf Müller │ Rudolf Müller │        │ invoice     │ CHF 123.11 │ 1     │
+│ kfugGdXU │ letter-de.pdf              │ created   │ 2021-07-18 │     │ Axa                       │ Rudolf Müller │        │ invoice     │            │ 1     │
+└──────────┴────────────────────────────┴───────────┴────────────┴─────┴───────────────────────────┴───────────────┴────────┴─────────────┴────────────┴───────┘
 </span></code></pre>
 <p>The same can be formatted as json and, for example, only print the ids:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>❯ dsc -f json search &#39;corr:*&#39; | jq &#39;.groups[].items[].id&#39;
-</span><span>&quot;HVK7JuCFt4W-qxkcwq1cWCV-dvpGo4DpZzU-Q16Xoujojas&quot;
-</span><span>&quot;3odNawKE1Ek-YJrWfPzekAq-47cjt14sexd-GK35JAEAanx&quot;
-</span><span>&quot;3MA5NdhSrbx-3JkjEpqHiyU-XyVNb15tioh-SUVjMLi1aoV&quot;
-</span><span>&quot;HDumXkRmDea-dNryjtRjk3V-ysdJmJNQGQS-UFb4DWNZJ3F&quot;
-</span><span>&quot;733gM656S4T-d4HmEgdAV6Z-9zuHAd3biKM-mBwNriZpqMB&quot;
-</span><span>&quot;8LiciitBVTi-DTmgiEUdqAJ-xXPckMvFHMc-JSiJMYvLaWh&quot;
-</span><span>&quot;8nFt2z7T9go-1qaCTTgodub-592n6gpmdNR-VRcyYAyT7qj&quot;
-</span><span>&quot;kfugGdXUGUc-mReaUnJxyUL-R44Lf7yH6RK-2JbZ1bv7dw&quot;
+<pre class="z-code"><code><span class="z-text z-plain">❯ dsc -f json search &#39;corr:*&#39; | jq &#39;.groups[].items[].id&#39;
+&quot;HVK7JuCFt4W-qxkcwq1cWCV-dvpGo4DpZzU-Q16Xoujojas&quot;
+&quot;3odNawKE1Ek-YJrWfPzekAq-47cjt14sexd-GK35JAEAanx&quot;
+&quot;3MA5NdhSrbx-3JkjEpqHiyU-XyVNb15tioh-SUVjMLi1aoV&quot;
+&quot;HDumXkRmDea-dNryjtRjk3V-ysdJmJNQGQS-UFb4DWNZJ3F&quot;
+&quot;733gM656S4T-d4HmEgdAV6Z-9zuHAd3biKM-mBwNriZpqMB&quot;
+&quot;8LiciitBVTi-DTmgiEUdqAJ-xXPckMvFHMc-JSiJMYvLaWh&quot;
+&quot;8nFt2z7T9go-1qaCTTgodub-592n6gpmdNR-VRcyYAyT7qj&quot;
+&quot;kfugGdXUGUc-mReaUnJxyUL-R44Lf7yH6RK-2JbZ1bv7dw&quot;
 </span></code></pre>
 <h1 id="docker">Docker<a class="zola-anchor" href="#docker" aria-label="Anchor link for: docker">🔗</a></h1>
 <p>The provided docker-compose setup runs this script to watch a single
@@ -592,44 +957,174 @@ integration endpoint. This requires you to provide a secret, that is
 shared between the rest-server and the <code>dsc</code> tool. This can be done by
 defining an environment variable which gets picked up by the
 containers defined in <code>docker-compose.yml</code>:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docker-compose up -d
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docker-compose</span></span><span class="z-meta z-function-call z-arguments z-shell"> up<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span></span>
 </span></code></pre>
 <p>Now you can create a folder <code>./docs/&lt;collective-name&gt;</code> and place all
 files in there that you want to import. Once dropped in this folder
 the <code>consumedir</code> container will push it to docspell.</p>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  
 
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;tools&#x2F;cli.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
-        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
-<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+                </div>
 
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#docspell-cli" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Docspell CLI
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#introduction" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Introduction
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#usage" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Usage
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#configuration" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Configuration
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#output-format" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Output format
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#login" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Login
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#demo" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Demo
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#use-cases-examples" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Use Cases &#x2F; Examples
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#uploads-files" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Uploads files
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#upload-by-traversing-a-directory" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Upload by traversing a directory
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#watch-a-directory" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Watch a directory
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#download-files" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Download files
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#export-data" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Export data
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#admin-commands" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Admin commands
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#search-for-items" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Search for items
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;#docker" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Docker
+                        </a>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -664,4 +1159,5 @@ the <code>consumedir</code> container will push it to docspell.</p>
 <!-- / Fathom -->
 
     </body>
+
 </html>

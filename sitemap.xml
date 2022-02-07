@@ -4,7 +4,19 @@
         <loc>https://docspell.org/</loc>
     </url>
     <url>
-        <loc>https://docspell.org/doc/</loc>
+        <loc>https://docspell.org/blog/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/blog/alternative-upload-from-browser/</loc>
+        <lastmod>2022-01-17</lastmod>
+    </url>
+    <url>
+        <loc>https://docspell.org/blog/create-post/</loc>
+        <lastmod>2022-01-31</lastmod>
+    </url>
+    <url>
+        <loc>https://docspell.org/blog/scan-and-process-from-adf/</loc>
+        <lastmod>2021-01-09</lastmod>
     </url>
     <url>
         <loc>https://docspell.org/docs/</loc>
@@ -17,9 +29,6 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/api/upload/</loc>
-    </url>
-    <url>
-        <loc>https://docspell.org/docs/changelog/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/configure/</loc>
@@ -103,6 +112,9 @@
         <loc>https://docspell.org/docs/install/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/install/changelog/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/install/docker/</loc>
     </url>
     <url>
@@ -151,9 +163,6 @@
         <loc>https://docspell.org/docs/tools/android/</loc>
     </url>
     <url>
-        <loc>https://docspell.org/docs/tools/browserext/</loc>
-    </url>
-    <url>
         <loc>https://docspell.org/docs/tools/cli/</loc>
     </url>
     <url>
@@ -176,6 +185,9 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/webapp/customfields/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/webapp/dashboards/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/webapp/emailsettings/</loc>

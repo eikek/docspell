@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,232 +32,619 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Query Language – Docspell Documentation</title>
+
+        <title>Query Language - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
         <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
 <script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
 <script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
 <script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            Query Language
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <div id="search"></div>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
+
+            <div class="flex-grow place-items-end">
+
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
                 
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;">Query Language</a>
-                </li>
-            </ul>
-        </nav>
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
         
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#structure">
-                                    Structure
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#the-parts">
-                                    The Parts
-                                </a>
-                                <ul>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#operators">
-                                            Operators
-                                        </a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#fields">
-                                            Fields
-                                        </a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#values">
-                                            Values
-                                        </a>
-                                    </li>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#simple-expressions">
-                                    Simple Expressions
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#tags">
-                                    Tags
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#custom-fields">
-                                    Custom Fields
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#fulltext-search">
-                                    Fulltext Search
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#file-checksums">
-                                    File Checksums
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#exist">
-                                    Exist
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#attach-id">
-                                    Attach-Id
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#shortcuts">
-                                    Shortcuts
-                                </a>
-                                <ul>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#date-ranges">
-                                            Date Ranges
-                                        </a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#names">
-                                            Names
-                                        </a>
-                                    </li>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#examples">
-                                    Examples
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                        </ul>
-                    </div>
-                </div>
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <p>Docspell uses a query language to provide a powerful way to search for
-your documents. It is targeted at &quot;power users&quot; and it needs to be
-enabled explicitely in your user settings.</p>
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  dark:bg-stone-800 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  <h1 id="query-language">Query Language<a class="zola-anchor" href="#query-language" aria-label="Anchor link for: query-language">🔗</a></h1>
+<p>Docspell uses a query language to provide a powerful way to search for
+your documents. It currently needs to be enabled explicitely in your
+user settings to be used on the search page.</p>
 <div class="colums">
-<figure class="image">
+<figure>
     
     
     
 
-    <img src="https://docspell.org/docs/query/enable-powersearch.png">
+    <img src="https://docspell.org/docs/query/enable-powersearch.png" >
 </figure>
 </div>
 <p>This changes the search bar on the items list page to expect a query
@@ -264,7 +658,7 @@ when applied to an item and so selects whether to include it in the
 results or not. It consists of smaller expressions that can be
 combined via the common ways: <code>and</code>, <code>or</code> and <code>not</code>.</p>
 <p>Simple expressions check some property of an item. The form is:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>&lt;field&gt;&lt;operator&gt;&lt;value&gt;
+<pre class="z-code"><code><span class="z-text z-plain">&lt;field&gt;&lt;operator&gt;&lt;value&gt;
 </span></code></pre>
 <p>For example: <code>tag=invoice</code> – where <code>tag</code> is the field, <code>=</code> the
 operator and <code>invoice</code> the value. It would evaluate to <code>true</code> if the
@@ -404,11 +798,11 @@ except for boolean fields.</p>
 sense for text values. It allows to do a substring search for a field.</p>
 <p>For example, this looks for an item with a name of exactly
 'invoice_22':</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>name=invoice_22
+<pre class="z-code"><code><span class="z-text z-plain">name=invoice_22
 </span></code></pre>
 <p>By using <code>:</code>, it is possible to look for items that have 'invoice'
 somewhere in their name:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>name:*invoice*
+<pre class="z-code"><code><span class="z-text z-plain">name:*invoice*
 </span></code></pre>
 <p>The asterisk <code>*</code> can be added at the beginning and/or end of the
 value, but not in betwee. Furthermore, the like operator is
@@ -416,7 +810,7 @@ case-insensitive, whereas <code>=</code> is not. This applies to all fields with
 a text value.</p>
 <p>This is another example looking for a correspondent person of with
 'marcus' in the name:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>corr.pers.name:*marcus*
+<pre class="z-code"><code><span class="z-text z-plain">corr.pers.name:*marcus*
 </span></code></pre>
 <hr />
 <p>Comparisons via <code>&lt;</code>/<code>&gt;</code> are done alphanumerically for text based
@@ -427,10 +821,10 @@ operators don't make sense and therefore don't work there.</p>
 <code>~=</code>. This is a more efficient form to specify a list of alternative
 values for the same field. It is logically the same as combining
 multiple expressions with <code>OR</code>. For example:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>source~=webapp,mailbox
+<pre class="z-code"><code><span class="z-text z-plain">source~=webapp,mailbox
 </span></code></pre>
 <p>is the same as</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>(| source=webapp source=mailbox )
+<pre class="z-code"><code><span class="z-text z-plain">(| source=webapp source=mailbox )
 </span></code></pre>
 <p>The <code>~=</code> version is nicer to read, safes some key strokes and also
 runs more efficient when the list grows. It is <em>not</em> possible to use a
@@ -439,7 +833,7 @@ longer form.</p>
 <p>If one value contains whitespace or other characters that require
 quoting, each value must be quoted, not the whole list. So this is
 correct:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>source~=&quot;web app&quot;,&quot;mail box&quot;
+<pre class="z-code"><code><span class="z-text z-plain">source~=&quot;web app&quot;,&quot;mail box&quot;
 </span></code></pre>
 <p>This is not correct: <code>source~=&quot;web app,mail box&quot;</code> – it would be treated
 as one single value and is then essentially the same as using <code>=</code>.</p>
@@ -448,14 +842,14 @@ as one single value and is then essentially the same as using <code>=</code>.</p
 <code>true</code> or <code>false</code>. The synonyms <code>yes</code> and <code>no</code> can also be used to
 make it better readable.</p>
 <p>This finds all items that have not been confirmed:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>inbox:yes
+<pre class="z-code"><code><span class="z-text z-plain">inbox:yes
 </span></code></pre>
 <p>The <code>incoming</code> can be used to show only incoming or only outgoing
 documents:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>incoming:yes
+<pre class="z-code"><code><span class="z-text z-plain">incoming:yes
 </span></code></pre>
 <p>For outgoing, you need to say:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>incoming:no
+<pre class="z-code"><code><span class="z-text z-plain">incoming:no
 </span></code></pre>
 <h1 id="tags">Tags<a class="zola-anchor" href="#tags" aria-label="Anchor link for: tags">🔗</a></h1>
 <p>Tags have their own syntax, because they can appear multiple times on
@@ -467,21 +861,21 @@ specified tags. Tags can be identified by their name or id and are
 given as a comma separated list (just like when using the
 in-operator).</p>
 <p>Some examples: Find all invoices that are todo:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag=invoice,todo
+<pre class="z-code"><code><span class="z-text z-plain">tag=invoice,todo
 </span></code></pre>
 <p>This returns all items that have both tags <code>invoice</code> and <code>todo</code>.
 Negating this:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>!tag=invoice,todo
+<pre class="z-code"><code><span class="z-text z-plain">!tag=invoice,todo
 </span></code></pre>
 <p>… results in an expression that returns all items that don't have
 <em>both</em> tags. It might return items with tag <code>invoice</code> and also items
 with tag <code>todo</code>, but no items that have both of them.</p>
 <p>Using <code>:</code> is just analog to <code>=</code>. This finds all items that are either
 <code>waiting</code> or <code>todo</code> (or both):</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag:waiting,todo
+<pre class="z-code"><code><span class="z-text z-plain">tag:waiting,todo
 </span></code></pre>
 <p>When negating this:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>!tag:waiting,todo
+<pre class="z-code"><code><span class="z-text z-plain">!tag:waiting,todo
 </span></code></pre>
 <p>it finds all items that have <em>none</em> of the tags.</p>
 <p>Tag names are always compared case-insensitive. Tags can also be
@@ -490,7 +884,7 @@ instead of <code>tag</code>.</p>
 <p>The field <code>cat</code> can be used the same way to search for tag categories.</p>
 <h1 id="custom-fields">Custom Fields<a class="zola-anchor" href="#custom-fields" aria-label="Anchor link for: custom-fields">🔗</a></h1>
 <p>Custom fields can be used via the following syntax:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:&lt;field-name&gt;&lt;operator&gt;&lt;value&gt;
+<pre class="z-code"><code><span class="z-text z-plain">f:&lt;field-name&gt;&lt;operator&gt;&lt;value&gt;
 </span></code></pre>
 <p>They look almost like a simple expression, only prefixed with a <code>f:</code>
 to indicate that the following is the name of a custom field.</p>
@@ -501,37 +895,37 @@ in-operator (<code>~=</code>).</p>
 <p>For example: assuming there is a custom field of type <em>money</em> and name
 <em>usd</em>, the following selects all items with an amount between 10 and
 150:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:usd&gt;10 f:usd&lt;150
+<pre class="z-code"><code><span class="z-text z-plain">f:usd&gt;10 f:usd&lt;150
 </span></code></pre>
 <p>The like-operator can be used, too. For example, to find all items
 that have a custom field <code>asn</code> (often used for a serial number printed
 on the document):</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:asn:*
+<pre class="z-code"><code><span class="z-text z-plain">f:asn:*
 </span></code></pre>
 <p>If the like operator is used on numeric fields, it falls back to
 text-comparison.</p>
 <p>Instead of using the name, the field-id can be used to select a field.
 Then the prefix is <code>f.id</code>:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f.id:J2ES1Z4Ni9W-xw1VdFbt3KA-rL725kuyVzh-7La95Yw7Ax2:15.00
+<pre class="z-code"><code><span class="z-text z-plain">f.id:J2ES1Z4Ni9W-xw1VdFbt3KA-rL725kuyVzh-7La95Yw7Ax2:15.00
 </span></code></pre>
 <h1 id="fulltext-search">Fulltext Search<a class="zola-anchor" href="#fulltext-search" aria-label="Anchor link for: fulltext-search">🔗</a></h1>
 <p>The special field <code>content</code> allows to add a fulltext search. Using
 this is currently restricted: it must occur in the root (AND) query
 and cannot be nested in other complex expressions.</p>
 <p>The form is:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>content:&lt;your search query&gt;
+<pre class="z-code"><code><span class="z-text z-plain">content:&lt;your search query&gt;
 </span></code></pre>
 <p>The search query is interpreted by the fulltext index (currently it is
 SOLR). This is usually very powerful and in many cases this value must
 be quoted.</p>
 <p>For example, do a fulltext search for 'red needle':</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>content:&quot;red needle&quot;
+<pre class="z-code"><code><span class="z-text z-plain">content:&quot;red needle&quot;
 </span></code></pre>
 <p>It can be combined in an AND expression:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>content:&quot;red needle&quot; tag:todo
+<pre class="z-code"><code><span class="z-text z-plain">content:&quot;red needle&quot; tag:todo
 </span></code></pre>
 <p>But it can't be combined via OR. This is not possible:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag:todo (| content:&quot;red needle&quot; tag:waiting)
+<pre class="z-code"><code><span class="z-text z-plain">tag:todo (| content:&quot;red needle&quot; tag:waiting)
 </span></code></pre>
 <h1 id="file-checksums">File Checksums<a class="zola-anchor" href="#file-checksums" aria-label="Anchor link for: file-checksums">🔗</a></h1>
 <p>The <code>checksum</code> field can be used to look for items that have a certain
@@ -540,17 +934,17 @@ file attached. It expects a SHA256 string.</p>
 disk:
 <code>40675c22ab035b8a4ffe760732b65e5f1d452c59b44d3d0a2a08a95d28853497</code>.</p>
 <p>To find all items that have (exactly) this file attached:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>checksum:40675c22ab035b8a4ffe760732b65e5f1d452c59b44d3d0a2a08a95d28853497
+<pre class="z-code"><code><span class="z-text z-plain">checksum:40675c22ab035b8a4ffe760732b65e5f1d452c59b44d3d0a2a08a95d28853497
 </span></code></pre>
 <h1 id="exist">Exist<a class="zola-anchor" href="#exist" aria-label="Anchor link for: exist">🔗</a></h1>
 <p>The <code>exist</code> field can be used with another field, to check whether an
 item has some value for it. It only works for fields that have at most
 one value.</p>
 <p>For example, it could be used to find items that are in any folder:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>exist:folder
+<pre class="z-code"><code><span class="z-text z-plain">exist:folder
 </span></code></pre>
 <p>When negating, it finds all items that are not in a folder:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>!exist:folder
+<pre class="z-code"><code><span class="z-text z-plain">!exist:folder
 </span></code></pre>
 <h1 id="attach-id">Attach-Id<a class="zola-anchor" href="#attach-id" aria-label="Anchor link for: attach-id">🔗</a></h1>
 <p>The <code>attach.id</code> field is a special field to find items by providing
@@ -558,8 +952,8 @@ the id of an attachment. This can be helpful in certain situations
 when you only have the id or part of that of an attachment. It uses
 equality if no wildcard is present. A wildcard <code>*</code> can be used at
 beginning or end if only a part of the id is known.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>attach.id=5YjdnuTAdKJ-V6ofWTYsqKV-mAwB5aXTNWE-FAbeRU58qLb
-</span><span>attach.id=5YjdnuTAdKJ*
+<pre class="z-code"><code><span class="z-text z-plain">attach.id=5YjdnuTAdKJ-V6ofWTYsqKV-mAwB5aXTNWE-FAbeRU58qLb
+attach.id=5YjdnuTAdKJ*
 </span></code></pre>
 <h1 id="shortcuts">Shortcuts<a class="zola-anchor" href="#shortcuts" aria-label="Anchor link for: shortcuts">🔗</a></h1>
 <p>Shortcuts are only a short form of a longer query and are provided for
@@ -605,60 +999,227 @@ look into correspondent names and concerning names.</p>
 </ul>
 <h1 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h1>
 <p>Find items with 2 or more attachments:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>attach.count&gt;2
+<pre class="z-code"><code><span class="z-text z-plain">attach.count&gt;2
 </span></code></pre>
 <p>Find items with at least one tag invoice or todo that are due next:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag:invoice,todo due&gt;today
+<pre class="z-code"><code><span class="z-text z-plain">tag:invoice,todo due&gt;today
 </span></code></pre>
 <p>Find items with at least both tags invoice and todo:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag=invoice,todo
+<pre class="z-code"><code><span class="z-text z-plain">tag=invoice,todo
 </span></code></pre>
 <p>Find items with a concerning person of name starting with &quot;Marcus&quot;:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>conc.pers.name:marcus*
+<pre class="z-code"><code><span class="z-text z-plain">conc.pers.name:marcus*
 </span></code></pre>
 <p>Find items with at least a tag &quot;todo&quot; in year 2020:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>tag:todo year:2020
+<pre class="z-code"><code><span class="z-text z-plain">tag:todo year:2020
 </span></code></pre>
 <p>Find items within the last 30 days:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>date&gt;today;-30d
+<pre class="z-code"><code><span class="z-text z-plain">date&gt;today;-30d
 </span></code></pre>
 <p>Find items with a custom field <code>paid</code> set to any value:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:paid:*
+<pre class="z-code"><code><span class="z-text z-plain">f:paid:*
 </span></code></pre>
 <p>Find items that have been paid with more than $100 (using custom
 fields <code>paid</code> as a date and <code>usd</code> as money):</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>f:paid:* f:usd&gt;100
+<pre class="z-code"><code><span class="z-text z-plain">f:paid:* f:usd&gt;100
 </span></code></pre>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
+  
+  
 
-        
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;query&#x2F;_index.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
+                </div>
+
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#query-language" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Query Language
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#structure" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Structure
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#the-parts" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            The Parts
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#operators" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Operators
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#fields" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Fields
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#values" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Values
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#simple-expressions" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Simple Expressions
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#tags" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Tags
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#custom-fields" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Custom Fields
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#fulltext-search" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Fulltext Search
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#file-checksums" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            File Checksums
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#exist" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Exist
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#attach-id" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Attach-Id
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#shortcuts" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Shortcuts
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#date-ranges" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Date Ranges
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#names" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Names
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;#examples" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Examples
+                        </a>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -693,4 +1254,5 @@ fields <code>paid</code> as a date and <code>usd</code> as money):</p>
 <!-- / Fathom -->
 
     </body>
+
 </html>

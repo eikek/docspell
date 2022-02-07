@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,194 +32,611 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Reverse Proxy – Docspell Documentation</title>
+
+        <title>Reverse Proxy - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            Reverse Proxy
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <id id="search"></id>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;">Installation and Deployment</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;">Reverse Proxy</a>
-                </li>
-            </ul>
-        </nav>
 
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            
+            <div class="flex-grow place-items-end">
 
-                            <p class="menu-label">
-                                Installation and Deployment
-                            </p>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/quickstart/"
-                                   >
-                                    Quickstart
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/prereq/"
-                                   >
-                                    Prerequisites
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/docker/"
-                                   >
-                                    Docker
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/download-run/"
-                                   >
-                                    Download &amp; Run
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/nix/"
-                                   >
-                                    Nix &#x2F; Nixos
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/downgrading/"
-                                   >
-                                    Downgrading
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/rpi/"
-                                   >
-                                    Raspberry-Pi And Similiar
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/reverseproxy/"
-                                   class="is-active">
-                                    Reverse Proxy
-                                </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#configuring-docspell">
-                                            Configuring Docspell
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#nginx">
-                                            Nginx
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
-                                
-                            </li>
-                            
-                        </ul>
-                    </div>
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
                 </div>
+            </div>
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <p>This contains examples for how to use docspell behind a reverse proxy.</p>
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
+                
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  
+  <h1 id="reverse-proxy">Reverse Proxy<a class="zola-anchor" href="#reverse-proxy" aria-label="Anchor link for: reverse-proxy">🔗</a></h1>
+<p>This contains examples for how to use docspell behind a reverse proxy.</p>
 <p>For the examples below, assume the following:</p>
 <ul>
 <li>Docspell app is available at <code>192.168.1.11:7880</code>. If it is running
@@ -229,13 +653,13 @@ configuration file:</p>
 to change the <code>bind.address</code> setting to be either <code>0.0.0.0</code> or the
 ip address of the network interface that the reverse proxy server
 connects to.</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server {
-</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># Where the server binds to.
-</span><span style="color:#fdf4c1;">  bind {
-</span><span style="color:#fdf4c1;">    address = </span><span style="color:#b8bb26;">&quot;192.168.1.11&quot;
-</span><span style="color:#fdf4c1;">    port = 7880
-</span><span style="color:#fdf4c1;">  }
-</span><span style="color:#fdf4c1;">}
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docspell.server</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span>  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Where the server binds to.</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span></span></span>  bind <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span>    address = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>192.168.1.11<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span>    port = 7880
+</span></span></span></span>  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+</span></span></span><span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
 </span></code></pre>
 <p>Note that a value of <code>0.0.0.0</code> instead of <code>192.168.1.11</code> will bind
 the server to every network interface.</p>
@@ -244,12 +668,12 @@ the server to every network interface.</p>
 <p>(Optional) Docspell needs to know the external url. The <code>base-url</code>
 setting should point to the external address. Using above values, it
 would be <code>https://docspell.example.com</code>.</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">docspell.server {
-</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># This is the base URL this application is deployed to. This is used
-</span><span style="color:#fdf4c1;">  </span><span style="font-style:italic;color:#928374;"># to create absolute URLs and to configure the cookie.
-</span><span style="color:#fdf4c1;">  base-url = </span><span style="color:#b8bb26;">&quot;https://docspell.example.com&quot;
-</span><span style="color:#fdf4c1;"> ...
-</span><span style="color:#fdf4c1;">}
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docspell.server</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span>  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> This is the base URL this application is deployed to. This is used</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span></span></span>  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> to create absolute URLs and to configure the cookie.</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span></span></span>  base-url = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>https://docspell.example.com<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span> ...
+</span></span></span><span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
 </span></code></pre>
 <p>You can also leave the default settings (<code>localhost</code>), in this case
 Docspell uses the request header to determine the external url.</p>
@@ -267,72 +691,116 @@ to the https variant. Additionally it defines the let's encrypt
 <p>The https server endpoint is configured with the let's encrypt
 certificates and acts as a proxy for the application at
 <code>192.168.1.11:7880</code>.</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">server {
-</span><span style="color:#fdf4c1;">    listen 0.0.0.0:80 ;
-</span><span style="color:#fdf4c1;">    listen </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::</span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;">:80 ;
-</span><span style="color:#fdf4c1;">    server_name docspell.example.com ;
-</span><span style="color:#fdf4c1;">    location /.well-known/acme-challenge {
-</span><span style="color:#fdf4c1;">        root /var/data/nginx/ACME-PUBLIC;
-</span><span style="color:#fdf4c1;">        auth_basic off;
-</span><span style="color:#fdf4c1;">    }
-</span><span style="color:#fdf4c1;">    location / {
-</span><span style="color:#fdf4c1;">        return 301 https://$host$request_uri;
-</span><span style="color:#fdf4c1;">    }
-</span><span style="color:#fdf4c1;">}
-</span><span style="color:#fdf4c1;">server {
-</span><span style="color:#fdf4c1;">    listen 0.0.0.0:443 ssl http2 ;
-</span><span style="color:#fdf4c1;">    listen </span><span style="color:#fa5c4b;">[</span><span style="color:#fdf4c1;">::</span><span style="color:#fa5c4b;">]</span><span style="color:#fdf4c1;">:443 ssl http2 ;
-</span><span style="color:#fdf4c1;">    server_name docspell.example.com ;
-</span><span style="color:#fdf4c1;">    location /.well-known/acme-challenge {
-</span><span style="color:#fdf4c1;">        root /var/data/nginx/ACME-PUBLIC;
-</span><span style="color:#fdf4c1;">        auth_basic off;
-</span><span style="color:#fdf4c1;">    }
-</span><span style="color:#fdf4c1;">    ssl_certificate /var/lib/acme/docspell.example.com/fullchain.pem;
-</span><span style="color:#fdf4c1;">    ssl_certificate_key /var/lib/acme/docspell.example.com/key.pem;
-</span><span style="color:#fdf4c1;">    ssl_trusted_certificate /var/lib/acme/docspell.example.com/full.pem;
-</span><span style="color:#fdf4c1;">    location / {
-</span><span style="color:#fdf4c1;">        proxy_pass http://192.168.1.11:7880;
-</span><span style="color:#fdf4c1;">        proxy_http_version 1.1;
-</span><span style="color:#fdf4c1;">        proxy_set_header Upgrade $http_upgrade;
-</span><span style="color:#fdf4c1;">        proxy_set_header Connection $connection_upgrade;
-</span><span style="color:#fdf4c1;">
-</span><span style="color:#fdf4c1;">        //client_max_body_size 40M; //to allow larger uploads
-</span><span style="color:#fdf4c1;">    }
-</span><span style="color:#fdf4c1;">}
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">server</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+    listen 0.0.0.0:80 ;
+    listen <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span>::<span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>:80 ;
+    server_name docspell.example.com ;
+    location /.well-known/acme-challenge <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+        root /var/data/nginx/ACME-PUBLIC;
+        auth_basic off;
+    <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+    location / <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+        return 301 https://<span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">host</span></span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">request_uri</span></span>;
+    <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+<span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">server</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+    listen 0.0.0.0:443 ssl http2 ;
+    listen <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span>::<span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>:443 ssl http2 ;
+    server_name docspell.example.com ;
+    location /.well-known/acme-challenge <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+        root /var/data/nginx/ACME-PUBLIC;
+        auth_basic off;
+    <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+    ssl_certificate /var/lib/acme/docspell.example.com/fullchain.pem;
+    ssl_certificate_key /var/lib/acme/docspell.example.com/key.pem;
+    ssl_trusted_certificate /var/lib/acme/docspell.example.com/full.pem;
+    location / <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+        proxy_pass http://192.168.1.11:7880;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">http_upgrade</span></span>;
+        proxy_set_header Connection <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">connection_upgrade</span></span>;
+
+        //client_max_body_size 40M; //to allow larger uploads
+    <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+<span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
 </span></code></pre>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  
 
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;install&#x2F;reverseproxy.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
-        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
-<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+                </div>
 
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#reverse-proxy" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Reverse Proxy
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#configuring-docspell" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Configuring Docspell
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#nginx" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Nginx
+                        </a>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -367,4 +835,5 @@ certificates and acts as a proxy for the application at
 <!-- / Fathom -->
 
     </body>
+
 </html>

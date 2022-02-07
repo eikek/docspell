@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,289 +32,616 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Two-Factor Authentication – Docspell Documentation</title>
+
+        <title>Two-Factor Authentication - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            Two-Factor Authentication
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <id id="search"></id>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;">Web-UI</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp&#x2F;">Two-Factor Authentication</a>
-                </li>
-            </ul>
-        </nav>
 
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            
+            <div class="flex-grow place-items-end">
 
-                            <p class="menu-label">
-                                Web-UI
-                            </p>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/uploading/"
-                                   >
-                                    Uploads
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/metadata/"
-                                   >
-                                    Meta Data
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/customfields/"
-                                   >
-                                    Custom Fields
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/curate/"
-                                   >
-                                    Curate Items
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/multiedit/"
-                                   >
-                                    Multi Edit
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/finding/"
-                                   >
-                                    Finding Items
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/bookmarks/"
-                                   >
-                                    Bookmarks
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/itemcard-customize/"
-                                   >
-                                    Customize Item Card
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/emailsettings/"
-                                   >
-                                    E-Mail Settings
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/mailitem/"
-                                   >
-                                    Send Items Via E-Mail
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/notification/"
-                                   >
-                                    Notifications
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/scanmailbox/"
-                                   >
-                                    Scan Mailboxes
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/processing/"
-                                   >
-                                    Processing Queue
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/autotagging/"
-                                   >
-                                    Auto Tagging
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/merge/"
-                                   >
-                                    Merge Items
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/totp/"
-                                   class="is-active">
-                                    Two-Factor Authentication
-                                </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp&#x2F;#setup">
-                                            Setup
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp&#x2F;#remove-2fa">
-                                            Remove 2FA
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp&#x2F;#when-secret-is-lost">
-                                            When secret is lost
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/share/"
-                                   >
-                                    Shares
-                                </a>
-                                
-                            </li>
-                            
-                        </ul>
-                    </div>
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
                 </div>
+            </div>
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <p>Docspell has built-in support for two-factor (2FA) authentication
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
+                
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  
+  <h1 id="totp">TOTP<a class="zola-anchor" href="#totp" aria-label="Anchor link for: totp">🔗</a></h1>
+<p>Docspell has built-in support for two-factor (2FA) authentication
 using
 <a href="https://en.wikipedia.org/wiki/Time-based_One-Time_Password">TOTP</a>s.
 For anything more, consider a dedicated account management tool and
 <a href="https://docspell.org/docs/configure/#openid-connect-oauth2">OpenID Connect</a>.</p>
-<h1 id="setup">Setup<a class="zola-anchor" href="#setup" aria-label="Anchor link for: setup">🔗</a></h1>
+<h2 id="setup">Setup<a class="zola-anchor" href="#setup" aria-label="Anchor link for: setup">🔗</a></h2>
 <p>A user can enable a TOTP as a second factor in their user settings. It
 is required to have some external device to hold the shared secret. A
 popular way is using your phone. Some Android apps are for example
@@ -316,13 +650,11 @@ popular way is using your phone. Some Android apps are for example
 and there are others as well.</p>
 <p>In user settings, go to <em>Two Factor Authentication</em> and click on
 <em>Activate two-factor authentication</em>. This then shows you a QR code:</p>
-<figure class="image">
-    
-    
-    
-    
-
-    <img src="https://docspell.org/docs/webapp/totp-01.png">
+<figure class="dark-block" title="totp-01_dark.png">
+    <img src="https://docspell.org/docs/webapp/totp-01_dark.png">
+</figure>
+<figure class="light-block" title="totp-01.png">
+    <img src="https://docspell.org/docs/webapp/totp-01.png" >
 </figure>
 <p>Open the app (or whatever you use) and scan the QR code. A new account
 is created and a 6-digit code will be shown to you. Enter this code in
@@ -333,35 +665,31 @@ shown again. Should you loose it (or your device where it is saved),
 you cannot log in anymore. See below for how to get into your account
 in this case.</p>
 <p>Once you typed in the code, the 2FA is enabled.</p>
-<figure class="image">
-    
-    
-    
-    
-
-    <img src="https://docspell.org/docs/webapp/totp-02.png">
+<figure class="dark-block" title="totp-02_dark.png">
+    <img src="https://docspell.org/docs/webapp/totp-02_dark.png">
+</figure>
+<figure class="light-block" title="totp-02.png">
+    <img src="https://docspell.org/docs/webapp/totp-02.png" >
 </figure>
 <p>When you now login, a second login form will be shown where you must
 now enter a one time password from the device.</p>
-<h1 id="remove-2fa">Remove 2FA<a class="zola-anchor" href="#remove-2fa" aria-label="Anchor link for: remove-2fa">🔗</a></h1>
+<h2 id="remove-2fa">Remove 2FA<a class="zola-anchor" href="#remove-2fa" aria-label="Anchor link for: remove-2fa">🔗</a></h2>
 <p>If you go to this page with 2FA enabled (refresh the page after
 finishing the setup), you can disable it. The secret will be removed
 from the database.</p>
 <p>It shows a form that allows you to disable 2FA again, but requires you
 to enter a one time password.</p>
-<figure class="image">
-    
-    
-    
-    
-
-    <img src="https://docspell.org/docs/webapp/totp-03.png">
+<figure class="dark-block" title="totp-03_dark.png">
+    <img src="https://docspell.org/docs/webapp/totp-03_dark.png">
+</figure>
+<figure class="light-block" title="totp-03.png">
+    <img src="https://docspell.org/docs/webapp/totp-03.png" >
 </figure>
 <p>If you have successfully disabled 2FA, you'll see the first screen
 where you can activate 2FA. You can remove the account from your
 device. Should you want to go back to 2FA, you need to go through the
 setup again and create a new secret.</p>
-<h1 id="when-secret-is-lost">When secret is lost<a class="zola-anchor" href="#when-secret-is-lost" aria-label="Anchor link for: when-secret-is-lost">🔗</a></h1>
+<h2 id="when-secret-is-lost">When secret is lost<a class="zola-anchor" href="#when-secret-is-lost" aria-label="Anchor link for: when-secret-is-lost">🔗</a></h2>
 <p>Should you loose your device where the secret is stored, you cannot
 log into docspell anymore. In this case you can use the <a href="https://docspell.org/docs/tools/cli/">command line
 client</a> to execute an admin command that removes
@@ -369,46 +697,94 @@ client</a> to execute an admin command that removes
 <p>For this to work, you need to <a href="https://docspell.org/docs/configure/#admin-endpoint">enable the admin
 endpoint</a>. Then execute the
 <code>disable-2fa</code> admin command and specify the complete account.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ dsc admin -a test123 disable-2fa --account demo
-</span><span>┌─────────┬──────────────────────┐
-</span><span>│ success │ message              │
-</span><span>├─────────┼──────────────────────┤
-</span><span>│ true    │ TOTP setup disabled. │
-</span><span>└─────────┴──────────────────────┘
+<pre class="z-code"><code><span class="z-text z-plain">$ dsc admin -a test123 disable-2fa --account demo
+┌─────────┬──────────────────────┐
+│ success │ message              │
+├─────────┼──────────────────────┤
+│ true    │ TOTP setup disabled. │
+└─────────┴──────────────────────┘
 </span></code></pre>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  
 
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;webapp&#x2F;totp.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
-        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
-<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+                </div>
 
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp&#x2F;#totp" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            TOTP
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp&#x2F;#setup" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Setup
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp&#x2F;#remove-2fa" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Remove 2FA
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;totp&#x2F;#when-secret-is-lost" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    When secret is lost
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -443,4 +819,5 @@ endpoint</a>. Then execute the
 <!-- / Fathom -->
 
     </body>
+
 </html>

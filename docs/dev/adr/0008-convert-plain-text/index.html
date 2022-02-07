@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,380 +32,689 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Convert Text Files – Docspell Documentation</title>
+
+        <title>Convert Text Files - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            Convert Text Files
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <id id="search"></id>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;">ADRs</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;">Convert Text Files</a>
-                </li>
-            </ul>
-        </nav>
 
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            
+            <div class="flex-grow place-items-end">
 
-                            <p class="menu-label">
-                                ADRs
-                            </p>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0000-use-markdown-architectural-decision-records/"
-                                   >
-                                    Use Markdown Architectural Decision Records
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0001-components/"
-                                   >
-                                    Components
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0002-component-interaction/"
-                                   >
-                                    Component Interaction
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0003-encryption/"
-                                   >
-                                    Encryption
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0004-iso8601vsepoch/"
-                                   >
-                                    Iso8601 Vs Millis As Date-Time Transfer
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0005-job-executor/"
-                                   >
-                                    Joex - Job Executor
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0006-more-file-types/"
-                                   >
-                                    More File Types
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0007-convert-html-files/"
-                                   >
-                                    Convert Html Files
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0008-convert-plain-text/"
-                                   class="is-active">
-                                    Convert Text Files
-                                </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#context-and-problem-statement">
-                                            Context and Problem Statement
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#considered-options">
-                                            Considered Options
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#flexmark-markdown-library-for-java">
-                                                    flexmark markdown library for java
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#pandoc">
-                                                    pandoc
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#decision-outcome">
-                                            Decision Outcome
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0009-convert-office-docs/"
-                                   >
-                                    Convert Office Documents
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0010-convert-image-files/"
-                                   >
-                                    Convert Image Files
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0011-extract-text/"
-                                   >
-                                    Extract Text From Files
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0012-periodic-tasks/"
-                                   >
-                                    Periodic Tasks
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0013-archive-files/"
-                                   >
-                                    Archive Files
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0014-fulltext-search-engine/"
-                                   >
-                                    Fulltext Search Engine
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0015-convert-pdf-files/"
-                                   >
-                                    Convert Pdf Files
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/adr/0016-custom-fields/"
-                                   >
-                                    Custom Fields
-                                </a>
-                                
-                            </li>
-                            
-                        </ul>
-                    </div>
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
                 </div>
+            </div>
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
+                
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  
+  <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
 <p>How can plain text and markdown documents be converted into a PDF
 files?</p>
 <p>Rendering images is not important here, since the files must be self
 contained when uploaded to Docspell.</p>
 <p>The test file is the current documentation page of Docspell, found in
 <code>microsite/docs/doc.md</code>.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>---
-</span><span>layout: docs
-</span><span>position: 4
-</span><span>title: Documentation
-</span><span>---
-</span><span>
-</span><span># {page .title}
-</span><span>
-</span><span>
-</span><span>Docspell assists in organizing large amounts of PDF files that are
-</span><span>...
-</span><span>
-</span><span>## How it works
-</span><span>
-</span><span>Documents have two ...
-</span><span>
-</span><span>1. You maintain a kind of address book. It should list all possible
-</span><span>   correspondents and the concerning people/things. This grows
-</span><span>   incrementally with each new unknown document.
-</span><span>2. When docspell analyzes a document, it tries to find matches within
-</span><span>   your address ...
-</span><span>3. You can inspect ...
-</span><span>
-</span><span>The set of meta data that docspell uses to draw suggestions from, must
-</span><span>be maintained ...
-</span><span>
-</span><span>
-</span><span>## Terms
-</span><span>
-</span><span>In order to better understand these pages, some terms should be
-</span><span>explained first.
-</span><span>
-</span><span>### Item
-</span><span>
-</span><span>An **Item** is roughly your (pdf) document, only that an item may span
-</span><span>multiple files, which are called **attachments**. And an item has
-</span><span>**meta data** associated:
-</span><span>
-</span><span>- a **correspondent**: the other side of the communication. It can be
-</span><span>  an organization or a person.
-</span><span>- a **concerning person** or **equipment**: a person or thing that
-</span><span>  this item is about. Maybe it is an insurance contract about your
-</span><span>  car.
-</span><span>- ...
-</span><span>
-</span><span>### Collective
-</span><span>
-</span><span>The users of the application are part of a **collective**. A
-</span><span>**collective** is a group of users that share access to the same
-</span><span>items. The account name is therefore comprised of a *collective name*
-</span><span>and a *user name*.
-</span><span>
-</span><span>All users of a collective are equal; they have same permissions to
-</span><span>access all...
+<pre class="z-code"><code><span class="z-text z-plain">---
+layout: docs
+position: 4
+title: Documentation
+---
+
+# {page .title}
+
+
+Docspell assists in organizing large amounts of PDF files that are
+...
+
+## How it works
+
+Documents have two ...
+
+1. You maintain a kind of address book. It should list all possible
+   correspondents and the concerning people/things. This grows
+   incrementally with each new unknown document.
+2. When docspell analyzes a document, it tries to find matches within
+   your address ...
+3. You can inspect ...
+
+The set of meta data that docspell uses to draw suggestions from, must
+be maintained ...
+
+
+## Terms
+
+In order to better understand these pages, some terms should be
+explained first.
+
+### Item
+
+An **Item** is roughly your (pdf) document, only that an item may span
+multiple files, which are called **attachments**. And an item has
+**meta data** associated:
+
+- a **correspondent**: the other side of the communication. It can be
+  an organization or a person.
+- a **concerning person** or **equipment**: a person or thing that
+  this item is about. Maybe it is an insurance contract about your
+  car.
+- ...
+
+### Collective
+
+The users of the application are part of a **collective**. A
+**collective** is a group of users that share access to the same
+items. The account name is therefore comprised of a *collective name*
+and a *user name*.
+
+All users of a collective are equal; they have same permissions to
+access all...
 </span></code></pre>
 <p>Then a plain text file is tried, too (without any markup).</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>Maecenas mauris lectus, lobortis et purus mattis
-</span><span>
-</span><span>Duis vehicula mi vel mi pretium
-</span><span>
-</span><span>In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu.
-</span><span>
-</span><span>Pellentesque scelerisque fermentum erat, id posuere justo pulvinar ut.
-</span><span>Cras id eros sed enim aliquam lobortis. Sed lobortis nisl ut eros
-</span><span>efficitur tincidunt. Cras justo mi, porttitor quis mattis vel,
-</span><span>ultricies ut purus. Ut facilisis et lacus eu cursus.
-</span><span>
-</span><span>In eleifend velit vitae libero sollicitudin euismod:
-</span><span>
-</span><span>- Fusce vitae vestibulum velit,
-</span><span>- Pellentesque vulputate lectus quis pellentesque commodo
-</span><span>
-</span><span>the end.
+<pre class="z-code"><code><span class="z-text z-plain">Maecenas mauris lectus, lobortis et purus mattis
+
+Duis vehicula mi vel mi pretium
+
+In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu.
+
+Pellentesque scelerisque fermentum erat, id posuere justo pulvinar ut.
+Cras id eros sed enim aliquam lobortis. Sed lobortis nisl ut eros
+efficitur tincidunt. Cras justo mi, porttitor quis mattis vel,
+ultricies ut purus. Ut facilisis et lacus eu cursus.
+
+In eleifend velit vitae libero sollicitudin euismod:
+
+- Fusce vitae vestibulum velit,
+- Pellentesque vulputate lectus quis pellentesque commodo
+
+the end.
 </span></code></pre>
 <h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
 <ul>
@@ -411,83 +727,83 @@ HTML, then use existing machinery described in <a href="https://docspell.org/doc
 <p>Process files with <a href="https://github.com/vsch/flexmark-java">flexmark</a>
 and then create a PDF from the resulting html.</p>
 <p>Using the following snippet:</p>
-<pre data-lang="scala" style="background-color:#282828;color:#fdf4c1aa;" class="language-scala "><code class="language-scala" data-lang="scala"><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">renderMarkdown</span><span>(): </span><span style="color:#8ec07c;">ExitCode </span><span style="color:#fe8019;">= </span><span>{
-</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">opts </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">new </span><span style="color:#8ec07c;">MutableDataSet</span><span>()
-</span><span>    opts.set(</span><span style="color:#fabd2f;">Parser</span><span>.</span><span style="color:#fabd2f;">EXTENSIONS</span><span>.asInstanceOf[</span><span style="color:#8ec07c;">DataKey</span><span>[</span><span style="color:#fabd2f;">util</span><span>.</span><span style="color:#8ec07c;">Collection</span><span>[</span><span style="color:#fdf4c1;">_</span><span>]]],
-</span><span>      util.</span><span style="color:#fabd2f;">Arrays</span><span>.asList(</span><span style="color:#fabd2f;">TablesExtension</span><span>.create(),
-</span><span>      </span><span style="color:#fabd2f;">StrikethroughExtension</span><span>.create()));
-</span><span>
-</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">parser </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Parser</span><span>.builder(opts).build()
-</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">renderer </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">HtmlRenderer</span><span>.builder(opts).build()
-</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">reader </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">Files</span><span>.newBufferedReader(</span><span style="color:#fabd2f;">Paths</span><span>.get(</span><span style="color:#b8bb26;">&quot;in.txt|md&quot;</span><span>))
-</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">doc </span><span style="color:#fe8019;">=</span><span> parser.parseReader(reader)
-</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">html </span><span style="color:#fe8019;">=</span><span> renderer.render(doc)
-</span><span>    </span><span style="color:#fa5c4b;">val </span><span style="color:#fdf4c1;">body </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body style=\&quot;padding: 0 5em;\&quot;&gt;&quot;</span><span> + html + </span><span style="color:#b8bb26;">&quot;&lt;/body&gt;&lt;/html&gt;&quot;
-</span><span>    </span><span style="color:#fabd2f;">Files</span><span>.write(
-</span><span>      </span><span style="color:#fabd2f;">Paths</span><span>.get(</span><span style="color:#b8bb26;">&quot;test.html&quot;</span><span>),
-</span><span>      body.getBytes(</span><span style="color:#fabd2f;">StandardCharsets</span><span>.</span><span style="color:#fabd2f;">UTF_8</span><span>))
-</span><span>
-</span><span>    </span><span style="color:#fabd2f;">ExitCode</span><span>.</span><span style="color:#fabd2f;">Success
-</span><span>  }
+<pre data-lang="scala" class="language-scala z-code"><code class="language-scala" data-lang="scala"><span class="z-source z-scala"><span class="z-storage z-type z-function z-scala">def</span> <span class="z-entity z-name z-function z-scala">renderMarkdown</span><span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-ascription z-scala">:</span> <span class="z-support z-class z-scala">ExitCode</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-meta z-block z-scala"><span class="z-punctuation z-section z-block z-begin z-scala">{</span>
+    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">opts</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-keyword z-other z-scala">new</span> <span class="z-support z-class z-scala">MutableDataSet</span><span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+    opts<span class="z-punctuation z-accessor z-scala">.</span>set<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">Parser</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">EXTENSIONS</span><span class="z-punctuation z-accessor z-scala">.</span>asInstanceOf<span class="z-meta z-generic z-scala"><span class="z-punctuation z-definition z-generic z-begin z-scala">[</span><span class="z-support z-class z-scala">DataKey</span><span class="z-punctuation z-definition z-generic z-begin z-scala">[</span><span class="z-support z-type z-scala">util</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-class z-scala">Collection</span><span class="z-punctuation z-definition z-generic z-begin z-scala">[</span><span class="z-variable z-language z-underscore z-scala">_</span><span class="z-punctuation z-definition z-generic z-end z-scala">]</span><span class="z-punctuation z-definition z-generic z-end z-scala">]</span><span class="z-punctuation z-definition z-generic z-end z-scala">]</span></span><span class="z-punctuation z-separator z-scala">,</span>
+      util<span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">Arrays</span><span class="z-punctuation z-accessor z-scala">.</span>asList<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">TablesExtension</span><span class="z-punctuation z-accessor z-scala">.</span>create<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-separator z-scala">,</span>
+      <span class="z-support z-constant z-scala">StrikethroughExtension</span><span class="z-punctuation z-accessor z-scala">.</span>create<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-terminator z-scala">;</span>
+
+    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">parser</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-support z-constant z-scala">Parser</span><span class="z-punctuation z-accessor z-scala">.</span>builder<span class="z-punctuation z-section z-group z-begin z-scala">(</span>opts<span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-accessor z-scala">.</span>build<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">renderer</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-support z-constant z-scala">HtmlRenderer</span><span class="z-punctuation z-accessor z-scala">.</span>builder<span class="z-punctuation z-section z-group z-begin z-scala">(</span>opts<span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-accessor z-scala">.</span>build<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">reader</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-support z-constant z-scala">Files</span><span class="z-punctuation z-accessor z-scala">.</span>newBufferedReader<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">Paths</span><span class="z-punctuation z-accessor z-scala">.</span>get<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>in.txt|md<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">doc</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> parser<span class="z-punctuation z-accessor z-scala">.</span>parseReader<span class="z-punctuation z-section z-group z-begin z-scala">(</span>reader<span class="z-punctuation z-section z-group z-end z-scala">)</span>
+    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">html</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> renderer<span class="z-punctuation z-accessor z-scala">.</span>render<span class="z-punctuation z-section z-group z-begin z-scala">(</span>doc<span class="z-punctuation z-section z-group z-end z-scala">)</span>
+    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">body</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body style=<span class="z-constant z-character z-escape z-scala">\&quot;</span>padding: 0 5em;<span class="z-constant z-character z-escape z-scala">\&quot;</span>&gt;<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span> + html + <span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>&lt;/body&gt;&lt;/html&gt;<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span>
+    <span class="z-support z-constant z-scala">Files</span><span class="z-punctuation z-accessor z-scala">.</span>write<span class="z-punctuation z-section z-group z-begin z-scala">(</span>
+      <span class="z-support z-constant z-scala">Paths</span><span class="z-punctuation z-accessor z-scala">.</span>get<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>test.html<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-separator z-scala">,</span>
+      body<span class="z-punctuation z-accessor z-scala">.</span>getBytes<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">StandardCharsets</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">UTF_8</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+
+    <span class="z-support z-constant z-scala">ExitCode</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">Success</span>
+  <span class="z-punctuation z-section z-block z-end z-scala">}</span></span>
 </span></code></pre>
 <p>Then run the result through <code>wkhtmltopdf</code>.</p>
 <p>Markdown file:</p>
-<figure class="image">
+<figure>
     
     
     
     
 
-    <img src="https://docspell.org/docs/dev/adr/example-md-java.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-md-java.jpg" >
 </figure>
 <p>TXT file:</p>
-<figure class="image">
+<figure>
     
     
     
     
 
-    <img src="https://docspell.org/docs/dev/adr/example-txt-java.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-txt-java.jpg" >
 </figure>
 <h2 id="pandoc">pandoc<a class="zola-anchor" href="#pandoc" aria-label="Anchor link for: pandoc">🔗</a></h2>
 <p>Command:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>pandoc -f markdown -t html -o test.pdf microsite/docs/doc.md
+<pre class="z-code"><code><span class="z-text z-plain">pandoc -f markdown -t html -o test.pdf microsite/docs/doc.md
 </span></code></pre>
 <p>Markdown/Latex:</p>
-<figure class="image">
+<figure>
     
     
     
     
 
-    <img src="https://docspell.org/docs/dev/adr/example-md-pandoc-latex.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-md-pandoc-latex.jpg" >
 </figure>
 <p>Markdown/Html:</p>
-<figure class="image">
+<figure>
     
     
     
     
 
-    <img src="https://docspell.org/docs/dev/adr/example-md-pandoc-html.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-md-pandoc-html.jpg" >
 </figure>
 <p>Text/Latex:</p>
-<figure class="image">
+<figure>
     
     
     
     
 
-    <img src="https://docspell.org/docs/dev/adr/example-txt-pandoc-latex.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-txt-pandoc-latex.jpg" >
 </figure>
 <p>Text/Html:</p>
-<figure class="image">
+<figure>
     
     
     
     
 
-    <img src="https://docspell.org/docs/dev/adr/example-txt-pandoc-html.jpg">
+    <img src="https://docspell.org/docs/dev/adr/example-txt-pandoc-html.jpg" >
 </figure>
 <h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
 <p>Java library &quot;flexmark&quot;.</p>
@@ -501,38 +817,98 @@ with options and css to make it look better.</p>
 <p>To not introduce another external command, decision is to use flexmark
 and then the already existing html-&gt;pdf conversion.</p>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  
 
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;dev&#x2F;adr&#x2F;0008_convert_plain_text.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
-        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
-<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+                </div>
 
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#context-and-problem-statement" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Context and Problem Statement
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#considered-options" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Considered Options
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#flexmark-markdown-library-for-java" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    flexmark markdown library for java
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#pandoc" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    pandoc
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0008-convert-plain-text&#x2F;#decision-outcome" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Decision Outcome
+                        </a>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -567,4 +943,5 @@ and then the already existing html-&gt;pdf conversion.</p>
 <!-- / Fathom -->
 
     </body>
+
 </html>

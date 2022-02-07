@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,142 +32,610 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>JSON (mini) query – Docspell Documentation</title>
+
+        <title>JSON (mini) query - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
         <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
 <script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
 <script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
 <script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
 
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            JSON (mini) query
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <div id="search"></div>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
+
+            <div class="flex-grow place-items-end">
+
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
                 
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;">JSON (mini) query</a>
-                </li>
-            </ul>
-        </nav>
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
         
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#structure">
-                                    Structure
-                                </a>
-                                <ul>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#field-selection">
-                                            Field selection
-                                        </a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#array-selection">
-                                            Array selection
-                                        </a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#matching-values">
-                                            Matching Values
-                                        </a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#combining">
-                                            Combining
-                                        </a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#example-walkthrough">
-                                            Example walkthrough
-                                        </a>
-                                    </li>
-                                    
-                                </ul>
-                            </li>
-                            
-                            <li>
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#sample-json">
-                                    Sample JSON
-                                </a>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-                            
-                        </ul>
-                    </div>
-                </div>
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <p>A &quot;JSON mini query&quot; is a simple expression that evaluates to <code>true</code> or
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  <h1 id="json-miniquery">JSON Miniquery</h1>
+<p>A &quot;JSON mini query&quot; is a simple expression that evaluates to <code>true</code> or
 <code>false</code> for any given JSON value.</p>
 <p>It is used in docspell to filter notification events.</p>
 <p>The examples shown here assume the JSON at <a href="https://docspell.org/docs/jsonminiquery/#sample-json">the end of this
@@ -191,38 +666,38 @@ empty list or not.</p>
 <p>The simplest segment is just a field name. It looks up the field name
 in the current JSON result and replaces each element in the result
 with the value at that field.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: a
-</span><span>current result: [{&quot;a&quot;:1,&quot;b&quot;:2}, {&quot;a&quot;:5, &quot;b&quot;:2}]
-</span><span>next result: [1, 5]
+<pre class="z-code"><code><span class="z-text z-plain">query: a
+current result: [{&quot;a&quot;:1,&quot;b&quot;:2}, {&quot;a&quot;:5, &quot;b&quot;:2}]
+next result: [1, 5]
 </span></code></pre>
 <p>You can select multiple fields at once by separating names by comma.
 This simply combines all results into a list:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: a,b
-</span><span>current result: [{&quot;a&quot;:1,&quot;b&quot;:2}, {&quot;a&quot;:5, &quot;b&quot;:2}]
-</span><span>next result: [1, 2, 5, 2]
+<pre class="z-code"><code><span class="z-text z-plain">query: a,b
+current result: [{&quot;a&quot;:1,&quot;b&quot;:2}, {&quot;a&quot;:5, &quot;b&quot;:2}]
+next result: [1, 2, 5, 2]
 </span></code></pre>
 <p>You can use dot-notation combining several field selection segments to
 select elements deeper in the JSON:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: a.b.x,y
-</span><span>current result:
-</span><span>  [{&quot;a&quot;: {&quot;b&quot;: {&quot;x&quot;: 1, &quot;y&quot;: 2}}, &quot;v&quot;: 0},
-</span><span>   {&quot;a&quot;: {&quot;b&quot;: {&quot;y&quot;: 9, &quot;b&quot;: 2}}, &quot;z&quot;: 0}]
-</span><span>next result: [1, 2, 9]
+<pre class="z-code"><code><span class="z-text z-plain">query: a.b.x,y
+current result:
+  [{&quot;a&quot;: {&quot;b&quot;: {&quot;x&quot;: 1, &quot;y&quot;: 2}}, &quot;v&quot;: 0},
+   {&quot;a&quot;: {&quot;b&quot;: {&quot;y&quot;: 9, &quot;b&quot;: 2}}, &quot;z&quot;: 0}]
+next result: [1, 2, 9]
 </span></code></pre>
 <h2 id="array-selection">Array selection</h2>
 <p>When looking at an array, you can select specific elements by their
 indexes. To distinguish it from field selection, you must surround it
 by parens:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: (0,2)
-</span><span>current result: [[1,2,3,4]]
-</span><span>next result: [1,3]
+<pre class="z-code"><code><span class="z-text z-plain">query: (0,2)
+current result: [[1,2,3,4]]
+next result: [1,3]
 </span></code></pre>
 <p>If you combine field selection and array selection, keep in mind that
 a previous field selection combines both arrays into one before array
 selection is used!</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: a(0,2)
-</span><span>current result: [{&quot;a&quot;: [10,9,8,7]}, {&quot;a&quot;: [1,2,3,4]}]
-</span><span>next result: [10,8]
+<pre class="z-code"><code><span class="z-text z-plain">query: a(0,2)
+current result: [{&quot;a&quot;: [10,9,8,7]}, {&quot;a&quot;: [1,2,3,4]}]
+next result: [10,8]
 </span></code></pre>
 <h2 id="matching-values">Matching Values</h2>
 <p>You can filter elements of the current result based on their value.
@@ -237,16 +712,16 @@ or double quotes. If you want to check for <code>null</code> use the special
 <code>*null*</code> value.</p>
 <p>The match will be applied to all elements in the current result and
 filters out those that don't match.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: =blue
-</span><span>current result: [&quot;blue&quot;, &quot;green&quot;, &quot;red&quot;]
-</span><span>next result: [&quot;blue&quot;]
+<pre class="z-code"><code><span class="z-text z-plain">query: =blue
+current result: [&quot;blue&quot;, &quot;green&quot;, &quot;red&quot;]
+next result: [&quot;blue&quot;]
 </span></code></pre>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: color=blue
-</span><span>current result:
-</span><span>    [{&quot;color&quot;: &quot;blue&quot;, &quot;count&quot;: 2},
-</span><span>     {&quot;color&quot;: &quot;blue&quot;, &quot;count&quot;: 1},
-</span><span>     {&quot;color&quot;: &quot;red&quot;, &quot;count&quot;: 3}]
-</span><span>next result:[&quot;blue&quot;, &quot;blue&quot;]
+<pre class="z-code"><code><span class="z-text z-plain">query: color=blue
+current result:
+    [{&quot;color&quot;: &quot;blue&quot;, &quot;count&quot;: 2},
+     {&quot;color&quot;: &quot;blue&quot;, &quot;count&quot;: 1},
+     {&quot;color&quot;: &quot;red&quot;, &quot;count&quot;: 3}]
+next result:[&quot;blue&quot;, &quot;blue&quot;]
 </span></code></pre>
 <h2 id="combining">Combining</h2>
 <p>The above expressions can be combined by writing one after the other,
@@ -260,39 +735,39 @@ not empty; otherwise the result is the empty list.</p>
 <p>This example filters all <code>count</code> equal to <code>6</code> and all <code>name</code> equal to
 <code>max</code>. Since there are no <code>count</code>s with value <code>6</code>, the final result is
 empty.</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: [count=6 &amp; name=max]
-</span><span>current result:
-</span><span>  [{&quot;name&quot;:&quot;max&quot;, &quot;count&quot;:4},
-</span><span>   {&quot;name&quot;:&quot;me&quot;, &quot;count&quot;: 3},
-</span><span>   {&quot;name&quot;:&quot;max&quot;, &quot;count&quot;: 3}
-</span><span>  ]
-</span><span>next result: []
+<pre class="z-code"><code><span class="z-text z-plain">query: [count=6 &amp; name=max]
+current result:
+  [{&quot;name&quot;:&quot;max&quot;, &quot;count&quot;:4},
+   {&quot;name&quot;:&quot;me&quot;, &quot;count&quot;: 3},
+   {&quot;name&quot;:&quot;max&quot;, &quot;count&quot;: 3}
+  ]
+next result: []
 </span></code></pre>
 <p>Using <code>|</code> for combining lets all the <code>max</code> values through:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>query: [count=6 &amp; name=max]
-</span><span>current result:
-</span><span>  [{&quot;name&quot;:&quot;max&quot;, &quot;count&quot;:4},
-</span><span>   {&quot;name&quot;:&quot;me&quot;, &quot;count&quot;: 3},
-</span><span>   {&quot;name&quot;:&quot;max&quot;, &quot;count&quot;: 3}
-</span><span>  ]
-</span><span>next result: [&quot;max&quot;, &quot;max&quot;]
+<pre class="z-code"><code><span class="z-text z-plain">query: [count=6 &amp; name=max]
+current result:
+  [{&quot;name&quot;:&quot;max&quot;, &quot;count&quot;:4},
+   {&quot;name&quot;:&quot;me&quot;, &quot;count&quot;: 3},
+   {&quot;name&quot;:&quot;max&quot;, &quot;count&quot;: 3}
+  ]
+next result: [&quot;max&quot;, &quot;max&quot;]
 </span></code></pre>
 <h2 id="example-walkthrough">Example walkthrough</h2>
 <p>Let's look at an example:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>content.added,removed[name=Invoice | category=expense]
+<pre class="z-code"><code><span class="z-text z-plain">content.added,removed[name=Invoice | category=expense]
 </span></code></pre>
 <p>Starting out with the root JSON document, a list is created containing
 it as the only element:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>( {&quot;eventType&quot;: &quot;TagsChanged&quot;, &quot;content: {…}, …} )
+<pre class="z-code"><code><span class="z-text z-plain">( {&quot;eventType&quot;: &quot;TagsChanged&quot;, &quot;content: {…}, …} )
 </span></code></pre>
 <p>Then the field <code>content</code> is selected. This changes the list to contain
 this sub-document:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>( {&quot;account&quot;: &quot;demo&quot;, &quot;added&quot;:[…], &quot;removed&quot;:[…], …} )
+<pre class="z-code"><code><span class="z-text z-plain">( {&quot;account&quot;: &quot;demo&quot;, &quot;added&quot;:[…], &quot;removed&quot;:[…], …} )
 </span></code></pre>
 <p>Then two fields are selected. They both select arrays. Both results
 are combined into a single list and arrays are flattened. So the
 result after <code>content.added,removed</code> looks like this:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>( {&quot;id&quot;:&quot;Fy4…&quot;,name=&quot;…&quot;,category=&quot;…&quot;}, {&quot;id&quot;:&quot;7zae…&quot;,…}, {&quot;id&quot;:&quot;GbXg…&quot;,…} )
+<pre class="z-code"><code><span class="z-text z-plain">( {&quot;id&quot;:&quot;Fy4…&quot;,name=&quot;…&quot;,category=&quot;…&quot;}, {&quot;id&quot;:&quot;7zae…&quot;,…}, {&quot;id&quot;:&quot;GbXg…&quot;,…} )
 </span></code></pre>
 <p>At last, the remaining elements are filtered. It resolve all <code>name</code>
 fields and keeps only <code>invoice</code> values. It also resolves <code>category</code>
@@ -301,85 +776,167 @@ one. The final result is then <code>[&quot;Invoice&quot;, &quot;expense&quot;]</
 the sample json data below.</p>
 <h1 id="sample-json">Sample JSON</h1>
 <p>Some examples assume the following JSON:</p>
-<pre data-lang="json" style="background-color:#282828;color:#fdf4c1aa;" class="language-json "><code class="language-json" data-lang="json"><span>{
-</span><span>  </span><span style="color:#b8bb26;">&quot;eventType&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;TagsChanged&quot;</span><span>,
-</span><span>  </span><span style="color:#b8bb26;">&quot;account&quot;</span><span>: {
-</span><span>    </span><span style="color:#b8bb26;">&quot;collective&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;demo&quot;</span><span>,
-</span><span>    </span><span style="color:#b8bb26;">&quot;user&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;demo&quot;</span><span>,
-</span><span>    </span><span style="color:#b8bb26;">&quot;login&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;demo&quot;
-</span><span>  },
-</span><span>  </span><span style="color:#b8bb26;">&quot;content&quot;</span><span>: {
-</span><span>    </span><span style="color:#b8bb26;">&quot;account&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;demo&quot;</span><span>,
-</span><span>    </span><span style="color:#b8bb26;">&quot;items&quot;</span><span>: [
-</span><span>      {
-</span><span>        </span><span style="color:#b8bb26;">&quot;id&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;4PvMM4m7Fwj-FsPRGxYt9zZ-uUzi35S2rEX-usyDEVyheR8&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;name&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;MapleSirupLtd_202331.pdf&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;dateMillis&quot;</span><span>: </span><span style="color:#d3869b;">1633557740733</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;date&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;2021-10-06&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;incoming&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;state&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;dueDateMillis&quot;</span><span>: </span><span style="color:#d3869b;">1639173740733</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;2021-12-10&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;source&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;overDue&quot;</span><span>: </span><span style="color:#d3869b;">false</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;dueIn&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;in 3 days&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Acme AG&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span>: </span><span style="color:#d3869b;">null
-</span><span>      }
-</span><span>    ],
-</span><span>    </span><span style="color:#b8bb26;">&quot;added&quot;</span><span>: [
-</span><span>      {
-</span><span>        </span><span style="color:#b8bb26;">&quot;id&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Fy4VC6hQwcL-oynrHaJg47D-Q5RiQyB5PQP-N5cFJ368c4N&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;name&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Invoice&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;category&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;doctype&quot;
-</span><span>      },
-</span><span>      {
-</span><span>        </span><span style="color:#b8bb26;">&quot;id&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;7zaeU6pqVym-6Je3Q36XNG2-ZdBTFSVwNjc-pJRXciTMP3B&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;name&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Grocery&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;category&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;expense&quot;
-</span><span>      }
-</span><span>    ],
-</span><span>    </span><span style="color:#b8bb26;">&quot;removed&quot;</span><span>: [
-</span><span>      {
-</span><span>        </span><span style="color:#b8bb26;">&quot;id&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;GbXgszdjBt4-zrzuLHoUx7N-RMFatC8CyWt-5dsBCvxaEuW&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;name&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;Receipt&quot;</span><span>,
-</span><span>        </span><span style="color:#b8bb26;">&quot;category&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;doctype&quot;
-</span><span>      }
-</span><span>    ],
-</span><span>    </span><span style="color:#b8bb26;">&quot;itemUrl&quot;</span><span>: </span><span style="color:#b8bb26;">&quot;http://localhost:7880/app/item&quot;
-</span><span>  }
-</span><span>}
+<pre data-lang="json" class="language-json z-code"><code class="language-json" data-lang="json"><span class="z-source z-json"><span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span>
+  </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>eventType<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>TagsChanged<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+  </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>account<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span>
+    </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>collective<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>demo<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+    </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>user<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>demo<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+    </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>login<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>demo<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span>
+  <span class="z-punctuation z-section z-mapping z-end z-json">}</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+  </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>content<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span>
+    </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>account<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>demo<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+    </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>items<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-meta z-sequence z-json"><span class="z-punctuation z-section z-sequence z-begin z-json">[</span>
+      <span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>4PvMM4m7Fwj-FsPRGxYt9zZ-uUzi35S2rEX-usyDEVyheR8<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>MapleSirupLtd_202331.pdf<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>dateMillis<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-constant z-numeric z-integer z-decimal z-json">1633557740733</span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>date<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>2021-10-06<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>direction<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>incoming<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>state<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>confirmed<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>dueDateMillis<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-constant z-numeric z-integer z-decimal z-json">1639173740733</span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>dueDate<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>2021-12-10<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>source<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>webapp<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>overDue<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-constant z-language z-json">false</span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>dueIn<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>in 3 days<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>corrOrg<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>Acme AG<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>notes<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-constant z-language z-json">null</span>
+      <span class="z-punctuation z-section z-mapping z-end z-json">}</span></span>
+    <span class="z-punctuation z-section z-sequence z-end z-json">]</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+    </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>added<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-meta z-sequence z-json"><span class="z-punctuation z-section z-sequence z-begin z-json">[</span>
+      <span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>Fy4VC6hQwcL-oynrHaJg47D-Q5RiQyB5PQP-N5cFJ368c4N<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>Invoice<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>category<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>doctype<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span>
+      <span class="z-punctuation z-section z-mapping z-end z-json">}</span></span><span class="z-punctuation z-separator z-sequence z-json">,</span>
+      <span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>7zaeU6pqVym-6Je3Q36XNG2-ZdBTFSVwNjc-pJRXciTMP3B<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>Grocery<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>category<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>expense<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span>
+      <span class="z-punctuation z-section z-mapping z-end z-json">}</span></span>
+    <span class="z-punctuation z-section z-sequence z-end z-json">]</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+    </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>removed<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-meta z-sequence z-json"><span class="z-punctuation z-section z-sequence z-begin z-json">[</span>
+      <span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>GbXgszdjBt4-zrzuLHoUx7N-RMFatC8CyWt-5dsBCvxaEuW<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>Receipt<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+        </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>category<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>doctype<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span>
+      <span class="z-punctuation z-section z-mapping z-end z-json">}</span></span>
+    <span class="z-punctuation z-section z-sequence z-end z-json">]</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+    </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>itemUrl<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>http://localhost:7880/app/item<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span>
+  <span class="z-punctuation z-section z-mapping z-end z-json">}</span></span>
+<span class="z-punctuation z-section z-mapping z-end z-json">}</span></span>
 </span></code></pre>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
+  
+  
 
-        
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;jsonminiquery&#x2F;_index.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
+                </div>
+
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#json-miniquery" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            JSON Miniquery
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#structure" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Structure
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#field-selection" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Field selection
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#array-selection" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Array selection
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#matching-values" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Matching Values
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#combining" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Combining
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#example-walkthrough" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Example walkthrough
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;jsonminiquery&#x2F;#sample-json" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Sample JSON
+                        </a>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -414,4 +971,5 @@ the sample json data below.</p>
 <!-- / Fathom -->
 
     </body>
+
 </html>

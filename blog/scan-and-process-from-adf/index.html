@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Docspell is a Document Management System (DMS), a system that asists in organizing your piles of documents, resulting from scanners, e-mails and other sources with miminal effort.">
+<meta name="keywords" content="document management system dms organizer ocr open source free scan pdf word doc archive gpl machine learning nlp auto tagging"/>
+<meta name="robots" content="index,follow"/>
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Preproces Scans before upload - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+
+        <title>Preproces Scans before upload - Docspell Blog</title>
+        <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
+    </head>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
+
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
+                </div>
+            </div>
+
+            <div class="flex-grow place-items-end">
+
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+<div class="flex flex-row space-x-2 -mb-6 mt-6 text-sm opacity-70 font-medium">
+    
+    
+    
+    
+    <div class="" title="by @eresturo">
+        by
+        
+        <a href="https:&#x2F;&#x2F;github.com&#x2F;eresturo">@eresturo</a>
+        
+    </div>
+    <div class="" title="Created on 2021-01-09">
+        on
+        2021-01-09
+    </div>
+</div>
+
+<h1 id="preproces-scans-before-upload">Preproces Scans before upload<a class="zola-anchor" href="#preproces-scans-before-upload" aria-label="Anchor link for: preproces-scans-before-upload">🔗</a></h1>
+<p>This script scans from the ADF (Automatic Document Feeder),
+preprocesses it and uploads it to Docspell:
+<a href="https://github.com/eresturo/scanadf2docspell">scanadf2docspell</a></p>
+<span id="continue-reading"></span><figure>
+<img src="https://github.com/eresturo/scanadf2docspell/raw/main/overview.png">
+</figure>
+<p>I don't know if this is helpful to other Docspell users, but feel free
+to link to it in the Docspell documentation.</p>
+<p>Any suggestions or missing features?</p>
+<p>Sheers eresturo</p>
+
+
+<div class="grid grid-cols-1 sm:grid-cols-2 items-center pt-6 mt-14 border-t dark:border-stone-700">
+
+    <div class="flex items-center flex-col sm:flex-row" title="Previous post">
+        
+    </div>
+
+    <div class="flex items-center flex-col sm:flex-row justify-end"  title="Next post">
+        
+        
+        <div class="italic my-2 mr-2"> Upload directly from the browser or email client </div>
+        <a class="no-default button1 my-auto" href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;alternative-upload-from-browser&#x2F;">
+            <i class="fa fa-chevron-right"></i>
+        </a>
+        
+    </div>
+
+</div>
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/blog&#x2F;2021-01-09_scan-and-process-from-adf.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
+    </div>
+    
+    </div>
+
+    
+</footer>
+
+                </div>
+
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;scan-and-process-from-adf&#x2F;#preproces-scans-before-upload" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Preproces Scans before upload
+                        </a>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+    </body>
+
+</html>

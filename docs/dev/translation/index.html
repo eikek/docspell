@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,221 +32,611 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Translating Web-UI – Docspell Documentation</title>
+
+        <title>Translating Web-UI - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            Translating Web-UI
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <id id="search"></id>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;">Development</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;">Translating Web-UI</a>
-                </li>
-            </ul>
-        </nav>
 
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            
+            <div class="flex-grow place-items-end">
 
-                            <p class="menu-label">
-                                Development
-                            </p>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/building/"
-                                   >
-                                    Building Docspell
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/translation/"
-                                   class="is-active">
-                                    Translating Web-Ui
-                                </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#tl-dr">
-                                            TL;DR
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#prepare">
-                                            Prepare
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#checkout-the-source-code">
-                                                    Checkout the source code
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#start-the-application">
-                                                    Start the application
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#make-webui-updates-faster">
-                                                    Make webui updates faster
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#find-the-webapp-sources">
-                                                    Find the webapp sources
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#example-add-german">
-                                            Example: Add German
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#add-the-new-language">
-                                                    Add the new language
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#translating">
-                                                    Translating
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#publishing">
-                                            Publishing
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#github-pr">
-                                                    Github PR
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#e-mail">
-                                                    E-Mail
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#any-other">
-                                                    Any other
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/dev/development/"
-                                   >
-                                    Tips &amp; Setup
-                                </a>
-                                
-                            </li>
-                            
-                        </ul>
-                    </div>
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
                 </div>
+            </div>
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <p>Help with translating the web-ui is greatly appreciated. I can only
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
+                
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  
+  <h1 id="ui-translation">UI Translation<a class="zola-anchor" href="#ui-translation" aria-label="Anchor link for: ui-translation">🔗</a></h1>
+<p>Help with translating the web-ui is greatly appreciated. I can only
 provide translations for English and German, and these may be wrong -
 so pointing out mistakes is also appreciated :).</p>
 <p>Here is a detailed walkthrough for adding a new language. It requires
@@ -248,7 +645,7 @@ programmer, you will be comfortable as it's not difficult for this
 task. Elm is also a nice and friendly language, provding helpful error
 messages.</p>
 <p>This guide assumes no knowledge about Elm at all.</p>
-<h1 id="tl-dr">TL;DR<a class="zola-anchor" href="#tl-dr" aria-label="Anchor link for: tl-dr">🔗</a></h1>
+<h2 id="tl-dr">TL;DR<a class="zola-anchor" href="#tl-dr" aria-label="Anchor link for: tl-dr">🔗</a></h2>
 <p>If you are already familiar with Elm, here is the TL;DR:</p>
 <ol>
 <li>Goto <code>Messages.UiLanguage</code> in <code>modules/webapp/src/main/elm</code> and add
@@ -270,49 +667,49 @@ your editor of choice.</p>
 translating, just start the application.</p>
 <p>Use git to clone the docspell repository to your machine. In a
 terminal type:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ git clone https://github.com/eikek/docspell.git
-</span><span style="color:#fdf4c1;">Cloning into </span><span style="color:#b8bb26;">&#39;docspell&#39;</span><span style="color:#fdf4c1;">...
-</span><span style="color:#fdf4c1;">remote: Enumerating objects: 1861, done.
-</span><span style="color:#fdf4c1;">remote: Counting objects: 100% (1861/1861</span><span>)</span><span style="color:#fdf4c1;">, done.
-</span><span style="color:#fdf4c1;">remote: Compressing objects: 100% (861/861</span><span>)</span><span style="color:#fdf4c1;">, done.
-</span><span style="color:#fdf4c1;">remote: Total 30276 (delta 821</span><span>)</span><span style="color:#fdf4c1;">, reused 1604 (delta 668</span><span>)</span><span style="color:#fdf4c1;">, pack-reused 28415
-</span><span style="color:#fdf4c1;">Receiving objects: 100% (30276/30276</span><span>)</span><span style="color:#fdf4c1;">, 60.89 MiB </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">23.62 MiB/s, done.
-</span><span style="color:#fdf4c1;">Resolving deltas: 100% (14658/14658</span><span>)</span><span style="color:#fdf4c1;">, done.
-</span><span>
-</span><span style="color:#fdf4c1;">/tmp took 4s
-</span><span style="color:#fdf4c1;">❯
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> git clone https://github.com/eikek/docspell.git</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Cloning</span></span><span class="z-meta z-function-call z-arguments z-shell"> into <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>docspell<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span>...</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Enumerating objects: 1861, done.</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Counting objects: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (1861/1861</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> done.</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Compressing objects: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (861/861</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> done.</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Total 30276 (delta 821</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> reused 1604 (delta 668</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> pack-reused 28415</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Receiving</span></span><span class="z-meta z-function-call z-arguments z-shell"> objects: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (30276/30276</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> 60.89 MiB</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">23.62</span></span><span class="z-meta z-function-call z-arguments z-shell"> MiB/s, done.</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Resolving</span></span><span class="z-meta z-function-call z-arguments z-shell"> deltas: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (14658/14658</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> done.</span>
+
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">/tmp</span></span><span class="z-meta z-function-call z-arguments z-shell"> took 4s</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span>
 </span></code></pre>
 <p>This creates a new directory <code>docspell</code>. Change into it, create a
 <code>DOCSPELL_ENV</code> environment variable and run sbt:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ cd docspell
-</span><span style="color:#fdf4c1;">docspell on  master via 🌳 v0.19.1 via ☕ v11.0.9 via ⬢ v12.21.0
-</span><span style="color:#fdf4c1;">❯ export DOCSPELL_ENV=dev
-</span><span style="color:#fdf4c1;">❯ sbt
-</span><span style="color:#fdf4c1;">[info] welcome to sbt 1.5.0 (Oracle Corporation Java 1.8.0_212</span><span>)
-</span><span style="color:#fdf4c1;">[info] loading settings for project global-plugins from plugins.sbt ...
-</span><span style="color:#fdf4c1;">[info] loading settings for project docspell-build from plugins.sbt ...
-</span><span style="color:#fdf4c1;">[info] loading project definition from /tmp/docspell/project
-</span><span style="color:#fdf4c1;">[info] compiling 6 Scala sources to /tmp/docspell/project/target/scala-2.12/sbt-1.0/classes ...
-</span><span style="color:#fdf4c1;">[info] loading settings for project root from build.sbt,version.sbt ...
-</span><span style="color:#fdf4c1;">[info] resolving key references (24191 settings</span><span>) </span><span style="color:#fdf4c1;">...
-</span><span style="color:#fdf4c1;">[info] set current project to docspell-root (in build file:/tmp/docspell/</span><span>)
-</span><span style="color:#fdf4c1;">[info] sbt server started at local:///home/eike/.sbt/1.0/server/3cf61b9ad9af43ee6032/sock
-</span><span style="color:#fdf4c1;">[info] started sbt server
-</span><span style="color:#fdf4c1;">sbt:docspell-root</span><span style="color:#fe8019;">&gt;
-</span></code></pre>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> cd docspell</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docspell</span></span><span class="z-meta z-function-call z-arguments z-shell"> on  master via 🌳 v0.19.1 via ☕ v11.0.9 via ⬢ v12.21.0</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> export DOCSPELL_ENV=dev</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> sbt</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> welcome to sbt 1.5.0 (Oracle Corporation Java 1.8.0_212</span><span class="z-meta z-function-call z-shell"></span>)
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading settings for project global-plugins from plugins.sbt ...</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading settings for project docspell-build from plugins.sbt ...</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading project definition from /tmp/docspell/project</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> compiling 6 Scala sources to /tmp/docspell/project/target/scala-2.12/sbt-1.0/classes ...</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading settings for project root from build.sbt,version.sbt ...</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> resolving key references (24191 settings</span><span class="z-meta z-function-call z-shell"></span>) <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">...</span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> set current project to docspell-root (in build file:/tmp/docspell/</span><span class="z-meta z-function-call z-shell"></span>)
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> sbt server started at local:///home/eike/.sbt/1.0/server/3cf61b9ad9af43ee6032/sock</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> started sbt server</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sbt:docspell-root</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>
+</span></span></code></pre>
 <p>This downloads some stuff and puts you in the sbt shell. Now compile
 everything (only needed the first time after checkout):</p>
-<pre data-lang="sbt" style="background-color:#282828;color:#fdf4c1aa;" class="language-sbt "><code class="language-sbt" data-lang="sbt"><span>sbt:</span><span style="color:#fabd2f;">docspell-root&gt; make
+<pre data-lang="sbt" class="language-sbt z-code"><code class="language-sbt" data-lang="sbt"><span class="z-source z-scala">sbt<span class="z-punctuation z-ascription z-scala">:</span><span class="z-support z-type z-scala">docspell</span><span class="z-support z-type z-scala">-</span><span class="z-support z-type z-scala">root</span><span class="z-support z-type z-scala">&gt;</span> <span class="z-support z-type z-scala">make</span>
 </span></code></pre>
 <p>This will take a while, you need to wait until this is finished.</p>
-<h2 id="start-the-application">Start the application<a class="zola-anchor" href="#start-the-application" aria-label="Anchor link for: start-the-application">🔗</a></h2>
+<h3 id="start-the-application">Start the application<a class="zola-anchor" href="#start-the-application" aria-label="Anchor link for: start-the-application">🔗</a></h3>
 <p>If sbt is not started, start sbt from within the source root. Also
 export the <code>DOCSPELL_ENV</code> variable <em>before</em> starting sbt:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fe8019;">&gt;</span><span> export </span><span style="color:#fdf4c1;">DOCSPELL_ENV</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">dev
-</span><span style="color:#fe8019;">&gt;</span><span> sbt
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> export <span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_ENV</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">dev</span>
+<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> sbt
 </span></code></pre>
 <p>Then start the application:</p>
-<pre data-lang="sbt" style="background-color:#282828;color:#fdf4c1aa;" class="language-sbt "><code class="language-sbt" data-lang="sbt"><span>sbt:</span><span style="color:#fabd2f;">docspell-root&gt; reStart
+<pre data-lang="sbt" class="language-sbt z-code"><code class="language-sbt" data-lang="sbt"><span class="z-source z-scala">sbt<span class="z-punctuation z-ascription z-scala">:</span><span class="z-support z-type z-scala">docspell</span><span class="z-support z-type z-scala">-</span><span class="z-support z-type z-scala">root</span><span class="z-support z-type z-scala">&gt;</span> <span class="z-support z-type z-scala">reStart</span>
 </span></code></pre>
 <p>This starts docspell (joex and the restserver). Once the output gets a
 bit quiter, open a browser and navigate to <code>http://localhost:7880</code>.
@@ -329,19 +726,19 @@ to the running server. For this, a script is provided in the
 <code>project/</code> folder.</p>
 <p>Now open two more terminals and <code>cd</code> into the docspell folder as before
 and run the following in one:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ ./project/dev-ui-build.sh watch-js
-</span><span style="color:#fdf4c1;">Compile elm to js …
-</span><span style="color:#fdf4c1;">Success!
-</span><span>
-</span><span>    </span><span style="color:#fdf4c1;">Main ───</span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> /tmp/docspell/modules/webapp/target/scala-2.13/classes/META-INF/resources/webjars/docspell-webapp/0.22.0-SNAPSHOT/docspell-app.js
-</span><span>
-</span><span style="color:#fdf4c1;">Watching elm sources. C-c to quit.
-</span><span style="color:#fdf4c1;">Setting up watches.  Beware: since -r was given, this may take a while!
-</span><span style="color:#fdf4c1;">Watches established.
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> ./project/dev-ui-build.sh watch-js</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Compile</span></span><span class="z-meta z-function-call z-arguments z-shell"> elm to js …</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Success!</span></span>
+
+    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Main</span></span><span class="z-meta z-function-call z-arguments z-shell"> ───<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> /tmp/docspell/modules/webapp/target/scala-2.13/classes/META-INF/resources/webjars/docspell-webapp/0.22.0-SNAPSHOT/docspell-app.js</span>
+
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Watching</span></span><span class="z-meta z-function-call z-arguments z-shell"> elm sources. C-c to quit.</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Setting</span></span><span class="z-meta z-function-call z-arguments z-shell"> up watches.  Beware: since<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>r</span> was given, this may take a while!</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Watches</span></span><span class="z-meta z-function-call z-arguments z-shell"> established.</span>
 </span></code></pre>
 <p>And in the other run this:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">❯ ./project/dev-ui-build.sh watch-css
-</span><span style="color:#fdf4c1;">Watching css …
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> ./project/dev-ui-build.sh watch-css</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Watching</span></span><span class="z-meta z-function-call z-arguments z-shell"> css …</span>
 </span></code></pre>
 <p>Once you have this, you're all set. The docspell application is
 running and changes to elm and css files are detected, the webapp is
@@ -362,41 +759,41 @@ below for details.</p>
 <h2 id="add-the-new-language">Add the new language<a class="zola-anchor" href="#add-the-new-language" aria-label="Anchor link for: add-the-new-language">🔗</a></h2>
 <p>Start by editing <code>UiLanguage.elm</code> and add another language to the
 list:</p>
-<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#fa5c4b;">type </span><span style="color:#8ec07c;">UiLanguage
-</span><span>    </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">English
-</span><span>    </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">German
+<pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-keyword z-other z-elm">type <span class="z-entity z-name z-type z-elm">UiLanguage</span></span>
+    <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">English</span>
+    <span class="z-keyword z-operator z-elm">|</span> <span class="z-constant z-other z-elm">German</span>
 </span></code></pre>
 <p>More languaes are simply appended using the <code>|</code> symbol. Use the
 English name here, because this is source code.</p>
 <p>Also add it to the list of all languages below. Simply add the new
 language separated by a comma <code>,</code>.</p>
-<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">all </span><span style="color:#fa5c4b;">: List UiLanguage
-</span><span style="color:#8ec07c;">all </span><span style="color:#fe8019;">=
-</span><span>    </span><span style="color:#fabd2f;">[ </span><span style="color:#fdf4c1;">English
-</span><span>    </span><span style="color:#fabd2f;">, </span><span style="color:#fdf4c1;">German
-</span><span>    </span><span style="color:#fabd2f;">]
+<pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">all</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">List</span> <span class="z-storage z-type z-elm">UiLanguage</span>
+</span><span class="z-entity z-name z-function z-elm">all </span><span class="z-keyword z-operator z-elm">=</span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">[</span></span> <span class="z-constant z-other z-elm">English</span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> <span class="z-constant z-other z-elm">German</span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">]</span></span>
 </span></code></pre>
 <p>If you make a mistake, the elm compiler will tell you with usually
 quite helpful messages. Now, after adding this, there will be errors
 when compiling the elm files. You should see something like this:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>Detected problems in 1 module.
-</span><span>-- MISSING PATTERNS ------------------- modules/webapp/src/main/elm/Messages.elm
-</span><span>
-</span><span>This `case` does not have branches for all possibilities:
-</span><span>
-</span><span>45|&gt;    case lang of
-</span><span>46|&gt;        English -&gt;
-</span><span>47|&gt;            gb
-</span><span>
-</span><span>Missing possibilities include:
-</span><span>
-</span><span>    German
-</span><span>
-</span><span>I would have to crash if I saw one of those. Add branches for them!
-</span><span>
-</span><span>Hint: If you want to write the code for each branch later, use `Debug.todo` as a
-</span><span>placeholder. Read &lt;https://elm-lang.org/0.19.1/missing-patterns&gt; for more
-</span><span>guidance on this workflow.
+<pre class="z-code"><code><span class="z-text z-plain">Detected problems in 1 module.
+-- MISSING PATTERNS ------------------- modules/webapp/src/main/elm/Messages.elm
+
+This `case` does not have branches for all possibilities:
+
+45|&gt;    case lang of
+46|&gt;        English -&gt;
+47|&gt;            gb
+
+Missing possibilities include:
+
+    German
+
+I would have to crash if I saw one of those. Add branches for them!
+
+Hint: If you want to write the code for each branch later, use `Debug.todo` as a
+placeholder. Read &lt;https://elm-lang.org/0.19.1/missing-patterns&gt; for more
+guidance on this workflow.
 </span></code></pre>
 <p>So around line 45 in <code>Messages.elm</code> there is something wrong. This is
 the place where a record of all strings is returned given some
@@ -404,24 +801,24 @@ lanugage. Currently, there is only one set of strings for English.
 Open this file, you see at the and a value of name <code>gb</code> for English.
 Copy it to another name, <code>de</code> for this example (it's good practice to
 stick to the two letter country code).</p>
-<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Messages
-</span><span style="color:#8ec07c;">de </span><span style="color:#fe8019;">=
-</span><span>    </span><span style="color:#fabd2f;">{</span><span> lang </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">German
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> iso2 </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;de&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> label </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Deutsch&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> flagIcon </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;flag-icon flag-icon-de&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> app </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">App</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> collectiveSettings </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">CollectiveSettings</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> login </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Login</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> register </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Register</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> newInvite </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">NewInvite</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> upload </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Upload</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> itemDetail </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">ItemDetail</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> queue </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Queue</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> userSettings </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">UserSettings</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> manageData </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">ManageData</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> home </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Home</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">}
+<pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">de</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">Messages</span>
+</span><span class="z-entity z-name z-function z-elm">de </span><span class="z-keyword z-operator z-elm">=</span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> lang <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">German</span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> iso2 <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> label <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Deutsch<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> flagIcon <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>flag-icon flag-icon-de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> app <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">App</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> collectiveSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">CollectiveSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> login <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Login</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> register <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Register</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> newInvite <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">NewInvite</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> upload <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Upload</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> itemDetail <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ItemDetail</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> queue <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Queue</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> userSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">UserSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> manageData <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ManageData</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> search <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Search</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <p>Change <code>lang</code>, <code>iso2</code>, <code>label</code> and <code>flagIcon</code> appropriately. For the
 <code>label</code> use the native language name (not English), as this is the
@@ -431,14 +828,14 @@ code. You may look <a href="https://github.com/lipis/flag-icon-css">here</a> for
 additional information.</p>
 <p>Now the error can be fixed. Go to line 45 and add another branch to
 the <code>case</code> expression:</p>
-<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">get </span><span style="color:#fa5c4b;">: UiLanguage -&gt; Messages
-</span><span style="color:#8ec07c;">get </span><span>lang </span><span style="color:#fe8019;">=
-</span><span>    </span><span style="color:#fa5c4b;">case </span><span>lang </span><span style="color:#fa5c4b;">of
-</span><span>        </span><span style="color:#fdf4c1;">English </span><span style="color:#fe8019;">-&gt;
-</span><span>            gb
-</span><span>
-</span><span>        </span><span style="color:#fdf4c1;">German </span><span style="color:#fe8019;">-&gt;
-</span><span>            de
+<pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">get</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">UiLanguage</span> <span class="z-keyword z-other z-arrow z-elm">-&gt;</span> <span class="z-storage z-type z-elm">Messages</span>
+</span><span class="z-entity z-name z-function z-elm">get </span>lang <span class="z-keyword z-operator z-elm">=</span>
+    <span class="z-keyword z-other z-elm">case </span>lang <span class="z-keyword z-other z-elm">of
+</span>        <span class="z-constant z-other z-elm">English</span> <span class="z-keyword z-operator z-elm">-&gt;</span>
+            gb
+
+        <span class="z-constant z-other z-elm">German</span> <span class="z-keyword z-operator z-elm">-&gt;</span>
+            de
 </span></code></pre>
 <p>This makes the compiler happy again. If you refresh the browser, you
 should see the new language in the dropdown menu. You can already
@@ -455,49 +852,49 @@ first one which is <code>Messages.App</code>. The file to this is
 <code>Messages/App.em</code>. You can always replace the dots with slashes to
 find a file to an elm module. Open this file and you'll see again a
 <code>gb</code> value at the end. Copy it to <code>de</code> and start translating:</p>
-<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Texts
-</span><span style="color:#8ec07c;">de </span><span style="color:#fe8019;">=
-</span><span>    </span><span style="color:#fabd2f;">{</span><span> collectiveProfile </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Kollektiv-Profil&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> userProfile </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Benutzer-Profil&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> lightDark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Hell/Dunkel&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> logout </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Abmelden&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> items </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Dokumente&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> manageData </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Daten verwalten&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> uploadFiles </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Dateien hochladen&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> processingQueue </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Verarbeitung&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> newInvites </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Neue Einladung&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> help </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Hilfe (English)&quot;
-</span><span>    </span><span style="color:#fabd2f;">}
+<pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">de</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">Texts</span>
+</span><span class="z-entity z-name z-function z-elm">de </span><span class="z-keyword z-operator z-elm">=</span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> collectiveProfile <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Kollektiv-Profil<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> userProfile <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Benutzer-Profil<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> lightDark <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Hell/Dunkel<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> logout <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Abmelden<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> items <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Dokumente<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> manageData <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Daten verwalten<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> uploadFiles <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Dateien hochladen<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> processingQueue <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Verarbeitung<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> newInvites <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Neue Einladung<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> help <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Hilfe (English)<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <p>Then go to the beginning of the file and add the new <code>de</code> value to the
 list of &quot;exposed&quot; values. This is necessary so it can be used from
 within the <code>Messages.elm</code> module.</p>
-<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#fa5c4b;">module </span><span style="color:#fabd2f;">Messages.App </span><span style="color:#fa5c4b;">exposing
-</span><span>    </span><span style="color:#fa5c4b;">( </span><span style="color:#fdf4c1;">Texts
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> de </span><span style="font-style:italic;color:#928374;">{- the new value -}
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> gb
-</span><span>    </span><span style="color:#fa5c4b;">)
+<pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-declaration z-module z-elm"><span class="z-keyword z-other z-elm">module</span> <span class="z-support z-other z-module z-elm">Messages.App</span> <span class="z-keyword z-other z-elm">exposing</span></span>
+    <span class="z-keyword z-other z-parenthesis z-elm">(</span> <span class="z-constant z-other z-elm">Texts</span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> de <span class="z-comment z-block z-elm"><span class="z-punctuation z-definition z-comment z-elm">{-</span> the new value <span class="z-punctuation z-definition z-comment z-elm">-}</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> gb
+    <span class="z-keyword z-other z-parenthesis z-elm">)</span>
 </span></code></pre>
 <p>Now you can go back to <code>Messages.elm</code> and exchange <code>Messages.App.gb</code>
 with <code>Messages.App.de</code>.</p>
-<pre data-lang="elm" style="background-color:#282828;color:#fdf4c1aa;" class="language-elm "><code class="language-elm" data-lang="elm"><span style="color:#8ec07c;">de </span><span style="color:#fa5c4b;">: Messages
-</span><span style="color:#8ec07c;">de </span><span style="color:#fe8019;">=
-</span><span>    </span><span style="color:#fabd2f;">{</span><span> lang </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">German
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> iso2 </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;de&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> label </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Deutsch&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> flagIcon </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;flag-icon flag-icon-de&quot;
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> app </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">App</span><span style="color:#fe8019;">.</span><span>de
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> collectiveSettings </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">CollectiveSettings</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> login </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Login</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> register </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Register</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> newInvite </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">NewInvite</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> upload </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Upload</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> itemDetail </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">ItemDetail</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> queue </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Queue</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> userSettings </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">UserSettings</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> manageData </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">ManageData</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">,</span><span> home </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">Messages</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Page</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">Home</span><span style="color:#fe8019;">.</span><span>gb
-</span><span>    </span><span style="color:#fabd2f;">}
+<pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">de</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">Messages</span>
+</span><span class="z-entity z-name z-function z-elm">de </span><span class="z-keyword z-operator z-elm">=</span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> lang <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">German</span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> iso2 <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> label <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Deutsch<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> flagIcon <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>flag-icon flag-icon-de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> app <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">App</span><span class="z-keyword z-operator z-elm">.</span>de
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> collectiveSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">CollectiveSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> login <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Login</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> register <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Register</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> newInvite <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">NewInvite</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> upload <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Upload</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> itemDetail <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ItemDetail</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> queue <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Queue</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> userSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">UserSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> manageData <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ManageData</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> search <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Search</span><span class="z-keyword z-operator z-elm">.</span>gb
+    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <p>If you refresh the browser, you should now see the new values. Then
 take the next entry and start over. It happens that some files contain
@@ -512,20 +909,20 @@ quick walk-through. There is a thorough help <a href="https://help.github.com/en
 github</a>.</p>
 <ol>
 <li>Fork this repository in the github webapp</li>
-<li>Go to the docspell source root you checked out in the terminal. Run:<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>git remote rename origin upstream
-</span><span>git remote add origin git@github.com:&lt;your-github-name&gt;/docspell.git
-</span><span>git fetch --all
+<li>Go to the docspell source root you checked out in the terminal. Run:<pre class="z-code"><code><span class="z-text z-plain">git remote rename origin upstream
+</span>git remote add origin git@github.com:&lt;your-github-name&gt;/docspell.git
+</span>git fetch --all
 </span></code></pre>
 </li>
-<li>Create a new git branch:<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>git checkout -b translate origin/master
+<li>Create a new git branch:<pre class="z-code"><code><span class="z-text z-plain">git checkout -b translate origin/master
 </span></code></pre>
 </li>
-<li>Make a commit of your changes:<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>git config user.name &quot;Your Name&quot;
-</span><span>git config user.email &quot;Your Email&quot; #(note that this email will be publicly viewable! a dummy address is fine, too)
-</span><span>git commit -am &#39;Add translation for German&#39;
+<li>Make a commit of your changes:<pre class="z-code"><code><span class="z-text z-plain">git config user.name &quot;Your Name&quot;
+</span>git config user.email &quot;Your Email&quot; #(note that this email will be publicly viewable! a dummy address is fine, too)
+</span>git commit -am &#39;Add translation for German&#39;
 </span></code></pre>
 Modify the message to your needs.</li>
-<li>Push the change to your fork:<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>git push origin translate
+<li>Push the change to your fork:<pre class="z-code"><code><span class="z-text z-plain">git push origin translate
 </span></code></pre>
 </li>
 <li>Go to the github webapp and create a pull request from your branch.</li>
@@ -533,48 +930,171 @@ Modify the message to your needs.</li>
 <h2 id="e-mail">E-Mail<a class="zola-anchor" href="#e-mail" aria-label="Anchor link for: e-mail">🔗</a></h2>
 <p>You can send me the patch via e-mail. You can use <code>git send-email</code> or
 your favorite e-mail client. For this do step 4 from above and then:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>git bundle create translation.bundle origin/master..HEAD
+<pre class="z-code"><code><span class="z-text z-plain">git bundle create translation.bundle origin/master..HEAD
 </span></code></pre>
 <p>Then send the created <code>translate.bundle</code> file. If this command doesn't
 work, try:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>git format-patch origin/master..HEAD
+<pre class="z-code"><code><span class="z-text z-plain">git format-patch origin/master..HEAD
 </span></code></pre>
 <p>This results in one or more <code>0001-…</code> files that you can send.</p>
 <h2 id="any-other">Any other<a class="zola-anchor" href="#any-other" aria-label="Anchor link for: any-other">🔗</a></h2>
 <p>Contact me by mail or create an issue.</p>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  
 
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;dev&#x2F;translation.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
-        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
-<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+                </div>
 
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#ui-translation" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            UI Translation
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#tl-dr" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    TL;DR
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#prepare" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Prepare
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#checkout-the-source-code" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Checkout the source code
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#make-webui-updates-faster" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Make webui updates faster
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#find-the-webapp-sources" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Find the webapp sources
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#example-add-german" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Example: Add German
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#add-the-new-language" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Add the new language
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#translating" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Translating
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#publishing" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Publishing
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#github-pr" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Github PR
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#e-mail" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    E-Mail
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;translation&#x2F;#any-other" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Any other
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -609,4 +1129,5 @@ work, try:</p>
 <!-- / Fathom -->
 
     </body>
+
 </html>

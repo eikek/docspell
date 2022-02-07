@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,305 +32,611 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>E-Mail Settings – Docspell Documentation</title>
+
+        <title>E-Mail Settings - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            E-Mail Settings
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <id id="search"></id>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;">Web-UI</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;">E-Mail Settings</a>
-                </li>
-            </ul>
-        </nav>
 
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            
+            <div class="flex-grow place-items-end">
 
-                            <p class="menu-label">
-                                Web-UI
-                            </p>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/uploading/"
-                                   >
-                                    Uploads
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/metadata/"
-                                   >
-                                    Meta Data
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/customfields/"
-                                   >
-                                    Custom Fields
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/curate/"
-                                   >
-                                    Curate Items
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/multiedit/"
-                                   >
-                                    Multi Edit
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/finding/"
-                                   >
-                                    Finding Items
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/bookmarks/"
-                                   >
-                                    Bookmarks
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/itemcard-customize/"
-                                   >
-                                    Customize Item Card
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/emailsettings/"
-                                   class="is-active">
-                                    E-Mail Settings
-                                </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#smtp-settings">
-                                            SMTP Settings
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#imap-settings">
-                                            IMAP Settings
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#ssl-tls-starttls">
-                                            SSL &#x2F; TLS &#x2F; StartTLS
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#gmail">
-                                            GMail
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#via-app-specific-passwords">
-                                                    via App specific passwords
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#via-oauth2">
-                                                    via OAuth2
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/mailitem/"
-                                   >
-                                    Send Items Via E-Mail
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/notification/"
-                                   >
-                                    Notifications
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/scanmailbox/"
-                                   >
-                                    Scan Mailboxes
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/processing/"
-                                   >
-                                    Processing Queue
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/autotagging/"
-                                   >
-                                    Auto Tagging
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/merge/"
-                                   >
-                                    Merge Items
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/totp/"
-                                   >
-                                    Two-Factor Authentication
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/webapp/share/"
-                                   >
-                                    Shares
-                                </a>
-                                
-                            </li>
-                            
-                        </ul>
-                    </div>
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
                 </div>
+            </div>
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <p>Docspell has a good integration for E-Mail. You can send e-mails
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
+                
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  
+  <h1 id="e-mail-settings">E-Mail Settings<a class="zola-anchor" href="#e-mail-settings" aria-label="Anchor link for: e-mail-settings">🔗</a></h1>
+<p>Docspell has a good integration for E-Mail. You can send e-mails
 related to an item and you can import e-mails from your mailbox into
 docspell.</p>
 <p>This requires to define settings to use for sending and receiving
@@ -338,18 +651,16 @@ own settings separately from others in the collective.</p>
 docspell's database. This is necessary to have docspell connect to
 your e-mail account to send mails on behalf of you and receive your
 mails.</em></p>
-<h1 id="smtp-settings">SMTP Settings<a class="zola-anchor" href="#smtp-settings" aria-label="Anchor link for: smtp-settings">🔗</a></h1>
+<h2 id="smtp-settings">SMTP Settings<a class="zola-anchor" href="#smtp-settings" aria-label="Anchor link for: smtp-settings">🔗</a></h2>
 <p>For sending mail, you need to provide information to connect to a SMTP
 server. Every e-mail provider has this information somewhere
 available.</p>
 <p>Configure this in <em>User Settings -&gt; E-Mail Settings (SMTP)</em>:</p>
-<figure class="image">
-    
-    
-    
-    
-
-    <img src="https://docspell.org/docs/webapp/mail-settings-1.png">
+<figure class="dark-block" title="mail-settings-1_dark.png">
+    <img src="https://docspell.org/docs/webapp/mail-settings-1_dark.png">
+</figure>
+<figure class="light-block" title="mail-settings-1.png">
+    <img src="https://docspell.org/docs/webapp/mail-settings-1.png" >
 </figure>
 <p>First, you need to provide some name that is used to recognize this
 account. This name is also used in URLs to docspell and so it must not
@@ -373,18 +684,16 @@ e-mail address that your recipients should use to answer a mail.</p>
 <p>Once this is setup, you can start sending mails within docspell. It is
 possible to set up these settings for multiple providers, so you can
 choose from which account you want to send mails.</p>
-<h1 id="imap-settings">IMAP Settings<a class="zola-anchor" href="#imap-settings" aria-label="Anchor link for: imap-settings">🔗</a></h1>
+<h2 id="imap-settings">IMAP Settings<a class="zola-anchor" href="#imap-settings" aria-label="Anchor link for: imap-settings">🔗</a></h2>
 <p>For receiving e-mails, you need to provide information to connect to
 an IMAP server. Your e-mail provider should have this information
 somewhere available.</p>
 <p>Configure this in <em>User Settings -&gt; E-Mail Settings (IMAP)</em>:</p>
-<figure class="image">
-    
-    
-    
-    
-
-    <img src="https://docspell.org/docs/webapp/mail-settings-2.png">
+<figure class="dark-block" title="mail-settings-2_dark.png">
+    <img src="https://docspell.org/docs/webapp/mail-settings-2_dark.png">
+</figure>
+<figure class="light-block" title="mail-settings-2.png">
+    <img src="https://docspell.org/docs/webapp/mail-settings-2.png" >
 </figure>
 <p>First you need to define a <em>Name</em> to recognize this connection inside
 docspell. This name is also used in URLs to docspell and so it must
@@ -445,129 +754,205 @@ Client-Id and the Client-Secret, which look something like this:</p>
 Download the <code>oauth2.py</code> script from
 <a href="https://github.com/google/gmail-oauth2-tools">here</a> and first create
 an <em>oauth2-token</em>:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">./oauth2.py --user</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">your.name@gmail.com \
-</span><span style="color:#fdf4c1;">   --client_id</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">106701....d8c.apps.googleusercontent.com \
-</span><span style="color:#fdf4c1;">   --client_secret</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">5Z1...Kir_t \
-</span><span style="color:#fdf4c1;">   --generate_oauth2_token
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">./oauth2.py</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>user</span><span class="z-keyword z-operator z-assignment z-option z-shell">=</span>your.name@gmail.com <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">   --</span>client_id</span><span class="z-keyword z-operator z-assignment z-option z-shell">=</span>106701....d8c.apps.googleusercontent.com <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">   --</span>client_secret</span><span class="z-keyword z-operator z-assignment z-option z-shell">=</span>5Z1...Kir_t <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">   --</span>generate_oauth2_token</span></span>
 </span></code></pre>
 <p>This will &quot;redirect you&quot; to an URL where you have to authenticate with
 google. Afterwards it lets you add permissions to the app for
 accessing your mail account. The result is another code you need to
 give to the script to proceed:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>4/zwE....q0QBAb-99yD7lw
+<pre class="z-code"><code><span class="z-text z-plain">4/zwE....q0QBAb-99yD7lw
 </span></code></pre>
 <p>Then the scripts produces this:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>Refresh Token: 1//09zH.........Lj6oc2SmFlZww
-</span><span>Access Token: ya29.a0........SECDQ
-</span><span>Access Token Expiration Seconds: 3599
+<pre class="z-code"><code><span class="z-text z-plain">Refresh Token: 1//09zH.........Lj6oc2SmFlZww
+Access Token: ya29.a0........SECDQ
+Access Token Expiration Seconds: 3599
 </span></code></pre>
 <p>The access token can be used to sign in via IMAP with google. The
 Refresh Token doesn't expire and can be used to generate new access
 tokens:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>./oauth2.py --user=your.name@gmail.com \
-</span><span>   --client_id=106701....d8c.apps.googleusercontent.com \
-</span><span>   --client_secret=5Z1...Kir_t \
-</span><span>   --refresh_token=1//09zH.........Lj6oc2SmFlZww
+<pre class="z-code"><code><span class="z-text z-plain">./oauth2.py --user=your.name@gmail.com \
+   --client_id=106701....d8c.apps.googleusercontent.com \
+   --client_secret=5Z1...Kir_t \
+   --refresh_token=1//09zH.........Lj6oc2SmFlZww
 </span></code></pre>
 <p>Output:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>Access Token: ya29.a0....._q-lX3ypntk3ln0h9Yk
-</span><span>Access Token Expiration Seconds: 3599
+<pre class="z-code"><code><span class="z-text z-plain">Access Token: ya29.a0....._q-lX3ypntk3ln0h9Yk
+Access Token Expiration Seconds: 3599
 </span></code></pre>
 <p>The problem is that the access token expires. Docspell doesn't support
 updating the access token. It could be worked around by setting up a
 cron-job or similiar which uses the <code>oauth2.py</code> tool to generate new
 access tokens and update your imap settings via a
 <a href="https://docspell.org/docs/api/">REST</a> call.</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="font-style:italic;color:#928374;">#!/usr/bin/env bash
-</span><span style="color:#fabd2f;">set </span><span style="color:#fdf4c1;">-e
-</span><span>
-</span><span style="font-style:italic;color:#928374;">## Change this to your values:
-</span><span>
-</span><span style="color:#fdf4c1;">DOCSPELL_USER</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;[docspell-user]&quot;
-</span><span style="color:#fdf4c1;">DOCSPELL_PASSWORD</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;[docspell-password]&quot;
-</span><span style="color:#fdf4c1;">DOCSPELL_URL</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;http://localhost:7880&quot;
-</span><span style="color:#fdf4c1;">DOCSPELL_IMAP_NAME</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;gmail.com&quot;
-</span><span>
-</span><span style="color:#fdf4c1;">GMAIL_USER</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;your.name@gmail.com&quot;
-</span><span style="color:#fdf4c1;">CLIENT_ID</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;106701....d8c.apps.googleusercontent.com&quot;
-</span><span style="color:#fdf4c1;">CLIENT_SECRET</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;secret=5Z1...Kir_t&quot;
-</span><span style="color:#fdf4c1;">REFRESH_TOKEN</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;1//09zH.........Lj6oc2SmFlZww&quot;
-</span><span style="font-style:italic;color:#928374;"># Path to the oauth2.py tool
-</span><span style="color:#fdf4c1;">OAUTH_TOOL</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;./oauth2.py&quot;
-</span><span>
-</span><span style="font-style:italic;color:#928374;">##############################################################################
-</span><span style="font-style:italic;color:#928374;">## Script
-</span><span>
-</span><span>
-</span><span style="font-style:italic;color:#928374;"># Login to docspell and store the auth-token
-</span><span style="color:#fdf4c1;">AUTH_DATA</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">$(</span><span style="color:#fdf4c1;">curl --silent -XPOST \
-</span><span style="color:#fdf4c1;">                 -H </span><span style="color:#b8bb26;">&#39;Content-Type: application/json&#39; </span><span style="color:#fdf4c1;">\
-</span><span style="color:#fdf4c1;">                 --data-binary </span><span style="color:#b8bb26;">&quot;{\&quot;account\&quot;:\&quot;$</span><span style="color:#fdf4c1;">DOCSPELL_USER</span><span style="color:#b8bb26;">\&quot;,\&quot;password\&quot;:\&quot;$</span><span style="color:#fdf4c1;">DOCSPELL_PASSWORD</span><span style="color:#b8bb26;">\&quot;}&quot; </span><span style="color:#fdf4c1;">\
-</span><span style="color:#fdf4c1;">                 $DOCSPELL_URL/api/v1/open/auth/login</span><span style="color:#b8bb26;">)
-</span><span style="color:#fa5c4b;">if </span><span style="color:#fabd2f;">[ </span><span style="color:#fdf4c1;">$(</span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$AUTH_DATA </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq .success) </span><span style="color:#fe8019;">== </span><span style="color:#b8bb26;">&quot;false&quot; </span><span style="color:#fabd2f;">]</span><span style="color:#fe8019;">; </span><span style="color:#fa5c4b;">then
-</span><span>    </span><span style="color:#fabd2f;">echo </span><span style="color:#b8bb26;">&quot;Auth failed&quot;
-</span><span>    </span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$AUTH_DATA
-</span><span style="color:#fa5c4b;">fi
-</span><span style="color:#fdf4c1;">TOKEN</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$(</span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$AUTH_DATA </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq -r .token</span><span style="color:#b8bb26;">)&quot;
-</span><span>
-</span><span>
-</span><span style="font-style:italic;color:#928374;"># Get the imap settings
-</span><span style="color:#fdf4c1;">UPDATE_URL</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">DOCSPELL_URL</span><span style="color:#b8bb26;">/api/v1/sec/email/settings/imap/$</span><span style="color:#fdf4c1;">DOCSPELL_IMAP_NAME</span><span style="color:#b8bb26;">&quot;
-</span><span style="color:#fdf4c1;">IMAP_DATA</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">$(</span><span style="color:#fdf4c1;">curl -s -H </span><span style="color:#b8bb26;">&quot;X-Docspell-Auth: $</span><span style="color:#fdf4c1;">TOKEN</span><span style="color:#b8bb26;">&quot; &quot;$</span><span style="color:#fdf4c1;">UPDATE_URL</span><span style="color:#b8bb26;">&quot;)
-</span><span>
-</span><span style="color:#fabd2f;">echo </span><span style="color:#b8bb26;">&quot;Current Settings:&quot;
-</span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$IMAP_DATA </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq
-</span><span>
-</span><span>
-</span><span style="font-style:italic;color:#928374;"># Get the new access token
-</span><span style="color:#fdf4c1;">ACCESS_TOKEN</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">$(</span><span style="color:#fdf4c1;">$OAUTH_TOOL --user</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">$GMAIL_USER \
-</span><span style="color:#fdf4c1;">    --client_id</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">CLIENT_ID</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fdf4c1;">\
-</span><span style="color:#fdf4c1;">    --client_secret</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">CLIENT_SECRET</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fdf4c1;">\
-</span><span style="color:#fdf4c1;">    --refresh_token</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">REFRESH_TOKEN</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">head -n1 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">cut -d</span><span style="color:#b8bb26;">&#39;:&#39;</span><span style="color:#fdf4c1;"> -f2 </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">xargs</span><span style="color:#b8bb26;">)
-</span><span>
-</span><span style="font-style:italic;color:#928374;"># Update settings
-</span><span style="color:#fabd2f;">echo </span><span style="color:#b8bb26;">&quot;Updating IMAP settings&quot;
-</span><span style="color:#fdf4c1;">NEW_IMAP</span><span style="color:#fe8019;">=</span><span style="color:#b8bb26;">$(</span><span style="color:#fabd2f;">echo </span><span style="color:#fdf4c1;">$IMAP_DATA </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq </span><span style="color:#b8bb26;">&quot;.imapPassword |= \&quot;$</span><span style="color:#fdf4c1;">ACCESS_TOKEN</span><span style="color:#b8bb26;">\&quot;&quot;)
-</span><span style="color:#fdf4c1;">curl -s -XPUT -H </span><span style="color:#b8bb26;">&quot;X-Docspell-Auth: $</span><span style="color:#fdf4c1;">TOKEN</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fdf4c1;">\
-</span><span style="color:#fdf4c1;">     -H </span><span style="color:#b8bb26;">&#39;Content-Type: application/json&#39; </span><span style="color:#fdf4c1;">\
-</span><span style="color:#fdf4c1;">     --data-binary </span><span style="color:#b8bb26;">&quot;$</span><span style="color:#fdf4c1;">NEW_IMAP</span><span style="color:#b8bb26;">&quot; &quot;$</span><span style="color:#fdf4c1;">UPDATE_URL</span><span style="color:#b8bb26;">&quot;
-</span><span style="color:#fabd2f;">echo
-</span><span style="color:#fabd2f;">echo </span><span style="color:#b8bb26;">&quot;New Settings:&quot;
-</span><span style="color:#fdf4c1;">curl -s -H </span><span style="color:#b8bb26;">&quot;X-Docspell-Auth: $</span><span style="color:#fdf4c1;">TOKEN</span><span style="color:#b8bb26;">&quot; &quot;$</span><span style="color:#fdf4c1;">UPDATE_URL</span><span style="color:#b8bb26;">&quot; </span><span style="color:#fe8019;">| </span><span style="color:#fdf4c1;">jq
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">!/usr/bin/env bash</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-meta z-function-call z-shell"><span class="z-support z-function z-set z-shell">set</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">-</span>e</span></span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"># Change this to your values:</span><span class="z-comment z-line z-number-sign z-shell">
+</span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_USER</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>[docspell-user]<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_PASSWORD</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>[docspell-password]<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_URL</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>http://localhost:7880<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_IMAP_NAME</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>gmail.com<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+
+<span class="z-variable z-other z-readwrite z-assignment z-shell">GMAIL_USER</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>your.name@gmail.com<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">CLIENT_ID</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>106701....d8c.apps.googleusercontent.com<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">CLIENT_SECRET</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>secret=5Z1...Kir_t<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">REFRESH_TOKEN</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>1//09zH.........Lj6oc2SmFlZww<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Path to the oauth2.py tool</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">OAUTH_TOOL</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>./oauth2.py<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">#############################################################################</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"># Script</span><span class="z-comment z-line z-number-sign z-shell">
+</span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Login to docspell and store the auth-token</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">AUTH_DATA</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-meta z-group z-expansion z-command z-parens z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-parens z-begin z-shell">(</span><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">curl</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>silent</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>XPOST</span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">                 -</span>H</span> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>Content-Type: application/json<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">                 --</span>data-binary</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>{<span class="z-constant z-character z-escape z-shell">\&quot;</span>account<span class="z-constant z-character z-escape z-shell">\&quot;</span>:<span class="z-constant z-character z-escape z-shell">\&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">DOCSPELL_USER</span></span><span class="z-constant z-character z-escape z-shell">\&quot;</span>,<span class="z-constant z-character z-escape z-shell">\&quot;</span>password<span class="z-constant z-character z-escape z-shell">\&quot;</span>:<span class="z-constant z-character z-escape z-shell">\&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">DOCSPELL_PASSWORD</span></span><span class="z-constant z-character z-escape z-shell">\&quot;</span>}<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span>                 <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">DOCSPELL_URL</span></span>/api/v1/open/auth/login</span><span class="z-punctuation z-section z-parens z-end z-shell">)</span></span></span>
+<span class="z-keyword z-control z-conditional z-if z-shell">if</span> <span class="z-support z-function z-test z-begin z-shell">[</span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-command z-parens z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-parens z-begin z-shell">(</span><span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">AUTH_DATA</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">jq</span></span><span class="z-meta z-function-call z-arguments z-shell"> .success</span><span class="z-punctuation z-section z-parens z-end z-shell">)</span></span> <span class="z-keyword z-operator z-logical z-shell">==</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>false<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-support z-function z-test z-end z-shell">]</span></span><span class="z-keyword z-operator z-logical z-continue z-shell">;</span> <span class="z-keyword z-control z-conditional z-then z-shell">then</span>
+    <span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Auth failed<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+    <span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">AUTH_DATA</span></span></span>
+<span class="z-keyword z-control z-conditional z-end z-shell">fi</span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">TOKEN</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-command z-parens z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-parens z-begin z-shell">(</span><span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">AUTH_DATA</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">jq</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>r</span> .token</span><span class="z-punctuation z-section z-parens z-end z-shell">)</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Get the imap settings</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">UPDATE_URL</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">DOCSPELL_URL</span></span>/api/v1/sec/email/settings/imap/<span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">DOCSPELL_IMAP_NAME</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">IMAP_DATA</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-meta z-group z-expansion z-command z-parens z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-parens z-begin z-shell">(</span><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">curl</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>s</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>H</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>X-Docspell-Auth: <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">TOKEN</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">UPDATE_URL</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span><span class="z-punctuation z-section z-parens z-end z-shell">)</span></span></span>
+
+<span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Current Settings:<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">IMAP_DATA</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">jq</span></span>
+
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Get the new access token</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">ACCESS_TOKEN</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-meta z-group z-expansion z-command z-parens z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-parens z-begin z-shell">(</span><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">OAUTH_TOOL</span></span></span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>user</span><span class="z-keyword z-operator z-assignment z-option z-shell">=</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">GMAIL_USER</span></span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">    --</span>client_id</span><span class="z-keyword z-operator z-assignment z-option z-shell">=</span><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">CLIENT_ID</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">    --</span>client_secret</span><span class="z-keyword z-operator z-assignment z-option z-shell">=</span><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">CLIENT_SECRET</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">    --</span>refresh_token</span><span class="z-keyword z-operator z-assignment z-option z-shell">=</span><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">REFRESH_TOKEN</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">head</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>n1</span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">cut</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span><span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>:<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>f2</span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">xargs</span></span><span class="z-punctuation z-section z-parens z-end z-shell">)</span></span></span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Update settings</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Updating IMAP settings<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">NEW_IMAP</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-meta z-group z-expansion z-command z-parens z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-parens z-begin z-shell">(</span><span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">IMAP_DATA</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">jq</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>.imapPassword |= <span class="z-constant z-character z-escape z-shell">\&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">ACCESS_TOKEN</span></span><span class="z-constant z-character z-escape z-shell">\&quot;</span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span><span class="z-punctuation z-section z-parens z-end z-shell">)</span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">curl</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>s</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>XPUT</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>H</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>X-Docspell-Auth: <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">TOKEN</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">     -</span>H</span> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>Content-Type: application/json<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">     --</span>data-binary</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">NEW_IMAP</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">UPDATE_URL</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>New Settings:<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">curl</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>s</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>H</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>X-Docspell-Auth: <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">TOKEN</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">UPDATE_URL</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">jq</span></span>
 </span></code></pre>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  
 
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;webapp&#x2F;emailsettings.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
-        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
-<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+                </div>
 
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#e-mail-settings" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            E-Mail Settings
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#smtp-settings" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    SMTP Settings
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#imap-settings" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    IMAP Settings
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#ssl-tls-starttls" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            SSL &#x2F; TLS &#x2F; StartTLS
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#gmail" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            GMail
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#via-app-specific-passwords" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    via App specific passwords
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;emailsettings&#x2F;#via-oauth2" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    via OAuth2
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -602,4 +987,5 @@ access tokens and update your imap settings via a
 <!-- / Fathom -->
 
     </body>
+
 </html>

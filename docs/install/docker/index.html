@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,224 +32,610 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Docker – Docspell Documentation</title>
+
+        <title>Docker - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            Docker
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <id id="search"></id>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;">Installation and Deployment</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;">Docker</a>
-                </li>
-            </ul>
-        </nav>
 
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            
+            <div class="flex-grow place-items-end">
 
-                            <p class="menu-label">
-                                Installation and Deployment
-                            </p>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/quickstart/"
-                                   >
-                                    Quickstart
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/prereq/"
-                                   >
-                                    Prerequisites
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/docker/"
-                                   class="is-active">
-                                    Docker
-                                </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#docker-images">
-                                            Docker Images
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#examples">
-                                                    Examples
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#docker-compose">
-                                            Docker Compose
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#start-docspell">
-                                                    Start Docspell
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#override-this-setup">
-                                                    Override this setup
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#upgrading">
-                                                    Upgrading
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#backups">
-                                                    Backups
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/download-run/"
-                                   >
-                                    Download &amp; Run
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/nix/"
-                                   >
-                                    Nix &#x2F; Nixos
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/downgrading/"
-                                   >
-                                    Downgrading
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/rpi/"
-                                   >
-                                    Raspberry-Pi And Similiar
-                                </a>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/install/reverseproxy/"
-                                   >
-                                    Reverse Proxy
-                                </a>
-                                
-                            </li>
-                            
-                        </ul>
-                    </div>
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
                 </div>
+            </div>
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <h2 id="docker-images">Docker Images<a class="zola-anchor" href="#docker-images" aria-label="Anchor link for: docker-images">🔗</a></h2>
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
+                
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  
+  <h1 id="docker-images">Docker Images<a class="zola-anchor" href="#docker-images" aria-label="Anchor link for: docker-images">🔗</a></h1>
 <p>The docker images are at
 <a href="https://hub.docker.com/u/docspell">hub.docker.com</a>. The <code>latest</code> tag
 always points to the latest <em>release</em>. The releases are also tagged
@@ -265,7 +658,7 @@ directories for new files. It doesn't specify a <code>CMD</code> or
 <code>ENTRYPOINT</code>, so you must specify the exact command to run. Here, it
 is used to watch a directory for uploading files. This runs the <code>dsc watch</code> command.</li>
 </ul>
-<h3 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h3>
+<h2 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h2>
 <p>These examples use <code>docker run</code> to start the restserver and
 jobexecutor. Both must be connected to the same database. For this
 example, a shared directory is used and the in-process database H2.
@@ -273,26 +666,26 @@ For a real setup, using PostgreSQL is recommended.</p>
 <p>This requires to change the default config. This example creates a new
 config file. Please refer to the <a href="https://docspell.org/docs/configure/">configuration
 page</a> for more details.</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cat </span><span style="color:#fe8019;">&gt;</span><span style="color:#fdf4c1;"> /tmp/docspell.conf </span><span style="color:#fe8019;">&lt;&lt;-</span><span style="color:#fdf4c1;">&quot;</span><span style="color:#fa5c4b;">EOF</span><span style="color:#fdf4c1;">&quot;
-</span><span style="color:#fdf4c1;"># common settings
-</span><span style="color:#fdf4c1;">db_url = &quot;jdbc:h2:///var/docspell/db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
-</span><span style="color:#fdf4c1;">
-</span><span style="color:#fdf4c1;"># job executor settings
-</span><span style="color:#fdf4c1;">docspell.joex.jdbc.url = ${db_url}
-</span><span style="color:#fdf4c1;">docspell.joex.base-url = &quot;http://10.4.3.2:7878&quot;
-</span><span style="color:#fdf4c1;">docspell.joex.bind.address = &quot;0.0.0.0&quot;
-</span><span style="color:#fdf4c1;">
-</span><span style="color:#fdf4c1;"># restserver settings
-</span><span style="color:#fdf4c1;">docspell.server.backend.jdbc.url = ${db_url}
-</span><span style="color:#fdf4c1;">docspell.server.bind.address = &quot;0.0.0.0&quot;
-</span><span style="color:#fdf4c1;">docspell.server.integration-endpoint {
-</span><span style="color:#fdf4c1;">  enabled = true
-</span><span style="color:#fdf4c1;">  http-header {
-</span><span style="color:#fdf4c1;">    enabled = true
-</span><span style="color:#fdf4c1;">    header-value = &quot;test123&quot;
-</span><span style="color:#fdf4c1;">  }
-</span><span style="color:#fdf4c1;">}
-</span><span style="color:#fa5c4b;">EOF
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> cat <span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> /tmp/docspell.conf <span class="z-string z-unquoted z-heredoc z-shell"><span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;&lt;-</span><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-keyword z-control z-heredoc-token z-shell">EOF</span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span><span class="z-string z-unquoted z-heredoc z-shell">
+# common settings
+db_url = &quot;jdbc:h2:///var/docspell/db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;
+
+# job executor settings
+docspell.joex.jdbc.url = ${db_url}
+docspell.joex.base-url = &quot;http://10.4.3.2:7878&quot;
+docspell.joex.bind.address = &quot;0.0.0.0&quot;
+
+# restserver settings
+docspell.server.backend.jdbc.url = ${db_url}
+docspell.server.bind.address = &quot;0.0.0.0&quot;
+docspell.server.integration-endpoint {
+  enabled = true
+  http-header {
+    enabled = true
+    header-value = &quot;test123&quot;
+  }
+}
+<span class="z-keyword z-control z-heredoc-token z-shell">EOF</span></span></span>
 </span></code></pre>
 <p>This sets the db url to the same value for both components; thus we
 can use the same file for both components. It also sets the bind
@@ -301,18 +694,18 @@ note is the <code>base-url</code> setting for joex. This publishes joex by this
 ip, such that the server component can notify the job executor for new
 work. The <code>integration-endpoint</code> setting is explained later.</p>
 <p>After creating a common network, we start the rest server and joex:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>$ docker network create --subnet 10.4.3.0/24 dsnet
-</span><span>$ docker run -d --name ds-restserver \
-</span><span>    --network dsnet --ip 10.4.3.3 \
-</span><span>    -p 127.0.0.1:7880:7880 \
-</span><span>    -v /tmp/testdb:/var/docspell \
-</span><span>    -v /tmp/docspell.conf:/opt/docspell.conf \
-</span><span>    docspell/restserver:latest /opt/docspell.conf
-</span><span>$ docker run -d --name ds-joex \
-</span><span>    --network dsnet --ip 10.4.3.2 \
-</span><span>    -v /tmp/testdb:/var/docspell \
-</span><span>    -v /tmp/docspell.conf:/opt/docspell.conf \
-</span><span>    docspell/joex:latest /opt/docspell.conf
+<pre class="z-code"><code><span class="z-text z-plain">$ docker network create --subnet 10.4.3.0/24 dsnet
+$ docker run -d --name ds-restserver \
+    --network dsnet --ip 10.4.3.3 \
+    -p 127.0.0.1:7880:7880 \
+    -v /tmp/testdb:/var/docspell \
+    -v /tmp/docspell.conf:/opt/docspell.conf \
+    docspell/restserver:latest /opt/docspell.conf
+$ docker run -d --name ds-joex \
+    --network dsnet --ip 10.4.3.2 \
+    -v /tmp/testdb:/var/docspell \
+    -v /tmp/docspell.conf:/opt/docspell.conf \
+    docspell/joex:latest /opt/docspell.conf
 </span></code></pre>
 <p>After this <code>docker ps</code> should show these two containers. Go to
 <code>http://localhost:7880</code> and sign up/login and start playing around.
@@ -320,11 +713,11 @@ When signing up, use the same name for collective and user and then
 login with this name.</p>
 <p>For the last part, we use the <code>docspell/dsc</code> image to create another
 container that watches a directory and pushes files to docspell.</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ docker run -d --name ds-consume \
-</span><span style="color:#fdf4c1;">    --network dsnet --ip 10.4.3.4 \
-</span><span style="color:#fdf4c1;">    -v /tmp/inbox:/var/inbox \
-</span><span style="color:#fdf4c1;">    docspell/dsc:latest dsc -v -d http://10.4.3.3:7880 watch -r --delete -i \
-</span><span style="color:#fdf4c1;">      --header </span><span style="color:#b8bb26;">&quot;Docspell-Integration:test123&quot;</span><span style="color:#fdf4c1;"> /var/inbox
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> docker run<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>name</span> ds-consume <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">    --</span>network</span> dsnet<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>ip</span> 10.4.3.4 <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">    -</span>v</span> /tmp/inbox:/var/inbox <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span>    docspell/dsc:latest dsc<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>v</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span> http://10.4.3.3:7880 watch<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>r</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>delete</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>i</span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">      --</span>header</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Docspell-Integration:test123<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> /var/inbox</span>
 </span></code></pre>
 <p>This starts the <a href="https://docspell.org/docs/tools/cli/">dsc</a> tool that watches a
 directory and uploads arriving files to the docspell server. This
@@ -336,7 +729,7 @@ with the name of the <em>collective</em> that you registered and place a file
 into the <code>/tmp/inbox/[collective]</code> directory. The file is pushed to
 docspell and processed shortly after.</p>
 <p>To see all available options, run <code>dsc</code> with the <code>--help</code> option:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ docker run docspell/dsc:latest dsc --help
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> docker run docspell/dsc:latest dsc<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>help</span></span>
 </span></code></pre>
 <p>Or just <a href="https://github.com/docspell/dsc/releases/latest">download the
 binary</a>, no docker
@@ -346,34 +739,34 @@ use the docker images. For instance, this setup does not provide
 fulltext search. For a more sophisticated docker setup, use
 appropriate tools, for example <code>docker-compose</code> which is explained
 below.</p>
-<h2 id="docker-compose">Docker Compose<a class="zola-anchor" href="#docker-compose" aria-label="Anchor link for: docker-compose">🔗</a></h2>
+<h1 id="docker-compose">Docker Compose<a class="zola-anchor" href="#docker-compose" aria-label="Anchor link for: docker-compose">🔗</a></h1>
 <p>There is a <a href="https://docs.docker.com/compose/">docker-compose</a> setup
 available in the <code>/docker/docker-compose</code> folder. This setup is
 similiar to the example above, but adding fulltext search and a
 PostgreSQL database by using just one command. It's only a few steps
 to get started.</p>
-<h3 id="start-docspell">Start Docspell<a class="zola-anchor" href="#start-docspell" aria-label="Anchor link for: start-docspell">🔗</a></h3>
-<h4 id="1-get-the-docker-compose-files">1. Get the docker-compose files<a class="zola-anchor" href="#1-get-the-docker-compose-files" aria-label="Anchor link for: 1-get-the-docker-compose-files">🔗</a></h4>
+<h2 id="start-docspell">Start Docspell<a class="zola-anchor" href="#start-docspell" aria-label="Anchor link for: start-docspell">🔗</a></h2>
+<h3 id="1-get-the-docker-compose-files">1. Get the docker-compose files<a class="zola-anchor" href="#1-get-the-docker-compose-files" aria-label="Anchor link for: 1-get-the-docker-compose-files">🔗</a></h3>
 <p>There are two options. You can clone the whole repository:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ git clone https://github.com/eikek/docspell
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> git clone https://github.com/eikek/docspell</span>
 </span></code></pre>
 <p>This downloads all sources. What you actually need is only 3 files. So
 if you don't have git or don't want to clone the whole repo, use these
 steps instead:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ mkdir -p docspell/docker/docker-compose
-</span><span style="color:#fdf4c1;">$ cd docspell/docker/docker-compose
-</span><span style="color:#fdf4c1;">$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docker-compose.yml
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> mkdir<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>p</span> docspell/docker/docker-compose</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> cd docspell/docker/docker-compose</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docker-compose.yml</span>
 </span></code></pre>
 <p>You can choose any directory instead of
 <code>docspell/docker/docker-compose</code>, of course. It's only this folder to
 make the rest of the guide work for both ways of obtaining the
 docker-compose file.</p>
-<h4 id="2-run-docker-compose-up">2. Run <code>docker-compose up</code><a class="zola-anchor" href="#2-run-docker-compose-up" aria-label="Anchor link for: 2-run-docker-compose-up">🔗</a></h4>
+<h3 id="2-run-docker-compose-up">2. Run <code>docker-compose up</code><a class="zola-anchor" href="#2-run-docker-compose-up" aria-label="Anchor link for: 2-run-docker-compose-up">🔗</a></h3>
 <p>Change into the new <code>docker-compose</code> directory, for example:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ cd docspell/docker/docker-compose
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> cd docspell/docker/docker-compose</span>
 </span></code></pre>
 <p>Then run <code>docker-compose</code>:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ docker-compose up -d
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> docker-compose up<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span></span>
 </span></code></pre>
 <p>If you look at <code>docker-compose.yml</code>, there are several environment
 variables defined. A few that you should change, i.e. all &quot;secrets&quot;:</p>
@@ -400,58 +793,58 @@ Please see the <a href="https://docspell.org/docs/configure/">configuration</a> 
 details and possible values/variables. You can create a config file
 and mount it into the container. Then specify the config file as the
 an argument to the command, i.e. add a</p>
-<pre data-lang="yml" style="background-color:#282828;color:#fdf4c1aa;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="font-weight:bold;color:#8ec07c;">command</span><span>:
-</span><span>  - </span><span style="color:#b8bb26;">/path/to/config.conf
+<pre data-lang="yml" class="language-yml z-code"><code class="language-yml" data-lang="yml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">command</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml">/path/to/config.conf</span>
 </span></code></pre>
 <p>to the service definition (or add it to an existing <code>command:</code>
 section).</p>
-<h3 id="override-this-setup">Override this setup<a class="zola-anchor" href="#override-this-setup" aria-label="Anchor link for: override-this-setup">🔗</a></h3>
+<h2 id="override-this-setup">Override this setup<a class="zola-anchor" href="#override-this-setup" aria-label="Anchor link for: override-this-setup">🔗</a></h2>
 <p>If you want to change this setup, you can simply use your own compose
 file or add a <code>docker-compose.override.yml</code> that allows to amend
 certain configs. Look <a href="https://docs.docker.com/compose/extends/">here</a>
 to find more about it.</p>
 <p>As an example, here is a <code>docker-compose.override.yml</code>:</p>
-<pre data-lang="yaml" style="background-color:#282828;color:#fdf4c1aa;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="font-weight:bold;color:#8ec07c;">version</span><span>: </span><span style="color:#b8bb26;">&#39;3.7&#39;
-</span><span>
-</span><span style="font-weight:bold;color:#8ec07c;">services</span><span>:
-</span><span>  </span><span style="font-weight:bold;color:#8ec07c;">consumedir</span><span>:
-</span><span>    </span><span style="font-weight:bold;color:#8ec07c;">volumes</span><span>:
-</span><span>      - </span><span style="color:#b8bb26;">importdocs:/opt/docs
-</span><span>
-</span><span style="font-weight:bold;color:#8ec07c;">volumes</span><span>:
-</span><span>  </span><span style="font-weight:bold;color:#8ec07c;">docspell-postgres_data</span><span>:
-</span><span>    </span><span style="font-weight:bold;color:#8ec07c;">driver</span><span>: </span><span style="color:#b8bb26;">local
-</span><span>    </span><span style="font-weight:bold;color:#8ec07c;">driver_opts</span><span>:
-</span><span>      </span><span style="font-weight:bold;color:#8ec07c;">type</span><span>: </span><span style="color:#b8bb26;">nfs4
-</span><span>      </span><span style="font-weight:bold;color:#8ec07c;">o</span><span>: </span><span style="color:#b8bb26;">addr=192.168.x.y,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14
-</span><span>      </span><span style="font-weight:bold;color:#8ec07c;">device</span><span>: </span><span style="color:#b8bb26;">&quot;:/mnt/FreeNas/docker_vol1/docspell/postgres_data&quot;
-</span><span>
-</span><span>  </span><span style="font-weight:bold;color:#8ec07c;">docspell-solr_data</span><span>:
-</span><span>    </span><span style="font-weight:bold;color:#8ec07c;">driver</span><span>: </span><span style="color:#b8bb26;">local
-</span><span>    </span><span style="font-weight:bold;color:#8ec07c;">driver_opts</span><span>:
-</span><span>      </span><span style="font-weight:bold;color:#8ec07c;">type</span><span>: </span><span style="color:#b8bb26;">nfs4
-</span><span>      </span><span style="font-weight:bold;color:#8ec07c;">o</span><span>: </span><span style="color:#b8bb26;">addr=192.168.x.y,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14
-</span><span>      </span><span style="font-weight:bold;color:#8ec07c;">device</span><span>: </span><span style="color:#b8bb26;">&quot;:/mnt/FreeNas/docker_vol1/docspell/solr_data&quot;
-</span><span>
-</span><span>  </span><span style="font-weight:bold;color:#8ec07c;">importdocs</span><span>:
-</span><span>    </span><span style="font-weight:bold;color:#8ec07c;">driver</span><span>: </span><span style="color:#b8bb26;">local
-</span><span>    </span><span style="font-weight:bold;color:#8ec07c;">driver_opts</span><span>:
-</span><span>      </span><span style="font-weight:bold;color:#8ec07c;">type</span><span>: </span><span style="color:#b8bb26;">nfs4
-</span><span>      </span><span style="font-weight:bold;color:#8ec07c;">o</span><span>: </span><span style="color:#b8bb26;">addr=192.168.x.y,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14
-</span><span>      </span><span style="font-weight:bold;color:#8ec07c;">device</span><span>: </span><span style="color:#b8bb26;">&quot;:/mnt/FreeNas/archiv/gescannt/output&quot;
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">version</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-single z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&#39;</span>3.7<span class="z-punctuation z-definition z-string z-end z-yaml">&#39;</span></span>
+
+<span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">services</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">consumedir</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">volumes</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+      <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml">importdocs:/opt/docs</span>
+
+<span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">volumes</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">docspell-postgres_data</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">driver</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">local</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">driver_opts</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">type</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">nfs4</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">o</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">addr=192.168.x.y,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">device</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>:/mnt/FreeNas/docker_vol1/docspell/postgres_data<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">docspell-solr_data</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">driver</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">local</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">driver_opts</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">type</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">nfs4</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">o</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">addr=192.168.x.y,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">device</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>:/mnt/FreeNas/docker_vol1/docspell/solr_data<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">importdocs</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">driver</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">local</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">driver_opts</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">type</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">nfs4</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">o</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">addr=192.168.x.y,rw,noatime,rsize=8192,wsize=8192,tcp,timeo=14</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">device</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>:/mnt/FreeNas/archiv/gescannt/output<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
 </span></code></pre>
-<h3 id="upgrading">Upgrading<a class="zola-anchor" href="#upgrading" aria-label="Anchor link for: upgrading">🔗</a></h3>
+<h2 id="upgrading">Upgrading<a class="zola-anchor" href="#upgrading" aria-label="Anchor link for: upgrading">🔗</a></h2>
 <p>Since <a href="https://docspell.org/docs/install/downgrading/">downgrading</a> is not supported,
 it is recommended to backup your database before upgrading. Should
 something not work as expected, restore the database backup and go
 back to the previous version.</p>
 <p>The latest release is always tagged with <code>latest</code>. Should you use this
 tag, then run these commands to upgrade to newer images:</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ docker-compose down
-</span><span style="color:#fdf4c1;">$ docker-compose pull
-</span><span style="color:#fdf4c1;">$ docker-compose up --force-recreate --build -d
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> docker-compose down</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> docker-compose pull</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> docker-compose up<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>force-recreate</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>build</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span></span>
 </span></code></pre>
-<h3 id="backups">Backups<a class="zola-anchor" href="#backups" aria-label="Anchor link for: backups">🔗</a></h3>
+<h2 id="backups">Backups<a class="zola-anchor" href="#backups" aria-label="Anchor link for: backups">🔗</a></h2>
 <p>When running the docker compose setup, you can use the following to
 backup the database.</p>
 <ol>
@@ -462,12 +855,12 @@ It is preferred to stop, i.e. should you upgrade versions.</p>
 <li>
 <p>Add a new file <code>docker-compose.override.yml</code> (next to your
 <code>docker-compose.yml</code>) with this content:</p>
-<pre data-lang="yml" style="background-color:#282828;color:#fdf4c1aa;" class="language-yml "><code class="language-yml" data-lang="yml"><span style="font-weight:bold;color:#8ec07c;">version</span><span>: </span><span style="color:#b8bb26;">&#39;3.8&#39;
-</span><span style="font-weight:bold;color:#8ec07c;">services</span><span>:
-</span><span>
-</span><span style="font-weight:bold;color:#8ec07c;">db</span><span>:
-</span><span>  </span><span style="font-weight:bold;color:#8ec07c;">volumes</span><span>:
-</span><span>    - </span><span style="color:#b8bb26;">/some/backupdir:/opt/backup
+<pre data-lang="yml" class="language-yml z-code"><code class="language-yml" data-lang="yml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">version</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-single z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&#39;</span>3.8<span class="z-punctuation z-definition z-string z-end z-yaml">&#39;</span></span>
+</span><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">services</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+
+</span><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">db</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span>  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">volumes</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span>    <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml">/some/backupdir:/opt/backup</span>
 </span></code></pre>
 <p>The <code>/some/backupdir</code> is the directory where the backup should be stored on the host.</p>
 </li>
@@ -476,7 +869,7 @@ It is preferred to stop, i.e. should you upgrade versions.</p>
 </li>
 <li>
 <p>Run the dump command:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>docker exec -it postgres_db pg_dump -d dbname -U dbuser -Fc -f /opt/backup/docspell.sqlc
+<pre class="z-code"><code><span class="z-text z-plain">docker exec -it postgres_db pg_dump -d dbname -U dbuser -Fc -f /opt/backup/docspell.sqlc
 </span></code></pre>
 </li>
 </ol>
@@ -487,45 +880,118 @@ into the <code>docker-compose.yml</code>. Now you have the dump in your local
 <p>This dump can be restored almost the same way. Mount your backup
 directory into the db container as before in steps 1-3. Then run this
 command in step 4 instead:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>docker exec -it postgres_db pg_restore -d dbname -U dbuser -Fc /opt/backup/docspell.sqlc
+<pre class="z-code"><code><span class="z-text z-plain">docker exec -it postgres_db pg_restore -d dbname -U dbuser -Fc /opt/backup/docspell.sqlc
 </span></code></pre>
 <p>So, before the upgrade run steps 1 to 4. Then you have a dump of your
 current database (everything, files and all other data). When creating
 and restoring a dump, do not start the docspell containers - make sure
 to start the db container only.</p>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  
 
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;install&#x2F;docker.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
-        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
-<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+                </div>
 
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#docker-images" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Docker Images
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#examples" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Examples
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#docker-compose" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Docker Compose
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#start-docspell" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Start Docspell
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#override-this-setup" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Override this setup
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#upgrading" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Upgrading
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;docker&#x2F;#backups" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Backups
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -560,4 +1026,5 @@ to start the db container only.</p>
 <!-- / Fathom -->
 
     </body>
+
 </html>

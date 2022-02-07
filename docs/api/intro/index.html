@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+
+
+
+
+
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,188 +32,611 @@
 <link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
-        <title>Api Introduction – Docspell Documentation</title>
+
+        <title>Api Introduction - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
     </head>
-    <body>
-        <section class="hero is-info is-small">
-            <div class="hero-head">
-                <nav class="navbar">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <span class="icon">
-                <img src="/icons/logo-only-36.svg">
-            </span>
-            <span>
-                Docspell
-            </span>
-        </a>
-    </div>
-    <div class="navbar-start">
-        <a target="_blank"
-           href="https://github.com/eikek/docspell"
-           class="navbar-item">
-            <span class="icon">
-                <img src="/icons/github-40.svg">
-            </span>
-            <span>
-                Github
-            </span>
-        </a>
-    </div>
-</nav>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
 
-            </div>
-            <div class="hero-body">
-                <div class="columns is-vcentered">
-                    <div class="column is-8">
-                        <h1 class="title">
-                            Api Introduction
-                        </h1>
-                        <h2 class="subtitle">
-                            Docspell Documentation
-                        </h2>
-                    </div>
-                    <div class="column">
-                        <id id="search"></id>
-                    </div>
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
                 </div>
             </div>
-        </section>
-        <nav class="breadcrumb has-succeeds-separator" aria-label="breadcrumbs"
-             style="position:sticky; top: 0; z-index:10;">
-            <ul>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;"></a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;">Overview</a>
-                </li>
-                
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;">Api</a>
-                </li>
-                
-                <li>
-                    <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;">Api Introduction</a>
-                </li>
-            </ul>
-        </nav>
 
-        <section class="section pt-2">
-            <div class="columns is-desktop">
-                <div class="column is-3">
-                    <div class="menu"
-                         style="position:sticky; top:2rem; z-index:10;">
-                        <ul class="menu-list">
-                            
-                            
+            <div class="flex-grow place-items-end">
 
-                            <p class="menu-label">
-                                Api
-                            </p>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/api/intro/"
-                                   class="is-active">
-                                    Api Introduction
-                                </a>
-                                
-                                <ul class="menu-list">
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#authentication">
-                                            Authentication
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#openid-connect">
-                                                    OpenID Connect
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#admin">
-                                            Admin
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#live-api">
-                                            Live Api
-                                        </a>
-                                        <ul>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                    <li>
-                                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#examples">
-                                            Examples
-                                        </a>
-                                        <ul>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#login">
-                                                    Login
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#get-new-token">
-                                                    Get new token
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#get-some-insights">
-                                                    Get some insights
-                                                </a>
-                                            </li>
-                                            
-                                            <li>
-                                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#search-for-items">
-                                                    Search for items
-                                                </a>
-                                            </li>
-                                            
-                                        </ul>
-                                    </li>
-                                    
-                                </ul>
-                                
-                            </li>
-                            
-                            
-                            <li>
-                                <a href="https://docspell.org/docs/api/upload/"
-                                   >
-                                    Upload Request
-                                </a>
-                                
-                            </li>
-                            
-                        </ul>
-                    </div>
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
                 </div>
+            </div>
 
-                <div class="column is-9">
-                    <div class="container">
-                        <div class="content doc">
-                            <p>Docspell is designed as a REST server that uses JSON to exchange
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+            <div id="sidebar"
+                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+            >
+
+                
+  <div class="flex flex-col mt-2">
+    
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200  ">
+        <a href="https://docspell.org/docs/"
+           title=""
+           class="block w-full"
+        >
+            <i class="fa fa-book mr-1"></i>
+            Documentation
+        </a>
+    </div>
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;quickstart&#x2F;"
+           title="There are multiple ways to install Docspell. This section contains detailed instructions."
+           class="block w-full"
+        >
+            Installation
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/quickstart/" class="w-full block">
+                Getting Started
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/prereq/" class="w-full block">
+                Prerequisites
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/docker/" class="w-full block">
+                Docker
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
+                Download &amp; Run
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/nix/" class="w-full block">
+                Nix &#x2F; Nixos
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/downgrading/" class="w-full block">
+                Downgrading
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
+                Raspberry-Pi
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/reverseproxy/" class="w-full block">
+                Reverse Proxy
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/install/changelog/" class="w-full block">
+                Changelog
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;feed&#x2F;"
+           title="Shows several ways for getting data into Docspell."
+           class="block w-full"
+        >
+            Feed Data Into Docspell
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;features&#x2F;"
+           title="A list of features and limitations."
+           class="block w-full"
+        >
+            Features And Limitations
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+           title="Describes the configuration file and shows all default settings."
+           class="block w-full"
+        >
+            Configuration
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;dashboards&#x2F;"
+           title="This section describes the features of the web application."
+           class="block w-full"
+        >
+            Web-Ui
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/dashboards/" class="w-full block">
+                Dashboards
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/uploading/" class="w-full block">
+                Uploads
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/metadata/" class="w-full block">
+                Meta Data
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/customfields/" class="w-full block">
+                Custom Fields
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/curate/" class="w-full block">
+                Curate Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/multiedit/" class="w-full block">
+                Multi Edit
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/finding/" class="w-full block">
+                Finding Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/bookmarks/" class="w-full block">
+                Bookmarks
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/itemcard-customize/" class="w-full block">
+                Customize Item Card
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/emailsettings/" class="w-full block">
+                E-Mail Settings
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/mailitem/" class="w-full block">
+                Send Items Via E-Mail
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/notification/" class="w-full block">
+                Notifications
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/scanmailbox/" class="w-full block">
+                Scan Mailboxes
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/processing/" class="w-full block">
+                Job Queue
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/autotagging/" class="w-full block">
+                Auto Tagging
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/merge/" class="w-full block">
+                Merge Items
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/totp/" class="w-full block">
+                Two-Factor Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/webapp/share/" class="w-full block">
+                Shares
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;tools&#x2F;cli&#x2F;"
+           title="There are several tools distributed with docspell, like a program to watch a folder and import files or a simple android app."
+           class="block w-full"
+        >
+            Tools
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/cli/" class="w-full block">
+                Cli
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/android/" class="w-full block">
+                Android Client
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
+                Smtp Gateway With Exim
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/paperless-import/" class="w-full block">
+                Paperless Import
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;"
+           title="Contains documentation about the REST API."
+           class="block w-full"
+        >
+            Api
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
+            <a href="https://docspell.org/docs/api/intro/" class="w-full block">
+                Api Introduction
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/api/upload/" class="w-full block">
+                Upload Request
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;joex&#x2F;intro&#x2F;"
+           title="More information about the job executor component."
+           class="block w-full"
+        >
+            Joex
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/intro/" class="w-full block">
+                Joex
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/joex/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;faq&#x2F;"
+           title="Frequently asked questions."
+           class="block w-full"
+        >
+            Faq
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;building&#x2F;"
+           title="Contains build instructions and other internal notes."
+           class="block w-full"
+        >
+            Development
+        </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/building/" class="w-full block">
+                Building Docspell
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/translation/" class="w-full block">
+                Translating Web-Ui
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/dev/development/" class="w-full block">
+                Tips &amp; Setup
+            </a>
+        </div>
+        
+    </div>
+    
+
+    
+    
+</div>
+
+
+
+            </div>
+            
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+  
+  
+  <h1 id="api">Api<a class="zola-anchor" href="#api" aria-label="Anchor link for: api">🔗</a></h1>
+<p>Docspell is designed as a REST server that uses JSON to exchange
 data. The REST api can be used to integrate docspell into your
 workflow.</p>
 <p><a href="/openapi/docspell-openapi.html">Docspell REST Api Doc</a></p>
@@ -257,7 +687,7 @@ secret defined in the configuration file. The person who installs
 docspell is the admin and knows this secret (and may share it) and
 requests must provide it as a http header <code>Docspell-Admin-Secret</code>.</p>
 <p>Example: re-create the fulltext index (over all collectives):</p>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&quot;Docspell-Admin-Secret: test123&quot;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/admin/fts/reIndexAll
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> curl<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>XPOST</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>H</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Docspell-Admin-Secret: test123<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> http://localhost:7880/api/v1/admin/fts/reIndexAll</span>
 </span></code></pre>
 <p>To enable these endpoints, you must provide a secret in the
 <a href="https://docspell.org/docs/configure/#admin-endpoint">configuration</a>.</p>
@@ -267,140 +697,194 @@ server provides a swagger generated api documenation, that allows
 playing around with the api. It requires a running docspell rest
 server. If it is deployed at <code>http://localhost:7880</code>, then check this
 url:</p>
-<pre style="background-color:#282828;color:#fdf4c1aa;"><code><span>http://localhost:7880/api/doc
+<pre class="z-code"><code><span class="z-text z-plain">http://localhost:7880/api/doc
 </span></code></pre>
 <h2 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h2>
 <p>These examples use the great command line tool
 <a href="https://curl.haxx.se/">curl</a>.</p>
 <h3 id="login">Login<a class="zola-anchor" href="#login" aria-label="Anchor link for: login">🔗</a></h3>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -X POST -d </span><span style="color:#b8bb26;">&#39;{&quot;account&quot;: &quot;smith&quot;, &quot;password&quot;: &quot;test&quot;}&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/open/auth/login
-</span><span style="color:#fdf4c1;">{</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;user&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Login successful&quot;
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;token&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;1568142350115-ZWlrZS9laWtl-$</span><span style="color:#fdf4c1;">2</span><span style="color:#b8bb26;">a$</span><span style="color:#fdf4c1;">1</span><span style="color:#b8bb26;">0$</span><span style="color:#fdf4c1;">rGZUFDAVNIKh4Tj6u6tlI</span><span style="color:#b8bb26;">.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=&quot;
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;validMs&quot;</span><span style="color:#fdf4c1;">:300000
-</span><span>}
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> curl<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>X</span> POST<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>{&quot;account&quot;: &quot;smith&quot;, &quot;password&quot;: &quot;test&quot;}<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span> http://localhost:7880/api/v1/open/auth/login</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">{<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>collective<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>smith<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>user<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>smith<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>success<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:true</span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>message<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Login successful<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>token<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>1568142350115-ZWlrZS9laWtl-<span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">2</span></span>a<span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">1</span></span>0<span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">rGZUFDAVNIKh4Tj6u6tlI</span></span>.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>validMs<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:300000</span></span>
+<span class="z-meta z-function-call z-shell"></span>}
 </span></code></pre>
 <h3 id="get-new-token">Get new token<a class="zola-anchor" href="#get-new-token" aria-label="Anchor link for: get-new-token">🔗</a></h3>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -XPOST -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142350115-ZWlrZS9laWtl-$2a$10$rGZUFDAVNIKh4Tj6u6tlI.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/auth/session
-</span><span style="color:#fdf4c1;">{</span><span style="color:#b8bb26;">&quot;collective&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;user&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;smith&quot;
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;success&quot;</span><span style="color:#fdf4c1;">:true
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;message&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;Login successful&quot;
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;token&quot;</span><span style="color:#fdf4c1;">:</span><span style="color:#b8bb26;">&quot;1568142446077-ZWlrZS9laWtl-$</span><span style="color:#fdf4c1;">2</span><span style="color:#b8bb26;">a$</span><span style="color:#fdf4c1;">1</span><span style="color:#b8bb26;">0$</span><span style="color:#fdf4c1;">3</span><span style="color:#b8bb26;">B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=&quot;
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;validMs&quot;</span><span style="color:#fdf4c1;">:300000
-</span><span>}
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> curl<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>XPOST</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>H</span> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>X-Docspell-Auth: 1568142350115-ZWlrZS9laWtl-$2a$10$rGZUFDAVNIKh4Tj6u6tlI.-O2euwCvmBT0TlyDmIHR1ZsLQPAI=<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span> http://localhost:7880/api/v1/sec/auth/session</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">{<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>collective<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>smith<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>user<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>smith<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>success<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:true</span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>message<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Login successful<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span></span>
+<span class="z-variable z-other z-readwrite z-assignment z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>token<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>1568142446077-ZWlrZS9laWtl-<span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">2</span></span>a<span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">1</span></span>0<span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">3</span></span>B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>validMs<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:300000</span></span>
+<span class="z-meta z-function-call z-shell"></span>}
 </span></code></pre>
 <h3 id="get-some-insights">Get some insights<a class="zola-anchor" href="#get-some-insights" aria-label="Anchor link for: get-some-insights">🔗</a></h3>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1568142446077-ZWlrZS9laWtl-$2a$10$3B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=&#39;</span><span style="color:#fdf4c1;"> http://localhost:7880/api/v1/sec/collective/insights
-</span><span style="color:#fdf4c1;">{</span><span style="color:#b8bb26;">&quot;incomingCount&quot;</span><span style="color:#fdf4c1;">:3
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;outgoingCount&quot;</span><span style="color:#fdf4c1;">:1
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;itemSize&quot;</span><span style="color:#fdf4c1;">:207310
-</span><span style="color:#fdf4c1;">,</span><span style="color:#b8bb26;">&quot;tagCloud&quot;</span><span style="color:#fdf4c1;">:{</span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">:[]</span><span>}
-</span><span>}
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> curl<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>H</span> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>X-Docspell-Auth: 1568142446077-ZWlrZS9laWtl-$2a$10$3B0teJ9rMpsBJPzHfZZPoO-WeA1bkfEONBN8fyzWE8DeaAHtUc=<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span> http://localhost:7880/api/v1/sec/collective/insights</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">{<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>incomingCount<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:3</span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>outgoingCount<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:1</span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>itemSize<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:207310</span></span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>tagCloud<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:{<span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>items<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:[]</span></span><span class="z-meta z-function-call z-shell"></span>}
+<span class="z-meta z-function-call z-shell"></span>}
 </span></code></pre>
 <h3 id="search-for-items">Search for items<a class="zola-anchor" href="#search-for-items" aria-label="Anchor link for: search-for-items">🔗</a></h3>
-<pre data-lang="bash" style="background-color:#282828;color:#fdf4c1aa;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#fdf4c1;">$ curl -i -H </span><span style="color:#b8bb26;">&#39;X-Docspell-Auth: 1615240493…kYtFynj4&#39; </span><span style="color:#fdf4c1;">\
-</span><span style="color:#fdf4c1;">  </span><span style="color:#b8bb26;">&#39;http://localhost:7880/api/v1/sec/item/search?q=tag=todo,invoice%20year:2021&#39;
-</span><span>{
-</span><span>  </span><span style="color:#b8bb26;">&quot;groups&quot;</span><span style="color:#fdf4c1;">: [
-</span><span>    {
-</span><span>      </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;2021-02&quot;</span><span style="color:#fdf4c1;">,
-</span><span>      </span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">: [
-</span><span>        {
-</span><span>          </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;41J962DjS7T-sjP9idxJ6o9-hJrmBk34YJN-mQqysHwcFD6&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;something.txt&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;state&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;date&quot;</span><span style="color:#fdf4c1;">: 1613598750202,
-</span><span>          </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span style="color:#fdf4c1;">: 1617883200000,
-</span><span>          </span><span style="color:#b8bb26;">&quot;source&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;outgoing&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span style="color:#fdf4c1;">: {
-</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH&quot;</span><span style="color:#fdf4c1;">,
-</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;EasyCare AG&quot;
-</span><span style="color:#fdf4c1;">          },
-</span><span>          </span><span style="color:#b8bb26;">&quot;corrPerson&quot;</span><span style="color:#fdf4c1;">: null,
-</span><span>          </span><span style="color:#b8bb26;">&quot;concPerson&quot;</span><span style="color:#fdf4c1;">: null,
-</span><span>          </span><span style="color:#b8bb26;">&quot;concEquipment&quot;</span><span style="color:#fdf4c1;">: null,
-</span><span>          </span><span style="color:#b8bb26;">&quot;folder&quot;</span><span style="color:#fdf4c1;">: {
-</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;GKwSvYVdvfb-QeAwzzT7pBM-Gbji2hQc2bL-uCyrMCAg3wo&quot;</span><span style="color:#fdf4c1;">,
-</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;test&quot;
-</span><span style="color:#fdf4c1;">          },
-</span><span>          </span><span style="color:#b8bb26;">&quot;attachments&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;tags&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;customfields&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span style="color:#fdf4c1;">: null,
-</span><span>          </span><span style="color:#b8bb26;">&quot;highlighting&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]
-</span><span>        }
-</span><span>      </span><span style="color:#fdf4c1;">]
-</span><span>    }</span><span style="color:#fdf4c1;">,
-</span><span>    {
-</span><span>      </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;2021-01&quot;</span><span style="color:#fdf4c1;">,
-</span><span>      </span><span style="color:#b8bb26;">&quot;items&quot;</span><span style="color:#fdf4c1;">: [
-</span><span>        {
-</span><span>          </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;ANqtuDynXWU-PrhzUxzQVmH-PDuJfeJ6dYB-Ut3g1jrcFhw&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;letter-de.pdf&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;state&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;confirmed&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;date&quot;</span><span style="color:#fdf4c1;">: 1611144000000,
-</span><span>          </span><span style="color:#b8bb26;">&quot;dueDate&quot;</span><span style="color:#fdf4c1;">: null,
-</span><span>          </span><span style="color:#b8bb26;">&quot;source&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;webapp&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;direction&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;incoming&quot;</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;corrOrg&quot;</span><span style="color:#fdf4c1;">: {
-</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH&quot;</span><span style="color:#fdf4c1;">,
-</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;EasyCare AG&quot;
-</span><span style="color:#fdf4c1;">          },
-</span><span>          </span><span style="color:#b8bb26;">&quot;corrPerson&quot;</span><span style="color:#fdf4c1;">: null,
-</span><span>          </span><span style="color:#b8bb26;">&quot;concPerson&quot;</span><span style="color:#fdf4c1;">: {
-</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;id&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;AA5sV1nH9ve-mDCn4DxDRvu-tWkUquiW4fZ-fVJimW4Vq79&quot;</span><span style="color:#fdf4c1;">,
-</span><span style="color:#fdf4c1;">            </span><span style="color:#b8bb26;">&quot;name&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#b8bb26;">&quot;Max Mustermann&quot;
-</span><span style="color:#fdf4c1;">          },
-</span><span>          </span><span style="color:#b8bb26;">&quot;concEquipment&quot;</span><span style="color:#fdf4c1;">: null,
-</span><span>          </span><span style="color:#b8bb26;">&quot;folder&quot;</span><span style="color:#fdf4c1;">: null,
-</span><span>          </span><span style="color:#b8bb26;">&quot;attachments&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;tags&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;customfields&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]</span><span style="color:#fdf4c1;">,
-</span><span>          </span><span style="color:#b8bb26;">&quot;notes&quot;</span><span style="color:#fdf4c1;">: null,
-</span><span>          </span><span style="color:#b8bb26;">&quot;highlighting&quot;</span><span style="color:#fdf4c1;">: </span><span style="color:#fa5c4b;">[]
-</span><span>        }
-</span><span>      </span><span style="color:#fdf4c1;">]
-</span><span>    }
-</span><span>  </span><span style="color:#fdf4c1;">]
-</span><span>}
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> curl<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>i</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>H</span> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>X-Docspell-Auth: 1615240493…kYtFynj4<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span>  <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>http://localhost:7880/api/v1/sec/item/search?q=tag=todo,invoice%20year:2021<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span>
+<span class="z-punctuation z-definition z-compound z-braces z-begin z-shell">{</span>
+  <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>groups<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> [</span>
+    <span class="z-punctuation z-definition z-compound z-braces z-begin z-shell">{</span>
+      <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>2021-02<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+      <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>items<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> [</span>
+        <span class="z-punctuation z-definition z-compound z-braces z-begin z-shell">{</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>41J962DjS7T-sjP9idxJ6o9-hJrmBk34YJN-mQqysHwcFD6<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>something.txt<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>state<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>confirmed<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>date<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> 1613598750202,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dueDate<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> 1617883200000,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>source<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>webapp<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>direction<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>outgoing<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>corrOrg<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+            <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>: <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span><span class="z-punctuation z-separator z-shell">,</span>
+            <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>: <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>EasyCare AG<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+          <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>corrPerson<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> null,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>concPerson<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> null,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>concEquipment<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> null,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>folder<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+            <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>: <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>GKwSvYVdvfb-QeAwzzT7pBM-Gbji2hQc2bL-uCyrMCAg3wo<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span><span class="z-punctuation z-separator z-shell">,</span>
+            <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>: <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>test<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+          <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>attachments<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span><span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>tags<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span><span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>customfields<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span><span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>notes<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> null,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>highlighting<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span><span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span></span>
+        <span class="z-punctuation z-definition z-compound z-braces z-end z-shell">}</span>
+      <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">]</span></span>
+    <span class="z-punctuation z-definition z-compound z-braces z-end z-shell">}</span><span class="z-meta z-function-call z-arguments z-shell">,</span>
+    <span class="z-punctuation z-definition z-compound z-braces z-begin z-shell">{</span>
+      <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>2021-01<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+      <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>items<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> [</span>
+        <span class="z-punctuation z-definition z-compound z-braces z-begin z-shell">{</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>ANqtuDynXWU-PrhzUxzQVmH-PDuJfeJ6dYB-Ut3g1jrcFhw<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>letter-de.pdf<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>state<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>confirmed<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>date<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> 1611144000000,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dueDate<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> null,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>source<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>webapp<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>direction<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>incoming<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>corrOrg<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+            <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>: <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>J58tYifCh4X-cze5R8eSJcc-YAFr6qt1VKL-1ZmhRwiTXoH<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span><span class="z-punctuation z-separator z-shell">,</span>
+            <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>: <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>EasyCare AG<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+          <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>corrPerson<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> null,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>concPerson<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+            <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>id<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>: <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>AA5sV1nH9ve-mDCn4DxDRvu-tWkUquiW4fZ-fVJimW4Vq79<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span><span class="z-punctuation z-separator z-shell">,</span>
+            <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>: <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Max Mustermann<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+          <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>concEquipment<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> null,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>folder<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> null,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>attachments<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span><span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>tags<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span><span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>customfields<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span><span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>notes<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> null,</span>
+          <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>highlighting<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>:</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span><span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span></span>
+        <span class="z-punctuation z-definition z-compound z-braces z-end z-shell">}</span>
+      <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">]</span></span>
+    <span class="z-punctuation z-definition z-compound z-braces z-end z-shell">}</span>
+  <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">]</span></span>
+<span class="z-punctuation z-definition z-compound z-braces z-end z-shell">}</span>
 </span></code></pre>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  
 
-        <footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <span>
-                Docspell 0.31.0
-            </span>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
-            <span class="ml-1 mr-1">•</span>
-            <a href="https://github.com/eikek/docspell" target="_blank">
-                Source Code
-            </a>
-            <span class="ml-1 mr-1">•</span>
-            <span>
-                Chat on <a href="https://gitter.im/eikek/docspell">Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im">Matrix</a>
-            </span>
-        </div>
+
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;api&#x2F;intro.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
     </div>
+    
+    </div>
+
     
 </footer>
 
-        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
-<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
-<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+                </div>
 
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#api" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Api
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#authentication" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Authentication
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#admin" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Admin
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#live-api" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Live Api
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;api&#x2F;intro&#x2F;#examples" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Examples
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
         <script>
  var initSearch = function() {
      var elmSearch = Elm.Search.init({
@@ -435,4 +919,5 @@ url:</p>
 <!-- / Fathom -->
 
     </body>
+
 </html>

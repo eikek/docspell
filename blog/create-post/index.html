@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Docspell is a Document Management System (DMS), a system that asists in organizing your piles of documents, resulting from scanners, e-mails and other sources with miminal effort.">
+<meta name="keywords" content="document management system dms organizer ocr open source free scan pdf word doc archive gpl machine learning nlp auto tagging"/>
+<meta name="robots" content="index,follow"/>
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Create a new post - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+
+        <title>Create a new post - Docspell Blog</title>
+        <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
+    </head>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
+
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.32.0
+                </div>
+            </div>
+
+            <div class="flex-grow place-items-end">
+
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+<div class="flex flex-row space-x-2 -mb-6 mt-6 text-sm opacity-70 font-medium">
+    
+    
+    
+    
+    <div class="" title="by eikek">
+        by
+        
+        eikek
+        
+    </div>
+    <div class="" title="Created on 2022-01-31">
+        on
+        2022-01-31
+    </div>
+</div>
+
+<h1 id="create-a-new-post">Create a new post<a class="zola-anchor" href="#create-a-new-post" aria-label="Anchor link for: create-a-new-post">🔗</a></h1>
+<p>Sharing ideas and tips is very much welcome, if you like you can
+create a small (or large) post here. You'll need <code>git</code> and potentially
+a <code>github</code> account to make this convenient.</p>
+<span id="continue-reading"></span>
+<p>The contents of this website is maintained in the <a href="https://github.com/eikek/docspell"><i class="fab fa-github ml-1"></i> git
+repository</a> in the <code>website/site</code>
+folder. It is build by the static site generator
+<a href="https://getzola.org">zola</a> from a set of
+<a href="https://www.markdownguide.org/basic-syntax">markdown</a> files.</p>
+<p>It is not necessary to know how everything is connected, you only need
+to edit or create markdown files at some specific location. Here are
+some proposals how to add or edit pages and getting them published to
+docspell.org.</p>
+<h2 id="where-to-create-the-files">Where to create the files<a class="zola-anchor" href="#where-to-create-the-files" aria-label="Anchor link for: where-to-create-the-files">🔗</a></h2>
+<p>The contents of the published website is in the branch <code>current-docs</code>.
+You should base your changes on this branch.</p>
+<p>All blog pages go into this directory: <code>website/site/content/blog/</code>.
+In this directory each post is a markdown file named by this pattern:</p>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;year&gt;-&lt;month&gt;-&lt;day&gt;_title_with_underscores.md
+</span></code></pre>
+<p>For example, this page here is named <code>2022-01-31_create_post.md</code>.</p>
+<h2 id="write-on-github">Write on Github<a class="zola-anchor" href="#write-on-github" aria-label="Anchor link for: write-on-github">🔗</a></h2>
+<p>A very convenient way is to edit and create posts directly on github
+in the browser. All pages contain a small <code>Edit</code> link at the bottom
+that takes you directly into edit model of the corresponding file on
+github.</p>
+<p>To create a new file on github, you can use this link:</p>
+<p><a href="https://github.com/eikek/docspell/new/current-docs/website/site/content/blog">https://github.com/eikek/docspell/new/current-docs/website/site/content/blog</a></p>
+<p>It will present a form that lets you create a new file with content.
+Once you commit this change, the project will be forked into your
+account and the change is applied to this new fork. Then you can
+create a pull request into this repository in order to publish it.</p>
+<p>Plase see <a href="https://docspell.org/blog/create-post/#content">below</a> for how to start writing content.</p>
+<h2 id="writing-locally">Writing locally<a class="zola-anchor" href="#writing-locally" aria-label="Anchor link for: writing-locally">🔗</a></h2>
+<p>The preferred approach is to explicitely fork the repository and clone
+it to your machine to do the modification. The big advantage is, that
+you can look at the results while writing.</p>
+<p>If you want to see a live view of the page while editing, some tools
+are required. The easiest way to get these is to install
+<a href="https://nixos.org/">nix</a> and run <code>nix-shell website/shell.nix</code> to get
+an environment with all these tools installed. Otherwise install the
+programs mentioned in <code>website/shell.nix</code>, which are:
+<a href="https://yarnpkg.com/">yarn</a>, <a href="https://getzola.org">zola</a>,
+<a href="https://elm-lang.org">elm</a> and <a href="https://scala-sbt.org">sbt</a>.</p>
+<p>Then clone the sources to your machine and build the complete site
+once, so that all assets and required stuff is present:</p>
+<pre class="z-code"><code><span class="z-text z-plain">sbt website/zolaBuildTest
+</span></code></pre>
+<p>Now you can use zola to start the page and watch for changes. The
+changes are visible immediately without reloading the page in the
+browser.</p>
+<pre class="z-code"><code><span class="z-text z-plain">cd website/site &amp;&amp; zola serve
+</span></code></pre>
+<p>This starts a web server on some port (usually <code>1111</code>); point your
+browser to it and navigate to your new page. Whenever changes are
+saved to the markdown file, the page refreshes automatically.</p>
+<p>If styling is changed (in the css files or also sometimes when adding
+new classes to HTML elements), a rebuild of the site css is necessary.
+This can be done by running <code>scripts/run-styles.sh</code>. Via
+<code>scripts/run-styles.sh --watch</code> it is possible to watch for these
+changes as well. But it shouldn't be necessary to do large edits to
+the css.</p>
+<h1 id="content">Content<a class="zola-anchor" href="#content" aria-label="Anchor link for: content">🔗</a></h1>
+<h2 id="front-matter">Front matter<a class="zola-anchor" href="#front-matter" aria-label="Anchor link for: front-matter">🔗</a></h2>
+<p>The very beginning of such a markdown file contains some metadata.
+Start each page with these lines:</p>
+<pre data-lang="markdown" class="language-markdown z-code"><code class="language-markdown" data-lang="markdown"><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">+++
+title = &quot;Title of the post&quot;
+[extra]
+author = &quot;<span class="z-meta z-tag z-other z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span></span><span class="z-meta z-tag z-other z-html"><span class="z-entity z-name z-tag z-other z-html">your</span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">name</span></span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>&quot;
+authorLink = &quot;https://some-url&quot;
++++
+
+</span><span class="z-meta z-block-level z-markdown"><span class="z-markup z-heading z-1 z-markdown"><span class="z-punctuation z-definition z-heading z-begin z-markdown">#</span> </span><span class="z-markup z-heading z-1 z-markdown"><span class="z-entity z-name z-section z-markdown">First heading…</span><span class="z-meta z-whitespace z-newline z-markdown">
+</span></span></span></span></code></pre>
+<p>The front matter is the first part enclosed in <code>+++</code>. See
+<a href="https://www.getzola.org/documentation/content/page/">zola</a>
+documentation for more details.</p>
+<p>The <code>author</code> and <code>authorLink</code> setting is optional. You can leave out
+the complete <code>[extra]</code> section. If <code>authorLink</code>is defined, the author
+is rendered as a link to that URL. If <code>author</code> is missing, it defaults
+to &quot;<em>Unknown</em>&quot;.</p>
+<h2 id="elements">Elements<a class="zola-anchor" href="#elements" aria-label="Anchor link for: elements">🔗</a></h2>
+<p>The content is styled automatically and the post is added to the list
+on the main blog page. Additional to the standard markdown formatting,
+there are some more usefull elements.</p>
+<h3 id="linking">Linking<a class="zola-anchor" href="#linking" aria-label="Anchor link for: linking">🔗</a></h3>
+<p>If you want to link to an internal page, use markdown links where the
+path is formatted like this:</p>
+<pre data-lang="markdown" class="language-markdown z-code"><code class="language-markdown" data-lang="markdown"><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown"><span class="z-meta z-link z-inline z-markdown"><span class="z-punctuation z-definition z-link z-begin z-markdown">[</span></span><span class="z-meta z-link z-inline z-description z-markdown">link title</span><span class="z-meta z-link z-inline z-markdown"><span class="z-punctuation z-definition z-link z-end z-markdown">]</span></span><span class="z-meta z-link z-inline z-markdown"><span class="z-punctuation z-definition z-metadata z-begin z-markdown">(</span></span><span class="z-meta z-link z-inline z-markdown"><span class="z-markup z-underline z-link z-markdown">@/path/to/markdown_file.md</span><span class="z-punctuation z-definition z-metadata z-end z-markdown">)</span></span>
+</span></span></code></pre>
+<p>Using the <code>@/path</code> style, zola generates the correct final link (and
+checks for dead links).</p>
+<h3 id="info-and-warning-boxes">Info and warning boxes<a class="zola-anchor" href="#info-and-warning-boxes" aria-label="Anchor link for: info-and-warning-boxes">🔗</a></h3>
+<p>There are small templates available to format a basic info or warning
+box message.</p>
+<pre data-lang="markdown" class="language-markdown z-code"><code class="language-markdown" data-lang="markdown"><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">{% infobubble(title=&quot;My Title&quot;) %}
+Your content here ….
+{% end %}
+</span></span></code></pre>
+<p>For a box more styled like a warning, replace <code>info</code> with <code>warning</code>.</p>
+<pre data-lang="markdown" class="language-markdown z-code"><code class="language-markdown" data-lang="markdown"><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">{% warningbubble(title=&quot;My Title&quot;) %}
+Your content here ….
+{% end %}
+</span></span></code></pre>
+<p>This will render into:</p>
+<div class="my-3 rounded border border-indigo-200 bg-indigo-100 bg-opacity-40 text-indigo-400 shadow shadow-indigo-200  dark:bg-cyan-500 dark:bg-opacity-30 dark:text-cyan-100 dark:border-cyan-700 dark:shadow-none">
+    <div class="px-1 py-1 border-b border-indigo-200 font-medium w-full bg-indigo-200 bg-opacity-60 dark:bg-cyan-700 dark:border-cyan-700">
+        <i class="fa fa-info mx-2" ></i>
+        My Title
+    </div>
+
+    <div class="px-2">
+        <p>Your content here ….</p>
+
+    </div>
+</div>
+<div class="my-3 rounded border border-yellow-300 bg-yellow-200 bg-opacity-40 text-yellow-600 shadow shadow-yellow-200  dark:bg-amber-500 dark:bg-opacity-30 dark:text-amber-100 dark:border-amber-700 dark:shadow-none">
+    <div class="px-1 py-1 border-b border-yellow-300 text-yellow-600 dark:text-amber-300 font-medium w-full bg-yellow-300 bg-opacity-50 dark:bg-amber-700 dark:border-amber-700">
+        <i class="fa fa-info mx-2" ></i>
+        My Title
+    </div>
+
+    <div class="px-2">
+        <p>Your content here ….</p>
+
+    </div>
+</div>
+<h3 id="summary">Summary<a class="zola-anchor" href="#summary" aria-label="Anchor link for: summary">🔗</a></h3>
+<p>In order to get a decent summary in the list of posts, you need to set
+a marker in your file. Place a line containing only</p>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;!-- more --&gt;
+</span></code></pre>
+<p>into your file and everything before it will be rendered as a summary
+on the blog listing.</p>
+<h3 id="buttons">Buttons<a class="zola-anchor" href="#buttons" aria-label="Anchor link for: buttons">🔗</a></h3>
+<p>Styled buttons can be created using HTML inside the markdown file:</p>
+<pre data-lang="markdown" class="language-markdown z-code"><code class="language-markdown" data-lang="markdown"><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown"><span class="z-meta z-tag z-inline z-a z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-inline z-a z-html">a</span> <span class="z-meta z-attribute-with-value z-class z-html"><span class="z-entity z-other z-attribute-name z-class z-html">class</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span></span><span class="z-string z-quoted z-double z-html"><span class="z-meta z-class-name z-html">no-default</span> <span class="z-meta z-class-name z-html">button1</span><span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">href</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span>#<span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>Click!<span class="z-meta z-tag z-inline z-a z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;/</span><span class="z-entity z-name z-tag z-inline z-a z-html">a</span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+</span></span></code></pre>
+<p>Turns into:</p>
+<p><a class="no-default button1" href="#">Click!</a></p>
+<h3 id="images">Images<a class="zola-anchor" href="#images" aria-label="Anchor link for: images">🔗</a></h3>
+<p>In image to appear on the whole page, use HTML with a <code>figure</code> tag:</p>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;figure&gt;
+  &lt;img src=&quot;image-url.jpg&quot;&gt;
+&lt;/figure&gt;
+</span></code></pre>
+<figure>
+  <img src="/img/jesse-gardner-EqdpXeemf58-unsplash.jpg" >
+</figure>
+<p>The site has a light and dark mode and sometimes it's nice to provide
+images for both variants. You can use HTML for this and a specific
+class per theme:</p>
+<pre data-lang="html" class="language-html z-code"><code class="language-html" data-lang="html"><span class="z-text z-html z-basic"><span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span> <span class="z-meta z-attribute-with-value z-class z-html"><span class="z-entity z-other z-attribute-name z-class z-html">class</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span></span><span class="z-string z-quoted z-double z-html"><span class="z-meta z-class-name z-html">dark-block</span><span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+    <span class="z-meta z-tag z-inline z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-inline z-any z-html">img</span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">src</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span>dark-image.jpg<span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span> <span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+<span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;/</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+<span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span> <span class="z-meta z-attribute-with-value z-class z-html"><span class="z-entity z-other z-attribute-name z-class z-html">class</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span></span><span class="z-string z-quoted z-double z-html"><span class="z-meta z-class-name z-html">light-block</span><span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+    <span class="z-meta z-tag z-inline z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-inline z-any z-html">img</span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">src</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span>light-image.jpg<span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span> <span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+<span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;/</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+</span></code></pre>
+<p>See the effect when changing the theme:</p>
+<figure class="dark-block">
+    <img src="/img/tersius-van-rhyn-xcQWMPm9fG8-unsplash.jpg" >
+</figure>
+<figure class="light-block">
+    <img src="/img/cassie-boca-x-tbVqkfQCU-unsplash.jpg" >
+</figure>
+<p>This can be done via a template if the file is next to the markdown
+file in the same directory:</p>
+<pre data-lang="markdown" class="language-markdown z-code"><code class="language-markdown" data-lang="markdown"><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">{{ figure2(light=&quot;light-image.jpg&quot;, dark=&quot;dark-image.jpg&quot;) }}
+</span></span></code></pre>
+<div class="text-sm text-right opacity-80">
+Pictures are from <a href="https://unsplash.com" target="_blank">Unsplash</a>.
+</div>
+<h1 id="publish">Publish<a class="zola-anchor" href="#publish" aria-label="Anchor link for: publish">🔗</a></h1>
+<p>Open a pull request against the <code>current-docs</code> branch. When the pull
+request is merged, the publishing process starts automatically and the
+content is available minutes after.</p>
+
+
+<div class="grid grid-cols-1 sm:grid-cols-2 items-center pt-6 mt-14 border-t dark:border-stone-700">
+
+    <div class="flex items-center flex-col sm:flex-row" title="Previous post">
+        
+        
+        <a class="no-default button1 my-auto" href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;alternative-upload-from-browser&#x2F;">
+            <i class="fa fa-chevron-left"></i>
+        </a>
+        <div class="italic my-2 ml-2"> Upload directly from the browser or email client </div>
+        
+    </div>
+
+    <div class="flex items-center flex-col sm:flex-row justify-end"  title="Next post">
+        
+    </div>
+
+</div>
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.32.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/blog&#x2F;2022-01-31_create_post.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
+    </div>
+    
+    </div>
+
+    
+</footer>
+
+                </div>
+
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;#create-a-new-post" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Create a new post
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;#where-to-create-the-files" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Where to create the files
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;#write-on-github" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Write on Github
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;#writing-locally" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Writing locally
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;#content" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Content
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;#front-matter" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Front matter
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;#elements" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Elements
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;#publish" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Publish
+                        </a>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+    </body>
+
+</html>
