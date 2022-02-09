@@ -12,7 +12,7 @@ import cats.implicits._
 import docspell.common.Ident
 import docspell.common.syntax.all._
 
-import io.circe.Decoder
+import io.circe.{Decoder, Encoder, Json}
 
 /** Binds a Task to a name. This is required to lookup the code based on the taskName in
   * the RJob data and to execute it given the arguments that have to be read from a
@@ -24,18 +24,19 @@ import io.circe.Decoder
   */
 case class JobTask[F[_]](
     name: Ident,
-    task: Task[F, String, Unit],
+    task: Task[F, String, Json],
     onCancel: Task[F, String, Unit]
 )
 
 object JobTask {
 
-  def json[F[_]: Sync, A](
+  def json[F[_]: Sync, A, B](
       name: Ident,
-      task: Task[F, A, Unit],
+      task: Task[F, A, B],
       onCancel: Task[F, A, Unit]
   )(implicit
-      D: Decoder[A]
+      D: Decoder[A],
+      E: Encoder[B]
   ): JobTask[F] = {
     val convert: String => F[A] =
       str =>
@@ -45,6 +46,6 @@ object JobTask {
             Sync[F].raiseError(new Exception(s"Cannot parse task arguments: $str", ex))
         }
 
-    JobTask(name, task.contramap(convert), onCancel.contramap(convert))
+    JobTask(name, task.contramap(convert).map(E.apply), onCancel.contramap(convert))
   }
 }

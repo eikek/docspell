@@ -13,8 +13,8 @@ import docspell.notification.api._
 import docspell.notification.impl.AbstractEventContext
 
 import doobie._
-import io.circe.Encoder
 import io.circe.syntax._
+import io.circe.{Encoder, Json}
 import yamusca.implicits._
 
 final case class JobDoneCtx(event: Event.JobDone, data: JobDoneCtx.Data)
@@ -45,14 +45,23 @@ object JobDoneCtx {
       args: String,
       state: JobState,
       subject: String,
-      submitter: Ident
+      submitter: Ident,
+      result: Json
   )
   object Data {
     implicit val jsonEncoder: Encoder[Data] =
       io.circe.generic.semiauto.deriveEncoder
 
     def apply(ev: Event.JobDone): Data =
-      Data(ev.jobId, ev.group, ev.task, ev.args, ev.state, ev.subject, ev.submitter)
+      Data(
+        ev.jobId,
+        ev.group,
+        ev.task,
+        ev.args,
+        ev.state,
+        ev.subject,
+        ev.submitter,
+        ev.result
+      )
   }
-
 }
