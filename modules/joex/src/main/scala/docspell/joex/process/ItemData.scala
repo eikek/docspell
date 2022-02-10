@@ -10,6 +10,9 @@ import docspell.common._
 import docspell.joex.process.ItemData.AttachmentDates
 import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
 
+import io.circe.syntax.EncoderOps
+import io.circe.{Encoder, Json}
+
 /** Data that is carried across all processing tasks.
   *
   * @param item
@@ -94,4 +97,28 @@ object ItemData {
       dates.map(dl => dl.label.copy(label = dl.date.toString))
   }
 
+  // Used to encode the result passed to the job-done event
+  implicit val jsonEncoder: Encoder[ItemData] =
+    Encoder.instance { data =>
+      val metaMap = data.metas.groupMap(_.id)(identity)
+      Json.obj(
+        "id" -> data.item.id.asJson,
+        "name" -> data.item.name.asJson,
+        "collective" -> data.item.cid.asJson,
+        "source" -> data.item.source.asJson,
+        "attachments" -> data.attachments
+          .map(a =>
+            Json.obj(
+              "id" -> a.id.asJson,
+              "name" -> a.name.asJson,
+              "content" -> metaMap.get(a.id).flatMap(_.head.content).asJson,
+              "language" -> metaMap.get(a.id).flatMap(_.head.language).asJson,
+              "pages" -> metaMap.get(a.id).flatMap(_.head.pages).asJson
+            )
+          )
+          .asJson,
+        "tags" -> data.tags.asJson,
+        "assumedTags" -> data.classifyTags.asJson
+      )
+    }
 }

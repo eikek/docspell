@@ -54,6 +54,9 @@ object JobState {
     NonEmptyList.of(Waiting, Scheduled, Running, Stuck)
   val inProgress: Set[JobState] = Set(Scheduled, Running, Stuck)
 
+  def isDone(state: JobState): Boolean =
+    done.exists(_ == state)
+
   def parse(str: String): Either[String, JobState] =
     str.toLowerCase match {
       case "waiting"   => Right(Waiting)
