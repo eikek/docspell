@@ -40,18 +40,18 @@ object ItemHandler {
       fts: FtsClient[F],
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F]
-  ): Task[F, Args, Unit] =
+  ): Task[F, Args, Option[ItemData]] =
     logBeginning.flatMap(_ =>
       DuplicateCheck[F]
         .flatMap(args =>
-          if (args.files.isEmpty) logNoFiles
+          if (args.files.isEmpty) logNoFiles.map(_ => None)
           else {
             val create: Task[F, Args, ItemData] =
               CreateItem[F].contramap(_ => args.pure[F])
             create
               .flatMap(itemStateTask(ItemState.Processing))
               .flatMap(safeProcess[F](cfg, itemOps, fts, analyser, regexNer))
-              .map(_ => ())
+              .map(_.some)
           }
         )
     )
