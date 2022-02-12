@@ -90,7 +90,7 @@ services:
       - restserver
 
   db:
-    image: postgres:14.1
+    image: postgres:14.2
     container_name: postgres_db
     restart: unless-stopped
     volumes:
