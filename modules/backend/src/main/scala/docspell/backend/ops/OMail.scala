@@ -249,7 +249,7 @@ object OMail {
           } yield {
             val addAttach = m.attach.filter(ras).map { a =>
               Attach[F](
-                store.fileStore.getBytes(a._2.id)
+                store.fileRepo.getBytes(a._2.id)
               ).withFilename(a._1.name)
                 .withLength(a._2.length.bytes)
                 .withMimeType(a._2.mimetype.toEmil)

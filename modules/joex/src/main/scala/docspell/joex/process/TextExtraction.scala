@@ -126,11 +126,11 @@ object TextExtraction {
       ctx: Context[F, _],
       extr: Extraction[F],
       lang: Language
-  )(fileId: Ident): F[ExtractResult] = {
-    val data = ctx.store.fileStore.getBytes(fileId)
+  )(fileId: FileKey): F[ExtractResult] = {
+    val data = ctx.store.fileRepo.getBytes(fileId)
 
     def findMime: F[MimeType] =
-      OptionT(ctx.store.transact(RFileMeta.findById(fileId)))
+      OptionT(ctx.store.fileRepo.findMeta(fileId))
         .map(_.mimetype)
         .getOrElse(MimeType.octetStream)
 
@@ -143,7 +143,7 @@ object TextExtraction {
       cfg: ExtractConfig,
       ra: RAttachment,
       lang: Language
-  )(fileIds: List[Ident]): F[Option[ExtractResult.Success]] =
+  )(fileIds: List[FileKey]): F[Option[ExtractResult.Success]] =
     fileIds match {
       case Nil =>
         ctx.logger.error(s"Cannot extract text").map(_ => None)
@@ -179,7 +179,7 @@ object TextExtraction {
   private def filesToExtract[F[_]: Sync](ctx: Context[F, _])(
       item: ItemData,
       ra: RAttachment
-  ): F[List[Ident]] =
+  ): F[List[FileKey]] =
     item.originFile.get(ra.id) match {
       case Some(sid) =>
         ctx.store.transact(RFileMeta.findMime(sid)).map {

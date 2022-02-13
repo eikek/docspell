@@ -14,6 +14,7 @@ import fs2.Stream
 import docspell.backend.ops.OItemSearch._
 import docspell.common._
 import docspell.store._
+import docspell.store.file.FileMetadata
 import docspell.store.queries.{QAttachment, QItem}
 import docspell.store.records._
 
@@ -89,18 +90,21 @@ object OItemSearch {
   trait BinaryData[F[_]] {
     def data: Stream[F, Byte]
     def name: Option[String]
-    def meta: RFileMeta
-    def fileId: Ident
+    def meta: FileMetadata
+    def fileId: FileKey
   }
-  case class AttachmentData[F[_]](ra: RAttachment, meta: RFileMeta, data: Stream[F, Byte])
-      extends BinaryData[F] {
+  case class AttachmentData[F[_]](
+      ra: RAttachment,
+      meta: FileMetadata,
+      data: Stream[F, Byte]
+  ) extends BinaryData[F] {
     val name = ra.name
     val fileId = ra.fileId
   }
 
   case class AttachmentSourceData[F[_]](
       rs: RAttachmentSource,
-      meta: RFileMeta,
+      meta: FileMetadata,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
     val name = rs.name
@@ -109,7 +113,7 @@ object OItemSearch {
 
   case class AttachmentPreviewData[F[_]](
       rs: RAttachmentPreview,
-      meta: RFileMeta,
+      meta: FileMetadata,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
     val name = rs.name
@@ -118,7 +122,7 @@ object OItemSearch {
 
   case class AttachmentArchiveData[F[_]](
       rs: RAttachmentArchive,
-      meta: RFileMeta,
+      meta: FileMetadata,
       data: Stream[F, Byte]
   ) extends BinaryData[F] {
     val name = rs.name
@@ -188,7 +192,7 @@ object OItemSearch {
                 AttachmentData[F](
                   ra,
                   m,
-                  store.fileStore.getBytes(m.id)
+                  store.fileRepo.getBytes(m.id)
                 )
               }
 
@@ -208,7 +212,7 @@ object OItemSearch {
                 AttachmentSourceData[F](
                   ra,
                   m,
-                  store.fileStore.getBytes(m.id)
+                  store.fileRepo.getBytes(m.id)
                 )
               }
 
@@ -228,7 +232,7 @@ object OItemSearch {
                 AttachmentPreviewData[F](
                   ra,
                   m,
-                  store.fileStore.getBytes(m.id)
+                  store.fileRepo.getBytes(m.id)
                 )
               }
 
@@ -248,7 +252,7 @@ object OItemSearch {
                 AttachmentPreviewData[F](
                   ra,
                   m,
-                  store.fileStore.getBytes(m.id)
+                  store.fileRepo.getBytes(m.id)
                 )
               }
 
@@ -268,7 +272,7 @@ object OItemSearch {
                 AttachmentArchiveData[F](
                   ra,
                   m,
-                  store.fileStore.getBytes(m.id)
+                  store.fileRepo.getBytes(m.id)
                 )
               }
 
@@ -276,9 +280,11 @@ object OItemSearch {
               (None: Option[AttachmentArchiveData[F]]).pure[F]
           }
 
-      private def makeBinaryData[A](fileId: Ident)(f: RFileMeta => A): F[Option[A]] =
-        store.fileStore
-          .findMeta(fileId)
+      private def makeBinaryData[A](fileId: FileKey)(f: FileMetadata => A): F[Option[A]] =
+        OptionT(
+          store.fileRepo
+            .findMeta(fileId)
+        )
           .map(fm => f(fm))
           .value
 

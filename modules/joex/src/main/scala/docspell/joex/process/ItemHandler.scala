@@ -133,7 +133,7 @@ object ItemHandler {
       ctx.logger.info("Deleting input files …") *>
         Stream
           .emits(ctx.args.files.map(_.fileMetaId))
-          .evalMap(id => ctx.store.fileStore.delete(id).attempt)
+          .evalMap(id => ctx.store.fileRepo.delete(id).attempt)
           .compile
           .drain
     )

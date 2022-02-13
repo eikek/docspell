@@ -92,7 +92,7 @@ object PdfConvTask {
       ctx: Context[F, Args],
       in: RFileMeta
   ): F[Unit] = {
-    val fs = ctx.store.fileStore
+    val fs = ctx.store.fileRepo
     val data = fs.getBytes(in.id)
 
     val storeResult: ConversionResult.Handler[F, Unit] =
@@ -141,11 +141,15 @@ object PdfConvTask {
       newFile: Stream[F, Byte]
   ): F[Unit] = {
     val mimeHint = MimeTypeHint.advertised(meta.mimetype)
+    val collective = meta.id.collective
+    val cat = FileCategory.AttachmentConvert
     for {
       fid <-
-        newFile.through(ctx.store.fileStore.save(mimeHint)).compile.lastOrError
+        newFile
+          .through(ctx.store.fileRepo.save(collective, cat, mimeHint))
+          .compile
+          .lastOrError
       _ <- ctx.store.transact(RAttachment.updateFileId(ctx.args.attachId, fid))
     } yield ()
   }
-
 }

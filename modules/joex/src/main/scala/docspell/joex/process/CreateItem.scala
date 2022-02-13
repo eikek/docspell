@@ -14,6 +14,7 @@ import fs2.Stream
 
 import docspell.common._
 import docspell.joex.scheduler.{Context, Task}
+import docspell.store.file.FileMetadata
 import docspell.store.queries.QItem
 import docspell.store.records._
 
@@ -28,7 +29,7 @@ object CreateItem {
 
   def createNew[F[_]: Sync]: Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
-      def isValidFile(fm: RFileMeta) =
+      def isValidFile(fm: FileMetadata) =
         ctx.args.meta.validFileTypes.isEmpty ||
           ctx.args.meta.validFileTypes.toSet
             .contains(fm.mimetype)
@@ -39,9 +40,7 @@ object CreateItem {
           .flatMap { offset =>
             Stream
               .emits(ctx.args.files)
-              .evalMap(f =>
-                ctx.store.fileStore.findMeta(f.fileMetaId).value.map(fm => (f, fm))
-              )
+              .evalMap(f => ctx.store.fileRepo.findMeta(f.fileMetaId).map(fm => (f, fm)))
               .collect { case (f, Some(fm)) if isValidFile(fm) => f }
               .zipWithIndex
               .evalMap { case (f, index) =>
@@ -198,6 +197,6 @@ object CreateItem {
   // TODO if no source is present, it must be saved!
   private def originFileTuple(
       t: (RAttachment, Option[RAttachmentSource])
-  ): (Ident, Ident) =
+  ): (Ident, FileKey) =
     t._2.map(s => s.id -> s.fileId).getOrElse(t._1.id -> t._1.fileId)
 }

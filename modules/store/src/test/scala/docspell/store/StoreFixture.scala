@@ -11,7 +11,7 @@ import javax.sql.DataSource
 import cats.effect._
 
 import docspell.common.LenientUri
-import docspell.store.file.FileStore
+import docspell.store.file.FileRepository
 import docspell.store.impl.StoreImpl
 import docspell.store.migrate.FlywayMigrate
 
@@ -67,7 +67,8 @@ object StoreFixture {
     for {
       ds <- dataSource(jdbc)
       xa <- makeXA(ds)
-      store = new StoreImpl[IO](FileStore[IO](xa, ds, 64 * 1024), jdbc, xa)
+      fr = FileRepository.genericJDBC[IO](xa, ds, 64 * 1024)
+      store = new StoreImpl[IO](fr, jdbc, xa)
       _ <- Resource.eval(store.migrate)
     } yield store
 }

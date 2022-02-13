@@ -15,7 +15,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common.syntax.all._
-import docspell.common.{IdRef, _}
+import docspell.common.{FileKey, IdRef, _}
 import docspell.query.ItemQuery
 import docspell.store.Store
 import docspell.store.qb.DSL._
@@ -470,7 +470,7 @@ object QItem {
     } yield tn + rn + n + mn + cf + im
 
   private def findByFileIdsQuery(
-      fileMetaIds: Nel[Ident],
+      fileMetaIds: Nel[FileKey],
       states: Option[Nel[ItemState]]
   ): Select.SimpleSelect = {
     val i = RItem.as("i")
@@ -490,7 +490,7 @@ object QItem {
     ).distinct
   }
 
-  def findOneByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Option[RItem]] =
+  def findOneByFileIds(fileMetaIds: Seq[FileKey]): ConnectionIO[Option[RItem]] =
     Nel.fromList(fileMetaIds.toList) match {
       case Some(nel) =>
         findByFileIdsQuery(nel, None).limit(1).build.query[RItem].option
@@ -499,7 +499,7 @@ object QItem {
     }
 
   def findByFileIds(
-      fileMetaIds: Seq[Ident],
+      fileMetaIds: Seq[FileKey],
       states: Nel[ItemState]
   ): ConnectionIO[Vector[RItem]] =
     Nel.fromList(fileMetaIds.toList) match {
@@ -512,7 +512,7 @@ object QItem {
   def findByChecksum(
       checksum: String,
       collective: Ident,
-      excludeFileMeta: Set[Ident]
+      excludeFileMeta: Set[FileKey]
   ): ConnectionIO[Vector[RItem]] = {
     val qq = findByChecksumQuery(checksum, collective, excludeFileMeta).build
     logger.debug(s"FindByChecksum: $qq")
@@ -522,7 +522,7 @@ object QItem {
   def findByChecksumQuery(
       checksum: String,
       collective: Ident,
-      excludeFileMeta: Set[Ident]
+      excludeFileMeta: Set[FileKey]
   ): Select = {
     val m1 = RFileMeta.as("m1")
     val m2 = RFileMeta.as("m2")

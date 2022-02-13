@@ -60,7 +60,7 @@ object ProcessItemArgs {
     implicit val jsonDecoder: Decoder[ProcessMeta] = deriveDecoder[ProcessMeta]
   }
 
-  case class File(name: Option[String], fileMetaId: Ident)
+  case class File(name: Option[String], fileMetaId: FileKey)
   object File {
     implicit val jsonEncoder: Encoder[File] = deriveEncoder[File]
     implicit val jsonDecoder: Decoder[File] = deriveDecoder[File]
