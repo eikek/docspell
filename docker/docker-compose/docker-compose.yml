@@ -110,7 +110,7 @@ services:
       - solr-precreate
       - docspell
     healthcheck:
-      test: ["CMD", "curl", "f", "http://localhost:8983/solr/docspell/admin/ping"]
+      test: ["CMD", "curl", "-f", "http://localhost:8983/solr/docspell/admin/ping"]
       interval: 1m
       timeout: 10s
       retries: 2
