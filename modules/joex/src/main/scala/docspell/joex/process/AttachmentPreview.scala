@@ -59,7 +59,7 @@ object AttachmentPreview {
         preview.previewPNG(loadFile(ctx)(ra)).flatMap {
           case Some(out) =>
             ctx.logger.debug("Preview generated, saving to database…") *>
-              createRecord(ctx, out, ra).map(_.some)
+              createRecord(ctx, ra.fileId.collective, out, ra).map(_.some)
           case None =>
             ctx.logger
               .info(s"Preview could not be generated. Maybe the pdf has no pages?") *>
@@ -73,6 +73,7 @@ object AttachmentPreview {
 
   private def createRecord[F[_]: Sync](
       ctx: Context[F, _],
+      collective: Ident,
       png: Stream[F, Byte],
       ra: RAttachment
   ): F[RAttachmentPreview] = {
@@ -82,7 +83,11 @@ object AttachmentPreview {
     for {
       fileId <- png
         .through(
-          ctx.store.fileStore.save(MimeTypeHint(name.map(_.fullName), Some("image/png")))
+          ctx.store.fileRepo.save(
+            collective,
+            FileCategory.PreviewImage,
+            MimeTypeHint(name.map(_.fullName), Some("image/png"))
+          )
         )
         .compile
         .lastOrError
@@ -99,5 +104,5 @@ object AttachmentPreview {
       .getOrElse(MimeType.octetStream)
 
   def loadFile[F[_]](ctx: Context[F, _])(ra: RAttachment): Stream[F, Byte] =
-    ctx.store.fileStore.getBytes(ra.fileId)
+    ctx.store.fileRepo.getBytes(ra.fileId)
 }

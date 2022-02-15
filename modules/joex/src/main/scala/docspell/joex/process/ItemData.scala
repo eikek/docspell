@@ -38,7 +38,7 @@ case class ItemData(
     attachments: Vector[RAttachment],
     metas: Vector[RAttachmentMeta],
     dateLabels: Vector[AttachmentDates],
-    originFile: Map[Ident, Ident], // maps RAttachment.id -> FileMeta.id
+    originFile: Map[Ident, FileKey], // maps RAttachment.id -> FileMeta.id
     givenMeta: MetaProposalList, // given meta data not associated to a specific attachment
     // a list of tags (names or ids) attached to the item if they exist
     tags: List[String],

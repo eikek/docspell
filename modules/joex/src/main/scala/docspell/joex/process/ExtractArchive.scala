@@ -32,16 +32,17 @@ import emil.Mail
   * This step assumes an existing premature item, it traverses its attachments.
   */
 object ExtractArchive {
+  type Args = ProcessItemArgs
 
   def apply[F[_]: Async](
       item: ItemData
-  ): Task[F, ProcessItemArgs, ItemData] =
+  ): Task[F, Args, ItemData] =
     multiPass(item, None).map(_._2)
 
   def multiPass[F[_]: Async](
       item: ItemData,
       archive: Option[RAttachmentArchive]
-  ): Task[F, ProcessItemArgs, (Option[RAttachmentArchive], ItemData)] =
+  ): Task[F, Args, (Option[RAttachmentArchive], ItemData)] =
     singlePass(item, archive).flatMap { t =>
       if (t._1.isEmpty) Task.pure(t)
       else multiPass(t._2, t._1)
@@ -50,7 +51,7 @@ object ExtractArchive {
   def singlePass[F[_]: Async](
       item: ItemData,
       archive: Option[RAttachmentArchive]
-  ): Task[F, ProcessItemArgs, (Option[RAttachmentArchive], ItemData)] =
+  ): Task[F, Args, (Option[RAttachmentArchive], ItemData)] =
     Task { ctx =>
       def extract(ra: RAttachment, pos: Int): F[Extracted] =
         findMime(ctx)(ra).flatMap(m => extractSafe(ctx, archive)(ra, pos, m))
@@ -88,7 +89,7 @@ object ExtractArchive {
       .getOrElse(MimeType.octetStream)
 
   def extractSafe[F[_]: Async](
-      ctx: Context[F, ProcessItemArgs],
+      ctx: Context[F, Args],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int, mime: MimeType): F[Extracted] =
     mime match {
@@ -120,7 +121,7 @@ object ExtractArchive {
           )
           _ <- ctx.store.transact(RAttachmentArchive.delete(ra.id))
           _ <- ctx.store.transact(RAttachment.delete(ra.id))
-          _ <- ctx.store.fileStore.delete(ra.fileId)
+          _ <- ctx.store.fileRepo.delete(ra.fileId)
         } yield extracted
       case None =>
         for {
@@ -132,10 +133,10 @@ object ExtractArchive {
     }
 
   def extractZip[F[_]: Async](
-      ctx: Context[F, ProcessItemArgs],
+      ctx: Context[F, Args],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int): F[Extracted] = {
-    val zipData = ctx.store.fileStore.getBytes(ra.fileId)
+    val zipData = ctx.store.fileRepo.getBytes(ra.fileId)
     val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
     ctx.logger.debug(s"Filtering zip entries with '${glob.asString}'") *>
       zipData
@@ -148,10 +149,10 @@ object ExtractArchive {
   }
 
   def extractMail[F[_]: Async](
-      ctx: Context[F, ProcessItemArgs],
+      ctx: Context[F, Args],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int): F[Extracted] = {
-    val email: Stream[F, Byte] = ctx.store.fileStore.getBytes(ra.fileId)
+    val email: Stream[F, Byte] = ctx.store.fileRepo.getBytes(ra.fileId)
 
     val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
     val attachOnly = ctx.args.meta.attachmentsOnly.getOrElse(false)
@@ -183,7 +184,7 @@ object ExtractArchive {
       .getOrElse(Extracted.empty)
 
   def handleEntry[F[_]: Sync](
-      ctx: Context[F, _],
+      ctx: Context[F, Args],
       ra: RAttachment,
       pos: Int,
       archive: Option[RAttachmentArchive],
@@ -193,7 +194,10 @@ object ExtractArchive {
   ): Stream[F, Extracted] = {
     val (entry, subPos) = tentry
     val mimeHint = MimeTypeHint.filename(entry.name).withAdvertised(entry.mime.asString)
-    val fileId = entry.data.through(ctx.store.fileStore.save(mimeHint))
+    val fileId = entry.data.through(
+      ctx.store.fileRepo
+        .save(ctx.args.meta.collective, FileCategory.AttachmentSource, mimeHint)
+    )
 
     Stream.eval(ctx.logger.debug(s"Extracted ${entry.name}. Storing as attachment.")) >>
       fileId.evalMap { fid =>

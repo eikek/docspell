@@ -15,7 +15,7 @@ import docspell.backend.ops.OItemSearch.{AttachmentData, AttachmentPreviewData}
 import docspell.backend.ops._
 import docspell.restapi.model.BasicResult
 import docspell.restserver.http4s.{QueryParam => QP}
-import docspell.store.records.RFileMeta
+import docspell.store.file.FileMetadata
 
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
@@ -117,7 +117,7 @@ object BinaryUtil {
   }
 
   def matchETag[F[_]](
-      fileData: Option[RFileMeta],
+      fileData: Option[FileMetadata],
       noneMatch: Option[NonEmptyList[EntityTag]]
   ): Boolean =
     (fileData, noneMatch) match {

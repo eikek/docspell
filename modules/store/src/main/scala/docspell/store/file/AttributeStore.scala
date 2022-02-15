@@ -23,8 +23,9 @@ final private[file] class AttributeStore[F[_]: Sync](xa: Transactor[F])
     for {
       now <- Timestamp.current[F]
       a <- attrs
+      fileKey <- makeFileKey(id)
       fm = RFileMeta(
-        Ident.unsafe(id.id),
+        fileKey,
         now,
         MimeType.parse(a.contentType.contentType).getOrElse(MimeType.octetStream),
         ByteSize(a.length),
@@ -34,7 +35,7 @@ final private[file] class AttributeStore[F[_]: Sync](xa: Transactor[F])
     } yield ()
 
   def deleteAttr(id: BinaryId): F[Boolean] =
-    RFileMeta.delete(Ident.unsafe(id.id)).transact(xa).map(_ > 0)
+    makeFileKey(id).flatMap(fileKey => RFileMeta.delete(fileKey).transact(xa).map(_ > 0))
 
   def findAttr(id: BinaryId): OptionT[F, BinaryAttributes] =
     findMeta(id).map(fm =>
@@ -46,5 +47,10 @@ final private[file] class AttributeStore[F[_]: Sync](xa: Transactor[F])
     )
 
   def findMeta(id: BinaryId): OptionT[F, RFileMeta] =
-    OptionT(RFileMeta.findById(Ident.unsafe(id.id)).transact(xa))
+    OptionT(makeFileKey(id).flatMap(fileKey => RFileMeta.findById(fileKey).transact(xa)))
+
+  private def makeFileKey(binaryId: BinaryId): F[FileKey] =
+    Sync[F]
+      .pure(BinnyUtils.binaryIdToFileKey(binaryId).left.map(new IllegalStateException(_)))
+      .rethrow
 }

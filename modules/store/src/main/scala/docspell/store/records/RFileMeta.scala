@@ -9,7 +9,7 @@ package docspell.store.records
 import cats.data.NonEmptyList
 import cats.implicits._
 
-import docspell.common._
+import docspell.common.{FileKey, _}
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
@@ -18,7 +18,7 @@ import doobie.implicits._
 import scodec.bits.ByteVector
 
 final case class RFileMeta(
-    id: Ident,
+    id: FileKey,
     created: Timestamp,
     mimetype: MimeType,
     length: ByteSize,
@@ -29,7 +29,7 @@ object RFileMeta {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "filemeta"
 
-    val id = Column[Ident]("file_id", this)
+    val id = Column[FileKey]("file_id", this)
     val timestamp = Column[Timestamp]("created", this)
     val mimetype = Column[MimeType]("mimetype", this)
     val length = Column[ByteSize]("length", this)
@@ -47,10 +47,10 @@ object RFileMeta {
   def insert(r: RFileMeta): ConnectionIO[Int] =
     DML.insert(T, T.all, fr"${r.id},${r.created},${r.mimetype},${r.length},${r.checksum}")
 
-  def findById(fid: Ident): ConnectionIO[Option[RFileMeta]] =
+  def findById(fid: FileKey): ConnectionIO[Option[RFileMeta]] =
     run(select(T.all), from(T), T.id === fid).query[RFileMeta].option
 
-  def findByIds(ids: List[Ident]): ConnectionIO[Vector[RFileMeta]] =
+  def findByIds(ids: List[FileKey]): ConnectionIO[Vector[RFileMeta]] =
     NonEmptyList.fromList(ids) match {
       case Some(nel) =>
         run(select(T.all), from(T), T.id.in(nel)).query[RFileMeta].to[Vector]
@@ -58,11 +58,11 @@ object RFileMeta {
         Vector.empty[RFileMeta].pure[ConnectionIO]
     }
 
-  def findMime(fid: Ident): ConnectionIO[Option[MimeType]] =
+  def findMime(fid: FileKey): ConnectionIO[Option[MimeType]] =
     run(select(T.mimetype), from(T), T.id === fid)
       .query[MimeType]
       .option
 
-  def delete(id: Ident): ConnectionIO[Int] =
+  def delete(id: FileKey): ConnectionIO[Int] =
     DML.delete(T, T.id === id)
 }

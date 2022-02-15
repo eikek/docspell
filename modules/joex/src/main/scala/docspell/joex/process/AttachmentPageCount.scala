@@ -100,5 +100,5 @@ object AttachmentPageCount {
       .getOrElse(MimeType.octetStream)
 
   def loadFile[F[_]](ctx: Context[F, _])(ra: RAttachment): Stream[F, Byte] =
-    ctx.store.fileStore.getBytes(ra.fileId)
+    ctx.store.fileRepo.getBytes(ra.fileId)
 }

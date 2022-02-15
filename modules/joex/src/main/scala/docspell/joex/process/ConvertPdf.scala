@@ -32,11 +32,12 @@ import docspell.store.records._
   * This step assumes an existing premature item, it traverses its attachments.
   */
 object ConvertPdf {
+  type Args = ProcessItemArgs
 
   def apply[F[_]: Async](
       cfg: ConvertConfig,
       item: ItemData
-  ): Task[F, ProcessItemArgs, ItemData] =
+  ): Task[F, Args, ItemData] =
     Task { ctx =>
       def convert(ra: RAttachment): F[(RAttachment, Option[RAttachmentMeta])] =
         isConverted(ctx)(ra).flatMap {
@@ -61,7 +62,7 @@ object ConvertPdf {
 
     }
 
-  def isConverted[F[_]](ctx: Context[F, ProcessItemArgs])(
+  def isConverted[F[_]](ctx: Context[F, Args])(
       ra: RAttachment
   ): F[Boolean] =
     ctx.store.transact(RAttachmentSource.isConverted(ra.id))
@@ -74,14 +75,14 @@ object ConvertPdf {
   def convertSafe[F[_]: Async](
       cfg: ConvertConfig,
       sanitizeHtml: SanitizeHtml,
-      ctx: Context[F, ProcessItemArgs],
+      ctx: Context[F, Args],
       item: ItemData
   )(ra: RAttachment, mime: MimeType): F[(RAttachment, Option[RAttachmentMeta])] =
     loadCollectivePasswords(ctx).flatMap(collPass =>
       Conversion.create[F](cfg, sanitizeHtml, collPass, ctx.logger).use { conv =>
         mime match {
           case mt =>
-            val data = ctx.store.fileStore.getBytes(ra.fileId)
+            val data = ctx.store.fileRepo.getBytes(ra.fileId)
             val handler = conversionHandler[F](ctx, cfg, ra, item)
             ctx.logger
               .info(s"Converting file ${ra.name} (${mime.asString}) into a PDF") *>
@@ -93,14 +94,14 @@ object ConvertPdf {
     )
 
   private def loadCollectivePasswords[F[_]: Async](
-      ctx: Context[F, ProcessItemArgs]
+      ctx: Context[F, Args]
   ): F[List[Password]] =
     ctx.store
       .transact(RCollectivePassword.findAll(ctx.args.meta.collective))
       .map(_.map(_.password).distinct)
 
   private def conversionHandler[F[_]: Sync](
-      ctx: Context[F, ProcessItemArgs],
+      ctx: Context[F, Args],
       cfg: ConvertConfig,
       ra: RAttachment,
       item: ItemData
@@ -146,7 +147,7 @@ object ConvertPdf {
     }
 
   private def storePDF[F[_]: Sync](
-      ctx: Context[F, ProcessItemArgs],
+      ctx: Context[F, Args],
       cfg: ConvertConfig,
       ra: RAttachment,
       pdf: Stream[F, Byte]
@@ -160,7 +161,13 @@ object ConvertPdf {
         .map(_.fullName)
 
     pdf
-      .through(ctx.store.fileStore.save(MimeTypeHint(hint.filename, hint.advertised)))
+      .through(
+        ctx.store.fileRepo.save(
+          ctx.args.meta.collective,
+          FileCategory.AttachmentConvert,
+          MimeTypeHint(hint.filename, hint.advertised)
+        )
+      )
       .compile
       .lastOrError
       .flatMap(fmId => updateAttachment[F](ctx, ra, fmId, newName).map(_ => fmId))
@@ -170,7 +177,7 @@ object ConvertPdf {
   private def updateAttachment[F[_]: Sync](
       ctx: Context[F, _],
       ra: RAttachment,
-      fmId: Ident,
+      fmId: FileKey,
       newName: Option[String]
   ): F[Unit] =
     for {
@@ -188,7 +195,7 @@ object ConvertPdf {
               if (sameFile) ().pure[F]
               else
                 ctx.logger.info("Deleting previous attachment file") *>
-                  ctx.store.fileStore
+                  ctx.store.fileRepo
                     .delete(raPrev.fileId)
                     .attempt
                     .flatMap {

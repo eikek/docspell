@@ -42,7 +42,12 @@ object StoreClassifierModel {
       _ <- logger.debug(s"Storing new trained model for: ${modelName.name}")
       fileData = Files[F].readAll(trainedModel.model)
       newFileId <-
-        fileData.through(store.fileStore.save(MimeTypeHint.none)).compile.lastOrError
+        fileData
+          .through(
+            store.fileRepo.save(collective, FileCategory.Classifier, MimeTypeHint.none)
+          )
+          .compile
+          .lastOrError
       _ <- store.transact(
         RClassifierModel.updateFile(collective, modelName.name, newFileId)
       )
@@ -50,7 +55,7 @@ object StoreClassifierModel {
       _ <- oldFile match {
         case Some(fid) =>
           logger.debug(s"Deleting old model file ${fid.id}") *>
-            store.fileStore.delete(fid)
+            store.fileRepo.delete(fid)
         case None => ().pure[F]
       }
     } yield ()

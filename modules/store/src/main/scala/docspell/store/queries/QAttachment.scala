@@ -40,7 +40,7 @@ object QAttachment {
       .evalSeq(store.transact(findPreview))
       .map(_.fileId)
       .evalTap(_ => store.transact(RAttachmentPreview.delete(attachId)))
-      .evalMap(store.fileStore.delete)
+      .evalMap(store.fileRepo.delete)
       .map(_ => 1)
       .compile
       .foldMonoid
@@ -68,7 +68,7 @@ object QAttachment {
       f <-
         Stream
           .emits(files._1)
-          .evalMap(store.fileStore.delete)
+          .evalMap(store.fileRepo.delete)
           .map(_ => 1)
           .compile
           .foldMonoid
@@ -91,7 +91,7 @@ object QAttachment {
       f <-
         Stream
           .emits(ra.fileId +: (s.map(_.fileId).toSeq ++ p.map(_.fileId).toSeq))
-          .evalMap(store.fileStore.delete)
+          .evalMap(store.fileRepo.delete)
           .map(_ => 1)
           .compile
           .foldMonoid
@@ -104,7 +104,7 @@ object QAttachment {
       _ <- OptionT.liftF(
         Stream
           .emit(aa.fileId)
-          .evalMap(store.fileStore.delete)
+          .evalMap(store.fileRepo.delete)
           .compile
           .drain
       )

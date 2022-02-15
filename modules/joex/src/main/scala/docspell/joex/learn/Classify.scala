@@ -31,7 +31,7 @@ object Classify {
       _ <- OptionT.liftF(logger.info(s"Guessing label for ${cname.name} …"))
       model <- OptionT(store.transact(RClassifierModel.findByName(coll, cname.name)))
         .flatTapNone(logger.debug("No classifier model found."))
-      modelData = store.fileStore.getBytes(model.fileId)
+      modelData = store.fileRepo.getBytes(model.fileId)
       cls <- OptionT(File.withTempDir(workingDir, "classify").use { dir =>
         val modelFile = dir.resolve("model.ser.gz")
         modelData

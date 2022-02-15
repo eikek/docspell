@@ -21,7 +21,7 @@ final case class RClassifierModel(
     id: Ident,
     cid: Ident,
     name: String,
-    fileId: Ident,
+    fileId: FileKey,
     created: Timestamp
 ) {}
 
@@ -30,7 +30,7 @@ object RClassifierModel {
   def createNew[F[_]: Sync](
       cid: Ident,
       name: String,
-      fileId: Ident
+      fileId: FileKey
   ): F[RClassifierModel] =
     for {
       id <- Ident.randomId[F]
@@ -43,7 +43,7 @@ object RClassifierModel {
     val id = Column[Ident]("id", this)
     val cid = Column[Ident]("cid", this)
     val name = Column[String]("name", this)
-    val fileId = Column[Ident]("file_id", this)
+    val fileId = Column[FileKey]("file_id", this)
     val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, cid, name, fileId, created)
@@ -61,7 +61,7 @@ object RClassifierModel {
       fr"${v.id},${v.cid},${v.name},${v.fileId},${v.created}"
     )
 
-  def updateFile(coll: Ident, name: String, fid: Ident): ConnectionIO[Int] =
+  def updateFile(coll: Ident, name: String, fid: FileKey): ConnectionIO[Int] =
     for {
       now <- Timestamp.current[ConnectionIO]
       n <- DML.update(
