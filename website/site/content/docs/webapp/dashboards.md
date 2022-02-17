@@ -32,7 +32,7 @@ The _Settings_ section contains some links to useful settings and the
 _Manage_ section has links to metadata that can be managed separately.
 These links are fixed and cannot be changed.
 
-## Dasbhoard properties
+## Dashboard properties
 
 The main component on this page is the "dashboard". A dashboard has
 the following properties (all required):
@@ -77,7 +77,7 @@ removed and box decorations are enabled for the field overview box.
 
 {{ figure2(light="dashboards-03.png", dark="dashboards-03_dark.png") }}
 
-When you now edit this dasbhoard again, the message is gone and you
+When you now edit this dashboard again, the message is gone and you
 can change the dashboard and also delete it. You can also create a new
 dashboard or copy the current one.
 
