@@ -13,6 +13,7 @@ import fs2.io.file.Path
 import docspell.common._
 import docspell.convert.ConversionResult
 import docspell.convert.ConversionResult.Handler
+import docspell.logging.Logger
 
 object OcrMyPdf {
 

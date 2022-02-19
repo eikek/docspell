@@ -6,14 +6,18 @@
 
 package docspell.logging
 
-import cats.Id
-import cats.effect.Sync
+import java.io.PrintStream
+import java.time.Instant
 
-import docspell.logging.impl.LoggerWrapper
+import cats.effect.{Ref, Sync}
+import cats.syntax.applicative._
+import cats.syntax.functor._
+import cats.syntax.order._
+import cats.{Applicative, Id}
 
 import sourcecode._
 
-trait Logger[F[_]] {
+trait Logger[F[_]] extends LoggerExtension[F] {
 
   def log(ev: LogEvent): F[Unit]
 
@@ -117,12 +121,46 @@ trait Logger[F[_]] {
 }
 
 object Logger {
-  def unsafe(name: String): Logger[Id] =
-    new LoggerWrapper.ImplUnsafe(scribe.Logger(name))
+  def off: Logger[Id] =
+    new Logger[Id] {
+      def log(ev: LogEvent): Unit = ()
+      def asUnsafe = this
+    }
 
-  def apply[F[_]: Sync](name: String): Logger[F] =
-    new LoggerWrapper.Impl[F](scribe.Logger(name))
+  def offF[F[_]: Applicative]: Logger[F] =
+    new Logger[F] {
+      def log(ev: LogEvent) = ().pure[F]
+      def asUnsafe = off
+    }
 
-  def apply[F[_]: Sync](clazz: Class[_]): Logger[F] =
-    new LoggerWrapper.Impl[F](scribe.Logger(clazz.getName))
+  def buffer[F[_]: Sync](): F[(Ref[F, Vector[LogEvent]], Logger[F])] =
+    for {
+      buffer <- Ref.of[F, Vector[LogEvent]](Vector.empty[LogEvent])
+      logger =
+        new Logger[F] {
+          def log(ev: LogEvent) =
+            buffer.update(_.appended(ev))
+          def asUnsafe = off
+        }
+    } yield (buffer, logger)
+
+  /** Just prints to the given print stream. Useful for testing. */
+  def simple(ps: PrintStream, minimumLevel: Level): Logger[Id] =
+    new Logger[Id] {
+      def log(ev: LogEvent): Unit =
+        if (ev.level >= minimumLevel)
+          ps.println(s"${Instant.now()} [${Thread.currentThread()}] ${ev.asString}")
+        else
+          ()
+
+      def asUnsafe = this
+    }
+
+  def simpleF[F[_]: Sync](ps: PrintStream, minimumLevel: Level): Logger[F] =
+    new Logger[F] {
+      def log(ev: LogEvent) =
+        Sync[F].delay(asUnsafe.log(ev))
+
+      val asUnsafe = simple(ps, minimumLevel)
+    }
 }

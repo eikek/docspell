@@ -7,10 +7,10 @@
 package docspell.logging.impl
 
 import io.circe.syntax._
-import scribe.LogRecord
+import scribe._
+import scribe.output._
 import scribe.output.format.OutputFormat
-import scribe.output.{LogOutput, TextOutput}
-import scribe.writer.Writer
+import scribe.writer._
 
 // https://brandur.org/logfmt
 final case class LogfmtWriter(writer: Writer) extends Writer {

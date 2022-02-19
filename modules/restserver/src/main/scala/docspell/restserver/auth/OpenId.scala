@@ -22,10 +22,8 @@ import io.circe.Json
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
 import org.http4s.{Response, Uri}
-import org.log4s.getLogger
 
 object OpenId {
-  private[this] val log = getLogger
 
   def codeFlowConfig[F[_]](config: Config): CodeFlowConfig[F] =
     CodeFlowConfig(
@@ -38,9 +36,9 @@ object OpenId {
 
   def handle[F[_]: Async](backend: BackendApp[F], config: Config): OnUserInfo[F] =
     OnUserInfo { (req, provider, userInfo) =>
+      val logger = docspell.logging.getLogger[F]
       val dsl = new Http4sDsl[F] {}
       import dsl._
-      val logger = Logger.log4s(log)
       val baseUrl = ClientRequestInfo.getBaseUrl(config, req)
       val uri = baseUrl.withQuery("openid", "1") / "app" / "login"
       val location = Location(Uri.unsafeFromString(uri.asString))
@@ -101,6 +99,7 @@ object OpenId {
       location: Location,
       baseUrl: LenientUri
   ): F[Response[F]] = {
+    val logger = docspell.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -108,7 +107,6 @@ object OpenId {
       setup <- backend.signup.setupExternal(cfg.backend.signup)(
         ExternalAccount(accountId)
       )
-      logger = Logger.log4s(log)
       res <- setup match {
         case SignupResult.Failure(ex) =>
           logger.error(ex)(s"Error when creating external account!") *>
@@ -141,6 +139,7 @@ object OpenId {
       location: Location,
       baseUrl: LenientUri
   ): F[Response[F]] = {
+    val logger = docspell.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -160,7 +159,7 @@ object OpenId {
             .map(_.addCookie(CookieData(session).asCookie(baseUrl)))
 
         case failed =>
-          Logger.log4s(log).error(s"External login failed: $failed") *>
+          logger.error(s"External login failed: $failed") *>
             SeeOther(location)
       }
     } yield resp

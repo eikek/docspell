@@ -17,6 +17,8 @@ import cats.implicits._
 import fs2.io.file.Path
 import fs2.{Stream, io, text}
 
+import docspell.logging.Logger
+
 object SystemCommand {
 
   final case class Config(program: String, args: Seq[String], timeout: Duration) {

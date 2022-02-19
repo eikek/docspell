@@ -12,10 +12,10 @@ import fs2.Stream
 
 import docspell.common._
 import docspell.ftsclient._
+import docspell.logging.Logger
 
 import org.http4s.client.Client
-import org.http4s.client.middleware.Logger
-import org.log4s.getLogger
+import org.http4s.client.middleware.{Logger => Http4sLogger}
 
 final class SolrFtsClient[F[_]: Async](
     solrUpdate: SolrUpdate[F],
@@ -81,7 +81,6 @@ final class SolrFtsClient[F[_]: Async](
 }
 
 object SolrFtsClient {
-  private[this] val logger = getLogger
 
   def apply[F[_]: Async](
       cfg: SolrConfig,
@@ -100,11 +99,13 @@ object SolrFtsClient {
   private def loggingMiddleware[F[_]: Async](
       cfg: SolrConfig,
       client: Client[F]
-  ): Client[F] =
-    Logger(
+  ): Client[F] = {
+    val delegate = docspell.logging.getLogger[F]
+    Http4sLogger(
       logHeaders = true,
       logBody = cfg.logVerbose,
-      logAction = Some((msg: String) => Sync[F].delay(logger.trace(msg)))
+      logAction = Some((msg: String) => delegate.trace(msg))
     )(client)
+  }
 
 }

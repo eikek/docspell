@@ -21,12 +21,10 @@ import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.http4s.implicits._
-import org.log4s._
 import yamusca.implicits._
 import yamusca.imports._
 
 object TemplateRoutes {
-  private[this] val logger = getLogger
 
   private val textHtml = mediaType"text/html"
   private val appJavascript = mediaType"application/javascript"
@@ -99,11 +97,12 @@ object TemplateRoutes {
   def parseTemplate[F[_]: Sync](str: String): F[Template] =
     Sync[F].pure(mustache.parse(str).leftMap(err => new Exception(err._2))).rethrow
 
-  def loadTemplate[F[_]: Sync](url: URL): F[Template] =
-    loadUrl[F](url).flatMap(parseTemplate[F]).map { t =>
-      logger.info(s"Compiled template $url")
-      t
+  def loadTemplate[F[_]: Sync](url: URL): F[Template] = {
+    val logger = docspell.logging.getLogger[F]
+    loadUrl[F](url).flatMap(parseTemplate[F]).flatMap { t =>
+      logger.info(s"Compiled template $url") *> t.pure[F]
     }
+  }
 
   case class DocData(swaggerRoot: String, openapiSpec: String)
   object DocData {

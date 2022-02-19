@@ -20,6 +20,9 @@ final case class LogEvent(
     line: Line
 ) {
 
+  def asString =
+    s"${level.name} ${name.value}/${fileName}:${line.value} - ${msg()}"
+
   def data[A: Encoder](key: String, value: => A): LogEvent =
     copy(data = data.updated(key, () => Encoder[A].apply(value)))
 
@@ -28,6 +31,11 @@ final case class LogEvent(
 
   def addError(ex: Throwable): LogEvent =
     copy(additional = (() => Right(ex)) :: additional)
+
+  def findErrors: List[Throwable] =
+    additional.map(a => a()).collect { case Right(ex) =>
+      ex
+    }
 }
 
 object LogEvent {

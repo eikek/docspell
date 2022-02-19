@@ -9,7 +9,7 @@ package docspell.notification.impl
 import cats.data.NonEmptyList
 import cats.effect._
 
-import docspell.common.Logger
+import docspell.logging.Logger
 import docspell.notification.api.NotificationBackend.{combineAll, ignoreErrors, silent}
 import docspell.notification.api.{NotificationBackend, NotificationChannel}
 

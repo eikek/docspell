@@ -6,7 +6,7 @@
 
 package docspell.logging.impl
 
-import cats.effect._
+import cats.effect.Sync
 
 import docspell.logging.LogConfig
 import docspell.logging.LogConfig.Format
@@ -26,7 +26,7 @@ object ScribeConfigure {
   def unsafeConfigure(logger: scribe.Logger, cfg: LogConfig): Unit = {
     val mods = List[scribe.Logger => scribe.Logger](
       _.clearHandlers(),
-      _.withMinimumLevel(LoggerWrapper.convertLevel(cfg.minimumLevel)),
+      _.withMinimumLevel(ScribeWrapper.convertLevel(cfg.minimumLevel)),
       l =>
         cfg.format match {
           case Format.Fancy =>

@@ -132,10 +132,8 @@ object JoexAppImpl extends MailAddressCodec {
   ): Resource[F, JoexApp[F]] =
     for {
       pstore <- PeriodicTaskStore.create(store)
-      pubSubT = PubSubT(
-        pubSub,
-        Logger.log4s(org.log4s.getLogger(s"joex-${cfg.appId.id}"))
-      )
+      joexLogger = docspell.logging.getLogger[F](s"joex-${cfg.appId.id}")
+      pubSubT = PubSubT(pubSub, joexLogger)
       javaEmil =
         JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
       notificationMod <- Resource.eval(

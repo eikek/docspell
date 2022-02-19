@@ -21,7 +21,7 @@ import docspell.common._
 import munit._
 
 class StanfordTextClassifierSuite extends FunSuite {
-  val logger = Logger.log4s[IO](org.log4s.getLogger)
+  val logger = docspell.logging.getLogger[IO]
 
   test("learn from data") {
     val cfg = TextClassifierConfig(File.path(Paths.get("target")), NonEmptyList.of(Map()))

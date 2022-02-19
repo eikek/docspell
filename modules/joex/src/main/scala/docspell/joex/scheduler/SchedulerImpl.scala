@@ -15,7 +15,6 @@ import fs2.concurrent.SignallingRef
 
 import docspell.backend.msg.JobDone
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.joex.scheduler.SchedulerImpl._
 import docspell.notification.api.Event
 import docspell.notification.api.EventSink
@@ -26,7 +25,6 @@ import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
 
 import io.circe.Json
-import org.log4s.getLogger
 
 final class SchedulerImpl[F[_]: Async](
     val config: SchedulerConfig,
@@ -41,7 +39,7 @@ final class SchedulerImpl[F[_]: Async](
     permits: Semaphore[F]
 ) extends Scheduler[F] {
 
-  private[this] val logger = getLogger
+  private[this] val logger = docspell.logging.getLogger[F]
 
   /** On startup, get all jobs in state running from this scheduler and put them into
     * waiting state, so they get picked up again.
@@ -53,7 +51,7 @@ final class SchedulerImpl[F[_]: Async](
     Async[F].start(
       Stream
         .awakeEvery[F](config.wakeupPeriod.toScala)
-        .evalMap(_ => logger.fdebug("Periodic awake reached") *> notifyChange)
+        .evalMap(_ => logger.debug("Periodic awake reached") *> notifyChange)
         .compile
         .drain
     )
@@ -62,7 +60,7 @@ final class SchedulerImpl[F[_]: Async](
     state.get.flatMap(s => QJob.findAll(s.getRunning, store))
 
   def requestCancel(jobId: Ident): F[Boolean] =
-    logger.finfo(s"Scheduler requested to cancel job: ${jobId.id}") *>
+    logger.info(s"Scheduler requested to cancel job: ${jobId.id}") *>
       state.get.flatMap(_.cancelRequest(jobId) match {
         case Some(ct) => ct.map(_ => true)
         case None =>
@@ -74,7 +72,7 @@ final class SchedulerImpl[F[_]: Async](
             )
           } yield true)
             .getOrElseF(
-              logger.fwarn(s"Job ${jobId.id} not found, cannot cancel.").map(_ => false)
+              logger.warn(s"Job ${jobId.id} not found, cannot cancel.").map(_ => false)
             )
       })
 
@@ -90,16 +88,16 @@ final class SchedulerImpl[F[_]: Async](
 
     val wait = Stream
       .eval(runShutdown)
-      .evalMap(_ => logger.finfo("Scheduler is shutting down now."))
+      .evalMap(_ => logger.info("Scheduler is shutting down now."))
       .flatMap(_ =>
         Stream.eval(state.get) ++ Stream
           .suspend(state.discrete.takeWhile(_.getRunning.nonEmpty))
       )
       .flatMap { state =>
-        if (state.getRunning.isEmpty) Stream.eval(logger.finfo("No jobs running."))
+        if (state.getRunning.isEmpty) Stream.eval(logger.info("No jobs running."))
         else
           Stream.eval(
-            logger.finfo(s"Waiting for ${state.getRunning.size} jobs to finish.")
+            logger.info(s"Waiting for ${state.getRunning.size} jobs to finish.")
           ) ++
             Stream.emit(state)
       }
@@ -108,35 +106,35 @@ final class SchedulerImpl[F[_]: Async](
   }
 
   def start: Stream[F, Nothing] =
-    logger.sinfo("Starting scheduler") ++
+    logger.stream.info("Starting scheduler").drain ++
       mainLoop
 
   def mainLoop: Stream[F, Nothing] = {
     val body: F[Boolean] =
       for {
         _ <- permits.available.flatMap(a =>
-          logger.fdebug(s"Try to acquire permit ($a free)")
+          logger.debug(s"Try to acquire permit ($a free)")
         )
         _ <- permits.acquire
-        _ <- logger.fdebug("New permit acquired")
+        _ <- logger.debug("New permit acquired")
         down <- state.get.map(_.shutdownRequest)
         rjob <-
           if (down)
-            logger.finfo("") *> permits.release *> (None: Option[RJob]).pure[F]
+            logger.info("") *> permits.release *> (None: Option[RJob]).pure[F]
           else
             queue.nextJob(
               group => state.modify(_.nextPrio(group, config.countingScheme)),
               config.name,
               config.retryDelay
             )
-        _ <- logger.fdebug(s"Next job found: ${rjob.map(_.info)}")
+        _ <- logger.debug(s"Next job found: ${rjob.map(_.info)}")
         _ <- rjob.map(execute).getOrElse(permits.release)
       } yield rjob.isDefined
 
     Stream
       .eval(state.get.map(_.shutdownRequest))
       .evalTap(
-        if (_) logger.finfo[F]("Stopping main loop due to shutdown request.")
+        if (_) logger.info("Stopping main loop due to shutdown request.")
         else ().pure[F]
       )
       .flatMap(if (_) Stream.empty else Stream.eval(body))
@@ -144,9 +142,9 @@ final class SchedulerImpl[F[_]: Async](
         case true =>
           mainLoop
         case false =>
-          logger.sdebug(s"Waiting for notify") ++
+          logger.stream.debug(s"Waiting for notify").drain ++
             waiter.discrete.take(2).drain ++
-            logger.sdebug(s"Notify signal, going into main loop") ++
+            logger.stream.debug(s"Notify signal, going into main loop").drain ++
             mainLoop
       }
   }
@@ -161,17 +159,17 @@ final class SchedulerImpl[F[_]: Async](
 
     task match {
       case Left(err) =>
-        logger.ferror(s"Unable to run cancellation task for job ${job.info}: $err")
+        logger.error(s"Unable to run cancellation task for job ${job.info}: $err")
       case Right(t) =>
         for {
           _ <-
-            logger.fdebug(s"Creating context for job ${job.info} to run cancellation $t")
+            logger.debug(s"Creating context for job ${job.info} to run cancellation $t")
           ctx <- Context[F, String](job, job.args, config, logSink, store)
           _ <- t.onCancel.run(ctx)
           _ <- state.modify(_.markCancelled(job))
           _ <- onFinish(job, Json.Null, JobState.Cancelled)
           _ <- ctx.logger.warn("Job has been cancelled.")
-          _ <- logger.fdebug(s"Job ${job.info} has been cancelled.")
+          _ <- logger.debug(s"Job ${job.info} has been cancelled.")
         } yield ()
     }
   }
@@ -186,10 +184,10 @@ final class SchedulerImpl[F[_]: Async](
 
     task match {
       case Left(err) =>
-        logger.ferror(s"Unable to start a task for job ${job.info}: $err")
+        logger.error(s"Unable to start a task for job ${job.info}: $err")
       case Right(t) =>
         for {
-          _ <- logger.fdebug(s"Creating context for job ${job.info} to run $t")
+          _ <- logger.debug(s"Creating context for job ${job.info} to run $t")
           ctx <- Context[F, String](job, job.args, config, logSink, store)
           jot = wrapTask(job, t.task, ctx)
           tok <- forkRun(job, jot.run(ctx), t.onCancel.run(ctx), ctx)
@@ -200,9 +198,9 @@ final class SchedulerImpl[F[_]: Async](
 
   def onFinish(job: RJob, result: Json, finishState: JobState): F[Unit] =
     for {
-      _ <- logger.fdebug(s"Job ${job.info} done $finishState. Releasing resources.")
+      _ <- logger.debug(s"Job ${job.info} done $finishState. Releasing resources.")
       _ <- permits.release *> permits.available.flatMap(a =>
-        logger.fdebug(s"Permit released ($a free)")
+        logger.debug(s"Permit released ($a free)")
       )
       _ <- state.modify(_.removeRunning(job))
       _ <- QJob.setFinalState(job.id, finishState, store)
@@ -241,7 +239,7 @@ final class SchedulerImpl[F[_]: Async](
       ctx: Context[F, String]
   ): Task[F, String, Unit] =
     task
-      .mapF(fa => onStart(job) *> logger.fdebug("Starting task now") *> fa)
+      .mapF(fa => onStart(job) *> logger.debug("Starting task now") *> fa)
       .mapF(_.attempt.flatMap {
         case Right(result) =>
           logger.info(s"Job execution successful: ${job.info}")
@@ -284,11 +282,11 @@ final class SchedulerImpl[F[_]: Async](
       onCancel: F[Unit],
       ctx: Context[F, String]
   ): F[F[Unit]] =
-    logger.fdebug(s"Forking job ${job.info}") *>
+    logger.debug(s"Forking job ${job.info}") *>
       Async[F]
         .start(code)
         .map(fiber =>
-          logger.fdebug(s"Cancelling job ${job.info}") *>
+          logger.debug(s"Cancelling job ${job.info}") *>
             fiber.cancel *>
             onCancel.attempt.map {
               case Right(_) => ()
@@ -299,7 +297,7 @@ final class SchedulerImpl[F[_]: Async](
             state.modify(_.markCancelled(job)) *>
             onFinish(job, Json.Null, JobState.Cancelled) *>
             ctx.logger.warn("Job has been cancelled.") *>
-            logger.fdebug(s"Job ${job.info} has been cancelled.")
+            logger.debug(s"Job ${job.info} has been cancelled.")
         )
 }
 

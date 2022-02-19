@@ -14,7 +14,6 @@ import fs2.Stream
 import docspell.backend.JobFactory
 import docspell.backend.ops.OItemSearch._
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.ftsclient._
 import docspell.query.ItemQuery._
 import docspell.query.ItemQueryDsl._
@@ -22,8 +21,6 @@ import docspell.store.queries.{QFolder, QItem, SelectedItem}
 import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
 import docspell.store.{Store, qb}
-
-import org.log4s.getLogger
 
 trait OFulltext[F[_]] {
 
@@ -59,7 +56,6 @@ trait OFulltext[F[_]] {
 }
 
 object OFulltext {
-  private[this] val logger = getLogger
 
   case class FtsInput(
       query: String,
@@ -89,16 +85,17 @@ object OFulltext {
       joex: OJoex[F]
   ): Resource[F, OFulltext[F]] =
     Resource.pure[F, OFulltext[F]](new OFulltext[F] {
+      val logger = docspell.logging.getLogger[F]
       def reindexAll: F[Unit] =
         for {
-          _ <- logger.finfo(s"Re-index all.")
+          _ <- logger.info(s"Re-index all.")
           job <- JobFactory.reIndexAll[F]
           _ <- queue.insertIfNew(job) *> joex.notifyAllNodes
         } yield ()
 
       def reindexCollective(account: AccountId): F[Unit] =
         for {
-          _ <- logger.fdebug(s"Re-index collective: $account")
+          _ <- logger.debug(s"Re-index collective: $account")
           exist <- store.transact(
             RJob.findNonFinalByTracker(DocspellSystem.migrationTaskTracker)
           )
@@ -123,7 +120,7 @@ object OFulltext {
           FtsQuery.HighlightSetting(ftsQ.highlightPre, ftsQ.highlightPost)
         )
         for {
-          _ <- logger.ftrace(s"Find index only: ${ftsQ.query}/$batch")
+          _ <- logger.trace(s"Find index only: ${ftsQ.query}/$batch")
           folders <- store.transact(QFolder.getMemberFolders(account))
           ftsR <- fts.search(fq.withFolders(folders))
           ftsItems = ftsR.results.groupBy(_.itemId)

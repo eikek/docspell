@@ -13,6 +13,7 @@ import cats.implicits._
 
 import docspell.common._
 import docspell.joex.scheduler.Task
+import docspell.logging.Logger
 
 /** After candidates have been determined, the set is reduced by doing some cross checks.
   * For example: if a organization is suggested as correspondent, the correspondent person

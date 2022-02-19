@@ -22,16 +22,15 @@ import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.log4s.getLogger
 
 object ItemMultiRoutes extends NonEmptyListSupport with MultiIdSupport {
-  private[this] val log4sLogger = getLogger
 
   def apply[F[_]: Async](
       cfg: Config,
       backend: BackendApp[F],
       user: AuthToken
   ): HttpRoutes[F] = {
+    val logger = docspell.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -236,7 +235,6 @@ object ItemMultiRoutes extends NonEmptyListSupport with MultiIdSupport {
         for {
           json <- req.as[IdList]
           items <- requireNonEmpty(json.ids)
-          logger = Logger.log4s(log4sLogger)
           res <- backend.item.merge(logger, items, user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Items merged"))
         } yield resp

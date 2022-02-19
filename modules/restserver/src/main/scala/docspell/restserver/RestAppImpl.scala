@@ -11,7 +11,6 @@ import fs2.Stream
 import fs2.concurrent.Topic
 
 import docspell.backend.BackendApp
-import docspell.common.Logger
 import docspell.ftsclient.FtsClient
 import docspell.ftssolr.SolrFtsClient
 import docspell.notification.api.NotificationModule
@@ -47,7 +46,8 @@ object RestAppImpl {
       pubSub: PubSub[F],
       wsTopic: Topic[F, OutputEvent]
   ): Resource[F, RestApp[F]] = {
-    val logger = Logger.log4s(org.log4s.getLogger(s"restserver-${cfg.appId.id}"))
+    val logger = docspell.logging.getLogger[F](s"restserver-${cfg.appId.id}")
+
     for {
       ftsClient <- createFtsClient(cfg)(httpClient)
       pubSubT = PubSubT(pubSub, logger)

@@ -55,5 +55,5 @@ trait HttpClientOps {
 }
 
 object HttpClientOps {
-  private val logger: Logger[IO] = Logger.log4s(org.log4s.getLogger)
+  private val logger = docspell.logging.getLogger[IO]
 }

@@ -13,13 +13,11 @@ import fs2.concurrent.SignallingRef
 
 import docspell.backend.ops.OJoex
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.joex.scheduler.PeriodicSchedulerImpl.State
 import docspell.store.queue._
 import docspell.store.records.RPeriodicTask
 
 import eu.timepit.fs2cron.calev.CalevScheduler
-import org.log4s.getLogger
 
 final class PeriodicSchedulerImpl[F[_]: Async](
     val config: PeriodicSchedulerConfig,
@@ -30,10 +28,10 @@ final class PeriodicSchedulerImpl[F[_]: Async](
     waiter: SignallingRef[F, Boolean],
     state: SignallingRef[F, State[F]]
 ) extends PeriodicScheduler[F] {
-  private[this] val logger = getLogger
+  private[this] val logger = docspell.logging.getLogger[F]
 
   def start: Stream[F, Nothing] =
-    logger.sinfo("Starting periodic scheduler") ++
+    logger.stream.info("Starting periodic scheduler").drain ++
       mainLoop
 
   def shutdown: F[Unit] =
@@ -43,7 +41,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
     Async[F].start(
       Stream
         .awakeEvery[F](config.wakeupPeriod.toScala)
-        .evalMap(_ => logger.fdebug("Periodic awake reached") *> notifyChange)
+        .evalMap(_ => logger.debug("Periodic awake reached") *> notifyChange)
         .compile
         .drain
     )
@@ -62,22 +60,22 @@ final class PeriodicSchedulerImpl[F[_]: Async](
   def mainLoop: Stream[F, Nothing] = {
     val body: F[Boolean] =
       for {
-        _ <- logger.fdebug(s"Going into main loop")
+        _ <- logger.debug(s"Going into main loop")
         now <- Timestamp.current[F]
-        _ <- logger.fdebug(s"Looking for next periodic task")
+        _ <- logger.debug(s"Looking for next periodic task")
         go <- logThrow("Error getting next task")(
           store
             .takeNext(config.name, None)
             .use {
               case Marked.Found(pj) =>
                 logger
-                  .fdebug(s"Found periodic task '${pj.subject}/${pj.timer.asString}'") *>
+                  .debug(s"Found periodic task '${pj.subject}/${pj.timer.asString}'") *>
                   (if (isTriggered(pj, now)) submitJob(pj)
                    else scheduleNotify(pj).map(_ => false))
               case Marked.NotFound =>
-                logger.fdebug("No periodic task found") *> false.pure[F]
+                logger.debug("No periodic task found") *> false.pure[F]
               case Marked.NotMarkable =>
-                logger.fdebug("Periodic job cannot be marked. Trying again.") *> true
+                logger.debug("Periodic job cannot be marked. Trying again.") *> true
                   .pure[F]
             }
         )
@@ -86,7 +84,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
     Stream
       .eval(state.get.map(_.shutdownRequest))
       .evalTap(
-        if (_) logger.finfo[F]("Stopping main loop due to shutdown request.")
+        if (_) logger.info("Stopping main loop due to shutdown request.")
         else ().pure[F]
       )
       .flatMap(if (_) Stream.empty else Stream.eval(cancelNotify *> body))
@@ -94,9 +92,9 @@ final class PeriodicSchedulerImpl[F[_]: Async](
         case true =>
           mainLoop
         case false =>
-          logger.sdebug(s"Waiting for notify") ++
+          logger.stream.debug(s"Waiting for notify").drain ++
             waiter.discrete.take(2).drain ++
-            logger.sdebug(s"Notify signal, going into main loop") ++
+            logger.stream.debug(s"Notify signal, going into main loop").drain ++
             mainLoop
       }
   }
@@ -109,12 +107,12 @@ final class PeriodicSchedulerImpl[F[_]: Async](
       .findNonFinalJob(pj.id)
       .flatMap {
         case Some(job) =>
-          logger.finfo[F](
+          logger.info(
             s"There is already a job with non-final state '${job.state}' in the queue"
           ) *> scheduleNotify(pj) *> false.pure[F]
 
         case None =>
-          logger.finfo[F](s"Submitting job for periodic task '${pj.task.id}'") *>
+          logger.info(s"Submitting job for periodic task '${pj.task.id}'") *>
             pj.toJob.flatMap(queue.insert) *> notifyJoex *> true.pure[F]
       }
 
@@ -125,7 +123,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
     Timestamp
       .current[F]
       .flatMap(now =>
-        logger.fdebug(
+        logger.debug(
           s"Scheduling next notify for timer ${pj.timer.asString} -> ${pj.timer.nextElapse(now.toUtcDateTime)}"
         )
       ) *>
@@ -153,13 +151,13 @@ final class PeriodicSchedulerImpl[F[_]: Async](
   private def logError(msg: => String)(fa: F[Unit]): F[Unit] =
     fa.attempt.flatMap {
       case Right(_) => ().pure[F]
-      case Left(ex) => logger.ferror(ex)(msg).map(_ => ())
+      case Left(ex) => logger.error(ex)(msg).map(_ => ())
     }
 
   private def logThrow[A](msg: => String)(fa: F[A]): F[A] =
     fa.attempt.flatMap {
       case r @ Right(_) => (r: Either[Throwable, A]).pure[F]
-      case l @ Left(ex) => logger.ferror(ex)(msg).map(_ => (l: Either[Throwable, A]))
+      case l @ Left(ex) => logger.error(ex)(msg).map(_ => (l: Either[Throwable, A]))
     }.rethrow
 }
 

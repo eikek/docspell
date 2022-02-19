@@ -10,7 +10,6 @@ import cats.data.Kleisli
 import cats.data.OptionT
 import cats.effect._
 
-import docspell.common.Logger
 import docspell.notification.api.Event
 import docspell.notification.api.NotificationBackend
 import docspell.store.Store
@@ -21,13 +20,13 @@ import org.http4s.client.Client
 
 /** Represents the actual work done for each event. */
 object EventNotify {
-  private[this] val log4sLogger = org.log4s.getLogger
 
   def apply[F[_]: Async](
       store: Store[F],
       mailService: Emil[F],
       client: Client[F]
-  ): Kleisli[F, Event, Unit] =
+  ): Kleisli[F, Event, Unit] = {
+    val logger = docspell.logging.getLogger[F]
     Kleisli { event =>
       (for {
         hooks <- OptionT.liftF(store.transact(QNotification.findChannelsForEvent(event)))
@@ -43,10 +42,11 @@ object EventNotify {
             NotificationBackendImpl.forChannelsIgnoreErrors(
               client,
               mailService,
-              Logger.log4s(log4sLogger)
+              logger
             )(channels)
         _ <- OptionT.liftF(backend.send(evctx))
       } yield ()).getOrElse(())
     }
+  }
 
 }

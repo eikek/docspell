@@ -15,8 +15,6 @@ import cats.implicits._
 import docspell.analysis.NlpSettings
 import docspell.common._
 
-import org.log4s.getLogger
-
 /** Creating the StanfordCoreNLP pipeline is quite expensive as it involves IO and
   * initializing large objects.
   *
@@ -31,17 +29,19 @@ trait PipelineCache[F[_]] {
 }
 
 object PipelineCache {
-  private[this] val logger = getLogger
+  private[this] val logger = docspell.logging.unsafeLogger
 
   def apply[F[_]: Async](clearInterval: Duration)(
       creator: NlpSettings => Annotator[F],
       release: F[Unit]
-  ): F[PipelineCache[F]] =
+  ): F[PipelineCache[F]] = {
+    val log = docspell.logging.getLogger[F]
     for {
       data <- Ref.of(Map.empty[String, Entry[Annotator[F]]])
       cacheClear <- CacheClearing.create(data, clearInterval, release)
-      _ <- Logger.log4s(logger).info("Creating nlp pipeline cache")
+      _ <- log.info("Creating nlp pipeline cache")
     } yield new Impl[F](data, creator, cacheClear)
+  }
 
   final private class Impl[F[_]: Async](
       data: Ref[F, Map[String, Entry[Annotator[F]]]],
@@ -116,7 +116,7 @@ object PipelineCache {
       for {
         counter <- Ref.of(0L)
         cleaning <- Ref.of(None: Option[Fiber[F, Throwable, Unit]])
-        log = Logger.log4s(logger)
+        log = docspell.logging.getLogger[F]
         result <-
           if (interval.millis <= 0)
             log
@@ -145,7 +145,7 @@ object PipelineCache {
       release: F[Unit]
   )(implicit F: Async[F])
       extends CacheClearing[F] {
-    private[this] val log = Logger.log4s[F](logger)
+    private[this] val log = docspell.logging.getLogger[F]
 
     def withCache: Resource[F, Unit] =
       Resource.make(counter.update(_ + 1) *> cancelClear)(_ =>

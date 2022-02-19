@@ -11,6 +11,7 @@ import cats.implicits._
 
 import docspell.common._
 import docspell.joex.scheduler.{Context, Task}
+import docspell.logging.Logger
 import docspell.store.records._
 
 import org.http4s.blaze.client.BlazeClientBuilder

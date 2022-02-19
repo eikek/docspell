@@ -11,8 +11,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
-
-import org.log4s.getLogger
+import docspell.logging.Logger
 
 /** The fts client is the interface for docspell to a fulltext search engine.
   *
@@ -127,7 +126,7 @@ object FtsClient {
 
   def none[F[_]: Sync] =
     new FtsClient[F] {
-      private[this] val logger = Logger.log4s[F](getLogger)
+      private[this] val logger = docspell.logging.getLogger[F]
 
       def initialize: F[List[FtsMigration[F]]] =
         Sync[F].pure(Nil)

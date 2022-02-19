@@ -7,14 +7,14 @@
 package docspell.logging.impl
 
 import cats.Id
-import cats.effect._
+import cats.effect.Sync
 
-import docspell.logging._
+import docspell.logging.{Level, LogEvent, Logger}
 
 import scribe.LoggerSupport
 import scribe.message.{LoggableMessage, Message}
 
-private[logging] object LoggerWrapper {
+private[logging] object ScribeWrapper {
   final class ImplUnsafe(log: scribe.Logger) extends Logger[Id] {
     override def asUnsafe = this
 

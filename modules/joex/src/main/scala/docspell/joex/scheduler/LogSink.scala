@@ -11,11 +11,8 @@ import cats.implicits._
 import fs2.Pipe
 
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.records.RJobLog
-
-import org.log4s.{LogLevel => _, _}
 
 trait LogSink[F[_]] {
 
@@ -24,29 +21,30 @@ trait LogSink[F[_]] {
 }
 
 object LogSink {
-  private[this] val logger = getLogger
 
   def apply[F[_]](sink: Pipe[F, LogEvent, Unit]): LogSink[F] =
     new LogSink[F] {
       val receive = sink
     }
 
-  def logInternal[F[_]: Sync](e: LogEvent): F[Unit] =
+  def logInternal[F[_]: Sync](e: LogEvent): F[Unit] = {
+    val logger = docspell.logging.getLogger[F]
     e.level match {
       case LogLevel.Info =>
-        logger.finfo(e.logLine)
+        logger.info(e.logLine)
       case LogLevel.Debug =>
-        logger.fdebug(e.logLine)
+        logger.debug(e.logLine)
       case LogLevel.Warn =>
-        logger.fwarn(e.logLine)
+        logger.warn(e.logLine)
       case LogLevel.Error =>
         e.ex match {
           case Some(exc) =>
-            logger.ferror(exc)(e.logLine)
+            logger.error(exc)(e.logLine)
           case None =>
-            logger.ferror(e.logLine)
+            logger.error(e.logLine)
         }
     }
+  }
 
   def printer[F[_]: Sync]: LogSink[F] =
     LogSink(_.evalMap(e => logInternal(e)))

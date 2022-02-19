@@ -15,6 +15,7 @@ import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
 import docspell.joex.scheduler.Context
+import docspell.logging.Logger
 
 object FtsWork {
   import syntax._

@@ -20,12 +20,13 @@ import docspell.convert.extern.OcrMyPdfConfig
 import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}
 import docspell.convert.flexmark.MarkdownConfig
 import docspell.files.ExampleFiles
+import docspell.logging.{Level, Logger}
 
 import munit._
 
 class ConversionTest extends FunSuite with FileChecks {
 
-  val logger = Logger.log4s[IO](org.log4s.getLogger)
+  val logger = Logger.simpleF[IO](System.err, Level.Info)
   val target = File.path(Paths.get("target"))
 
   val convertConfig = ConvertConfig(

@@ -6,9 +6,6 @@
 
 package docspell.backend.ops
 
-import java.io.PrintWriter
-import java.io.StringWriter
-
 import cats.data.OptionT
 import cats.data.{NonEmptyList => Nel}
 import cats.effect._
@@ -17,6 +14,7 @@ import cats.implicits._
 import docspell.backend.ops.ONotification.Hook
 import docspell.common._
 import docspell.jsonminiq.JsonMiniQuery
+import docspell.logging.{Level, LogEvent, Logger}
 import docspell.notification.api._
 import docspell.store.AddResult
 import docspell.store.Store
@@ -75,14 +73,13 @@ trait ONotification[F[_]] {
 }
 
 object ONotification {
-  private[this] val logger = org.log4s.getLogger
 
   def apply[F[_]: Async](
       store: Store[F],
       notMod: NotificationModule[F]
   ): Resource[F, ONotification[F]] =
     Resource.pure[F, ONotification[F]](new ONotification[F] {
-      val log = Logger.log4s[F](logger)
+      val log = docspell.logging.getLogger[F]
 
       def withUserId[A](
           account: AccountId
@@ -129,9 +126,9 @@ object ONotification {
           .map {
             case Right(res) => res
             case Left(ex) =>
-              val ps = new StringWriter()
-              ex.printStackTrace(new PrintWriter(ps))
-              SendTestResult(false, Vector(s"${ex.getMessage}\n$ps"))
+              val ev =
+                LogEvent.of(Level.Error, "Failed sending sample event").addError(ex)
+              SendTestResult(false, Vector(ev))
           }
 
       def listChannels(account: AccountId): F[Vector[Channel]] =
@@ -316,5 +313,5 @@ object ONotification {
       } yield h
   }
 
-  final case class SendTestResult(success: Boolean, logMessages: Vector[String])
+  final case class SendTestResult(success: Boolean, logEvents: Vector[LogEvent])
 }

@@ -14,6 +14,7 @@ import fs2.{Pipe, Stream}
 import docspell.common._
 import docspell.convert.ConversionResult
 import docspell.convert.ConversionResult.{Handler, successPdf, successPdfTxt}
+import docspell.logging.Logger
 
 private[extern] object ExternConv {
 

@@ -44,6 +44,7 @@ object Dependencies {
   val ScodecBitsVersion = "1.1.30"
   val ScribeVersion = "3.7.0"
   val Slf4jVersion = "1.7.36"
+  val SourcecodeVersion = "0.2.8"
   val StanfordNlpVersion = "4.4.0"
   val TikaVersion = "2.3.0"
   val YamuscaVersion = "0.8.2"
@@ -55,6 +56,10 @@ object Dependencies {
   val scribe = Seq(
     "com.outr" %% "scribe" % ScribeVersion,
     "com.outr" %% "scribe-slf4j" % ScribeVersion
+  )
+
+  val sourcecode = Seq(
+    "com.lihaoyi" %% "sourcecode" % SourcecodeVersion
   )
 
   val jwtScala = Seq(
@@ -226,10 +231,13 @@ object Dependencies {
     "org.mindrot" % "jbcrypt" % BcryptVersion
   )
 
-  val fs2 = Seq(
-    "co.fs2" %% "fs2-core" % Fs2Version,
+  val fs2Core = Seq(
+    "co.fs2" %% "fs2-core" % Fs2Version
+  )
+  val fs2Io = Seq(
     "co.fs2" %% "fs2-io" % Fs2Version
   )
+  val fs2 = fs2Core ++ fs2Io
 
   val http4sClient = Seq(
     "org.http4s" %% "http4s-blaze-client" % Http4sVersion

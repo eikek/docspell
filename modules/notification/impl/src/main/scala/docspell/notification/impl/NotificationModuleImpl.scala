@@ -10,7 +10,7 @@ import cats.data.Kleisli
 import cats.effect.kernel.Async
 import cats.implicits._
 
-import docspell.common._
+import docspell.logging.Logger
 import docspell.notification.api._
 import docspell.store.Store
 

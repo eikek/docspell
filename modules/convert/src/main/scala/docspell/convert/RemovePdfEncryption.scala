@@ -12,6 +12,7 @@ import cats.effect._
 import fs2.{Chunk, Pipe, Stream}
 
 import docspell.common._
+import docspell.logging.Logger
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException
@@ -36,7 +37,7 @@ object RemovePdfEncryption {
         .head
         .flatMap { doc =>
           if (doc.isEncrypted) {
-            logger.s.debug("Removing protection/encryption from PDF").drain ++
+            logger.stream.debug("Removing protection/encryption from PDF").drain ++
               Stream.eval(Sync[F].delay(doc.setAllSecurityToBeRemoved(true))).drain ++
               toStream[F](doc)
           } else {
@@ -44,7 +45,7 @@ object RemovePdfEncryption {
           }
         }
         .ifEmpty(
-          logger.s
+          logger.stream
             .info(
               s"None of the passwords helped to read the given PDF!"
             )
@@ -64,7 +65,8 @@ object RemovePdfEncryption {
 
     val log =
       if (pw.isEmpty) Stream.empty
-      else logger.s.debug(s"Try opening PDF with password: ${pw.pass.take(2)}***").drain
+      else
+        logger.stream.debug(s"Try opening PDF with password: ${pw.pass.take(2)}***").drain
 
     in =>
       Stream

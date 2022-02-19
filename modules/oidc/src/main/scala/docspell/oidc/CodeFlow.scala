@@ -22,7 +22,6 @@ import org.http4s.client.middleware.RequestLogger
 import org.http4s.client.middleware.ResponseLogger
 import org.http4s.headers.Accept
 import org.http4s.headers.Authorization
-import org.log4s.getLogger
 
 /** https://openid.net/specs/openid-connect-core-1_0.html (OIDC)
   * https://openid.net/specs/openid-connect-basic-1_0.html#TokenRequest (OIDC)
@@ -30,7 +29,6 @@ import org.log4s.getLogger
   * https://datatracker.ietf.org/doc/html/rfc7519 (JWT)
   */
 object CodeFlow {
-  private[this] val log4sLogger = getLogger
 
   def apply[F[_]: Async, A](
       client: Client[F],
@@ -39,7 +37,7 @@ object CodeFlow {
   )(
       code: String
   ): OptionT[F, Json] = {
-    val logger = Logger.log4s[F](log4sLogger)
+    val logger = docspell.logging.getLogger[F]
     val dsl = new Http4sClientDsl[F] {}
     val c = logRequests[F](logResponses[F](client))
 
@@ -93,7 +91,7 @@ object CodeFlow {
       code: String
   ): OptionT[F, AccessToken] = {
     import dsl._
-    val logger = Logger.log4s[F](log4sLogger)
+    val logger = docspell.logging.getLogger[F]
 
     val req = POST(
       UrlForm(
@@ -133,7 +131,7 @@ object CodeFlow {
       token: AccessToken
   ): OptionT[F, Json] = {
     import dsl._
-    val logger = Logger.log4s[F](log4sLogger)
+    val logger = docspell.logging.getLogger[F]
 
     val req = GET(
       Uri.unsafeFromString(endpointUrl.asString),
@@ -162,18 +160,22 @@ object CodeFlow {
     OptionT(resp)
   }
 
-  private def logRequests[F[_]: Async](c: Client[F]): Client[F] =
+  private def logRequests[F[_]: Async](c: Client[F]): Client[F] = {
+    val logger = docspell.logging.getLogger[F]
     RequestLogger(
       logHeaders = true,
       logBody = true,
-      logAction = Some((msg: String) => Logger.log4s(log4sLogger).trace(msg))
+      logAction = Some((msg: String) => logger.trace(msg))
     )(c)
+  }
 
-  private def logResponses[F[_]: Async](c: Client[F]): Client[F] =
+  private def logResponses[F[_]: Async](c: Client[F]): Client[F] = {
+    val logger = docspell.logging.getLogger[F]
     ResponseLogger(
       logHeaders = true,
       logBody = true,
-      logAction = Some((msg: String) => Logger.log4s(log4sLogger).trace(msg))
+      logAction = Some((msg: String) => logger.trace(msg))
     )(c)
+  }
 
 }

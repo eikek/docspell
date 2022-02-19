@@ -6,6 +6,8 @@
 
 package docspell.common
 
+import docspell.logging.Level
+
 import io.circe.{Decoder, Encoder}
 
 sealed trait LogLevel { self: Product =>
@@ -38,6 +40,16 @@ object LogLevel {
       case "warning" => Right(Warn)
       case "error"   => Right(Error)
       case _         => Left(s"Invalid log-level: $str")
+    }
+
+  def fromLevel(level: Level): LogLevel =
+    level match {
+      case Level.Fatal => LogLevel.Error
+      case Level.Error => LogLevel.Error
+      case Level.Warn  => LogLevel.Warn
+      case Level.Info  => LogLevel.Info
+      case Level.Debug => LogLevel.Debug
+      case Level.Trace => LogLevel.Debug
     }
 
   def unsafeString(str: String): LogLevel =

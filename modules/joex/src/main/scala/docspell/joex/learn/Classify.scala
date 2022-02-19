@@ -14,6 +14,7 @@ import fs2.io.file.Path
 
 import docspell.analysis.classifier.{ClassifierModel, TextClassifier}
 import docspell.common._
+import docspell.logging.Logger
 import docspell.store.Store
 import docspell.store.records.RClassifierModel
 

@@ -13,6 +13,7 @@ import scala.reflect.ClassTag
 import fs2.io.file.Path
 
 import docspell.common._
+import docspell.logging.{Level, LogConfig}
 
 import com.github.eikek.calev.CalEvent
 import pureconfig.ConfigReader
@@ -62,6 +63,12 @@ object Implicits {
 
   implicit val nlpModeReader: ConfigReader[NlpMode] =
     ConfigReader[String].emap(reason(NlpMode.fromString))
+
+  implicit val logFormatReader: ConfigReader[LogConfig.Format] =
+    ConfigReader[String].emap(reason(LogConfig.Format.fromString))
+
+  implicit val logLevelReader: ConfigReader[Level] =
+    ConfigReader[String].emap(reason(Level.fromString))
 
   def reason[A: ClassTag](
       f: String => Either[String, A]

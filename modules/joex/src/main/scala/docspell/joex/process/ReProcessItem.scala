@@ -49,7 +49,7 @@ object ReProcessItem {
 
   private def contains[F[_]](ctx: Context[F, Args]): RAttachment => Boolean = {
     val selection = ctx.args.attachments.toSet
-    if (selection.isEmpty) (_ => true)
+    if (selection.isEmpty) _ => true
     else ra => selection.contains(ra.id)
   }
 
