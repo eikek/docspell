@@ -313,6 +313,19 @@ val common = project
         Dependencies.calevCirce
   )
 
+val logging = project
+  .in(file("modules/logging"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "docspell-logging",
+    libraryDependencies ++=
+      Dependencies.scribe ++
+        Dependencies.catsEffect ++
+        Dependencies.circeCore
+  )
+
 val config = project
   .in(file("modules/config"))
   .disablePlugins(RevolverPlugin)
@@ -869,6 +882,7 @@ val root = project
   )
   .aggregate(
     common,
+    logging,
     config,
     extract,
     convert,

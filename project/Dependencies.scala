@@ -9,6 +9,8 @@ object Dependencies {
   val BetterMonadicForVersion = "0.3.1"
   val BinnyVersion = "0.3.0"
   val CalevVersion = "0.6.1"
+  val CatsVersion = "2.7.0"
+  val CatsEffectVersion = "3.3.5"
   val CatsParseVersion = "0.3.6"
   val CirceVersion = "0.14.1"
   val ClipboardJsVersion = "2.0.6"
@@ -40,6 +42,7 @@ object Dependencies {
   val PureConfigVersion = "0.17.1"
   val ScalaJavaTimeVersion = "2.3.0"
   val ScodecBitsVersion = "1.1.30"
+  val ScribeVersion = "3.7.0"
   val Slf4jVersion = "1.7.36"
   val StanfordNlpVersion = "4.4.0"
   val TikaVersion = "2.3.0"
@@ -48,6 +51,11 @@ object Dependencies {
   val TestContainerVersion = "0.40.1"
   val TwelveMonkeysVersion = "3.8.1"
   val JQueryVersion = "3.5.1"
+
+  val scribe = Seq(
+    "com.outr" %% "scribe" % ScribeVersion,
+    "com.outr" %% "scribe-slf4j" % ScribeVersion
+  )
 
   val jwtScala = Seq(
     "com.github.jwt-scala" %% "jwt-circe" % JwtScalaVersion
@@ -65,6 +73,14 @@ object Dependencies {
     "com.dimafeng" %% "testcontainers-scala-munit" % TestContainerVersion,
     "com.dimafeng" %% "testcontainers-scala-mariadb" % TestContainerVersion,
     "com.dimafeng" %% "testcontainers-scala-postgresql" % TestContainerVersion
+  )
+
+  val cats = Seq(
+    "org.typelevel" %% "cats-core" % CatsVersion
+  )
+
+  val catsEffect = Seq(
+    "org.typelevel" %% "cats-effect" % CatsEffectVersion
   )
 
   val catsParse = Seq(
