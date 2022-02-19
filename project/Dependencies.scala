@@ -119,9 +119,9 @@ object Dependencies {
   val jclOverSlf4j = Seq(
     "org.slf4j" % "jcl-over-slf4j" % Slf4jVersion
   )
-  val julOverSlf4j = Seq(
-    "org.slf4j" % "jul-to-slf4j" % Slf4jVersion
-  )
+  // val julOverSlf4j = Seq(
+  //   "org.slf4j" % "jul-to-slf4j" % Slf4jVersion
+  // )
 
   val poi = Seq(
     "org.apache.poi" % "poi" % PoiVersion,
@@ -269,14 +269,14 @@ object Dependencies {
     "io.circe" %% "circe-generic-extras" % CirceVersion
   )
 
-  // https://github.com/Log4s/log4s;ASL 2.0
-  val loggingApi = Seq(
-    "org.log4s" %% "log4s" % Log4sVersion
-  )
+  // // https://github.com/Log4s/log4s;ASL 2.0
+  // val loggingApi = Seq(
+  //   "org.log4s" %% "log4s" % Log4sVersion
+  // )
 
-  val logging = Seq(
-    "ch.qos.logback" % "logback-classic" % LogbackVersion
-  )
+  // val logging = Seq(
+  //   "ch.qos.logback" % "logback-classic" % LogbackVersion
+  // )
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0

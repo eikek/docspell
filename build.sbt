@@ -463,7 +463,6 @@ val store = project
         Dependencies.fs2 ++
         Dependencies.databases ++
         Dependencies.flyway ++
-        Dependencies.loggingApi ++
         Dependencies.emil ++
         Dependencies.emilDoobie ++
         Dependencies.calevCore ++
@@ -532,8 +531,7 @@ val extract = project
         Dependencies.twelvemonkeys ++
         Dependencies.pdfbox ++
         Dependencies.poi ++
-        Dependencies.commonsIO ++
-        Dependencies.julOverSlf4j
+        Dependencies.commonsIO
   )
   .dependsOn(common, loggingScribe, files % "compile->compile;test->test")
 
@@ -638,7 +636,6 @@ val backend = project
   .settings(
     name := "docspell-backend",
     libraryDependencies ++=
-      Dependencies.loggingApi ++
         Dependencies.fs2 ++
         Dependencies.bcrypt ++
         Dependencies.http4sClient ++
@@ -654,7 +651,6 @@ val oidc = project
   .settings(
     name := "docspell-oidc",
     libraryDependencies ++=
-      Dependencies.loggingApi ++
         Dependencies.fs2 ++
         Dependencies.http4sClient ++
         Dependencies.http4sCirce ++
@@ -713,9 +709,7 @@ val joex = project
         Dependencies.emilMarkdown ++
         Dependencies.emilJsoup ++
         Dependencies.jsoup ++
-        Dependencies.yamusca ++
-        Dependencies.loggingApi ++
-        Dependencies.logging.map(_ % Runtime),
+        Dependencies.yamusca,
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
     reStart / javaOptions ++= Seq(
@@ -767,9 +761,7 @@ val restserver = project
         Dependencies.pureconfig ++
         Dependencies.yamusca ++
         Dependencies.kittens ++
-        Dependencies.webjars ++
-        Dependencies.loggingApi ++
-        Dependencies.logging.map(_ % Runtime),
+        Dependencies.webjars,
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.restserver",
     Compile / sourceGenerators += Def.task {

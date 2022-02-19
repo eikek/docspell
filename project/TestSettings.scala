@@ -29,7 +29,7 @@ object TestSettingsPlugin extends AutoPlugin {
   import autoImport._
 
   val testSettings = Seq(
-    libraryDependencies ++= inTest(Dependencies.munit, Dependencies.logging),
+    libraryDependencies ++= inTest(Dependencies.munit, Dependencies.scribe),
     testFrameworks += new TestFramework("munit.Framework")
   )
 
