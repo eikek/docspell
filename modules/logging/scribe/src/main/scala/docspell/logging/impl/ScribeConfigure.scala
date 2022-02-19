@@ -13,7 +13,6 @@ import docspell.logging.{Level, LogConfig}
 
 import scribe.format.Formatter
 import scribe.jul.JULHandler
-import scribe.writer.ConsoleWriter
 
 object ScribeConfigure {
   private[this] val docspellRootVerbose = "DOCSPELL_ROOT_LOGGER_LEVEL"
@@ -46,13 +45,13 @@ object ScribeConfigure {
       l =>
         cfg.format match {
           case Format.Fancy =>
-            l.withHandler(formatter = Formatter.enhanced)
+            l.withHandler(formatter = Formatter.enhanced, writer = StdoutWriter)
           case Format.Plain =>
-            l.withHandler(formatter = Formatter.classic)
+            l.withHandler(formatter = Formatter.classic, writer = StdoutWriter)
           case Format.Json =>
-            l.withHandler(writer = JsonWriter(ConsoleWriter))
+            l.withHandler(writer = JsonWriter(StdoutWriter))
           case Format.Logfmt =>
-            l.withHandler(writer = LogfmtWriter(ConsoleWriter))
+            l.withHandler(writer = LogfmtWriter(StdoutWriter))
         },
       _.replace()
     )
