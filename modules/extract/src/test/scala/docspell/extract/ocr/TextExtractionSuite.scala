@@ -10,10 +10,11 @@ import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 
 import docspell.files.TestFiles
+import docspell.logging.TestLoggingConfig
 
 import munit._
 
-class TextExtractionSuite extends FunSuite {
+class TextExtractionSuite extends FunSuite with TestLoggingConfig {
   import TestFiles._
 
   val logger = docspell.logging.getLogger[IO]

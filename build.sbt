@@ -453,7 +453,7 @@ val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .withTestSettings
+  .withTestSettingsDependsOn(loggingScribe)
   .settings(
     name := "docspell-store",
     libraryDependencies ++=
@@ -523,7 +523,7 @@ val extract = project
   .in(file("modules/extract"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .withTestSettings
+  .withTestSettingsDependsOn(loggingScribe)
   .settings(
     name := "docspell-extract",
     libraryDependencies ++=
@@ -539,7 +539,7 @@ val convert = project
   .in(file("modules/convert"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .withTestSettings
+  .withTestSettingsDependsOn(loggingScribe)
   .settings(
     name := "docspell-convert",
     libraryDependencies ++=
@@ -554,7 +554,7 @@ val analysis = project
   .disablePlugins(RevolverPlugin)
   .enablePlugins(NerModelsPlugin)
   .settings(sharedSettings)
-  .withTestSettings
+  .withTestSettingsDependsOn(loggingScribe)
   .settings(NerModelsPlugin.nerClassifierSettings)
   .settings(
     name := "docspell-analysis",
@@ -636,7 +636,7 @@ val backend = project
   .settings(
     name := "docspell-backend",
     libraryDependencies ++=
-        Dependencies.fs2 ++
+      Dependencies.fs2 ++
         Dependencies.bcrypt ++
         Dependencies.http4sClient ++
         Dependencies.emil
@@ -651,7 +651,7 @@ val oidc = project
   .settings(
     name := "docspell-oidc",
     libraryDependencies ++=
-        Dependencies.fs2 ++
+      Dependencies.fs2 ++
         Dependencies.http4sClient ++
         Dependencies.http4sCirce ++
         Dependencies.http4sDsl ++

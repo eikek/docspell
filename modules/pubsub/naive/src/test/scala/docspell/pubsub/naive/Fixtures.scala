@@ -46,7 +46,7 @@ trait Fixtures extends HttpClientOps { self: CatsEffectSuite =>
 }
 
 object Fixtures {
-  private val loggerIO: Logger[IO] = docspell.logging.getLogger[IO]
+  private val loggerIO: Logger[IO] = Logger.simpleDefault[IO]()
 
   final case class Env(store: Store[IO], cfg: PubSubConfig) {
     def pubSub: Resource[IO, NaivePubSub[IO]] = {

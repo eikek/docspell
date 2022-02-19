@@ -10,10 +10,11 @@ import cats.effect._
 import cats.effect.unsafe.implicits.global
 
 import docspell.files.ExampleFiles
+import docspell.logging.TestLoggingConfig
 
 import munit._
 
-class OdfExtractTest extends FunSuite {
+class OdfExtractTest extends FunSuite with TestLoggingConfig {
 
   val files = List(
     ExampleFiles.examples_sample_odt -> 6367,

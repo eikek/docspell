@@ -10,10 +10,11 @@ import cats.effect._
 import cats.effect.unsafe.implicits.global
 
 import docspell.files.{ExampleFiles, TestFiles}
+import docspell.logging.TestLoggingConfig
 
 import munit._
 
-class PdfboxExtractTest extends FunSuite {
+class PdfboxExtractTest extends FunSuite with TestLoggingConfig {
 
   val textPDFs = List(
     ExampleFiles.letter_de_pdf -> TestFiles.letterDEText,

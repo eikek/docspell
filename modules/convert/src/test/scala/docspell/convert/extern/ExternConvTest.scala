@@ -16,13 +16,13 @@ import fs2.io.file.Path
 import docspell.common._
 import docspell.convert._
 import docspell.files.ExampleFiles
-import docspell.logging.{Level, Logger}
+import docspell.logging.TestLoggingConfig
 
 import munit._
 
-class ExternConvTest extends FunSuite with FileChecks {
+class ExternConvTest extends FunSuite with FileChecks with TestLoggingConfig {
   val utf8 = StandardCharsets.UTF_8
-  val logger = Logger.simpleF[IO](System.err, Level.Info)
+  val logger = docspell.logging.getLogger[IO]
   val target = File.path(Paths.get("target"))
 
   test("convert html to pdf") {

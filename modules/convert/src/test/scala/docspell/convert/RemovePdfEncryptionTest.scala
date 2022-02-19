@@ -11,12 +11,15 @@ import fs2.Stream
 
 import docspell.common._
 import docspell.files.ExampleFiles
-import docspell.logging.{Level, Logger}
+import docspell.logging.{Logger, TestLoggingConfig}
 
 import munit.CatsEffectSuite
 
-class RemovePdfEncryptionTest extends CatsEffectSuite with FileChecks {
-  val logger: Logger[IO] = Logger.simpleF[IO](System.err, Level.Info)
+class RemovePdfEncryptionTest
+    extends CatsEffectSuite
+    with FileChecks
+    with TestLoggingConfig {
+  val logger: Logger[IO] = docspell.logging.getLogger[IO]
 
   private val protectedPdf =
     ExampleFiles.secured_protected_test123_pdf.readURL[IO](16 * 1024)

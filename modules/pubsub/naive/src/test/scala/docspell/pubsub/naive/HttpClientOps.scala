@@ -9,6 +9,7 @@ package docspell.pubsub.naive
 import cats.effect._
 
 import docspell.common._
+import docspell.logging.Logger
 import docspell.pubsub.api._
 
 import io.circe.Encoder
@@ -55,5 +56,5 @@ trait HttpClientOps {
 }
 
 object HttpClientOps {
-  private val logger = docspell.logging.getLogger[IO]
+  private val logger = Logger.simpleDefault[IO]()
 }

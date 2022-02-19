@@ -11,10 +11,11 @@ import cats.effect.unsafe.implicits.global
 
 import docspell.common.MimeTypeHint
 import docspell.files.ExampleFiles
+import docspell.logging.TestLoggingConfig
 
 import munit._
 
-class PoiExtractTest extends FunSuite {
+class PoiExtractTest extends FunSuite with TestLoggingConfig {
 
   val officeFiles = List(
     ExampleFiles.examples_sample_doc -> 6241,

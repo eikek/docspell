@@ -604,41 +604,18 @@ Please have a look at the corresponding [section](@/docs/configure/_index.md#mem
 # Logging
 
 By default, docspell logs to stdout. This works well, when managed by
-systemd or other inits. Logging is done by
-[logback](https://logback.qos.ch/). Please refer to its documentation
-for how to configure logging.
+systemd or other inits. Logging can be configured in the configuration
+file or via environment variables. There are only two settings:
 
-If you created your logback config file, it can be added as argument
-to the executable using this syntax:
+- `minimum-level` specifies the log level to control the verbosity.
+  Levels are ordered from: *Trace*, *Debug*, *Info*, *Warn* and
+  *Error*
+- `format` this defines how the logs are formatted. There are two
+  formats for humans: *Plain* and *Fancy*. And two more suited for
+  machine consumption: *Json* and *Logfmt*. The *Json* format contains
+  all details, while the others may omit some for readability
 
-``` bash
-/path/to/docspell -Dlogback.configurationFile=/path/to/your/logging-config-file
-```
-
-To get started, the default config looks like this:
-
-``` xml
-<configuration>
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <withJansi>true</withJansi>
-
-    <encoder>
-      <pattern>[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</pattern>
-    </encoder>
-  </appender>
-
-  <logger name="docspell" level="debug" />
-  <root level="INFO">
-    <appender-ref ref="STDOUT" />
-  </root>
-</configuration>
-```
-
-The `<root level="INFO">` means, that only log statements with level
-"INFO" will be printed. But the `<logger name="docspell"
-level="debug">` above says, that for loggers with name "docspell"
-statements with level "DEBUG" will be printed, too.
-
+These settings are the same for joex and the restserver component.
 
 # Default Config
 ## Rest Server

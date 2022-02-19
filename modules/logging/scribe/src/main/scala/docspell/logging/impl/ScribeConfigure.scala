@@ -8,20 +8,36 @@ package docspell.logging.impl
 
 import cats.effect.Sync
 
-import docspell.logging.LogConfig
 import docspell.logging.LogConfig.Format
+import docspell.logging.{Level, LogConfig}
 
 import scribe.format.Formatter
 import scribe.jul.JULHandler
 import scribe.writer.ConsoleWriter
 
 object ScribeConfigure {
+  private[this] val docspellRootVerbose = "DOCSPELL_ROOT_LOGGER_LEVEL"
 
   def configure[F[_]: Sync](cfg: LogConfig): F[Unit] =
     Sync[F].delay {
       replaceJUL()
-      unsafeConfigure(scribe.Logger.root, cfg)
+      val docspellLogger = scribe.Logger("docspell")
+      unsafeConfigure(scribe.Logger.root, cfg.copy(minimumLevel = getRootMinimumLevel))
+      unsafeConfigure(docspellLogger, cfg)
     }
+
+  private[this] def getRootMinimumLevel: Level =
+    Option(System.getenv(docspellRootVerbose))
+      .map(Level.fromString)
+      .flatMap {
+        case Right(level) => Some(level)
+        case Left(err) =>
+          scribe.warn(
+            s"Environment variable '$docspellRootVerbose' has invalid value: $err"
+          )
+          None
+      }
+      .getOrElse(Level.Error)
 
   def unsafeConfigure(logger: scribe.Logger, cfg: LogConfig): Unit = {
     val mods = List[scribe.Logger => scribe.Logger](
@@ -45,7 +61,7 @@ object ScribeConfigure {
     ()
   }
 
-  def replaceJUL(): Unit = {
+  private def replaceJUL(): Unit = {
     scribe.Logger.system // just to load effects in Logger singleton
     val julRoot = java.util.logging.LogManager.getLogManager.getLogger("")
     julRoot.getHandlers.foreach(julRoot.removeHandler)

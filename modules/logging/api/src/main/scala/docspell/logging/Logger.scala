@@ -163,4 +163,7 @@ object Logger {
 
       val asUnsafe = simple(ps, minimumLevel)
     }
+
+  def simpleDefault[F[_]: Sync](minimumLevel: Level = Level.Info): Logger[F] =
+    simpleF[F](System.err, minimumLevel)
 }
