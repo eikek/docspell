@@ -12,6 +12,8 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
+import docspell.logging
+import docspell.logging.{Level, Logger}
 
 object QueueLogger {
 
@@ -21,26 +23,20 @@ object QueueLogger {
       q: Queue[F, LogEvent]
   ): Logger[F] =
     new Logger[F] {
-      def trace(msg: => String): F[Unit] =
-        LogEvent.create[F](jobId, jobInfo, LogLevel.Debug, msg).flatMap(q.offer)
 
-      def debug(msg: => String): F[Unit] =
-        LogEvent.create[F](jobId, jobInfo, LogLevel.Debug, msg).flatMap(q.offer)
-
-      def info(msg: => String): F[Unit] =
-        LogEvent.create[F](jobId, jobInfo, LogLevel.Info, msg).flatMap(q.offer)
-
-      def warn(msg: => String): F[Unit] =
-        LogEvent.create[F](jobId, jobInfo, LogLevel.Warn, msg).flatMap(q.offer)
-
-      def error(ex: Throwable)(msg: => String): F[Unit] =
+      def log(logEvent: logging.LogEvent) =
         LogEvent
-          .create[F](jobId, jobInfo, LogLevel.Error, msg)
-          .map(le => le.copy(ex = Some(ex)))
-          .flatMap(q.offer)
+          .create[F](jobId, jobInfo, level2Level(logEvent.level), logEvent.msg())
+          .flatMap { ev =>
+            val event =
+              logEvent.findErrors.headOption
+                .map(ex => ev.copy(ex = Some(ex)))
+                .getOrElse(ev)
 
-      def error(msg: => String): F[Unit] =
-        LogEvent.create[F](jobId, jobInfo, LogLevel.Error, msg).flatMap(q.offer)
+            q.offer(event)
+          }
+
+      def asUnsafe = Logger.off
     }
 
   def apply[F[_]: Async](
@@ -57,4 +53,6 @@ object QueueLogger {
       )
     } yield log
 
+  private def level2Level(level: Level): LogLevel =
+    LogLevel.fromLevel(level)
 }

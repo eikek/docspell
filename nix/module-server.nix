@@ -21,6 +21,10 @@ let
       address = "localhost";
       port = 7880;
     };
+    logging = {
+      minimum-level = "Info";
+      format = "Plain";
+    };
     integration-endpoint = {
       enabled = false;
       priority = "low";
@@ -208,6 +212,25 @@ in {
         });
         default = defaults.bind;
         description = "Address and port bind the rest server.";
+      };
+
+      logging = mkOption {
+        type = types.submodule({
+          options = {
+            minimum-level = mkOption {
+              type = types.str;
+              default = defaults.logging.minimum-level;
+              description = "The minimum level for logging to control verbosity.";
+            };
+            format = mkOption {
+              type = types.str;
+              default = defaults.logging.format;
+              description = "The log format. One of: Fancy, Plain, Json or Logfmt";
+            };
+          };
+        });
+        default = defaults.logging;
+        description = "Settings for logging";
       };
 
       auth = mkOption {

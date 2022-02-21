@@ -14,12 +14,9 @@ import fs2.Stream
 
 import docspell.backend.JobFactory
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.queue.JobQueue
 import docspell.store.records._
-
-import org.log4s._
 
 trait OUpload[F[_]] {
 
@@ -56,8 +53,6 @@ trait OUpload[F[_]] {
 }
 
 object OUpload {
-  private[this] val logger = getLogger
-
   case class File[F[_]](
       name: Option[String],
       advertisedMime: Option[MimeType],
@@ -117,7 +112,7 @@ object OUpload {
       joex: OJoex[F]
   ): Resource[F, OUpload[F]] =
     Resource.pure[F, OUpload[F]](new OUpload[F] {
-
+      private[this] val logger = docspell.logging.getLogger[F]
       def submit(
           data: OUpload.UploadData[F],
           account: AccountId,
@@ -155,7 +150,7 @@ object OUpload {
             if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
             else Vector(ProcessItemArgs(meta, files.toList))
           jobs <- right(makeJobs(args, account, data.priority, data.tracker))
-          _ <- right(logger.fdebug(s"Storing jobs: $jobs"))
+          _ <- right(logger.debug(s"Storing jobs: $jobs"))
           res <- right(submitJobs(notifyJoex)(jobs))
           _ <- right(
             store.transact(
@@ -194,7 +189,7 @@ object OUpload {
           notifyJoex: Boolean
       )(jobs: Vector[RJob]): F[OUpload.UploadResult] =
         for {
-          _ <- logger.fdebug(s"Storing jobs: $jobs")
+          _ <- logger.debug(s"Storing jobs: $jobs")
           _ <- queue.insertAll(jobs)
           _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield UploadResult.Success
@@ -203,7 +198,7 @@ object OUpload {
       private def saveFile(
           accountId: AccountId
       )(file: File[F]): F[Option[ProcessItemArgs.File]] =
-        logger.finfo(s"Receiving file $file") *>
+        logger.info(s"Receiving file $file") *>
           file.data
             .through(
               store.fileRepo.save(

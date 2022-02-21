@@ -11,6 +11,7 @@ import fs2.Stream
 import fs2.io.file.Path
 
 import docspell.common._
+import docspell.logging.Logger
 
 object Ocr {
 

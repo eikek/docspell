@@ -11,7 +11,7 @@ import cats.data.Kleisli
 import cats.effect.Sync
 import cats.implicits._
 
-import docspell.common.Logger
+import docspell.logging.Logger
 
 /** The code that is executed by the scheduler */
 trait Task[F[_], A, B] {

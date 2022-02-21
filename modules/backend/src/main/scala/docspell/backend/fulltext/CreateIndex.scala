@@ -12,6 +12,7 @@ import cats.effect._
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.ftsclient.TextData
+import docspell.logging.Logger
 import docspell.store.Store
 import docspell.store.queries.QAttachment
 import docspell.store.queries.QItem

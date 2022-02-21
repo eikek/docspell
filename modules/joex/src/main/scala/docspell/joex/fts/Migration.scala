@@ -15,6 +15,7 @@ import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
+import docspell.logging.Logger
 import docspell.store.Store
 
 /** Migrating the index from the previous version to this version.

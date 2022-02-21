@@ -10,13 +10,10 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
-import docspell.common.Logger
-
 import io.circe.Json
 import org.http4s._
 import org.http4s.headers.`Content-Type`
 import org.http4s.implicits._
-import org.log4s.getLogger
 
 /** Once the authentication flow is completed, we get "some" json structure that contains
   * a claim about the user. From here it's to the user of this small library to complete
@@ -44,18 +41,16 @@ trait OnUserInfo[F[_]] {
 }
 
 object OnUserInfo {
-  private[this] val log = getLogger
-
   def apply[F[_]](
       f: (Request[F], ProviderConfig, Option[Json]) => F[Response[F]]
   ): OnUserInfo[F] =
     (req: Request[F], cfg: ProviderConfig, userInfo: Option[Json]) =>
       f(req, cfg, userInfo)
 
-  def logInfo[F[_]: Sync]: OnUserInfo[F] =
+  def logInfo[F[_]: Sync]: OnUserInfo[F] = {
+    val logger = docspell.logging.getLogger[F]
     OnUserInfo((_, _, json) =>
-      Logger
-        .log4s(log)
+      logger
         .info(s"Got data: ${json.map(_.spaces2)}")
         .map(_ =>
           Response[F](Status.Ok)
@@ -65,4 +60,5 @@ object OnUserInfo {
             )
         )
     )
+  }
 }

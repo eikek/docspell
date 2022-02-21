@@ -12,6 +12,7 @@ import fs2.Stream
 import docspell.common._
 import docspell.extract.internal.Text
 import docspell.files._
+import docspell.logging.Logger
 
 object TextExtract {
 

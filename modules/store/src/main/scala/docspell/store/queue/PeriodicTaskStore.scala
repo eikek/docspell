@@ -10,12 +10,9 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.store.queries.QPeriodicTask
 import docspell.store.records._
 import docspell.store.{AddResult, Store}
-
-import org.log4s.getLogger
 
 trait PeriodicTaskStore[F[_]] {
 
@@ -44,11 +41,10 @@ trait PeriodicTaskStore[F[_]] {
 }
 
 object PeriodicTaskStore {
-  private[this] val logger = getLogger
 
   def create[F[_]: Sync](store: Store[F]): Resource[F, PeriodicTaskStore[F]] =
     Resource.pure[F, PeriodicTaskStore[F]](new PeriodicTaskStore[F] {
-
+      private[this] val logger = docspell.logging.getLogger[F]
       def takeNext(
           worker: Ident,
           excludeId: Option[Ident]
@@ -91,7 +87,7 @@ object PeriodicTaskStore {
         store
           .transact(QPeriodicTask.clearWorkers(name))
           .flatMap { n =>
-            if (n > 0) logger.finfo(s"Clearing $n periodic tasks from worker ${name.id}")
+            if (n > 0) logger.info(s"Clearing $n periodic tasks from worker ${name.id}")
             else ().pure[F]
           }
 

@@ -9,9 +9,6 @@ val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 // --- Settings
 
-def inTest(d0: Seq[ModuleID], ds: Seq[ModuleID]*) =
-  ds.fold(d0)(_ ++ _).map(_ % Test)
-
 val scalafixSettings = Seq(
   semanticdbEnabled := true, // enable SemanticDB
   semanticdbVersion := scalafixSemanticdb.revision, // "4.4.0"
@@ -58,13 +55,9 @@ val sharedSettings = Seq(
   libraryDependencySchemes ++= Seq(
     "com.github.eikek" %% "calev-core" % VersionScheme.Always,
     "com.github.eikek" %% "calev-circe" % VersionScheme.Always
-  )
+  ),
+  addCompilerPlugin(Dependencies.kindProjectorPlugin)
 ) ++ scalafixSettings
-
-val testSettingsMUnit = Seq(
-  libraryDependencies ++= inTest(Dependencies.munit, Dependencies.logging),
-  testFrameworks += new TestFramework("munit.Framework")
-)
 
 lazy val noPublish = Seq(
   publish := {},
@@ -294,6 +287,20 @@ val openapiScalaSettings = Seq(
 
 // --- Modules
 
+val loggingApi = project
+  .in(file("modules/logging/api"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettings
+  .settings(
+    name := "docspell-logging-api",
+    libraryDependencies ++=
+      Dependencies.catsEffect ++
+        Dependencies.circeCore ++
+        Dependencies.fs2Core ++
+        Dependencies.sourcecode
+  )
+
 // Base module, everything depends on this – including restapi and
 // joexapi modules. This should aim to have least possible
 // dependencies
@@ -301,31 +308,44 @@ val common = project
   .in(file("modules/common"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-common",
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.circe ++
-        Dependencies.loggingApi ++
         Dependencies.calevCore ++
         Dependencies.calevCirce
   )
+  .dependsOn(loggingApi)
 
 val config = project
   .in(file("modules/config"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-config",
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.pureconfig
   )
-  .dependsOn(common)
+  .dependsOn(common, loggingApi)
+
+val loggingScribe = project
+  .in(file("modules/logging/scribe"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettings
+  .settings(
+    name := "docspell-logging-scribe",
+    libraryDependencies ++=
+      Dependencies.scribe ++
+        Dependencies.catsEffect ++
+        Dependencies.circeCore ++
+        Dependencies.fs2Core
+  )
+  .dependsOn(loggingApi)
 
 // Some example files for testing
 // https://file-examples.com/index.php/sample-documents-download/sample-doc-download/
@@ -333,7 +353,7 @@ val files = project
   .in(file("modules/files"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-files",
     libraryDependencies ++=
@@ -372,7 +392,7 @@ val query =
     .in(file("modules/query"))
     .disablePlugins(RevolverPlugin)
     .settings(sharedSettings)
-    .settings(testSettingsMUnit)
+    .withTestSettings
     .settings(
       name := "docspell-query",
       libraryDependencies +=
@@ -392,7 +412,7 @@ val totp = project
   .in(file("modules/totp"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-totp",
     libraryDependencies ++=
@@ -406,7 +426,7 @@ val jsonminiq = project
   .in(file("modules/jsonminiq"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-jsonminiq",
     libraryDependencies ++=
@@ -419,25 +439,23 @@ val notificationApi = project
   .in(file("modules/notification/api"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-notification-api",
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.emilCommon ++
         Dependencies.circeGenericExtra
   )
-  .dependsOn(common)
+  .dependsOn(common, loggingScribe)
 
 val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettingsDependsOn(loggingScribe)
   .settings(
     name := "docspell-store",
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.doobie ++
         Dependencies.binny ++
@@ -445,7 +463,6 @@ val store = project
         Dependencies.fs2 ++
         Dependencies.databases ++
         Dependencies.flyway ++
-        Dependencies.loggingApi ++
         Dependencies.emil ++
         Dependencies.emilDoobie ++
         Dependencies.calevCore ++
@@ -453,16 +470,15 @@ val store = project
     libraryDependencies ++=
       Dependencies.testContainer.map(_ % Test)
   )
-  .dependsOn(common, query.jvm, totp, files, notificationApi, jsonminiq)
+  .dependsOn(common, query.jvm, totp, files, notificationApi, jsonminiq, loggingScribe)
 
 val notificationImpl = project
   .in(file("modules/notification/impl"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-notification-impl",
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.emil ++
@@ -479,10 +495,9 @@ val pubsubApi = project
   .in(file("modules/pubsub/api"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-pubsub-api",
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.fs2
   )
@@ -492,10 +507,9 @@ val pubsubNaive = project
   .in(file("modules/pubsub/naive"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-pubsub-naive",
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.http4sCirce ++
@@ -509,7 +523,7 @@ val extract = project
   .in(file("modules/extract"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettingsDependsOn(loggingScribe)
   .settings(
     name := "docspell-extract",
     libraryDependencies ++=
@@ -517,16 +531,15 @@ val extract = project
         Dependencies.twelvemonkeys ++
         Dependencies.pdfbox ++
         Dependencies.poi ++
-        Dependencies.commonsIO ++
-        Dependencies.julOverSlf4j
+        Dependencies.commonsIO
   )
-  .dependsOn(common, files % "compile->compile;test->test")
+  .dependsOn(common, loggingScribe, files % "compile->compile;test->test")
 
 val convert = project
   .in(file("modules/convert"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettingsDependsOn(loggingScribe)
   .settings(
     name := "docspell-convert",
     libraryDependencies ++=
@@ -541,7 +554,7 @@ val analysis = project
   .disablePlugins(RevolverPlugin)
   .enablePlugins(NerModelsPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettingsDependsOn(loggingScribe)
   .settings(NerModelsPlugin.nerClassifierSettings)
   .settings(
     name := "docspell-analysis",
@@ -549,24 +562,24 @@ val analysis = project
       Dependencies.fs2 ++
         Dependencies.stanfordNlpCore
   )
-  .dependsOn(common, files % "test->test")
+  .dependsOn(common, files % "test->test", loggingScribe)
 
 val ftsclient = project
   .in(file("modules/fts-client"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-fts-client",
     libraryDependencies ++= Seq.empty
   )
-  .dependsOn(common)
+  .dependsOn(common, loggingScribe)
 
 val ftssolr = project
   .in(file("modules/fts-solr"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-fts-solr",
     libraryDependencies ++=
@@ -582,7 +595,7 @@ val restapi = project
   .disablePlugins(RevolverPlugin)
   .enablePlugins(OpenApiSchema)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(openapiScalaSettings)
   .settings(
     name := "docspell-restapi",
@@ -600,7 +613,7 @@ val joexapi = project
   .disablePlugins(RevolverPlugin)
   .enablePlugins(OpenApiSchema)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(openapiScalaSettings)
   .settings(
     name := "docspell-joexapi",
@@ -613,41 +626,39 @@ val joexapi = project
     openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc
   )
-  .dependsOn(common)
+  .dependsOn(common, loggingScribe)
 
 val backend = project
   .in(file("modules/backend"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-backend",
     libraryDependencies ++=
-      Dependencies.loggingApi ++
-        Dependencies.fs2 ++
+      Dependencies.fs2 ++
         Dependencies.bcrypt ++
         Dependencies.http4sClient ++
         Dependencies.emil
   )
-  .dependsOn(store, notificationApi, joexapi, ftsclient, totp, pubsubApi)
+  .dependsOn(store, notificationApi, joexapi, ftsclient, totp, pubsubApi, loggingApi)
 
 val oidc = project
   .in(file("modules/oidc"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(
     name := "docspell-oidc",
     libraryDependencies ++=
-      Dependencies.loggingApi ++
-        Dependencies.fs2 ++
+      Dependencies.fs2 ++
         Dependencies.http4sClient ++
         Dependencies.http4sCirce ++
         Dependencies.http4sDsl ++
         Dependencies.circe ++
         Dependencies.jwtScala
   )
-  .dependsOn(common)
+  .dependsOn(common, loggingScribe)
 
 val webapp = project
   .in(file("modules/webapp"))
@@ -678,7 +689,7 @@ val joex = project
     ClasspathJarPlugin
   )
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(debianSettings("docspell-joex"))
   .settings(buildInfoSettings)
   .settings(
@@ -698,10 +709,7 @@ val joex = project
         Dependencies.emilMarkdown ++
         Dependencies.emilJsoup ++
         Dependencies.jsoup ++
-        Dependencies.yamusca ++
-        Dependencies.loggingApi ++
-        Dependencies.logging.map(_ % Runtime),
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+        Dependencies.yamusca,
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.joex",
     reStart / javaOptions ++= Seq(
@@ -713,6 +721,8 @@ val joex = project
   )
   .dependsOn(
     config,
+    loggingApi,
+    loggingScribe,
     store,
     backend,
     extract,
@@ -735,7 +745,7 @@ val restserver = project
     ClasspathJarPlugin
   )
   .settings(sharedSettings)
-  .settings(testSettingsMUnit)
+  .withTestSettings
   .settings(debianSettings("docspell-server"))
   .settings(buildInfoSettings)
   .settings(
@@ -751,10 +761,7 @@ val restserver = project
         Dependencies.pureconfig ++
         Dependencies.yamusca ++
         Dependencies.kittens ++
-        Dependencies.webjars ++
-        Dependencies.loggingApi ++
-        Dependencies.logging.map(_ % Runtime),
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+        Dependencies.webjars,
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "docspell.restserver",
     Compile / sourceGenerators += Def.task {
@@ -788,6 +795,8 @@ val restserver = project
   )
   .dependsOn(
     config,
+    loggingApi,
+    loggingScribe,
     restapi,
     joexapi,
     backend,
@@ -869,6 +878,8 @@ val root = project
   )
   .aggregate(
     common,
+    loggingApi,
+    loggingScribe,
     config,
     extract,
     convert,

@@ -37,11 +37,9 @@ trait OClientSettings[F[_]] {
 }
 
 object OClientSettings {
-  private[this] val logger = org.log4s.getLogger
-
   def apply[F[_]: Async](store: Store[F]): Resource[F, OClientSettings[F]] =
     Resource.pure[F, OClientSettings[F]](new OClientSettings[F] {
-      val log = Logger.log4s[F](logger)
+      val log = docspell.logging.getLogger[F]
 
       private def getUserId(account: AccountId): OptionT[F, Ident] =
         OptionT(store.transact(RUser.findByAccount(account))).map(_.uid)

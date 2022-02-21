@@ -9,6 +9,8 @@ object Dependencies {
   val BetterMonadicForVersion = "0.3.1"
   val BinnyVersion = "0.3.0"
   val CalevVersion = "0.6.1"
+  val CatsVersion = "2.7.0"
+  val CatsEffectVersion = "3.3.5"
   val CatsParseVersion = "0.3.6"
   val CirceVersion = "0.14.1"
   val ClipboardJsVersion = "2.0.6"
@@ -40,7 +42,9 @@ object Dependencies {
   val PureConfigVersion = "0.17.1"
   val ScalaJavaTimeVersion = "2.3.0"
   val ScodecBitsVersion = "1.1.30"
+  val ScribeVersion = "3.7.0"
   val Slf4jVersion = "1.7.36"
+  val SourcecodeVersion = "0.2.8"
   val StanfordNlpVersion = "4.4.0"
   val TikaVersion = "2.3.0"
   val YamuscaVersion = "0.8.2"
@@ -48,6 +52,15 @@ object Dependencies {
   val TestContainerVersion = "0.40.2"
   val TwelveMonkeysVersion = "3.8.1"
   val JQueryVersion = "3.5.1"
+
+  val scribe = Seq(
+    "com.outr" %% "scribe" % ScribeVersion,
+    "com.outr" %% "scribe-slf4j" % ScribeVersion
+  )
+
+  val sourcecode = Seq(
+    "com.lihaoyi" %% "sourcecode" % SourcecodeVersion
+  )
 
   val jwtScala = Seq(
     "com.github.jwt-scala" %% "jwt-circe" % JwtScalaVersion
@@ -65,6 +78,14 @@ object Dependencies {
     "com.dimafeng" %% "testcontainers-scala-munit" % TestContainerVersion,
     "com.dimafeng" %% "testcontainers-scala-mariadb" % TestContainerVersion,
     "com.dimafeng" %% "testcontainers-scala-postgresql" % TestContainerVersion
+  )
+
+  val cats = Seq(
+    "org.typelevel" %% "cats-core" % CatsVersion
+  )
+
+  val catsEffect = Seq(
+    "org.typelevel" %% "cats-effect" % CatsEffectVersion
   )
 
   val catsParse = Seq(
@@ -98,9 +119,9 @@ object Dependencies {
   val jclOverSlf4j = Seq(
     "org.slf4j" % "jcl-over-slf4j" % Slf4jVersion
   )
-  val julOverSlf4j = Seq(
-    "org.slf4j" % "jul-to-slf4j" % Slf4jVersion
-  )
+  // val julOverSlf4j = Seq(
+  //   "org.slf4j" % "jul-to-slf4j" % Slf4jVersion
+  // )
 
   val poi = Seq(
     "org.apache.poi" % "poi" % PoiVersion,
@@ -210,10 +231,13 @@ object Dependencies {
     "org.mindrot" % "jbcrypt" % BcryptVersion
   )
 
-  val fs2 = Seq(
-    "co.fs2" %% "fs2-core" % Fs2Version,
+  val fs2Core = Seq(
+    "co.fs2" %% "fs2-core" % Fs2Version
+  )
+  val fs2Io = Seq(
     "co.fs2" %% "fs2-io" % Fs2Version
   )
+  val fs2 = fs2Core ++ fs2Io
 
   val http4sClient = Seq(
     "org.http4s" %% "http4s-blaze-client" % Http4sVersion
@@ -245,14 +269,14 @@ object Dependencies {
     "io.circe" %% "circe-generic-extras" % CirceVersion
   )
 
-  // https://github.com/Log4s/log4s;ASL 2.0
-  val loggingApi = Seq(
-    "org.log4s" %% "log4s" % Log4sVersion
-  )
+  // // https://github.com/Log4s/log4s;ASL 2.0
+  // val loggingApi = Seq(
+  //   "org.log4s" %% "log4s" % Log4sVersion
+  // )
 
-  val logging = Seq(
-    "ch.qos.logback" % "logback-classic" % LogbackVersion
-  )
+  // val logging = Seq(
+  //   "ch.qos.logback" % "logback-classic" % LogbackVersion
+  // )
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0

@@ -9,6 +9,7 @@ package docspell.store.file
 import docspell.common
 import docspell.common._
 import docspell.files.TikaMimetype
+import docspell.logging.Logger
 
 import binny._
 import scodec.bits.ByteVector

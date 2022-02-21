@@ -14,10 +14,9 @@ import fs2.io.file.Path
 import docspell.common._
 
 import edu.stanford.nlp.pipeline.{CoreDocument, StanfordCoreNLP}
-import org.log4s.getLogger
 
 object StanfordNerAnnotator {
-  private[this] val logger = getLogger
+  private[this] val logger = docspell.logging.unsafeLogger
 
   /** Runs named entity recognition on the given `text`.
     *

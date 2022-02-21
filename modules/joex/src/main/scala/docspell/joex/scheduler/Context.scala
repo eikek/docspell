@@ -11,11 +11,9 @@ import cats.implicits._
 import cats.{Applicative, Functor}
 
 import docspell.common._
-import docspell.common.syntax.all._
+import docspell.logging.Logger
 import docspell.store.Store
 import docspell.store.records.RJob
-
-import org.log4s.{Logger => _, _}
 
 trait Context[F[_], A] { self =>
 
@@ -42,7 +40,6 @@ trait Context[F[_], A] { self =>
 }
 
 object Context {
-  private[this] val log = getLogger
 
   def create[F[_]: Async, A](
       jobId: Ident,
@@ -59,13 +56,15 @@ object Context {
       config: SchedulerConfig,
       logSink: LogSink[F],
       store: Store[F]
-  ): F[Context[F, A]] =
+  ): F[Context[F, A]] = {
+    val log = docspell.logging.getLogger[F]
     for {
-      _ <- log.ftrace("Creating logger for task run")
+      _ <- log.trace("Creating logger for task run")
       logger <- QueueLogger(job.id, job.info, config.logBufferSize, logSink)
-      _ <- log.ftrace("Logger created, instantiating context")
+      _ <- log.trace("Logger created, instantiating context")
       ctx = create[F, A](job.id, arg, config, logger, store)
     } yield ctx
+  }
 
   final private class ContextImpl[F[_]: Functor, A](
       val args: A,

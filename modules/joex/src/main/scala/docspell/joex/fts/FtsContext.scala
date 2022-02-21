@@ -7,10 +7,10 @@
 package docspell.joex.fts
 
 import docspell.backend.fulltext.CreateIndex
-import docspell.common.Logger
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
 import docspell.joex.scheduler.Context
+import docspell.logging.Logger
 import docspell.store.Store
 
 case class FtsContext[F[_]](

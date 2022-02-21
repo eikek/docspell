@@ -12,6 +12,7 @@ import cats.{Applicative, FlatMap}
 
 import docspell.analysis.NlpSettings
 import docspell.common._
+import docspell.logging.Logger
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 

@@ -9,6 +9,7 @@ package docspell.pubsub.naive
 import cats.effect._
 
 import docspell.common._
+import docspell.logging.Logger
 import docspell.pubsub.api._
 import docspell.store.{Store, StoreFixture}
 
@@ -45,7 +46,7 @@ trait Fixtures extends HttpClientOps { self: CatsEffectSuite =>
 }
 
 object Fixtures {
-  private val loggerIO: Logger[IO] = Logger.log4s(org.log4s.getLogger)
+  private val loggerIO: Logger[IO] = Logger.simpleDefault[IO]()
 
   final case class Env(store: Store[IO], cfg: PubSubConfig) {
     def pubSub: Resource[IO, NaivePubSub[IO]] = {

@@ -59,7 +59,7 @@ object OJob {
       pubsub: PubSubT[F]
   ): Resource[F, OJob[F]] =
     Resource.pure[F, OJob[F]](new OJob[F] {
-      private[this] val logger = Logger.log4s(org.log4s.getLogger(OJob.getClass))
+      private[this] val logger = docspell.logging.getLogger[F]
 
       def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState] =
         store

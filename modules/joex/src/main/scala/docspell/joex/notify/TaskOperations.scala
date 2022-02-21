@@ -12,6 +12,7 @@ import cats.implicits._
 
 import docspell.backend.ops.ONotification
 import docspell.common._
+import docspell.logging.Logger
 import docspell.notification.api.ChannelRef
 import docspell.notification.api.Event
 import docspell.notification.api.EventContext

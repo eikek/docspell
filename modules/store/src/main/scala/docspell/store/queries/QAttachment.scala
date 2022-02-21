@@ -13,7 +13,6 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.qb.DSL._
 import docspell.store.qb._
@@ -22,8 +21,6 @@ import docspell.store.records._
 import doobie._
 
 object QAttachment {
-  private[this] val logger = org.log4s.getLogger
-
   private val a = RAttachment.as("a")
   private val item = RItem.as("i")
   private val am = RAttachmentMeta.as("am")
@@ -79,13 +76,14 @@ object QAttachment {
     * item and should not be used to delete a *single* attachment where the item should
     * stay.
     */
-  private def deleteAttachment[F[_]: Sync](store: Store[F])(ra: RAttachment): F[Int] =
+  private def deleteAttachment[F[_]: Sync](store: Store[F])(ra: RAttachment): F[Int] = {
+    val logger = docspell.logging.getLogger[F]
     for {
-      _ <- logger.fdebug[F](s"Deleting attachment: ${ra.id.id}")
+      _ <- logger.debug(s"Deleting attachment: ${ra.id.id}")
       s <- store.transact(RAttachmentSource.findById(ra.id))
       p <- store.transact(RAttachmentPreview.findById(ra.id))
       n <- store.transact(RAttachment.delete(ra.id))
-      _ <- logger.fdebug[F](
+      _ <- logger.debug(
         s"Deleted $n meta records (source, meta, preview, archive). Deleting binaries now."
       )
       f <-
@@ -96,6 +94,7 @@ object QAttachment {
           .compile
           .foldMonoid
     } yield n + f
+  }
 
   def deleteArchive[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] =
     (for {
@@ -112,16 +111,18 @@ object QAttachment {
 
   def deleteItemAttachments[F[_]: Sync](
       store: Store[F]
-  )(itemId: Ident, coll: Ident): F[Int] =
+  )(itemId: Ident, coll: Ident): F[Int] = {
+    val logger = docspell.logging.getLogger[F]
     for {
       ras <- store.transact(RAttachment.findByItemAndCollective(itemId, coll))
-      _ <- logger.finfo[F](
+      _ <- logger.info(
         s"Have ${ras.size} attachments to delete. Must first delete archive entries"
       )
       a <- ras.traverse(a => deleteArchive(store)(a.id))
-      _ <- logger.fdebug[F](s"Deleted ${a.sum} archive entries")
+      _ <- logger.debug(s"Deleted ${a.sum} archive entries")
       ns <- ras.traverse(deleteAttachment[F](store))
     } yield ns.sum
+  }
 
   def getMetaProposals(itemId: Ident, coll: Ident): ConnectionIO[MetaProposalList] = {
     val qa = Select(

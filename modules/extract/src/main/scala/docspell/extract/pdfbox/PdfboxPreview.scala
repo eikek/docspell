@@ -32,7 +32,7 @@ trait PdfboxPreview[F[_]] {
 }
 
 object PdfboxPreview {
-  private[this] val logger = org.log4s.getLogger
+  private[this] val logger = docspell.logging.unsafeLogger
 
   def apply[F[_]: Sync](cfg: PreviewConfig): F[PdfboxPreview[F]] =
     Sync[F].pure(new PdfboxPreview[F] {

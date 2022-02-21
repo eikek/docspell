@@ -16,6 +16,7 @@ import fs2.{Chunk, Stream}
 import docspell.common._
 import docspell.convert.ConversionResult.Handler
 import docspell.convert.{ConversionResult, SanitizeHtml}
+import docspell.logging.Logger
 
 object WkHtmlPdf {
 

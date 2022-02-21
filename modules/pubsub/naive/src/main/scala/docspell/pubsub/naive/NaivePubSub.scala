@@ -14,6 +14,7 @@ import fs2.Stream
 import fs2.concurrent.{Topic => Fs2Topic}
 
 import docspell.common._
+import docspell.logging.Logger
 import docspell.pubsub.api._
 import docspell.pubsub.naive.NaivePubSub.State
 import docspell.store.Store
@@ -60,7 +61,7 @@ final class NaivePubSub[F[_]: Async](
     store: Store[F],
     client: Client[F]
 ) extends PubSub[F] {
-  private val logger: Logger[F] = Logger.log4s(org.log4s.getLogger)
+  private val logger: Logger[F] = docspell.logging.getLogger[F]
 
   def withClient(client: Client[F]): NaivePubSub[F] =
     new NaivePubSub[F](cfg, state, store, client)
@@ -85,7 +86,7 @@ final class NaivePubSub[F[_]: Async](
 
   def subscribe(topics: NonEmptyList[Topic]): Stream[F, Message[Json]] =
     (for {
-      _ <- logger.s.info(s"Adding subscriber for topics: $topics")
+      _ <- logger.stream.info(s"Adding subscriber for topics: $topics")
       _ <- Stream.resource[F, Unit](addRemote(topics))
       m <- Stream.eval(addLocal(topics))
     } yield m).flatten

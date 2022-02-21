@@ -17,6 +17,7 @@ import docspell.analysis.classifier.TextClassifier._
 import docspell.analysis.nlp.Properties
 import docspell.common._
 import docspell.common.syntax.FileSyntax._
+import docspell.logging.Logger
 
 import edu.stanford.nlp.classify.ColumnDataClassifier
 

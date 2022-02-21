@@ -6,13 +6,14 @@
 
 package docspell.store.qb.impl
 
+import docspell.logging.TestLoggingConfig
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.qb.model._
 
 import munit._
 
-class SelectBuilderTest extends FunSuite {
+class SelectBuilderTest extends FunSuite with TestLoggingConfig {
 
   test("basic fragment") {
     val c = CourseRecord.as("c")

@@ -152,7 +152,7 @@ object OShare {
       emil: Emil[F]
   ): OShare[F] =
     new OShare[F] {
-      private[this] val logger = Logger.log4s[F](org.log4s.getLogger)
+      private[this] val logger = docspell.logging.getLogger[F]
 
       def findAll(
           collective: Ident,

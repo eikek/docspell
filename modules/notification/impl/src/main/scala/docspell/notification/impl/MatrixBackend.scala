@@ -8,7 +8,7 @@ package docspell.notification.impl
 
 import cats.effect._
 
-import docspell.common.Logger
+import docspell.logging.Logger
 import docspell.notification.api._
 
 import org.http4s.Uri

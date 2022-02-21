@@ -14,7 +14,6 @@ import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OOrganization
 import docspell.common.Ident
-import docspell.common.syntax.all._
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.QueryParam
@@ -23,12 +22,11 @@ import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.log4s._
 
 object PersonRoutes {
-  private[this] val logger = getLogger
 
   def apply[F[_]: Async](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
+    val logger = docspell.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -73,7 +71,7 @@ object PersonRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          _ <- logger.fdebug(s"Deleting person ${id.id}")
+          _ <- logger.debug(s"Deleting person ${id.id}")
           delOrg <- backend.organization.deletePerson(id, user.account.collective)
           resp <- Ok(basicResult(delOrg, "Person deleted."))
         } yield resp
