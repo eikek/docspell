@@ -8,7 +8,6 @@ package docspell.joex.notify
 
 import docspell.common._
 
-import yamusca.derive._
 import yamusca.implicits._
 import yamusca.imports._
 
@@ -24,7 +23,7 @@ trait YamuscaConverter {
     ValueConverter.of(id => Value.fromString(id.id))
 
   implicit val account: ValueConverter[AccountId] =
-    deriveValueConverter[AccountId]
+    ValueConverter.deriveConverter[AccountId]
 
 }
 

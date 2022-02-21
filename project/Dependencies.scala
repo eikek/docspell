@@ -43,7 +43,7 @@ object Dependencies {
   val Slf4jVersion = "1.7.36"
   val StanfordNlpVersion = "4.4.0"
   val TikaVersion = "2.3.0"
-  val YamuscaVersion = "0.9.0"
+  val YamuscaVersion = "0.8.2"
   val SwaggerUIVersion = "4.5.0"
   val TestContainerVersion = "0.40.2"
   val TwelveMonkeysVersion = "3.8.1"
@@ -294,8 +294,7 @@ object Dependencies {
   )
 
   val yamusca = Seq(
-    "com.github.eikek" %% "yamusca-core" % YamuscaVersion,
-    "com.github.eikek" %% "yamusca-derive" % YamuscaVersion
+    "com.github.eikek" %% "yamusca-core" % YamuscaVersion
   )
   val yamuscaCirce = Seq(
     "com.github.eikek" %% "yamusca-circe" % YamuscaVersion

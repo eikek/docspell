@@ -12,7 +12,6 @@ import docspell.restserver.{BuildInfo, Config}
 
 import io.circe._
 import io.circe.generic.semiauto._
-import yamusca.derive._
 import yamusca.implicits._
 import yamusca.imports._
 
@@ -66,11 +65,11 @@ object Flags {
   implicit def yamuscaIdentConverter: ValueConverter[Ident] =
     ValueConverter.of(id => Value.fromString(id.id))
   implicit def yamuscaOpenIdAuthConverter: ValueConverter[OpenIdAuth] =
-    deriveValueConverter[OpenIdAuth]
+    ValueConverter.deriveConverter[OpenIdAuth]
   implicit def yamuscaSignupModeConverter: ValueConverter[SignupConfig.Mode] =
     ValueConverter.of(m => Value.fromString(m.name))
   implicit def yamuscaUriConverter: ValueConverter[LenientUri] =
     ValueConverter.of(uri => Value.fromString(uri.asString))
   implicit def yamuscaValueConverter: ValueConverter[Flags] =
-    deriveValueConverter[Flags]
+    ValueConverter.deriveConverter[Flags]
 }

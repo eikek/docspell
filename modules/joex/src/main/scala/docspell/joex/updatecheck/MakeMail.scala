@@ -15,7 +15,6 @@ import docspell.store.records.RUserEmail
 import emil._
 import emil.builder._
 import emil.markdown._
-import yamusca.derive._
 import yamusca.implicits._
 import yamusca.imports._
 
@@ -55,6 +54,6 @@ object MakeMail {
       TemplateCtx(thisVersion.get, release.version, release.published_at)
 
     implicit val yamuscaConverter: ValueConverter[TemplateCtx] =
-      deriveValueConverter[TemplateCtx]
+      ValueConverter.deriveConverter[TemplateCtx]
   }
 }

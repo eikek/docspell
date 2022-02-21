@@ -22,7 +22,6 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.http4s.implicits._
 import org.log4s._
-import yamusca.derive._
 import yamusca.implicits._
 import yamusca.imports._
 
@@ -116,7 +115,7 @@ object TemplateRoutes {
       )
 
     implicit def yamuscaValueConverter: ValueConverter[DocData] =
-      deriveValueConverter[DocData]
+      ValueConverter.deriveConverter[DocData]
   }
 
   case class IndexData(
@@ -149,7 +148,7 @@ object TemplateRoutes {
       Seq(s"/app/assets/docspell-webapp/${BuildInfo.version}/css/styles.css")
 
     implicit def yamuscaValueConverter: ValueConverter[IndexData] =
-      deriveValueConverter[IndexData]
+      ValueConverter.deriveConverter[IndexData]
   }
 
   private def memo[F[_]: Sync, A](fa: => F[A]): F[A] = {
