@@ -6,9 +6,11 @@
 
 package docspell.extract.pdfbox
 
+import docspell.logging.TestLoggingConfig
+
 import munit._
 
-class PdfMetaDataTest extends FunSuite {
+class PdfMetaDataTest extends FunSuite with TestLoggingConfig {
 
   test("split keywords on comma") {
     val md = PdfMetaData.empty.copy(keywords = Some("a,b, c"))

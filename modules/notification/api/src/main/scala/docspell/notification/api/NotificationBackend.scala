@@ -13,7 +13,7 @@ import cats.implicits._
 import cats.kernel.Monoid
 import fs2.Stream
 
-import docspell.common._
+import docspell.logging.Logger
 
 /** Pushes notification messages/events to an external system */
 trait NotificationBackend[F[_]] {

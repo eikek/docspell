@@ -12,7 +12,6 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.store.Store
 import docspell.store.qb.DSL._
 import docspell.store.qb._
@@ -20,10 +19,9 @@ import docspell.store.records.{RJob, RJobGroupUse, RJobLog}
 
 import doobie._
 import doobie.implicits._
-import org.log4s._
 
 object QJob {
-  private[this] val logger = getLogger
+  private[this] val cioLogger = docspell.logging.getLogger[ConnectionIO]
 
   def takeNextJob[F[_]: Async](
       store: Store[F]
@@ -31,13 +29,14 @@ object QJob {
       priority: Ident => F[Priority],
       worker: Ident,
       retryPause: Duration
-  ): F[Option[RJob]] =
+  ): F[Option[RJob]] = {
+    val logger = docspell.logging.getLogger[F]
     Stream
       .range(0, 10)
       .evalMap(n => takeNextJob1(store)(priority, worker, retryPause, n))
       .evalTap { x =>
         if (x.isLeft)
-          logger.fdebug[F](
+          logger.debug(
             "Cannot mark job, probably due to concurrent updates. Will retry."
           )
         else ().pure[F]
@@ -48,12 +47,13 @@ object QJob {
           Stream.emit(job)
         case Left(_) =>
           Stream
-            .eval(logger.fwarn[F]("Cannot mark job, even after retrying. Give up."))
+            .eval(logger.warn("Cannot mark job, even after retrying. Give up."))
             .map(_ => None)
       }
       .compile
       .last
       .map(_.flatten)
+  }
 
   private def takeNextJob1[F[_]: Async](store: Store[F])(
       priority: Ident => F[Priority],
@@ -61,6 +61,7 @@ object QJob {
       retryPause: Duration,
       currentTry: Int
   ): F[Either[Unit, Option[RJob]]] = {
+    val logger = docspell.logging.getLogger[F]
     // if this fails, we have to restart takeNextJob
     def markJob(job: RJob): F[Either[Unit, RJob]] =
       store.transact(for {
@@ -68,25 +69,25 @@ object QJob {
         _ <-
           if (n == 1) RJobGroupUse.setGroup(RJobGroupUse(job.group, worker))
           else 0.pure[ConnectionIO]
-        _ <- logger.fdebug[ConnectionIO](
+        _ <- cioLogger.debug(
           s"Scheduled job ${job.info} to worker ${worker.id}"
         )
       } yield if (n == 1) Right(job) else Left(()))
 
     for {
-      _ <- logger.ftrace[F](
+      _ <- logger.trace(
         s"About to take next job (worker ${worker.id}), try $currentTry"
       )
       now <- Timestamp.current[F]
       group <- store.transact(selectNextGroup(worker, now, retryPause))
-      _ <- logger.ftrace[F](s"Choose group ${group.map(_.id)}")
+      _ <- logger.trace(s"Choose group ${group.map(_.id)}")
       prio <- group.map(priority).getOrElse((Priority.Low: Priority).pure[F])
-      _ <- logger.ftrace[F](s"Looking for job of prio $prio")
+      _ <- logger.trace(s"Looking for job of prio $prio")
       job <-
         group
           .map(g => store.transact(selectNextJob(g, prio, retryPause, now)))
           .getOrElse((None: Option[RJob]).pure[F])
-      _ <- logger.ftrace[F](s"Found job: ${job.map(_.info)}")
+      _ <- logger.trace(s"Found job: ${job.map(_.info)}")
       res <- job.traverse(j => markJob(j))
     } yield res.map(_.map(_.some)).getOrElse {
       if (group.isDefined)
@@ -138,7 +139,7 @@ object QJob {
         .limit(1)
 
     val frag = groups.build
-    logger.trace(
+    cioLogger.trace(
       s"nextGroupQuery: $frag  (now=${now.toMillis}, pause=${initialPause.millis})"
     )
 
@@ -206,7 +207,8 @@ object QJob {
       _ <- store.transact(RJob.setRunning(id, workerId, now))
     } yield ()
 
-  def setFinalState[F[_]: Async](id: Ident, state: JobState, store: Store[F]): F[Unit] =
+  def setFinalState[F[_]: Async](id: Ident, state: JobState, store: Store[F]): F[Unit] = {
+    val logger = docspell.logging.getLogger[F]
     state match {
       case JobState.Success =>
         setSuccess(id, store)
@@ -217,8 +219,9 @@ object QJob {
       case JobState.Stuck =>
         setStuck(id, store)
       case _ =>
-        logger.ferror[F](s"Invalid final state: $state.")
+        logger.error(s"Invalid final state: $state.")
     }
+  }
 
   def exceedsRetries[F[_]: Async](id: Ident, max: Int, store: Store[F]): F[Boolean] =
     store.transact(RJob.getRetries(id)).map(n => n.forall(_ >= max))

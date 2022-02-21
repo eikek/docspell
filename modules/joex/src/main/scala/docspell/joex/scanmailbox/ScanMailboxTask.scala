@@ -17,6 +17,7 @@ import docspell.backend.ops.{OJoex, OUpload}
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.scheduler.{Context, Task}
+import docspell.logging.Logger
 import docspell.store.queries.QOrganization
 import docspell.store.records._
 

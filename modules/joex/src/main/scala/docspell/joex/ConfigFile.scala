@@ -8,7 +8,6 @@ package docspell.joex
 
 import cats.effect.Async
 
-import docspell.common.Logger
 import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, Validation}
 import docspell.joex.scheduler.CountingScheme
@@ -23,7 +22,7 @@ object ConfigFile {
   import Implicits._
 
   def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
-    val logger = Logger.log4s[F](org.log4s.getLogger)
+    val logger = docspell.logging.getLogger[F]
     ConfigFactory
       .default[F, Config](logger, "docspell.joex")(args, validate)
   }

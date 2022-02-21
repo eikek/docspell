@@ -14,6 +14,7 @@ import cats.implicits._
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops.OItem
 import docspell.common._
+import docspell.logging.Logger
 import docspell.store.Store
 import docspell.store.queries.QCustomField
 import docspell.store.queries.QCustomField.FieldValue

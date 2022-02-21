@@ -10,6 +10,7 @@ import docspell.backend.auth.Login
 import docspell.backend.{Config => BackendConfig}
 import docspell.common._
 import docspell.ftssolr.SolrConfig
+import docspell.logging.LogConfig
 import docspell.oidc.ProviderConfig
 import docspell.pubsub.naive.PubSubConfig
 import docspell.restserver.Config.OpenIdConfig
@@ -23,6 +24,7 @@ case class Config(
     appId: Ident,
     baseUrl: LenientUri,
     internalUrl: LenientUri,
+    logging: LogConfig,
     bind: Config.Bind,
     backend: BackendConfig,
     auth: Login.Config,

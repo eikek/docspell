@@ -11,12 +11,10 @@ import cats.implicits._
 
 import docspell.backend.PasswordCrypt
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.store.records.{RCollective, RInvitation, RUser}
 import docspell.store.{AddResult, Store}
 
 import doobie.free.connection.ConnectionIO
-import org.log4s.getLogger
 
 trait OSignup[F[_]] {
 
@@ -29,10 +27,10 @@ trait OSignup[F[_]] {
 }
 
 object OSignup {
-  private[this] val logger = getLogger
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OSignup[F]] =
     Resource.pure[F, OSignup[F]](new OSignup[F] {
+      private[this] val logger = docspell.logging.getLogger[F]
 
       def newInvite(cfg: Config)(password: Password): F[NewInviteResult] =
         if (cfg.mode == Config.Mode.Invite)
@@ -66,7 +64,7 @@ object OSignup {
                   _ <-
                     if (retryInvite(res))
                       logger
-                        .fdebug(
+                        .debug(
                           s"Adding account failed ($res). Allow retry with invite."
                         ) *> store
                         .transact(

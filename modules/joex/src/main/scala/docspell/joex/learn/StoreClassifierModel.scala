@@ -13,6 +13,7 @@ import fs2.io.file.Files
 import docspell.analysis.classifier.ClassifierModel
 import docspell.common._
 import docspell.joex.scheduler._
+import docspell.logging.Logger
 import docspell.store.Store
 import docspell.store.records.RClassifierModel
 

@@ -11,6 +11,7 @@ import cats.implicits._
 import fs2.{Pipe, Stream}
 
 import docspell.common._
+import docspell.logging.Logger
 import docspell.store.syntax.MimeTypes._
 
 import emil.javamail.syntax._

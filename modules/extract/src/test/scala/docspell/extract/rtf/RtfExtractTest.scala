@@ -7,10 +7,11 @@
 package docspell.extract.rtf
 
 import docspell.files.ExampleFiles
+import docspell.logging.TestLoggingConfig
 
 import munit._
 
-class RtfExtractTest extends FunSuite {
+class RtfExtractTest extends FunSuite with TestLoggingConfig {
 
   test("extract text from rtf using java input-stream") {
     val file = ExampleFiles.examples_sample_rtf

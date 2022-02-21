@@ -10,7 +10,7 @@ import cats.data.Kleisli
 import fs2.Stream
 
 import docspell.analysis.classifier.TextClassifier.Data
-import docspell.common._
+import docspell.logging.Logger
 
 trait TextClassifier[F[_]] {
 

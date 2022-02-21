@@ -9,15 +9,15 @@ package docspell.extract.ocr
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 
-import docspell.common.Logger
 import docspell.files.TestFiles
+import docspell.logging.TestLoggingConfig
 
 import munit._
 
-class TextExtractionSuite extends FunSuite {
+class TextExtractionSuite extends FunSuite with TestLoggingConfig {
   import TestFiles._
 
-  val logger = Logger.log4s[IO](org.log4s.getLogger)
+  val logger = docspell.logging.getLogger[IO]
 
   test("extract english pdf".ignore) {
     val text = TextExtract

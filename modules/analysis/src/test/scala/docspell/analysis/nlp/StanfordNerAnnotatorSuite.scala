@@ -14,11 +14,12 @@ import cats.effect.unsafe.implicits.global
 import docspell.analysis.Env
 import docspell.common._
 import docspell.files.TestFiles
+import docspell.logging.TestLoggingConfig
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import munit._
 
-class StanfordNerAnnotatorSuite extends FunSuite {
+class StanfordNerAnnotatorSuite extends FunSuite with TestLoggingConfig {
   lazy val germanClassifier =
     new StanfordCoreNLP(Properties.nerGerman(None, false))
   lazy val englishClassifier =

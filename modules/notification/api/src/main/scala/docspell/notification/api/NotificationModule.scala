@@ -11,7 +11,7 @@ import cats.data.{Kleisli, OptionT}
 import cats.implicits._
 import fs2.Stream
 
-import docspell.common.Logger
+import docspell.logging.Logger
 
 trait NotificationModule[F[_]]
     extends EventSink[F]

@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong
 import cats.implicits._
 
 import docspell.common._
+import docspell.logging.TestLoggingConfig
 import docspell.store.StoreFixture
 import docspell.store.records.RJob
 import docspell.store.records.RJobGroupUse
@@ -19,7 +20,7 @@ import docspell.store.records.RJobGroupUse
 import doobie.implicits._
 import munit._
 
-class QJobTest extends CatsEffectSuite with StoreFixture {
+class QJobTest extends CatsEffectSuite with StoreFixture with TestLoggingConfig {
   private[this] val c = new AtomicLong(0)
 
   private val worker = Ident.unsafe("joex1")

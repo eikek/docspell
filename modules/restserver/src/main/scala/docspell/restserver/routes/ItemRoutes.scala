@@ -18,7 +18,6 @@ import docspell.backend.ops.OItemSearch.{Batch, Query}
 import docspell.backend.ops.OSimpleSearch
 import docspell.backend.ops.OSimpleSearch.StringSearchResult
 import docspell.common._
-import docspell.common.syntax.all._
 import docspell.query.FulltextExtract.Result.TooMany
 import docspell.query.FulltextExtract.Result.UnsupportedPosition
 import docspell.restapi.model._
@@ -34,16 +33,14 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.http4s.{HttpRoutes, Response}
-import org.log4s._
 
 object ItemRoutes {
-  private[this] val logger = getLogger
-
   def apply[F[_]: Async](
       cfg: Config,
       backend: BackendApp[F],
       user: AuthToken
   ): HttpRoutes[F] = {
+    val logger = docspell.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -322,7 +319,7 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "duedate" =>
         for {
           date <- req.as[OptionalDate]
-          _ <- logger.fdebug(s"Setting item due date to ${date.date}")
+          _ <- logger.debug(s"Setting item due date to ${date.date}")
           res <- backend.item.setItemDueDate(
             NonEmptyList.of(id),
             date.date,
@@ -334,7 +331,7 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "date" =>
         for {
           date <- req.as[OptionalDate]
-          _ <- logger.fdebug(s"Setting item date to ${date.date}")
+          _ <- logger.debug(s"Setting item date to ${date.date}")
           res <- backend.item.setItemDate(
             NonEmptyList.of(id),
             date.date,
@@ -353,7 +350,7 @@ object ItemRoutes {
       case req @ POST -> Root / Ident(id) / "attachment" / "movebefore" =>
         for {
           data <- req.as[MoveAttachment]
-          _ <- logger.fdebug(s"Move item (${id.id}) attachment $data")
+          _ <- logger.debug(s"Move item (${id.id}) attachment $data")
           res <- backend.item.moveAttachmentBefore(id, data.source, data.target)
           resp <- Ok(Conversions.basicResult(res, "Attachment moved."))
         } yield resp
@@ -390,7 +387,7 @@ object ItemRoutes {
       case req @ POST -> Root / Ident(id) / "reprocess" =>
         for {
           data <- req.as[IdList]
-          _ <- logger.fdebug(s"Re-process item ${id.id}")
+          _ <- logger.debug(s"Re-process item ${id.id}")
           res <- backend.item.reprocess(id, data.ids, user.account, true)
           resp <- Ok(Conversions.basicResult(res, "Re-process task submitted."))
         } yield resp

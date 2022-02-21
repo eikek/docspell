@@ -13,10 +13,11 @@ import fs2.io.file.Files
 import fs2.io.file.Path
 
 import docspell.files.ExampleFiles
+import docspell.logging.TestLoggingConfig
 
 import munit._
 
-class PdfboxPreviewTest extends FunSuite {
+class PdfboxPreviewTest extends FunSuite with TestLoggingConfig {
 
   val testPDFs = List(
     ExampleFiles.letter_de_pdf -> "7d98be75b239816d6c751b3f3c56118ebf1a4632c43baf35a68a662f9d595ab8",

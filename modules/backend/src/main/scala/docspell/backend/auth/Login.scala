@@ -17,7 +17,6 @@ import docspell.store.queries.QLogin
 import docspell.store.records._
 import docspell.totp.{OnetimePassword, Totp}
 
-import org.log4s.getLogger
 import org.mindrot.jbcrypt.BCrypt
 import scodec.bits.ByteVector
 
@@ -41,8 +40,6 @@ trait Login[F[_]] {
 }
 
 object Login {
-  private[this] val logger = getLogger
-
   case class Config(
       serverSecret: ByteVector,
       sessionValid: Duration,
@@ -93,7 +90,7 @@ object Login {
   def apply[F[_]: Async](store: Store[F], totp: Totp): Resource[F, Login[F]] =
     Resource.pure[F, Login[F]](new Login[F] {
 
-      private val logF = Logger.log4s(logger)
+      private val logF = docspell.logging.getLogger[F]
 
       def loginExternal(config: Config)(accountId: AccountId): F[Result] =
         for {
@@ -124,7 +121,7 @@ object Login {
           case Right(acc) =>
             for {
               data <- store.transact(QLogin.findUser(acc))
-              _ <- Sync[F].delay(logger.trace(s"Account lookup: $data"))
+              _ <- logF.trace(s"Account lookup: $data")
               res <-
                 if (data.exists(check(up.pass))) doLogin(config, acc, up.rememberMe)
                 else Result.invalidAuth.pure[F]

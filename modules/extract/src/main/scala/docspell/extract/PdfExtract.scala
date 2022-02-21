@@ -10,11 +10,12 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
-import docspell.common.{Language, Logger}
+import docspell.common.Language
 import docspell.extract.internal.Text
 import docspell.extract.ocr.{OcrConfig, TextExtract}
 import docspell.extract.pdfbox.PdfMetaData
 import docspell.extract.pdfbox.PdfboxExtract
+import docspell.logging.Logger
 
 object PdfExtract {
   final case class Result(txt: Text, meta: Option[PdfMetaData])

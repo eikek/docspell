@@ -10,6 +10,7 @@ import cats.effect._
 import cats.effect.unsafe.implicits._
 
 import docspell.common.LenientUri
+import docspell.logging.TestLoggingConfig
 import docspell.store.JdbcConfig
 
 import com.dimafeng.testcontainers.MariaDBContainer
@@ -17,7 +18,10 @@ import com.dimafeng.testcontainers.munit.TestContainerForAll
 import munit._
 import org.testcontainers.utility.DockerImageName
 
-class MariaDbMigrateTest extends FunSuite with TestContainerForAll {
+class MariaDbMigrateTest
+    extends FunSuite
+    with TestContainerForAll
+    with TestLoggingConfig {
   override val containerDef: MariaDBContainer.Def =
     MariaDBContainer.Def(DockerImageName.parse("mariadb:10.5"))
 

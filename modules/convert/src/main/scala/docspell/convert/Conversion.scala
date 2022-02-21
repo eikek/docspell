@@ -17,6 +17,7 @@ import docspell.convert.ConversionResult.Handler
 import docspell.convert.extern._
 import docspell.convert.flexmark.Markdown
 import docspell.files.{ImageSize, TikaMimetype}
+import docspell.logging.Logger
 
 import scodec.bits.ByteVector
 
@@ -46,7 +47,7 @@ object Conversion {
             val allPass = cfg.decryptPdf.passwords ++ additionalPasswords
             val pdfStream =
               if (cfg.decryptPdf.enabled) {
-                logger.s
+                logger.stream
                   .debug(s"Trying to read the PDF using ${allPass.size} passwords")
                   .drain ++
                   in.through(RemovePdfEncryption(logger, allPass))

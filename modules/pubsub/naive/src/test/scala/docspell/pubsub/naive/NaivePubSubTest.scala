@@ -12,14 +12,14 @@ import cats.effect._
 import cats.implicits._
 import fs2.concurrent.SignallingRef
 
-import docspell.common._
+import docspell.logging.{Logger, TestLoggingConfig}
 import docspell.pubsub.api._
 import docspell.pubsub.naive.Topics._
 
 import munit.CatsEffectSuite
 
-class NaivePubSubTest extends CatsEffectSuite with Fixtures {
-  private[this] val logger = Logger.log4s[IO](org.log4s.getLogger)
+class NaivePubSubTest extends CatsEffectSuite with Fixtures with TestLoggingConfig {
+  private[this] val logger = Logger.simpleDefault[IO]()
 
   def subscribe[A](ps: PubSubT[IO], topic: TypedTopic[A]) =
     for {

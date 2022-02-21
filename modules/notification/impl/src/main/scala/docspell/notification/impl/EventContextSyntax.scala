@@ -6,7 +6,7 @@
 
 package docspell.notification.impl
 
-import docspell.common.Logger
+import docspell.logging.Logger
 import docspell.notification.api.EventContext
 
 import io.circe.Json

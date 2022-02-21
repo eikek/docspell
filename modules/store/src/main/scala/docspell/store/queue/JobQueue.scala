@@ -14,8 +14,6 @@ import docspell.store.Store
 import docspell.store.queries.QJob
 import docspell.store.records.RJob
 
-import org.log4s.getLogger
-
 trait JobQueue[F[_]] {
 
   /** Inserts the job into the queue to get picked up as soon as possible. The job must
@@ -44,7 +42,7 @@ trait JobQueue[F[_]] {
 object JobQueue {
   def apply[F[_]: Async](store: Store[F]): Resource[F, JobQueue[F]] =
     Resource.pure[F, JobQueue[F]](new JobQueue[F] {
-      private[this] val logger = Logger.log4s(getLogger)
+      private[this] val logger = docspell.logging.getLogger[F]
 
       def nextJob(
           prio: Ident => F[Priority],

@@ -15,8 +15,7 @@ import docspell.analysis.contact.Contact
 import docspell.analysis.date.DateFind
 import docspell.analysis.nlp._
 import docspell.common._
-
-import org.log4s.getLogger
+import docspell.logging.Logger
 
 trait TextAnalyser[F[_]] {
 
@@ -30,7 +29,6 @@ trait TextAnalyser[F[_]] {
   def classifier: TextClassifier[F]
 }
 object TextAnalyser {
-  private[this] val logger = getLogger
 
   case class Result(labels: Vector[NerLabel], dates: Vector[NerDateLabel]) {
 
@@ -87,10 +85,11 @@ object TextAnalyser {
   private object Nlp {
     def apply[F[_]: Async](
         cfg: TextAnalysisConfig.NlpConfig
-    ): F[Input[F] => F[Vector[NerLabel]]] =
+    ): F[Input[F] => F[Vector[NerLabel]]] = {
+      val log = docspell.logging.getLogger[F]
       cfg.mode match {
         case NlpMode.Disabled =>
-          Logger.log4s(logger).info("NLP is disabled as defined in config.") *>
+          log.info("NLP is disabled as defined in config.") *>
             Applicative[F].pure(_ => Vector.empty[NerLabel].pure[F])
         case _ =>
           PipelineCache(cfg.clearInterval)(
@@ -99,6 +98,7 @@ object TextAnalyser {
           )
             .map(annotate[F])
       }
+    }
 
     final case class Input[F[_]](
         key: Ident,

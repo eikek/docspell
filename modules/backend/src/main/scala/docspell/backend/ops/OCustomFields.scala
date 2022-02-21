@@ -31,7 +31,6 @@ import docspell.store.records.RCustomFieldValue
 import docspell.store.records.RItem
 
 import doobie._
-import org.log4s.getLogger
 
 trait OCustomFields[F[_]] {
 
@@ -153,7 +152,7 @@ object OCustomFields {
   ): Resource[F, OCustomFields[F]] =
     Resource.pure[F, OCustomFields[F]](new OCustomFields[F] {
 
-      private[this] val logger = Logger.log4s[ConnectionIO](getLogger)
+      private[this] val logger = docspell.logging.getLogger[ConnectionIO]
 
       def findAllValues(itemIds: Nel[Ident]): F[List[FieldValue]] =
         store.transact(QCustomField.findAllValues(itemIds))
@@ -224,7 +223,7 @@ object OCustomFields {
               .transact(RItem.existsByIdsAndCollective(items, value.collective))
               .map(flag => if (flag) Right(()) else Left(SetValueResult.itemNotFound))
           )
-          nu <- EitherT.right[SetValueResult](
+          _ <- EitherT.right[SetValueResult](
             items
               .traverse(item => store.transact(RCustomField.setValue(field, item, fval)))
               .map(_.toList.sum)

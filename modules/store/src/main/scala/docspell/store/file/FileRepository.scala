@@ -32,7 +32,6 @@ trait FileRepository[F[_]] {
 }
 
 object FileRepository {
-  private[this] val logger = org.log4s.getLogger
 
   def genericJDBC[F[_]: Sync](
       xa: Transactor[F],
@@ -41,7 +40,7 @@ object FileRepository {
   ): FileRepository[F] = {
     val attrStore = new AttributeStore[F](xa)
     val cfg = JdbcStoreConfig("filechunk", chunkSize, BinnyUtils.TikaContentTypeDetect)
-    val log = Logger.log4s[F](logger)
+    val log = docspell.logging.getLogger[F]
     val binStore = GenericJdbcStore[F](ds, BinnyUtils.LoggerAdapter(log), cfg, attrStore)
     val keyFun: FileKey => BinaryId = BinnyUtils.fileKeyToBinaryId
 
