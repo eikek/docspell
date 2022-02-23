@@ -29,7 +29,7 @@ renderDiv ctx settings col attr item =
                 (List.map
                     (\t ->
                         div
-                            [ class "label text-sm"
+                            [ class "label text-sm mt-1"
                             , class <| Data.UiSettings.tagColorString2 t settings
                             ]
                             [ text t.name ]
