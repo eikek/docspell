@@ -123,6 +123,12 @@ viewItemHead texts meta =
     let
         ( col1, cols ) =
             getColumns meta
+
+        isSecond n =
+            n == 1
+
+        isNotLast n =
+            n > 1 && n < List.length cols
     in
     if not meta.showHeaders then
         []
@@ -131,7 +137,18 @@ viewItemHead texts meta =
         [ thead []
             [ tr []
                 (List.map texts.itemColumn.header (col1 :: cols)
-                    |> List.map (\n -> th [ class "text-left text-sm" ] [ text n ])
+                    |> List.indexedMap
+                        (\index ->
+                            \n ->
+                                th
+                                    [ class "text-left text-sm"
+                                    , classList
+                                        [ ( "hidden sm:table-cell", isSecond index )
+                                        , ( "hidden md:table-cell", isNotLast index )
+                                        ]
+                                    ]
+                                    [ text n ]
+                        )
                 )
             ]
         ]
@@ -143,12 +160,18 @@ viewItemRow texts settings meta item =
         ( col1, cols ) =
             getColumns meta
 
+        isSecond n =
+            n == 0
+
+        isNotLast n =
+            n > 0 && n < (List.length cols - 1)
+
         render col =
             Comp.ItemColumnView.renderDiv
                 texts.templateCtx
                 settings
                 col
-                [ class "flex flex-row flex-wrap space-x-1 space-y-1" ]
+                [ class "flex flex-row break-all flex-wrap space-x-1" ]
                 item
 
         td1 =
@@ -164,7 +187,10 @@ viewItemRow texts settings meta item =
         tdRem index col =
             td
                 [ class "py-1 px-1"
-                , classList [ ( "hidden md:table-cell", index > 1 ) ]
+                , classList
+                    [ ( "hidden sm:table-cell", isSecond index )
+                    , ( "hidden md:table-cell", isNotLast index )
+                    ]
                 ]
                 [ render col
                 ]

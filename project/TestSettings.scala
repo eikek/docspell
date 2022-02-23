@@ -30,7 +30,7 @@ object TestSettingsPlugin extends AutoPlugin {
 
   val testSettings = Seq(
     libraryDependencies ++= inTest(Dependencies.munit, Dependencies.scribe),
-    testFrameworks += new TestFramework("munit.Framework")
+    testFrameworks += TestFrameworks.MUnit
   )
 
 }
