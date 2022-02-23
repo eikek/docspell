@@ -18,7 +18,7 @@ let
     };
     logging = {
       minimum-level = "Info";
-      format = "Plain";
+      format = "Fancy";
     };
     mail-debug = false;
     jdbc = {

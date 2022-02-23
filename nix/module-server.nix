@@ -23,7 +23,7 @@ let
     };
     logging = {
       minimum-level = "Info";
-      format = "Plain";
+      format = "Fancy";
     };
     integration-endpoint = {
       enabled = false;
