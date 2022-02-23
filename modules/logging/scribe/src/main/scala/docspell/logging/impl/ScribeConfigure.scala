@@ -44,16 +44,18 @@ object ScribeConfigure {
       _.clearHandlers(),
       _.withMinimumLevel(ScribeWrapper.convertLevel(cfg.minimumLevel)),
       l =>
-        cfg.format match {
-          case Format.Fancy =>
-            l.withHandler(formatter = Formatter.enhanced, writer = SystemOutWriter)
-          case Format.Plain =>
-            l.withHandler(formatter = Formatter.classic, writer = SystemOutWriter)
-          case Format.Json =>
-            l.withHandler(writer = JsonWriter(SystemOutWriter))
-          case Format.Logfmt =>
-            l.withHandler(writer = LogfmtWriter(SystemOutWriter))
-        },
+        if (logger.id == scribe.Logger.RootId) {
+          cfg.format match {
+            case Format.Fancy =>
+              l.withHandler(formatter = Formatter.default, writer = SystemOutWriter)
+            case Format.Plain =>
+              l.withHandler(formatter = Formatter.classic, writer = SystemOutWriter)
+            case Format.Json =>
+              l.withHandler(writer = JsonWriter(SystemOutWriter))
+            case Format.Logfmt =>
+              l.withHandler(writer = LogfmtWriter(SystemOutWriter))
+          }
+        } else l,
       _.replace()
     )
 
