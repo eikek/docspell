@@ -388,7 +388,7 @@ formTabs texts flags settings model =
       , titleRight = []
       , info = Nothing
       , body =
-            [ div [ class "mb-4" ]
+            [ div [ class "mb-24" ]
                 [ Html.map DirDropdownMsg
                     (Comp.Dropdown.view2
                         directionCfg
