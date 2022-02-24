@@ -106,7 +106,7 @@ initAvailable allTags allCats model =
 
         cats =
             List.sortBy (.count >> negate) allCats
-                |> List.map (.name >> Maybe.withDefault "")
+                |> List.filterMap .name
     in
     { model
         | availableTags = tags
