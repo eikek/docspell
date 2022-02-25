@@ -424,6 +424,7 @@ defaultMenuBar texts flags settings model =
                 }
             ]
         , rootClasses = "mb-2 pt-1 dark:bg-slate-700 items-center text-sm"
+        , sticky = True
         }
 
 
@@ -551,6 +552,7 @@ editMenuBar texts model svm =
                 }
             ]
         , rootClasses = "mb-2 pt-2 sticky top-0 text-sm"
+        , sticky = True
         }
 
 

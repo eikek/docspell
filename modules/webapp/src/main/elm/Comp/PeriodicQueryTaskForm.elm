@@ -490,6 +490,7 @@ view texts extraClasses settings model =
                     [ startOnceBtn
                     ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ classList

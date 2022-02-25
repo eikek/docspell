@@ -49,6 +49,7 @@ view texts flags settings model =
                 ]
             , start = []
             , rootClasses = "text-sm w-full bg-blue-50 pt-2 hidden"
+            , sticky = True
             }
         , div [ class "flex flex-col" ]
             (case model.viewMode of
@@ -81,6 +82,7 @@ viewSearch texts flags settings model =
             ]
         , end = []
         , rootClasses = "my-1 text-xs hidden sm:flex"
+        , sticky = True
         }
     , let
         searchMenuCfg =
@@ -140,6 +142,7 @@ viewEditMenu texts flags svm settings =
             ]
         , end = []
         , rootClasses = "mt-2 text-sm"
+        , sticky = True
         }
     , Html.map EditMenuMsg
         (Comp.ItemDetail.MultiEditMenu.view2

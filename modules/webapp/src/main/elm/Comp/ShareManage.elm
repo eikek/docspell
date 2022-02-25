@@ -329,6 +329,7 @@ viewTable texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map TableMsg (Comp.ShareTable.view texts.shareTable model.shares)
         , B.loadingDimmer
@@ -406,6 +407,7 @@ viewForm texts settings flags model =
                     else
                         []
                 , rootClasses = "mb-4"
+                , sticky = True
                 }
             , div
                 [ classList

@@ -153,7 +153,7 @@ update flags msg model =
             , Sub.none
             )
 
-        NameExistsResp (Err err) ->
+        NameExistsResp (Err _) ->
             ( model, Cmd.none, Sub.none )
 
         UpdateThrottle ->

@@ -151,4 +151,5 @@ view texts flags model =
                 }
             ]
         , rootClasses = "mb-2 pt-1 dark:bg-slate-700 items-center text-sm"
+        , sticky = True
         }

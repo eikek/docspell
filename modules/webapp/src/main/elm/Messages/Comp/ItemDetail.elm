@@ -77,7 +77,7 @@ gb =
     , nextItem = "Next item"
     , sendMail = "Send Mail"
     , addMoreFiles = "Add more files to this item"
-    , confirmItemMetadata = "Confirm item metadata"
+    , confirmItemMetadata = "Confirm metadata"
     , confirm = "Confirm"
     , unconfirmItemMetadata = "Un-confirm item metadata"
     , reprocessItem = "Reprocess this item"
@@ -91,7 +91,7 @@ gb =
     , sendingMailNow = "Sending e-mail…"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
     , mailSendSuccessful = "Mail sent."
-    , showQrCode = "Show the URL to this page as QR code"
+    , showQrCode = "Show URL as QR code"
     , close = "Close"
     }
 
@@ -127,6 +127,6 @@ de =
     , sendingMailNow = "E-Mail wird gesendet…"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
     , mailSendSuccessful = "E-Mail wurde versendet."
-    , showQrCode = "Den Link zu dieser Seite als QR code anzeigen"
+    , showQrCode = "Link als QR code anzeigen"
     , close = "Schließen"
     }

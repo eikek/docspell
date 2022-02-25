@@ -339,6 +339,7 @@ view2 texts flags _ classes model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ classList

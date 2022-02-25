@@ -257,6 +257,7 @@ viewTable texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ class "flex flex-col"
@@ -334,6 +335,7 @@ viewForm texts _ _ model =
                     else
                         []
                 , rootClasses = "mb-4"
+                , sticky = True
                 }
             , div
                 [ classList

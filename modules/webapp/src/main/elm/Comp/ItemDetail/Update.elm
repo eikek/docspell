@@ -519,10 +519,16 @@ update key flags inav settings msg model =
                 resetCmds =
                     resetHiddenFields settings flags model.item.id ResetHiddenMsg
             in
-            resultModelCmd ( model, Cmd.batch (Api.setConfirmed flags model.item.id SaveResp :: resetCmds) )
+            resultModelCmd
+                ( { model | mobileItemMenuOpen = False }
+                , Cmd.batch (Api.setConfirmed flags model.item.id SaveResp :: resetCmds)
+                )
 
         UnconfirmItem ->
-            resultModelCmd ( model, Api.setUnconfirmed flags model.item.id SaveResp )
+            resultModelCmd
+                ( { model | mobileItemMenuOpen = False }
+                , Api.setUnconfirmed flags model.item.id SaveResp
+                )
 
         ItemDatePickerMsg m ->
             let
@@ -573,7 +579,11 @@ update key flags inav settings msg model =
             resultModel { model | itemModal = Nothing }
 
         RequestDelete ->
-            resultModel { model | itemModal = Just (ConfirmModalDeleteItem DeleteItemConfirmed) }
+            resultModel
+                { model
+                    | itemModal = Just (ConfirmModalDeleteItem DeleteItemConfirmed)
+                    , mobileItemMenuOpen = False
+                }
 
         SetCorrOrgSuggestion idname ->
             resultModelCmd ( model, setCorrOrg flags model (Just idname) )
@@ -819,6 +829,7 @@ update key flags inav settings msg model =
                     | mailOpen = newOpen
                     , addFilesOpen = filesOpen
                     , mailSendResult = sendResult
+                    , mobileItemMenuOpen = False
                 }
 
         SendMailResp (Ok br) ->
@@ -983,6 +994,7 @@ update key flags inav settings msg model =
             resultModel
                 { model
                     | addFilesOpen = not model.addFilesOpen
+                    , mobileItemMenuOpen = False
                     , mailOpen =
                         if model.addFilesOpen == False then
                             False
@@ -1520,6 +1532,9 @@ update key flags inav settings msg model =
         ToggleAttachmentDropdown ->
             resultModel { model | attachmentDropdownOpen = not model.attachmentDropdownOpen }
 
+        ToggleMobileItemMenu ->
+            resultModel { model | mobileItemMenuOpen = not model.mobileItemMenuOpen }
+
         ToggleAkkordionTab name ->
             let
                 tabs =
@@ -1572,6 +1587,7 @@ update key flags inav settings msg model =
                     { model
                         | attachmentDropdownOpen = False
                         , itemModal = Just (ConfirmModalReprocessItem ReprocessItemConfirmed)
+                        , mobileItemMenuOpen = False
                     }
             in
             resultModel model_
@@ -1611,7 +1627,7 @@ update key flags inav settings msg model =
                 next =
                     { sqm | item = not sqm.item }
             in
-            resultModel { model | showQrModel = next }
+            resultModel { model | showQrModel = next, mobileItemMenuOpen = False }
 
         ToggleShowQrAttach id ->
             let

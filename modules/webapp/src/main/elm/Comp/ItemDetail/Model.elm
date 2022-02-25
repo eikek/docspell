@@ -118,6 +118,7 @@ type alias Model =
     , allTags : List Tag
     , allPersons : Dict String Person
     , attachmentDropdownOpen : Bool
+    , mobileItemMenuOpen : Bool
     , editMenuTabsOpen : Set String
     , viewMode : ViewMode
     , showQrModel : ShowQrModel
@@ -253,6 +254,7 @@ emptyModel =
     , allTags = []
     , allPersons = Dict.empty
     , attachmentDropdownOpen = False
+    , mobileItemMenuOpen = False
     , editMenuTabsOpen = Set.empty
     , viewMode = SimpleView
     , showQrModel = initShowQrModel
@@ -356,6 +358,7 @@ type Msg
     | CustomFieldSaveResp CustomField String (Result Http.Error BasicResult)
     | CustomFieldRemoveResp String (Result Http.Error BasicResult)
     | ToggleAttachmentDropdown
+    | ToggleMobileItemMenu
     | ToggleAkkordionTab String
     | ToggleOpenAllAkkordionTabs
     | RequestReprocessFile String

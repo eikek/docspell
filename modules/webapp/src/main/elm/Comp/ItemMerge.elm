@@ -272,6 +272,7 @@ view texts settings model =
                 ]
             , end = []
             , rootClasses = "my-4"
+            , sticky = True
             }
         , renderFormState texts model
         , div [ class "flex-col px-2" ]

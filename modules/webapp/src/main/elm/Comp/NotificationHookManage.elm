@@ -358,6 +358,7 @@ viewForm texts settings outerModel model =
             else
                 []
         , rootClasses = "mb-4"
+        , sticky = True
         }
     , div [ class "mt-2" ]
         [ viewState texts outerModel
@@ -409,6 +410,7 @@ viewList texts model =
                 }
             ]
         , rootClasses = "mb-4"
+        , sticky = True
         }
     , Html.map TableMsg
         (Comp.NotificationHookTable.view texts.notificationTable

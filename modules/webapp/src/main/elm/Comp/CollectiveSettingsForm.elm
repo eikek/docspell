@@ -352,6 +352,7 @@ view2 flags texts settings model =
                 ]
             , end = []
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , h2 [ class S.header2 ]
             [ text texts.documentLanguage
