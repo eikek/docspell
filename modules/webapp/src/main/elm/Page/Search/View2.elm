@@ -250,7 +250,6 @@ defaultMenuBar texts flags settings model =
                 [ Html.map PowerSearchMsg
                     (Comp.PowerSearchInput.viewInput
                         { placeholder = texts.powerSearchPlaceholder
-                        , extraAttrs = []
                         }
                         model.powerSearchInput
                     )

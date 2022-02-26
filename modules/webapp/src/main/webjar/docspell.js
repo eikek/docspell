@@ -87,7 +87,6 @@ elmApp.ports.checkSearchQueryString.subscribe(function(args) {
                   messages: []
                 };
         }
-        console.log("Sending: " + answer.success);
         elmApp.ports.receiveCheckQueryResult.send(answer);
     }
 });

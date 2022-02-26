@@ -5,32 +5,38 @@
 -}
 
 
-module Comp.BookmarkQueryForm exposing (Model, Msg, get, init, initQuery, initWith, update, view)
+module Comp.BookmarkQueryForm exposing (Model, Msg, get, getName, init, initQuery, initWith, update, view)
 
 import Api
 import Api.Model.BookmarkedQuery exposing (BookmarkedQuery)
 import Comp.Basic as B
 import Comp.PowerSearchInput
+import Comp.SimpleTextInput
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onInput)
+import Html.Events exposing (onCheck)
 import Http
 import Messages.Comp.BookmarkQueryForm exposing (Texts)
 import Styles as S
-import Throttle exposing (Throttle)
-import Time
-import Util.Maybe
 
 
 type alias Model =
     { bookmark : BookmarkedQuery
-    , name : Maybe String
+    , name : Comp.SimpleTextInput.Model
     , nameExists : Bool
     , queryModel : Comp.PowerSearchInput.Model
     , isPersonal : Bool
-    , nameExistsThrottle : Throttle Msg
     }
+
+
+nameCfg : Comp.SimpleTextInput.Config
+nameCfg =
+    let
+        c =
+            Comp.SimpleTextInput.defaultConfig
+    in
+    { c | delay = 600 }
 
 
 initQuery : String -> ( Model, Cmd Msg )
@@ -42,11 +48,10 @@ initQuery q =
                 Comp.PowerSearchInput.init
     in
     ( { bookmark = Api.Model.BookmarkedQuery.empty
-      , name = Nothing
+      , name = Comp.SimpleTextInput.init nameCfg Nothing
       , nameExists = False
       , queryModel = res.model
       , isPersonal = True
-      , nameExistsThrottle = Throttle.create 1
       }
     , Cmd.batch
         [ Cmd.map QueryMsg res.cmd
@@ -66,7 +71,7 @@ initWith bm =
             initQuery bm.query
     in
     ( { m
-        | name = Just bm.name
+        | name = Comp.SimpleTextInput.init nameCfg <| Just bm.name
         , isPersonal = bm.personal
         , bookmark = bm
       }
@@ -78,16 +83,22 @@ isValid : Model -> Bool
 isValid model =
     List.all identity
         [ Comp.PowerSearchInput.isValid model.queryModel
-        , model.name /= Nothing
+        , getName model /= Nothing
         , not model.nameExists
         ]
+
+
+getName : Model -> Maybe String
+getName model =
+    Comp.SimpleTextInput.getValue model.name
 
 
 get : Model -> Maybe BookmarkedQuery
 get model =
     let
         qStr =
-            Maybe.withDefault "" model.queryModel.input
+            Comp.PowerSearchInput.getSearchString model.queryModel
+                |> Maybe.withDefault ""
 
         bm =
             model.bookmark
@@ -96,7 +107,7 @@ get model =
         Just
             { bm
                 | query = qStr
-                , name = Maybe.withDefault "" model.name
+                , name = getName model |> Maybe.withDefault ""
                 , personal = model.isPersonal
             }
 
@@ -105,11 +116,10 @@ get model =
 
 
 type Msg
-    = SetName String
+    = SetName Comp.SimpleTextInput.Msg
     | QueryMsg Comp.PowerSearchInput.Msg
     | SetPersonal Bool
     | NameExistsResp (Result Http.Error Bool)
-    | UpdateThrottle
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -117,21 +127,24 @@ update flags msg model =
     let
         nameCheck1 name =
             Api.bookmarkNameExists flags name NameExistsResp
-
-        throttleSub =
-            Throttle.ifNeeded
-                (Time.every 150 (\_ -> UpdateThrottle))
-                model.nameExistsThrottle
     in
     case msg of
-        SetName n ->
+        SetName lm ->
             let
-                ( newThrottle, cmd ) =
-                    Throttle.try (nameCheck1 n) model.nameExistsThrottle
+                result =
+                    Comp.SimpleTextInput.update lm model.name
+
+                cmd =
+                    case result.change of
+                        Comp.SimpleTextInput.ValueUnchanged ->
+                            Cmd.none
+
+                        Comp.SimpleTextInput.ValueUpdated v ->
+                            Maybe.map nameCheck1 v |> Maybe.withDefault Cmd.none
             in
-            ( { model | name = Util.Maybe.fromString n, nameExistsThrottle = newThrottle }
-            , cmd
-            , throttleSub
+            ( { model | name = result.model }
+            , Cmd.batch [ cmd, Cmd.map SetName result.cmd ]
+            , Sub.map SetName result.sub
             )
 
         SetPersonal flag ->
@@ -156,16 +169,6 @@ update flags msg model =
         NameExistsResp (Err _) ->
             ( model, Cmd.none, Sub.none )
 
-        UpdateThrottle ->
-            let
-                ( newThrottle, cmd ) =
-                    Throttle.update model.nameExistsThrottle
-            in
-            ( { model | nameExistsThrottle = newThrottle }
-            , cmd
-            , throttleSub
-            )
-
 
 
 --- View
@@ -180,7 +183,6 @@ view texts model =
                 [ Html.map QueryMsg
                     (Comp.PowerSearchInput.viewInput
                         { placeholder = texts.queryLabel
-                        , extraAttrs = []
                         }
                         model.queryModel
                     )
@@ -198,15 +200,18 @@ view texts model =
                 [ text texts.basics.name
                 , B.inputRequired
                 ]
-            , input
-                [ type_ "text"
-                , onInput SetName
-                , placeholder texts.basics.name
-                , value <| Maybe.withDefault "" model.name
-                , id "bookmark-name"
-                , class S.textInput
-                ]
-                []
+            , Html.map SetName
+                (Comp.SimpleTextInput.view [ placeholder texts.basics.name, class S.textInput, id "bookmark-name" ] model.name)
+
+            -- , input
+            --     [ type_ "text"
+            --     , onInput SetName
+            --     , placeholder texts.basics.name
+            --     , value <| Maybe.withDefault "" model.name
+            --     , id "bookmark-name"
+            --     , class S.textInput
+            --     ]
+            --     []
             , span
                 [ class S.warnMessagePlain
                 , class "font-medium text-sm"

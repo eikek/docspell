@@ -20,6 +20,7 @@ import Comp.ItemDetail.Model
         , personMatchesOrg
         )
 import Comp.KeyInput
+import Comp.SimpleTextInput
 import Comp.Tabs as TB
 import Comp.TagDropdown
 import Data.DropdownStyle
@@ -158,14 +159,11 @@ formTabs texts flags settings model =
       , info = Nothing
       , body =
             [ div [ class "relative mb-4" ]
-                [ input
-                    [ type_ "text"
-                    , value model.nameModel
-                    , onInput SetName
-                    , class S.textInputSidebar
-                    , class "pr-10"
-                    ]
-                    []
+                [ Html.map SetNameMsg
+                    (Comp.SimpleTextInput.view
+                        [ class S.textInputSidebar, class "pr-10" ]
+                        model.nameInput
+                    )
                 , span [ class S.inputLeftIconOnly ]
                     [ i
                         [ classList

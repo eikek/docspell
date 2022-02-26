@@ -54,6 +54,7 @@ import Comp.MarkdownInput
 import Comp.OrgForm
 import Comp.PersonForm
 import Comp.SentMails
+import Comp.SimpleTextInput
 import Comp.TagDropdown
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction
@@ -73,7 +74,6 @@ import Http
 import Page exposing (Page(..))
 import Ports
 import Set exposing (Set)
-import Throttle
 import Time
 import Util.File exposing (makeFileId)
 import Util.List
@@ -239,6 +239,7 @@ update key flags inav settings msg model =
             { model =
                 { lastModel
                     | item = item
+                    , nameInput = Comp.SimpleTextInput.initDefault (Just item.name)
                     , nameModel = item.name
                     , nameState = SaveSuccess
                     , notesModel = item.notes
@@ -459,29 +460,25 @@ update key flags inav settings msg model =
             in
             resultModelCmd ( newModel, Cmd.batch [ save, Cmd.map ConcEquipMsg c2 ] )
 
-        SetName str ->
-            case Util.Maybe.fromString str of
-                Just newName ->
-                    let
-                        nm =
-                            { model | nameModel = newName }
+        SetNameMsg lm ->
+            let
+                result =
+                    Comp.SimpleTextInput.update lm model.nameInput
 
-                        cmd_ =
-                            setName flags nm
+                ( setter, value, save ) =
+                    case result.change of
+                        Comp.SimpleTextInput.ValueUpdated v ->
+                            ( setName flags { model | nameModel = Maybe.withDefault "" v }, v, Saving )
 
-                        ( newThrottle, cmd ) =
-                            Throttle.try cmd_ nm.nameSaveThrottle
-                    in
-                    withSub
-                        ( { nm
-                            | nameState = Saving
-                            , nameSaveThrottle = newThrottle
-                          }
-                        , cmd
-                        )
-
-                Nothing ->
-                    resultModel { model | nameModel = str, nameState = SaveFailed }
+                        Comp.SimpleTextInput.ValueUnchanged ->
+                            ( Cmd.none, Nothing, model.nameState )
+            in
+            { model = { model | nameInput = result.model, nameState = save, nameModel = Maybe.withDefault model.nameModel value }
+            , cmd = Cmd.batch [ Cmd.map SetNameMsg result.cmd, setter ]
+            , sub = Sub.map SetNameMsg result.sub
+            , linkTarget = Comp.LinkTarget.LinkNone
+            , removedItem = Nothing
+            }
 
         SetNotes str ->
             resultModel
@@ -1363,19 +1360,6 @@ update key flags inav settings msg model =
         ResetHiddenMsg _ _ ->
             resultModel model
 
-        UpdateThrottle ->
-            let
-                ( newSaveName, cmd1 ) =
-                    Throttle.update model.nameSaveThrottle
-
-                ( newCustomField, cmd2 ) =
-                    Throttle.update model.customFieldThrottle
-            in
-            withSub
-                ( { model | nameSaveThrottle = newSaveName, customFieldThrottle = newCustomField }
-                , Cmd.batch [ cmd1, cmd2 ]
-                )
-
         KeyInputMsg lm ->
             let
                 ( km, keys ) =
@@ -1408,9 +1392,7 @@ update key flags inav settings msg model =
                         resultModel model_
 
             else
-                -- withSub because the keypress may be inside the name
-                -- field and requires to activate the throttle
-                withSub ( model_, Cmd.none )
+                resultModelCmd ( model_, Cmd.none )
 
         ToggleAttachMenu ->
             resultModel
@@ -1444,10 +1426,13 @@ update key flags inav settings msg model =
                 cmd_ =
                     Cmd.map CustomFieldMsg result.cmd
 
+                sub_ =
+                    Sub.map CustomFieldMsg result.sub
+
                 loadingIcon =
                     "refresh loading icon"
 
-                ( action_, icons ) =
+                ( action, icons ) =
                     case result.result of
                         NoFieldChange ->
                             ( Cmd.none, model.customFieldSavingIcon )
@@ -1478,22 +1463,14 @@ update key flags inav settings msg model =
                     else
                         Nothing
 
-                ( throttle, action ) =
-                    if action_ == Cmd.none then
-                        ( model.customFieldThrottle, action_ )
-
-                    else
-                        Throttle.try action_ model.customFieldThrottle
-
                 model_ =
                     { model
                         | customFieldsModel = result.model
-                        , customFieldThrottle = throttle
                         , modalEdit = modalEdit
                         , customFieldSavingIcon = icons
                     }
             in
-            withSub ( model_, Cmd.batch [ cmd_, action ] )
+            resultModelCmdSub ( model_, Cmd.batch [ cmd_, action ], sub_ )
 
         CustomFieldSaveResp cf fv (Ok res) ->
             let
@@ -1609,7 +1586,7 @@ update key flags inav settings msg model =
                         SelectView _ ->
                             ( SimpleView, Cmd.none )
             in
-            withSub
+            resultModelCmd
                 ( { model
                     | viewMode = nextView
                   }
@@ -1774,24 +1751,6 @@ setCompleted model fileid =
 setErrored : Model -> String -> Set String
 setErrored model fileid =
     Set.insert fileid model.errored
-
-
-withSub : ( Model, Cmd Msg ) -> UpdateResult
-withSub ( m, c ) =
-    { model = m
-    , cmd = c
-    , sub =
-        Sub.batch
-            [ Throttle.ifNeeded
-                (Time.every 200 (\_ -> UpdateThrottle))
-                m.nameSaveThrottle
-            , Throttle.ifNeeded
-                (Time.every 200 (\_ -> UpdateThrottle))
-                m.customFieldThrottle
-            ]
-    , linkTarget = Comp.LinkTarget.LinkNone
-    , removedItem = Nothing
-    }
 
 
 resetField : Flags -> String -> (Field -> Result Http.Error BasicResult -> msg) -> Field -> Cmd msg

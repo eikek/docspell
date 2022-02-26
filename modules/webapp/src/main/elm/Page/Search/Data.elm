@@ -298,7 +298,7 @@ createQuery : Model -> Maybe Q.ItemQuery
 createQuery model =
     Q.and
         [ Comp.SearchMenu.getItemQuery model.searchMenuModel
-        , Maybe.map Q.Fragment model.powerSearchInput.input
+        , Maybe.map Q.Fragment (Comp.PowerSearchInput.getSearchString model.powerSearchInput)
         ]
 
 

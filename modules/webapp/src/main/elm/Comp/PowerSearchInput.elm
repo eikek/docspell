@@ -10,6 +10,7 @@ module Comp.PowerSearchInput exposing
     , Model
     , Msg
     , ViewSettings
+    , getSearchString
     , init
     , initWith
     , isValid
@@ -83,6 +84,11 @@ type alias Result =
 setSearchString : String -> Msg
 setSearchString q =
     SetSearch q
+
+
+getSearchString : Model -> Maybe String
+getSearchString model =
+    model.input
 
 
 
@@ -165,24 +171,21 @@ throttleUpdate model =
 
 type alias ViewSettings =
     { placeholder : String
-    , extraAttrs : List (Attribute Msg)
     }
 
 
 viewInput : ViewSettings -> Model -> Html Msg
 viewInput cfg model =
     input
-        (cfg.extraAttrs
-            ++ [ type_ "text"
-               , placeholder cfg.placeholder
-               , onInput SetSearch
-               , Util.Html.onKeyUpCode KeyUpMsg
-               , Maybe.map value model.input
-                    |> Maybe.withDefault (value "")
-               , class S.textInput
-               , class "text-sm "
-               ]
-        )
+        [ type_ "text"
+        , placeholder cfg.placeholder
+        , onInput SetSearch
+        , Util.Html.onKeyUpCode KeyUpMsg
+        , Maybe.map value model.input
+            |> Maybe.withDefault (value "")
+        , class S.textInput
+        , class "text-sm "
+        ]
         []
 
 

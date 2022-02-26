@@ -302,7 +302,7 @@ viewForm texts _ _ model =
 
               else
                 h1 [ class S.header2 ]
-                    [ text (Maybe.withDefault "" model.formModel.name)
+                    [ text (Comp.BookmarkQueryForm.getName model.formModel |> Maybe.withDefault "")
                     ]
             , MB.view
                 { start =
