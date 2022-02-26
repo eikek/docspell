@@ -164,4 +164,23 @@ object RTag {
 
   def delete(tagId: Ident, coll: Ident): ConnectionIO[Int] =
     DML.delete(T, T.tid === tagId && T.cid === coll)
+
+  def sort(tags: List[RTag]): List[RTag] =
+    tags match {
+      case Nil => tags
+      case _ =>
+        val byCat = tags
+          .groupBy(_.category)
+          .view
+          .mapValues(_.sortBy(_.name))
+          .toList
+          .sortBy(_._1)
+
+        byCat match {
+          case (None, tags) :: rest =>
+            rest.flatMap(_._2) ++ tags
+          case _ =>
+            byCat.flatMap(_._2)
+        }
+    }
 }

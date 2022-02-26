@@ -33,7 +33,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Comp.ItemCardList exposing (Texts)
 import Page exposing (Page(..))
-import Set exposing (Set)
 import Styles as S
 import Util.ItemDragDrop as DD
 import Util.List
