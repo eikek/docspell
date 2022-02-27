@@ -24,7 +24,8 @@ case class RememberCookieData(token: RememberToken) {
       path = Some(path.asString),
       httpOnly = true,
       secure = sec,
-      maxAge = Some(config.valid.seconds)
+      maxAge = Some(config.valid.seconds),
+      sameSite = Some(SameSite.Strict)
     )
   }
 

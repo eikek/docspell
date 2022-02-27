@@ -26,7 +26,8 @@ final case class ShareCookieData(token: ShareToken) {
       httpOnly = true,
       secure = sec,
       maxAge = None,
-      expires = None
+      expires = None,
+      sameSite = Some(SameSite.Strict)
     )
   }
 
