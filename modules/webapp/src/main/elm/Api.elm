@@ -1727,42 +1727,42 @@ mergeItems flags items receive =
 
 reprocessMultiple :
     Flags
-    -> Set String
+    -> List String
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 reprocessMultiple flags items receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/reprocess"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.IdList.encode (Set.toList items |> IdList))
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList items))
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 
 confirmMultiple :
     Flags
-    -> Set String
+    -> List String
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 confirmMultiple flags ids receive =
     Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/confirm"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList ids))
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 
 unconfirmMultiple :
     Flags
-    -> Set String
+    -> List String
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 unconfirmMultiple flags ids receive =
     Http2.authPut
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/unconfirm"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList ids))
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
@@ -1937,28 +1937,28 @@ setConcEquipmentMultiple flags data receive =
 
 deleteAllItems :
     Flags
-    -> Set String
+    -> List String
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 deleteAllItems flags ids receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/deleteAll"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList ids))
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 
 restoreAllItems :
     Flags
-    -> Set String
+    -> List String
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 restoreAllItems flags ids receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/items/restoreAll"
         , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.IdList.encode (IdList (Set.toList ids)))
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList ids))
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

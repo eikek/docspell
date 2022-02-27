@@ -25,6 +25,7 @@ import Comp.ItemCard
 import Comp.LinkTarget exposing (LinkTarget)
 import Data.Flags exposing (Flags)
 import Data.ItemArrange exposing (ItemArrange)
+import Data.ItemIds exposing (ItemIdChange)
 import Data.ItemSelection exposing (ItemSelection)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
@@ -83,7 +84,7 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , dragModel : DD.Model
-    , selection : ItemSelection
+    , selection : ItemIdChange
     , linkTarget : LinkTarget
     , toggleOpenRow : Maybe String
     }
@@ -105,7 +106,7 @@ updateDrag dm _ msg model =
             UpdateResult newModel
                 Cmd.none
                 dm
-                Data.ItemSelection.Inactive
+                Data.ItemIds.noChange
                 Comp.LinkTarget.LinkNone
                 Nothing
 
@@ -114,7 +115,7 @@ updateDrag dm _ msg model =
                 UpdateResult model
                     Cmd.none
                     dm
-                    Data.ItemSelection.Inactive
+                    Data.ItemIds.noChange
                     Comp.LinkTarget.LinkNone
                     Nothing
 
@@ -126,7 +127,7 @@ updateDrag dm _ msg model =
                 UpdateResult newModel
                     Cmd.none
                     dm
-                    Data.ItemSelection.Inactive
+                    Data.ItemIds.noChange
                     Comp.LinkTarget.LinkNone
                     Nothing
 
@@ -153,7 +154,7 @@ updateDrag dm _ msg model =
             UpdateResult { model | results = removeItemById id model.results }
                 Cmd.none
                 dm
-                Data.ItemSelection.Inactive
+                Data.ItemIds.noChange
                 Comp.LinkTarget.LinkNone
                 Nothing
 

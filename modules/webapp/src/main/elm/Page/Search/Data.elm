@@ -84,8 +84,7 @@ type ConfirmModalValue
 
 
 type alias SelectViewModel =
-    { ids : Set String
-    , action : SelectActionMode
+    { action : SelectActionMode
     , confirmModal : Maybe ConfirmModalValue
     , editModel : Comp.ItemDetail.MultiEditMenu.Model
     , mergeModel : Comp.ItemMerge.Model
@@ -97,8 +96,7 @@ type alias SelectViewModel =
 
 initSelectViewModel : Flags -> SelectViewModel
 initSelectViewModel flags =
-    { ids = Set.empty
-    , action = NoneAction
+    { action = NoneAction
     , confirmModal = Nothing
     , editModel = Comp.ItemDetail.MultiEditMenu.init
     , mergeModel = Comp.ItemMerge.init []

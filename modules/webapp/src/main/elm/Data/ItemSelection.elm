@@ -11,12 +11,12 @@ module Data.ItemSelection exposing
     , isSelected
     )
 
-import Set exposing (Set)
+import Data.ItemIds exposing (ItemIds)
 
 
 type ItemSelection
     = Inactive
-    | Active (Set String)
+    | Active ItemIds
 
 
 isSelected : String -> ItemSelection -> Bool
@@ -26,7 +26,7 @@ isSelected id set =
             False
 
         Active ids ->
-            Set.member id ids
+            Data.ItemIds.isMember ids id
 
 
 isActive : ItemSelection -> Bool

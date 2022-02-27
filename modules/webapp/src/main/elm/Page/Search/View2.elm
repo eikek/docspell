@@ -18,9 +18,11 @@ import Comp.PowerSearchInput
 import Comp.PublishItems
 import Comp.SearchMenu
 import Comp.SearchStatsView
+import Data.Environment as Env
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.ItemArrange
+import Data.ItemIds exposing (ItemIds)
 import Data.ItemSelection
 import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
@@ -36,27 +38,27 @@ import Styles as S
 import Util.Html
 
 
-viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar texts visible flags settings model =
+viewSidebar : Texts -> Env.View -> Model -> Html Msg
+viewSidebar texts env model =
     div
         [ id "sidebar"
         , class S.sidebar
         , class S.sidebarBg
-        , classList [ ( "hidden", not visible ) ]
+        , classList [ ( "hidden", not env.sidebarVisible ) ]
         ]
-        [ Page.Search.SideMenu.view texts.sideMenu flags settings model
+        [ Page.Search.SideMenu.view texts.sideMenu env.flags env.settings model
         ]
 
 
-viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
-viewContent texts flags settings model =
+viewContent : Texts -> Env.View -> Model -> Html Msg
+viewContent texts env model =
     div
         [ id "item-card-list" -- this id is used in scroll-to-card
         , class S.content
         ]
-        (searchStats texts flags settings model
-            ++ itemsBar texts flags settings model
-            ++ mainView texts flags settings model
+        (searchStats texts env.flags env.settings model
+            ++ itemsBar texts env model
+            ++ mainView texts env model
             ++ confirmModal texts model
         )
 
@@ -65,8 +67,8 @@ viewContent texts flags settings model =
 --- Helpers
 
 
-mainView : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
-mainView texts flags settings model =
+mainView : Texts -> Env.View -> Model -> List (Html Msg)
+mainView texts env model =
     let
         otherView =
             case model.viewMode of
@@ -75,13 +77,13 @@ mainView texts flags settings model =
                         MergeSelected ->
                             Just
                                 [ div [ class "sm:relative mb-2" ]
-                                    (itemMergeView texts settings svm)
+                                    (itemMergeView texts env.settings svm)
                                 ]
 
                         PublishSelected ->
                             Just
                                 [ div [ class "sm:relative mb-2" ]
-                                    (itemPublishView texts settings flags svm)
+                                    (itemPublishView texts env.settings env.flags svm)
                                 ]
 
                         _ ->
@@ -90,7 +92,7 @@ mainView texts flags settings model =
                 PublishView pm ->
                     Just
                         [ div [ class "sm:relative mb-2" ]
-                            (publishResults texts settings flags model pm)
+                            (publishResults texts env.settings env.flags model pm)
                         ]
 
                 SearchView ->
@@ -101,8 +103,8 @@ mainView texts flags settings model =
             body
 
         Nothing ->
-            bookmarkQueryWidget texts settings flags model
-                ++ itemCardList texts flags settings model
+            bookmarkQueryWidget texts env.settings env.flags model
+                ++ itemCardList texts env model
 
 
 bookmarkQueryWidget : Texts -> UiSettings -> Flags -> Model -> List (Html Msg)
@@ -182,17 +184,17 @@ confirmModal texts model =
             []
 
 
-itemsBar : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
-itemsBar texts flags settings model =
+itemsBar : Texts -> Env.View -> Model -> List (Html Msg)
+itemsBar texts env model =
     case model.viewMode of
         SearchView ->
-            [ defaultMenuBar texts flags settings model ]
+            [ defaultMenuBar texts env.flags env.settings model ]
 
         SelectView svm ->
-            [ editMenuBar texts model svm ]
+            [ editMenuBar texts model env.selectedItems svm ]
 
         PublishView _ ->
-            [ defaultMenuBar texts flags settings model ]
+            [ defaultMenuBar texts env.flags env.settings model ]
 
 
 defaultMenuBar : Texts -> Flags -> UiSettings -> Model -> Html Msg
@@ -427,11 +429,11 @@ defaultMenuBar texts flags settings model =
         }
 
 
-editMenuBar : Texts -> Model -> SelectViewModel -> Html Msg
-editMenuBar texts model svm =
+editMenuBar : Texts -> Model -> ItemIds -> SelectViewModel -> Html Msg
+editMenuBar texts model selectedItems svm =
     let
         selectCount =
-            Set.size svm.ids
+            Data.ItemIds.size selectedItems
 
         btnStyle =
             S.secondaryBasicButton ++ " text-sm"
@@ -565,8 +567,8 @@ searchStats texts _ settings model =
         []
 
 
-itemCardList : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
-itemCardList texts flags settings model =
+itemCardList : Texts -> Env.View -> Model -> List (Html Msg)
+itemCardList texts env model =
     let
         previewUrl attach =
             Api.attachmentPreviewURL attach.id
@@ -581,15 +583,15 @@ itemCardList texts flags settings model =
             , previewUrlFallback = previewUrlFallback
             , attachUrl = .id >> Api.fileURL
             , detailPage = .id >> ItemDetailPage
-            , arrange = settings.itemSearchArrange
-            , showGroups = settings.itemSearchShowGroups
+            , arrange = env.settings.itemSearchArrange
+            , showGroups = env.settings.itemSearchShowGroups
             , rowOpen = \id -> Set.member "all" model.itemRowsOpen || Set.member id model.itemRowsOpen
             }
 
         itemViewCfg =
             case model.viewMode of
-                SelectView svm ->
-                    viewCfg (Data.ItemSelection.Active svm.ids)
+                SelectView _ ->
+                    viewCfg (Data.ItemSelection.Active env.selectedItems)
 
                 _ ->
                     viewCfg Data.ItemSelection.Inactive
@@ -597,11 +599,11 @@ itemCardList texts flags settings model =
     [ Html.map ItemCardListMsg
         (Comp.ItemCardList.view texts.itemCardList
             itemViewCfg
-            settings
-            flags
+            env.settings
+            env.flags
             model.itemListModel
         )
-    , loadMore texts settings model
+    , loadMore texts env.settings model
     ]
 
 

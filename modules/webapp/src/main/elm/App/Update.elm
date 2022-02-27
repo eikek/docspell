@@ -584,11 +584,20 @@ updateSearch texts lmsg model =
                 _ ->
                     ( Nothing, Nothing )
 
+        env =
+            { bookmarkId = bmId
+            , lastViewedItemId = mid
+            , key = model.key
+            , selectedItems = model.selectedItems
+            , flags = model.flags
+            , settings = model.uiSettings
+            }
+
         result =
-            Page.Search.Update.update bmId mid model.key model.flags texts.search model.uiSettings lmsg model.searchModel
+            Page.Search.Update.update texts.search env lmsg model.searchModel
 
         model_ =
-            { model | searchModel = result.model }
+            { model | searchModel = result.model, selectedItems = result.selectedItems }
 
         lc =
             case result.appEvent of

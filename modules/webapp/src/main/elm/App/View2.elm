@@ -549,17 +549,22 @@ viewShareDetail texts shareId itemId model =
 
 viewSearch : Messages -> Maybe String -> Model -> List (Html Msg)
 viewSearch texts bmId model =
+    let
+        env =
+            { sidebarVisible = model.sidebarVisible
+            , flags = model.flags
+            , settings = model.uiSettings
+            , selectedItems = model.selectedItems
+            }
+    in
     [ Html.map SearchMsg
         (Search.viewSidebar texts.search
-            model.sidebarVisible
-            model.flags
-            model.uiSettings
+            env
             model.searchModel
         )
     , Html.map SearchMsg
         (Search.viewContent texts.search
-            model.flags
-            model.uiSettings
+            env
             model.searchModel
         )
     ]
