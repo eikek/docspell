@@ -373,91 +373,91 @@ view2 texts flags model =
                 texts.basics.no
     in
     div [ class "flex flex-col md:relative" ]
-        (viewButtons2 texts model
-            :: [ Html.map DeleteMsg
-                    (Comp.YesNoDimmer.viewN
-                        True
-                        dimmerSettings
-                        model.deleteDimmer
-                    )
-               , div
-                    [ class "py-2 text-lg opacity-75"
-                    , classList [ ( "hidden", model.folder.id /= "" ) ]
+        ([ viewButtons2 texts model
+         , Html.map DeleteMsg
+            (Comp.YesNoDimmer.viewN
+                True
+                dimmerSettings
+                model.deleteDimmer
+            )
+         , div
+            [ class "py-2 text-lg opacity-75"
+            , classList [ ( "hidden", model.folder.id /= "" ) ]
+            ]
+            [ text texts.autoOwnerInfo
+            ]
+         , div
+            [ class "py-2 text-lg opacity-75"
+            , classList [ ( "hidden", model.folder.id == "" ) ]
+            ]
+            [ text texts.modifyInfo
+            ]
+         , div
+            [ class S.message
+            , classList [ ( "hidden", model.folder.id == "" || isOwner ) ]
+            ]
+            [ text texts.notOwnerInfo
+            ]
+         , div [ class "mb-4 flex flex-col" ]
+            [ label
+                [ class S.inputLabel
+                , for "folder-name"
+                ]
+                [ text texts.basics.name
+                , B.inputRequired
+                ]
+            , div [ class "flex flex-row space-x-2" ]
+                [ input
+                    [ type_ "text"
+                    , onInput SetName
+                    , Maybe.withDefault "" model.name
+                        |> value
+                    , classList [ ( S.inputErrorBorder, model.name == Nothing ) ]
+                    , class S.textInput
+                    , id "folder-name"
                     ]
-                    [ text texts.autoOwnerInfo
+                    []
+                , a
+                    [ class S.primaryButton
+                    , class "rounded-r -ml-1"
+                    , onClick SaveName
+                    , href "#"
                     ]
-               , div
-                    [ class "py-2 text-lg opacity-75"
-                    , classList [ ( "hidden", model.folder.id == "" ) ]
-                    ]
-                    [ text texts.modifyInfo
-                    ]
-               , div
-                    [ class S.message
-                    , classList [ ( "hidden", model.folder.id == "" || isOwner ) ]
-                    ]
-                    [ text texts.notOwnerInfo
-                    ]
-               , div [ class "mb-4 flex flex-col" ]
-                    [ label
-                        [ class S.inputLabel
-                        , for "folder-name"
-                        ]
-                        [ text texts.basics.name
-                        , B.inputRequired
-                        ]
-                    , div [ class "flex flex-row space-x-2" ]
-                        [ input
-                            [ type_ "text"
-                            , onInput SetName
-                            , Maybe.withDefault "" model.name
-                                |> value
-                            , classList [ ( S.inputErrorBorder, model.name == Nothing ) ]
-                            , class S.textInput
-                            , id "folder-name"
-                            ]
-                            []
-                        , a
-                            [ class S.primaryButton
-                            , class "rounded-r -ml-1"
-                            , onClick SaveName
-                            , href "#"
-                            ]
-                            [ i [ class "fa fa-save" ] []
-                            , span [ class "ml-2 hidden sm:inline" ]
-                                [ text texts.basics.submit
-                                ]
-                            ]
+                    [ i [ class "fa fa-save" ] []
+                    , span [ class "ml-2 hidden sm:inline" ]
+                        [ text texts.basics.submit
                         ]
                     ]
-               , div
-                    [ classList
-                        [ ( "hidden", model.formState == FormStateInitial )
-                        , ( S.errorMessage, isError model.formState )
-                        , ( S.successMessage, isSuccess model.formState )
-                        ]
-                    , class "my-4"
-                    ]
-                    [ case model.formState of
-                        FormStateInitial ->
-                            text ""
+                ]
+            ]
+         , div
+            [ classList
+                [ ( "hidden", model.formState == FormStateInitial )
+                , ( S.errorMessage, isError model.formState )
+                , ( S.successMessage, isSuccess model.formState )
+                ]
+            , class "my-4"
+            ]
+            [ case model.formState of
+                FormStateInitial ->
+                    text ""
 
-                        FormStateHttpError err ->
-                            text (texts.httpError err)
+                FormStateHttpError err ->
+                    text (texts.httpError err)
 
-                        FormStateGenericError m ->
-                            text m
+                FormStateGenericError m ->
+                    text m
 
-                        FormStateFolderCreated ->
-                            text texts.folderCreated
+                FormStateFolderCreated ->
+                    text texts.folderCreated
 
-                        FormStateNameChangeSuccessful ->
-                            text texts.nameChangeSuccessful
+                FormStateNameChangeSuccessful ->
+                    text texts.nameChangeSuccessful
 
-                        FormStateDeleteSuccessful ->
-                            text texts.deleteSuccessful
-                    ]
-               ]
+                FormStateDeleteSuccessful ->
+                    text texts.deleteSuccessful
+            ]
+         ]
             ++ viewMembers2 texts model
         )
 
@@ -558,4 +558,5 @@ viewButtons2 texts model =
                 }
             ]
         , rootClasses = "mb-4"
+        , sticky = True
         }

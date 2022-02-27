@@ -290,6 +290,7 @@ viewInfo texts settings flags model share =
                 ]
             , end = []
             , rootClasses = "my-4"
+            , sticky = True
             }
         , div []
             [ Comp.ShareView.view cfg texts.shareView flags share
@@ -346,6 +347,7 @@ viewForm texts model =
                 ]
             , end = []
             , rootClasses = "my-4"
+            , sticky = True
             }
         , div []
             [ Html.map FormMsg (Comp.ShareForm.view texts.shareForm model.formModel)

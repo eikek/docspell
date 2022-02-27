@@ -266,7 +266,7 @@ makeSearchCmd flags doInit model =
                 , Maybe.map Q.Fragment <|
                     case model.searchMode of
                         SearchBarNormal ->
-                            model.powerSearchInput.input
+                            Comp.PowerSearchInput.getSearchString model.powerSearchInput
 
                         SearchBarContent ->
                             if flags.config.fullTextSearchEnabled then

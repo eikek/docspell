@@ -296,6 +296,7 @@ viewList2 texts model =
                 }
             ]
         , rootClasses = "mb-4"
+        , sticky = True
         }
     , Html.map ListMsg
         (Comp.DueItemsTaskList.view2 texts.notificationTable

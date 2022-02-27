@@ -271,6 +271,7 @@ viewTable2 texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map TableMsg (Comp.UserTable.view2 texts.userTable model.tableModel)
         , B.loadingDimmer
@@ -281,7 +282,7 @@ viewTable2 texts model =
 
 
 renderDeleteConfirm : Texts -> UiSettings -> Model -> Html Msg
-renderDeleteConfirm texts settings model =
+renderDeleteConfirm texts _ model =
     case model.deleteConfirm of
         DimmerOff ->
             span [ class "hidden" ] []
@@ -397,6 +398,7 @@ viewForm2 texts settings model =
                 else
                     []
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map FormMsg (Comp.UserForm.view2 texts.userForm settings model.formModel)
         , div

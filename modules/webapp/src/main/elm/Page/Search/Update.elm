@@ -115,7 +115,7 @@ update bookmarkId mId key flags texts settings msg model =
                         doSearch (SearchParam flags BasicSearch settings.itemSearchPageSize 0 False) newModel
 
                     else
-                        withSub ( newModel, Cmd.none )
+                        resultModelCmd ( newModel, Cmd.none )
             in
             { result
                 | cmd =
@@ -124,6 +124,7 @@ update bookmarkId mId key flags texts settings msg model =
                         , Cmd.map SearchMenuMsg nextState.cmd
                         , dropCmd
                         ]
+                , sub = Sub.map SearchMenuMsg nextState.sub
             }
 
         SetLinkTarget lt ->
@@ -166,7 +167,7 @@ update bookmarkId mId key flags texts settings msg model =
                         Nothing ->
                             model.itemRowsOpen
             in
-            withSub
+            resultModelCmd
                 ( { model
                     | itemListModel = result.model
                     , viewMode = nextView
@@ -185,7 +186,7 @@ update bookmarkId mId key flags texts settings msg model =
                     else
                         Set.empty
             in
-            noSub ( { model | itemRowsOpen = itemRows, viewMenuOpen = False }, Cmd.none )
+            resultModelCmd ( { model | itemRowsOpen = itemRows, viewMenuOpen = False }, Cmd.none )
 
         ItemSearchResp scroll (Ok list) ->
             let
@@ -226,7 +227,7 @@ update bookmarkId mId key flags texts settings msg model =
             update bookmarkId mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
 
         ItemSearchAddResp (Err _) ->
-            withSub
+            resultModelCmd
                 ( { model
                     | moreInProgress = False
                   }
@@ -234,7 +235,7 @@ update bookmarkId mId key flags texts settings msg model =
                 )
 
         ItemSearchResp _ (Err _) ->
-            withSub
+            resultModelCmd
                 ( { model
                     | searchInProgress = False
                   }
@@ -255,7 +256,7 @@ update bookmarkId mId key flags texts settings msg model =
                     }
             in
             if model.searchInProgress then
-                withSub ( model, Cmd.none )
+                resultModelCmd ( model, Cmd.none )
 
             else
                 doSearch param nm
@@ -271,7 +272,7 @@ update bookmarkId mId key flags texts settings msg model =
                     }
             in
             if model.searchInProgress then
-                withSub ( model, Cmd.none )
+                resultModelCmd ( model, Cmd.none )
 
             else
                 doSearch param model
@@ -289,7 +290,7 @@ update bookmarkId mId key flags texts settings msg model =
                         PublishView q ->
                             ( PublishView q, Cmd.none )
             in
-            withSub
+            resultModelCmd
                 ( { model
                     | viewMode = nextView
                   }
@@ -298,10 +299,10 @@ update bookmarkId mId key flags texts settings msg model =
 
         LoadMore ->
             if model.moreAvailable then
-                doSearchMore flags settings model |> withSub
+                doSearchMore flags settings model |> resultModelCmd
 
             else
-                withSub ( model, Cmd.none )
+                resultModelCmd ( model, Cmd.none )
 
         SetBasicSearch str ->
             let
@@ -322,17 +323,17 @@ update bookmarkId mId key flags texts settings msg model =
             update bookmarkId mId key flags texts settings (DoSearch model.searchTypeDropdownValue) model
 
         KeyUpSearchbarMsg _ ->
-            withSub ( model, Cmd.none )
+            resultModelCmd ( model, Cmd.none )
 
         ScrollResult _ ->
             let
                 cmd =
                     Process.sleep 800 |> Task.perform (always ClearItemDetailId)
             in
-            withSub ( model, cmd )
+            resultModelCmd ( model, cmd )
 
         ClearItemDetailId ->
-            noSub ( { model | scrollToCard = Nothing }, Cmd.none )
+            resultModelCmd ( { model | scrollToCard = Nothing }, Cmd.none )
 
         SelectAllItems ->
             case model.viewMode of
@@ -344,13 +345,13 @@ update bookmarkId mId key flags texts settings msg model =
                         svm_ =
                             { svm | ids = Set.union svm.ids visible }
                     in
-                    noSub
+                    resultModelCmd
                         ( { model | viewMode = SelectView svm_ }
                         , Cmd.none
                         )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         SelectNoItems ->
             case model.viewMode of
@@ -359,13 +360,13 @@ update bookmarkId mId key flags texts settings msg model =
                         svm_ =
                             { svm | ids = Set.empty }
                     in
-                    noSub
+                    resultModelCmd
                         ( { model | viewMode = SelectView svm_ }
                         , Cmd.none
                         )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         DeleteSelectedConfirmed ->
             case model.viewMode of
@@ -374,7 +375,7 @@ update bookmarkId mId key flags texts settings msg model =
                         cmd =
                             Api.deleteAllItems flags svm.ids DeleteAllResp
                     in
-                    noSub
+                    resultModelCmd
                         ( { model
                             | viewMode =
                                 SelectView
@@ -387,7 +388,7 @@ update bookmarkId mId key flags texts settings msg model =
                         )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         RestoreSelectedConfirmed ->
             case model.viewMode of
@@ -396,7 +397,7 @@ update bookmarkId mId key flags texts settings msg model =
                         cmd =
                             Api.restoreAllItems flags svm.ids DeleteAllResp
                     in
-                    noSub
+                    resultModelCmd
                         ( { model
                             | viewMode =
                                 SelectView
@@ -409,7 +410,7 @@ update bookmarkId mId key flags texts settings msg model =
                         )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         DeleteAllResp (Ok res) ->
             if res.success then
@@ -428,16 +429,16 @@ update bookmarkId mId key flags texts settings msg model =
                 doSearch param nm
 
             else
-                noSub ( model, Cmd.none )
+                resultModelCmd ( model, Cmd.none )
 
         DeleteAllResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModelCmd ( model, Cmd.none )
 
         RequestReprocessSelected ->
             case model.viewMode of
                 SelectView svm ->
                     if svm.ids == Set.empty then
-                        noSub ( model, Cmd.none )
+                        resultModelCmd ( model, Cmd.none )
 
                     else
                         let
@@ -451,15 +452,15 @@ update bookmarkId mId key flags texts settings msg model =
                                             }
                                 }
                         in
-                        noSub ( model_, Cmd.none )
+                        resultModelCmd ( model_, Cmd.none )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         CloseConfirmModal ->
             case model.viewMode of
                 SelectView svm ->
-                    noSub
+                    resultModelCmd
                         ( { model
                             | viewMode = SelectView { svm | confirmModal = Nothing, action = NoneAction }
                           }
@@ -467,20 +468,20 @@ update bookmarkId mId key flags texts settings msg model =
                         )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         ReprocessSelectedConfirmed ->
             case model.viewMode of
                 SelectView svm ->
                     if svm.ids == Set.empty then
-                        noSub ( model, Cmd.none )
+                        resultModelCmd ( model, Cmd.none )
 
                     else
                         let
                             cmd =
                                 Api.reprocessMultiple flags svm.ids DeleteAllResp
                         in
-                        noSub
+                        resultModelCmd
                             ( { model
                                 | viewMode =
                                     SelectView
@@ -493,13 +494,13 @@ update bookmarkId mId key flags texts settings msg model =
                             )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         RequestDeleteSelected ->
             case model.viewMode of
                 SelectView svm ->
                     if svm.ids == Set.empty then
-                        noSub ( model, Cmd.none )
+                        resultModelCmd ( model, Cmd.none )
 
                     else
                         let
@@ -513,16 +514,16 @@ update bookmarkId mId key flags texts settings msg model =
                                             }
                                 }
                         in
-                        noSub ( model_, Cmd.none )
+                        resultModelCmd ( model_, Cmd.none )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         RequestRestoreSelected ->
             case model.viewMode of
                 SelectView svm ->
                     if svm.ids == Set.empty then
-                        noSub ( model, Cmd.none )
+                        resultModelCmd ( model, Cmd.none )
 
                     else
                         let
@@ -536,37 +537,37 @@ update bookmarkId mId key flags texts settings msg model =
                                             }
                                 }
                         in
-                        noSub ( model_, Cmd.none )
+                        resultModelCmd ( model_, Cmd.none )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         EditSelectedItems ->
             case model.viewMode of
                 SelectView svm ->
                     if svm.action == EditSelected then
-                        noSub
+                        resultModelCmd
                             ( { model | viewMode = SelectView { svm | action = NoneAction } }
                             , Cmd.none
                             )
 
                     else if svm.ids == Set.empty then
-                        noSub ( model, Cmd.none )
+                        resultModelCmd ( model, Cmd.none )
 
                     else
-                        noSub
+                        resultModelCmd
                             ( { model | viewMode = SelectView { svm | action = EditSelected } }
                             , Cmd.none
                             )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         MergeSelectedItems ->
             case model.viewMode of
                 SelectView svm ->
                     if svm.action == MergeSelected then
-                        noSub
+                        resultModelCmd
                             ( { model
                                 | viewMode =
                                     SelectView
@@ -579,7 +580,7 @@ update bookmarkId mId key flags texts settings msg model =
                             )
 
                     else if svm.ids == Set.empty then
-                        noSub ( model, Cmd.none )
+                        resultModelCmd ( model, Cmd.none )
 
                     else
                         let
@@ -589,7 +590,7 @@ update bookmarkId mId key flags texts settings msg model =
                                     model.searchMenuModel.searchMode
                                     (Q.ItemIdIn (Set.toList svm.ids))
                         in
-                        noSub
+                        resultModelCmd
                             ( { model
                                 | viewMode =
                                     SelectView
@@ -602,7 +603,7 @@ update bookmarkId mId key flags texts settings msg model =
                             )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         MergeItemsMsg lmsg ->
             case model.viewMode of
@@ -636,13 +637,13 @@ update bookmarkId mId key flags texts settings msg model =
                             model_
 
                     else
-                        noSub
+                        resultModelCmd
                             ( model_
                             , Cmd.map MergeItemsMsg result.cmd
                             )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         PublishSelectedItems ->
             case model.viewMode of
@@ -652,7 +653,7 @@ update bookmarkId mId key flags texts settings msg model =
                             ( mm, mc ) =
                                 Comp.PublishItems.init flags
                         in
-                        noSub
+                        resultModelCmd
                             ( { model
                                 | viewMode =
                                     SelectView
@@ -665,7 +666,7 @@ update bookmarkId mId key flags texts settings msg model =
                             )
 
                     else if svm.ids == Set.empty then
-                        noSub ( model, Cmd.none )
+                        resultModelCmd ( model, Cmd.none )
 
                     else
                         let
@@ -673,7 +674,7 @@ update bookmarkId mId key flags texts settings msg model =
                                 Comp.PublishItems.initQuery flags
                                     (Q.ItemIdIn (Set.toList svm.ids))
                         in
-                        noSub
+                        resultModelCmd
                             ( { model
                                 | viewMode =
                                     SelectView
@@ -686,7 +687,7 @@ update bookmarkId mId key flags texts settings msg model =
                             )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         PublishItemsMsg lmsg ->
             case model.viewMode of
@@ -717,13 +718,13 @@ update bookmarkId mId key flags texts settings msg model =
                             model_
 
                     else
-                        noSub
+                        resultModelCmd
                             ( model_
                             , Cmd.map PublishItemsMsg result.cmd
                             )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         EditMenuMsg lmsg ->
             case model.viewMode of
@@ -773,7 +774,7 @@ update bookmarkId mId key flags texts settings msg model =
                         )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         MultiUpdateResp change (Ok res) ->
             let
@@ -784,13 +785,13 @@ update bookmarkId mId key flags texts settings msg model =
                 case model.viewMode of
                     SelectView svm ->
                         -- replace changed items in the view
-                        noSub ( nm, loadChangedItems flags model.searchMenuModel.searchMode svm.ids )
+                        resultModelCmd ( nm, loadChangedItems flags model.searchMenuModel.searchMode svm.ids )
 
                     _ ->
-                        noSub ( nm, Cmd.none )
+                        resultModelCmd ( nm, Cmd.none )
 
             else
-                noSub ( nm, Cmd.none )
+                resultModelCmd ( nm, Cmd.none )
 
         MultiUpdateResp change (Err _) ->
             makeResult
@@ -800,10 +801,10 @@ update bookmarkId mId key flags texts settings msg model =
                 )
 
         ReplaceChangedItemsResp (Ok items) ->
-            noSub ( replaceItems model items, Cmd.none )
+            resultModelCmd ( replaceItems model items, Cmd.none )
 
         ReplaceChangedItemsResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModelCmd ( model, Cmd.none )
 
         UiSettingsUpdated ->
             let
@@ -841,7 +842,7 @@ update bookmarkId mId key flags texts settings msg model =
                 cmd =
                     Api.saveUserClientSettingsBy flags newSettings ClientSettingsSaveResp
             in
-            noSub ( { model | viewMenuOpen = False }, cmd )
+            resultModelCmd ( { model | viewMenuOpen = False }, cmd )
 
         ClientSettingsSaveResp (Ok res) ->
             if res.success then
@@ -852,10 +853,10 @@ update bookmarkId mId key flags texts settings msg model =
                 }
 
             else
-                noSub ( model, Cmd.none )
+                resultModelCmd ( model, Cmd.none )
 
         ClientSettingsSaveResp (Err _) ->
-            noSub ( model, Cmd.none )
+            resultModelCmd ( model, Cmd.none )
 
         PowerSearchMsg lm ->
             let
@@ -879,7 +880,7 @@ update bookmarkId mId key flags texts settings msg model =
             update bookmarkId mId key flags texts settings (DoSearch model.searchTypeDropdownValue) model
 
         KeyUpPowerSearchbarMsg _ ->
-            withSub ( model, Cmd.none )
+            resultModelCmd ( model, Cmd.none )
 
         RemoveItem id ->
             update bookmarkId mId key flags texts settings (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
@@ -891,30 +892,30 @@ update bookmarkId mId key flags texts settings msg model =
                         ( pm, pc ) =
                             Comp.PublishItems.initQuery flags q
                     in
-                    noSub ( { model | viewMode = PublishView pm, viewMenuOpen = False }, Cmd.map PublishViewMsg pc )
+                    resultModelCmd ( { model | viewMode = PublishView pm, viewMenuOpen = False }, Cmd.map PublishViewMsg pc )
 
                 Nothing ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         ToggleBookmarkCurrentQueryView ->
             case createQuery model of
                 Just q ->
                     case model.topWidgetModel of
                         BookmarkQuery _ ->
-                            noSub ( { model | topWidgetModel = TopWidgetHidden, viewMenuOpen = False }, Cmd.none )
+                            resultModelCmd ( { model | topWidgetModel = TopWidgetHidden, viewMenuOpen = False }, Cmd.none )
 
                         TopWidgetHidden ->
                             let
                                 ( qm, qc ) =
                                     Comp.BookmarkQueryManage.init (Q.render q)
                             in
-                            noSub
+                            resultModelCmd
                                 ( { model | topWidgetModel = BookmarkQuery qm, viewMenuOpen = False }
                                 , Cmd.map BookmarkQueryMsg qc
                                 )
 
                 Nothing ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         BookmarkQueryMsg lm ->
             case model.topWidgetModel of
@@ -952,7 +953,7 @@ update bookmarkId mId key flags texts settings msg model =
                         )
 
                 TopWidgetHidden ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         PublishViewMsg lmsg ->
             case model.viewMode of
@@ -963,22 +964,22 @@ update bookmarkId mId key flags texts settings msg model =
                     in
                     case result.outcome of
                         Comp.PublishItems.OutcomeInProgress ->
-                            noSub
+                            resultModelCmd
                                 ( { model | viewMode = PublishView result.model }
                                 , Cmd.map PublishViewMsg result.cmd
                                 )
 
                         Comp.PublishItems.OutcomeDone ->
-                            noSub
+                            resultModelCmd
                                 ( { model | viewMode = SearchView }
                                 , Cmd.map SearchMenuMsg (Comp.SearchMenu.refreshBookmarks flags)
                                 )
 
                 _ ->
-                    noSub ( model, Cmd.none )
+                    resultModelCmd ( model, Cmd.none )
 
         ToggleViewMenu ->
-            noSub ( { model | viewMenuOpen = not model.viewMenuOpen }, Cmd.none )
+            resultModelCmd ( { model | viewMenuOpen = not model.viewMenuOpen }, Cmd.none )
 
         ToggleShowGroups ->
             let
@@ -988,7 +989,7 @@ update bookmarkId mId key flags texts settings msg model =
                 cmd =
                     Api.saveUserClientSettingsBy flags newSettings ClientSettingsSaveResp
             in
-            noSub ( { model | viewMenuOpen = False }, cmd )
+            resultModelCmd ( { model | viewMenuOpen = False }, cmd )
 
         ToggleArrange am ->
             let
@@ -998,7 +999,7 @@ update bookmarkId mId key flags texts settings msg model =
                 cmd =
                     Api.saveUserClientSettingsBy flags newSettings ClientSettingsSaveResp
             in
-            noSub ( { model | viewMenuOpen = False }, cmd )
+            resultModelCmd ( { model | viewMenuOpen = False }, cmd )
 
 
 
@@ -1115,7 +1116,7 @@ doSearch param model =
         searchCmd =
             doSearchCmd param_ model
     in
-    withSub
+    resultModelCmd
         ( { model
             | searchInProgress = True
             , searchOffset = 0
@@ -1149,17 +1150,8 @@ doSearchMore flags settings model =
     )
 
 
-withSub : ( Model, Cmd Msg ) -> UpdateResult
-withSub ( m, c ) =
-    makeResult
-        ( m
-        , c
-        , Sub.none
-        )
-
-
-noSub : ( Model, Cmd Msg ) -> UpdateResult
-noSub ( m, c ) =
+resultModelCmd : ( Model, Cmd Msg ) -> UpdateResult
+resultModelCmd ( m, c ) =
     makeResult ( m, c, Sub.none )
 
 

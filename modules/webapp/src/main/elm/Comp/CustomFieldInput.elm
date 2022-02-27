@@ -11,7 +11,9 @@ module Comp.CustomFieldInput exposing
     , Msg
     , UpdateResult
     , init
+    , init1
     , initWith
+    , initWith1
     , update
     , updateSearch
     , view2
@@ -21,6 +23,7 @@ import Api.Model.CustomField exposing (CustomField)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
 import Comp.DatePicker
 import Comp.MenuBar as MB
+import Comp.SimpleTextInput
 import Data.CustomFieldType exposing (CustomFieldType)
 import Data.Icons as Icons
 import Data.Money exposing (MoneyParseError(..))
@@ -32,7 +35,6 @@ import Html.Events exposing (onClick, onInput)
 import Messages.Comp.CustomFieldInput exposing (Texts)
 import Styles as S
 import Util.CustomField
-import Util.Maybe
 
 
 type alias Model =
@@ -48,24 +50,30 @@ type FieldError
 
 
 type alias FloatModel =
+    { input : Comp.SimpleTextInput.Model
+    , result : Result FieldError Float
+    }
+
+
+type alias MoneyModel =
     { input : String
     , result : Result FieldError Float
     }
 
 
 type FieldModel
-    = TextField (Maybe String)
+    = TextField Comp.SimpleTextInput.Model
     | NumberField FloatModel
-    | MoneyField FloatModel
+    | MoneyField MoneyModel
     | BoolField Bool
     | DateField (Maybe Date) DatePicker
 
 
 type Msg
-    = NumberMsg String
+    = NumberMsg Comp.SimpleTextInput.Msg
     | MoneyMsg String
     | DateMsg DatePicker.Msg
-    | SetText String
+    | SetTextMsg Comp.SimpleTextInput.Msg
     | ToggleBool
     | Remove
 
@@ -115,7 +123,7 @@ errorMsg texts model =
                     parseMsg True parseError
 
         TextField mt ->
-            if mt == Nothing then
+            if Comp.SimpleTextInput.getValue mt == Nothing then
                 Just texts.errorNoValue
 
             else
@@ -126,7 +134,12 @@ errorMsg texts model =
 
 
 init : CustomField -> ( Model, Cmd Msg )
-init field =
+init =
+    init1 Comp.SimpleTextInput.defaultConfig
+
+
+init1 : Comp.SimpleTextInput.Config -> CustomField -> ( Model, Cmd Msg )
+init1 cfg field =
     let
         ( dm, dc ) =
             Comp.DatePicker.init
@@ -135,13 +148,13 @@ init field =
       , fieldModel =
             case fieldType field of
                 Data.CustomFieldType.Text ->
-                    TextField Nothing
+                    TextField (Comp.SimpleTextInput.init cfg Nothing)
 
                 Data.CustomFieldType.Numeric ->
-                    NumberField (FloatModel "" (Err NoValue))
+                    NumberField (FloatModel (Comp.SimpleTextInput.init cfg Nothing) (Err NoValue))
 
                 Data.CustomFieldType.Money ->
-                    MoneyField (FloatModel "" (Err NoValue))
+                    MoneyField (MoneyModel "" (Err NoValue))
 
                 Data.CustomFieldType.Boolean ->
                     BoolField False
@@ -158,7 +171,12 @@ init field =
 
 
 initWith : ItemFieldValue -> ( Model, Cmd Msg )
-initWith value =
+initWith =
+    initWith1 Comp.SimpleTextInput.defaultConfig
+
+
+initWith1 : Comp.SimpleTextInput.Config -> ItemFieldValue -> ( Model, Cmd Msg )
+initWith1 cfg value =
     let
         field =
             CustomField value.id value.name value.label value.ftype 0 0
@@ -170,19 +188,22 @@ initWith value =
       , fieldModel =
             case fieldType field of
                 Data.CustomFieldType.Text ->
-                    TextField (Just value.value)
+                    TextField (Comp.SimpleTextInput.init cfg <| Just value.value)
 
                 Data.CustomFieldType.Numeric ->
                     let
-                        ( fm, _ ) =
-                            updateFloatModel False value.value string2Float identity
+                        fm =
+                            Comp.SimpleTextInput.init cfg <| Just value.value
+
+                        res =
+                            string2Float value.value
                     in
-                    NumberField fm
+                    NumberField { input = fm, result = res }
 
                 Data.CustomFieldType.Money ->
                     let
                         ( fm, _ ) =
-                            updateFloatModel
+                            updateMoneyModel
                                 False
                                 value.value
                                 (Data.Money.fromString >> Result.mapError NotMoney)
@@ -223,6 +244,7 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , result : FieldResult
+    , sub : Sub Msg
     }
 
 
@@ -239,30 +261,37 @@ updateSearch =
 update1 : Bool -> Msg -> Model -> UpdateResult
 update1 forSearch msg model =
     case ( msg, model.fieldModel ) of
-        ( SetText str, TextField _ ) ->
+        ( SetTextMsg lm, TextField tm ) ->
             let
-                newValue =
-                    Util.Maybe.fromString str
+                result =
+                    Comp.SimpleTextInput.update lm tm
 
                 model_ =
-                    { model | fieldModel = TextField newValue }
-            in
-            UpdateResult model_ Cmd.none (Maybe.map Value newValue |> Maybe.withDefault NoResult)
+                    { model | fieldModel = TextField result.model }
 
-        ( NumberMsg str, NumberField _ ) ->
-            let
-                ( fm, res ) =
-                    updateFloatModel forSearch str string2Float identity
+                cmd =
+                    Cmd.map SetTextMsg result.cmd
 
-                model_ =
-                    { model | fieldModel = NumberField fm }
+                sub =
+                    Sub.map SetTextMsg result.sub
+
+                fres =
+                    case result.change of
+                        Comp.SimpleTextInput.ValueUpdated v ->
+                            Maybe.map Value v |> Maybe.withDefault NoResult
+
+                        Comp.SimpleTextInput.ValueUnchanged ->
+                            NoResult
             in
-            UpdateResult model_ Cmd.none res
+            UpdateResult model_ cmd fres sub
+
+        ( NumberMsg lm, NumberField tm ) ->
+            updateFloatModel forSearch model lm tm string2Float
 
         ( MoneyMsg str, MoneyField _ ) ->
             let
                 ( fm, res ) =
-                    updateFloatModel
+                    updateMoneyModel
                         forSearch
                         str
                         (Data.Money.fromString >> Result.mapError NotMoney)
@@ -271,7 +300,7 @@ update1 forSearch msg model =
                 model_ =
                     { model | fieldModel = MoneyField fm }
             in
-            UpdateResult model_ Cmd.none res
+            UpdateResult model_ Cmd.none res Sub.none
 
         ( ToggleBool, BoolField b ) ->
             let
@@ -281,7 +310,7 @@ update1 forSearch msg model =
                 value =
                     Util.CustomField.boolValue (not b)
             in
-            UpdateResult model_ Cmd.none (Value value)
+            UpdateResult model_ Cmd.none (Value value) Sub.none
 
         ( DateMsg lm, DateField old picker ) ->
             let
@@ -309,23 +338,23 @@ update1 forSearch msg model =
                 model_ =
                     { model | fieldModel = DateField newDate picker_ }
             in
-            UpdateResult model_ Cmd.none value
+            UpdateResult model_ Cmd.none value Sub.none
 
         ( Remove, _ ) ->
-            UpdateResult model Cmd.none RemoveField
+            UpdateResult model Cmd.none RemoveField Sub.none
 
         -- no other possibilities, not well encoded here
         _ ->
-            UpdateResult model Cmd.none NoResult
+            UpdateResult model Cmd.none NoResult Sub.none
 
 
-updateFloatModel :
+updateMoneyModel :
     Bool
     -> String
     -> (String -> Result FieldError Float)
     -> (String -> String)
-    -> ( FloatModel, FieldResult )
-updateFloatModel forSearch msg parse normalize =
+    -> ( MoneyModel, FieldResult )
+updateMoneyModel forSearch msg parse normalize =
     if forSearch && hasWildCards msg then
         ( { input = normalize msg
           , result = Ok 0
@@ -348,6 +377,57 @@ updateFloatModel forSearch msg parse normalize =
                   }
                 , NoResult
                 )
+
+
+updateFloatModel :
+    Bool
+    -> Model
+    -> Comp.SimpleTextInput.Msg
+    -> FloatModel
+    -> (String -> Result FieldError Float)
+    -> UpdateResult
+updateFloatModel forSearch model lm fm parse =
+    let
+        result =
+            Comp.SimpleTextInput.update lm fm.input
+
+        ( floatModel, fieldResult ) =
+            case result.change of
+                Comp.SimpleTextInput.ValueUnchanged ->
+                    ( { fm | input = result.model }, NoResult )
+
+                Comp.SimpleTextInput.ValueUpdated v ->
+                    let
+                        value =
+                            Maybe.withDefault "" v
+                    in
+                    if forSearch && hasWildCards value then
+                        ( { input = result.model
+                          , result = Ok 0
+                          }
+                        , Value value
+                        )
+
+                    else
+                        case parse value of
+                            Ok n ->
+                                ( { input = result.model
+                                  , result = Ok n
+                                  }
+                                , Value value
+                                )
+
+                            Err err ->
+                                ( { input = result.model
+                                  , result = Err err
+                                  }
+                                , NoResult
+                                )
+
+        model_ =
+            { model | fieldModel = NumberField floatModel }
+    in
+    UpdateResult model_ (Cmd.map NumberMsg result.cmd) fieldResult (Sub.map NumberMsg result.sub)
 
 
 hasWildCards : String -> Bool
@@ -406,14 +486,8 @@ makeInput2 icon model =
     case model.fieldModel of
         TextField v ->
             div [ class "flex flex-row relative" ]
-                [ input
-                    [ type_ "text"
-                    , Maybe.withDefault "" v |> value
-                    , onInput SetText
-                    , class S.textInputSidebar
-                    , class "pl-10 pr-10"
-                    ]
-                    []
+                [ Html.map SetTextMsg
+                    (Comp.SimpleTextInput.view [ class S.textInputSidebar, class "pl-10 pr-10" ] v)
                 , removeButton2 ""
                 , i
                     [ class (iconOr <| Icons.customFieldType2 Data.CustomFieldType.Text)
@@ -424,14 +498,8 @@ makeInput2 icon model =
 
         NumberField nm ->
             div [ class "flex flex-row relative" ]
-                [ input
-                    [ type_ "text"
-                    , value nm.input
-                    , onInput NumberMsg
-                    , class S.textInputSidebar
-                    , class "pl-10 pr-10"
-                    ]
-                    []
+                [ Html.map NumberMsg
+                    (Comp.SimpleTextInput.view [ class S.textInputSidebar, class "pl-10 pr-10" ] nm.input)
                 , removeButton2 ""
                 , i
                     [ class (iconOr <| Icons.customFieldType2 Data.CustomFieldType.Numeric)

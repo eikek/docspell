@@ -284,6 +284,7 @@ viewTable2 texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map TableMsg (Comp.TagTable.view2 texts.tagTable model.order model.tagTableModel)
         , div
@@ -359,6 +360,7 @@ viewForm2 texts settings model =
                 else
                     []
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ classList

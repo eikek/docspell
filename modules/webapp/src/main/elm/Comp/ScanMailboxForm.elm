@@ -22,7 +22,6 @@ import Api.Model.IdName exposing (IdName)
 import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.ScanMailboxSettings exposing (ScanMailboxSettings)
 import Api.Model.StringList exposing (StringList)
-import Api.Model.Tag
 import Api.Model.TagList exposing (TagList)
 import Comp.Basic as B
 import Comp.CalEventInput
@@ -823,6 +822,7 @@ view2 texts flags extraClasses settings model =
                     [ startOnceBtn
                     ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ classList

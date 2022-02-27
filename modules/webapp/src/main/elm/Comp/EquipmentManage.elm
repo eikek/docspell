@@ -268,6 +268,7 @@ viewTable2 texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map TableMsg
             (Comp.EquipmentTable.view2 texts.equipmentTable
@@ -347,6 +348,7 @@ viewForm2 texts model =
                 else
                     []
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ classList

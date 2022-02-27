@@ -442,7 +442,7 @@ object QItem {
       cfields <- Stream.eval(findCustomFieldValuesForItem(item.id))
     } yield ListItemWithTags(
       item,
-      ftags.toList.sortBy(_.name),
+      RTag.sort(ftags.toList),
       attachs.sortBy(_.position),
       cfields.toList
     )

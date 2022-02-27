@@ -49,7 +49,8 @@ toSearchQuery model =
         Search pm ->
             let
                 qstr =
-                    Maybe.withDefault "" pm.input
+                    Comp.PowerSearchInput.getSearchString pm
+                        |> Maybe.withDefault ""
             in
             if qstr == "" || Comp.PowerSearchInput.isValid pm then
                 Just (SearchQueryString qstr)
@@ -258,7 +259,6 @@ view texts settings model =
 
         searchSettings =
             { placeholder = texts.searchPlaceholder
-            , extraAttrs = []
             }
     in
     div [ class "flex flex-col" ]

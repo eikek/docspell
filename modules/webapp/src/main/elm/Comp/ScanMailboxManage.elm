@@ -297,6 +297,7 @@ viewList2 texts model =
                 }
             ]
         , rootClasses = "mb-4"
+        , sticky = True
         }
     , Html.map ListMsg
         (Comp.ScanMailboxList.view2 texts.table

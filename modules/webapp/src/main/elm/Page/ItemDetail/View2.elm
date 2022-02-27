@@ -54,6 +54,7 @@ viewSidebar texts visible flags settings model =
                 ]
             , end = []
             , rootClasses = "text-sm mb-3 "
+            , sticky = True
             }
         , Html.map ItemDetailMsg
             (Comp.ItemDetail.EditForm.view2 texts.editForm flags settings model.detail)

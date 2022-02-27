@@ -196,7 +196,7 @@ makeSettings model =
         query =
             let
                 qstr =
-                    model.queryModel.input
+                    Comp.PowerSearchInput.getSearchString model.queryModel
 
                 bm =
                     Comp.BookmarkDropdown.getSelectedId model.bookmarkDropdown
@@ -409,7 +409,6 @@ view texts extraClasses settings model =
                 [ Html.map QueryMsg
                     (Comp.PowerSearchInput.viewInput
                         { placeholder = texts.queryLabel
-                        , extraAttrs = []
                         }
                         model.queryModel
                     )
@@ -490,6 +489,7 @@ view texts extraClasses settings model =
                     [ startOnceBtn
                     ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ classList

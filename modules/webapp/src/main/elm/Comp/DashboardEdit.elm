@@ -347,6 +347,7 @@ view texts flags settings model =
                     }
                 ]
             , rootClasses = "mb-2"
+            , sticky = True
             }
         , div
             [ class (gridStyle model.dashboard)

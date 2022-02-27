@@ -446,6 +446,7 @@ linkTargetMsg linkTarget =
 type alias NextState =
     { model : Model
     , cmd : Cmd Msg
+    , sub : Sub Msg
     , stateChange : Bool
     , dragDrop : DD.DragDropData
     }
@@ -479,6 +480,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = set.model
             , cmd = set.cmd
+            , sub = Sub.none
             , stateChange = True
             , dragDrop = set.dragDrop
             }
@@ -520,6 +522,7 @@ updateDrop ddm flags settings msg model =
                     , cdp
                     , Api.getBookmarks flags AllBookmarksResp
                     ]
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -527,6 +530,7 @@ updateDrop ddm flags settings msg model =
         ResetForm ->
             { model = resetModel model
             , cmd = Api.itemSearchStats flags Api.Model.ItemQuery.empty GetAllTagsResp
+            , sub = Sub.none
             , stateChange = True
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -548,6 +552,7 @@ updateDrop ddm flags settings msg model =
                 Nothing ->
                     { model = model
                     , cmd = Cmd.none
+                    , sub = Sub.none
                     , stateChange = False
                     , dragDrop = DD.DragDropData ddm Nothing
                     }
@@ -578,6 +583,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { nextModel | selectedBookmarks = sel }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = sel /= model.selectedBookmarks
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -591,6 +597,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | tagSelectModel = tagSel }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -598,6 +605,7 @@ updateDrop ddm flags settings msg model =
         GetAllTagsResp (Err _) ->
             { model = model
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -644,7 +652,7 @@ updateDrop ddm flags settings msg model =
                     Util.CustomField.statsToFields stats
 
                 fieldOpts =
-                    Comp.CustomFieldMultiInput.update flags
+                    Comp.CustomFieldMultiInput.updateSearch flags
                         (Comp.CustomFieldMultiInput.setOptions fields)
                         model.customFieldModel
                         |> .model
@@ -665,6 +673,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = model_
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -672,6 +681,7 @@ updateDrop ddm flags settings msg model =
         GetStatsResp (Err _) ->
             { model = model
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -686,6 +696,7 @@ updateDrop ddm flags settings msg model =
         GetEquipResp (Err _) ->
             { model = model
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -700,6 +711,7 @@ updateDrop ddm flags settings msg model =
         GetOrgResp (Err _) ->
             { model = model
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -734,6 +746,7 @@ updateDrop ddm flags settings msg model =
         GetPersonResp (Err _) ->
             { model = model
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -749,6 +762,7 @@ updateDrop ddm flags settings msg model =
                     , tagSelection = sel
                 }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = sel /= model.tagSelection
             , dragDrop = ddd
             }
@@ -760,6 +774,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | directionModel = m2 }
             , cmd = Cmd.map DirectionMsg c2
+            , sub = Sub.none
             , stateChange = isDropdownChangeMsg m
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -771,6 +786,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | orgModel = m2 }
             , cmd = Cmd.map OrgMsg c2
+            , sub = Sub.none
             , stateChange = isDropdownChangeMsg m
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -782,6 +798,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | corrPersonModel = m2 }
             , cmd = Cmd.map CorrPersonMsg c2
+            , sub = Sub.none
             , stateChange = isDropdownChangeMsg m
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -793,6 +810,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | concPersonModel = m2 }
             , cmd = Cmd.map ConcPersonMsg c2
+            , sub = Sub.none
             , stateChange = isDropdownChangeMsg m
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -804,6 +822,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | concEquipmentModel = m2 }
             , cmd = Cmd.map ConcEquipmentMsg c2
+            , sub = Sub.none
             , stateChange = isDropdownChangeMsg m
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -815,6 +834,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | inboxCheckbox = not current }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = True
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -833,6 +853,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | searchMode = next }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = True
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -852,6 +873,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | fromDateModel = dp, fromDate = nextDate }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = model.fromDate /= nextDate
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -871,6 +893,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | untilDateModel = dp, untilDate = nextDate }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = model.untilDate /= nextDate
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -890,6 +913,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | fromDueDateModel = dp, fromDueDate = nextDate }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = model.fromDueDate /= nextDate
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -909,6 +933,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | untilDueDateModel = dp, untilDueDate = nextDate }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = model.untilDueDate /= nextDate
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -920,6 +945,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | nameModel = next }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -927,6 +953,7 @@ updateDrop ddm flags settings msg model =
         SetTextSearch str ->
             { model = { model | textSearchModel = updateTextSearch str model.textSearchModel }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -935,6 +962,7 @@ updateDrop ddm flags settings msg model =
             if flags.config.fullTextSearchEnabled then
                 { model = { model | textSearchModel = swapTextSearch model.textSearchModel }
                 , cmd = Cmd.none
+                , sub = Sub.none
                 , stateChange = False
                 , dragDrop = DD.DragDropData ddm Nothing
                 }
@@ -942,6 +970,7 @@ updateDrop ddm flags settings msg model =
             else
                 { model = model
                 , cmd = Cmd.none
+                , sub = Sub.none
                 , stateChange = False
                 , dragDrop = DD.DragDropData ddm Nothing
                 }
@@ -951,6 +980,7 @@ updateDrop ddm flags settings msg model =
                 Fulltext _ ->
                     { model = model
                     , cmd = Cmd.none
+                    , sub = Sub.none
                     , stateChange = False
                     , dragDrop = DD.DragDropData ddm Nothing
                     }
@@ -958,6 +988,7 @@ updateDrop ddm flags settings msg model =
                 Names s ->
                     { model = { model | textSearchModel = Fulltext s }
                     , cmd = Cmd.none
+                    , sub = Sub.none
                     , stateChange = False
                     , dragDrop = DD.DragDropData ddm Nothing
                     }
@@ -967,6 +998,7 @@ updateDrop ddm flags settings msg model =
                 Fulltext s ->
                     { model = { model | textSearchModel = Names s }
                     , cmd = Cmd.none
+                    , sub = Sub.none
                     , stateChange = False
                     , dragDrop = DD.DragDropData ddm Nothing
                     }
@@ -974,6 +1006,7 @@ updateDrop ddm flags settings msg model =
                 Names _ ->
                     { model = model
                     , cmd = Cmd.none
+                    , sub = Sub.none
                     , stateChange = False
                     , dragDrop = DD.DragDropData ddm Nothing
                     }
@@ -981,6 +1014,7 @@ updateDrop ddm flags settings msg model =
         KeyUpMsg (Just Enter) ->
             { model = model
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = True
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -988,6 +1022,7 @@ updateDrop ddm flags settings msg model =
         KeyUpMsg _ ->
             { model = model
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -1003,6 +1038,7 @@ updateDrop ddm flags settings msg model =
                     , selectedFolder = sel
                 }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = model.selectedFolder /= sel
             , dragDrop = ddd
             }
@@ -1018,6 +1054,7 @@ updateDrop ddm flags settings msg model =
                     , customValues = Data.CustomFieldChange.collectValues res.result model.customValues
                 }
             , cmd = Cmd.map CustomFieldMsg res.cmd
+            , sub = Sub.map CustomFieldMsg res.sub
             , stateChange =
                 Data.CustomFieldChange.isValueChange res.result
             , dragDrop = DD.DragDropData ddm Nothing
@@ -1046,6 +1083,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | sourceModel = next }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -1064,6 +1102,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | openTabs = tabs }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -1083,6 +1122,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | openTabs = next }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -1090,13 +1130,15 @@ updateDrop ddm flags settings msg model =
         AllBookmarksResp (Ok bm) ->
             { model = { model | allBookmarks = Comp.BookmarkChooser.init bm }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = model.allBookmarks /= Comp.BookmarkChooser.init bm
             , dragDrop = DD.DragDropData ddm Nothing
             }
 
-        AllBookmarksResp (Err err) ->
+        AllBookmarksResp (Err _) ->
             { model = model
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = False
             , dragDrop = DD.DragDropData ddm Nothing
             }
@@ -1108,6 +1150,7 @@ updateDrop ddm flags settings msg model =
             in
             { model = { model | allBookmarks = next, selectedBookmarks = sel }
             , cmd = Cmd.none
+            , sub = Sub.none
             , stateChange = sel /= model.selectedBookmarks || model.allBookmarks /= next
             , dragDrop = DD.DragDropData ddm Nothing
             }

@@ -25,11 +25,10 @@ import Html.Attributes exposing (..)
 import Messages.Comp.ItemDetail.ItemInfoHeader exposing (Texts)
 import Page exposing (Page(..))
 import Styles as S
-import Util.Maybe
 
 
-view : Texts -> UiSettings -> Model -> Html Msg
-view texts settings model =
+view : Texts -> UiSettings -> Model -> Html Msg -> Html Msg
+view texts settings model beforeTags =
     let
         date =
             ( div
@@ -45,24 +44,27 @@ view texts settings model =
             )
 
         itemStyle =
-            "ml-2 sm:ml-4 py-1 whitespace-nowrap "
+            "ml-2 sm:ml-4 py-1 whitespace-nowrap truncate"
 
         linkStyle =
-            "opacity-75 hover:opacity-100"
+            "opacity-75 hover:opacity-100 "
 
         duedate =
             ( div
-                [ class "ml-2 sm:ml-4 py-1 max-w-min whitespace-nowrap opacity-100"
-                , class S.basicLabel
+                [ class "ml-2 sm:ml-0 py-1 whitespace-nowrap "
+                , classList
+                    [ ( "dark:text-amber-400 text-amber-800 italic underline"
+                      , model.item.dueDate /= Nothing
+                      )
+                    ]
                 , title texts.dueDate
                 ]
                 [ Icons.dueDateIcon2 "mr-2"
                 , Maybe.map texts.formatDate model.item.dueDate
-                    |> Maybe.withDefault ""
+                    |> Maybe.withDefault "-"
                     |> text
                 ]
             , Data.UiSettings.fieldVisible settings Data.Fields.DueDate
-                && Util.Maybe.nonEmpty model.item.dueDate
             )
 
         corr =
@@ -126,7 +128,7 @@ view texts settings model =
             model.item.state == "created"
     in
     div [ class "flex flex-col pb-2" ]
-        [ div [ class "flex flex-row items-center text-2xl" ]
+        [ div [ class "flex flex-row items-center text-2xl order-1" ]
             [ if isDeleted then
                 div
                     [ classList
@@ -172,34 +174,39 @@ view texts settings model =
                     ]
                 ]
             ]
-        , ul [ class "flex flex-col sm:flex-row flex-wrap text-base " ]
+        , div [ class "flex flex-col sm:flex-row flex-wrap text-base order-2" ]
             (List.filter Tuple.second
                 [ date
                 , corr
                 , conc
                 , itemfolder
                 , src
-                , duedate
                 ]
                 |> List.map Tuple.first
             )
+        , div [ class "flex flex-col sm:flex-row flex-wrap text-base order-3" ]
+            (List.filter Tuple.second [ duedate ] |> List.map Tuple.first)
+        , div [ class "order-4 md:order-5" ]
+            [ beforeTags
+            ]
         , renderTagsAndFields settings model
         ]
 
 
 renderTagsAndFields : UiSettings -> Model -> Html Msg
 renderTagsAndFields settings model =
-    div [ class "flex flex-row flex-wrap items-center font-semibold sm:justify-end mt-1 min-h-7" ]
+    div [ class "flex flex-row flex-wrap items-center font-semibold justify-end mt-1 min-h-7 order-5 md:order-4" ]
         (renderTags settings model ++ renderCustomValues settings model)
 
 
 renderTags : UiSettings -> Model -> List (Html Msg)
 renderTags settings model =
     let
-        tagView t =
+        tagView index t =
             Comp.LinkTarget.makeTagLink
                 (IdName t.id t.name)
-                [ ( "label md:text-sm inline-flex ml-2 hover:opacity-90 mt-1 items-center", True )
+                [ ( "label md:text-sm inline-flex hover:opacity-90 mt-1 items-center", True )
+                , ( "mr-0 ml-2", index > 0 )
                 , ( Data.UiSettings.tagColorString2 t settings, True )
                 ]
                 SetLinkTarget
@@ -208,7 +215,7 @@ renderTags settings model =
         []
 
     else
-        List.map tagView model.item.tags
+        List.indexedMap tagView model.item.tags
 
 
 renderCustomValues : UiSettings -> Model -> List (Html Msg)

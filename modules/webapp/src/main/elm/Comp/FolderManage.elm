@@ -265,6 +265,7 @@ viewTable2 texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map TableMsg
             (Comp.FolderTable.view2

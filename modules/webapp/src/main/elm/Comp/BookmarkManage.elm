@@ -257,6 +257,7 @@ viewTable texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ class "flex flex-col"
@@ -301,7 +302,7 @@ viewForm texts _ _ model =
 
               else
                 h1 [ class S.header2 ]
-                    [ text (Maybe.withDefault "" model.formModel.name)
+                    [ text (Comp.BookmarkQueryForm.getName model.formModel |> Maybe.withDefault "")
                     ]
             , MB.view
                 { start =
@@ -334,6 +335,7 @@ viewForm texts _ _ model =
                     else
                         []
                 , rootClasses = "mb-4"
+                , sticky = True
                 }
             , div
                 [ classList

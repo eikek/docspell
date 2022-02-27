@@ -272,6 +272,7 @@ viewTable2 texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map TableMsg (Comp.OrgTable.view2 texts.orgTable model.order model.tableModel)
         , B.loadingDimmer
@@ -343,6 +344,7 @@ viewForm2 texts settings model =
                 else
                     []
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ classList
