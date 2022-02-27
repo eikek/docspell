@@ -12,6 +12,7 @@ import Comp.ItemDetail
 import Comp.ItemDetail.EditForm
 import Comp.ItemDetail.Model
 import Comp.MenuBar as MB
+import Data.Environment as Env
 import Data.Flags exposing (Flags)
 import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
@@ -23,13 +24,13 @@ import Page.ItemDetail.Data exposing (..)
 import Styles as S
 
 
-viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar texts visible flags settings model =
+viewSidebar : Texts -> Env.View -> Model -> Html Msg
+viewSidebar texts env model =
     div
         [ id "sidebar"
         , class S.sidebar
         , class S.sidebarBg
-        , classList [ ( "hidden", not visible ) ]
+        , classList [ ( "hidden", not env.sidebarVisible ) ]
         ]
         [ div
             [ class S.header2
@@ -57,16 +58,16 @@ viewSidebar texts visible flags settings model =
             , sticky = True
             }
         , Html.map ItemDetailMsg
-            (Comp.ItemDetail.EditForm.view2 texts.editForm flags settings model.detail)
+            (Comp.ItemDetail.EditForm.view2 texts.editForm env.flags env.settings model.detail)
         ]
 
 
-viewContent : Texts -> ItemNav -> Flags -> UiSettings -> Model -> Html Msg
-viewContent texts inav flags settings model =
+viewContent : Texts -> ItemNav -> Env.View -> Model -> Html Msg
+viewContent texts inav env model =
     div
         [ id "content"
         , class S.content
         ]
         [ Html.map ItemDetailMsg
-            (Comp.ItemDetail.view2 texts.itemDetail flags inav settings model.detail)
+            (Comp.ItemDetail.view2 texts.itemDetail inav env model.detail)
         ]

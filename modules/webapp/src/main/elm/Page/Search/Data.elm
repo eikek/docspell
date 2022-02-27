@@ -234,6 +234,7 @@ type Msg
     | ToggleExpandCollapseRows
     | ToggleBookmarkCurrentQueryView
     | BookmarkQueryMsg Comp.BookmarkQueryManage.Msg
+    | ItemSelectionChanged
 
 
 type SearchType

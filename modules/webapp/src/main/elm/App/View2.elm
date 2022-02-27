@@ -10,6 +10,7 @@ module App.View2 exposing (view)
 import Api.Model.AuthResult exposing (AuthResult)
 import App.Data exposing (..)
 import Comp.Basic as B
+import Data.Environment as Env
 import Data.Flags
 import Data.Icons as Icons
 import Data.UiSettings
@@ -485,6 +486,15 @@ dropdownMenu =
     " absolute right-0 bg-white dark:bg-slate-800 border dark:border-slate-700 dark:text-slate-300 shadow-lg opacity-1 transition duration-200 min-w-max "
 
 
+modelEnv : Model -> Env.View
+modelEnv model =
+    { sidebarVisible = model.sidebarVisible
+    , flags = model.flags
+    , settings = model.uiSettings
+    , selectedItems = model.selectedItems
+    }
+
+
 viewDashboard : Messages -> Model -> List (Html Msg)
 viewDashboard texts model =
     [ Html.map DashboardMsg
@@ -551,11 +561,7 @@ viewSearch : Messages -> Maybe String -> Model -> List (Html Msg)
 viewSearch texts bmId model =
     let
         env =
-            { sidebarVisible = model.sidebarVisible
-            , flags = model.flags
-            , settings = model.uiSettings
-            , selectedItems = model.selectedItems
-            }
+            modelEnv model
     in
     [ Html.map SearchMsg
         (Search.viewSidebar texts.search
@@ -690,19 +696,19 @@ viewItemDetail texts id model =
     let
         inav =
             Page.Search.Data.itemNav id model.searchModel
+
+        env =
+            modelEnv model
     in
     [ Html.map ItemDetailMsg
         (ItemDetail.viewSidebar texts.itemDetail
-            model.sidebarVisible
-            model.flags
-            model.uiSettings
+            env
             model.itemDetailModel
         )
     , Html.map ItemDetailMsg
         (ItemDetail.viewContent texts.itemDetail
             inav
-            model.flags
-            model.uiSettings
+            env
             model.itemDetailModel
         )
     ]

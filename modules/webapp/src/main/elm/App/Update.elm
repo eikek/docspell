@@ -15,7 +15,9 @@ import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
 import Data.AppEvent exposing (AppEvent(..))
+import Data.Environment as Env
 import Data.Flags
+import Data.ItemIds exposing (ItemIds)
 import Data.ServerEvent exposing (ServerEvent(..))
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme
@@ -346,6 +348,15 @@ updateWithSub msg model =
             )
 
 
+modelEnv : Model -> Env.Update
+modelEnv model =
+    { key = model.key
+    , selectedItems = model.selectedItems
+    , flags = model.flags
+    , settings = model.uiSettings
+    }
+
+
 applyClientSettings : Messages -> Model -> UiSettings -> ( Model, Cmd Msg, Sub Msg )
 applyClientSettings texts model settings =
     let
@@ -366,6 +377,18 @@ applyClientSettings texts model settings =
         , updateItemDetail texts Page.ItemDetail.Data.UiSettingsUpdated
         ]
         { model | uiSettings = settings }
+
+
+applySelectionChange : Messages -> Model -> ItemIds -> ( Model, Cmd Msg, Sub Msg )
+applySelectionChange texts model newSelection =
+    if model.selectedItems == newSelection then
+        ( { model | selectedItems = newSelection }, Cmd.none, Sub.none )
+
+    else
+        Util.Update.andThen2
+            [ updateSearch texts Page.Search.Data.ItemSelectionChanged
+            ]
+            { model | selectedItems = newSelection }
 
 
 updateDashboard : Messages -> Page.Dashboard.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
@@ -427,17 +450,16 @@ updateItemDetail texts lmsg model =
 
         result =
             Page.ItemDetail.Update.update
-                model.key
-                model.flags
                 inav
-                model.uiSettings
+                (modelEnv model)
                 lmsg
                 model.itemDetailModel
 
-        model_ =
-            { model
-                | itemDetailModel = result.model
-            }
+        ( model_, cmd_, sub_ ) =
+            applySelectionChange
+                texts
+                { model | itemDetailModel = result.model }
+                result.selectedItems
 
         ( hm, hc, hs ) =
             updateSearch texts (Page.Search.Data.SetLinkTarget result.linkTarget) model_
@@ -451,8 +473,8 @@ updateItemDetail texts lmsg model =
                     ( hm, hc, hs )
     in
     ( hm1
-    , Cmd.batch [ Cmd.map ItemDetailMsg result.cmd, hc, hc1 ]
-    , Sub.batch [ Sub.map ItemDetailMsg result.sub, hs, hs1 ]
+    , Cmd.batch [ Cmd.map ItemDetailMsg result.cmd, hc, hc1, cmd_ ]
+    , Sub.batch [ Sub.map ItemDetailMsg result.sub, hs, hs1, sub_ ]
     )
 
 
@@ -576,7 +598,7 @@ updateLogin lmsg model =
 updateSearch : Messages -> Page.Search.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateSearch texts lmsg model =
     let
-        ( mid, bmId ) =
+        ( lastViewItemId, bookmarkId ) =
             case model.page of
                 SearchPage bId ->
                     ( Util.Maybe.fromString model.itemDetailModel.detail.item.id, bId )
@@ -585,19 +607,10 @@ updateSearch texts lmsg model =
                     ( Nothing, Nothing )
 
         env =
-            { bookmarkId = bmId
-            , lastViewedItemId = mid
-            , key = model.key
-            , selectedItems = model.selectedItems
-            , flags = model.flags
-            , settings = model.uiSettings
-            }
+            modelEnv model
 
         result =
-            Page.Search.Update.update texts.search env lmsg model.searchModel
-
-        model_ =
-            { model | searchModel = result.model, selectedItems = result.selectedItems }
+            Page.Search.Update.update texts.search bookmarkId lastViewItemId env lmsg model.searchModel
 
         lc =
             case result.appEvent of
@@ -606,15 +619,13 @@ updateSearch texts lmsg model =
 
                 AppNothing ->
                     Cmd.none
+
+        ( model_, cmd_, sub_ ) =
+            applySelectionChange texts { model | searchModel = result.model } result.selectedItems
     in
     ( model_
-    , Cmd.batch
-        [ Cmd.map SearchMsg result.cmd
-        , lc
-        ]
-    , Sub.batch
-        [ Sub.map SearchMsg result.sub
-        ]
+    , Cmd.batch [ Cmd.map SearchMsg result.cmd, lc, cmd_ ]
+    , Sub.batch [ Sub.map SearchMsg result.sub, sub_ ]
     )
 
 

@@ -57,6 +57,7 @@ import Comp.SimpleTextInput
 import Comp.TagDropdown
 import Data.Direction exposing (Direction)
 import Data.Fields exposing (Field)
+import Data.ItemIds exposing (ItemIdChange)
 import DatePicker exposing (DatePicker)
 import Dict exposing (Dict)
 import File exposing (File)
@@ -367,6 +368,7 @@ type Msg
     | ToggleShowQrAttach String
     | PrintElement String
     | SetNameMsg Comp.SimpleTextInput.Msg
+    | ToggleSelectItem
 
 
 type SaveNameState
@@ -381,22 +383,23 @@ type alias UpdateResult =
     , sub : Sub Msg
     , linkTarget : LinkTarget
     , removedItem : Maybe String
+    , selectionChange : ItemIdChange
     }
 
 
 resultModel : Model -> UpdateResult
 resultModel model =
-    UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone Nothing
+    UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone Nothing Data.ItemIds.noChange
 
 
 resultModelCmd : ( Model, Cmd Msg ) -> UpdateResult
 resultModelCmd ( model, cmd ) =
-    UpdateResult model cmd Sub.none Comp.LinkTarget.LinkNone Nothing
+    UpdateResult model cmd Sub.none Comp.LinkTarget.LinkNone Nothing Data.ItemIds.noChange
 
 
 resultModelCmdSub : ( Model, Cmd Msg, Sub Msg ) -> UpdateResult
 resultModelCmdSub ( model, cmd, sub ) =
-    UpdateResult model cmd sub Comp.LinkTarget.LinkNone Nothing
+    UpdateResult model cmd sub Comp.LinkTarget.LinkNone Nothing Data.ItemIds.noChange
 
 
 personMatchesOrg : Model -> Bool

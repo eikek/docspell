@@ -1594,8 +1594,8 @@ searchTabs texts ddd flags settings selectedItems model =
                         i [ class "fa fa-check mr-2" ] []
 
                       else
-                        i [ class "fa fa-list mr-2" ] []
-                    , text "Show selection"
+                        i [ class "fa fa-list-check mr-2" ] []
+                    , text texts.showSelection
                     ]
                 , a
                     [ class "flex flex-row items-center"
@@ -1604,7 +1604,7 @@ searchTabs texts ddd flags settings selectedItems model =
                     , Html.Events.onClick ClearSelection
                     ]
                     [ i [ class "fa fa-times mr-2" ] []
-                    , text "Clear selection"
+                    , text texts.clearSelection
                     ]
                 ]
             ]

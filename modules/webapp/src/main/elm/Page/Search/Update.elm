@@ -50,8 +50,8 @@ type alias UpdateResult =
     }
 
 
-update : Texts -> Env.Update -> Msg -> Model -> UpdateResult
-update texts env msg model =
+update : Texts -> Maybe String -> Maybe String -> Env.Update -> Msg -> Model -> UpdateResult
+update texts bookmarkId lastViewedItemId env msg model =
     case msg of
         Init ->
             let
@@ -65,14 +65,14 @@ update texts env msg model =
                     }
 
                 setBookmark =
-                    Maybe.map (\bmId -> SearchMenuMsg <| Comp.SearchMenu.SetBookmark bmId) env.bookmarkId
+                    Maybe.map (\bmId -> SearchMenuMsg <| Comp.SearchMenu.SetBookmark bmId) bookmarkId
                         |> Maybe.withDefault DoNothing
             in
-            makeResult env <|
+            makeResult env.selectedItems <|
                 Util.Update.andThen3
-                    [ update texts env (SearchMenuMsg Comp.SearchMenu.Init)
-                    , update texts env setBookmark
-                    , doSearch env searchParam
+                    [ update texts bookmarkId lastViewedItemId env (SearchMenuMsg Comp.SearchMenu.Init)
+                    , update texts bookmarkId lastViewedItemId env setBookmark
+                    , doSearch env.selectedItems searchParam
                     ]
                     model
 
@@ -84,7 +84,7 @@ update texts env msg model =
                 nm =
                     { model | searchOffset = 0, powerSearchInput = Comp.PowerSearchInput.init }
             in
-            update texts env (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
+            update texts bookmarkId lastViewedItemId env (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
 
         SearchMenuMsg m ->
             let
@@ -125,10 +125,10 @@ update texts env msg model =
 
                 result =
                     if nextState.stateChange && not model.searchInProgress then
-                        doSearch env searchParam newModel
+                        doSearch env.selectedItems searchParam newModel
 
                     else
-                        resultModelCmd env ( newModel, Cmd.none )
+                        resultModelCmd env.selectedItems ( newModel, Cmd.none )
             in
             { result
                 | cmd =
@@ -144,10 +144,10 @@ update texts env msg model =
         SetLinkTarget lt ->
             case linkTargetMsg lt of
                 Just m ->
-                    update texts env m model
+                    update texts bookmarkId lastViewedItemId env m model
 
                 Nothing ->
-                    makeResult env ( model, Cmd.none, Sub.none )
+                    makeResult env.selectedItems ( model, Cmd.none, Sub.none )
 
         ItemCardListMsg m ->
             let
@@ -197,7 +197,7 @@ update texts env msg model =
                     else
                         Set.empty
             in
-            resultModelCmd env ( { model | itemRowsOpen = itemRows, viewMenuOpen = False }, Cmd.none )
+            resultModelCmd env.selectedItems ( { model | itemRowsOpen = itemRows, viewMenuOpen = False }, Cmd.none )
 
         ItemSearchResp scroll (Ok list) ->
             let
@@ -211,14 +211,14 @@ update texts env msg model =
                         , moreAvailable = list.groups /= []
                     }
             in
-            makeResult env <|
+            makeResult env.selectedItems <|
                 Util.Update.andThen3
-                    [ update texts env (ItemCardListMsg (Comp.ItemCardList.SetResults list))
+                    [ update texts bookmarkId lastViewedItemId env (ItemCardListMsg (Comp.ItemCardList.SetResults list))
                     , if scroll then
-                        scrollToCard env
+                        scrollToCard env.selectedItems lastViewedItemId
 
                       else
-                        \next -> makeResult env ( next, Cmd.none, Sub.none )
+                        \next -> makeResult env.selectedItems ( next, Cmd.none, Sub.none )
                     ]
                     m
 
@@ -235,10 +235,10 @@ update texts env msg model =
                         , moreAvailable = list.groups /= []
                     }
             in
-            update texts env (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
+            update texts bookmarkId lastViewedItemId env (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m
 
         ItemSearchAddResp (Err _) ->
-            resultModelCmd env
+            resultModelCmd env.selectedItems
                 ( { model
                     | moreInProgress = False
                   }
@@ -246,7 +246,7 @@ update texts env msg model =
                 )
 
         ItemSearchResp _ (Err _) ->
-            resultModelCmd env
+            resultModelCmd env.selectedItems
                 ( { model
                     | searchInProgress = False
                   }
@@ -268,10 +268,10 @@ update texts env msg model =
                     }
             in
             if model.searchInProgress then
-                resultModelCmd env ( model, Cmd.none )
+                resultModelCmd env.selectedItems ( model, Cmd.none )
 
             else
-                doSearch env param nm
+                doSearch env.selectedItems param nm
 
         RefreshView ->
             let
@@ -285,10 +285,10 @@ update texts env msg model =
                     }
             in
             if model.searchInProgress then
-                resultModelCmd env ( model, Cmd.none )
+                resultModelCmd env.selectedItems ( model, Cmd.none )
 
             else
-                doSearch env param model
+                doSearch env.selectedItems param model
 
         ToggleSelectView ->
             let
@@ -303,45 +303,45 @@ update texts env msg model =
                         PublishView q ->
                             ( PublishView q, Cmd.none )
             in
-            resultModelCmd env ( { model | viewMode = nextView }, cmd )
+            resultModelCmd env.selectedItems ( { model | viewMode = nextView }, cmd )
 
         LoadMore ->
             if model.moreAvailable then
-                doSearchMore env model |> resultModelCmd env
+                doSearchMore env model |> resultModelCmd env.selectedItems
 
             else
-                resultModelCmd env ( model, Cmd.none )
+                resultModelCmd env.selectedItems ( model, Cmd.none )
 
         SetBasicSearch str ->
             let
                 smMsg =
                     SearchMenuMsg (Comp.SearchMenu.SetTextSearch str)
             in
-            update texts env smMsg model
+            update texts bookmarkId lastViewedItemId env smMsg model
 
         ToggleSearchType ->
             case model.searchTypeDropdownValue of
                 BasicSearch ->
-                    update texts env (SearchMenuMsg Comp.SearchMenu.SetFulltextSearch) model
+                    update texts bookmarkId lastViewedItemId env (SearchMenuMsg Comp.SearchMenu.SetFulltextSearch) model
 
                 ContentOnlySearch ->
-                    update texts env (SearchMenuMsg Comp.SearchMenu.SetNamesSearch) model
+                    update texts bookmarkId lastViewedItemId env (SearchMenuMsg Comp.SearchMenu.SetNamesSearch) model
 
         KeyUpSearchbarMsg (Just Enter) ->
-            update texts env (DoSearch model.searchTypeDropdownValue) model
+            update texts bookmarkId lastViewedItemId env (DoSearch model.searchTypeDropdownValue) model
 
         KeyUpSearchbarMsg _ ->
-            resultModelCmd env ( model, Cmd.none )
+            resultModelCmd env.selectedItems ( model, Cmd.none )
 
         ScrollResult _ ->
             let
                 cmd =
                     Process.sleep 800 |> Task.perform (always ClearItemDetailId)
             in
-            resultModelCmd env ( model, cmd )
+            resultModelCmd env.selectedItems ( model, cmd )
 
         ClearItemDetailId ->
-            resultModelCmd env ( { model | scrollToCard = Nothing }, Cmd.none )
+            resultModelCmd env.selectedItems ( { model | scrollToCard = Nothing }, Cmd.none )
 
         SelectAllItems ->
             let
@@ -352,16 +352,12 @@ update texts env msg model =
                     Data.ItemIds.apply env.selectedItems (Data.ItemIds.selectAll visible)
 
                 res_ =
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
             in
             { res_ | selectedItems = itemIds }
 
         SelectNoItems ->
-            let
-                result =
-                    update texts env (SearchMenuMsg <| Comp.SearchMenu.setIncludeSelection False) model
-            in
-            { result | selectedItems = Data.ItemIds.empty }
+            resultModelCmd Data.ItemIds.empty ( model, Cmd.none )
 
         DeleteSelectedConfirmed ->
             case model.viewMode of
@@ -370,7 +366,7 @@ update texts env msg model =
                         cmd =
                             Api.deleteAllItems env.flags (Data.ItemIds.toList env.selectedItems) DeleteAllResp
                     in
-                    resultModelCmd env
+                    resultModelCmd env.selectedItems
                         ( { model
                             | viewMode =
                                 SelectView
@@ -383,7 +379,7 @@ update texts env msg model =
                         )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         RestoreSelectedConfirmed ->
             case model.viewMode of
@@ -392,7 +388,7 @@ update texts env msg model =
                         cmd =
                             Api.restoreAllItems env.flags (Data.ItemIds.toList env.selectedItems) DeleteAllResp
                     in
-                    resultModelCmd env
+                    resultModelCmd env.selectedItems
                         ( { model
                             | viewMode =
                                 SelectView
@@ -405,7 +401,7 @@ update texts env msg model =
                         )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         DeleteAllResp (Ok res) ->
             if res.success then
@@ -422,19 +418,19 @@ update texts env msg model =
                         , selectedItems = env.selectedItems
                         }
                 in
-                doSearch env param nm
+                doSearch env.selectedItems param nm
 
             else
-                resultModelCmd env ( model, Cmd.none )
+                resultModelCmd env.selectedItems ( model, Cmd.none )
 
         DeleteAllResp (Err _) ->
-            resultModelCmd env ( model, Cmd.none )
+            resultModelCmd env.selectedItems ( model, Cmd.none )
 
         RequestReprocessSelected ->
             case model.viewMode of
                 SelectView svm ->
                     if Data.ItemIds.isEmpty env.selectedItems then
-                        resultModelCmd env ( model, Cmd.none )
+                        resultModelCmd env.selectedItems ( model, Cmd.none )
 
                     else
                         let
@@ -448,15 +444,15 @@ update texts env msg model =
                                             }
                                 }
                         in
-                        resultModelCmd env ( model_, Cmd.none )
+                        resultModelCmd env.selectedItems ( model_, Cmd.none )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         CloseConfirmModal ->
             case model.viewMode of
                 SelectView svm ->
-                    resultModelCmd env
+                    resultModelCmd env.selectedItems
                         ( { model
                             | viewMode = SelectView { svm | confirmModal = Nothing, action = NoneAction }
                           }
@@ -464,20 +460,20 @@ update texts env msg model =
                         )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         ReprocessSelectedConfirmed ->
             case model.viewMode of
                 SelectView svm ->
                     if Data.ItemIds.isEmpty env.selectedItems then
-                        resultModelCmd env ( model, Cmd.none )
+                        resultModelCmd env.selectedItems ( model, Cmd.none )
 
                     else
                         let
                             cmd =
                                 Api.reprocessMultiple env.flags (Data.ItemIds.toList env.selectedItems) DeleteAllResp
                         in
-                        resultModelCmd env
+                        resultModelCmd env.selectedItems
                             ( { model
                                 | viewMode =
                                     SelectView
@@ -490,13 +486,13 @@ update texts env msg model =
                             )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         RequestDeleteSelected ->
             case model.viewMode of
                 SelectView svm ->
                     if Data.ItemIds.isEmpty env.selectedItems then
-                        resultModelCmd env ( model, Cmd.none )
+                        resultModelCmd env.selectedItems ( model, Cmd.none )
 
                     else
                         let
@@ -510,16 +506,16 @@ update texts env msg model =
                                             }
                                 }
                         in
-                        resultModelCmd env ( model_, Cmd.none )
+                        resultModelCmd env.selectedItems ( model_, Cmd.none )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         RequestRestoreSelected ->
             case model.viewMode of
                 SelectView svm ->
                     if Data.ItemIds.isEmpty env.selectedItems then
-                        resultModelCmd env ( model, Cmd.none )
+                        resultModelCmd env.selectedItems ( model, Cmd.none )
 
                     else
                         let
@@ -533,37 +529,37 @@ update texts env msg model =
                                             }
                                 }
                         in
-                        resultModelCmd env ( model_, Cmd.none )
+                        resultModelCmd env.selectedItems ( model_, Cmd.none )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         EditSelectedItems ->
             case model.viewMode of
                 SelectView svm ->
                     if svm.action == EditSelected then
-                        resultModelCmd env
+                        resultModelCmd env.selectedItems
                             ( { model | viewMode = SelectView { svm | action = NoneAction } }
                             , Cmd.none
                             )
 
                     else if Data.ItemIds.isEmpty env.selectedItems then
-                        resultModelCmd env ( model, Cmd.none )
+                        resultModelCmd env.selectedItems ( model, Cmd.none )
 
                     else
-                        resultModelCmd env
+                        resultModelCmd env.selectedItems
                             ( { model | viewMode = SelectView { svm | action = EditSelected } }
                             , Cmd.none
                             )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         MergeSelectedItems ->
             case model.viewMode of
                 SelectView svm ->
                     if svm.action == MergeSelected then
-                        resultModelCmd env
+                        resultModelCmd env.selectedItems
                             ( { model
                                 | viewMode =
                                     SelectView
@@ -582,7 +578,7 @@ update texts env msg model =
                                     ( mm, mc ) =
                                         Comp.ItemMerge.initQuery env.flags model.searchMenuModel.searchMode q
                                 in
-                                resultModelCmd env
+                                resultModelCmd env.selectedItems
                                     ( { model
                                         | viewMode =
                                             SelectView
@@ -595,10 +591,10 @@ update texts env msg model =
                                     )
 
                             Nothing ->
-                                resultModelCmd env ( model, Cmd.none )
+                                resultModelCmd env.selectedItems ( model, Cmd.none )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         MergeItemsMsg lmsg ->
             case model.viewMode of
@@ -623,18 +619,20 @@ update texts env msg model =
                     in
                     if result.outcome == Comp.ItemMerge.OutcomeMerged then
                         update texts
+                            bookmarkId
+                            lastViewedItemId
                             env
                             (DoSearch model.searchTypeDropdownValue)
                             model_
 
                     else
-                        resultModelCmd env
+                        resultModelCmd env.selectedItems
                             ( model_
                             , Cmd.map MergeItemsMsg result.cmd
                             )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         PublishSelectedItems ->
             case model.viewMode of
@@ -644,7 +642,7 @@ update texts env msg model =
                             ( mm, mc ) =
                                 Comp.PublishItems.init env.flags
                         in
-                        resultModelCmd env
+                        resultModelCmd env.selectedItems
                             ( { model
                                 | viewMode =
                                     SelectView
@@ -663,7 +661,7 @@ update texts env msg model =
                                     ( mm, mc ) =
                                         Comp.PublishItems.initQuery env.flags q
                                 in
-                                resultModelCmd env
+                                resultModelCmd env.selectedItems
                                     ( { model
                                         | viewMode =
                                             SelectView
@@ -676,10 +674,10 @@ update texts env msg model =
                                     )
 
                             Nothing ->
-                                resultModelCmd env ( model, Cmd.none )
+                                resultModelCmd env.selectedItems ( model, Cmd.none )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         PublishItemsMsg lmsg ->
             case model.viewMode of
@@ -701,18 +699,20 @@ update texts env msg model =
                     in
                     if result.outcome == Comp.PublishItems.OutcomeDone then
                         update texts
+                            bookmarkId
+                            lastViewedItemId
                             env
                             (DoSearch model.searchTypeDropdownValue)
                             model_
 
                     else
-                        resultModelCmd env
+                        resultModelCmd env.selectedItems
                             ( model_
                             , Cmd.map PublishItemsMsg result.cmd
                             )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         EditMenuMsg lmsg ->
             case model.viewMode of
@@ -755,14 +755,14 @@ update texts env msg model =
                                 res.change
                                 (MultiUpdateResp res.change)
                     in
-                    makeResult env
+                    makeResult env.selectedItems
                         ( { model | viewMode = SelectView svm_ }
                         , Cmd.batch [ cmd_, upCmd ]
                         , sub_
                         )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         MultiUpdateResp change (Ok res) ->
             let
@@ -771,23 +771,23 @@ update texts env msg model =
             in
             if res.success then
                 -- replace changed items in the view
-                resultModelCmd env ( nm, loadChangedItems env.flags model.searchMenuModel.searchMode env.selectedItems )
+                resultModelCmd env.selectedItems ( nm, loadChangedItems env.flags model.searchMenuModel.searchMode env.selectedItems )
 
             else
-                resultModelCmd env ( nm, Cmd.none )
+                resultModelCmd env.selectedItems ( nm, Cmd.none )
 
         MultiUpdateResp change (Err _) ->
-            makeResult env
+            makeResult env.selectedItems
                 ( updateSelectViewNameState False model change
                 , Cmd.none
                 , Sub.none
                 )
 
         ReplaceChangedItemsResp (Ok items) ->
-            resultModelCmd env ( replaceItems model items, Cmd.none )
+            resultModelCmd env.selectedItems ( replaceItems model items, Cmd.none )
 
         ReplaceChangedItemsResp (Err _) ->
-            resultModelCmd env ( model, Cmd.none )
+            resultModelCmd env.selectedItems ( model, Cmd.none )
 
         UiSettingsUpdated ->
             let
@@ -805,7 +805,7 @@ update texts env msg model =
                 model_ =
                     { model | viewMode = viewMode }
             in
-            update texts env (DoSearch model.lastSearchType) model_
+            update texts bookmarkId lastViewedItemId env (DoSearch model.lastSearchType) model_
 
         SearchStatsResp result ->
             let
@@ -815,7 +815,7 @@ update texts env msg model =
                 stats =
                     Result.withDefault model.searchStats result
             in
-            update texts env lm { model | searchStats = stats }
+            update texts bookmarkId lastViewedItemId env lm { model | searchStats = stats }
 
         TogglePreviewFullWidth ->
             let
@@ -825,7 +825,7 @@ update texts env msg model =
                 cmd =
                     Api.saveUserClientSettingsBy env.flags newSettings ClientSettingsSaveResp
             in
-            resultModelCmd env ( { model | viewMenuOpen = False }, cmd )
+            resultModelCmd env.selectedItems ( { model | viewMenuOpen = False }, cmd )
 
         ClientSettingsSaveResp (Ok res) ->
             if res.success then
@@ -837,10 +837,10 @@ update texts env msg model =
                 }
 
             else
-                resultModelCmd env ( model, Cmd.none )
+                resultModelCmd env.selectedItems ( model, Cmd.none )
 
         ClientSettingsSaveResp (Err _) ->
-            resultModelCmd env ( model, Cmd.none )
+            resultModelCmd env.selectedItems ( model, Cmd.none )
 
         PowerSearchMsg lm ->
             let
@@ -855,19 +855,19 @@ update texts env msg model =
             in
             case result.action of
                 Comp.PowerSearchInput.NoAction ->
-                    makeResult env ( model_, cmd_, Sub.map PowerSearchMsg result.subs )
+                    makeResult env.selectedItems ( model_, cmd_, Sub.map PowerSearchMsg result.subs )
 
                 Comp.PowerSearchInput.SubmitSearch ->
-                    update texts env (DoSearch model_.searchTypeDropdownValue) model_
+                    update texts bookmarkId lastViewedItemId env (DoSearch model_.searchTypeDropdownValue) model_
 
         KeyUpPowerSearchbarMsg (Just Enter) ->
-            update texts env (DoSearch model.searchTypeDropdownValue) model
+            update texts bookmarkId lastViewedItemId env (DoSearch model.searchTypeDropdownValue) model
 
         KeyUpPowerSearchbarMsg _ ->
-            resultModelCmd env ( model, Cmd.none )
+            resultModelCmd env.selectedItems ( model, Cmd.none )
 
         RemoveItem id ->
-            update texts env (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
+            update texts bookmarkId lastViewedItemId env (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
 
         TogglePublishCurrentQueryView ->
             case createQuery env.selectedItems model of
@@ -876,30 +876,33 @@ update texts env msg model =
                         ( pm, pc ) =
                             Comp.PublishItems.initQuery env.flags q
                     in
-                    resultModelCmd env ( { model | viewMode = PublishView pm, viewMenuOpen = False }, Cmd.map PublishViewMsg pc )
+                    resultModelCmd env.selectedItems
+                        ( { model | viewMode = PublishView pm, viewMenuOpen = False }
+                        , Cmd.map PublishViewMsg pc
+                        )
 
                 Nothing ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         ToggleBookmarkCurrentQueryView ->
             case createQuery env.selectedItems model of
                 Just q ->
                     case model.topWidgetModel of
                         BookmarkQuery _ ->
-                            resultModelCmd env ( { model | topWidgetModel = TopWidgetHidden, viewMenuOpen = False }, Cmd.none )
+                            resultModelCmd env.selectedItems ( { model | topWidgetModel = TopWidgetHidden, viewMenuOpen = False }, Cmd.none )
 
                         TopWidgetHidden ->
                             let
                                 ( qm, qc ) =
                                     Comp.BookmarkQueryManage.init (Q.render q)
                             in
-                            resultModelCmd env
+                            resultModelCmd env.selectedItems
                                 ( { model | topWidgetModel = BookmarkQuery qm, viewMenuOpen = False }
                                 , Cmd.map BookmarkQueryMsg qc
                                 )
 
                 Nothing ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         BookmarkQueryMsg lm ->
             case model.topWidgetModel of
@@ -927,7 +930,7 @@ update texts env msg model =
                             else
                                 Cmd.none
                     in
-                    makeResult env
+                    makeResult env.selectedItems
                         ( { model | topWidgetModel = nextModel }
                         , Cmd.batch
                             [ Cmd.map BookmarkQueryMsg res.cmd
@@ -937,7 +940,7 @@ update texts env msg model =
                         )
 
                 TopWidgetHidden ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         PublishViewMsg lmsg ->
             case model.viewMode of
@@ -948,22 +951,22 @@ update texts env msg model =
                     in
                     case result.outcome of
                         Comp.PublishItems.OutcomeInProgress ->
-                            resultModelCmd env
+                            resultModelCmd env.selectedItems
                                 ( { model | viewMode = PublishView result.model }
                                 , Cmd.map PublishViewMsg result.cmd
                                 )
 
                         Comp.PublishItems.OutcomeDone ->
-                            resultModelCmd env
+                            resultModelCmd env.selectedItems
                                 ( { model | viewMode = SearchView }
                                 , Cmd.map SearchMenuMsg (Comp.SearchMenu.refreshBookmarks env.flags)
                                 )
 
                 _ ->
-                    resultModelCmd env ( model, Cmd.none )
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
 
         ToggleViewMenu ->
-            resultModelCmd env ( { model | viewMenuOpen = not model.viewMenuOpen }, Cmd.none )
+            resultModelCmd env.selectedItems ( { model | viewMenuOpen = not model.viewMenuOpen }, Cmd.none )
 
         ToggleShowGroups ->
             let
@@ -973,7 +976,7 @@ update texts env msg model =
                 cmd =
                     Api.saveUserClientSettingsBy env.flags newSettings ClientSettingsSaveResp
             in
-            resultModelCmd env ( { model | viewMenuOpen = False }, cmd )
+            resultModelCmd env.selectedItems ( { model | viewMenuOpen = False }, cmd )
 
         ToggleArrange am ->
             let
@@ -983,7 +986,19 @@ update texts env msg model =
                 cmd =
                     Api.saveUserClientSettingsBy env.flags newSettings ClientSettingsSaveResp
             in
-            resultModelCmd env ( { model | viewMenuOpen = False }, cmd )
+            resultModelCmd env.selectedItems ( { model | viewMenuOpen = False }, cmd )
+
+        ItemSelectionChanged ->
+            if Data.ItemIds.isEmpty env.selectedItems then
+                update texts
+                    bookmarkId
+                    lastViewedItemId
+                    env
+                    (SearchMenuMsg <| Comp.SearchMenu.setIncludeSelection False)
+                    model
+
+            else
+                resultModelCmd env.selectedItems ( model, Cmd.none )
 
 
 
@@ -1068,16 +1083,16 @@ loadChangedItems flags smode ids =
         Api.itemSearch flags search ReplaceChangedItemsResp
 
 
-scrollToCard : Env.Update -> Model -> UpdateResult
-scrollToCard env model =
+scrollToCard : ItemIds -> Maybe String -> Model -> UpdateResult
+scrollToCard selection lastViewedItemId model =
     let
         scroll id =
             Scroll.scrollElementY "item-card-list" id 0.5 0.5
     in
-    makeResult env <|
-        case env.lastViewedItemId of
+    makeResult selection <|
+        case lastViewedItemId of
             Just id ->
-                ( { model | scrollToCard = env.lastViewedItemId }
+                ( { model | scrollToCard = lastViewedItemId }
                 , Task.attempt ScrollResult (scroll id)
                 , Sub.none
                 )
@@ -1091,8 +1106,8 @@ loadEditModel flags =
     Cmd.map EditMenuMsg (Comp.ItemDetail.MultiEditMenu.loadModel flags)
 
 
-doSearch : Env.Update -> SearchParam -> Model -> UpdateResult
-doSearch env param model =
+doSearch : ItemIds -> SearchParam -> Model -> UpdateResult
+doSearch selection param model =
     let
         param_ =
             { param | offset = 0 }
@@ -1100,7 +1115,7 @@ doSearch env param model =
         searchCmd =
             doSearchCmd param_ model
     in
-    resultModelCmd env
+    resultModelCmd selection
         ( { model
             | searchInProgress = True
             , searchOffset = 0
@@ -1135,16 +1150,16 @@ doSearchMore env model =
     )
 
 
-resultModelCmd : Env.Update -> ( Model, Cmd Msg ) -> UpdateResult
-resultModelCmd env ( m, c ) =
-    makeResult env ( m, c, Sub.none )
+resultModelCmd : ItemIds -> ( Model, Cmd Msg ) -> UpdateResult
+resultModelCmd selection ( m, c ) =
+    makeResult selection ( m, c, Sub.none )
 
 
-makeResult : Env.Update -> ( Model, Cmd Msg, Sub Msg ) -> UpdateResult
-makeResult env ( m, c, s ) =
+makeResult : ItemIds -> ( Model, Cmd Msg, Sub Msg ) -> UpdateResult
+makeResult selection ( m, c, s ) =
     { model = m
     , cmd = c
     , sub = s
     , appEvent = AppNothing
-    , selectedItems = env.selectedItems
+    , selectedItems = selection
     }

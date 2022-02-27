@@ -51,6 +51,8 @@ type alias Texts =
     , trashcan : String
     , bookmarks : String
     , selection : String
+    , showSelection : String
+    , clearSelection : String
     }
 
 
@@ -86,6 +88,8 @@ gb =
     , trashcan = "Trash"
     , bookmarks = "Bookmarks"
     , selection = "Selection"
+    , showSelection = "Show selection"
+    , clearSelection = "Clear selection"
     }
 
 
@@ -121,4 +125,6 @@ de =
     , trashcan = "Papierkorb"
     , bookmarks = "Bookmarks"
     , selection = "Auswahl"
+    , showSelection = "Auswahl anzeigen"
+    , clearSelection = "Auswahl aufheben"
     }

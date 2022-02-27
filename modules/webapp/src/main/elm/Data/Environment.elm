@@ -14,9 +14,7 @@ import Data.UiSettings exposing (UiSettings)
 
 
 type alias Update =
-    { bookmarkId : Maybe String
-    , lastViewedItemId : Maybe String
-    , key : Nav.Key
+    { key : Nav.Key
     , selectedItems : ItemIds
     , flags : Flags
     , settings : UiSettings
