@@ -42,7 +42,6 @@ jobs:
             modules/restserver/target/universal/docspell-restserver-${{ env.DOCSPELL_VERSION }}.zip
             modules/joex/target/docspell-joex_${{ env.DOCSPELL_VERSION }}_all.deb
             modules/joex/target/universal/docspell-joex-${{ env.DOCSPELL_VERSION }}.zip
-            tools/target/docspell-tools-${{ env.DOCSPELL_VERSION }}.zip
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx

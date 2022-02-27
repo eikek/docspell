@@ -1038,7 +1038,7 @@ addCommandAlias(
 addCommandAlias("make-zip", ";restserver/Universal/packageBin ;joex/Universal/packageBin")
 addCommandAlias("make-deb", ";restserver/Debian/packageBin ;joex/Debian/packageBin")
 addCommandAlias("make-tools", ";root/toolsPackage")
-addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb ;make-tools")
+addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb")
 
 addCommandAlias("ci", "make; lint; test")
 addCommandAlias(
