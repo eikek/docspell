@@ -24,6 +24,7 @@ import Data.Fields
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.ItemArrange exposing (ItemArrange)
+import Data.ItemIds exposing (ItemIdChange, ItemIds)
 import Data.ItemSelection exposing (ItemSelection)
 import Data.ItemTemplate as IT
 import Data.UiSettings exposing (UiSettings)
@@ -49,7 +50,7 @@ type alias Model =
 
 type Msg
     = CyclePreview ItemLight
-    | ToggleSelectItem (Set String) String
+    | ToggleSelectItem ItemIds String
     | ItemDDMsg DD.Msg
     | SetLinkTarget LinkTarget
     | ToggleRowOpen String
@@ -70,7 +71,7 @@ type alias ViewConfig =
 type alias UpdateResult =
     { model : Model
     , dragModel : DD.Model
-    , selection : ItemSelection
+    , selection : ItemIdChange
     , linkTarget : LinkTarget
     , toggleRow : Maybe String
     }
@@ -117,25 +118,21 @@ update : DD.Model -> Msg -> Model -> UpdateResult
 update ddm msg model =
     case msg of
         ToggleRowOpen id ->
-            UpdateResult model ddm Data.ItemSelection.Inactive LinkNone (Just id)
+            UpdateResult model ddm Data.ItemIds.noChange LinkNone (Just id)
 
         ItemDDMsg lm ->
             let
                 ddd =
                     DD.update lm ddm
             in
-            UpdateResult model ddd.model Data.ItemSelection.Inactive LinkNone Nothing
+            UpdateResult model ddd.model Data.ItemIds.noChange LinkNone Nothing
 
         ToggleSelectItem ids id ->
             let
                 newSet =
-                    if Set.member id ids then
-                        Set.remove id ids
-
-                    else
-                        Set.insert id ids
+                    Data.ItemIds.toggle ids id
             in
-            UpdateResult model ddm (Data.ItemSelection.Active newSet) LinkNone Nothing
+            UpdateResult model ddm newSet LinkNone Nothing
 
         CyclePreview item ->
             let
@@ -147,12 +144,12 @@ update ddm msg model =
             in
             UpdateResult { model | previewAttach = next }
                 ddm
-                Data.ItemSelection.Inactive
+                Data.ItemIds.noChange
                 LinkNone
                 Nothing
 
         SetLinkTarget target ->
-            UpdateResult model ddm Data.ItemSelection.Inactive target Nothing
+            UpdateResult model ddm Data.ItemIds.noChange target Nothing
 
 
 
@@ -532,7 +529,7 @@ viewCard texts cfg settings flags model item =
 
 
 mkCardAction : Texts -> ViewConfig -> UiSettings -> ItemLight -> List (Attribute Msg)
-mkCardAction texts cfg settings item =
+mkCardAction texts cfg _ item =
     case cfg.selection of
         Data.ItemSelection.Inactive ->
             case cfg.arrange of
@@ -977,7 +974,7 @@ isSelected : ViewConfig -> String -> Bool
 isSelected cfg id =
     case cfg.selection of
         Data.ItemSelection.Active ids ->
-            Set.member id ids
+            Data.ItemIds.isMember ids id
 
         Data.ItemSelection.Inactive ->
             False

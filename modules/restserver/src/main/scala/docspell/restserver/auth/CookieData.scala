@@ -26,7 +26,8 @@ case class CookieData(auth: AuthToken) {
       domain = None,
       path = Some(path.asString),
       httpOnly = true,
-      secure = sec
+      secure = sec,
+      sameSite = Some(SameSite.Strict)
     )
   }
 

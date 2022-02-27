@@ -50,6 +50,9 @@ type alias Texts =
     , direction : Direction -> String
     , trashcan : String
     , bookmarks : String
+    , selection : String
+    , showSelection : String
+    , clearSelection : String
     }
 
 
@@ -84,6 +87,9 @@ gb =
     , direction = Messages.Data.Direction.gb
     , trashcan = "Trash"
     , bookmarks = "Bookmarks"
+    , selection = "Selection"
+    , showSelection = "Show selection"
+    , clearSelection = "Clear selection"
     }
 
 
@@ -118,4 +124,7 @@ de =
     , direction = Messages.Data.Direction.de
     , trashcan = "Papierkorb"
     , bookmarks = "Bookmarks"
+    , selection = "Auswahl"
+    , showSelection = "Auswahl anzeigen"
+    , clearSelection = "Auswahl aufheben"
     }

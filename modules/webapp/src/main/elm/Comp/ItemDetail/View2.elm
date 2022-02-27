@@ -27,8 +27,10 @@ import Comp.ItemDetail.SingleAttachment
 import Comp.ItemMail
 import Comp.MenuBar as MB
 import Comp.SentMails
+import Data.Environment as Env
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
+import Data.ItemIds
 import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -39,13 +41,13 @@ import Page exposing (Page(..))
 import Styles as S
 
 
-view : Texts -> Flags -> ItemNav -> UiSettings -> Model -> Html Msg
-view texts flags inav settings model =
+view : Texts -> ItemNav -> Env.View -> Model -> Html Msg
+view texts inav env model =
     div [ class "flex flex-col h-full" ]
-        [ header texts settings inav model
+        [ header texts inav env model
 
         --        , menuBar texts inav settings model
-        , body texts flags inav settings model
+        , body texts env.flags inav env.settings model
         , itemModal texts model
         ]
 
@@ -60,25 +62,35 @@ itemModal texts model =
             span [ class "hidden" ] []
 
 
-header : Texts -> UiSettings -> ItemNav -> Model -> Html Msg
-header texts settings inav model =
+header : Texts -> ItemNav -> Env.View -> Model -> Html Msg
+header texts inav env model =
     div [ class "my-3" ]
         [ Comp.ItemDetail.ItemInfoHeader.view texts.itemInfoHeader
-            settings
+            env.settings
             model
-            (menuBar texts inav settings model)
+            (menuBar texts inav env model)
         ]
 
 
-menuBar : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
-menuBar texts inav settings model =
+menuBar : Texts -> ItemNav -> Env.View -> Model -> Html Msg
+menuBar texts inav env model =
     let
         keyDescr name =
-            if settings.itemDetailShortcuts && model.menuOpen then
+            if env.settings.itemDetailShortcuts && model.menuOpen then
                 " " ++ texts.key ++ "'" ++ name ++ "'."
 
             else
                 ""
+
+        isSelected =
+            Data.ItemIds.isMember env.selectedItems model.item.id
+
+        foldSelected fsel funsel =
+            if isSelected then
+                fsel
+
+            else
+                funsel
     in
     MB.view
         { start =
@@ -210,7 +222,18 @@ menuBar texts inav settings model =
                 , toggleMenu = ToggleMobileItemMenu
                 , menuOpen = model.mobileItemMenuOpen
                 , items =
-                    [ { icon = i [ class "fa fa-envelope font-thin" ] []
+                    [ { icon =
+                            foldSelected
+                                (i [ class "fa fa-check-square dark:text-lime-400 text-lime-600" ] [])
+                                (i [ class "fa fa-tasks" ] [])
+                      , label = foldSelected texts.deselectItem texts.selectItem
+                      , disabled = False
+                      , attrs =
+                            [ href "#"
+                            , onClick ToggleSelectItem
+                            ]
+                      }
+                    , { icon = i [ class "fa fa-envelope font-thin" ] []
                       , label = texts.sendMail
                       , disabled = False
                       , attrs =
@@ -282,12 +305,27 @@ menuBar texts inav settings model =
         , end =
             [ MB.CustomElement <|
                 a
+                    [ href "#"
+                    , onClick ToggleSelectItem
+                    , title (foldSelected texts.deselectItem texts.selectItem)
+                    , class "hidden md:flex flex-row items-center h-full "
+                    , classList
+                        [ ( S.greenButton, isSelected )
+                        , ( S.secondaryBasicButton, not isSelected )
+                        ]
+                    ]
+                    [ foldSelected
+                        (i [ class "fa fa-square-check" ] [])
+                        (i [ class "fa fa-list-check" ] [])
+                    ]
+            , MB.CustomElement <|
+                a
                     [ class S.secondaryBasicButton
                     , href "#"
                     , onClick UnconfirmItem
                     , title texts.unconfirmItemMetadata
-                    , classList [ ( "hidden", model.item.state == "created" ) ]
-                    , class "hidden md:block"
+                    , class "hidden"
+                    , classList [ ( "md:block", model.item.state /= "created" ) ]
                     ]
                     [ i [ class "fa fa-eye-slash font-thin" ] []
                     ]

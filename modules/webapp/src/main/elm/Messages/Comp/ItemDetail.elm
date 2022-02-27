@@ -57,6 +57,8 @@ type alias Texts =
     , mailSendSuccessful : String
     , showQrCode : String
     , close : String
+    , selectItem : String
+    , deselectItem : String
     }
 
 
@@ -93,6 +95,8 @@ gb =
     , mailSendSuccessful = "Mail sent."
     , showQrCode = "Show URL as QR code"
     , close = "Close"
+    , selectItem = "Select this item"
+    , deselectItem = "Deselect this item"
     }
 
 
@@ -115,7 +119,7 @@ de =
     , addMoreFiles = "Diesem Dokument weitere Dateien anfügen"
     , confirmItemMetadata = "Metadaten bestätigen"
     , confirm = "Bestätige"
-    , unconfirmItemMetadata = "Widerrufe"
+    , unconfirmItemMetadata = "Widerrufe Bestätigung"
     , reprocessItem = "Das Dokument erneut verarbeiten"
     , deleteThisItem = "Das Dokument löschen"
     , undeleteThisItem = "Das Dokument wiederherstellen"
@@ -129,4 +133,6 @@ de =
     , mailSendSuccessful = "E-Mail wurde versendet."
     , showQrCode = "Link als QR code anzeigen"
     , close = "Schließen"
+    , selectItem = "Zur Auswahl hinzufügen"
+    , deselectItem = "Aus Auswahl entfernen"
     }
