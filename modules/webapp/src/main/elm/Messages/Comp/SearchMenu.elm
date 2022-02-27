@@ -50,6 +50,7 @@ type alias Texts =
     , direction : Direction -> String
     , trashcan : String
     , bookmarks : String
+    , selection : String
     }
 
 
@@ -84,6 +85,7 @@ gb =
     , direction = Messages.Data.Direction.gb
     , trashcan = "Trash"
     , bookmarks = "Bookmarks"
+    , selection = "Selection"
     }
 
 
@@ -118,4 +120,5 @@ de =
     , direction = Messages.Data.Direction.de
     , trashcan = "Papierkorb"
     , bookmarks = "Bookmarks"
+    , selection = "Auswahl"
     }

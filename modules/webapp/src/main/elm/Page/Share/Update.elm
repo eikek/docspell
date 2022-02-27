@@ -14,6 +14,7 @@ import Comp.PowerSearchInput
 import Comp.SearchMenu
 import Comp.SharePasswordForm
 import Data.Flags exposing (Flags)
+import Data.ItemIds
 import Data.ItemQuery as Q
 import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
@@ -262,7 +263,7 @@ makeSearchCmd flags doInit model =
     let
         xq =
             Q.and
-                [ Comp.SearchMenu.getItemQuery model.searchMenuModel
+                [ Comp.SearchMenu.getItemQuery Data.ItemIds.empty model.searchMenuModel
                 , Maybe.map Q.Fragment <|
                     case model.searchMode of
                         SearchBarNormal ->

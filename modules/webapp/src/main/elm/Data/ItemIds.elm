@@ -9,6 +9,7 @@ module Data.ItemIds exposing
     ( ItemIdChange
     , ItemIds
     , apply
+    , clearAll
     , combine
     , combineAll
     , deselect
@@ -17,6 +18,7 @@ module Data.ItemIds exposing
     , isEmpty
     , isMember
     , noChange
+    , nonEmpty
     , select
     , selectAll
     , size
@@ -44,6 +46,11 @@ isEmpty (ItemIds ids) =
     Set.isEmpty ids
 
 
+nonEmpty : ItemIds -> Bool
+nonEmpty ids =
+    not (isEmpty ids)
+
+
 isMember : ItemIds -> String -> Bool
 isMember (ItemIds ids) id =
     Set.member id ids
@@ -69,9 +76,13 @@ toList (ItemIds ids) =
     Set.toList ids
 
 
-toQuery : ItemIds -> ItemQuery
+toQuery : ItemIds -> Maybe ItemQuery
 toQuery (ItemIds ids) =
-    Data.ItemQuery.ItemIdIn (Set.toList ids)
+    if Set.isEmpty ids then
+        Nothing
+
+    else
+        Just <| Data.ItemQuery.ItemIdIn (Set.toList ids)
 
 
 
@@ -82,17 +93,22 @@ type ItemIdChange
     = ItemIdChange
         { remove : Set String
         , add : Set String
+        , clear : Bool
         }
 
 
 apply : ItemIds -> ItemIdChange -> ItemIds
-apply (ItemIds ids) (ItemIdChange { remove, add }) =
-    ItemIds (Set.diff ids remove |> Set.union add)
+apply (ItemIds ids) (ItemIdChange { remove, add, clear }) =
+    if clear then
+        empty
+
+    else
+        ItemIds (Set.diff ids remove |> Set.union add)
 
 
 noChange : ItemIdChange
 noChange =
-    ItemIdChange { remove = Set.empty, add = Set.empty }
+    ItemIdChange { remove = Set.empty, add = Set.empty, clear = False }
 
 
 combine : ItemIdChange -> ItemIdChange -> ItemIdChange
@@ -100,6 +116,7 @@ combine (ItemIdChange c1) (ItemIdChange c2) =
     ItemIdChange
         { remove = Set.union c1.remove c2.remove
         , add = Set.union c1.add c2.add
+        , clear = False
         }
 
 
@@ -110,17 +127,22 @@ combineAll all =
 
 select : String -> ItemIdChange
 select id =
-    ItemIdChange { add = Set.singleton id, remove = Set.empty }
+    ItemIdChange { add = Set.singleton id, remove = Set.empty, clear = False }
 
 
 selectAll : Set String -> ItemIdChange
 selectAll ids =
-    ItemIdChange { add = ids, remove = Set.empty }
+    ItemIdChange { add = ids, remove = Set.empty, clear = False }
 
 
 deselect : String -> ItemIdChange
 deselect id =
-    ItemIdChange { add = Set.empty, remove = Set.singleton id }
+    ItemIdChange { add = Set.empty, remove = Set.singleton id, clear = False }
+
+
+clearAll : ItemIdChange
+clearAll =
+    ItemIdChange { add = Set.empty, remove = Set.empty, clear = True }
 
 
 toggle : ItemIds -> String -> ItemIdChange

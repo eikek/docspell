@@ -46,7 +46,7 @@ viewSidebar texts env model =
         , class S.sidebarBg
         , classList [ ( "hidden", not env.sidebarVisible ) ]
         ]
-        [ Page.Search.SideMenu.view texts.sideMenu env.flags env.settings model
+        [ Page.Search.SideMenu.view texts.sideMenu env model
         ]
 
 
@@ -188,17 +188,17 @@ itemsBar : Texts -> Env.View -> Model -> List (Html Msg)
 itemsBar texts env model =
     case model.viewMode of
         SearchView ->
-            [ defaultMenuBar texts env.flags env.settings model ]
+            [ defaultMenuBar texts env model ]
 
         SelectView svm ->
             [ editMenuBar texts model env.selectedItems svm ]
 
         PublishView _ ->
-            [ defaultMenuBar texts env.flags env.settings model ]
+            [ defaultMenuBar texts env model ]
 
 
-defaultMenuBar : Texts -> Flags -> UiSettings -> Model -> Html Msg
-defaultMenuBar texts flags settings model =
+defaultMenuBar : Texts -> Env.View -> Model -> Html Msg
+defaultMenuBar texts env model =
     let
         btnStyle =
             S.secondaryBasicButton ++ " text-sm"
@@ -226,7 +226,7 @@ defaultMenuBar texts flags settings model =
                         |> Maybe.withDefault (value "")
                     , class (String.replace "rounded" "" S.textInput)
                     , class "py-2 text-sm"
-                    , if flags.config.fullTextSearchEnabled then
+                    , if env.flags.config.fullTextSearchEnabled then
                         class " border-r-0 rounded-l"
 
                       else
@@ -237,7 +237,7 @@ defaultMenuBar texts flags settings model =
                     [ class S.secondaryBasicButtonPlain
                     , class "text-sm px-4 py-2 border rounded-r"
                     , classList
-                        [ ( "hidden", not flags.config.fullTextSearchEnabled )
+                        [ ( "hidden", not env.flags.config.fullTextSearchEnabled )
                         ]
                     , href "#"
                     , onClick ToggleSearchType
@@ -260,10 +260,10 @@ defaultMenuBar texts flags settings model =
                 ]
 
         isCardView =
-            settings.itemSearchArrange == Data.ItemArrange.Cards
+            env.settings.itemSearchArrange == Data.ItemArrange.Cards
 
         isListView =
-            settings.itemSearchArrange == Data.ItemArrange.List
+            env.settings.itemSearchArrange == Data.ItemArrange.List
 
         menuSep =
             { icon = i [] []
@@ -276,7 +276,7 @@ defaultMenuBar texts flags settings model =
     MB.view
         { start =
             [ MB.CustomElement <|
-                if settings.powerSearchEnabled then
+                if env.settings.powerSearchEnabled then
                     powerSearchBar
 
                 else
@@ -316,7 +316,7 @@ defaultMenuBar texts flags settings model =
                 , menuOpen = model.viewMenuOpen
                 , items =
                     [ { icon =
-                            if settings.itemSearchShowGroups then
+                            if env.settings.itemSearchShowGroups then
                                 i [ class "fa fa-check-square font-thin" ] []
 
                             else
@@ -370,16 +370,16 @@ defaultMenuBar texts flags settings model =
                     , menuSep
                     , { label = texts.shareResults
                       , icon = Icons.shareIcon ""
-                      , disabled = createQuery model == Nothing
+                      , disabled = createQuery env.selectedItems model == Nothing
                       , attrs =
                             [ title <|
-                                if createQuery model == Nothing then
+                                if createQuery env.selectedItems model == Nothing then
                                     texts.nothingSelectedToShare
 
                                 else
                                     texts.publishCurrentQueryTitle
                             , href "#"
-                            , if createQuery model == Nothing then
+                            , if createQuery env.selectedItems model == Nothing then
                                 class ""
 
                               else
@@ -388,16 +388,16 @@ defaultMenuBar texts flags settings model =
                       }
                     , { label = texts.bookmarkQuery
                       , icon = i [ class "fa fa-bookmark" ] []
-                      , disabled = createQuery model == Nothing
+                      , disabled = createQuery env.selectedItems model == Nothing
                       , attrs =
                             [ title <|
-                                if createQuery model == Nothing then
+                                if createQuery env.selectedItems model == Nothing then
                                     texts.nothingToBookmark
 
                                 else
                                     texts.bookmarkQuery
                             , href "#"
-                            , if createQuery model == Nothing then
+                            , if createQuery env.selectedItems model == Nothing then
                                 class ""
 
                               else
@@ -405,7 +405,7 @@ defaultMenuBar texts flags settings model =
                             ]
                       }
                     , { label =
-                            if settings.cardPreviewFullWidth then
+                            if env.settings.cardPreviewFullWidth then
                                 texts.fullHeightPreviewTitle
 
                             else
@@ -417,7 +417,7 @@ defaultMenuBar texts flags settings model =
                             , onClick TogglePreviewFullWidth
                             , classList
                                 [ ( "hidden sm:inline-block", False )
-                                , ( "bg-gray-200 dark:bg-slate-600", settings.cardPreviewFullWidth )
+                                , ( "bg-gray-200 dark:bg-slate-600", env.settings.cardPreviewFullWidth )
                                 ]
                             ]
                       }

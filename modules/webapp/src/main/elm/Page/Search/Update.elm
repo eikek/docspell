@@ -29,7 +29,6 @@ import Data.ItemIds exposing (ItemIds)
 import Data.ItemQuery as Q
 import Data.Items
 import Data.SearchMode exposing (SearchMode)
-import Data.UiSettings exposing (UiSettings)
 import Messages.Page.Search exposing (Texts)
 import Page exposing (Page(..))
 import Page.Search.Data exposing (..)
@@ -62,6 +61,7 @@ update texts env msg model =
                     , pageSize = env.settings.itemSearchPageSize
                     , offset = 0
                     , scroll = True
+                    , selectedItems = env.selectedItems
                     }
 
                 setBookmark =
@@ -111,9 +111,21 @@ update texts env msg model =
                                 BasicSearch
                     }
 
+                newSelection =
+                    Data.ItemIds.apply env.selectedItems nextState.selectionChange
+
+                searchParam =
+                    { flags = env.flags
+                    , searchType = BasicSearch
+                    , pageSize = env.settings.itemSearchPageSize
+                    , offset = 0
+                    , scroll = False
+                    , selectedItems = newSelection
+                    }
+
                 result =
                     if nextState.stateChange && not model.searchInProgress then
-                        doSearch env (SearchParam env.flags BasicSearch env.settings.itemSearchPageSize 0 False) newModel
+                        doSearch env searchParam newModel
 
                     else
                         resultModelCmd env ( newModel, Cmd.none )
@@ -126,6 +138,7 @@ update texts env msg model =
                         , dropCmd
                         ]
                 , sub = Sub.map SearchMenuMsg nextState.sub
+                , selectedItems = newSelection
             }
 
         SetLinkTarget lt ->
@@ -251,6 +264,7 @@ update texts env msg model =
                     , pageSize = env.settings.itemSearchPageSize
                     , offset = 0
                     , scroll = False
+                    , selectedItems = env.selectedItems
                     }
             in
             if model.searchInProgress then
@@ -267,6 +281,7 @@ update texts env msg model =
                     , pageSize = env.settings.itemSearchPageSize
                     , offset = model.searchOffset
                     , scroll = False
+                    , selectedItems = env.selectedItems
                     }
             in
             if model.searchInProgress then
@@ -292,7 +307,7 @@ update texts env msg model =
 
         LoadMore ->
             if model.moreAvailable then
-                doSearchMore env.flags env.settings model |> resultModelCmd env
+                doSearchMore env model |> resultModelCmd env
 
             else
                 resultModelCmd env ( model, Cmd.none )
@@ -344,7 +359,7 @@ update texts env msg model =
         SelectNoItems ->
             let
                 result =
-                    resultModelCmd env ( model, Cmd.none )
+                    update texts env (SearchMenuMsg <| Comp.SearchMenu.setIncludeSelection False) model
             in
             { result | selectedItems = Data.ItemIds.empty }
 
@@ -404,6 +419,7 @@ update texts env msg model =
                         , pageSize = env.settings.itemSearchPageSize
                         , offset = 0
                         , scroll = False
+                        , selectedItems = env.selectedItems
                         }
                 in
                 doSearch env param nm
@@ -559,28 +575,27 @@ update texts env msg model =
                             , Cmd.none
                             )
 
-                    else if Data.ItemIds.isEmpty env.selectedItems then
-                        resultModelCmd env ( model, Cmd.none )
-
                     else
-                        let
-                            ( mm, mc ) =
-                                Comp.ItemMerge.initQuery
-                                    env.flags
-                                    model.searchMenuModel.searchMode
-                                    (Data.ItemIds.toQuery env.selectedItems)
-                        in
-                        resultModelCmd env
-                            ( { model
-                                | viewMode =
-                                    SelectView
-                                        { svm
-                                            | action = MergeSelected
-                                            , mergeModel = mm
-                                        }
-                              }
-                            , Cmd.map MergeItemsMsg mc
-                            )
+                        case Data.ItemIds.toQuery env.selectedItems of
+                            Just q ->
+                                let
+                                    ( mm, mc ) =
+                                        Comp.ItemMerge.initQuery env.flags model.searchMenuModel.searchMode q
+                                in
+                                resultModelCmd env
+                                    ( { model
+                                        | viewMode =
+                                            SelectView
+                                                { svm
+                                                    | action = MergeSelected
+                                                    , mergeModel = mm
+                                                }
+                                      }
+                                    , Cmd.map MergeItemsMsg mc
+                                    )
+
+                            Nothing ->
+                                resultModelCmd env ( model, Cmd.none )
 
                 _ ->
                     resultModelCmd env ( model, Cmd.none )
@@ -641,26 +656,27 @@ update texts env msg model =
                             , Cmd.map PublishItemsMsg mc
                             )
 
-                    else if Data.ItemIds.isEmpty env.selectedItems then
-                        resultModelCmd env ( model, Cmd.none )
-
                     else
-                        let
-                            ( mm, mc ) =
-                                Comp.PublishItems.initQuery env.flags
-                                    (Data.ItemIds.toQuery env.selectedItems)
-                        in
-                        resultModelCmd env
-                            ( { model
-                                | viewMode =
-                                    SelectView
-                                        { svm
-                                            | action = PublishSelected
-                                            , publishModel = mm
-                                        }
-                              }
-                            , Cmd.map PublishItemsMsg mc
-                            )
+                        case Data.ItemIds.toQuery env.selectedItems of
+                            Just q ->
+                                let
+                                    ( mm, mc ) =
+                                        Comp.PublishItems.initQuery env.flags q
+                                in
+                                resultModelCmd env
+                                    ( { model
+                                        | viewMode =
+                                            SelectView
+                                                { svm
+                                                    | action = PublishSelected
+                                                    , publishModel = mm
+                                                }
+                                      }
+                                    , Cmd.map PublishItemsMsg mc
+                                    )
+
+                            Nothing ->
+                                resultModelCmd env ( model, Cmd.none )
 
                 _ ->
                     resultModelCmd env ( model, Cmd.none )
@@ -854,7 +870,7 @@ update texts env msg model =
             update texts env (ItemCardListMsg (Comp.ItemCardList.RemoveItem id)) model
 
         TogglePublishCurrentQueryView ->
-            case createQuery model of
+            case createQuery env.selectedItems model of
                 Just q ->
                     let
                         ( pm, pc ) =
@@ -866,7 +882,7 @@ update texts env msg model =
                     resultModelCmd env ( model, Cmd.none )
 
         ToggleBookmarkCurrentQueryView ->
-            case createQuery model of
+            case createQuery env.selectedItems model of
                 Just q ->
                     case model.topWidgetModel of
                         BookmarkQuery _ ->
@@ -1099,15 +1115,16 @@ linkTargetMsg linkTarget =
     Maybe.map SearchMenuMsg (Comp.SearchMenu.linkTargetMsg linkTarget)
 
 
-doSearchMore : Flags -> UiSettings -> Model -> ( Model, Cmd Msg )
-doSearchMore flags settings model =
+doSearchMore : Env.Update -> Model -> ( Model, Cmd Msg )
+doSearchMore env model =
     let
         param =
-            { flags = flags
+            { flags = env.flags
             , searchType = model.lastSearchType
-            , pageSize = settings.itemSearchPageSize
+            , pageSize = env.settings.itemSearchPageSize
             , offset = model.searchOffset
             , scroll = False
+            , selectedItems = env.selectedItems
             }
 
         cmd =

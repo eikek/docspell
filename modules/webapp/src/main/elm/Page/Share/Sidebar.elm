@@ -10,6 +10,7 @@ module Page.Share.Sidebar exposing (..)
 import Comp.SearchMenu
 import Comp.Tabs
 import Data.Flags exposing (Flags)
+import Data.ItemIds
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Page.Share exposing (Texts)
@@ -30,6 +31,7 @@ view texts flags model =
 
         searchMenuCfg =
             { overrideTabLook = hideTrashTab
+            , selectedItems = Data.ItemIds.empty
             }
     in
     div
