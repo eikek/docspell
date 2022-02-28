@@ -24,6 +24,7 @@ module Data.UiSettings exposing
     , merge
     , mergeDefaults
     , pdfUrl
+    , pdfView
     , storedUiSettingsDecoder
     , storedUiSettingsEncode
     , tagColor
@@ -41,8 +42,8 @@ import Data.ItemTemplate exposing (ItemTemplate)
 import Data.Pdf exposing (PdfMode)
 import Data.UiTheme exposing (UiTheme)
 import Dict exposing (Dict)
-import Html exposing (Attribute)
-import Html.Attributes as HA
+import Html exposing (Attribute, Html, embed, iframe)
+import Html.Attributes as HA exposing (src)
 import Json.Decode as Decode
 import Json.Decode.Pipeline as P
 import Json.Encode as Encode
@@ -424,6 +425,33 @@ pdfUrl settings flags originalUrl =
 
         Data.Pdf.Server ->
             Data.Pdf.serverUrl originalUrl
+
+
+pdfView : UiSettings -> Flags -> String -> List (Attribute msg) -> Html msg
+pdfView settings flags originalUrl attrs =
+    let
+        url =
+            pdfUrl settings flags originalUrl
+
+        native =
+            embed (src url :: attrs) []
+
+        fallback =
+            iframe (src url :: attrs) []
+    in
+    case settings.pdfMode of
+        Data.Pdf.Detect ->
+            if flags.pdfSupported then
+                native
+
+            else
+                fallback
+
+        Data.Pdf.Native ->
+            native
+
+        Data.Pdf.Server ->
+            fallback
 
 
 getUiLanguage : Flags -> UiSettings -> UiLanguage -> UiLanguage

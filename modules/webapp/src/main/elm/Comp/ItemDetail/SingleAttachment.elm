@@ -85,12 +85,12 @@ view texts flags settings model pos attach =
                 , style "max-height" "calc(100vh - 140px)"
                 , style "min-height" "500px"
                 ]
-                [ embed
-                    [ src <| Data.UiSettings.pdfUrl settings flags fileUrl
-                    , class "absolute h-full w-full top-0 left-0 mx-0 py-0"
+                [ Data.UiSettings.pdfView settings
+                    flags
+                    fileUrl
+                    [ class "absolute h-full w-full top-0 left-0 mx-0 py-0"
                     , id "ds-pdf-view-iframe"
                     ]
-                    []
                 ]
         ]
 
