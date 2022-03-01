@@ -11,6 +11,7 @@ module Messages.DateFormat exposing
     , formatDateShort
     , formatDateTimeLong
     , formatDateTimeShort
+    , formatIsoDateTimeUtc
     )
 
 import DateFormat exposing (Token)
@@ -20,6 +21,7 @@ import Time
     exposing
         ( Month(..)
         , Weekday(..)
+        , Zone
         )
 
 
@@ -72,6 +74,29 @@ formatDateShort lang millis =
 formatDateTimeShort : UiLanguage -> Int -> String
 formatDateTimeShort lang millis =
     format lang .dateTimeShort millis
+
+
+isoDateTimeFormatter : List Token
+isoDateTimeFormatter =
+    [ DateFormat.yearNumber
+    , DateFormat.text "-"
+    , DateFormat.monthFixed
+    , DateFormat.text "-"
+    , DateFormat.dayOfMonthFixed
+    , DateFormat.text "T"
+    , DateFormat.hourMilitaryNumber
+    , DateFormat.text ":"
+    , DateFormat.minuteFixed
+    , DateFormat.text ":"
+    , DateFormat.secondFixed
+    , DateFormat.text "Z"
+    ]
+
+
+formatIsoDateTimeUtc : Int -> String
+formatIsoDateTimeUtc millis =
+    Time.millisToPosix millis
+        |> DateFormat.format isoDateTimeFormatter Time.utc
 
 
 
