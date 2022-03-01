@@ -11,6 +11,7 @@ module Messages.Page.Search exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.Comp.BookmarkQueryManage
 import Messages.Comp.ItemCardList
@@ -61,14 +62,14 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , itemCardList = Messages.Comp.ItemCardList.gb
+    , itemCardList = Messages.Comp.ItemCardList.gb tz
     , searchStatsView = Messages.Comp.SearchStatsView.gb
     , sideMenu = Messages.Page.SearchSideMenu.gb
-    , itemMerge = Messages.Comp.ItemMerge.gb
-    , publishItems = Messages.Comp.PublishItems.gb
+    , itemMerge = Messages.Comp.ItemMerge.gb tz
+    , publishItems = Messages.Comp.PublishItems.gb tz
     , bookmarkManage = Messages.Comp.BookmarkQueryManage.gb
     , contentSearch = "Content search…"
     , searchInNames = "Search in names…"
@@ -103,14 +104,14 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , itemCardList = Messages.Comp.ItemCardList.de
+    , itemCardList = Messages.Comp.ItemCardList.de tz
     , searchStatsView = Messages.Comp.SearchStatsView.de
     , sideMenu = Messages.Page.SearchSideMenu.de
-    , itemMerge = Messages.Comp.ItemMerge.de
-    , publishItems = Messages.Comp.PublishItems.de
+    , itemMerge = Messages.Comp.ItemMerge.de tz
+    , publishItems = Messages.Comp.PublishItems.de tz
     , bookmarkManage = Messages.Comp.BookmarkQueryManage.de
     , contentSearch = "Volltextsuche…"
     , searchInNames = "Suche in Namen…"

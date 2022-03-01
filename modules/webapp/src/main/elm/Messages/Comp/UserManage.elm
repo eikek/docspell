@@ -11,6 +11,7 @@ module Messages.Comp.UserManage exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -38,9 +39,9 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
-    { userTable = Messages.Comp.UserTable.gb
+gb : TimeZone -> Texts
+gb tz =
+    { userTable = Messages.Comp.UserTable.gb tz
     , userForm = Messages.Comp.UserForm.gb
     , basics = Messages.Basics.gb
     , httpError = Messages.Comp.HttpError.gb
@@ -59,9 +60,9 @@ gb =
     }
 
 
-de : Texts
-de =
-    { userTable = Messages.Comp.UserTable.de
+de : TimeZone -> Texts
+de tz =
+    { userTable = Messages.Comp.UserTable.de tz
     , userForm = Messages.Comp.UserForm.de
     , basics = Messages.Basics.de
     , httpError = Messages.Comp.HttpError.de

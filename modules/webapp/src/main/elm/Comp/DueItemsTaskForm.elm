@@ -29,6 +29,7 @@ import Data.CalEvent exposing (CalEvent)
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.TagOrder
+import Data.TimeZone exposing (TimeZone)
 import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
@@ -237,8 +238,8 @@ withValidSettings mkcmd model =
             )
 
 
-update : Flags -> Msg -> Model -> ( Model, Action, Cmd Msg )
-update flags msg model =
+update : Flags -> TimeZone -> Msg -> Model -> ( Model, Action, Cmd Msg )
+update flags tz msg model =
     case msg of
         ChannelMsg lm ->
             let
@@ -254,6 +255,7 @@ update flags msg model =
             let
                 ( cm, cc, cs ) =
                     Comp.CalEventInput.update flags
+                        tz
                         model.schedule
                         lmsg
                         model.scheduleModel

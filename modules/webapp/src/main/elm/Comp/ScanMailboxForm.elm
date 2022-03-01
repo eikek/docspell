@@ -40,6 +40,7 @@ import Data.Flags exposing (Flags)
 import Data.FolderOrder
 import Data.Language exposing (Language)
 import Data.TagOrder
+import Data.TimeZone exposing (TimeZone)
 import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
@@ -183,7 +184,7 @@ initWith flags s =
                 |> Maybe.withDefault []
 
         ( nm, _, nc ) =
-            update flags (ConnMsg (Comp.Dropdown.SetSelection imap)) im
+            update flags Data.TimeZone.utc (ConnMsg (Comp.Dropdown.SetSelection imap)) im
 
         newSchedule =
             Data.CalEvent.fromEvent s.schedule
@@ -354,13 +355,14 @@ withValidSettings mkAction model =
             )
 
 
-update : Flags -> Msg -> Model -> ( Model, Action, Cmd Msg )
-update flags msg model =
+update : Flags -> TimeZone -> Msg -> Model -> ( Model, Action, Cmd Msg )
+update flags tz msg model =
     case msg of
         CalEventMsg lmsg ->
             let
                 ( cm, cc, cs ) =
                     Comp.CalEventInput.update flags
+                        tz
                         model.schedule
                         lmsg
                         model.scheduleModel
@@ -585,8 +587,8 @@ update flags msg model =
                     ( a, NoAction, b )
             in
             Util.Update.andThen1
-                [ update flags (FolderDropdownMsg opts) >> removeAction
-                , update flags (FolderDropdownMsg (Comp.Dropdown.SetSelection sel)) >> removeAction
+                [ update flags tz (FolderDropdownMsg opts) >> removeAction
+                , update flags tz (FolderDropdownMsg (Comp.Dropdown.SetSelection sel)) >> removeAction
                 ]
                 model_
                 |> addNoAction

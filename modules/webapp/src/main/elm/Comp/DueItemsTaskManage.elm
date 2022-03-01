@@ -20,6 +20,7 @@ import Comp.DueItemsTaskForm
 import Comp.DueItemsTaskList
 import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
+import Data.TimeZone exposing (TimeZone)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -81,8 +82,8 @@ init flags =
 --- Update
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update flags msg model =
+update : Flags -> TimeZone -> Msg -> Model -> ( Model, Cmd Msg )
+update flags tz msg model =
     case msg of
         GetDataResp (Ok items) ->
             ( { model
@@ -126,7 +127,7 @@ update flags msg model =
                 Just dm ->
                     let
                         ( mm, action, mc ) =
-                            Comp.DueItemsTaskForm.update flags lm dm
+                            Comp.DueItemsTaskForm.update flags tz lm dm
 
                         ( model_, cmd_ ) =
                             case action of

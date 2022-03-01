@@ -11,6 +11,7 @@ module Messages.Comp.ItemDetail exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Comp.DetailEdit
 import Messages.Comp.HttpError
@@ -62,12 +63,12 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { addFilesForm = Messages.Comp.ItemDetail.AddFilesForm.gb
-    , itemInfoHeader = Messages.Comp.ItemDetail.ItemInfoHeader.gb
-    , singleAttachment = Messages.Comp.ItemDetail.SingleAttachment.gb
-    , sentMails = Messages.Comp.SentMails.gb
+    , itemInfoHeader = Messages.Comp.ItemDetail.ItemInfoHeader.gb tz
+    , singleAttachment = Messages.Comp.ItemDetail.SingleAttachment.gb tz
+    , sentMails = Messages.Comp.SentMails.gb tz
     , notes = Messages.Comp.ItemDetail.Notes.gb
     , itemMail = Messages.Comp.ItemMail.gb
     , detailEdit = Messages.Comp.DetailEdit.gb
@@ -91,7 +92,7 @@ gb =
     , createdOn = "Created on"
     , lastUpdateOn = "Last update on"
     , sendingMailNow = "Sending e-mail…"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English tz
     , mailSendSuccessful = "Mail sent."
     , showQrCode = "Show URL as QR code"
     , close = "Close"
@@ -100,12 +101,12 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { addFilesForm = Messages.Comp.ItemDetail.AddFilesForm.de
-    , itemInfoHeader = Messages.Comp.ItemDetail.ItemInfoHeader.de
-    , singleAttachment = Messages.Comp.ItemDetail.SingleAttachment.de
-    , sentMails = Messages.Comp.SentMails.de
+    , itemInfoHeader = Messages.Comp.ItemDetail.ItemInfoHeader.de tz
+    , singleAttachment = Messages.Comp.ItemDetail.SingleAttachment.de tz
+    , sentMails = Messages.Comp.SentMails.de tz
     , notes = Messages.Comp.ItemDetail.Notes.de
     , itemMail = Messages.Comp.ItemMail.de
     , detailEdit = Messages.Comp.DetailEdit.de
@@ -129,7 +130,7 @@ de =
     , createdOn = "Erstellt am"
     , lastUpdateOn = "Letzte Aktualisierung"
     , sendingMailNow = "E-Mail wird gesendet…"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German tz
     , mailSendSuccessful = "E-Mail wurde versendet."
     , showQrCode = "Link als QR code anzeigen"
     , close = "Schließen"

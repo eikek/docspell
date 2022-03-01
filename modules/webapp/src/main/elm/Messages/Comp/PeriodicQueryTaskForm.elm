@@ -11,6 +11,7 @@ module Messages.Comp.PeriodicQueryTaskForm exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.BookmarkDropdown
@@ -49,10 +50,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , calEventInput = Messages.Comp.CalEventInput.gb
+    , calEventInput = Messages.Comp.CalEventInput.gb tz
     , channelForm = Messages.Comp.ChannelForm.gb
     , httpError = Messages.Comp.HttpError.gb
     , bookmarkDropdown = Messages.Comp.BookmarkDropdown.gb
@@ -83,10 +84,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , calEventInput = Messages.Comp.CalEventInput.de
+    , calEventInput = Messages.Comp.CalEventInput.de tz
     , channelForm = Messages.Comp.ChannelForm.de
     , httpError = Messages.Comp.HttpError.de
     , bookmarkDropdown = Messages.Comp.BookmarkDropdown.de

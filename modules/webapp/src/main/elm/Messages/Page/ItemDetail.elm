@@ -11,6 +11,7 @@ module Messages.Page.ItemDetail exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Comp.ItemDetail
 import Messages.Comp.ItemDetail.EditForm
 
@@ -23,19 +24,19 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
-    { itemDetail = Messages.Comp.ItemDetail.gb
-    , editForm = Messages.Comp.ItemDetail.EditForm.gb
+gb : TimeZone -> Texts
+gb tz =
+    { itemDetail = Messages.Comp.ItemDetail.gb tz
+    , editForm = Messages.Comp.ItemDetail.EditForm.gb tz
     , editMetadata = "Edit Metadata"
     , collapseExpand = "Collapse/Expand"
     }
 
 
-de : Texts
-de =
-    { itemDetail = Messages.Comp.ItemDetail.de
-    , editForm = Messages.Comp.ItemDetail.EditForm.de
+de : TimeZone -> Texts
+de tz =
+    { itemDetail = Messages.Comp.ItemDetail.de tz
+    , editForm = Messages.Comp.ItemDetail.EditForm.de tz
     , editMetadata = "Metadaten ändern"
     , collapseExpand = "Aus-/Einklappen"
     }

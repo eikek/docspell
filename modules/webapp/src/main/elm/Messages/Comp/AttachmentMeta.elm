@@ -11,6 +11,7 @@ module Messages.Comp.AttachmentMeta exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -35,8 +36,8 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , httpError = Messages.Comp.HttpError.gb
     , extractedMetadata = "Extracted Meta Data"
@@ -49,12 +50,12 @@ gb =
     , concerningEquipment = "Concerning Equipment"
     , itemDate = "Item Date"
     , itemDueDate = "Item Due Date"
-    , formatDateShort = DF.formatDateShort Messages.UiLanguage.English
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.English tz
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , httpError = Messages.Comp.HttpError.de
     , extractedMetadata = "Extrahierte Metadaten"
@@ -67,5 +68,5 @@ de =
     , concerningEquipment = "Betreffende Ausstattung"
     , itemDate = "Datum"
     , itemDueDate = "Fälligkeitsdatum"
-    , formatDateShort = DF.formatDateShort Messages.UiLanguage.German
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.German tz
     }

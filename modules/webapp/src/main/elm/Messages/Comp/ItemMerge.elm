@@ -11,6 +11,7 @@ module Messages.Comp.ItemMerge exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -35,15 +36,15 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , httpError = Messages.Comp.HttpError.gb
     , title = "Merge Items"
     , infoText = "When merging items the first item in the list acts as the target. Every other items metadata is copied into the target item. If the property is a single value (like correspondent), it is only set if not already present. Tags, custom fields and attachments are added. The items can be reordered using drag&drop."
     , deleteWarn = "Note that all items but the first one is deleted after a successful merge!"
-    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.English
-    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.English
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.English tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.English tz
     , submitMerge = "Merge"
     , submitMergeTitle = "Merge the documents now"
     , cancelMerge = "Cancel"
@@ -53,15 +54,15 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , httpError = Messages.Comp.HttpError.de
     , title = "Dokumente zusammenführen"
     , infoText = "Beim Zusammenführen der Dokumente, wird das erste in der Liste als Zieldokument verwendet. Die Metadaten der anderen Dokumente werden der Reihe nach auf des Zieldokument geschrieben. Metadaten die nur einen Wert haben, werden nur gesetzt falls noch kein Wert existiert. Tags, Benutzerfelder und Anhänge werden zu dem Zieldokument hinzugefügt. Die Einträge können mit Drag&Drop umgeordnet werden."
     , deleteWarn = "Bitte beachte, dass nach erfolgreicher Zusammenführung alle anderen Dokumente gelöscht werden!"
-    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.German
-    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.German
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.German tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.German tz
     , submitMerge = "Zusammenführen"
     , submitMergeTitle = "Dokumente jetzt zusammenführen"
     , cancelMerge = "Abbrechen"

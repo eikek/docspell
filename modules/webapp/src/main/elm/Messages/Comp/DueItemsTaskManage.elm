@@ -11,6 +11,7 @@ module Messages.Comp.DueItemsTaskManage exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.DueItemsTaskForm
@@ -34,10 +35,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , notificationForm = Messages.Comp.DueItemsTaskForm.gb
+    , notificationForm = Messages.Comp.DueItemsTaskForm.gb tz
     , notificationTable = Messages.Comp.DueItemsTaskList.gb
     , httpError = Messages.Comp.HttpError.gb
     , channelType = Messages.Data.ChannelType.gb
@@ -50,10 +51,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , notificationForm = Messages.Comp.DueItemsTaskForm.de
+    , notificationForm = Messages.Comp.DueItemsTaskForm.de tz
     , notificationTable = Messages.Comp.DueItemsTaskList.de
     , httpError = Messages.Comp.HttpError.de
     , channelType = Messages.Data.ChannelType.de

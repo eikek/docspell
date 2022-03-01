@@ -11,6 +11,7 @@ module Messages.Comp.ScanMailboxManage exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -32,10 +33,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tb =
     { basics = Messages.Basics.gb
-    , form = Messages.Comp.ScanMailboxForm.gb
+    , form = Messages.Comp.ScanMailboxForm.gb tb
     , table = Messages.Comp.ScanMailboxTable.gb
     , httpError = Messages.Comp.HttpError.gb
     , newTask = "New Task"
@@ -47,10 +48,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , form = Messages.Comp.ScanMailboxForm.de
+    , form = Messages.Comp.ScanMailboxForm.de tz
     , table = Messages.Comp.ScanMailboxTable.de
     , httpError = Messages.Comp.HttpError.de
     , newTask = "Neuer Auftrag"

@@ -225,7 +225,7 @@ menuBar texts inav env model =
                     [ { icon =
                             foldSelected
                                 (i [ class "fa fa-check-square dark:text-lime-400 text-lime-600" ] [])
-                                (i [ class "fa fa-tasks" ] [])
+                                (i [ class "fa-regular fa-plus" ] [])
                       , label = foldSelected texts.deselectItem texts.selectItem
                       , disabled = False
                       , attrs =
@@ -316,7 +316,7 @@ menuBar texts inav env model =
                     ]
                     [ foldSelected
                         (i [ class "fa fa-square-check" ] [])
-                        (i [ class "fa fa-list-check" ] [])
+                        (i [ class "fa fa-plus" ] [])
                     ]
             , MB.CustomElement <|
                 a

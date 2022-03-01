@@ -7,6 +7,7 @@
 
 module Messages.Page.Share exposing (..)
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -32,11 +33,11 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { searchMenu = Messages.Comp.SearchMenu.gb
     , basics = Messages.Basics.gb
-    , itemCardList = Messages.Comp.ItemCardList.gb
+    , itemCardList = Messages.Comp.ItemCardList.gb tz
     , passwordForm = Messages.Comp.SharePasswordForm.gb
     , authFailed = "This share does not exist."
     , httpError = Messages.Comp.HttpError.gb
@@ -50,11 +51,11 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { searchMenu = Messages.Comp.SearchMenu.de
     , basics = Messages.Basics.de
-    , itemCardList = Messages.Comp.ItemCardList.de
+    , itemCardList = Messages.Comp.ItemCardList.de tz
     , passwordForm = Messages.Comp.SharePasswordForm.de
     , authFailed = "Diese Freigabe existiert nicht."
     , httpError = Messages.Comp.HttpError.de
