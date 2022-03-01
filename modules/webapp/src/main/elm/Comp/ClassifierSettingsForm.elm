@@ -26,6 +26,7 @@ import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.ListType exposing (ListType)
 import Data.TagOrder
+import Data.TimeZone exposing (TimeZone)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -111,8 +112,8 @@ getSettings model =
         model.schedule
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update flags msg model =
+update : Flags -> TimeZone -> Msg -> Model -> ( Model, Cmd Msg )
+update flags tz msg model =
     case msg of
         GetTagsResp (Ok tl) ->
             let
@@ -123,7 +124,7 @@ update flags msg model =
                 lm =
                     Comp.Dropdown.SetOptions categories
             in
-            update flags (CategoryListMsg lm) model
+            update flags tz (CategoryListMsg lm) model
 
         GetTagsResp (Err _) ->
             ( model, Cmd.none )
@@ -133,6 +134,7 @@ update flags msg model =
                 ( cm, cc, ce ) =
                     Comp.CalEventInput.update
                         flags
+                        tz
                         model.schedule
                         lmsg
                         model.scheduleModel

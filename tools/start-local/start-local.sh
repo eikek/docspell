@@ -114,7 +114,7 @@ docspell.joex {
     retry-delay = "10 seconds"
   }
   house-keeping {
-    schedule = "*-*-* 01:00:00"
+    schedule = "*-*-* 01:00:00 UTC"
     cleanup-invites = {
       older-than = "10 days"
     }

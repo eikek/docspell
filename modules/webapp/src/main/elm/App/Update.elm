@@ -566,7 +566,7 @@ updateCollSettings texts lmsg model =
     let
         ( lm, lc, ls ) =
             Page.CollectiveSettings.Update.update texts.collectiveSettings
-                model.flags
+                (modelEnv model)
                 lmsg
                 model.collSettingsModel
     in

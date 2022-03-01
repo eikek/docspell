@@ -19,6 +19,7 @@ import Api
 import Api.Model.TagList exposing (TagList)
 import Comp.BasicSizeField
 import Comp.ColorTagger
+import Comp.Dropdown
 import Comp.FieldListSelect
 import Comp.FixedDropdown
 import Comp.IntField
@@ -32,7 +33,7 @@ import Data.Flags exposing (Flags)
 import Data.ItemTemplate as IT exposing (ItemTemplate)
 import Data.Pdf exposing (PdfMode)
 import Data.TagOrder
-import Data.TimeZone
+import Data.TimeZone exposing (TimeZone)
 import Data.UiSettings exposing (ItemPattern, StoredUiSettings, UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
@@ -75,6 +76,7 @@ type alias Model =
     , powerSearchEnabled : Bool
     , uiLangModel : Comp.FixedDropdown.Model UiLanguage
     , uiLang : UiLanguage
+    , timezoneDropdown : Comp.Dropdown.Model String
     , openTabs : Set String
     , defaults : UiSettings
     }
@@ -170,6 +172,11 @@ initModel flags storedSettings defaults =
     , uiLang = settings.uiLang
     , uiLangModel =
         Comp.FixedDropdown.init Messages.UiLanguage.all
+    , timezoneDropdown =
+        Comp.Dropdown.makeSingleList
+            { options = Data.TimeZone.listAll
+            , selected = Just (Data.TimeZone.toName settings.timeZone)
+            }
     , openTabs = Set.empty
     , defaults = defaults
     }
@@ -209,6 +216,7 @@ type Msg
     | TogglePowerSearch
     | UiLangMsg (Comp.FixedDropdown.Msg UiLanguage)
     | PdfModeMsg (Comp.FixedDropdown.Msg PdfMode)
+    | TimeZoneMsg (Comp.Dropdown.Msg String)
     | ToggleAllTabs
     | ResetTab AkkordionTab
 
@@ -599,6 +607,27 @@ update flags sett msg model =
             in
             ( { nm | openTabs = model.openTabs }, Just newSettings )
 
+        TimeZoneMsg lm ->
+            let
+                ( tm, tcmd ) =
+                    Comp.Dropdown.update lm model.timezoneDropdown
+
+                tz =
+                    if Comp.Dropdown.isDropdownChangeMsg lm then
+                        Comp.Dropdown.getSelected tm |> List.head
+
+                    else
+                        sett.timeZone
+
+                newSett =
+                    if sett.timeZone == tz then
+                        Nothing
+
+                    else
+                        Just { sett | timeZone = tz }
+            in
+            ( { model | timezoneDropdown = tm }, newSett )
+
 
 
 --- View2
@@ -670,6 +699,9 @@ settingFormTabs texts flags _ model =
                 [ i [ class "fa fa-eraser mr-1" ] []
                 , text texts.resetLabel
                 ]
+
+        uiSettings =
+            Data.UiSettings.defaults
     in
     [ { name = akkordionTabName GeneralTab
       , title = texts.general
@@ -694,6 +726,22 @@ settingFormTabs texts flags _ model =
                         (Just model.uiLang)
                         model.uiLangModel
                     )
+                ]
+            , div [ class "mb-4" ]
+                [ label [ class S.inputLabel ] [ text "Timezone" ]
+                , Html.map TimeZoneMsg
+                    (Comp.Dropdown.view2
+                        { makeOption = \s -> { text = s, additional = "" }
+                        , placeholder = ""
+                        , labelColor = \_ -> \_ -> ""
+                        , style = DS.mainStyle
+                        }
+                        uiSettings
+                        model.timezoneDropdown
+                    )
+                , span [ class "opacity-75 text-sm" ]
+                    [ text "Used to format date-time values."
+                    ]
                 ]
             ]
       }

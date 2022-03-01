@@ -21,6 +21,7 @@ import Comp.MenuBar as MB
 import Comp.ScanMailboxForm
 import Comp.ScanMailboxList
 import Data.Flags exposing (Flags)
+import Data.TimeZone exposing (TimeZone)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -82,8 +83,8 @@ init flags =
 --- Update
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update flags msg model =
+update : Flags -> TimeZone -> Msg -> Model -> ( Model, Cmd Msg )
+update flags tz msg model =
     case msg of
         GetDataResp (Ok res) ->
             ( { model
@@ -127,7 +128,7 @@ update flags msg model =
                 Just dm ->
                     let
                         ( mm, action, mc ) =
-                            Comp.ScanMailboxForm.update flags lm dm
+                            Comp.ScanMailboxForm.update flags tz lm dm
 
                         ( model_, cmd_ ) =
                             case action of

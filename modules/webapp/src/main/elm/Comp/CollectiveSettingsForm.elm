@@ -26,6 +26,7 @@ import Comp.StringListInput
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
+import Data.TimeZone exposing (TimeZone)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -143,8 +144,8 @@ type Msg
     | PasswordMsg Comp.StringListInput.Msg
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe CollectiveSettings )
-update flags msg model =
+update : Flags -> TimeZone -> Msg -> Model -> ( Model, Cmd Msg, Maybe CollectiveSettings )
+update flags tz msg model =
     case msg of
         LangDropdownMsg m ->
             let
@@ -207,7 +208,7 @@ update flags msg model =
         ClassifierSettingMsg lmsg ->
             let
                 ( cm, cc ) =
-                    Comp.ClassifierSettingsForm.update flags lmsg model.classifierModel
+                    Comp.ClassifierSettingsForm.update flags tz lmsg model.classifierModel
             in
             ( { model
                 | classifierModel = cm
@@ -219,7 +220,7 @@ update flags msg model =
         EmptyTrashMsg lmsg ->
             let
                 ( cm, cc ) =
-                    Comp.EmptyTrashForm.update flags lmsg model.emptyTrashModel
+                    Comp.EmptyTrashForm.update flags tz lmsg model.emptyTrashModel
             in
             ( { model
                 | emptyTrashModel = cm

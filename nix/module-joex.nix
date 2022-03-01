@@ -48,7 +48,7 @@ let
       wakeup-period = "10 minutes";
     };
     house-keeping = {
-      schedule = "Sun *-*-* 00:00:00";
+      schedule = "Sun *-*-* 00:00:00 UTC";
       cleanup-invites = {
         enabled = true;
         older-than = "30 days";
@@ -70,7 +70,7 @@ let
     update-check = {
       enabled = false;
       test-run = false;
-      schedule = "Sun *-*-* 00:00:00";
+      schedule = "Sun *-*-* 00:00:00 UTC";
       sender-account = "";
       smtp-id = "";
       recipients = [];

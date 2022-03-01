@@ -12,13 +12,14 @@ import Comp.CollectiveSettingsForm
 import Comp.ShareManage
 import Comp.SourceManage
 import Comp.UserManage
-import Data.Flags exposing (Flags)
+import Data.Environment as Env
+import Data.Flags
 import Messages.Page.CollectiveSettings exposing (Texts)
 import Page.CollectiveSettings.Data exposing (..)
 
 
-update : Texts -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update texts flags msg model =
+update : Texts -> Env.Update -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update texts env msg model =
     case msg of
         SetTab t ->
             let
@@ -27,45 +28,45 @@ update texts flags msg model =
             in
             case t of
                 SourceTab ->
-                    update texts flags (SourceMsg Comp.SourceManage.LoadSources) m
+                    update texts env (SourceMsg Comp.SourceManage.LoadSources) m
 
                 UserTab ->
-                    update texts flags (UserMsg Comp.UserManage.LoadUsers) m
+                    update texts env (UserMsg Comp.UserManage.LoadUsers) m
 
                 InsightsTab ->
-                    update texts flags Init m
+                    update texts env Init m
 
                 SettingsTab ->
-                    update texts flags Init m
+                    update texts env Init m
 
                 ShareTab ->
-                    update texts flags (ShareMsg Comp.ShareManage.loadShares) m
+                    update texts env (ShareMsg Comp.ShareManage.loadShares) m
 
         SourceMsg m ->
             let
                 ( m2, c2 ) =
-                    Comp.SourceManage.update flags m model.sourceModel
+                    Comp.SourceManage.update env.flags m model.sourceModel
             in
             ( { model | sourceModel = m2 }, Cmd.map SourceMsg c2, Sub.none )
 
         ShareMsg lm ->
             let
                 ( sm, sc, ss ) =
-                    Comp.ShareManage.update texts.shareManage flags lm model.shareModel
+                    Comp.ShareManage.update texts.shareManage env.flags lm model.shareModel
             in
             ( { model | shareModel = sm }, Cmd.map ShareMsg sc, Sub.map ShareMsg ss )
 
         UserMsg m ->
             let
                 ( m2, c2 ) =
-                    Comp.UserManage.update flags m model.userModel
+                    Comp.UserManage.update env.flags m model.userModel
             in
             ( { model | userModel = m2 }, Cmd.map UserMsg c2, Sub.none )
 
         SettingsFormMsg m ->
             let
                 ( m2, c2, msett ) =
-                    Comp.CollectiveSettingsForm.update flags m model.settingsModel
+                    Comp.CollectiveSettingsForm.update env.flags env.settings.timeZone m model.settingsModel
 
                 cmd =
                     case msett of
@@ -73,7 +74,7 @@ update texts flags msg model =
                             Cmd.none
 
                         Just sett ->
-                            Api.setCollectiveSettings flags sett SubmitResp
+                            Api.setCollectiveSettings env.flags sett SubmitResp
             in
             ( { model | settingsModel = m2, formState = InitialState }
             , Cmd.batch [ cmd, Cmd.map SettingsFormMsg c2 ]
@@ -83,8 +84,8 @@ update texts flags msg model =
         Init ->
             ( { model | formState = InitialState }
             , Cmd.batch
-                [ Api.getInsights flags GetInsightsResp
-                , Api.getCollectiveSettings flags CollectiveSettingsResp
+                [ Api.getInsights env.flags GetInsightsResp
+                , Api.getCollectiveSettings env.flags CollectiveSettingsResp
                 ]
             , Sub.none
             )
@@ -98,7 +99,7 @@ update texts flags msg model =
         CollectiveSettingsResp (Ok data) ->
             let
                 ( cm, cc ) =
-                    Comp.CollectiveSettingsForm.init flags data
+                    Comp.CollectiveSettingsForm.init env.flags data
             in
             ( { model | settingsModel = cm }
             , Cmd.map SettingsFormMsg cc

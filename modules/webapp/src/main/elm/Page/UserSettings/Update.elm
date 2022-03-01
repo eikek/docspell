@@ -161,7 +161,7 @@ update flags settings msg model =
         NotificationMsg lm ->
             let
                 ( m2, c2 ) =
-                    Comp.DueItemsTaskManage.update flags lm model.notificationModel
+                    Comp.DueItemsTaskManage.update flags settings.timeZone lm model.notificationModel
             in
             { model = { model | notificationModel = m2 }
             , cmd = Cmd.map NotificationMsg c2
@@ -172,7 +172,7 @@ update flags settings msg model =
         ScanMailboxMsg lm ->
             let
                 ( m2, c2 ) =
-                    Comp.ScanMailboxManage.update flags lm model.scanMailboxModel
+                    Comp.ScanMailboxManage.update flags settings.timeZone lm model.scanMailboxModel
             in
             { model = { model | scanMailboxModel = m2 }
             , cmd = Cmd.map ScanMailboxMsg c2
@@ -227,7 +227,7 @@ update flags settings msg model =
         PeriodicQueryMsg lm ->
             let
                 ( pqm, pqc, pqs ) =
-                    Comp.PeriodicQueryTaskManage.update flags lm model.periodicQueryModel
+                    Comp.PeriodicQueryTaskManage.update flags settings.timeZone lm model.periodicQueryModel
             in
             { model = { model | periodicQueryModel = pqm }
             , cmd = Cmd.map PeriodicQueryMsg pqc
