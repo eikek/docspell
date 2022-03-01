@@ -11,6 +11,7 @@ module Messages.Comp.OtpSetup exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Comp.HttpError
 import Messages.DateFormat
@@ -43,10 +44,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { httpError = Messages.Comp.HttpError.gb
-    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.English
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.English tz
     , errorTitle = "Error"
     , stateErrorInfoText = "There was a problem determining the current state of your two factor authentication scheme:"
     , errorGeneratingQR = "Error generating QR Code"
@@ -70,10 +71,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { httpError = Messages.Comp.HttpError.de
-    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.German
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.German tz
     , errorTitle = "Fehler"
     , stateErrorInfoText = "Es gab ein Problem, den Status der Zwei-Faktor-Authentifizierung zu ermittlen:"
     , errorGeneratingQR = "Fehler beim Generieren des QR-Code"

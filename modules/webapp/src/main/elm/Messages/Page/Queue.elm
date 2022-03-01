@@ -11,6 +11,7 @@ module Messages.Page.Queue exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -44,8 +45,8 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , httpError = Messages.Comp.HttpError.gb
     , currentlyRunning = "Currently Running"
@@ -66,13 +67,13 @@ gb =
     , retries = "Retries"
     , changePriority = "Change priority of this job"
     , prio = "Prio"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English tz
     , sidebarTitle = "Processing"
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , httpError = Messages.Comp.HttpError.de
     , currentlyRunning = "Wird ausgeführt"
@@ -93,6 +94,6 @@ de =
     , retries = "Versuche"
     , changePriority = "Priorität des Jobs ändern"
     , prio = "Prio"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German tz
     , sidebarTitle = "Verarbeitung"
     }

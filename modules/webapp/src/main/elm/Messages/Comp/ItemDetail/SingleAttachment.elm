@@ -11,6 +11,7 @@ module Messages.Comp.ItemDetail.SingleAttachment exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Comp.AttachmentMeta
 import Messages.Comp.ItemDetail.ConfirmModal
 
@@ -35,9 +36,9 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
-    { attachmentMeta = Messages.Comp.AttachmentMeta.gb
+gb : TimeZone -> Texts
+gb tz =
+    { attachmentMeta = Messages.Comp.AttachmentMeta.gb tz
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.gb
     , noName = "No name"
     , openFileInNewTab = "Open file in new tab"
@@ -56,9 +57,9 @@ gb =
     }
 
 
-de : Texts
-de =
-    { attachmentMeta = Messages.Comp.AttachmentMeta.de
+de : TimeZone -> Texts
+de tz =
+    { attachmentMeta = Messages.Comp.AttachmentMeta.de tz
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.de
     , noName = "Kein Name"
     , openFileInNewTab = "Anhang im neuen Tab öffnen"

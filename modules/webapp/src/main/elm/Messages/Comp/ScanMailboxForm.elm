@@ -11,6 +11,7 @@ module Messages.Comp.ScanMailboxForm exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.CalEventInput
@@ -80,10 +81,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , calEventInput = Messages.Comp.CalEventInput.gb
+    , calEventInput = Messages.Comp.CalEventInput.gb tz
     , httpError = Messages.Comp.HttpError.gb
     , tagDropdown = Messages.Comp.TagDropdown.gb
     , reallyDeleteTask = "Really delete this scan mailbox task?"
@@ -165,10 +166,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , calEventInput = Messages.Comp.CalEventInput.de
+    , calEventInput = Messages.Comp.CalEventInput.de tz
     , httpError = Messages.Comp.HttpError.de
     , tagDropdown = Messages.Comp.TagDropdown.de
     , reallyDeleteTask = "Den Auftrag wirklich löschen?"

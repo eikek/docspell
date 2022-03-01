@@ -11,6 +11,7 @@ module Messages.Comp.UserTable exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.DateFormat as DF
 import Messages.UiLanguage
@@ -28,8 +29,8 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , login = "Login"
     , state = "State"
@@ -37,12 +38,12 @@ gb =
     , email = "E-Mail"
     , logins = "Logins"
     , lastLogin = "Last Login"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English tz
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , login = "Benutzername"
     , state = "Status"
@@ -50,5 +51,5 @@ de =
     , email = "E-Mail"
     , logins = "Anmeldungen"
     , lastLogin = "Letzte Anmeldung"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German tz
     }

@@ -7,6 +7,7 @@
 
 module Messages.Page.Dashboard exposing (Texts, de, gb)
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.Comp.BookmarkChooser
 import Messages.Comp.DashboardManage
@@ -55,21 +56,21 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , bookmarkChooser = Messages.Comp.BookmarkChooser.gb
     , notificationHookManage = Messages.Comp.NotificationHookManage.gb
-    , periodicQueryManage = Messages.Comp.PeriodicQueryTaskManage.gb
+    , periodicQueryManage = Messages.Comp.PeriodicQueryTaskManage.gb tz
     , sourceManage = Messages.Comp.SourceManage.gb
-    , shareManage = Messages.Comp.ShareManage.gb
+    , shareManage = Messages.Comp.ShareManage.gb tz
     , organizationManage = Messages.Comp.OrgManage.gb
     , personManage = Messages.Comp.PersonManage.gb
     , equipManage = Messages.Comp.EquipmentManage.gb
     , tagManage = Messages.Comp.TagManage.gb
-    , folderManage = Messages.Comp.FolderManage.gb
+    , folderManage = Messages.Comp.FolderManage.gb tz
     , uploadForm = Messages.Comp.UploadForm.gb
-    , dashboard = Messages.Comp.DashboardView.gb
+    , dashboard = Messages.Comp.DashboardView.gb tz
     , dashboardManage = Messages.Comp.DashboardManage.gb
     , defaultDashboard = Messages.Page.DefaultDashboard.gb
     , accountScope = Messages.Data.AccountScope.gb
@@ -86,21 +87,21 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , bookmarkChooser = Messages.Comp.BookmarkChooser.de
     , notificationHookManage = Messages.Comp.NotificationHookManage.de
-    , periodicQueryManage = Messages.Comp.PeriodicQueryTaskManage.de
+    , periodicQueryManage = Messages.Comp.PeriodicQueryTaskManage.de tz
     , sourceManage = Messages.Comp.SourceManage.de
-    , shareManage = Messages.Comp.ShareManage.de
+    , shareManage = Messages.Comp.ShareManage.de tz
     , organizationManage = Messages.Comp.OrgManage.de
     , personManage = Messages.Comp.PersonManage.de
     , equipManage = Messages.Comp.EquipmentManage.de
     , tagManage = Messages.Comp.TagManage.de
-    , folderManage = Messages.Comp.FolderManage.de
+    , folderManage = Messages.Comp.FolderManage.de tz
     , uploadForm = Messages.Comp.UploadForm.de
-    , dashboard = Messages.Comp.DashboardView.de
+    , dashboard = Messages.Comp.DashboardView.de tz
     , dashboardManage = Messages.Comp.DashboardManage.de
     , defaultDashboard = Messages.Page.DefaultDashboard.de
     , accountScope = Messages.Data.AccountScope.de

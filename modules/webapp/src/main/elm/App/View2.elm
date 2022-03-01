@@ -59,7 +59,7 @@ topNavUser : AuthResult -> Model -> Html Msg
 topNavUser auth model =
     let
         texts =
-            Messages.get <| App.Data.getUiLanguage model
+            Messages.get (App.Data.getUiLanguage model) model.uiSettings.timeZone
     in
     nav
         [ id "top-nav"
@@ -161,7 +161,7 @@ mainContent : Model -> Html Msg
 mainContent model =
     let
         texts =
-            Messages.get <| App.Data.getUiLanguage model
+            Messages.get (App.Data.getUiLanguage model) model.uiSettings.timeZone
     in
     div
         [ id "main"
@@ -227,12 +227,12 @@ langMenu : Model -> Html Msg
 langMenu model =
     let
         texts =
-            Messages.get <| App.Data.getUiLanguage model
+            Messages.get (App.Data.getUiLanguage model) model.uiSettings.timeZone
 
         langItem lang =
             let
                 langMsg =
-                    Messages.get lang
+                    Messages.get lang model.uiSettings.timeZone
             in
             a
                 [ classList

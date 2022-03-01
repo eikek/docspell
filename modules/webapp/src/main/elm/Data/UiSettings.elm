@@ -40,6 +40,7 @@ import Data.Flags exposing (Flags)
 import Data.ItemArrange exposing (ItemArrange)
 import Data.ItemTemplate exposing (ItemTemplate)
 import Data.Pdf exposing (PdfMode)
+import Data.TimeZone exposing (TimeZone)
 import Data.UiTheme exposing (UiTheme)
 import Dict exposing (Dict)
 import Html exposing (Attribute, Html, embed, iframe)
@@ -80,6 +81,7 @@ type alias StoredUiSettings =
     , uiLang : Maybe String
     , itemSearchShowGroups : Maybe Bool
     , itemSearchArrange : Maybe String
+    , timeZone : Maybe String
     }
 
 
@@ -105,6 +107,7 @@ emptyStoredSettings =
     , uiLang = Nothing
     , itemSearchShowGroups = Nothing
     , itemSearchArrange = Nothing
+    , timeZone = Nothing
     }
 
 
@@ -141,6 +144,7 @@ storedUiSettingsDecoder =
         |> P.optional "uiLang" maybeString Nothing
         |> P.optional "itemSearchShowGroups" maybeBool Nothing
         |> P.optional "itemSearchArrange" maybeString Nothing
+        |> P.optional "timeZone" maybeString Nothing
 
 
 storedUiSettingsEncode : StoredUiSettings -> Encode.Value
@@ -173,6 +177,7 @@ storedUiSettingsEncode value =
             , maybeEnc "uiLang" Encode.string value.uiLang
             , maybeEnc "itemSearchShowGroups" Encode.bool value.itemSearchShowGroups
             , maybeEnc "itemSearchArrange" Encode.string value.itemSearchArrange
+            , maybeEnc "timeZone" Encode.string value.timeZone
             ]
 
 
@@ -205,6 +210,7 @@ type alias UiSettings =
     , uiLang : UiLanguage
     , itemSearchShowGroups : Bool
     , itemSearchArrange : ItemArrange
+    , timeZone : TimeZone
     }
 
 
@@ -248,6 +254,7 @@ defaults =
     , uiLang = Messages.UiLanguage.English
     , itemSearchShowGroups = True
     , itemSearchArrange = Data.ItemArrange.Cards
+    , timeZone = Data.TimeZone.utc
     }
 
 
@@ -306,6 +313,9 @@ merge given fallback =
     , itemSearchArrange =
         Maybe.andThen Data.ItemArrange.fromString given.itemSearchArrange
             |> Maybe.withDefault fallback.itemSearchArrange
+    , timeZone =
+        Maybe.andThen Data.TimeZone.get given.timeZone
+            |> Maybe.withDefault fallback.timeZone
     }
 
 
@@ -344,6 +354,7 @@ convert settings =
     , uiLang = Just <| Messages.toIso2 settings.uiLang
     , itemSearchShowGroups = Just settings.itemSearchShowGroups
     , itemSearchArrange = Data.ItemArrange.asString settings.itemSearchArrange |> Just
+    , timeZone = Data.TimeZone.toName settings.timeZone |> Just
     }
 
 

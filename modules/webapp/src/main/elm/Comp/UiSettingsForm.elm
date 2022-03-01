@@ -32,6 +32,7 @@ import Data.Flags exposing (Flags)
 import Data.ItemTemplate as IT exposing (ItemTemplate)
 import Data.Pdf exposing (PdfMode)
 import Data.TagOrder
+import Data.TimeZone
 import Data.UiSettings exposing (ItemPattern, StoredUiSettings, UiSettings)
 import Dict exposing (Dict)
 import Html exposing (..)
@@ -646,8 +647,8 @@ settingFormTabs : Texts -> Flags -> StoredUiSettings -> Model -> List (Comp.Tabs
 settingFormTabs texts flags _ model =
     let
         langCfg =
-            { display = \lang -> Messages.get lang |> .label
-            , icon = \lang -> Just (Messages.get lang |> .flagIcon)
+            { display = \lang -> Messages.get lang Data.TimeZone.utc |> .label
+            , icon = \lang -> Just (Messages.get lang Data.TimeZone.utc |> .flagIcon)
             , style = DS.mainStyle
             , selectPlaceholder = texts.basics.selectPlaceholder
             }

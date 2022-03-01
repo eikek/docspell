@@ -11,6 +11,7 @@ module Messages.Comp.PeriodicQueryTaskManage exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -38,10 +39,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , notificationForm = Messages.Comp.PeriodicQueryTaskForm.gb
+    , notificationForm = Messages.Comp.PeriodicQueryTaskForm.gb tz
     , notificationTable = Messages.Comp.PeriodicQueryTaskList.gb
     , httpError = Messages.Comp.HttpError.gb
     , channelType = Messages.Data.ChannelType.gb
@@ -58,10 +59,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , notificationForm = Messages.Comp.PeriodicQueryTaskForm.de
+    , notificationForm = Messages.Comp.PeriodicQueryTaskForm.de tz
     , notificationTable = Messages.Comp.PeriodicQueryTaskList.de
     , httpError = Messages.Comp.HttpError.de
     , channelType = Messages.Data.ChannelType.de

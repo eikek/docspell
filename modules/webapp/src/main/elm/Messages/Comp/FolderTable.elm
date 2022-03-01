@@ -11,6 +11,7 @@ module Messages.Comp.FolderTable exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.DateFormat as DF
 import Messages.UiLanguage
@@ -24,19 +25,19 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , memberCount = "#Member"
-    , formatDateShort = DF.formatDateShort Messages.UiLanguage.English
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.English tz
     , owner = "Owner"
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , memberCount = "#Mitglieder"
-    , formatDateShort = DF.formatDateShort Messages.UiLanguage.German
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.German tz
     , owner = "Besitzer"
     }

@@ -11,6 +11,7 @@ module Messages.Page.CollectiveSettings exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.CollectiveSettingsForm
@@ -39,13 +40,13 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , userManage = Messages.Comp.UserManage.gb
-    , collectiveSettingsForm = Messages.Comp.CollectiveSettingsForm.gb
+    , userManage = Messages.Comp.UserManage.gb tz
+    , collectiveSettingsForm = Messages.Comp.CollectiveSettingsForm.gb tz
     , sourceManage = Messages.Comp.SourceManage.gb
-    , shareManage = Messages.Comp.ShareManage.gb
+    , shareManage = Messages.Comp.ShareManage.gb tz
     , httpError = Messages.Comp.HttpError.gb
     , collectiveSettings = "Collective Settings"
     , insights = "Insights"
@@ -59,13 +60,13 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , userManage = Messages.Comp.UserManage.de
-    , collectiveSettingsForm = Messages.Comp.CollectiveSettingsForm.de
+    , userManage = Messages.Comp.UserManage.de tz
+    , collectiveSettingsForm = Messages.Comp.CollectiveSettingsForm.de tz
     , sourceManage = Messages.Comp.SourceManage.de
-    , shareManage = Messages.Comp.ShareManage.de
+    , shareManage = Messages.Comp.ShareManage.de tz
     , httpError = Messages.Comp.HttpError.de
     , collectiveSettings = "Kollektiveinstellungen"
     , insights = "Statistiken"

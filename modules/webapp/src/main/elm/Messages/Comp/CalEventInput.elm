@@ -11,6 +11,7 @@ module Messages.Comp.CalEventInput exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Comp.HttpError
 import Messages.DateFormat as DF
@@ -32,8 +33,8 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { weekday = "Weekday"
     , year = "Year"
     , month = "Month"
@@ -43,13 +44,13 @@ gb =
     , error = "Error"
     , schedule = "Schedule"
     , next = "Next"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English tz
     , httpError = Messages.Comp.HttpError.gb
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { weekday = "Wochentag"
     , year = "Jahr"
     , month = "Monat"
@@ -59,6 +60,6 @@ de =
     , error = "Fehler"
     , schedule = "Zeitplan"
     , next = "Nächste Zeiten"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German tz
     , httpError = Messages.Comp.HttpError.de
     }

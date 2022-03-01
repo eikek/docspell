@@ -12,6 +12,7 @@ module Messages.Comp.CollectiveSettingsForm exposing
     )
 
 import Data.Language exposing (Language)
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.ClassifierSettingsForm
@@ -49,11 +50,11 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.gb
-    , emptyTrashForm = Messages.Comp.EmptyTrashForm.gb
+    , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.gb tz
+    , emptyTrashForm = Messages.Comp.EmptyTrashForm.gb tz
     , httpError = Messages.Comp.HttpError.gb
     , save = "Save"
     , saveSettings = "Save Settings"
@@ -84,11 +85,11 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.de
-    , emptyTrashForm = Messages.Comp.EmptyTrashForm.de
+    , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.de tz
+    , emptyTrashForm = Messages.Comp.EmptyTrashForm.de tz
     , httpError = Messages.Comp.HttpError.de
     , save = "Speichern"
     , saveSettings = "Einstellungen speichern"

@@ -22,6 +22,7 @@
             "elm/url": "1.0.0",
             "elm-explorations/markdown": "1.0.0",
             "justinmimbs/date": "3.1.2",
+            "justinmimbs/timezone-data": "5.1.2",
             "norpan/elm-html5-drag-drop": "3.1.4",
             "pablohirafuji/elm-qrcode": "4.0.1",
             "ryannhg/date-format": "2.3.0",

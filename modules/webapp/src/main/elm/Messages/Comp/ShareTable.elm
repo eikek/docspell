@@ -11,6 +11,7 @@ module Messages.Comp.ShareTable exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.DateFormat as DF
 import Messages.UiLanguage
@@ -25,20 +26,20 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English tz
     , active = "Active"
     , publishUntil = "Publish Until"
     , user = "User"
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German tz
     , active = "Aktiv"
     , publishUntil = "Publiziert bis"
     , user = "Benutzer"

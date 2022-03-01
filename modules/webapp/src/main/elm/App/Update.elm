@@ -68,7 +68,7 @@ updateWithSub : Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
 updateWithSub msg model =
     let
         texts =
-            Messages.get <| App.Data.getUiLanguage model
+            Messages.get (App.Data.getUiLanguage model) model.uiSettings.timeZone
     in
     case msg of
         ToggleSidebar ->
@@ -648,7 +648,7 @@ initPage model_ page =
             { model_ | page = page }
 
         texts =
-            Messages.get <| App.Data.getUiLanguage model
+            Messages.get (App.Data.getUiLanguage model) model.uiSettings.timeZone
 
         noop =
             ( model, Cmd.none, Sub.none )

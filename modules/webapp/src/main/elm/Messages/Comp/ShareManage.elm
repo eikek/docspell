@@ -11,6 +11,7 @@ module Messages.Comp.ShareManage exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -44,13 +45,13 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , httpError = Messages.Comp.HttpError.gb
-    , shareTable = Messages.Comp.ShareTable.gb
+    , shareTable = Messages.Comp.ShareTable.gb tz
     , shareForm = Messages.Comp.ShareForm.gb
-    , shareView = Messages.Comp.ShareView.gb
+    , shareView = Messages.Comp.ShareView.gb tz
     , shareMail = Messages.Comp.ShareMail.gb
     , newShare = "New share"
     , copyToClipboard = "Copy to clipboard"
@@ -69,12 +70,12 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , shareTable = Messages.Comp.ShareTable.de
+    , shareTable = Messages.Comp.ShareTable.de tz
     , shareForm = Messages.Comp.ShareForm.de
-    , shareView = Messages.Comp.ShareView.de
+    , shareView = Messages.Comp.ShareView.de tz
     , httpError = Messages.Comp.HttpError.de
     , shareMail = Messages.Comp.ShareMail.de
     , newShare = "Neue Freigabe"

@@ -41,7 +41,7 @@ getDefaultDashboard flags settings =
             Data.UiSettings.getUiLanguage flags settings Messages.UiLanguage.English
 
         texts =
-            Messages.get lang
+            Messages.get lang settings.timeZone
     in
     value texts.dashboard.defaultDashboard
 

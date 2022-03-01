@@ -7,6 +7,7 @@
 
 module Messages.Comp.DashboardView exposing (Texts, de, gb)
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Comp.BoxView
 
 
@@ -15,13 +16,13 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
-    { boxView = Messages.Comp.BoxView.gb
+gb : TimeZone -> Texts
+gb tz =
+    { boxView = Messages.Comp.BoxView.gb tz
     }
 
 
-de : Texts
-de =
-    { boxView = Messages.Comp.BoxView.de
+de : TimeZone -> Texts
+de tz =
+    { boxView = Messages.Comp.BoxView.de tz
     }

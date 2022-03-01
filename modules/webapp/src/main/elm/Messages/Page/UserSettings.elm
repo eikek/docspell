@@ -11,6 +11,7 @@ module Messages.Page.UserSettings exposing
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.Comp.ChangePasswordForm
 import Messages.Comp.DueItemsTaskManage
@@ -58,19 +59,19 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , changePasswordForm = Messages.Comp.ChangePasswordForm.gb
     , uiSettingsManage = Messages.Comp.UiSettingsManage.gb
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.gb
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.gb
-    , notificationManage = Messages.Comp.DueItemsTaskManage.gb
-    , scanMailboxManage = Messages.Comp.ScanMailboxManage.gb
+    , notificationManage = Messages.Comp.DueItemsTaskManage.gb tz
+    , scanMailboxManage = Messages.Comp.ScanMailboxManage.gb tz
     , notificationHookManage = Messages.Comp.NotificationHookManage.gb
-    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.gb
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.gb tz
     , channelManage = Messages.Comp.NotificationChannelManage.gb
-    , otpSetup = Messages.Comp.OtpSetup.gb
+    , otpSetup = Messages.Comp.OtpSetup.gb tz
     , userSettings = "User Settings"
     , uiSettings = "UI Settings"
     , notifications = "Notifications"
@@ -121,19 +122,19 @@ must be created before.
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , changePasswordForm = Messages.Comp.ChangePasswordForm.de
     , uiSettingsManage = Messages.Comp.UiSettingsManage.de
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.de
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.de
-    , notificationManage = Messages.Comp.DueItemsTaskManage.de
-    , scanMailboxManage = Messages.Comp.ScanMailboxManage.de
+    , notificationManage = Messages.Comp.DueItemsTaskManage.de tz
+    , scanMailboxManage = Messages.Comp.ScanMailboxManage.de tz
     , notificationHookManage = Messages.Comp.NotificationHookManage.de
-    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.de
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.de tz
     , channelManage = Messages.Comp.NotificationChannelManage.de
-    , otpSetup = Messages.Comp.OtpSetup.de
+    , otpSetup = Messages.Comp.OtpSetup.de tz
     , userSettings = "Benutzereinstellung"
     , uiSettings = "Oberfläche"
     , notifications = "Benachrichtigungen"
