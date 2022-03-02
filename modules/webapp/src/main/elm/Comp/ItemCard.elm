@@ -207,7 +207,7 @@ viewRow texts cfg settings flags model item =
         expandCollapseLink =
             a
                 [ classList
-                    [ ( "my-auto flex text-lg w-4 text-left w-1", not rowOpen )
+                    [ ( "my-auto flex text-lg w-4 text-left w-1 mr-2", not rowOpen )
                     , ( "flex w-full block text-xl bg-gray-50 dark:bg-slate-700 mb-2 rounded ", rowOpen )
                     , ( "invisible", isSelected cfg item.id )
                     ]
