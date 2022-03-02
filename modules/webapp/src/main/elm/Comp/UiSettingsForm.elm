@@ -569,7 +569,7 @@ update flags sett msg model =
                 newSettings =
                     case tab of
                         GeneralTab ->
-                            { sett | uiLang = Nothing, sideMenuVisible = Nothing }
+                            { sett | uiLang = Nothing, timeZone = Nothing, sideMenuVisible = Nothing }
 
                         SearchTab ->
                             { sett

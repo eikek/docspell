@@ -31,20 +31,22 @@ view texts versionInfo _ model =
             , menuLink [ Page.href (SearchPage Nothing) ] (Icons.searchIcon "") texts.basics.items
             , menuLink [ onClick InitUpload, href "#" ] (Icons.fileUploadIcon "") texts.uploadFiles
             ]
-        , h3
-            [ class S.header3
-            , class "italic mt-3"
-            ]
-            [ text texts.bookmarks
-            ]
-        , div [ class "ml-2" ]
-            [ Html.map BookmarkMsg
-                (Comp.BookmarkChooser.viewWith
-                    { showUser = True, showCollective = True, showShares = False }
-                    texts.bookmarkChooser
-                    model.sideMenu.bookmarkChooser
-                    Comp.BookmarkChooser.emptySelection
-                )
+        , div [ classList [ ( "hidden", Comp.BookmarkChooser.isEmpty model.sideMenu.bookmarkChooser ) ] ]
+            [ h3
+                [ class S.header3
+                , class "italic mt-3"
+                ]
+                [ text texts.bookmarks
+                ]
+            , div [ class "ml-2" ]
+                [ Html.map BookmarkMsg
+                    (Comp.BookmarkChooser.viewWith
+                        { showUser = True, showCollective = True, showShares = False }
+                        texts.bookmarkChooser
+                        model.sideMenu.bookmarkChooser
+                        Comp.BookmarkChooser.emptySelection
+                    )
+                ]
             ]
         , h3
             [ class S.header3
