@@ -1,5 +1,70 @@
 # Changelog
 
+## v0.33.0
+
+*Mar 6, 2022*
+
+- Refactor file identifiers, as preparation for different file storage
+  backends (#1380)
+  - **PLEASE NOTE** this release contains a DB migration that changes
+    all file identifiers in the database. It is really very much
+    recommended to do a backup of the database *before* updating!
+- Allow background tasks to return results that are published via events (#1362)
+  - the task for processing files returns now data (item id, name,
+    extracted text, tags etc) that is included in the `JobDone` event
+    data
+- Users can specify a time zone in user settings (#1062)
+  - the time zone is used when formatting dates in the web ui
+  - the time zone is used for calendar events of periodic tasks; you
+    need to save each periodic task again in order to pass a different
+    timezone
+  - should you have calendar events in the config file, you can add a
+    time zone at the end
+  - if not specified, it will default to UTC as before
+- Improve item selection (#1422)
+  - selecting items was possible before, but only ephemeral in the list view
+  - it is now stored globally and kept until you explicitely clear the selection
+  - items can be selected in detail view and the search menu shows an
+    entry to quickly see all items currently selected
+  - makes it easier to select a bunch of documents for sharing/bookmarking etc
+- Change logging format and backend
+  - The logging format has changed again from logfmt to the "classic" one
+  - the configuration allows to use logfmt, json or two "classic" formats
+  - logback has been removed! If you used a custom `logback.xml`
+    before, I'm sorry this is not possible anymore. There are two
+    settings in the config file for now to control logging:
+    `logging.minimum-level` and `logging.format`.
+- Pdf preview not updated (#1210)
+  - some browsers (e.g. safari and some mobile browsers) don't update
+    the ui when the `src` attribute of the `embed` element changes
+  - for the "fallback view", an `iframe` is now used - thus for mobile
+    it should work now. Safari on desktop would require to change the
+    respective setting
+- Several ui improvements
+  - More cards per row for large screens (#1401)
+  - more space below direction dropdown (#1400)
+  - fix input field save-while-typing (#1340, #1299)
+  - improves detail view on small screens (#1420)
+  - sort tags by group and then name (#1396)
+  - fix bug presenting an empty tag category in search menu (#1402)
+  - wrap long text in dashboard tables (#1357)
+  - typo fixes (#1387, #1433)
+- Remove tools package from release (#1421)
+  - the tools package doesn't contain general useful stuff anymore and
+    is thus removed from the release packaging. The code is still
+    there, and can be packaged manually
+
+### Rest API Changes
+
+None.
+
+### Configuration Changes
+
+- add `logging.format` and `logging.minimum-level`
+- change default values for calendar events to explicitely show that
+  they are in UTC (the value itself is not changed)
+
+
 ## v0.32.0
 
 *Feb 06, 2022*
