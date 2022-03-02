@@ -47,7 +47,7 @@ object ScribeConfigure {
         if (logger.id == scribe.Logger.RootId) {
           cfg.format match {
             case Format.Fancy =>
-              l.withHandler(formatter = Formatter.default, writer = SystemOutWriter)
+              l.withHandler(formatter = Formatter.enhanced, writer = SystemOutWriter)
             case Format.Plain =>
               l.withHandler(formatter = Formatter.classic, writer = SystemOutWriter)
             case Format.Json =>

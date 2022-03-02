@@ -104,7 +104,7 @@ object RestServer {
   )(
       wsB: WebSocketBuilder2[F]
   ) = {
-    val templates = TemplateRoutes[F](cfg)
+    val templates = TemplateRoutes[F](cfg, Templates[F])
     val httpApp = Router(
       "/internal" -> InternalHeader(internSettings.internalRouteKey) {
         internalRoutes(pubSub)

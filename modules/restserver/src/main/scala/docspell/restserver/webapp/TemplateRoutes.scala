@@ -6,12 +6,8 @@
 
 package docspell.restserver.webapp
 
-import java.net.URL
-import java.util.concurrent.atomic.AtomicReference
-
 import cats.effect._
 import cats.implicits._
-import fs2.text
 
 import docspell.restserver.{BuildInfo, Config}
 
@@ -36,22 +32,16 @@ object TemplateRoutes {
     def serviceWorker: HttpRoutes[F]
   }
 
-  def apply[F[_]: Async](cfg: Config): InnerRoutes[F] = {
-    val indexTemplate = memo(
-      loadResource("/index.html").flatMap(loadTemplate(_))
-    )
-    val docTemplate = memo(loadResource("/doc.html").flatMap(loadTemplate(_)))
-    val swTemplate = memo(loadResource("/sw.js").flatMap(loadTemplate(_)))
-
+  def apply[F[_]: Async](cfg: Config, templates: Templates[F]): InnerRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
     new InnerRoutes[F] {
       def doc =
         HttpRoutes.of[F] { case GET -> Root =>
           for {
-            templ <- docTemplate
+            docTemplate <- templates.doc
             resp <- Ok(
-              DocData().render(templ),
+              DocData().render(docTemplate),
               `Content-Type`(textHtml, Charset.`UTF-8`)
             )
           } yield resp
@@ -59,9 +49,9 @@ object TemplateRoutes {
       def app =
         HttpRoutes.of[F] { case GET -> _ =>
           for {
-            templ <- indexTemplate
+            indexTemplate <- templates.index
             resp <- Ok(
-              IndexData(cfg).render(templ),
+              IndexData(cfg).render(indexTemplate),
               `Content-Type`(textHtml, Charset.`UTF-8`)
             )
           } yield resp
@@ -70,38 +60,13 @@ object TemplateRoutes {
       def serviceWorker =
         HttpRoutes.of[F] { case GET -> _ =>
           for {
-            templ <- swTemplate
+            swTemplate <- templates.serviceWorker
             resp <- Ok(
-              IndexData(cfg).render(templ),
+              IndexData(cfg).render(swTemplate),
               `Content-Type`(appJavascript, Charset.`UTF-8`)
             )
           } yield resp
         }
-    }
-  }
-
-  def loadResource[F[_]: Sync](name: String): F[URL] =
-    Option(getClass.getResource(name)) match {
-      case None =>
-        Sync[F].raiseError(new Exception("Unknown resource: " + name))
-      case Some(r) =>
-        r.pure[F]
-    }
-
-  def loadUrl[F[_]: Sync](url: URL): F[String] =
-    fs2.io
-      .readInputStream(Sync[F].delay(url.openStream()), 64 * 1024)
-      .through(text.utf8.decode)
-      .compile
-      .string
-
-  def parseTemplate[F[_]: Sync](str: String): F[Template] =
-    Sync[F].pure(mustache.parse(str).leftMap(err => new Exception(err._2))).rethrow
-
-  def loadTemplate[F[_]: Sync](url: URL): F[Template] = {
-    val logger = docspell.logging.getLogger[F]
-    loadUrl[F](url).flatMap(parseTemplate[F]).flatMap { t =>
-      logger.info(s"Compiled template $url") *> t.pure[F]
     }
   }
 
@@ -149,19 +114,5 @@ object TemplateRoutes {
 
     implicit def yamuscaValueConverter: ValueConverter[IndexData] =
       deriveValueConverter[IndexData]
-  }
-
-  private def memo[F[_]: Sync, A](fa: => F[A]): F[A] = {
-    val ref = new AtomicReference[A]()
-    Sync[F].defer {
-      Option(ref.get) match {
-        case Some(a) => a.pure[F]
-        case None =>
-          fa.map { a =>
-            ref.set(a)
-            a
-          }
-      }
-    }
   }
 }

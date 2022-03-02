@@ -308,7 +308,7 @@ view texts settings model =
                 (Comp.EventSample.viewJson texts.eventSample False model.eventSampleModel)
             ]
         , div [ class "mt-4" ]
-            [ formHeader "Test Delviery"
+            [ formHeader "Test Delivery"
             , Html.map DeliveryTestMsg
                 (Comp.NotificationTest.view
                     { runDisabled = getHook model == Nothing }
