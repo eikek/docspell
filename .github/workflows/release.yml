@@ -11,7 +11,7 @@ jobs:
       matrix:
         java: [ 'openjdk@1.11' ]
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3.0.0
         with:
           fetch-depth: 0
       - uses: olafurpg/setup-scala@v13
