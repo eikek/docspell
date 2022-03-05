@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.ConfirmModal exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Basics
@@ -77,4 +78,32 @@ de =
         "Dieses Dokument wirklich löschen? Es kann für einige Zeit aus dem Papierkorb wiederhergestellt werden."
     , confirmDeleteFile = "Diese Datei wirklich löschen?"
     , confirmDeleteAllFiles = "Die gewählten Dateien wirklich löschen?"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , confirmReprocessItem =
+        \state ->
+            if state == "created" then
+                "Le retraitement du document peut affecter ses métadonnées,"
+                    ++ " car il n'a pas été confirmé. Continuer ?"
+
+            else
+                "Le retraitement du document n'affectera pas ses métadonnées,"
+                    ++ " car il a été confirmé. Continuer ?"
+    , confirmReprocessFile =
+        \state ->
+            if state == "created" then
+                "Le retraitement  de ce fichier peut affecter les métadonnées du document, "
+                    ++ " car il n'a pas été confirmé.  Continuer ?"
+
+            else
+                "Le retraitement  de ce fichier n'affectera pas les métadonnées du document,  "
+                    ++ " car il a été confirmé. Continuer ?"
+    , confirmDeleteItem =
+        "Confirmer la suppression du document ? Il pourra être récupéré via la corbeille pendant un temps."
+    , confirmDeleteFile = "Confirmer la suppresion de ce fichier ?"
+    , confirmDeleteAllFiles = "Confirmer la suppresion de tous ces fichiers ?"
     }

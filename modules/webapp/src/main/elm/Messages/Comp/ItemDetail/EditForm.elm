@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.EditForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.Direction exposing (Direction)
@@ -89,4 +90,28 @@ de tz =
     , noSuggestions = "Keine Vorschläge"
     , formatDate = DF.formatDateLong Messages.UiLanguage.German tz
     , direction = Messages.Data.Direction.de
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , customFieldInput = Messages.Comp.CustomFieldMultiInput.fr
+    , tagDropdown = Messages.Comp.TagDropdown.fr
+    , createNewCustomField = "Créer un nouveau champs personnalisé"
+    , chooseDirection = "Choisir un sens…"
+    , dueDateTab = "Date d'échéance"
+    , addNewOrg = "Ajouter une nouvelle organisation"
+    , editOrg = "Editer une organisation"
+    , chooseOrg = "Choisir une organisation"
+    , addNewCorrespondentPerson = "Ajouter un correspondant"
+    , editPerson = "Editer uncorrespondant"
+    , personOrgInfo = "Le correspondant n'appartient pas à l'organisation."
+    , addNewConcerningPerson = "Ajouter une personne concernée"
+    , addNewEquipment = "Ajouter un nouvel équipement"
+    , editEquipment = "Editer un équipement"
+    , suggestions = "Suggestions"
+    , noSuggestions = "Aucune suggestion"
+    , formatDate = DF.formatDateLong Messages.UiLanguage.English tz
+    , direction = Messages.Data.Direction.fr
     }

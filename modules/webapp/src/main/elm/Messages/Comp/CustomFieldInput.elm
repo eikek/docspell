@@ -9,6 +9,7 @@ module Messages.Comp.CustomFieldInput exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -35,4 +36,13 @@ de =
     , errorNoNumber = "Keine Zahl angegeben"
     , errorNoAmount = "Kein Betrag angegeben"
     , errorNotANumber = \str -> "Keine Zahl: " ++ str
+    }
+
+
+fr : Texts
+fr =
+    { errorNoValue = "remplir avec une valeur"
+    , errorNoNumber = "Pas de nombre donné"
+    , errorNoAmount = "Pas de montant donné"
+    , errorNotANumber = \str -> "Pas un nombre: " ++ str
     }

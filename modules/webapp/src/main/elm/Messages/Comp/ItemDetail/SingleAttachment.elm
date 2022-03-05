@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.SingleAttachment exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -75,4 +76,25 @@ de tz =
     , exitSelectMode = "Auswahlmodus beenden"
     , deleteAttachments = "Anhänge löschen"
     , showQrCode = "Link als QR Code anzeigen"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { attachmentMeta = Messages.Comp.AttachmentMeta.fr tz
+    , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.fr
+    , noName = "Sans nom"
+    , openFileInNewTab = "Ouvrir le fichier dans un nouvel onglet"
+    , downloadFile = "Télécharger le fichier"
+    , renameFile = "Renommer le fichier"
+    , downloadOriginalArchiveFile = "Télécharger l'archive original"
+    , originalFile = "Fichier original"
+    , renderPdfByBrowser = "Rendu des pdf pas le navigateur"
+    , viewExtractedData = "Voir les données extraites"
+    , reprocessFile = "Retraiter ce fichier"
+    , deleteThisFile = "Supprimer ce fichier"
+    , selectModeTitle = "Mode sélection"
+    , exitSelectMode = "Quitter le mode sélection"
+    , deleteAttachments = "Supprimer les pièces-jointes"
+    , showQrCode = "Afficher l'URL en QR code"
     }

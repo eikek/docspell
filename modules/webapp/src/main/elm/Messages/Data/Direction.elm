@@ -8,6 +8,7 @@
 module Messages.Data.Direction exposing
     ( de
     , gb
+    , fr
     )
 
 import Data.Direction exposing (Direction(..))
@@ -31,3 +32,13 @@ de dir =
 
         Outgoing ->
             "Ausgehend"
+
+
+fr : Direction -> String
+fr dir =
+    case dir of
+        Incoming ->
+            "Entrant"
+
+        Outgoing ->
+            "Sortant"

@@ -9,6 +9,7 @@ module Messages.Comp.AddressForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -38,4 +39,14 @@ de =
     , zipCode = "Postleitzahl"
     , city = "Ort"
     , country = "Land"
+    }
+
+
+fr : Texts
+fr =
+    { selectCountry = "Choix pays"
+    , street = "rue"
+    , zipCode = "Code Postal"
+    , city = "Ville"
+    , country = "Pays"
     }

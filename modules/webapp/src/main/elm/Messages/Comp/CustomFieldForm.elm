@@ -9,6 +9,7 @@ module Messages.Comp.CustomFieldForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.CustomFieldType exposing (CustomFieldType)
@@ -90,4 +91,32 @@ de =
     , fieldNameRequired = "Ein Name ist erforderlich."
     , fieldTypeRequired = "Ein Format ist erforderlich."
     , updateSuccessful = "Das Feld wurde gespeichert."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , reallyDeleteField = "Confirmer la suppression de ce champs ?"
+    , fieldTypeLabel = Messages.Data.CustomFieldType.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , createCustomField = "Créer un champs personnalisé."
+    , modifyTypeWarning =
+        "Le changement de format peut rendre certaines valeurs invisibles"
+            ++ " si elles ne respectent pas le nouveau format !"
+    , nameInfo =
+        "Le nom propre de ce champs. Cela doit être un identifiant "
+            ++ "valide et ne contenir ni espace ni charactères spéciaux."
+    , fieldFormat = "Format du champs"
+    , fieldFormatInfo =
+        "Un champs doit avoir un format. Les valeurs sont validées"
+            ++ " selon ce format."
+    , label = "Label"
+    , labelInfo =
+        "Label utilisateur de ce champs. Utilisé dans l'UI."
+            ++ "si absent, le nom est utilisé"
+    , deleteThisField = "Supprimer ce champs"
+    , fieldNameRequired = "Nom  requis."
+    , fieldTypeRequired = "Type requis."
+    , updateSuccessful = "Champs enregistré."
     }
