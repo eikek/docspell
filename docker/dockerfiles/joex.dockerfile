@@ -5,10 +5,9 @@ ARG joex_url=
 ARG UNO_URL=https://raw.githubusercontent.com/unoconv/unoconv/0.9.0/unoconv
 ARG TARGETPLATFORM
 
-ENV JAVA_OPTS="-Xmx1536M"
-
-RUN JDKPKG="openjdk11"; \
-    if [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then JDKPKG="openjdk8"; fi; \
+RUN JDKPKG="openjdk11-jre"; \
+    if [[ $TARGETPLATFORM = linux/arm* ]]; then JDKPKG="openjdk8-jre"; fi; \
+    apk update && \
     apk add --no-cache $JDKPKG \
     tzdata \
     bash \
