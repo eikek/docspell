@@ -7,8 +7,9 @@
 package docspell.restserver
 
 import fs2.Stream
-
 import docspell.backend.BackendApp
+import org.http4s.HttpRoutes
+import org.http4s.server.websocket.WebSocketBuilder2
 
 trait RestApp[F[_]] {
 
@@ -25,4 +26,7 @@ trait RestApp[F[_]] {
     * via websocket.
     */
   def subscriptions: Stream[F, Nothing]
+
+  /** Http4s endpoint definitions. */
+  def routes(wsb: WebSocketBuilder2[F]): HttpRoutes[F]
 }
