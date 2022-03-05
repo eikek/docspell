@@ -9,6 +9,7 @@ module Messages.Comp.ShareTable exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -44,3 +45,14 @@ de tz =
     , publishUntil = "Publiziert bis"
     , user = "Benutzer"
     }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
+    , active = "Actif"
+    , publishUntil = "Publié jusqu'au"
+    , user = "Utilisateur"
+    }
+

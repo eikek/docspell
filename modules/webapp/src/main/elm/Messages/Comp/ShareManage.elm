@@ -9,6 +9,7 @@ module Messages.Comp.ShareManage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -92,4 +93,30 @@ de tz =
     , sendViaMail = "Per E-Mail versenden"
     , notOwnerInfo = "Nur der Benutzer, der diese Freigabe erstellt hat, kann diese auch ändern."
     , showOwningSharesOnly = "Nur meine Freigaben anzeigen"
+    }
+
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , shareTable = Messages.Comp.ShareTable.fr tz
+    , shareForm = Messages.Comp.ShareForm.fr
+    , shareView = Messages.Comp.ShareView.fr tz
+    , shareMail = Messages.Comp.ShareMail.fr
+    , newShare = "Nouveau partage"
+    , copyToClipboard = "Copier dans le presse-papier"
+    , openInNewTab = "Ouvrir dans un nouvel onglet/fenêtre"
+    , publicUrl = "URL publique"
+    , reallyDeleteShare = "Confirmer la suppression de ce partage ?"
+    , createNewShare = "Créer un nouveau partage"
+    , deleteThisShare = "Supprimer un partage"
+    , errorGeneratingQR = "Erreur  lors de la génération du QR Code"
+    , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    , noName = "Sans nom"
+    , shareInformation = "Partager des informations"
+    , sendViaMail = "Envoyer par E-Mail"
+    , notOwnerInfo = "Seul l'utilisateur ayant créé ce partage peut modifier ses propiétés."
+    , showOwningSharesOnly = "Montrer seulement mes partages"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.ShareView exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -65,3 +66,21 @@ de tz =
     , views = "Aufrufe"
     , lastAccess = "Letzter Zugriff"
     }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , date = DF.formatDateLong Messages.UiLanguage.French tz
+    , qrCodeError = "Erreur  lors de la génération du QR Code"
+    , expiredInfo = "Ce partage a expiré."
+    , disabledInfo = "Ce partage est inactif."
+    , noName = "Sans nom"
+    , copyToClipboard = "Copier dans le presse-papier"
+    , openInNewTab = "Ouvrir dans un nouvel onglet/fenêtre"
+    , publishUntil = "Publié jusqu'au"
+    , passwordProtected = "Protégé par mot de passe"
+    , views = "Vues"
+    , lastAccess = "Dernier accès"
+    }
+

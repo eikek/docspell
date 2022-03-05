@@ -9,6 +9,7 @@ module Messages.App exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -59,4 +60,21 @@ de =
     , help = "Hilfe (English)"
     , newItemsArrived = "Neue Dokumente eingetroffen!"
     , dashboard = "Dashboard"
+    }
+
+
+fr : Texts
+fr =
+    { collectiveProfile = "Profile groupe"
+    , userProfile = "Profile utilisateur"
+    , lightDark = "Clair/Sombre"
+    , logout = "Déconnexion "
+    , items = "Documents"
+    , manageData = "Gérer les informations complémentaires"
+    , uploadFiles = "Envoyer des documents"
+    , processingQueue = "File de traitement"
+    , newInvites = "Nouvelles invitations"
+    , help = "Aide"
+    , newItemsArrived = "De nouveaux documents sont arrivés!"
+    , dashboard = "Tableau de bord"
     }

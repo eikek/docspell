@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.AddFilesForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Basics
@@ -48,4 +49,17 @@ de =
         "Alle Dateien wurden hochgeladen und werden jetzt verarbeitet. Einige Daten "
             ++ "sind evtl. noch nicht sofort verfügbar. "
     , refreshNow = "Neu laden"
+    }
+
+
+fr : Texts
+fr =
+    { dropzone = Messages.Comp.Dropzone.fr
+    , basics = Messages.Basics.fr
+    , addMoreFilesToItem = "Ajouter plus de fichier à ce document"
+    , reset = "Reset"
+    , filesSubmittedInfo =
+        "Tous les fichiers ont été importés. Ils sont en cours de traitement, certains"
+            ++ "peuvent ne pas être immédiatement disponible. "
+    , refreshNow = "Rafraichir maintenant"
     }

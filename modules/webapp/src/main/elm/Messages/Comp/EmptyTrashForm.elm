@@ -9,6 +9,7 @@ module Messages.Comp.EmptyTrashForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -42,4 +43,14 @@ de tz =
     , schedule = "Zeitplan"
     , minAge = "Mindestalter (Tage)"
     , minAgeInfo = "Das Mindestalter (in Tagen) der Dokumente, die gelöscht werden. Es wird das Datum der letzten Veränderung verwendet."
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , calEventInput = Messages.Comp.CalEventInput.fr tz
+    , schedule = "Programmation"
+    , minAge = "Durée minimum (jours)"
+    , minAgeInfo = "Durée minimum en jours avant qu'un document soit supprimé. L'heure de la dernière mise à jour est utilisée."
     }

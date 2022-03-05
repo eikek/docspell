@@ -9,6 +9,7 @@ module Messages.Comp.UserForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Basics
@@ -40,4 +41,14 @@ de =
     , state = "Status"
     , email = "E-Mail"
     , password = "Passwort"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , login = "Identifiant"
+    , state = "Etat"
+    , email = "E-Mail"
+    , password = "Mot de passe"
     }

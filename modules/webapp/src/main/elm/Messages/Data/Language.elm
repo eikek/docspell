@@ -8,6 +8,7 @@
 module Messages.Data.Language exposing
     ( de
     , gb
+    , fr
     )
 
 import Data.Language exposing (Language(..))
@@ -127,3 +128,61 @@ de lang =
 
         Hungarian ->
             "Ungarisch"
+
+
+fr : Language -> String
+fr lang =
+    case lang of
+        German ->
+            "Allemand"
+
+        English ->
+            "Anglais"
+
+        French ->
+            "Français"
+
+        Italian ->
+            "Italien"
+
+        Spanish ->
+            "Espagnol"
+
+        Portuguese ->
+            "Portugais"
+
+        Czech ->
+            "Tchèque"
+
+        Danish ->
+            "Danois"
+
+        Finnish ->
+            "Finlandais"
+
+        Norwegian ->
+            "Norvégiens"
+
+        Swedish ->
+            "Suédois"
+
+        Russian ->
+            "Russe"
+
+        Romanian ->
+            "Roumain"
+
+        Dutch ->
+            "Néerlandais"
+
+        Latvian ->
+            "Letton"
+
+        Japanese ->
+            "Japonnais"
+
+        Hebrew ->
+            "Hébreu"
+
+        Hungarian ->
+            "Hongrois"

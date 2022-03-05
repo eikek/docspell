@@ -9,6 +9,7 @@ module Messages.Comp.CalEventInput exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -62,4 +63,20 @@ de tz =
     , next = "Nächste Zeiten"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German tz
     , httpError = Messages.Comp.HttpError.de
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { weekday = "Jour  de la semaine"
+    , year = "Année"
+    , month = "Mois"
+    , day = "Jour"
+    , hour = "Heure"
+    , minute = "Minute"
+    , error = "Erreur"
+    , schedule = "Programmation"
+    , next = "Suivant"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
+    , httpError = Messages.Comp.HttpError.fr
     }

@@ -9,6 +9,7 @@ module Messages.Comp.CollectiveSettingsForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.Language exposing (Language)
@@ -117,4 +118,39 @@ de tz =
     , emptyTrash = "Papierkorb löschen"
     , passwords = "Passwörter"
     , passwordsInfo = "Diese Passwörter werden zum Lesen von verschlüsselten PDFs verwendet. Diese Passwörter werden in der Datanbank **in Klartext** gespeichert!"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.fr tz
+    , emptyTrashForm = Messages.Comp.EmptyTrashForm.fr tz
+    , httpError = Messages.Comp.HttpError.fr
+    , save = "Enregistrer"
+    , saveSettings = "Enregistrer la configuration"
+    , documentLanguage = "Langue du document"
+    , documentLanguageHelp = "La langue de vos documents. Cela aide la reconnaissance de charactères (OCR) et l'analyse de texte."
+    , integrationEndpoint = "Integration Endpoint"
+    , integrationEndpointLabel = "Activer integration endpoint"
+    , integrationEndpointHelp =
+        "L'Integration Endpoint permet aux applications (locales) d'envoyer des fichiers. "
+            ++ "Il peut être désactivé pour le groupe."
+    , fulltextSearch = "Recherche en texte intégral"
+    , reindexAllData = "Réindexer les documents"
+    , reindexAllDataHelp =
+        "Ceci démarrera une tâche qui effacera l'index de recherche en texte intégral et réindexera tous les documents."
+            ++ "Veuillez presser OK afin d'éviter toute réindexation accidentèle."
+    , autoTagging = "Auto-Tagging"
+    , startNow = "Commencer"
+    , languageLabel = Messages.Data.Language.fr
+    , classifierTaskStarted = "Tâche de classement démarrée."
+    , emptyTrashTaskStarted = "Vidange de la corbeille démarrée."
+    , emptyTrashStartInvalidForm = "Le formulaire de vidange de la corbeille contient des erreurs."
+    , fulltextReindexSubmitted = "Réindexation de la recherche en texte intégral démarrée."
+    , fulltextReindexOkMissing =
+        "Veuillez presser OK pour confirmer le lancement de la réindexation des documents."
+    , emptyTrash = "Vider la corbeille"
+    , passwords = "Mots de passe"
+    , passwordsInfo = "Ces mots de passes sont utilisés pour le traitement des PDF encryptés. Veuillez noter qu'ils sont stockés dans la base de donnée en **clair**!"
     }
