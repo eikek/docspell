@@ -9,6 +9,7 @@ module Messages.Page.Queue exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -96,4 +97,31 @@ de tz =
     , prio = "Prio"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German tz
     , sidebarTitle = "Verarbeitung"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , currentlyRunning = "En cours d'exécution"
+    , queue = "Tâches"
+    , waiting = "En attente"
+    , errored = "En échec"
+    , success = "Complétées"
+    , cancelled = "Annulées"
+    , noJobsRunning = "Aucune tâche en cours d'exécution."
+    , noJobsDisplay = "Aucune tâche à afficher."
+    , noJobsWaiting = "Aucune tâche en attente."
+    , noJobsFailed = "Aucune tâche échouée à afficher."
+    , noJobsSuccess = "Aucune tâche complétée à afficher."
+    , noJobsCancelled = "Aucune tâche annulée à afficher.."
+    , deleteThisJob = "Annuler/Supprimer cette tâche ?"
+    , showLog = "Afficher le journal"
+    , remove = "Supprimer"
+    , retries = "Réessais"
+    , changePriority = "Changer la priorité de cette tâche."
+    , prio = "Prio"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
+    , sidebarTitle = "En cours"
     }
