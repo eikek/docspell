@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.UploadForm exposing (Texts, de, gb)
+module Messages.Comp.UploadForm exposing (Texts, de, gb, fr)
 
 import Data.Language exposing (Language)
 import Messages.Basics
@@ -95,4 +95,34 @@ de =
         }
     , selectedFiles = "Ausgewählte Dateien"
     , languageLabel = Messages.Data.Language.de
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , dropzone = Messages.Comp.Dropzone.fr
+    , reset = "Reset"
+    , allFilesOneItem = "Tous les fichiers ne sont qu'un seul document"
+    , skipExistingFiles = "Ignorer les fichiers déjà présents dans docspell"
+    , language = "Langue"
+    , languageInfo =
+        "Utilisé pour l'extraction et l'analyse. Le langage par défaut"
+            ++ "du groupe est utilisé si rien n'est spécifié."
+    , uploadErrorMessage = "Erreurs lors du transfert des fichiers."
+    , successBox =
+        { allFilesUploaded = "Tous les transferts sont complétés."
+        , line1 =
+            "Les fichiers ont bien été envoyés"
+                ++ "Ils sont en cours de traitement.  Rendez-vous aux"
+        , itemsPage = "Documents"
+        , line2 = " plus tard où les fichiers arrivent. Où rendez-vous à la "
+        , processingPage = "File de traitement"
+        , line3 = " afin de voir l'état du traitement."
+        , resetLine1 = " Click "
+        , reset = "Reset"
+        , resetLine2 = " pour envoyer plus de fichier."
+        }
+    , selectedFiles = "Fichiers séléctionnés"
+    , languageLabel = Messages.Data.Language.fr
     }
