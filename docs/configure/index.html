@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.32.0
+                    0.33.0
                 </div>
             </div>
 
@@ -1076,7 +1076,7 @@ which can be configured:</p>
 you need to add an option to use G1GC (<code>-XX:+UseG1GC</code>), for java11
 this is not necessary (but doesn't hurt either). This could look like
 this:</p>
-<pre class="z-code"><code><span class="z-text z-plain">./docspell-joex-&lt;pre data-shortcode&gt;0.32.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+<pre class="z-code"><code><span class="z-text z-plain">./docspell-joex-&lt;pre data-shortcode&gt;0.33.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
 </span></code></pre>
 <p>Using these options you can define how much memory the JVM process is
 able to use. This might be necessary to adopt depending on the usage
@@ -1084,32 +1084,18 @@ scenario and configured text analysis features.</p>
 <p>Please have a look at the corresponding <a href="https://docspell.org/docs/configure/#memory-usage">section</a>.</p>
 <h1 id="logging">Logging<a class="zola-anchor" href="#logging" aria-label="Anchor link for: logging">🔗</a></h1>
 <p>By default, docspell logs to stdout. This works well, when managed by
-systemd or other inits. Logging is done by
-<a href="https://logback.qos.ch/">logback</a>. Please refer to its documentation
-for how to configure logging.</p>
-<p>If you created your logback config file, it can be added as argument
-to the executable using this syntax:</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">/path/to/docspell</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>Dlogback</span>.configurationFile=/path/to/your/logging-config-file</span>
-</span></code></pre>
-<p>To get started, the default config looks like this:</p>
-<pre data-lang="xml" class="language-xml z-code"><code class="language-xml" data-lang="xml"><span class="z-text z-xml"><span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">configuration</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-  <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">appender</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">name</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>STDOUT<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-entity z-other z-attribute-name z-localname z-xml">class</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>ch.qos.logback.core.ConsoleAppender<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-    <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">withJansi</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>true<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">withJansi</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-
-    <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">encoder</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-      <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">pattern</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">pattern</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-    <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">encoder</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-  <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">appender</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-
-  <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">logger</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">name</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>docspell<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-entity z-other z-attribute-name z-localname z-xml">level</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>debug<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
-  <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">root</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">level</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>INFO<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-    <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">appender-ref</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">ref</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>STDOUT<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
-  <span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">root</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">configuration</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
-</span></code></pre>
-<p>The <code>&lt;root level=&quot;INFO&quot;&gt;</code> means, that only log statements with level
-&quot;INFO&quot; will be printed. But the <code>&lt;logger name=&quot;docspell&quot; level=&quot;debug&quot;&gt;</code> above says, that for loggers with name &quot;docspell&quot;
-statements with level &quot;DEBUG&quot; will be printed, too.</p>
+systemd or other inits. Logging can be configured in the configuration
+file or via environment variables. There are only two settings:</p>
+<ul>
+<li><code>minimum-level</code> specifies the log level to control the verbosity.
+Levels are ordered from: <em>Trace</em>, <em>Debug</em>, <em>Info</em>, <em>Warn</em> and
+<em>Error</em></li>
+<li><code>format</code> this defines how the logs are formatted. There are two
+formats for humans: <em>Plain</em> and <em>Fancy</em>. And two more suited for
+machine consumption: <em>Json</em> and <em>Logfmt</em>. The <em>Json</em> format contains
+all details, while the others may omit some for readability</li>
+</ul>
+<p>These settings are the same for joex and the restserver component.</p>
 <h1 id="default-config">Default Config<a class="zola-anchor" href="#default-config" aria-label="Anchor link for: default-config">🔗</a></h1>
 <h2 id="rest-server">Rest Server<a class="zola-anchor" href="#rest-server" aria-label="Anchor link for: rest-server">🔗</a></h2>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash">
@@ -1135,6 +1121,17 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span>  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> mydocs.myserver.com), the `internal-url` must be set such that</span><span class="z-comment z-line z-number-sign z-shell">
 </span>  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> other nodes can reach this server.</span><span class="z-comment z-line z-number-sign z-shell">
 </span>  internal-url = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>http://localhost:7880<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+
+  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Configures logging</span><span class="z-comment z-line z-number-sign z-shell">
+</span>  logging <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> The format for the log messages. Can be one of:</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Json, Logfmt, Fancy or Plain</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    format = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Fancy<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+
+    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> The minimum level to log. From lowest to highest:</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Trace, Debug, Info, Warn, Error</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    minimum-level = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Info<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
 
   <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Where the server binds to.</span><span class="z-comment z-line z-number-sign z-shell">
 </span>  bind <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
@@ -1488,6 +1485,17 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
     port = 7878
   <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
 
+  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Configures logging</span><span class="z-comment z-line z-number-sign z-shell">
+</span>  logging <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> The format for the log messages. Can be one of:</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Json, Logfmt, Fancy or Plain</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    format = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Fancy<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+
+    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> The minimum level to log. From lowest to highest:</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Trace, Debug, Info, Warn, Error</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    minimum-level = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Info<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+
   <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> The database connection.</span><span class="z-comment z-line z-number-sign z-shell">
 </span>  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">
 </span>  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> It must be the same connection as the rest server is using.</span><span class="z-comment z-line z-number-sign z-shell">
@@ -1603,7 +1611,7 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 
     <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> When the house keeping tasks execute. Default is to run every</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> week.</span><span class="z-comment z-line z-number-sign z-shell">
-</span>    schedule = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Sun *-*-* 00:00:00<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span>    schedule = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Sun *-*-* 00:00:00 UTC<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
 
     <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> This task removes invitation keys that have been created but not</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> used. The timespan here must be greater than the `invite-time&#39;</span><span class="z-comment z-line z-number-sign z-shell">
@@ -1668,8 +1676,9 @@ statements with level &quot;DEBUG&quot; will be printed, too.</p>
 </span>    test-run = false
 
     <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> When the update check should execute. Default is to run every</span><span class="z-comment z-line z-number-sign z-shell">
-</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> week.</span><span class="z-comment z-line z-number-sign z-shell">
-</span>    schedule = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Sun *-*-* 00:00:00<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> week. You can specify a time zone identifier, like</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> &#39;Europe/Berlin&#39; at the end.</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    schedule = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Sun *-*-* 00:00:00 UTC<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
 
     <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> An account id in form of `collective/user` (or just `user` if</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> collective and user name are the same). This user account must</span><span class="z-comment z-line z-number-sign z-shell">
@@ -2269,6 +2278,14 @@ default values.</p>
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  other nodes can reach this server.</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_INTERNAL__URL</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>http://localhost:7880<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
 
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  The format for the log messages. Can be one of:</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Json, Logfmt, Fancy or Plain</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_LOGGING_FORMAT</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Fancy<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  The minimum level to log. From lowest to highest:</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Trace, Debug, Info, Warn, Error</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_LOGGING_MINIMUM__LEVEL</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Info<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  This is a hard limit to restrict the size of a batch that is</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  returned when searching for items. The user can set this limit</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  within the client config, but it is restricted by the server to</span><span class="z-comment z-line z-number-sign z-shell">
@@ -2431,7 +2448,7 @@ default values.</p>
 
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  When the house keeping tasks execute. Default is to run every</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  week.</span><span class="z-comment z-line z-number-sign z-shell">
-</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_HOUSE__KEEPING_SCHEDULE</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Sun *-*-* 00:00:00<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_HOUSE__KEEPING_SCHEDULE</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Sun *-*-* 00:00:00 UTC<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
 
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  The database password.</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_JDBC_PASSWORD</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
@@ -2439,6 +2456,14 @@ default values.</p>
 
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  The database user.</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_JDBC_USER</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>sa<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  The format for the log messages. Can be one of:</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Json, Logfmt, Fancy or Plain</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_LOGGING_FORMAT</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Fancy<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  The minimum level to log. From lowest to highest:</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Trace, Debug, Info, Warn, Error</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_LOGGING_MINIMUM__LEVEL</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Info<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
 
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Enable or disable debugging for e-mail related functionality. This</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  applies to both sending and receiving mails. For security reasons</span><span class="z-comment z-line z-number-sign z-shell">
@@ -2603,8 +2628,9 @@ default values.</p>
 </span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_UPDATE__CHECK_ENABLED</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">false</span>
 
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  When the update check should execute. Default is to run every</span><span class="z-comment z-line z-number-sign z-shell">
-</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  week.</span><span class="z-comment z-line z-number-sign z-shell">
-</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_UPDATE__CHECK_SCHEDULE</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Sun *-*-* 00:00:00<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  week. You can specify a time zone identifier, like</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  &#39;Europe/Berlin&#39; at the end.</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_UPDATE__CHECK_SCHEDULE</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Sun *-*-* 00:00:00 UTC<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
 
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  An account id in form of `collective/user` (or just `user` if</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  collective and user name are the same). This user account must</span><span class="z-comment z-line z-number-sign z-shell">
@@ -2654,7 +2680,7 @@ default values.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.32.0
+            Docspell 0.33.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
