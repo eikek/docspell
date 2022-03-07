@@ -16,6 +16,7 @@ import docspell.common.Pools
 import docspell.joex.routes._
 import docspell.pubsub.naive.NaivePubSub
 import docspell.store.Store
+import docspell.store.file.FileRepositoryConfig
 import docspell.store.records.RInternalSetting
 
 import org.http4s.HttpApp
@@ -41,7 +42,7 @@ object JoexServer {
 
       store <- Store.create[F](
         cfg.jdbc,
-        cfg.files.chunkSize,
+        FileRepositoryConfig.Database(cfg.files.chunkSize),
         pools.connectEC
       )
       settings <- Resource.eval(store.transact(RInternalSetting.create))

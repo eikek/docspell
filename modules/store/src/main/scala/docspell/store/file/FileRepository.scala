@@ -13,8 +13,7 @@ import fs2._
 
 import docspell.common._
 
-import binny.BinaryId
-import binny.jdbc.{GenericJdbcStore, JdbcStoreConfig}
+import binny.{BinaryId, BinaryStore}
 import doobie.Transactor
 
 trait FileRepository[F[_]] {
@@ -33,16 +32,15 @@ trait FileRepository[F[_]] {
 
 object FileRepository {
 
-  def genericJDBC[F[_]: Sync](
+  def apply[F[_]: Async](
       xa: Transactor[F],
       ds: DataSource,
-      chunkSize: Int
+      cfg: FileRepositoryConfig
   ): FileRepository[F] = {
     val attrStore = new AttributeStore[F](xa)
-    val cfg = JdbcStoreConfig("filechunk", chunkSize, BinnyUtils.TikaContentTypeDetect)
     val log = docspell.logging.getLogger[F]
-    val binStore = GenericJdbcStore[F](ds, BinnyUtils.LoggerAdapter(log), cfg, attrStore)
     val keyFun: FileKey => BinaryId = BinnyUtils.fileKeyToBinaryId
+    val binStore: BinaryStore[F] = BinnyUtils.binaryStore(cfg, attrStore, ds, log)
 
     new FileRepositoryImpl[F](binStore, attrStore, keyFun)
   }
