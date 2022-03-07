@@ -2487,6 +2487,35 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /admin/files/cloneFileRepository:
+    post:
+      operationId: "admin-files-cloneFileRepository"
+      tags: [Admin]
+      summary: Copy all files into a new repository
+      description: |
+        Submits a task that will copy all files of the application
+        (from the default file repository) into another file
+        repository as specified in the request. The request may define
+        ids of file repository configurations that must be present in
+        the config file. An empty list means to copy to all enabled
+        file repositories from te default file repository.
+      security:
+        - adminHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FileRepositoryCloneRequest"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/source:
     get:
       operationId: "sec-source-get-all"
@@ -5433,6 +5462,18 @@ paths:
 
 components:
   schemas:
+    FileRepositoryCloneRequest:
+      description: |
+        Clone the file repository to a new location.
+      required:
+        - targetRepositories
+      properties:
+        targetRepositories:
+          type: array
+          items:
+            type: string
+            format: ident
+
     BookmarkedQuery:
       description: |
         A query bookmark.

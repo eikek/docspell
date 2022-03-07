@@ -7,18 +7,21 @@
 package docspell.restserver
 
 import scala.concurrent.duration._
+
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
 import fs2.concurrent.Topic
+
 import docspell.backend.msg.Topics
 import docspell.common._
 import docspell.pubsub.naive.NaivePubSub
 import docspell.restserver.http4s.InternalHeader
-import docspell.restserver.ws.OutputEvent.KeepAlive
 import docspell.restserver.ws.OutputEvent
+import docspell.restserver.ws.OutputEvent.KeepAlive
 import docspell.store.Store
 import docspell.store.records.RInternalSetting
+
 import org.http4s._
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.blaze.server.BlazeServerBuilder
@@ -73,7 +76,7 @@ object RestServer {
       httpClient <- BlazeClientBuilder[F].resource
       store <- Store.create[F](
         cfg.backend.jdbc,
-        cfg.backend.files.toFileRepositoryConfig,
+        cfg.backend.files.defaultFileRepositoryConfig,
         pools.connectEC
       )
       setting <- Resource.eval(store.transact(RInternalSetting.create))

@@ -42,15 +42,11 @@ object Config {
     def defaultStoreConfig: FileStoreConfig =
       enabledStores(defaultStore)
 
-    def toFileRepositoryConfig: FileRepositoryConfig =
-      defaultStoreConfig match {
-        case FileStoreConfig.DefaultDatabase(_) =>
-          FileRepositoryConfig.Database(chunkSize)
-        case FileStoreConfig.S3(_, endpoint, accessKey, secretKey, bucket) =>
-          FileRepositoryConfig.S3(endpoint, accessKey, secretKey, bucket, chunkSize)
-        case FileStoreConfig.FileSystem(_, directory) =>
-          FileRepositoryConfig.Directory(directory, chunkSize)
-      }
+    def defaultFileRepositoryConfig: FileRepositoryConfig =
+      FileRepositoryConfig.fromFileStoreConfig(chunkSize, defaultStoreConfig)
+
+    def getFileRepositoryConfig(id: Ident): Option[FileRepositoryConfig] =
+      stores.get(id).map(FileRepositoryConfig.fromFileStoreConfig(chunkSize, _))
 
     def validate: ValidatedNec[String, Files] = {
       val storesEmpty =

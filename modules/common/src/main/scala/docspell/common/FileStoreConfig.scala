@@ -32,5 +32,8 @@ object FileStoreConfig {
       bucket: String
   ) extends FileStoreConfig {
     val storeType = FileStoreType.S3
+
+    override def toString =
+      s"S3(enabled=$enabled, endpoint=$endpoint, bucket=$bucket, accessKey=$accessKey, secretKey=***)"
   }
 }

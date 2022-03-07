@@ -41,7 +41,7 @@ object JoexServer {
 
       store <- Store.create[F](
         cfg.jdbc,
-        cfg.files.toFileRepositoryConfig,
+        cfg.files.defaultFileRepositoryConfig,
         pools.connectEC
       )
       settings <- Resource.eval(store.transact(RInternalSetting.create))

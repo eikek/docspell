@@ -50,6 +50,7 @@ trait BackendApp[F[_]] {
   def events: EventExchange[F]
   def notification: ONotification[F]
   def bookmarks: OQueryBookmarks[F]
+  def fileRepository: OFileRepository[F]
 }
 
 object BackendApp {
@@ -91,6 +92,7 @@ object BackendApp {
       )
       notifyImpl <- ONotification(store, notificationMod)
       bookmarksImpl <- OQueryBookmarks(store)
+      fileRepoImpl <- OFileRepository(queue, joexImpl)
     } yield new BackendApp[F] {
       val pubSub = pubSubT
       val login = loginImpl
@@ -118,5 +120,6 @@ object BackendApp {
       val events = notificationMod
       val notification = notifyImpl
       val bookmarks = bookmarksImpl
+      val fileRepository = fileRepoImpl
     }
 }

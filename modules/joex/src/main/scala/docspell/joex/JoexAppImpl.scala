@@ -20,6 +20,7 @@ import docspell.ftsclient.FtsClient
 import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.emptytrash._
+import docspell.joex.filecopy.FileCopyTask
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
 import docspell.joex.learn.LearnClassifierTask
@@ -277,6 +278,13 @@ object JoexAppImpl extends MailAddressCodec {
             PeriodicDueItemsTask.taskName,
             PeriodicDueItemsTask[F](notification),
             PeriodicDueItemsTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            FileCopyTaskArgs.taskName,
+            FileCopyTask[F](cfg),
+            FileCopyTask.onCancel[F]
           )
         )
         .resource

@@ -31,7 +31,8 @@ object Main extends IOApp {
         Option(System.getProperty("config.file")),
         cfg.appId,
         cfg.baseUrl,
-        Some(cfg.fullTextSearch.solr.url).filter(_ => cfg.fullTextSearch.enabled)
+        Some(cfg.fullTextSearch.solr.url).filter(_ => cfg.fullTextSearch.enabled),
+        cfg.files.defaultStoreConfig
       )
       _ <- logger.info(s"\n${banner.render("***>")}")
       _ <-

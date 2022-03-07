@@ -8,6 +8,8 @@ package docspell.store.file
 
 import fs2.io.file.Path
 
+import docspell.common.FileStoreConfig
+
 sealed trait FileRepositoryConfig {}
 
 object FileRepositoryConfig {
@@ -24,4 +26,13 @@ object FileRepositoryConfig {
 
   final case class Directory(path: Path, chunkSize: Int) extends FileRepositoryConfig
 
+  def fromFileStoreConfig(chunkSize: Int, cfg: FileStoreConfig): FileRepositoryConfig =
+    cfg match {
+      case FileStoreConfig.DefaultDatabase(_) =>
+        FileRepositoryConfig.Database(chunkSize)
+      case FileStoreConfig.S3(_, endpoint, accessKey, secretKey, bucket) =>
+        FileRepositoryConfig.S3(endpoint, accessKey, secretKey, bucket, chunkSize)
+      case FileStoreConfig.FileSystem(_, directory) =>
+        FileRepositoryConfig.Directory(directory, chunkSize)
+    }
 }

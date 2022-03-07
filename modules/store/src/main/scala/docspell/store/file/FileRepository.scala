@@ -13,10 +13,12 @@ import fs2._
 
 import docspell.common._
 
-import binny.{BinaryId, BinaryStore}
+import binny.{BinaryAttributeStore, BinaryId, BinaryStore}
 import doobie.Transactor
 
 trait FileRepository[F[_]] {
+  def config: FileRepositoryConfig
+
   def getBytes(key: FileKey): Stream[F, Byte]
 
   def findMeta(key: FileKey): F[Option[FileMetadata]]
@@ -35,13 +37,27 @@ object FileRepository {
   def apply[F[_]: Async](
       xa: Transactor[F],
       ds: DataSource,
-      cfg: FileRepositoryConfig
+      cfg: FileRepositoryConfig,
+      withAttributeStore: Boolean
   ): FileRepository[F] = {
-    val attrStore = new AttributeStore[F](xa)
+    val attrStore =
+      if (withAttributeStore) AttributeStore[F](xa)
+      else AttributeStore.empty[F]
     val log = docspell.logging.getLogger[F]
     val keyFun: FileKey => BinaryId = BinnyUtils.fileKeyToBinaryId
     val binStore: BinaryStore[F] = BinnyUtils.binaryStore(cfg, attrStore, ds, log)
 
-    new FileRepositoryImpl[F](binStore, attrStore, keyFun)
+    new FileRepositoryImpl[F](cfg, binStore, attrStore, keyFun)
   }
+
+  def getDelegate[F[_]](
+      repo: FileRepository[F]
+  ): Option[(BinaryStore[F], BinaryAttributeStore[F])] =
+    repo match {
+      case n: FileRepositoryImpl[F] =>
+        Some((n.bs, n.attrStore))
+
+      case _ =>
+        None
+    }
 }

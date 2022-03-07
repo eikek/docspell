@@ -6,12 +6,14 @@
 
 package docspell.store.impl
 
+import javax.sql.DataSource
+
 import cats.arrow.FunctionK
 import cats.effect.Async
 import cats.implicits._
 import cats.~>
 
-import docspell.store.file.FileRepository
+import docspell.store.file.{FileRepository, FileRepositoryConfig}
 import docspell.store.migrate.FlywayMigrate
 import docspell.store.{AddResult, JdbcConfig, Store}
 
@@ -21,8 +23,15 @@ import doobie.implicits._
 final class StoreImpl[F[_]: Async](
     val fileRepo: FileRepository[F],
     jdbc: JdbcConfig,
+    ds: DataSource,
     xa: Transactor[F]
 ) extends Store[F] {
+
+  def createFileRepository(
+      cfg: FileRepositoryConfig,
+      withAttributeStore: Boolean
+  ): FileRepository[F] =
+    FileRepository(xa, ds, cfg, withAttributeStore)
 
   def transform: ConnectionIO ~> F =
     FunctionK.lift(transact)

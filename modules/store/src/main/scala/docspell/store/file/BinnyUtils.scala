@@ -21,7 +21,7 @@ import binny.jdbc.{GenericJdbcStore, JdbcStoreConfig}
 import binny.minio.{MinioBinaryStore, MinioConfig, S3KeyMapping}
 import scodec.bits.ByteVector
 
-private[store] object BinnyUtils {
+object BinnyUtils {
 
   def fileKeyToBinaryId(fk: FileKey): BinaryId =
     BinaryId(s"${fk.collective.id}/${fk.category.id.id}/${fk.id.id}")

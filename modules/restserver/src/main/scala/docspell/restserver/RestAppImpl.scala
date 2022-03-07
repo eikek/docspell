@@ -9,6 +9,7 @@ package docspell.restserver
 import cats.effect._
 import fs2.Stream
 import fs2.concurrent.Topic
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.{AuthToken, ShareToken}
 import docspell.ftsclient.FtsClient
@@ -23,6 +24,7 @@ import docspell.restserver.routes._
 import docspell.restserver.webapp.{TemplateRoutes, Templates, WebjarRoutes}
 import docspell.restserver.ws.{OutputEvent, WebSocketRoutes}
 import docspell.store.Store
+
 import emil.javamail.JavaMailEmil
 import org.http4s.HttpRoutes
 import org.http4s.client.Client
@@ -76,7 +78,8 @@ final class RestAppImpl[F[_]: Async](
       "user/otp" -> TotpRoutes.admin(backend),
       "user" -> UserRoutes.admin(backend),
       "info" -> InfoRoutes.admin(config),
-      "attachments" -> AttachmentRoutes.admin(backend)
+      "attachments" -> AttachmentRoutes.admin(backend),
+      "files" -> FileRepositoryRoutes.admin(backend)
     )
 
   def shareRoutes(

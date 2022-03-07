@@ -19,6 +19,9 @@ import pureconfig.generic.auto._
 import yamusca.imports._
 
 object ConfigFile {
+  // IntelliJ is wrong, this is required
+  import Implicits._
+
   def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
     val logger = docspell.logging.getLogger[F]
     ConfigFactory

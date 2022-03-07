@@ -28,6 +28,11 @@ trait Store[F[_]] {
 
   def fileRepo: FileRepository[F]
 
+  def createFileRepository(
+      cfg: FileRepositoryConfig,
+      withAttributeStore: Boolean
+  ): FileRepository[F]
+
   def add(insert: ConnectionIO[Int], exists: ConnectionIO[Boolean]): F[AddResult]
 }
 
@@ -50,8 +55,8 @@ object Store {
         ds.setDriverClassName(jdbc.driverClass)
       }
       xa = HikariTransactor(ds, connectEC)
-      fr = FileRepository.apply(xa, ds, fileRepoConfig)
-      st = new StoreImpl[F](fr, jdbc, xa)
+      fr = FileRepository.apply(xa, ds, fileRepoConfig, true)
+      st = new StoreImpl[F](fr, jdbc, ds, xa)
       _ <- Resource.eval(st.migrate)
     } yield st
   }
