@@ -6,9 +6,13 @@
 
 package docspell.backend
 
+import cats.data.{Validated, ValidatedNec}
+import cats.implicits._
+
 import docspell.backend.signup.{Config => SignupConfig}
 import docspell.common._
 import docspell.store.JdbcConfig
+import docspell.store.file.FileRepositoryConfig
 
 import emil.javamail.Settings
 
@@ -21,10 +25,49 @@ case class Config(
 
   def mailSettings: Settings =
     Settings.defaultSettings.copy(debug = mailDebug)
+
 }
 
 object Config {
 
-  case class Files(chunkSize: Int, validMimeTypes: Seq[MimeType])
+  case class Files(
+      chunkSize: Int,
+      validMimeTypes: Seq[MimeType],
+      defaultStore: Ident,
+      stores: Map[Ident, FileStoreConfig]
+  ) {
+    val enabledStores: Map[Ident, FileStoreConfig] =
+      stores.view.filter(_._2.enabled).toMap
 
+    def defaultStoreConfig: FileStoreConfig =
+      enabledStores(defaultStore)
+
+    def toFileRepositoryConfig: FileRepositoryConfig =
+      defaultStoreConfig match {
+        case FileStoreConfig.DefaultDatabase(_) =>
+          FileRepositoryConfig.Database(chunkSize)
+        case FileStoreConfig.S3(_, endpoint, accessKey, secretKey, bucket) =>
+          FileRepositoryConfig.S3(endpoint, accessKey, secretKey, bucket, chunkSize)
+        case FileStoreConfig.FileSystem(_, directory) =>
+          FileRepositoryConfig.Directory(directory, chunkSize)
+      }
+
+    def validate: ValidatedNec[String, Files] = {
+      val storesEmpty =
+        if (enabledStores.isEmpty)
+          Validated.invalidNec(
+            "No file stores defined! Make sure at least one enabled store is present."
+          )
+        else Validated.validNec(())
+
+      val defaultStorePresent =
+        enabledStores.get(defaultStore) match {
+          case Some(_) => Validated.validNec(())
+          case None =>
+            Validated.invalidNec(s"Default file store not present: ${defaultStore.id}")
+        }
+
+      (storesEmpty |+| defaultStorePresent).map(_ => this)
+    }
+  }
 }

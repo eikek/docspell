@@ -18,7 +18,6 @@ import docspell.restserver.http4s.InternalHeader
 import docspell.restserver.ws.OutputEvent.KeepAlive
 import docspell.restserver.ws.OutputEvent
 import docspell.store.Store
-import docspell.store.file.FileRepositoryConfig
 import docspell.store.records.RInternalSetting
 import org.http4s._
 import org.http4s.blaze.client.BlazeClientBuilder
@@ -74,7 +73,7 @@ object RestServer {
       httpClient <- BlazeClientBuilder[F].resource
       store <- Store.create[F](
         cfg.backend.jdbc,
-        FileRepositoryConfig.Database(cfg.backend.files.chunkSize),
+        cfg.backend.files.toFileRepositoryConfig,
         pools.connectEC
       )
       setting <- Resource.eval(store.transact(RInternalSetting.create))

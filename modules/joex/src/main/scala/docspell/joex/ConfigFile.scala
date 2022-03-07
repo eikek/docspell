@@ -19,8 +19,6 @@ import pureconfig.generic.auto._
 import yamusca.imports._
 
 object ConfigFile {
-  import Implicits._
-
   def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
     val logger = docspell.logging.getLogger[F]
     ConfigFactory
@@ -51,6 +49,7 @@ object ConfigFile {
       Validation.failWhen(
         cfg => cfg.updateCheck.enabled && cfg.updateCheck.subject.els.isEmpty,
         "No subject given for enabled update check!"
-      )
+      ),
+      Validation(cfg => cfg.files.validate.map(_ => cfg))
     )
 }
