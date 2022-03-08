@@ -9,6 +9,7 @@ module Messages.Comp.NotificationMatrixForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Basics
@@ -38,3 +39,12 @@ de =
     , roomId = "Room ID"
     , accessKey = "Access Token"
     }
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , homeServer = "URL du homeserver"
+    , roomId = "Room ID"
+    , accessKey = "Token d'accès"
+    }
+
+

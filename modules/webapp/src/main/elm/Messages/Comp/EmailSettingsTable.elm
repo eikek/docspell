@@ -9,6 +9,7 @@ module Messages.Comp.EmailSettingsTable exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Basics
@@ -35,3 +36,12 @@ de =
     , hostPort = "Server/Port"
     , from = "Absender"
     }
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , hostPort = "Hôte/Port"
+    , from = "De"
+    }
+
+

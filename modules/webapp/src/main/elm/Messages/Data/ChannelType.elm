@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Data.ChannelType exposing (Texts, de, gb)
+module Messages.Data.ChannelType exposing (Texts, de, gb, fr)
 
 import Data.ChannelType exposing (ChannelType)
 
@@ -44,3 +44,20 @@ de ct =
 
         Data.ChannelType.Http ->
             "JSON"
+
+
+fr : Texts
+fr ct =
+    case ct of
+        Data.ChannelType.Matrix ->
+            "Matrix"
+
+        Data.ChannelType.Gotify ->
+            "Gotify"
+
+        Data.ChannelType.Mail ->
+            "E-Mail"
+
+        Data.ChannelType.Http ->
+            "JSON"
+

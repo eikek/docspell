@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Data.AccountScope exposing (Texts, de, gb)
+module Messages.Data.AccountScope exposing (Texts, de, gb, fr)
 
 import Data.AccountScope exposing (AccountScope)
 
@@ -22,3 +22,8 @@ gb =
 de : Texts
 de =
     Data.AccountScope.fold "Persönlich" "Kollektiv"
+
+
+fr : Texts
+fr =
+    Data.AccountScope.fold "Personnel" "Groupe"

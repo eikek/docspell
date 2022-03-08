@@ -8,6 +8,7 @@
 module Messages.Data.PdfMode exposing
     ( de
     , gb
+    , fr
     )
 
 import Data.Pdf exposing (PdfMode(..))
@@ -37,3 +38,17 @@ de st =
 
         Server ->
             "Browserübergreifende Ersatzdarstellung"
+
+
+
+fr : PdfMode -> String
+fr st =
+    case st of
+        Detect ->
+            "Détecter automatiquement"
+
+        Native ->
+            "Utiliser le support pdf natif du navigateur"
+
+        Server ->
+            "Utiliser le mode compatibilité"

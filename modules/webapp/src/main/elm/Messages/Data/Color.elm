@@ -8,6 +8,7 @@
 module Messages.Data.Color exposing
     ( de
     , gb
+    , fr
     )
 
 import Data.Color exposing (Color(..))
@@ -97,3 +98,45 @@ de color =
 
         Black ->
             "Schwarz"
+
+fr : Color -> String
+fr color =
+    case color of
+        Red ->
+            "Rouge"
+
+        Orange ->
+            "Orange"
+
+        Yellow ->
+            "Jaune"
+
+        Olive ->
+            "Olive"
+
+        Green ->
+            "Vert"
+
+        Teal ->
+            "Turquoise"
+
+        Blue ->
+            "Bleu"
+
+        Violet ->
+            "Mauve"
+
+        Purple ->
+            "Violet"
+
+        Pink ->
+            "Rose"
+
+        Brown ->
+            "Marron"
+
+        Grey ->
+            "Gris"
+
+        Black ->
+            "Noir"

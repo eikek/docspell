@@ -9,6 +9,7 @@ module Messages.Page.UserSettings exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -182,4 +183,68 @@ erstellt werden muss.
     , periodicQueryInfoText = "Hier können beliebige Abfragen definiert werden, welche regelmäßig ausgeführt werden."
     , channels = "Benachrichtigungskanäle"
     , channelInfoText = "Über Kanäle werden Notifizierungen versendet."
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , changePasswordForm = Messages.Comp.ChangePasswordForm.fr
+    , uiSettingsManage = Messages.Comp.UiSettingsManage.fr
+    , emailSettingsManage = Messages.Comp.EmailSettingsManage.fr
+    , imapSettingsManage = Messages.Comp.ImapSettingsManage.fr
+    , notificationManage = Messages.Comp.DueItemsTaskManage.fr tz
+    , scanMailboxManage = Messages.Comp.ScanMailboxManage.fr tz
+    , notificationHookManage = Messages.Comp.NotificationHookManage.fr
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.fr tz
+    , channelManage = Messages.Comp.NotificationChannelManage.fr
+    , otpSetup = Messages.Comp.OtpSetup.fr tz
+    , userSettings = "Paramètres utilisateur"
+    , uiSettings = "Paramètres UI"
+    , notifications = "Notifications"
+    , scanMailbox = "Scanner Boite Mail"
+    , emailSettingSmtp = "Configuration E-Mail (SMTP)"
+    , emailSettingImap = "Configuration E-Mail (IMAP)"
+    , changePassword = "Changer le mot de passe"
+    , channelSettings = "Canaux de notifications"
+    , uiSettingsInfo =
+        "Ces paramètres n'affectent que l'interface web. Les paramètres peuvent être enregistrer "
+            ++ " dans les profiles utilsateur ou de groupe. Les paramètres utilsateurs ont la priorité."
+    , scanMailboxInfo1 =
+        "Docspell scanne les dossiers de votre boite mail pour importer vos mails. "
+            ++ "La connexion doit être configurée"
+            ++ " dans les paramètres email (imap)."
+    , scanMailboxInfo2 =
+        """
+            Docpsell parcourt tous les dossiers configurés et importe
+            les mails correspondant aux critères de recherche. Les
+            mails précédement importés (avec documents toujours présents)
+            sont ignorés. Après import d'un mail dans docspell, il
+            est possible de le déplacer dans un autre répertoire, le
+            supprimer ou ne rien faire. Dans ce dernier cas
+            la programmation devra être ajustée afin de ne pas
+            relir ce mail encore une fois."""
+    , otpMenu = "Authentification à 2 facteurs"
+    , dueItems = "requête des Documents à échéance"
+    , notificationInfoText = """
+
+Docspell peut envoyer des notifications pour divers événements. 
+Les canaux suivants sont possible pour envoyer des message: 
+[Matrix](https://matrix.org), [Gotify](https://gotify.net) or E-Mail.
+Enfin il est possible d'envoyer de vrai requête http avec les détails
+de l'événement contenus dans le payload.
+
+De plus, il est possible de paramétrer des requêtes exécutées périodiquement
+dont les résultats seront transmis via une notification.
+
+Le paramétrage d'une notification nécessite la création au préalable d'au
+moins un canal de communication.
+
+"""
+    , webhookInfoText = """Les webhooksWebhooks executent une requête http en réponse à certains évenements dans docspell.
+"""
+    , dueItemsInfoText = """Docspell peut vous notifier quand la data d'échéance de vos documents approche.  """
+    , periodicQueryInfoText = "Des requêtes périodiques peuvent être définies."
+    , channels = "Canaux de notification"
+    , channelInfoText = "Les canaux sont utilisés pour envoyer des messages de notification."
     }

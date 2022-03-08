@@ -9,6 +9,7 @@ module Messages.Comp.UiSettingsManage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Http
@@ -48,7 +49,7 @@ gb =
     , userHeader = "Personal settings"
     , userInfo = "Your personal settings override those of the collective. On reset, settings are taken from the collective settings."
     , collectiveHeader = "Collective settings"
-    , collectiveInfo = "These settings apply to all users, unless overriden by personal ones. A reset loads the provided default values of the application."
+    , collectiveInfo = "These settings apply to all users, unless overridden by personal ones. A reset loads the provided default values of the application."
     , expandCollapse = "Expand/collapse all"
     }
 
@@ -68,4 +69,22 @@ de =
     , collectiveHeader = "Kollektiv Einstellungen"
     , collectiveInfo = "Diese Einstellungen sind für alle Benutzer, können aber in den persönlichen Einstellungen überschrieben werden. Durch ein Zurücksetzen erhält man die bereitgestellten Standardwerte der Anwendung."
     , expandCollapse = "Alle ein-/ausklappen"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , uiSettingsForm = Messages.Comp.UiSettingsForm.fr
+    , accountScope = Messages.Data.AccountScope.fr
+    , saveSettings = "Enregistrer les paramètres"
+    , settingsUnchanged = "Paramètres inchangés ou invalides."
+    , settingsSaved = "Paramètres enregistrés."
+    , unknownSaveError = "Erreur inconnue lors de l'enregistrement des paramètres."
+    , httpError = Messages.Comp.HttpError.fr
+    , userHeader = "Paramètres personnels"
+    , userInfo = "Les paramètres personnels écrasent ceux du groupe. En cas de remise à zéro, ceux du groupe sont utilisés."
+    , collectiveHeader = "Paramètres de groupe"
+    , collectiveInfo = "Ces paramètres s'appliquent à tous les utilisateurs à moins d'être écrasés par les paramètres personnels. En cas de remise à zéro, les paramètres par défaut de l'application sont utilisés."
+    , expandCollapse = "Étendre/Réduire tout"
     }
