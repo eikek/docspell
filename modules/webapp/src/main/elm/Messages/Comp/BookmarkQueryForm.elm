@@ -9,6 +9,7 @@ module Messages.Comp.BookmarkQueryForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Basics
@@ -46,4 +47,15 @@ de =
     , collectiveLocation = "Kollektiv-Bookmark"
     , collectiveLocationText = "Der Bookmark kann von allen Benutzer verwendet werden"
     , nameExistsWarning = "Der Bookmark existiert bereits! Verwende einen anderen Namen."
+    }
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , queryLabel = "requête"
+    , userLocation = "Favoris personnels"
+    , userLocationText = "Utilisé et édité que par vous"
+    , collectiveLocation = "Favoris du groupe"
+    , collectiveLocationText = "Utilisé et édité par tous les utilisateurs du groupe"
+    , nameExistsWarning = "Un favoris avec ce nom existe déjà !"
     }

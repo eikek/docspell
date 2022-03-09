@@ -9,6 +9,7 @@ module Messages.Comp.FolderManage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -46,4 +47,15 @@ de tz =
     , showOwningFoldersOnly = "Nur besitzende Ordner anzeigen"
     , createNewFolder = "Neuen Ordner anlegen"
     , newFolder = "Neuer Ordner"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , folderDetail = Messages.Comp.FolderDetail.fr
+    , folderTable = Messages.Comp.FolderTable.fr tz
+    , showOwningFoldersOnly = "Afficher seulement les dossiers dont vous êtes propriétaire"
+    , createNewFolder = "Créer un nouveau dossier"
+    , newFolder = "Nouveau dossier"
     }

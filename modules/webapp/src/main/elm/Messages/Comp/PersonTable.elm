@@ -9,6 +9,7 @@ module Messages.Comp.PersonTable exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.PersonUse exposing (PersonUse)
@@ -42,4 +43,14 @@ de =
     , contact = "Kontakt"
     , use = "Art"
     , personUseLabel = Messages.Data.PersonUse.de
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , address = "Adresse"
+    , contact = "Contact"
+    , use = "Utiliser"
+    , personUseLabel = Messages.Data.PersonUse.fr
     }

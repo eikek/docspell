@@ -9,6 +9,7 @@ module Messages.Comp.TagTable exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Basics
@@ -31,4 +32,10 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , category = "Kategorie"
+    }
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , category = "Catégorie"
     }

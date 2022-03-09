@@ -9,6 +9,7 @@ module Messages.Comp.BookmarkManage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Http
@@ -62,4 +63,19 @@ de =
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     , userBookmarks = "Persönliche Bookmarks"
     , collectiveBookmarks = "Kollektivbookmarks"
+    }
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , bookmarkTable = Messages.Comp.BookmarkTable.fr
+    , bookmarkForm = Messages.Comp.BookmarkQueryForm.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , newBookmark = "Nouveau favori"
+    , reallyDeleteBookmark = "Confirmer la suppression de ce  favori ?"
+    , createNewBookmark = "Créer un nouveau favori"
+    , deleteThisBookmark = "Supprimer ce favori"
+    , correctFormErrors = "Veuillez corriger les erreurs du formulaire"
+    , userBookmarks = "Favoris personnels"
+    , collectiveBookmarks = "Favoris de groupe"
     }
