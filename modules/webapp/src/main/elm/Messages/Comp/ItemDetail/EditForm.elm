@@ -112,6 +112,6 @@ fr tz =
     , editEquipment = "Editer un équipement"
     , suggestions = "Suggestions"
     , noSuggestions = "Aucune suggestion"
-    , formatDate = DF.formatDateLong Messages.UiLanguage.English tz
+    , formatDate = DF.formatDateLong Messages.UiLanguage.French tz
     , direction = Messages.Data.Direction.fr
     }
