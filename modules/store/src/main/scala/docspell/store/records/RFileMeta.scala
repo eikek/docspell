@@ -8,8 +8,10 @@ package docspell.store.records
 
 import cats.data.NonEmptyList
 import cats.implicits._
+import fs2.Stream
 
 import docspell.common.{FileKey, _}
+import docspell.store.file.BinnyUtils
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
@@ -43,6 +45,18 @@ object RFileMeta {
   val T = Table(None)
   def as(alias: String): Table =
     Table(Some(alias))
+
+  def findAll(part: FileKeyPart, chunkSize: Int): Stream[ConnectionIO, RFileMeta] = {
+    val cond = BinnyUtils
+      .fileKeyPartToPrefix(part)
+      .map(prefix => T.id.cast[String].like(prefix))
+
+    Select(
+      select(T.all),
+      from(T),
+      cond.getOrElse(Condition.unit)
+    ).build.query[RFileMeta].streamWithChunkSize(chunkSize)
+  }
 
   def insert(r: RFileMeta): ConnectionIO[Int] =
     DML.insert(T, T.all, fr"${r.id},${r.created},${r.mimetype},${r.length},${r.checksum}")

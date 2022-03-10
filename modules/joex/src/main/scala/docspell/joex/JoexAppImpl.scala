@@ -20,7 +20,7 @@ import docspell.ftsclient.FtsClient
 import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.emptytrash._
-import docspell.joex.filecopy.FileCopyTask
+import docspell.joex.filecopy.{FileCopyTask, FileIntegrityCheckTask}
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk._
 import docspell.joex.learn.LearnClassifierTask
@@ -151,6 +151,7 @@ object JoexAppImpl extends MailAddressCodec {
       regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
       updateCheck <- UpdateCheck.resource(httpClient)
       notification <- ONotification(store, notificationMod)
+      fileRepo <- OFileRepository(store, queue, joex)
       sch <- SchedulerBuilder(cfg.scheduler, store)
         .withQueue(queue)
         .withPubSub(pubSubT)
@@ -285,6 +286,13 @@ object JoexAppImpl extends MailAddressCodec {
             FileCopyTaskArgs.taskName,
             FileCopyTask[F](cfg),
             FileCopyTask.onCancel[F]
+          )
+        )
+        .withTask(
+          JobTask.json(
+            FileIntegrityCheckArgs.taskName,
+            FileIntegrityCheckTask[F](fileRepo),
+            FileIntegrityCheckTask.onCancel[F]
           )
         )
         .resource

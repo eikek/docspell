@@ -11,8 +11,8 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.BackendApp
-import docspell.common.FileCopyTaskArgs
 import docspell.common.FileCopyTaskArgs.Selection
+import docspell.common.{FileCopyTaskArgs, FileIntegrityCheckArgs, FileKeyPart}
 import docspell.restapi.model._
 
 import org.http4s._
@@ -27,20 +27,35 @@ object FileRepositoryRoutes {
     import dsl._
     val logger = docspell.logging.getLogger[F]
 
-    HttpRoutes.of { case req @ POST -> Root / "cloneFileRepository" =>
-      for {
-        input <- req.as[FileRepositoryCloneRequest]
-        args = makeTaskArgs(input)
-        job <- backend.fileRepository.cloneFileRepository(args, true)
-        result = BasicResult(
-          job.isDefined,
-          job.fold(s"Job for '${FileCopyTaskArgs.taskName.id}' already running")(j =>
-            s"Job for '${FileCopyTaskArgs.taskName.id}' submitted: ${j.id.id}"
+    HttpRoutes.of {
+      case req @ POST -> Root / "cloneFileRepository" =>
+        for {
+          input <- req.as[FileRepositoryCloneRequest]
+          args = makeTaskArgs(input)
+          job <- backend.fileRepository.cloneFileRepository(args, true)
+          result = BasicResult(
+            job.isDefined,
+            job.fold(s"Job for '${FileCopyTaskArgs.taskName.id}' already running")(j =>
+              s"Job for '${FileCopyTaskArgs.taskName.id}' submitted: ${j.id.id}"
+            )
           )
-        )
-        _ <- logger.info(result.message)
-        resp <- Ok(result)
-      } yield resp
+          _ <- logger.info(result.message)
+          resp <- Ok(result)
+        } yield resp
+
+      case req @ POST -> Root / "integrityCheckAll" =>
+        for {
+          input <- req.as[FileKeyPart]
+          job <- backend.fileRepository.checkIntegrityAll(input, true)
+          result = BasicResult(
+            job.isDefined,
+            job.fold(s"Job for '${FileCopyTaskArgs.taskName.id}' already running")(j =>
+              s"Job for '${FileIntegrityCheckArgs.taskName.id}' submitted: ${j.id.id}"
+            )
+          )
+          _ <- logger.info(result.message)
+          resp <- Ok(result)
+        } yield resp
     }
   }
 

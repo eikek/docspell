@@ -26,6 +26,14 @@ object BinnyUtils {
   def fileKeyToBinaryId(fk: FileKey): BinaryId =
     BinaryId(s"${fk.collective.id}/${fk.category.id.id}/${fk.id.id}")
 
+  def fileKeyPartToPrefix(fkp: FileKeyPart): Option[String] =
+    fkp match {
+      case FileKeyPart.Empty              => None
+      case FileKeyPart.Collective(cid)    => Some(s"${cid.id}/%")
+      case FileKeyPart.Category(cid, cat) => Some(s"${cid.id}/${cat.id.id}/%")
+      case FileKeyPart.Key(key)           => Some(fileKeyToBinaryId(key).id)
+    }
+
   def binaryIdToFileKey(bid: BinaryId): Either[String, FileKey] =
     bid.id.split('/').toList match {
       case cId :: catId :: fId :: Nil =>

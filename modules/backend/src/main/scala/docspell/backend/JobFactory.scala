@@ -15,6 +15,26 @@ import docspell.notification.api.PeriodicQueryArgs
 import docspell.store.records.RJob
 
 object JobFactory extends MailAddressCodec {
+  def integrityCheck[F[_]: Sync](
+      args: FileIntegrityCheckArgs,
+      submitter: AccountId = DocspellSystem.account
+  ): F[RJob] =
+    for {
+      id <- Ident.randomId[F]
+      now <- Timestamp.current[F]
+      job = RJob.newJob(
+        id,
+        FileIntegrityCheckArgs.taskName,
+        submitter.collective,
+        args,
+        s"Check integrity of files",
+        now,
+        submitter.user,
+        Priority.High,
+        Some(FileIntegrityCheckArgs.taskName)
+      )
+    } yield job
+
   def fileCopy[F[_]: Sync](
       args: FileCopyTaskArgs,
       submitter: AccountId = DocspellSystem.account

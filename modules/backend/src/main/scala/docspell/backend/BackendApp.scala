@@ -92,7 +92,7 @@ object BackendApp {
       )
       notifyImpl <- ONotification(store, notificationMod)
       bookmarksImpl <- OQueryBookmarks(store)
-      fileRepoImpl <- OFileRepository(queue, joexImpl)
+      fileRepoImpl <- OFileRepository(store, queue, joexImpl)
     } yield new BackendApp[F] {
       val pubSub = pubSubT
       val login = loginImpl
