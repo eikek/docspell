@@ -9,6 +9,7 @@ module Messages.Comp.FolderSelect exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Comp.ExpandCollapse
@@ -28,4 +29,9 @@ gb =
 de : Texts
 de =
     { expandCollapse = Messages.Comp.ExpandCollapse.de
+    }
+
+fr : Texts
+fr =
+    { expandCollapse = Messages.Comp.ExpandCollapse.fr
     }

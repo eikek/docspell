@@ -88,20 +88,20 @@ fr =
         \state ->
             if state == "created" then
                 "Le retraitement du document peut affecter ses métadonnées,"
-                    ++ " car il n'a pas été confirmé. Continuer ?"
+                    ++ " car il n'a pas été validé. Continuer ?"
 
             else
                 "Le retraitement du document n'affectera pas ses métadonnées,"
-                    ++ " car il a été confirmé. Continuer ?"
+                    ++ " car il a été validé. Continuer ?"
     , confirmReprocessFile =
         \state ->
             if state == "created" then
                 "Le retraitement  de ce fichier peut affecter les métadonnées du document, "
-                    ++ " car il n'a pas été confirmé.  Continuer ?"
+                    ++ " car il n'a pas été validé.  Continuer ?"
 
             else
                 "Le retraitement  de ce fichier n'affectera pas les métadonnées du document,  "
-                    ++ " car il a été confirmé. Continuer ?"
+                    ++ " car il a été validé. Continuer ?"
     , confirmDeleteItem =
         "Confirmer la suppression du document ? Il pourra être récupéré via la corbeille pendant un temps."
     , confirmDeleteFile = "Confirmer la suppresion de ce fichier ?"

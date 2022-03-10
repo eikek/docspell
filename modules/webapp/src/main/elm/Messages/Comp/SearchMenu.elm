@@ -9,6 +9,7 @@ module Messages.Comp.SearchMenu exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Data.Direction exposing (Direction)
@@ -128,3 +129,40 @@ de =
     , showSelection = "Auswahl anzeigen"
     , clearSelection = "Auswahl aufheben"
     }
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.fr
+    , tagSelect = Messages.Comp.TagSelect.fr
+    , folderSelect = Messages.Comp.FolderSelect.fr
+    , bookmarkChooser = Messages.Comp.BookmarkChooser.fr
+    , chooseDirection = "Choisir un sens..."
+    , choosePerson = "Choisir une personne"
+    , chooseEquipment = "Choisir un équipement"
+    , inbox = "Boite de réception"
+    , fulltextSearch = "Recherche  dans texte entier"
+    , searchInNames = "Recherche dans les noms"
+    , switchSearchModes = "Changer de mode de recherche de texte"
+    , contentSearch = "Recherche de contenu..."
+    , searchInNamesPlaceholder = "Chercher dans différents noms..."
+    , fulltextSearchInfo = "Recherche en texte entier dans le contenu et les notes"
+    , nameSearchInfo = "Regarde dans les correspondants, organisations, documents et notes."
+    , tagCategoryTab = "Catégorie de tag"
+    , chooseOrganization = "Choisir une organisation"
+    , createCustomFieldTitle = "Créer un nouveau champs personnalisé"
+    , from = "De"
+    , to = "À"
+    , dueDateTab = "Date d'échéance"
+    , dueFrom = "Dû depuis"
+    , dueTo = "Dû le"
+    , sourceTab = "Source"
+    , searchInItemSource = "Rechercher un document par la source..."
+    , direction = Messages.Data.Direction.fr
+    , trashcan = "Corbeille"
+    , bookmarks = "Favoris"
+    , selection = "Sélection"
+    , showSelection = "Afficher la sélection"
+    , clearSelection = "Effacer la sélection"
+    }
+

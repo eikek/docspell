@@ -9,6 +9,7 @@ module Messages.Comp.TagSelect exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Comp.ExpandCollapse
@@ -38,3 +39,12 @@ de =
     , showEmpty = "Leere anzeigen"
     , filterPlaceholder = "Filter …"
     }
+
+fr : Texts
+fr =
+    { expandCollapse = Messages.Comp.ExpandCollapse.fr
+    , hideEmpty = "Cacher si vide"
+    , showEmpty = "Montrer si vide"
+    , filterPlaceholder = "Filtrer …"
+    }
+
