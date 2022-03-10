@@ -130,7 +130,7 @@ fr tz =
     , save = "Enregistrer"
     , saveSettings = "Enregistrer la configuration"
     , documentLanguage = "Langue du document"
-    , documentLanguageHelp = "La langue de vos documents. Cela aide la reconnaissance de charactères (OCR) et l'analyse de texte."
+    , documentLanguageHelp = "La langue de vos documents. Cela aide la reconnaissance de caractères (OCR) et l'analyse de texte."
     , integrationEndpoint = "Integration Endpoint"
     , integrationEndpointLabel = "Activer integration endpoint"
     , integrationEndpointHelp =
@@ -140,7 +140,7 @@ fr tz =
     , reindexAllData = "Réindexer les documents"
     , reindexAllDataHelp =
         "Ceci démarrera une tâche qui effacera l'index de recherche en texte intégral et réindexera tous les documents."
-            ++ "Veuillez presser OK afin d'éviter toute réindexation accidentèle."
+            ++ "Veuillez presser OK afin d'éviter toute réindexation accidentelle."
     , autoTagging = "Auto-Tagging"
     , startNow = "Commencer"
     , languageLabel = Messages.Data.Language.fr

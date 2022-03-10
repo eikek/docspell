@@ -102,7 +102,7 @@ fr : Texts
 fr =
     { basics = Messages.Basics.fr
     , dropzone = Messages.Comp.Dropzone.fr
-    , reset = "Reset"
+    , reset = "Recommencer"
     , allFilesOneItem = "Tous les fichiers ne sont qu'un seul document"
     , skipExistingFiles = "Ignorer les fichiers déjà présents dans docspell"
     , language = "Langue"
@@ -119,8 +119,8 @@ fr =
         , line2 = " plus tard où les fichiers arrivent. Où rendez-vous à la "
         , processingPage = "File de traitement"
         , line3 = " afin de voir l'état du traitement."
-        , resetLine1 = " Click "
-        , reset = "Reset"
+        , resetLine1 = " Cliquer sur "
+        , reset = "Recommencer"
         , resetLine2 = " pour envoyer plus de fichier."
         }
     , selectedFiles = "Fichiers séléctionnés"
