@@ -168,7 +168,7 @@ fr tz =
     , userSettings = Messages.Page.UserSettings.fr tz
     , manageData = Messages.Page.ManageData.fr tz
     , search = Messages.Page.Search.fr tz
-    , share = Messages.Page.Share.gb tz
-    , shareDetail = Messages.Page.ShareDetail.gb tz
+    , share = Messages.Page.Share.fr tz
+    , shareDetail = Messages.Page.ShareDetail.fr tz
     , dashboard = Messages.Page.Dashboard.fr tz
     }

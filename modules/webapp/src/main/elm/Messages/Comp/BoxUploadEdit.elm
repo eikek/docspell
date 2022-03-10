@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxUploadEdit exposing (Texts, de, gb)
+module Messages.Comp.BoxUploadEdit exposing (Texts, de, gb, fr)
 
 
 type alias Texts =
@@ -28,4 +28,11 @@ de =
     { sourceLabel = "Quelle"
     , sourcePlaceholder = "Quelle…"
     , infoText = "Optional kann eine Quelle als Einstellung gewählt werden, sonst werden Standardeinstellungen verwendet."
+    }
+
+fr : Texts
+fr =
+    { sourceLabel = "Source"
+    , sourcePlaceholder = "Choisir la source…"
+    , infoText = "Choisir une source (facultatif) sinon les paramètres par défaut sont utilisés pour tous les envois"
     }

@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Data.BoxContent exposing (Texts, de, gb)
+module Messages.Data.BoxContent exposing (Texts, de, gb, fr)
 
 import Data.BoxContent exposing (BoxContent(..))
 
@@ -59,3 +59,13 @@ updateForContent init =
                     BoxStats _ ->
                         init.statsBox
     }
+
+fr : Texts
+fr =
+    updateForContent
+        { forContent = \_ -> ""
+        , queryBox = "Boite de recherche"
+        , statsBox = "Boite de statistique"
+        , messageBox = "Boite de message"
+        , uploadBox = "Boite d'envoi"
+        }

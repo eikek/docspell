@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxStatsView exposing (Texts, de, gb)
+module Messages.Comp.BoxStatsView exposing (Texts, de, gb, fr)
 
 import Http
 import Messages.Basics
@@ -36,4 +36,12 @@ de =
     , errorOccurred = "Fehler beim Laden der Daten."
     , statsView = Messages.Comp.SearchStatsView.de
     , basics = Messages.Basics.de
+    }
+
+fr : Texts
+fr =
+    { httpError = Messages.Comp.HttpError.fr
+    , errorOccurred = "Erreur en récupérant les données."
+    , statsView = Messages.Comp.SearchStatsView.fr
+    , basics = Messages.Basics.fr
     }
