@@ -8,8 +8,8 @@
 module Messages.Page.Upload exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Comp.UploadForm
