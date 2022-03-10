@@ -8,8 +8,8 @@
 module Messages.Comp.ItemDetail.AddFilesForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics

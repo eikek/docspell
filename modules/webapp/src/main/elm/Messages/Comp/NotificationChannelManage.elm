@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.NotificationChannelManage exposing (Texts, de, gb, fr)
+module Messages.Comp.NotificationChannelManage exposing (Texts, de, fr, gb)
 
 import Http
 import Messages.Basics
@@ -81,6 +81,7 @@ de =
     , deleteThisChannel = "Kanal löschen"
     , reallyDeleteChannel = "Den Kanal wirklich löschen?"
     }
+
 
 fr : Texts
 fr =

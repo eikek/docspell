@@ -8,8 +8,8 @@
 module Messages.Comp.SourceTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics

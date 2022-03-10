@@ -68,6 +68,7 @@ de tz =
     , tileView = "Kachelansicht"
     }
 
+
 fr : TimeZone -> Texts
 fr tz =
     { searchMenu = Messages.Comp.SearchMenu.fr

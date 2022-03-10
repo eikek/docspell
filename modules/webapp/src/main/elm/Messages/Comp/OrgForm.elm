@@ -8,8 +8,8 @@
 module Messages.Comp.OrgForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.ContactType exposing (ContactType)

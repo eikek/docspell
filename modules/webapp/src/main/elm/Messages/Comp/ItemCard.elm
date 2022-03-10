@@ -8,8 +8,8 @@
 module Messages.Comp.ItemCard exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Direction exposing (Direction)
@@ -60,6 +60,7 @@ de tz =
     , directionLabel = Messages.Data.Direction.de
     }
 
+
 fr : TimeZone -> Texts
 fr tz =
     { basics = Messages.Basics.fr
@@ -72,5 +73,3 @@ fr tz =
     , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.French tz
     , directionLabel = Messages.Data.Direction.fr
     }
-
-

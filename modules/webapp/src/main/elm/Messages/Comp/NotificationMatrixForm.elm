@@ -8,8 +8,8 @@
 module Messages.Comp.NotificationMatrixForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -39,6 +39,8 @@ de =
     , roomId = "Room ID"
     , accessKey = "Access Token"
     }
+
+
 fr : Texts
 fr =
     { basics = Messages.Basics.fr
@@ -46,5 +48,3 @@ fr =
     , roomId = "Room ID"
     , accessKey = "Token d'accès"
     }
-
-

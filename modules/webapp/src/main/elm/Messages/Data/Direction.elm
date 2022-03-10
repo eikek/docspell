@@ -7,8 +7,8 @@
 
 module Messages.Data.Direction exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Direction exposing (Direction(..))

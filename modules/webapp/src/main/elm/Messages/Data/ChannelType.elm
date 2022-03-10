@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Data.ChannelType exposing (Texts, de, gb, fr)
+module Messages.Data.ChannelType exposing (Texts, de, fr, gb)
 
 import Data.ChannelType exposing (ChannelType)
 
@@ -60,4 +60,3 @@ fr ct =
 
         Data.ChannelType.Http ->
             "JSON"
-

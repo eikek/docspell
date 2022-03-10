@@ -7,8 +7,8 @@
 
 module Messages.Data.PersonUse exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.PersonUse exposing (PersonUse(..))

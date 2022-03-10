@@ -8,8 +8,8 @@
 module Messages.Comp.EquipmentForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.EquipmentUse exposing (EquipmentUse)
@@ -47,6 +47,7 @@ de =
     , equipmentUseLabel = Messages.Data.EquipmentUse.de
     , notes = "Notizen"
     }
+
 
 fr : Texts
 fr =

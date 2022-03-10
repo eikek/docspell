@@ -8,8 +8,8 @@
 module Messages.Comp.SourceManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http
@@ -116,7 +116,7 @@ fr =
             ++ "peut être utilisée avec d'autres clients."
     , itemsCreatedInfo =
         \n ->
-                ""
+            ""
                 ++ String.fromInt n
                 ++ " documents créés via cette source."
     , publicUploadPage = "Page des envois publiques"

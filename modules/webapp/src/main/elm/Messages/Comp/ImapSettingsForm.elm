@@ -8,8 +8,8 @@
 module Messages.Comp.ImapSettingsForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.SSLType exposing (SSLType)
@@ -74,6 +74,7 @@ de =
     , enableOAuth2 = "Aktiviere OAuth2-Authentifizierung"
     , oauth2Info = "Wenn dies aktiviert ist, wird via XOAuth authentifiziert wobei das Passwort als Access-Token verwendet wird."
     }
+
 
 fr : Texts
 fr =

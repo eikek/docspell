@@ -8,8 +8,8 @@
 module Messages.Comp.BookmarkQueryManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http
@@ -45,6 +45,7 @@ de =
     , formInvalid = "Bitte korrigiere das Formular"
     , saved = "Bookmark gespeichert"
     }
+
 
 fr : Texts
 fr =

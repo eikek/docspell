@@ -7,8 +7,8 @@
 
 module Messages.Data.CustomFieldType exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.CustomFieldType exposing (CustomFieldType(..))

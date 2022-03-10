@@ -8,8 +8,8 @@
 module Messages.Comp.PeriodicQueryTaskManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -78,6 +78,7 @@ de tz =
     , email = "E-Mail"
     , httpRequest = "HTTP Request"
     }
+
 
 fr : TimeZone -> Texts
 fr tz =

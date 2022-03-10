@@ -150,6 +150,7 @@ de tz =
     , dashboard = Messages.Page.Dashboard.de tz
     }
 
+
 fr : TimeZone -> Messages
 fr tz =
     { lang = French

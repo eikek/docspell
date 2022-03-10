@@ -8,8 +8,8 @@
 module Messages.Comp.TagManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http
@@ -58,6 +58,7 @@ de =
     , deleteThisTag = "Tag löschen"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     }
+
 
 fr : Texts
 fr =

@@ -8,8 +8,8 @@
 module Messages.Comp.PublishItems exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -89,6 +89,7 @@ de tz =
     , doneLabel = "Fertig"
     , sendViaMail = "Per E-Mail versenden"
     }
+
 
 fr : TimeZone -> Texts
 fr tz =

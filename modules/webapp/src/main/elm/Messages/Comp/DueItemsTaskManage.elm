@@ -8,8 +8,8 @@
 module Messages.Comp.DueItemsTaskManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -66,6 +66,7 @@ de tz =
     , taskStarted = "Auftrag gestartet."
     , taskDeleted = "Auftrag gelöscht."
     }
+
 
 fr : TimeZone -> Texts
 fr tz =

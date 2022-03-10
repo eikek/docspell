@@ -8,8 +8,8 @@
 module Messages.Comp.EmailSettingsManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

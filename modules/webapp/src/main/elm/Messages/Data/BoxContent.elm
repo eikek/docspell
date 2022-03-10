@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Data.BoxContent exposing (Texts, de, gb, fr)
+module Messages.Data.BoxContent exposing (Texts, de, fr, gb)
 
 import Data.BoxContent exposing (BoxContent(..))
 
@@ -59,6 +59,7 @@ updateForContent init =
                     BoxStats _ ->
                         init.statsBox
     }
+
 
 fr : Texts
 fr =

@@ -8,8 +8,8 @@
 module Messages.Comp.PersonTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.PersonUse exposing (PersonUse)

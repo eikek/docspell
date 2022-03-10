@@ -8,8 +8,8 @@
 module Messages.Comp.CalEventInput exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)

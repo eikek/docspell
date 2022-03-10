@@ -8,8 +8,8 @@
 module Messages.Comp.ShareView exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -83,4 +83,3 @@ fr tz =
     , views = "Vues"
     , lastAccess = "Dernier accès"
     }
-

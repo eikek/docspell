@@ -8,8 +8,8 @@
 module Messages.Comp.ShareMail exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

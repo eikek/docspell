@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.DashboardManage exposing (Texts, de, gb, fr)
+module Messages.Comp.DashboardManage exposing (Texts, de, fr, gb)
 
 import Http
 import Messages.Basics
@@ -49,6 +49,7 @@ de =
     , createDashboard = "Neu"
     , copyDashboard = "Kopie"
     }
+
 
 fr : Texts
 fr =

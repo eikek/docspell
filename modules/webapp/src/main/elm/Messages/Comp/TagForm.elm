@@ -8,8 +8,8 @@
 module Messages.Comp.TagForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics

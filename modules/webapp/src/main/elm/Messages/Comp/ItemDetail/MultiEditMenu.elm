@@ -8,8 +8,8 @@
 module Messages.Comp.ItemDetail.MultiEditMenu exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Direction exposing (Direction)
@@ -70,6 +70,7 @@ de =
     , dueDateTab = "Fälligkeitsdatum"
     , direction = Messages.Data.Direction.de
     }
+
 
 fr : Texts
 fr =

@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Data.AccountScope exposing (Texts, de, gb, fr)
+module Messages.Data.AccountScope exposing (Texts, de, fr, gb)
 
 import Data.AccountScope exposing (AccountScope)
 

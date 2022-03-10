@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.DashboardView exposing (Texts, de, gb, fr)
+module Messages.Comp.DashboardView exposing (Texts, de, fr, gb)
 
 import Data.TimeZone exposing (TimeZone)
 import Messages.Comp.BoxView

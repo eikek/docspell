@@ -8,8 +8,8 @@
 module Messages.Page.Queue exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)

@@ -8,8 +8,8 @@
 module Messages.Comp.UiSettingsForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Color exposing (Color)

@@ -8,8 +8,8 @@
 module Messages.Comp.CustomFieldForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.CustomFieldType exposing (CustomFieldType)

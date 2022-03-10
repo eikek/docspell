@@ -8,8 +8,8 @@
 module Messages.Comp.NotificationGotifyForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -43,6 +43,7 @@ de =
     , priorityInfo = "Eine Zahl, um die Wichtigkeit anzugeben (je höher desto wichtiger). Es steuert, wie eine Notifizierung erscheint."
     }
 
+
 fr : Texts
 fr =
     { basics = Messages.Basics.fr
@@ -51,5 +52,3 @@ fr =
     , priority = "Priorité"
     , priorityInfo = "A number denoting the importance of a message controlling notification behaviour. The higher the more important."
     }
-
-

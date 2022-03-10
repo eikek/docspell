@@ -7,8 +7,8 @@
 
 module Messages.Data.Color exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Color exposing (Color(..))
@@ -98,6 +98,7 @@ de color =
 
         Black ->
             "Schwarz"
+
 
 fr : Color -> String
 fr color =

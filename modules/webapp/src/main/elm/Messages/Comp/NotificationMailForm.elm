@@ -8,8 +8,8 @@
 module Messages.Comp.NotificationMailForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -48,6 +48,8 @@ de =
     , recipientsInfo = "Eine oder mehrere E-Mail-Adressen, jede mit 'Eingabe' bestätigen."
     , recipientsRequired = "Mindestens ein Empfänger muss angegeben werden."
     }
+
+
 fr : Texts
 fr =
     { basics = Messages.Basics.fr
@@ -58,5 +60,3 @@ fr =
     , recipientsInfo = "Une ou plusieurs adresses mail, confirmer chacune en pressant 'Entrée'"
     , recipientsRequired = "Au moins un destinataire est requis"
     }
-
-

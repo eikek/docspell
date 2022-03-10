@@ -8,8 +8,8 @@
 module Messages.Comp.ExpandCollapse exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 
@@ -31,6 +31,7 @@ de =
     { showMoreLabel = "Mehr …"
     , showLessLabel = "Weniger …"
     }
+
 
 fr : Texts
 fr =

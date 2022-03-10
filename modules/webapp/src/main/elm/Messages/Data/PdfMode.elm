@@ -7,8 +7,8 @@
 
 module Messages.Data.PdfMode exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Pdf exposing (PdfMode(..))
@@ -38,7 +38,6 @@ de st =
 
         Server ->
             "Browserübergreifende Ersatzdarstellung"
-
 
 
 fr : PdfMode -> String

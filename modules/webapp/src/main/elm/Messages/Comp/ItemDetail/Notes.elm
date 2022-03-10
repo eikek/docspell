@@ -8,8 +8,8 @@
 module Messages.Comp.ItemDetail.Notes exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics

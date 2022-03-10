@@ -8,8 +8,8 @@
 module Messages.Comp.DueItemsTaskList exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -43,6 +43,7 @@ de =
     , schedule = "Zeitplan"
     , connection = "Kanal"
     }
+
 
 fr : Texts
 fr =

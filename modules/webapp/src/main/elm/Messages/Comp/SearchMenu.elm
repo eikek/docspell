@@ -8,8 +8,8 @@
 module Messages.Comp.SearchMenu exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Direction exposing (Direction)
@@ -130,6 +130,7 @@ de =
     , clearSelection = "Auswahl aufheben"
     }
 
+
 fr : Texts
 fr =
     { basics = Messages.Basics.fr
@@ -165,4 +166,3 @@ fr =
     , showSelection = "Afficher la sélection"
     , clearSelection = "Effacer la sélection"
     }
-

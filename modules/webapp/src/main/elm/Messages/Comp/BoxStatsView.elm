@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxStatsView exposing (Texts, de, gb, fr)
+module Messages.Comp.BoxStatsView exposing (Texts, de, fr, gb)
 
 import Http
 import Messages.Basics
@@ -37,6 +37,7 @@ de =
     , statsView = Messages.Comp.SearchStatsView.de
     , basics = Messages.Basics.de
     }
+
 
 fr : Texts
 fr =

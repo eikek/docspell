@@ -7,8 +7,8 @@
 
 module Messages.Comp.HttpError exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Http
@@ -69,6 +69,7 @@ fr err =
             }
     in
     errorToString texts err
+
 
 
 -- Error Utilities

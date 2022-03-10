@@ -8,8 +8,8 @@
 module Messages.Comp.ItemMerge exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -71,6 +71,7 @@ de tz =
     , mergeSuccessful = "Die Dokumente wurden erfolgreich zusammengeführt."
     , mergeInProcess = "Dokumente werden zusammengeführt…"
     }
+
 
 fr : TimeZone -> Texts
 fr tz =

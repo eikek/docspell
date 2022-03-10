@@ -7,8 +7,8 @@
 
 module Messages.Data.Fields exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Fields exposing (Field(..))

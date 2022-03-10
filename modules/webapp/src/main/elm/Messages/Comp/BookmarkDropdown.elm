@@ -8,8 +8,8 @@
 module Messages.Comp.BookmarkDropdown exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -42,6 +42,7 @@ de =
     , collective = "Kollektiv"
     , share = "Freigabe"
     }
+
 
 fr : Texts
 fr =

@@ -8,8 +8,8 @@
 module Messages.Comp.ChannelRefInput exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -41,6 +41,7 @@ de =
     , noCategory = "Kein Kanal"
     }
 
+
 fr : Texts
 fr =
     { basics = Messages.Basics.fr
@@ -48,5 +49,3 @@ fr =
     , placeholder = "Choisir..."
     , noCategory = "Pas de canal"
     }
-
-

@@ -8,8 +8,8 @@
 module Messages.Comp.ShareManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -94,7 +94,6 @@ de tz =
     , notOwnerInfo = "Nur der Benutzer, der diese Freigabe erstellt hat, kann diese auch ändern."
     , showOwningSharesOnly = "Nur meine Freigaben anzeigen"
     }
-
 
 
 fr : TimeZone -> Texts

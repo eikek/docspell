@@ -8,8 +8,8 @@
 module Messages.Comp.FolderDetail exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

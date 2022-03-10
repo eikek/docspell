@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxStatsEdit exposing (Texts, de, gb, fr)
+module Messages.Comp.BoxStatsEdit exposing (Texts, de, fr, gb)
 
 import Messages.Comp.BoxSearchQueryInput
 
@@ -37,6 +37,7 @@ de =
     , showLabel = "Anzeige"
     , showItemCount = "Gesamtanzahl Dokumente mit anzeigen"
     }
+
 
 fr : Texts
 fr =

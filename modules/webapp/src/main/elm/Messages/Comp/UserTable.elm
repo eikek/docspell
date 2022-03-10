@@ -8,8 +8,8 @@
 module Messages.Comp.UserTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)

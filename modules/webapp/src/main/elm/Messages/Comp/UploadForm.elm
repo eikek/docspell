@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.UploadForm exposing (Texts, de, gb, fr)
+module Messages.Comp.UploadForm exposing (Texts, de, fr, gb)
 
 import Data.Language exposing (Language)
 import Messages.Basics

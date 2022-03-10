@@ -8,8 +8,8 @@
 module Messages.Basics exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 

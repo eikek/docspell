@@ -8,8 +8,8 @@
 module Messages.Comp.BookmarkQueryForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -48,6 +48,7 @@ de =
     , collectiveLocationText = "Der Bookmark kann von allen Benutzer verwendet werden"
     , nameExistsWarning = "Der Bookmark existiert bereits! Verwende einen anderen Namen."
     }
+
 
 fr : Texts
 fr =

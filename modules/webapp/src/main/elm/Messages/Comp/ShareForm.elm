@@ -8,8 +8,8 @@
 module Messages.Comp.ShareForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics

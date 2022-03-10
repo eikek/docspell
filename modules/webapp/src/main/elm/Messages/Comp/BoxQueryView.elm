@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxQueryView exposing (Texts, de, gb, fr)
+module Messages.Comp.BoxQueryView exposing (Texts, de, fr, gb)
 
 import Data.ItemTemplate as IT
 import Data.TimeZone exposing (TimeZone)

@@ -8,8 +8,8 @@
 module Messages.Comp.ItemMail exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

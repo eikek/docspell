@@ -8,8 +8,8 @@
 module Messages.Data.EventType exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.EventType exposing (EventType(..))

@@ -8,8 +8,8 @@
 module Messages.Comp.EmailSettingsForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.SSLType exposing (SSLType)
@@ -80,6 +80,7 @@ de =
     , ssl = "SSL"
     , ignoreCertCheck = "Zertifikatsprüfung ignorieren"
     }
+
 
 fr : Texts
 fr =

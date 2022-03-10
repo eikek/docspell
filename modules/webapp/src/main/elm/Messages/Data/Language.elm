@@ -7,8 +7,8 @@
 
 module Messages.Data.Language exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Language exposing (Language(..))

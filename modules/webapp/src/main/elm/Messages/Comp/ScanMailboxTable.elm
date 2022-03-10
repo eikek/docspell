@@ -8,8 +8,8 @@
 module Messages.Comp.ScanMailboxTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -43,6 +43,7 @@ de =
     , receivedSince = "Empfangen seit"
     }
 
+
 fr : Texts
 fr =
     { basics = Messages.Basics.fr
@@ -51,5 +52,3 @@ fr =
     , folders = "Dossiers"
     , receivedSince = "Reçu depuis"
     }
-
-

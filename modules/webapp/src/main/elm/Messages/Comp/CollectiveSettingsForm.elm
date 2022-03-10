@@ -8,8 +8,8 @@
 module Messages.Comp.CollectiveSettingsForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Language exposing (Language)

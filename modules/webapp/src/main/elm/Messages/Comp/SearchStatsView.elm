@@ -8,8 +8,8 @@
 module Messages.Comp.SearchStatsView exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 
@@ -44,6 +44,7 @@ de =
     , max = "Maximum"
     }
 
+
 fr : Texts
 fr =
     { items = "Documents"
@@ -53,4 +54,3 @@ fr =
     , min = "Min"
     , max = "Max"
     }
-

@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxSearchQueryInput exposing (Texts, de, gb, fr)
+module Messages.Comp.BoxSearchQueryInput exposing (Texts, de, fr, gb)
 
 import Messages.Comp.BookmarkDropdown
 
@@ -34,6 +34,7 @@ de =
     , switchToQuery = "Suchabfrage"
     , searchPlaceholder = "Abfrage…"
     }
+
 
 fr : Texts
 fr =

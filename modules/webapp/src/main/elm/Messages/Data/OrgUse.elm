@@ -7,8 +7,8 @@
 
 module Messages.Data.OrgUse exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.OrgUse exposing (OrgUse(..))

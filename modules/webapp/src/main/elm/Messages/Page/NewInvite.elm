@@ -8,8 +8,8 @@
 module Messages.Page.NewInvite exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

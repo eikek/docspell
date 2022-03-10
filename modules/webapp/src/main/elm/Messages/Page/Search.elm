@@ -8,8 +8,8 @@
 module Messages.Page.Search exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -145,6 +145,7 @@ de tz =
     , bookmarkQuery = "Abfrage merken"
     , nothingToBookmark = "Keine Abfrage vorhanden"
     }
+
 
 fr : TimeZone -> Texts
 fr tz =

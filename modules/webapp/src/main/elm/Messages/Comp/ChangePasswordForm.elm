@@ -8,8 +8,8 @@
 module Messages.Comp.ChangePasswordForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

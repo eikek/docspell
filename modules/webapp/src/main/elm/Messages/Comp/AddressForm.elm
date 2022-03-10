@@ -8,8 +8,8 @@
 module Messages.Comp.AddressForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 

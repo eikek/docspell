@@ -8,8 +8,8 @@
 module Messages.Comp.BookmarkChooser exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.AccountScope exposing (AccountScope(..))
@@ -41,6 +41,7 @@ de =
     , collectiveLabel = Messages.Data.AccountScope.de Collective
     , shareLabel = "Freigaben"
     }
+
 
 fr : Texts
 fr =

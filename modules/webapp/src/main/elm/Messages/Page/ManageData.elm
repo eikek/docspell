@@ -8,8 +8,8 @@
 module Messages.Page.ManageData exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -65,6 +65,7 @@ de tz =
     , manageData = "Daten verwalten"
     , bookmarks = "Bookmarks"
     }
+
 
 fr : TimeZone -> Texts
 fr tz =

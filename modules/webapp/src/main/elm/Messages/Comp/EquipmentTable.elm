@@ -8,8 +8,8 @@
 module Messages.Comp.EquipmentTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.EquipmentUse exposing (EquipmentUse)

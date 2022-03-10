@@ -8,8 +8,8 @@
 module Messages.Page.ItemDetail exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)

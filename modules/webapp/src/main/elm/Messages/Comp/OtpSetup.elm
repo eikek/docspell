@@ -8,8 +8,8 @@
 module Messages.Comp.OtpSetup exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -98,6 +98,7 @@ de tz =
     , revertInfo = "Es kann jederzeit zur normalen Passwort-Authentifizierung zurück gegangen werden (dazu Seite neu laden)."
     }
 
+
 fr : TimeZone -> Texts
 fr tz =
     { httpError = Messages.Comp.HttpError.fr
@@ -113,9 +114,10 @@ fr tz =
     , disableButton = "Désactiver A2F"
     , disableConfirmBoxInfo = "Entre un code TOTP et cliquer sur le bouton pour désactiver A2F"
     , setupTwoFactorAuth = "Paramétrer l'authentification 2 facteurs (A2F)"
-    , setupTwoFactorAuthInfo = "Il est possible d'ajouter un deuxième facteur en utilisant un mot de passe à usage unique. "
-        ++ "En cliquant sur le bouton, un nouveau de mot de passe est généré permettant de se connecter via l'application mobile. "
-        ++ "L'application fournira un code à 6 chiffres qu'il faudra reporter dans le champs pour confirmer et finaliser la configuration"
+    , setupTwoFactorAuthInfo =
+        "Il est possible d'ajouter un deuxième facteur en utilisant un mot de passe à usage unique. "
+            ++ "En cliquant sur le bouton, un nouveau de mot de passe est généré permettant de se connecter via l'application mobile. "
+            ++ "L'application fournira un code à 6 chiffres qu'il faudra reporter dans le champs pour confirmer et finaliser la configuration"
     , activateButton = "Activer l'authentification 2 facteurs"
     , setupConfirmLabel = "Confirmer"
     , scanQRCode = "Scanner le QR code avec votre appareil et entrer le code à 6 chiffres."

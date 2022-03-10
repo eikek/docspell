@@ -8,8 +8,8 @@
 module Messages.Comp.CustomFieldMultiInput exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Comp.CustomFieldInput

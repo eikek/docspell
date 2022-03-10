@@ -7,8 +7,8 @@
 
 module Messages.Data.ContactType exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.ContactType exposing (ContactType(..))

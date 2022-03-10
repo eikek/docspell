@@ -8,8 +8,8 @@
 module Messages.Comp.DueItemsTaskForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -139,6 +139,7 @@ de tz =
     , channelRequired = "Ein Versandkanal muss angegeben werden."
     , channelHeader = "Kanäle"
     }
+
 
 fr : TimeZone -> Texts
 fr tz =

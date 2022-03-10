@@ -8,8 +8,8 @@
 module Messages.Comp.ImapSettingsManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http
@@ -59,6 +59,7 @@ de =
     , fillRequiredFields = "Bitte die erforderlichen Felder ausfüllen."
     }
 
+
 fr : Texts
 fr =
     { basics = Messages.Basics.fr
@@ -71,5 +72,3 @@ fr =
     , deleteThisEntry = "Supprimer cette entrée"
     , fillRequiredFields = "Veuillez compléter les champs requis"
     }
-
-

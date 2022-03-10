@@ -8,8 +8,8 @@
 module Messages.Page.Login exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

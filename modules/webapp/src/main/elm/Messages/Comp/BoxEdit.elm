@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxEdit exposing (Texts, de, gb, fr)
+module Messages.Comp.BoxEdit exposing (Texts, de, fr, gb)
 
 import Messages.Basics
 import Messages.Comp.BoxMessageEdit
@@ -72,6 +72,7 @@ de =
     , moveToRight = "Nach rechts verschieben"
     , deleteBox = "Kachel entfernen"
     }
+
 
 fr : Texts
 fr =

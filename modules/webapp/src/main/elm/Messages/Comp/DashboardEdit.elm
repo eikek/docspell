@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.DashboardEdit exposing (Texts, de, gb, fr)
+module Messages.Comp.DashboardEdit exposing (Texts, de, fr, gb)
 
 import Messages.Basics
 import Messages.Comp.BoxEdit
@@ -55,6 +55,7 @@ de =
     , defaultDashboard = "Standard Dashboard"
     , gap = "Abstand"
     }
+
 
 fr : Texts
 fr =

@@ -8,8 +8,8 @@
 module Messages.Page.SearchSideMenu exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Comp.ItemDetail.MultiEditMenu
@@ -50,6 +50,7 @@ de =
     , close = "Schließen"
     }
 
+
 fr : Texts
 fr =
     { searchMenu = Messages.Comp.SearchMenu.fr
@@ -60,4 +61,3 @@ fr =
     , multiEditInfo = "Veuillez noter qu'un changement ici, affecte immédiatement tous les documents sélectionnés à droite !"
     , close = "Fermer"
     }
-

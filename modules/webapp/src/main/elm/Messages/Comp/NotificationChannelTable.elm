@@ -34,6 +34,7 @@ de =
     , channelType = "Kanaltyp"
     }
 
+
 fr : Texts
 fr =
     { basics = Messages.Basics.fr

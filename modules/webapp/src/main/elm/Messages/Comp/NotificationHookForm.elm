@@ -8,8 +8,8 @@
 module Messages.Comp.NotificationHookForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.EventType exposing (EventType)
@@ -82,6 +82,7 @@ de =
     , messagePayload = "Nachricht"
     , payloadInfo = "Es werden abhängig vom Kanal JSON oder Nachricht-Formate versendet. Der HTTP Kanal empfängt nur JSON, an die anderen wird das Nachrichtformat gesendet."
     }
+
 
 fr : Texts
 fr =

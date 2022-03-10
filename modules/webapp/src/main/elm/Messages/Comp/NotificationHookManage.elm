@@ -8,8 +8,8 @@
 module Messages.Comp.NotificationHookManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http
@@ -83,6 +83,7 @@ de =
     , updateWebhook = "Webhook aktualisieren"
     , addWebhook = "Neuen Webhook hinzufügen"
     }
+
 
 fr : Texts
 fr =

@@ -8,8 +8,8 @@
 module Messages.Page.CollectiveSettings exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -89,7 +89,7 @@ fr tz =
     , sourceManage = Messages.Comp.SourceManage.fr
     , shareManage = Messages.Comp.ShareManage.fr tz
     , httpError = Messages.Comp.HttpError.fr
-    , collectiveSettings =  "Paramètres de groupe"
+    , collectiveSettings = "Paramètres de groupe"
     , insights = "Synthèse"
     , settings = "Configuration"
     , users = "Utilisateurs"

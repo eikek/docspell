@@ -8,8 +8,8 @@
 module Messages.Comp.BookmarkManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http
@@ -64,6 +64,7 @@ de =
     , userBookmarks = "Persönliche Bookmarks"
     , collectiveBookmarks = "Kollektivbookmarks"
     }
+
 
 fr : Texts
 fr =

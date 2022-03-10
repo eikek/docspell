@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Page.Dashboard exposing (Texts, de, gb, fr)
+module Messages.Page.Dashboard exposing (Texts, de, fr, gb)
 
 import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
@@ -142,7 +142,7 @@ fr tz =
     , misc = "Divers"
     , settings = "Configuration"
     , documentation = "Documentation"
-    , uploadFiles =  "Envoyer des documents"
+    , uploadFiles = "Envoyer des documents"
     , editDashboard = "Éditer le Tableau de Bord"
     , dashboards = "Tableaux de bord"
     , predefinedMessage = "Ce tableau de bord est prédéfini et ne peut être supprimer. Il est remplacé par le premier que vous enregistrez."

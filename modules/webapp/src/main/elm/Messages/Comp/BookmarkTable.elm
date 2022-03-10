@@ -8,8 +8,8 @@
 module Messages.Comp.BookmarkTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -33,6 +33,7 @@ de =
     { basics = Messages.Basics.de
     , user = "Benutzer"
     }
+
 
 fr : Texts
 fr =

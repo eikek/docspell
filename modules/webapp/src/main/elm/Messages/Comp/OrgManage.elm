@@ -8,8 +8,8 @@
 module Messages.Comp.OrgManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

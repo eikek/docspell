@@ -8,8 +8,8 @@
 module Messages.Comp.UserForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics

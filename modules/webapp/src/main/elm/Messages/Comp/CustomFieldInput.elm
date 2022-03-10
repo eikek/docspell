@@ -8,8 +8,8 @@
 module Messages.Comp.CustomFieldInput exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 

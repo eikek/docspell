@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Data.ItemColumn exposing (Texts, de, gb, fr)
+module Messages.Data.ItemColumn exposing (Texts, de, fr, gb)
 
 import Data.ItemColumn exposing (ItemColumn(..))
 
@@ -173,4 +173,3 @@ fr =
                 _ ->
                     headerName col
     }
-

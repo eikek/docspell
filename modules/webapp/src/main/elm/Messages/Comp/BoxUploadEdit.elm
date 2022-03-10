@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxUploadEdit exposing (Texts, de, gb, fr)
+module Messages.Comp.BoxUploadEdit exposing (Texts, de, fr, gb)
 
 
 type alias Texts =
@@ -29,6 +29,7 @@ de =
     , sourcePlaceholder = "Quelle…"
     , infoText = "Optional kann eine Quelle als Einstellung gewählt werden, sonst werden Standardeinstellungen verwendet."
     }
+
 
 fr : Texts
 fr =

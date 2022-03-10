@@ -8,8 +8,8 @@
 module Messages.Comp.PersonManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

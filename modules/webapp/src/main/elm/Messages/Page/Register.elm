@@ -8,8 +8,8 @@
 module Messages.Page.Register exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

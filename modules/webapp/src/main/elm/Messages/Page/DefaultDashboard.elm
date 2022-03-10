@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Page.DefaultDashboard exposing (Texts, de, gb, fr)
+module Messages.Page.DefaultDashboard exposing (Texts, de, fr, gb)
 
 import Messages.Basics
 

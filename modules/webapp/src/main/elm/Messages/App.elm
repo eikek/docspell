@@ -8,8 +8,8 @@
 module Messages.App exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 

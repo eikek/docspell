@@ -8,8 +8,8 @@
 module Messages.Comp.ItemDetail.EditForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.Direction exposing (Direction)

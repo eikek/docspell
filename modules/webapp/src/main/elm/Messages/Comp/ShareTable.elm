@@ -8,8 +8,8 @@
 module Messages.Comp.ShareTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -55,4 +55,3 @@ fr tz =
     , publishUntil = "Publié jusqu'au"
     , user = "Utilisateur"
     }
-

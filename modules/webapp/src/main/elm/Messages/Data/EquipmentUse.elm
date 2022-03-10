@@ -7,8 +7,8 @@
 
 module Messages.Data.EquipmentUse exposing
     ( de
-    , gb
     , fr
+    , gb
     )
 
 import Data.EquipmentUse exposing (EquipmentUse(..))

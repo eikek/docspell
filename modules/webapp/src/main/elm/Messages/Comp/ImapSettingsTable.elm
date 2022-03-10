@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.ImapSettingsTable exposing (Texts, de, gb, fr)
+module Messages.Comp.ImapSettingsTable exposing (Texts, de, fr, gb)
 
 import Messages.Basics
 

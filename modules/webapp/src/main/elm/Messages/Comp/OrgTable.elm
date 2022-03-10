@@ -8,8 +8,8 @@
 module Messages.Comp.OrgTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.OrgUse exposing (OrgUse)

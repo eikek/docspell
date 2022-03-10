@@ -8,8 +8,8 @@
 module Messages.Comp.PeriodicQueryTaskForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -117,6 +117,7 @@ de tz =
     , messageContentInfo = "Dieser Text wird an den Anfang der generierten Nachricht angefügt."
     , messageContentPlaceholder = "Hallo, hier ist Docspell mit den nächsten Themen …"
     }
+
 
 fr : TimeZone -> Texts
 fr tz =

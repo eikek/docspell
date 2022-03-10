@@ -8,8 +8,8 @@
 module Messages.Comp.UiSettingsManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http

@@ -8,8 +8,8 @@
 module Messages.Comp.ChannelForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.Basics
@@ -46,6 +46,7 @@ de =
     , mailForm = Messages.Comp.NotificationMailForm.de
     , httpForm = Messages.Comp.NotificationHttpForm.de
     }
+
 
 fr : Texts
 fr =

@@ -8,8 +8,8 @@
 module Messages.Comp.NotificationHookTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Data.EventType exposing (EventType)
@@ -51,6 +51,7 @@ de =
     , events = "Ereignisse"
     , allEvents = "Alle"
     }
+
 
 fr : Texts
 fr =

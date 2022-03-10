@@ -8,8 +8,8 @@
 module Messages.Comp.EquipmentManage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Http
@@ -59,6 +59,7 @@ de =
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     }
 
+
 fr : Texts
 fr =
     { basics = Messages.Basics.fr
@@ -71,4 +72,3 @@ fr =
     , deleteThisEquipment = "Supprimer cet équipement"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
     }
-
