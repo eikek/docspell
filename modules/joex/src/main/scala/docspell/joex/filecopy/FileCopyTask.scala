@@ -9,14 +9,12 @@ package docspell.joex.filecopy
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
-
 import docspell.common.FileCopyTaskArgs.Selection
 import docspell.common.{FileCopyTaskArgs, Ident}
 import docspell.joex.Config
-import docspell.joex.scheduler.Task
+import docspell.joex.scheduler.{JobTaskResultEncoder, Task}
 import docspell.logging.Logger
 import docspell.store.file.{BinnyUtils, FileRepository, FileRepositoryConfig}
-
 import binny.CopyTool.Counter
 import binny.{BinaryId, BinaryStore, CopyTool}
 import io.circe.generic.semiauto.deriveCodec
@@ -56,6 +54,16 @@ object FileCopyTask {
       deriveCodec
     implicit val jsonCodec: Codec[CopyResult] =
       deriveCodec
+
+    implicit val jobTaskResultEncoder: JobTaskResultEncoder[CopyResult] =
+      JobTaskResultEncoder.fromJson[CopyResult].withMessage { result =>
+        val allGood = result.counter.map(_.success).sum
+        val failed = result.counter.map(_.failed.size).sum
+        if (result.success)
+          s"Successfully copied $allGood files to ${result.counter.size} stores."
+        else
+          s"Copying files failed for ${failed} files! ${allGood} were copied successfully."
+      }
   }
 
   def onCancel[F[_]]: Task[F, Args, Unit] =
@@ -91,7 +99,7 @@ object FileCopyTask {
 
       data match {
         case Right((from, tos)) =>
-          ctx.logger.info(s"Start copying all files from ") *>
+          ctx.logger.info(s"Start copying all files from $from") *>
             copy(ctx.logger, from, tos).flatTap(r =>
               if (r.success) ctx.logger.info(s"Copying finished: ${r.counter}")
               else ctx.logger.error(s"Copying failed: $r")

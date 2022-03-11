@@ -8,6 +8,7 @@ package docspell.joex.process
 
 import docspell.common._
 import docspell.joex.process.ItemData.AttachmentDates
+import docspell.joex.scheduler.JobTaskResultEncoder
 import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
 
 import io.circe.syntax.EncoderOps
@@ -118,7 +119,28 @@ object ItemData {
           )
           .asJson,
         "tags" -> data.tags.asJson,
-        "assumedTags" -> data.classifyTags.asJson
+        "assumedTags" -> data.classifyTags.asJson,
+        "assumedCorrOrg" -> data.finalProposals
+          .find(MetaProposalType.CorrOrg)
+          .map(_.values.head.ref)
+          .asJson
       )
+    }
+
+  implicit val jobTaskResultEncoder: JobTaskResultEncoder[ItemData] =
+    JobTaskResultEncoder.fromJson[ItemData].withMessage { data =>
+      val tags =
+        if (data.tags.isEmpty && data.classifyTags.isEmpty) ""
+        else (data.tags ++ data.classifyTags).mkString("[", ", ", "]")
+
+      val corg =
+        data.finalProposals.find(MetaProposalType.CorrOrg).map(_.values.head.ref.name)
+      val cpers =
+        data.finalProposals.find(MetaProposalType.CorrPerson).map(_.values.head.ref.name)
+      val org = corg match {
+        case Some(o) => s" by $o" + cpers.map(p => s"/$p").getOrElse("")
+        case None    => cpers.map(p => s" by $p").getOrElse("")
+      }
+      s"Processed '${data.item.name}' $tags$org"
     }
 }

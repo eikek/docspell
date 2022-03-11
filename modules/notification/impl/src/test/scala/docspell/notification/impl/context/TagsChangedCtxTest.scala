@@ -46,9 +46,10 @@ class TagsChangedCtxTest extends FunSuite {
       TagsChangedCtx.Data(account, List(item), List(tag), Nil, url.some.map(_.asString))
     )
 
-    assertEquals(ctx.defaultTitle.toOption.get, "TagsChanged (by *user2*)")
+    val dm = ctx.defaultMessage.toOption.get
+    assertEquals(dm.title, "TagsChanged (by *user2*)")
     assertEquals(
-      ctx.defaultBody.toOption.get,
+      dm.body,
       "Adding *tag-red* on [`Report 2`](http://test/item-1)."
     )
   }
@@ -65,9 +66,10 @@ class TagsChangedCtxTest extends FunSuite {
       )
     )
 
-    assertEquals(ctx.defaultTitle.toOption.get, "TagsChanged (by *user2*)")
+    val dm = ctx.defaultMessage.toOption.get
+    assertEquals(dm.title, "TagsChanged (by *user2*)")
     assertEquals(
-      ctx.defaultBody.toOption.get,
+      dm.body,
       "Adding *tag-red*; Removing *tag-blue* on [`Report 2`](http://test/item-1)."
     )
   }

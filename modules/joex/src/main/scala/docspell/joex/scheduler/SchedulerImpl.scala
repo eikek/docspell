@@ -167,7 +167,7 @@ final class SchedulerImpl[F[_]: Async](
           ctx <- Context[F, String](job, job.args, config, logSink, store)
           _ <- t.onCancel.run(ctx)
           _ <- state.modify(_.markCancelled(job))
-          _ <- onFinish(job, Json.Null, JobState.Cancelled)
+          _ <- onFinish(job, JobTaskResult.empty, JobState.Cancelled)
           _ <- ctx.logger.warn("Job has been cancelled.")
           _ <- logger.debug(s"Job ${job.info} has been cancelled.")
         } yield ()
@@ -196,7 +196,7 @@ final class SchedulerImpl[F[_]: Async](
     }
   }
 
-  def onFinish(job: RJob, result: Json, finishState: JobState): F[Unit] =
+  def onFinish(job: RJob, result: JobTaskResult, finishState: JobState): F[Unit] =
     for {
       _ <- logger.debug(s"Job ${job.info} done $finishState. Releasing resources.")
       _ <- permits.release *> permits.available.flatMap(a =>
@@ -220,7 +220,8 @@ final class SchedulerImpl[F[_]: Async](
             job.state,
             job.subject,
             job.submitter,
-            result
+            result.json.getOrElse(Json.Null),
+            result.message
           )
         )
       )
@@ -235,7 +236,7 @@ final class SchedulerImpl[F[_]: Async](
 
   def wrapTask(
       job: RJob,
-      task: Task[F, String, Json],
+      task: Task[F, String, JobTaskResult],
       ctx: Context[F, String]
   ): Task[F, String, Unit] =
     task
@@ -250,19 +251,19 @@ final class SchedulerImpl[F[_]: Async](
             case true =>
               logger.error(ex)(s"Job ${job.info} execution failed (cancel = true)")
               ctx.logger.error(ex)("Job execution failed (cancel = true)") *>
-                (JobState.Cancelled: JobState, Json.Null).pure[F]
+                (JobState.Cancelled: JobState, JobTaskResult.empty).pure[F]
             case false =>
               QJob.exceedsRetries(job.id, config.retries, store).flatMap {
                 case true =>
                   logger.error(ex)(s"Job ${job.info} execution failed. Retries exceeded.")
                   ctx.logger
                     .error(ex)(s"Job ${job.info} execution failed. Retries exceeded.")
-                    .map(_ => (JobState.Failed: JobState, Json.Null))
+                    .map(_ => (JobState.Failed: JobState, JobTaskResult.empty))
                 case false =>
                   logger.error(ex)(s"Job ${job.info} execution failed. Retrying later.")
                   ctx.logger
                     .error(ex)(s"Job ${job.info} execution failed. Retrying later.")
-                    .map(_ => (JobState.Stuck: JobState, Json.Null))
+                    .map(_ => (JobState.Stuck: JobState, JobTaskResult.empty))
               }
           }
       })
@@ -273,7 +274,7 @@ final class SchedulerImpl[F[_]: Async](
           logger.error(ex)(s"Error happened during post-processing of ${job.info}!")
           // we don't know the real outcome here…
           // since tasks should be idempotent, set it to stuck. if above has failed, this might fail anyways
-          onFinish(job, Json.Null, JobState.Stuck)
+          onFinish(job, JobTaskResult.empty, JobState.Stuck)
       })
 
   def forkRun(
@@ -295,7 +296,7 @@ final class SchedulerImpl[F[_]: Async](
                 ()
             } *>
             state.modify(_.markCancelled(job)) *>
-            onFinish(job, Json.Null, JobState.Cancelled) *>
+            onFinish(job, JobTaskResult.empty, JobState.Cancelled) *>
             ctx.logger.warn("Job has been cancelled.") *>
             logger.debug(s"Job ${job.info} has been cancelled.")
         )

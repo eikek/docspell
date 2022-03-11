@@ -43,7 +43,7 @@ object FileRepositoryRoutes {
           resp <- Ok(result)
         } yield resp
 
-      case req @ POST -> Root / "integrityCheckAll" =>
+      case req @ POST -> Root / "integrityCheck" =>
         for {
           input <- req.as[FileKeyPart]
           job <- backend.fileRepository.checkIntegrityAll(input, true)
