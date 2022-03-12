@@ -9,15 +9,12 @@ package docspell.joex.updatecheck
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-
 import docspell.common._
 import docspell.scheduler.Context
 import docspell.scheduler.Task
+import docspell.scheduler.usertask.{UserTask, UserTaskScope}
 import docspell.store.records.RPeriodicTask
 import docspell.store.records.RUserEmail
-import docspell.store.usertask.UserTask
-import docspell.store.usertask.UserTaskScope
-
 import emil._
 
 object UpdateCheckTask {

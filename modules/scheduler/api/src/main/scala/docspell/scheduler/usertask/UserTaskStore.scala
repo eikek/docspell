@@ -4,17 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.store.usertask
+package docspell.scheduler.usertask
 
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import fs2.Stream
-
 import docspell.common._
-import docspell.store.queries.QUserTask
 import docspell.store.{AddResult, Store}
-
+import fs2.Stream
 import io.circe._
 
 /** User tasks are `RPeriodicTask`s that can be managed by the user. The user can change

@@ -41,10 +41,9 @@ import docspell.notification.api.NotificationModule
 import docspell.notification.impl.NotificationModuleImpl
 import docspell.pubsub.api.{PubSub, PubSubT}
 import docspell.scheduler.msg.JobQueuePublish
+import docspell.scheduler.usertask.{UserTaskScope, UserTaskStore}
 import docspell.store.Store
 import docspell.store.records.{REmptyTrashSetting, RJobLog}
-import docspell.store.usertask.UserTaskScope
-import docspell.store.usertask.UserTaskStore
 import emil.javamail._
 import org.http4s.client.Client
 

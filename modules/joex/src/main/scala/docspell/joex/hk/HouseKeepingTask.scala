@@ -8,16 +8,14 @@ package docspell.joex.hk
 
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.ops.OFileRepository
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.filecopy.FileIntegrityCheckTask
 import docspell.scheduler.{JobTaskResultEncoder, Task}
 import docspell.store.records._
-import docspell.store.usertask.UserTaskScope
-
 import com.github.eikek.calev._
+import docspell.scheduler.usertask.{QUserTask, UserTaskScope}
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder
 
@@ -48,7 +46,7 @@ object HouseKeepingTask {
     Task.log[F, Unit](_.warn("Cancelling house-keeping task"))
 
   def periodicTask[F[_]: Sync](ce: CalEvent): F[RPeriodicTask] =
-    RPeriodicTask
+    QUserTask
       .createJson(
         true,
         UserTaskScope(DocspellSystem.taskGroup),

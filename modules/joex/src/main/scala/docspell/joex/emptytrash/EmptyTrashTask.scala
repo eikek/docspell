@@ -9,14 +9,12 @@ package docspell.joex.emptytrash
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-
 import docspell.backend.ops.{OItem, OItemSearch}
 import docspell.common._
 import docspell.scheduler._
 import docspell.store.records.RItem
-import docspell.store.usertask.UserTask
-
 import com.github.eikek.calev.CalEvent
+import docspell.scheduler.usertask.UserTask
 
 object EmptyTrashTask {
   type Args = EmptyTrashArgs

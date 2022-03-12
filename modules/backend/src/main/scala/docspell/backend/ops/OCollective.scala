@@ -16,10 +16,10 @@ import docspell.common._
 import docspell.store.UpdateResult
 import docspell.store.queries.{QCollective, QUser}
 import docspell.store.records._
-import docspell.store.usertask.{UserTask, UserTaskScope, UserTaskStore}
 import docspell.store.{AddResult, Store}
 import com.github.eikek.calev._
 import docspell.scheduler.JobQueue
+import docspell.scheduler.usertask.{UserTask, UserTaskScope, UserTaskStore}
 
 trait OCollective[F[_]] {
 

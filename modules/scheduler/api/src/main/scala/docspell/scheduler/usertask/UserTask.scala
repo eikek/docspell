@@ -4,18 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.store.usertask
+package docspell.scheduler.usertask
 
 import cats.effect._
 import cats.implicits._
-
+import com.github.eikek.calev.CalEvent
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.store.records.RPeriodicTask
-
-import com.github.eikek.calev.CalEvent
-import io.circe.Decoder
-import io.circe.Encoder
+import io.circe.{Decoder, Encoder}
 
 case class UserTask[A](
     id: Ident,
@@ -51,7 +48,7 @@ object UserTask {
         scope: UserTaskScope,
         subject: Option[String]
     ): F[RPeriodicTask] =
-      RPeriodicTask
+      QUserTask
         .create[F](
           ut.enabled,
           scope,

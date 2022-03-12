@@ -15,8 +15,8 @@ import docspell.ftsclient.FtsClient
 import docspell.notification.api.{EventExchange, NotificationModule}
 import docspell.pubsub.api.PubSubT
 import docspell.scheduler.msg.JobQueuePublish
+import docspell.scheduler.usertask.UserTaskStore
 import docspell.store.Store
-import docspell.store.usertask.UserTaskStore
 import docspell.totp.Totp
 import emil.Emil
 

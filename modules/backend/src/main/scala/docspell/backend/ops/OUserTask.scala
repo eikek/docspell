@@ -13,9 +13,9 @@ import fs2.Stream
 import docspell.common._
 import docspell.notification.api.{ChannelRef, PeriodicDueItemsArgs, PeriodicQueryArgs}
 import docspell.scheduler.JobQueue
+import docspell.scheduler.usertask.{UserTask, UserTaskScope, UserTaskStore}
 import docspell.store.Store
 import docspell.store.records.RNotificationChannel
-import docspell.store.usertask._
 import io.circe.Encoder
 
 trait OUserTask[F[_]] {
