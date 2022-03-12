@@ -12,7 +12,7 @@ import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
 import docspell.store.records.{RAttachmentMeta, RPerson}
 
 /** Calculate weights for candidates that adds the most likely candidate a lower number.

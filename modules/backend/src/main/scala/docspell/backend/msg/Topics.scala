@@ -7,8 +7,8 @@
 package docspell.backend.msg
 
 import cats.data.NonEmptyList
-
 import docspell.pubsub.api.{Topic, TypedTopic}
+import docspell.scheduler.msg.JobDone
 
 /** All topics used in Docspell. */
 object Topics {

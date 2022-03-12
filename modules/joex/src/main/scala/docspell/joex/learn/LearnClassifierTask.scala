@@ -14,7 +14,7 @@ import docspell.analysis.TextAnalyser
 import docspell.backend.ops.OCollective
 import docspell.common._
 import docspell.joex.Config
-import docspell.joex.scheduler._
+import docspell.scheduler._
 import docspell.logging.Logger
 import docspell.store.records.{RClassifierModel, RClassifierSetting}
 

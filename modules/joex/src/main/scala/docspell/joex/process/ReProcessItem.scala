@@ -16,8 +16,8 @@ import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
-import docspell.joex.scheduler.Context
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Context
+import docspell.scheduler.Task
 import docspell.store.queries.QItem
 import docspell.store.records.RAttachment
 import docspell.store.records.RAttachmentSource

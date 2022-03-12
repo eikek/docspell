@@ -13,7 +13,7 @@ import docspell.backend.ops.OFileRepository
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.filecopy.FileIntegrityCheckTask
-import docspell.joex.scheduler.{JobTaskResultEncoder, Task}
+import docspell.scheduler.{JobTaskResultEncoder, Task}
 import docspell.store.records._
 import docspell.store.usertask.UserTaskScope
 

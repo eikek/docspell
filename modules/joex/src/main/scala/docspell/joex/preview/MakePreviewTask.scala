@@ -13,8 +13,8 @@ import docspell.common._
 import docspell.extract.pdfbox.PdfboxPreview
 import docspell.extract.pdfbox.PreviewConfig
 import docspell.joex.process.AttachmentPreview
-import docspell.joex.scheduler.Context
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Context
+import docspell.scheduler.Task
 import docspell.store.records.RAttachment
 import docspell.store.records.RAttachmentPreview
 

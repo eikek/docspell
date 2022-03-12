@@ -10,7 +10,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Task
 import docspell.store.records._
 
 object CleanupInvitesTask {

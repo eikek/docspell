@@ -8,7 +8,7 @@ package docspell.joex.process
 
 import docspell.common._
 import docspell.joex.process.ItemData.AttachmentDates
-import docspell.joex.scheduler.JobTaskResultEncoder
+import docspell.scheduler.JobTaskResultEncoder
 import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
 
 import io.circe.syntax.EncoderOps

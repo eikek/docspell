@@ -15,7 +15,7 @@ import docspell.common.ProcessItemArgs
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Task
 
 object ProcessItem {
 

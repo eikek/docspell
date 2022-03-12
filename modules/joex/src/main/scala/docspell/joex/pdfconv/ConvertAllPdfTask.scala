@@ -12,7 +12,7 @@ import fs2.{Chunk, Stream}
 
 import docspell.backend.ops.OJoex
 import docspell.common._
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
 import docspell.store.queue.JobQueue
 import docspell.store.records.RAttachment
 import docspell.store.records._

@@ -10,7 +10,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
 import docspell.store.queries.QItem
 import docspell.store.records.RFileMeta
 import docspell.store.records.RJob

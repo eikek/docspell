@@ -11,8 +11,8 @@ import cats.implicits._
 
 import docspell.common._
 import docspell.joex.process.AttachmentPageCount
-import docspell.joex.scheduler.Context
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Context
+import docspell.scheduler.Task
 import docspell.store.records.RAttachment
 import docspell.store.records.RAttachmentMeta
 

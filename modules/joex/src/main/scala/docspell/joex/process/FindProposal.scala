@@ -16,7 +16,7 @@ import docspell.analysis.contact._
 import docspell.common.MetaProposal.Candidate
 import docspell.common._
 import docspell.joex.Config
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
 import docspell.store.records._
 
 /** Super simple approach to find corresponding meta data to an item by looking up values

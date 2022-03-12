@@ -18,8 +18,8 @@ import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.learn.{ClassifierName, Classify, LearnClassifierTask}
 import docspell.joex.process.ItemData.AttachmentDates
-import docspell.joex.scheduler.Context
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Context
+import docspell.scheduler.Task
 import docspell.store.records.{RAttachmentMeta, RClassifierSetting}
 
 object TextAnalysis {

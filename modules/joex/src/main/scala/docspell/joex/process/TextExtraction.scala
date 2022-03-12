@@ -13,7 +13,7 @@ import cats.implicits._
 import docspell.common._
 import docspell.extract.{ExtractConfig, ExtractResult, Extraction}
 import docspell.ftsclient.{FtsClient, TextData}
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
 import docspell.store.records.{RAttachment, RAttachmentMeta, RFileMeta}
 
 object TextExtraction {

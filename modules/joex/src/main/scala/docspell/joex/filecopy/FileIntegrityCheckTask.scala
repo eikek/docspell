@@ -12,7 +12,7 @@ import cats.implicits._
 import docspell.backend.ops.OFileRepository
 import docspell.backend.ops.OFileRepository.IntegrityResult
 import docspell.common.{FileIntegrityCheckArgs, FileKey}
-import docspell.joex.scheduler.{JobTaskResultEncoder, Task}
+import docspell.scheduler.{JobTaskResultEncoder, Task}
 import docspell.store.records.RFileMeta
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder

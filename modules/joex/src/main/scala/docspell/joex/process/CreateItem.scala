@@ -13,7 +13,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
 import docspell.store.file.FileMetadata
 import docspell.store.queries.QItem
 import docspell.store.records._

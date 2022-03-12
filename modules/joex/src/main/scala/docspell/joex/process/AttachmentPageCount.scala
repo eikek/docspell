@@ -15,7 +15,7 @@ import fs2.Stream
 import docspell.common._
 import docspell.extract.pdfbox.PdfMetaData
 import docspell.extract.pdfbox.PdfboxExtract
-import docspell.joex.scheduler._
+import docspell.scheduler._
 import docspell.store.records.RAttachment
 import docspell.store.records._
 

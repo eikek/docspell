@@ -13,8 +13,8 @@ import cats.implicits._
 
 import docspell.backend.ops.ONotification
 import docspell.common._
-import docspell.joex.scheduler.Context
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Context
+import docspell.scheduler.Task
 import docspell.notification.api.EventContext
 import docspell.notification.api.NotificationChannel
 import docspell.notification.api.PeriodicQueryArgs

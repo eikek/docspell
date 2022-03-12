@@ -18,7 +18,7 @@ import fs2.Stream
 import docspell.common._
 import docspell.files.Zip
 import docspell.joex.mail._
-import docspell.joex.scheduler._
+import docspell.scheduler._
 import docspell.store.records._
 
 import emil.Mail

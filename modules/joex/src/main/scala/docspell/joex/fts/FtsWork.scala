@@ -14,7 +14,7 @@ import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
-import docspell.joex.scheduler.Context
+import docspell.scheduler.Context
 import docspell.logging.Logger
 
 object FtsWork {

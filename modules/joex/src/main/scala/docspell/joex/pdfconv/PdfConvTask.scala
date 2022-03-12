@@ -16,7 +16,7 @@ import docspell.common._
 import docspell.convert.ConversionResult
 import docspell.convert.extern.OcrMyPdf
 import docspell.joex.Config
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
 import docspell.store.records._
 
 import io.circe.generic.semiauto._

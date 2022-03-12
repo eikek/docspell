@@ -14,7 +14,7 @@ import fs2.Stream
 import docspell.analysis.TextAnalyser
 import docspell.analysis.classifier.TextClassifier.Data
 import docspell.common._
-import docspell.joex.scheduler._
+import docspell.scheduler._
 
 object LearnItemEntities {
   def learnAll[F[_]: Async, A](

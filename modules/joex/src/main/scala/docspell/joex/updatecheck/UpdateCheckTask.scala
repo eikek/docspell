@@ -11,8 +11,8 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.joex.scheduler.Context
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Context
+import docspell.scheduler.Task
 import docspell.store.records.RPeriodicTask
 import docspell.store.records.RUserEmail
 import docspell.store.usertask.UserTask

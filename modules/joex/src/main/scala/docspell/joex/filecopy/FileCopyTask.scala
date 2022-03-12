@@ -12,7 +12,7 @@ import cats.implicits._
 import docspell.common.FileCopyTaskArgs.Selection
 import docspell.common.{FileCopyTaskArgs, Ident}
 import docspell.joex.Config
-import docspell.joex.scheduler.{JobTaskResultEncoder, Task}
+import docspell.scheduler.{JobTaskResultEncoder, Task}
 import docspell.logging.Logger
 import docspell.store.file.{BinnyUtils, FileRepository, FileRepositoryConfig}
 import binny.CopyTool.Counter

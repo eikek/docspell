@@ -12,7 +12,7 @@ import cats.implicits._
 import docspell.backend.ops.OFileRepository
 import docspell.common._
 import docspell.joex.filecopy.FileIntegrityCheckTask
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Task
 
 object IntegrityCheckTask {
 

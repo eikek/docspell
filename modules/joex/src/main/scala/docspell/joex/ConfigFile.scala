@@ -10,7 +10,7 @@ import cats.effect.Async
 
 import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, Validation}
-import docspell.joex.scheduler.CountingScheme
+import docspell.scheduler.CountingScheme
 
 import emil.MailAddress
 import emil.javamail.syntax._

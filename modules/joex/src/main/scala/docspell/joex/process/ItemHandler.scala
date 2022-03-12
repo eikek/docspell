@@ -17,7 +17,7 @@ import docspell.common.{ItemState, ProcessItemArgs}
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Task
 import docspell.store.queries.QItem
 import docspell.store.records.RItem
 

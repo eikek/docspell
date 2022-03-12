@@ -10,7 +10,7 @@ import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
 import docspell.store.AddResult
 import docspell.store.records._
 

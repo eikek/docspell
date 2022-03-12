@@ -13,7 +13,7 @@ import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Task
 import docspell.store.records.RJob
 
 object MigrationTask {

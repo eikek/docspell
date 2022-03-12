@@ -9,7 +9,7 @@ package docspell.joex.fts
 import docspell.backend.fulltext.CreateIndex
 import docspell.ftsclient.FtsClient
 import docspell.joex.Config
-import docspell.joex.scheduler.Context
+import docspell.scheduler.Context
 import docspell.logging.Logger
 import docspell.store.Store
 

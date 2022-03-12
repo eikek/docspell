@@ -14,8 +14,8 @@ import docspell.backend.JobFactory
 import docspell.backend.ops.OJoex
 import docspell.common.MakePreviewArgs.StoreMode
 import docspell.common._
-import docspell.joex.scheduler.Context
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Context
+import docspell.scheduler.Task
 import docspell.store.queue.JobQueue
 import docspell.store.records.RAttachment
 import docspell.store.records.RJob

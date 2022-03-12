@@ -11,7 +11,7 @@ import cats.implicits._
 
 import docspell.backend.ops.OItem
 import docspell.common._
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Task
 import docspell.store.UpdateResult
 
 object SetGivenData {

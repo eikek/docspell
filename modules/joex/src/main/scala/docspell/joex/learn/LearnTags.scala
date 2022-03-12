@@ -12,7 +12,7 @@ import cats.implicits._
 
 import docspell.analysis.TextAnalyser
 import docspell.common._
-import docspell.joex.scheduler._
+import docspell.scheduler._
 import docspell.store.records.RClassifierSetting
 
 object LearnTags {

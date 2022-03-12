@@ -9,7 +9,6 @@ package docspell.joex
 import cats.effect._
 import cats.implicits._
 import fs2.concurrent.SignallingRef
-
 import docspell.analysis.TextAnalyser
 import docspell.backend.MailAddressCodec
 import docspell.backend.fulltext.CreateIndex
@@ -32,7 +31,8 @@ import docspell.joex.preview._
 import docspell.joex.process.ItemHandler
 import docspell.joex.process.ReProcessItem
 import docspell.joex.scanmailbox._
-import docspell.joex.scheduler._
+import docspell.scheduler._
+import docspell.scheduler.impl.{PeriodicSchedulerBuilder, SchedulerBuilder}
 import docspell.joex.updatecheck._
 import docspell.notification.api.NotificationModule
 import docspell.notification.impl.NotificationModuleImpl
@@ -42,7 +42,6 @@ import docspell.store.queue._
 import docspell.store.records.{REmptyTrashSetting, RJobLog}
 import docspell.store.usertask.UserTaskScope
 import docspell.store.usertask.UserTaskStore
-
 import emil.javamail._
 import org.http4s.client.Client
 
@@ -296,12 +295,12 @@ object JoexAppImpl extends MailAddressCodec {
           )
         )
         .resource
-      psch <- PeriodicScheduler.create(
+      psch <- PeriodicSchedulerBuilder.build(
         cfg.periodicScheduler,
         sch,
         queue,
         pstore,
-        joex
+        joex.notifyAllNodes
       )
       app = new JoexAppImpl(
         cfg,

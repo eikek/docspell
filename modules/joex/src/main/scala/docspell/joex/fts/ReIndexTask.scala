@@ -14,7 +14,7 @@ import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
 import docspell.joex.fts.FtsWork.syntax._
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Task
 
 object ReIndexTask {
   type Args = ReIndexTaskArgs

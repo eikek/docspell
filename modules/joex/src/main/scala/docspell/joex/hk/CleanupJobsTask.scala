@@ -11,7 +11,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Task
 import docspell.store.Store
 import docspell.store.records._
 

@@ -10,7 +10,7 @@ import fs2.{Pipe, Stream}
 
 import docspell.analysis.classifier.TextClassifier.Data
 import docspell.common._
-import docspell.joex.scheduler.Context
+import docspell.scheduler.Context
 import docspell.store.Store
 import docspell.store.qb.Batch
 import docspell.store.queries.{QItem, TextAndTag}

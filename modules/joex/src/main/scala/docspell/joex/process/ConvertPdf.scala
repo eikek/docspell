@@ -17,7 +17,7 @@ import docspell.convert.ConversionResult.Handler
 import docspell.convert.SanitizeHtml
 import docspell.convert._
 import docspell.joex.extract.JsoupSanitizer
-import docspell.joex.scheduler._
+import docspell.scheduler._
 import docspell.store.records._
 
 /** Goes through all attachments and creates a PDF version of it where supported.
