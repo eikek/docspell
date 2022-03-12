@@ -519,6 +519,29 @@ val pubsubNaive = project
   )
   .dependsOn(common, pubsubApi, store % "compile->compile;test->test")
 
+val schedulerApi = project
+  .in(file("modules/scheduler/api"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettingsDependsOn(loggingScribe)
+  .settings(
+    name := "docspell-scheduler-api",
+    libraryDependencies ++=
+      Dependencies.fs2Core ++
+        Dependencies.circeCore
+  )
+  .dependsOn(loggingApi, common, store, pubsubApi)
+
+val schedulerImpl = project
+  .in(file("modules/scheduler/impl"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettingsDependsOn(loggingScribe)
+  .settings(
+    name := "docspell-scheduler-impl"
+  )
+  .dependsOn(schedulerApi, notificationApi, pubsubApi)
+
 val extract = project
   .in(file("modules/extract"))
   .disablePlugins(RevolverPlugin)
@@ -641,7 +664,16 @@ val backend = project
         Dependencies.http4sClient ++
         Dependencies.emil
   )
-  .dependsOn(store, notificationApi, joexapi, ftsclient, totp, pubsubApi, loggingApi)
+  .dependsOn(
+    store,
+    notificationApi,
+    joexapi,
+    ftsclient,
+    totp,
+    pubsubApi,
+    loggingApi,
+    schedulerApi
+  )
 
 val oidc = project
   .in(file("modules/oidc"))
@@ -732,7 +764,8 @@ val joex = project
     restapi,
     ftssolr,
     pubsubNaive,
-    notificationImpl
+    notificationImpl,
+    schedulerImpl
   )
 
 val restserver = project
@@ -902,7 +935,9 @@ val root = project
     pubsubApi,
     pubsubNaive,
     notificationApi,
-    notificationImpl
+    notificationImpl,
+    schedulerApi,
+    schedulerImpl
   )
 
 // --- Helpers
