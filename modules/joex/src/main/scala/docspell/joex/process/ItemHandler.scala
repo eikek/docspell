@@ -25,7 +25,7 @@ object ItemHandler {
   type Args = ProcessItemArgs
 
   def onCancel[F[_]: Sync]: Task[F, Args, Unit] =
-    logWarn("Now cancelling.").flatMap(_ =>
+    logWarn[F]("Now cancelling.").flatMap(_ =>
       markItemCreated.flatMap {
         case true =>
           Task.pure(())
@@ -41,10 +41,10 @@ object ItemHandler {
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F]
   ): Task[F, Args, Option[ItemData]] =
-    logBeginning.flatMap(_ =>
+    logBeginning[F].flatMap(_ =>
       DuplicateCheck[F]
         .flatMap(args =>
-          if (args.files.isEmpty) logNoFiles.map(_ => None)
+          if (args.files.isEmpty) logNoFiles[F].map(_ => None)
           else {
             val create: Task[F, Args, ItemData] =
               CreateItem[F].contramap(_ => args.pure[F])

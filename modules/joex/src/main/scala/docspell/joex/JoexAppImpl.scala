@@ -194,7 +194,7 @@ object JoexAppImpl extends MailAddressCodec {
         .withTask(
           JobTask.json(
             HouseKeepingTask.taskName,
-            HouseKeepingTask[F](cfg),
+            HouseKeepingTask[F](cfg, fileRepo),
             HouseKeepingTask.onCancel[F]
           )
         )

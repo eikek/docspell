@@ -23,7 +23,7 @@ object LearnItemEntities {
       maxItems: Int,
       maxTextLen: Int
   ): Task[F, A, Unit] =
-    learnCorrOrg(analyser, collective, maxItems, maxTextLen)
+    learnCorrOrg[F, A](analyser, collective, maxItems, maxTextLen)
       .flatMap(_ => learnCorrPerson[F, A](analyser, collective, maxItems, maxTextLen))
       .flatMap(_ => learnConcPerson(analyser, collective, maxItems, maxTextLen))
       .flatMap(_ => learnConcEquip(analyser, collective, maxItems, maxTextLen))

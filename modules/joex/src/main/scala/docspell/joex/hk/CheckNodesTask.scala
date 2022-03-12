@@ -18,10 +18,9 @@ import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
 
 object CheckNodesTask {
-
   def apply[F[_]: Async](
       cfg: HouseKeepingConfig.CheckNodes
-  ): Task[F, Unit, Unit] =
+  ): Task[F, Unit, CleanupResult] =
     Task { ctx =>
       if (cfg.enabled)
         for {
@@ -35,9 +34,11 @@ object CheckNodesTask {
           )
           n <- removeNodes(ctx, cfg)
           _ <- ctx.logger.info(s"Removed $n nodes")
-        } yield ()
+        } yield CleanupResult.of(n)
       else
-        ctx.logger.info("CheckNodes task is disabled in the configuration")
+        ctx.logger.info("CheckNodes task is disabled in the configuration") *>
+          CleanupResult.disabled.pure[F]
+
     }
 
   def checkNodes[F[_]: Async](ctx: Context[F, _], client: Client[F]): F[Unit] =

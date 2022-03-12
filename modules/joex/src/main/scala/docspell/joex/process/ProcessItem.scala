@@ -7,6 +7,7 @@
 package docspell.joex.process
 
 import cats.effect._
+import cats.implicits._
 
 import docspell.analysis.TextAnalyser
 import docspell.backend.ops.OItem

@@ -18,12 +18,6 @@ trait Task[F[_], A, B] {
 
   def run(ctx: Context[F, A]): F[B]
 
-  def map[C](f: B => C)(implicit F: Functor[F]): Task[F, A, C] =
-    Task(Task.toKleisli(this).map(f))
-
-  def flatMap[C](f: B => Task[F, A, C])(implicit F: FlatMap[F]): Task[F, A, C] =
-    Task(Task.toKleisli(this).flatMap(a => Task.toKleisli(f(a))))
-
   def andThen[C](f: B => F[C])(implicit F: FlatMap[F]): Task[F, A, C] =
     Task(Task.toKleisli(this).andThen(f))
 
@@ -62,4 +56,17 @@ object Task {
 
   def log[F[_], A](f: Logger[F] => F[Unit]): Task[F, A, Unit] =
     Task(ctx => f(ctx.logger))
+
+  implicit def taskMonad[F[_]: Monad, T]: Monad[Task[F, T, *]] =
+    new Monad[Task[F, T, *]] {
+      def pure[A](x: A) = Task(_ => Monad[F].pure(x))
+      def flatMap[A, B](fa: Task[F, T, A])(f: A => Task[F, T, B]) =
+        Task(Task.toKleisli(fa).flatMap(a => Task.toKleisli(f(a))))
+
+      def tailRecM[A, B](a: A)(f: A => Task[F, T, Either[A, B]]) = {
+        val monadK = Monad[Kleisli[F, Context[F, T], *]]
+        val r = monadK.tailRecM(a)(x => Task.toKleisli(f(x)))
+        Task(r)
+      }
+    }
 }

@@ -15,7 +15,9 @@ import docspell.store.records._
 
 object CleanupInvitesTask {
 
-  def apply[F[_]: Sync](cfg: HouseKeepingConfig.CleanupInvites): Task[F, Unit, Unit] =
+  def apply[F[_]: Sync](
+      cfg: HouseKeepingConfig.CleanupInvites
+  ): Task[F, Unit, CleanupResult] =
     Task { ctx =>
       if (cfg.enabled)
         for {
@@ -24,8 +26,9 @@ object CleanupInvitesTask {
           _ <- ctx.logger.info(s"Cleanup invitations older than $ts")
           n <- ctx.store.transact(RInvitation.deleteOlderThan(ts))
           _ <- ctx.logger.info(s"Removed $n invitations")
-        } yield ()
+        } yield CleanupResult.of(n)
       else
-        ctx.logger.info("CleanupInvites task is disabled in the configuration")
+        ctx.logger.info("CleanupInvites task is disabled in the configuration") *>
+          CleanupResult.disabled.pure[F]
     }
 }

@@ -7,6 +7,7 @@
 package docspell.joex.fts
 
 import cats.effect._
+import cats.implicits._
 
 import docspell.backend.fulltext.CreateIndex
 import docspell.common._
@@ -42,7 +43,7 @@ object ReIndexTask {
       (collective match {
         case Some(_) =>
           FtsWork
-            .clearIndex(collective)
+            .clearIndex[F](collective)
             .recoverWith(
               FtsWork.log[F](_.info("Clearing data failed. Continue re-indexing."))
             ) ++
