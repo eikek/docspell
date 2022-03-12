@@ -3,6 +3,13 @@
         @apply leading-relaxed text-left;
     }
 
+    .content table.striped-basic tbody tr {
+        @apply  border-t dark:border-stone-600;
+    }
+    .content table {
+        @apply w-full my-2 px-4;
+    }
+
     .content h1:not(.no-default) {
         @apply text-4xl font-serif font-bold mt-6 mb-3 py-1 border-b dark:border-stone-800 text-stone-700 dark:text-stone-200;
     }

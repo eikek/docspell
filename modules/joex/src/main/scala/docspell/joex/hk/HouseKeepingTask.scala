@@ -8,21 +8,20 @@ package docspell.joex.hk
 
 import cats.effect._
 import cats.implicits._
-
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.scheduler.Task
 import docspell.store.records._
 import docspell.store.usertask.UserTaskScope
-
 import com.github.eikek.calev._
+import docspell.backend.ops.OFileRepository
 
 object HouseKeepingTask {
   private val periodicId = Ident.unsafe("docspell-houskeeping")
 
   val taskName: Ident = Ident.unsafe("housekeeping")
 
-  def apply[F[_]: Async](cfg: Config): Task[F, Unit, Unit] =
+  def apply[F[_]: Async](cfg: Config, fileRepo: OFileRepository[F]): Task[F, Unit, Unit] =
     Task
       .log[F, Unit](_.info(s"Running house-keeping task now"))
       .flatMap(_ => CleanupInvitesTask(cfg.houseKeeping.cleanupInvites))
