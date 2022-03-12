@@ -9,14 +9,12 @@ package docspell.backend.ops
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.JobFactory
 import docspell.backend.ops.OFileRepository.IntegrityResult
 import docspell.common._
+import docspell.scheduler.JobQueue
 import docspell.store.Store
-import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
-
 import scodec.bits.ByteVector
 
 trait OFileRepository[F[_]] {

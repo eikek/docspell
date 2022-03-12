@@ -27,6 +27,7 @@ trait PeriodicScheduler[F[_]] {
   def periodicAwake: F[Fiber[F, Throwable, Unit]]
 
   def notifyChange: F[Unit]
-}
 
-object PeriodicScheduler {}
+  /** Starts listening for notify messages in the background. */
+  def startSubscriptions: F[Unit]
+}

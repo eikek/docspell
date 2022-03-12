@@ -12,7 +12,6 @@ import fs2.concurrent.SignallingRef
 import docspell.analysis.TextAnalyser
 import docspell.backend.MailAddressCodec
 import docspell.backend.fulltext.CreateIndex
-import docspell.backend.msg.{CancelJob, JobQueuePublish, Topics}
 import docspell.backend.ops._
 import docspell.common._
 import docspell.ftsclient.FtsClient
@@ -32,13 +31,17 @@ import docspell.joex.process.ItemHandler
 import docspell.joex.process.ReProcessItem
 import docspell.joex.scanmailbox._
 import docspell.scheduler._
-import docspell.scheduler.impl.{PeriodicSchedulerBuilder, SchedulerBuilder}
+import docspell.scheduler.impl.{
+  PeriodicSchedulerBuilder,
+  PeriodicTaskStore,
+  SchedulerBuilder
+}
 import docspell.joex.updatecheck._
 import docspell.notification.api.NotificationModule
 import docspell.notification.impl.NotificationModuleImpl
 import docspell.pubsub.api.{PubSub, PubSubT}
+import docspell.scheduler.msg.JobQueuePublish
 import docspell.store.Store
-import docspell.store.queue._
 import docspell.store.records.{REmptyTrashSetting, RJobLog}
 import docspell.store.usertask.UserTaskScope
 import docspell.store.usertask.UserTaskStore
@@ -49,7 +52,6 @@ final class JoexAppImpl[F[_]: Async](
     cfg: Config,
     store: Store[F],
     queue: JobQueue[F],
-    pubSubT: PubSubT[F],
     pstore: PeriodicTaskStore[F],
     termSignal: SignallingRef[F, Boolean],
     notificationMod: NotificationModule[F],
@@ -67,19 +69,10 @@ final class JoexAppImpl[F[_]: Async](
       _ <- Async[F].start(eventConsume)
       _ <- scheduler.periodicAwake
       _ <- periodicScheduler.periodicAwake
-      _ <- subscriptions
+      _ <- scheduler.startSubscriptions
+      _ <- periodicScheduler.startSubscriptions
     } yield ()
   }
-
-  def subscriptions =
-    for {
-      _ <- Async[F].start(pubSubT.subscribeSink(Topics.jobsNotify) { _ =>
-        scheduler.notifyChange
-      })
-      _ <- Async[F].start(pubSubT.subscribeSink(CancelJob.topic) { msg =>
-        scheduler.requestCancel(msg.body.jobId).as(())
-      })
-    } yield ()
 
   def findLogs(jobId: Ident): F[Vector[RJobLog]] =
     store.transact(RJobLog.findLogs(jobId))
@@ -300,13 +293,12 @@ object JoexAppImpl extends MailAddressCodec {
         sch,
         queue,
         pstore,
-        joex.notifyAllNodes
+        pubSubT
       )
       app = new JoexAppImpl(
         cfg,
         store,
         queue,
-        pubSubT,
         pstore,
         termSignal,
         notificationMod,

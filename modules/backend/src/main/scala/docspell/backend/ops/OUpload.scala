@@ -11,11 +11,10 @@ import cats.data.{EitherT, OptionT}
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-
 import docspell.backend.JobFactory
 import docspell.common._
+import docspell.scheduler.JobQueue
 import docspell.store.Store
-import docspell.store.queue.JobQueue
 import docspell.store.records._
 
 trait OUpload[F[_]] {

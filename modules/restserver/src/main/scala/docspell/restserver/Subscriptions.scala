@@ -9,10 +9,9 @@ package docspell.restserver
 import cats.effect.Async
 import fs2.Stream
 import fs2.concurrent.Topic
-
-import docspell.backend.msg.{JobDone, JobSubmitted}
 import docspell.pubsub.api.PubSubT
 import docspell.restserver.ws.OutputEvent
+import docspell.scheduler.msg.{JobDone, JobSubmitted}
 
 /** Subscribes to those events from docspell that are forwarded to the websocket endpoints
   */

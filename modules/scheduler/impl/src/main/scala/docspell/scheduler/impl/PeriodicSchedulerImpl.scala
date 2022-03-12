@@ -10,13 +10,12 @@ import cats.effect._
 import cats.implicits._
 import fs2._
 import fs2.concurrent.SignallingRef
-
 import docspell.common._
+import docspell.pubsub.api.PubSubT
 import docspell.scheduler._
 import docspell.scheduler.impl.PeriodicSchedulerImpl.State
-import docspell.store.queue._
+import docspell.scheduler.msg.{JobsNotify, PeriodicTaskNotify}
 import docspell.store.records.RPeriodicTask
-
 import eu.timepit.fs2cron.calev.CalevScheduler
 
 final class PeriodicSchedulerImpl[F[_]: Async](
@@ -24,7 +23,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
     sch: Scheduler[F],
     queue: JobQueue[F],
     store: PeriodicTaskStore[F],
-    joexNotifyAll: F[Unit],
+    pubSub: PubSubT[F],
     waiter: SignallingRef[F, Boolean],
     state: SignallingRef[F, State[F]]
 ) extends PeriodicScheduler[F] {
@@ -48,6 +47,13 @@ final class PeriodicSchedulerImpl[F[_]: Async](
 
   def notifyChange: F[Unit] =
     waiter.update(b => !b)
+
+  def startSubscriptions: F[Unit] =
+    for {
+      _ <- Async[F].start(pubSub.subscribeSink(PeriodicTaskNotify()) { _ =>
+        logger.info("Notify periodic scheduler from message") *> notifyChange
+      })
+    } yield ()
 
   // internal
 
@@ -117,7 +123,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
       }
 
   def notifyJoex: F[Unit] =
-    sch.notifyChange *> joexNotifyAll
+    sch.notifyChange *> pubSub.publish1IgnoreErrors(JobsNotify(), ()).void
 
   def scheduleNotify(pj: RPeriodicTask): F[Unit] =
     Timestamp

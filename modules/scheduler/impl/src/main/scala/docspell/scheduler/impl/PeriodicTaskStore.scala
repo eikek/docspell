@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.store.queue
+package docspell.scheduler.impl
 
 import cats.effect._
 import cats.implicits._
-
 import docspell.common._
 import docspell.store.queries.QPeriodicTask
 import docspell.store.records._
@@ -57,7 +56,7 @@ object PeriodicTaskStore {
                 case false => Marked.notMarkable
               }
             case None =>
-              Marked.notFound.pure[F]
+              Marked.notFound[RPeriodicTask].pure[F]
           }
 
         Resource.make(chooseNext) {

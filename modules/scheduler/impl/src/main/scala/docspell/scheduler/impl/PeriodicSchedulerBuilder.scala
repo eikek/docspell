@@ -1,8 +1,8 @@
 package docspell.scheduler.impl
 
 import cats.effect._
+import docspell.pubsub.api.PubSubT
 import docspell.scheduler._
-import docspell.store.queue.{JobQueue, PeriodicTaskStore}
 import fs2.concurrent.SignallingRef
 
 object PeriodicSchedulerBuilder {
@@ -12,7 +12,7 @@ object PeriodicSchedulerBuilder {
       sch: Scheduler[F],
       queue: JobQueue[F],
       store: PeriodicTaskStore[F],
-      notifyJoex: F[Unit]
+      pubsub: PubSubT[F]
   ): Resource[F, PeriodicScheduler[F]] =
     for {
       waiter <- Resource.eval(SignallingRef(true))
@@ -22,7 +22,7 @@ object PeriodicSchedulerBuilder {
         sch,
         queue,
         store,
-        notifyJoex,
+        pubsub,
         waiter,
         state
       )

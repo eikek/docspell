@@ -12,19 +12,16 @@ import cats.effect.std.Semaphore
 import cats.implicits._
 import fs2.Stream
 import fs2.concurrent.SignallingRef
-
-import docspell.scheduler.msg.JobDone
+import docspell.scheduler.msg.{CancelJob, JobDone, JobsNotify}
 import docspell.common._
-import docspell.scheduler._
+import docspell.scheduler.{JobQueue, _}
 import docspell.scheduler.impl.SchedulerImpl._
 import docspell.notification.api.Event
 import docspell.notification.api.EventSink
 import docspell.pubsub.api.PubSubT
 import docspell.store.Store
 import docspell.store.queries.QJob
-import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
-
 import io.circe.Json
 
 final class SchedulerImpl[F[_]: Async](
@@ -41,6 +38,16 @@ final class SchedulerImpl[F[_]: Async](
 ) extends Scheduler[F] {
 
   private[this] val logger = docspell.logging.getLogger[F]
+
+  def startSubscriptions =
+    for {
+      _ <- Async[F].start(pubSub.subscribeSink(JobsNotify()) { _ =>
+        notifyChange
+      })
+      _ <- Async[F].start(pubSub.subscribeSink(CancelJob.topic) { msg =>
+        requestCancel(msg.body.jobId).void
+      })
+    } yield ()
 
   /** On startup, get all jobs in state running from this scheduler and put them into
     * waiting state, so they get picked up again.

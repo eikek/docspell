@@ -9,11 +9,9 @@ package docspell.joex.pdfconv
 import cats.effect._
 import cats.implicits._
 import fs2.{Chunk, Stream}
-
 import docspell.backend.ops.OJoex
 import docspell.common._
-import docspell.scheduler.{Context, Task}
-import docspell.store.queue.JobQueue
+import docspell.scheduler.{Context, JobQueue, Task}
 import docspell.store.records.RAttachment
 import docspell.store.records._
 

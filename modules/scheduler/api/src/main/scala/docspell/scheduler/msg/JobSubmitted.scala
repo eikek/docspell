@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.backend.msg
+package docspell.scheduler.msg
+
 import docspell.common._
 import docspell.pubsub.api.{Topic, TypedTopic}
-
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 

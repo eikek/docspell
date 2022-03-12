@@ -89,7 +89,7 @@ trait UserTaskStore[F[_]] {
       implicit E: Encoder[A]
   ): F[UserTask[String]]
 
-  /** Delete all tasks of the given user that have name `name'. */
+  /** Delete all tasks of the given user that have name `name`. */
   def deleteAll(scope: UserTaskScope, name: Ident): F[Int]
 }
 

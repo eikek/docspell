@@ -4,17 +4,15 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.backend.msg
+package docspell.scheduler.msg
 
 import cats.effect._
 import cats.implicits._
-
 import docspell.common.{Duration, Ident, Priority}
-import docspell.notification.api.Event
-import docspell.notification.api.EventSink
+import docspell.notification.api.{Event, EventSink}
 import docspell.pubsub.api.PubSubT
+import docspell.scheduler.JobQueue
 import docspell.store.Store
-import docspell.store.queue.JobQueue
 import docspell.store.records.RJob
 
 final class JobQueuePublish[F[_]: Sync](
@@ -76,5 +74,5 @@ object JobQueuePublish {
       pubSub: PubSubT[F],
       eventSink: EventSink[F]
   ): Resource[F, JobQueue[F]] =
-    JobQueue(store).map(q => new JobQueuePublish[F](q, pubSub, eventSink))
+    JobQueue.create(store).map(q => new JobQueuePublish[F](q, pubSub, eventSink))
 }

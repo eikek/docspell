@@ -530,7 +530,7 @@ val schedulerApi = project
       Dependencies.fs2Core ++
         Dependencies.circeCore
   )
-  .dependsOn(loggingApi, common, store, pubsubApi)
+  .dependsOn(loggingApi, common, store, notificationApi, pubsubApi)
 
 val schedulerImpl = project
   .in(file("modules/scheduler/impl"))

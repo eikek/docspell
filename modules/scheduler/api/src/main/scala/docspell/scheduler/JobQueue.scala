@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.store.queue
+package docspell.scheduler
 
 import cats.effect._
 import cats.implicits._
-
 import docspell.common._
 import docspell.store.Store
 import docspell.store.queries.QJob
@@ -40,7 +39,7 @@ trait JobQueue[F[_]] {
 }
 
 object JobQueue {
-  def apply[F[_]: Async](store: Store[F]): Resource[F, JobQueue[F]] =
+  private[scheduler] def create[F[_]: Async](store: Store[F]): Resource[F, JobQueue[F]] =
     Resource.pure[F, JobQueue[F]](new JobQueue[F] {
       private[this] val logger = docspell.logging.getLogger[F]
 

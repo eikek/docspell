@@ -10,12 +10,10 @@ import cats.effect._
 import cats.effect.std.Semaphore
 import cats.implicits._
 import fs2.concurrent.SignallingRef
-
-import docspell.scheduler._
+import docspell.scheduler.{JobQueue, _}
 import docspell.notification.api.EventSink
 import docspell.pubsub.api.PubSubT
 import docspell.store.Store
-import docspell.store.queue.JobQueue
 
 case class SchedulerBuilder[F[_]: Async](
     config: SchedulerConfig,
@@ -88,7 +86,7 @@ object SchedulerBuilder {
       config,
       JobTaskRegistry.empty[F],
       store,
-      JobQueue(store),
+      JobQueue.create(store),
       LogSink.db[F](store),
       PubSubT.noop[F],
       EventSink.silent[F]

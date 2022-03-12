@@ -7,19 +7,17 @@
 package docspell.backend
 
 import cats.effect._
-
 import docspell.backend.auth.Login
 import docspell.backend.fulltext.CreateIndex
-import docspell.backend.msg.JobQueuePublish
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
 import docspell.ftsclient.FtsClient
 import docspell.notification.api.{EventExchange, NotificationModule}
 import docspell.pubsub.api.PubSubT
+import docspell.scheduler.msg.JobQueuePublish
 import docspell.store.Store
 import docspell.store.usertask.UserTaskStore
 import docspell.totp.Totp
-
 import emil.Emil
 
 trait BackendApp[F[_]] {

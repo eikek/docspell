@@ -22,6 +22,10 @@ trait Scheduler[F[_]] {
 
   def notifyChange: F[Unit]
 
+  /** Starts reacting on notify and cancel messages. */
+  def startSubscriptions: F[Unit]
+
+  /** Starts the schedulers main loop. */
   def start: Stream[F, Nothing]
 
   /** Requests to shutdown the scheduler.
