@@ -12,7 +12,6 @@ import fs2.Pipe
 
 import docspell.common._
 import docspell.logging
-import docspell.scheduler.LogEvent
 import docspell.store.Store
 import docspell.store.records.RJobLog
 
@@ -32,7 +31,10 @@ object LogSink {
   def logInternal[F[_]: Sync](e: LogEvent): F[Unit] = {
     val logger = docspell.logging.getLogger[F]
     val addData: logging.LogEvent => logging.LogEvent =
-      _.data("jobId", e.jobId).data("jobInfo", e.jobInfo)
+      _.data("jobId", e.jobId)
+        .data("task", e.taskName)
+        .data("group", e.group)
+        .data("jobInfo", e.jobInfo)
 
     e.level match {
       case LogLevel.Info =>
