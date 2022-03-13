@@ -19,7 +19,6 @@ object Dependencies {
   val FlexmarkVersion = "0.64.0"
   val FlywayVersion = "8.5.2"
   val Fs2Version = "3.2.5"
-  val Fs2CronVersion = "0.7.1"
   val H2Version = "1.4.200"
   val Http4sVersion = "0.23.10"
   val Icu4jVersion = "70.1"
@@ -110,7 +109,7 @@ object Dependencies {
     "com.github.eikek" %% "calev-core" % CalevVersion
   )
   val calevFs2 = Seq(
-    "eu.timepit" %% "fs2-cron-calev" % Fs2CronVersion
+    "com.github.eikek" %% "calev-fs2" % CalevVersion
   )
   val calevCirce = Seq(
     "com.github.eikek" %% "calev-circe" % CalevVersion
@@ -119,9 +118,6 @@ object Dependencies {
   val jclOverSlf4j = Seq(
     "org.slf4j" % "jcl-over-slf4j" % Slf4jVersion
   )
-  // val julOverSlf4j = Seq(
-  //   "org.slf4j" % "jul-to-slf4j" % Slf4jVersion
-  // )
 
   val poi = Seq(
     "org.apache.poi" % "poi" % PoiVersion,
