@@ -18,7 +18,7 @@ import docspell.scheduler.impl.PeriodicSchedulerImpl.State
 import docspell.scheduler.msg.{JobsNotify, PeriodicTaskNotify}
 import docspell.store.records.RPeriodicTask
 
-import eu.timepit.fs2cron.calev.CalevScheduler
+import com.github.eikek.calev.fs2.{Scheduler => CalevScheduler}
 
 final class PeriodicSchedulerImpl[F[_]: Async](
     val config: PeriodicSchedulerConfig,
