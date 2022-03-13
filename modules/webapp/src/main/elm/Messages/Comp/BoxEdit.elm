@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxEdit exposing (Texts, de, gb)
+module Messages.Comp.BoxEdit exposing (Texts, de, fr, gb)
 
 import Messages.Basics
 import Messages.Comp.BoxMessageEdit
@@ -71,4 +71,24 @@ de =
     , moveToLeft = "Nach links verschieben"
     , moveToRight = "Nach rechts verschieben"
     , deleteBox = "Kachel entfernen"
+    }
+
+
+fr : Texts
+fr =
+    { messageEdit = Messages.Comp.BoxMessageEdit.fr
+    , uploadEdit = Messages.Comp.BoxUploadEdit.fr
+    , queryEdit = Messages.Comp.BoxQueryEdit.fr
+    , statsEdit = Messages.Comp.BoxStatsEdit.fr
+    , boxContent = Messages.Data.BoxContent.fr
+    , basics = Messages.Basics.fr
+    , namePlaceholder = "Nom"
+    , visible = "Visible"
+    , decorations = "Décorations"
+    , colspan = "Nombre de colonnes de large"
+    , contentProperties = "Contenu"
+    , reallyDeleteBox = "Confirmer la suppression de la boite ?"
+    , moveToLeft = "Déplacer à gauche"
+    , moveToRight = "Déplacer à droite"
+    , deleteBox = "Supprimer la boite"
     }

@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.SharePasswordForm exposing (Texts, de, gb)
+module Messages.Comp.SharePasswordForm exposing (Texts, de, fr, gb)
 
 import Http
 import Messages.Comp.HttpError
@@ -37,4 +37,14 @@ de =
     , password = "Passwort"
     , passwordSubmitButton = "Submit"
     , passwordFailed = "Das Passwort ist falsch"
+    }
+
+
+fr : Texts
+fr =
+    { httpError = Messages.Comp.HttpError.fr
+    , passwordRequired = "Mot de passe requis"
+    , password = "Mot de passe"
+    , passwordSubmitButton = "Envoyer"
+    , passwordFailed = "Le mot de passe est faux"
     }

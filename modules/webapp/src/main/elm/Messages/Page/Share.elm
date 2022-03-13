@@ -67,3 +67,21 @@ de tz =
     , listView = "Listenansicht"
     , tileView = "Kachelansicht"
     }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { searchMenu = Messages.Comp.SearchMenu.fr
+    , basics = Messages.Basics.fr
+    , itemCardList = Messages.Comp.ItemCardList.fr tz
+    , passwordForm = Messages.Comp.SharePasswordForm.fr
+    , authFailed = "Ce partage n'existe pas."
+    , httpError = Messages.Comp.HttpError.fr
+    , fulltextPlaceholder = "Recherche en texte entier..."
+    , powerSearchPlaceholder = "Recherche étendue…"
+    , extendedSearch = "Requête de recherche étendue"
+    , normalSearchPlaceholder = "Recherche…"
+    , showItemGroups = "Grouper par mois"
+    , listView = "Affichage liste"
+    , tileView = "Affichage tuile"
+    }

@@ -60,3 +60,18 @@ de tz =
     , noName = "Kein Name"
     , unconfirmed = "Nicht bestätigt"
     }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { passwordForm = Messages.Comp.SharePasswordForm.fr
+    , basics = Messages.Basics.fr
+    , field = Messages.Data.Fields.fr
+    , formatDateLong = Messages.DateFormat.formatDateLong French tz
+    , formatDateShort = Messages.DateFormat.formatDateShort French tz
+    , authFailed = "Ce partage n'existe pas."
+    , httpError = Messages.Comp.HttpError.fr
+    , tagsAndFields = "Tags & champs"
+    , noName = "Aucun nom"
+    , unconfirmed = "Non validé"
+    }

@@ -8,6 +8,7 @@
 module Messages.Comp.ItemCard exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -57,4 +58,18 @@ de tz =
     , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.German tz
     , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.German tz
     , directionLabel = Messages.Data.Direction.de
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , dueOn = "Échéance le"
+    , new = "Nouveau"
+    , openAttachmentFile = "Ouvrir la pièce-jointe"
+    , gotoDetail = "Voir en détail"
+    , cycleAttachments = "Parcourir les pièces-jointes"
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.French tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.French tz
+    , directionLabel = Messages.Data.Direction.fr
     }

@@ -8,6 +8,7 @@
 module Messages.Comp.DetailEdit exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -74,4 +75,23 @@ de =
     , addOrgHeader = "Organisation anlegen"
     , addEquipmentHeader = "Ausstattung anlegen"
     , addCustomFieldHeader = "Benutzerfeld anlegen"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , tagForm = Messages.Comp.TagForm.fr
+    , personForm = Messages.Comp.PersonForm.fr
+    , orgForm = Messages.Comp.OrgForm.fr
+    , equipmentForm = Messages.Comp.EquipmentForm.fr
+    , customFieldForm = Messages.Comp.CustomFieldForm.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , submitSuccessful = "Enregistré"
+    , missingRequiredFields = "Veuillez compléter les champs requis."
+    , addTagHeader = "Ajouter un Tag"
+    , addPersonHeader = "Ajouter une personne"
+    , addOrgHeader = "Ajouter une organisation"
+    , addEquipmentHeader = "Ajouter un équipement"
+    , addCustomFieldHeader = "Ajouter un champs personnalisé"
     }

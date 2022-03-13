@@ -8,6 +8,7 @@
 module Messages.Comp.EmailSettingsForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -78,4 +79,26 @@ de =
     , replyToPlaceholder = "Optionale Antwortadresse"
     , ssl = "SSL"
     , ignoreCertCheck = "Zertifikatsprüfung ignorieren"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , sslTypeLabel = Messages.Data.SSLType.fr
+    , connectionPlaceholder = "Nom de la connection ex: 'gmail.com'"
+    , connectionNameInfo = "Le nom ne doit pas comprendre d'espace ou de caractères spéciaux."
+    , smtpHost = "Hôte SMTP"
+    , smtpHostPlaceholder = "SMTP hostname ex: 'mail.gmail.com'"
+    , smtpPort = "Port SMTP"
+    , smtpUser = "Identifiant SMTP"
+    , smtpUserPlaceholder = "identifiant SMTP, ex: 'your.name@gmail.com'"
+    , smtpPassword = "Mot de passe SMTP"
+    , smtpPasswordPlaceholder = "Mot de passe"
+    , fromAddress = "De"
+    , fromAddressPlaceholder = "Email de l'expéditeur"
+    , replyTo = "Répondre à"
+    , replyToPlaceholder = "Adresse de réponse optionnelle"
+    , ssl = "SSL"
+    , ignoreCertCheck = "Ignorer la vérification des certificats"
     }

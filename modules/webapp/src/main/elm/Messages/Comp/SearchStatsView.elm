@@ -8,6 +8,7 @@
 module Messages.Comp.SearchStatsView exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -41,4 +42,15 @@ de =
     , avg = "Durchschnitt"
     , min = "Minimum"
     , max = "Maximum"
+    }
+
+
+fr : Texts
+fr =
+    { items = "Documents"
+    , count = "Nombre"
+    , sum = "Somme"
+    , avg = "Moyenne"
+    , min = "Min"
+    , max = "Max"
     }

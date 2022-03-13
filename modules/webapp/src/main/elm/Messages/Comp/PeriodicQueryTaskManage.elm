@@ -8,6 +8,7 @@
 module Messages.Comp.PeriodicQueryTaskManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -76,4 +77,24 @@ de tz =
     , gotify = "Gotify"
     , email = "E-Mail"
     , httpRequest = "HTTP Request"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , notificationForm = Messages.Comp.PeriodicQueryTaskForm.fr tz
+    , notificationTable = Messages.Comp.PeriodicQueryTaskList.gb
+    , httpError = Messages.Comp.HttpError.fr
+    , channelType = Messages.Data.ChannelType.fr
+    , newTask = "Nouvelle tâche"
+    , createNewTask = "Créer une nouvelle tache de notification"
+    , taskCreated = "Tâche créée."
+    , taskUpdated = "Tâche mise à jours."
+    , taskStarted = "Tâche démarrée"
+    , taskDeleted = "Tâche supprimée"
+    , matrix = "Matrix"
+    , gotify = "Gotify"
+    , email = "E-Mail"
+    , httpRequest = "Requête HTTP"
     }

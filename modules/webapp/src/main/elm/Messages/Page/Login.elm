@@ -8,6 +8,7 @@
 module Messages.Page.Login exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -68,4 +69,23 @@ de =
     , signupLink = "Hier registrieren!"
     , otpCode = "Authentifizierungscode"
     , or = "Oder"
+    }
+
+
+fr : Texts
+fr =
+    { httpError = Messages.Comp.HttpError.fr
+    , loginToDocspell = "Connexion à  Docspell"
+    , username = "Identifiant"
+    , collectiveSlashLogin = "Groupe / Utilisateur"
+    , password = "Mot de passe"
+    , rememberMe = "Se souvenir de moi"
+    , loginPlaceholder = "Identifiant"
+    , passwordPlaceholder = "Mot de passe"
+    , loginButton = "Identifiant"
+    , loginSuccessful = "Identification réussie"
+    , noAccount = "Pas de compte ?"
+    , signupLink = "S'incrire!"
+    , otpCode = "Code d'authentification"
+    , or = "Ou"
     }

@@ -8,6 +8,7 @@
 module Messages.Comp.OrgManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -56,4 +57,18 @@ de =
     , reallyDeleteOrg = "Die Organisation wirklich löschen?"
     , deleteThisOrg = "Organisation löschen"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , orgForm = Messages.Comp.OrgForm.fr
+    , orgTable = Messages.Comp.OrgTable.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , newOrganization = "Nouvelle organisation"
+    , createNewOrganization = "Créer une nouvelle organisation"
+    , reallyDeleteOrg = "Confirmer la suppression de cette organisation"
+    , deleteThisOrg = "Supprimer cette organisation"
+    , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
     }

@@ -8,6 +8,7 @@
 module Messages.Comp.CustomFieldManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -43,4 +44,14 @@ de tz =
     , fieldTable = Messages.Comp.CustomFieldTable.de tz
     , addCustomField = "Ein neues Benutzerfeld anlegen"
     , newCustomField = "Neues Benutzerfeld"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , fieldForm = Messages.Comp.CustomFieldForm.fr
+    , fieldTable = Messages.Comp.CustomFieldTable.fr tz
+    , addCustomField = "Ajouter un champs personnalisé"
+    , newCustomField = "Nouveau champs personnalisé"
     }

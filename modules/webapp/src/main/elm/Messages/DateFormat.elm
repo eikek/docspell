@@ -44,6 +44,9 @@ get lang =
         German ->
             de
 
+        French ->
+            fr
+
 
 format : UiLanguage -> TimeZone -> (DateTimeMsg -> List Token) -> Int -> String
 format lang zone pattern millis =

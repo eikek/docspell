@@ -8,6 +8,7 @@
 module Messages.Comp.AttachmentMeta exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -69,4 +70,22 @@ de tz =
     , itemDate = "Datum"
     , itemDueDate = "Fälligkeitsdatum"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.German tz
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , extractedMetadata = "Métadonnées extraites"
+    , content = "Contenu"
+    , labels = "Labels"
+    , proposals = "Propositions"
+    , correspondentOrg = "Organisation correspondante"
+    , correspondentPerson = "Personne correspondante"
+    , concerningPerson = "Personne concernée"
+    , concerningEquipment = "Equipment concerné"
+    , itemDate = "Date du document"
+    , itemDueDate = "Date d'échéance"
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.French tz
     }

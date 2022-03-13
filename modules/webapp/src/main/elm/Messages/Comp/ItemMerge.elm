@@ -8,6 +8,7 @@
 module Messages.Comp.ItemMerge exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -69,4 +70,22 @@ de tz =
     , cancelMergeTitle = "Zurück zur Auswahl"
     , mergeSuccessful = "Die Dokumente wurden erfolgreich zusammengeführt."
     , mergeInProcess = "Dokumente werden zusammengeführt…"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , title = "Fusionner des documents"
+    , infoText = "Lors d'une fusion, le premier document sert de cible. Les métadonnées des autres documents sont ajoutées à la cible. Si la propriété est un valeur seule (comme correspondant), ceci est ajouté si pas déjà présent. Tags, champs personnalisés et pièces-jointes sont ajoutés. Les documents peuvent être réordonnés avec le glisser/déposer."
+    , deleteWarn = "Veuillez noter que tous les documents sont supprimés après une fusion réussie !"
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.French tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.French tz
+    , submitMerge = "Fusionner"
+    , submitMergeTitle = "Lancer la fusion"
+    , cancelMerge = "Annuler"
+    , cancelMergeTitle = "Annuler la fusion"
+    , mergeSuccessful = "Documents fusionnés avec succès"
+    , mergeInProcess = "Fusion en cours ..."
     }

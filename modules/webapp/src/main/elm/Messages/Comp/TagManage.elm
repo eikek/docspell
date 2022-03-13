@@ -8,6 +8,7 @@
 module Messages.Comp.TagManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -56,4 +57,18 @@ de =
     , reallyDeleteTag = "Den Tag wirklich löschen?"
     , deleteThisTag = "Tag löschen"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , tagTable = Messages.Comp.TagTable.fr
+    , tagForm = Messages.Comp.TagForm.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , createNewTag = "Créer un nouveau tag"
+    , newTag = "Nouveau tag"
+    , reallyDeleteTag = "Confirmer la suppression du tag ?"
+    , deleteThisTag = "Supprimer ce tag"
+    , correctFormErrors = "Merci de corriger les erreurs du formulaire"
     }

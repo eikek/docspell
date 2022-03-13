@@ -8,6 +8,7 @@
 module Messages.Comp.FolderTable exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -40,4 +41,13 @@ de tz =
     , memberCount = "#Mitglieder"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.German tz
     , owner = "Besitzer"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , memberCount = "#Membre"
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.French tz
+    , owner = "Propriétaire"
     }

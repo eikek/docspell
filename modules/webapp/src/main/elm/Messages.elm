@@ -64,6 +64,9 @@ get lang tz =
         German ->
             de tz
 
+        French ->
+            fr tz
+
 
 {-| Get a ISO-3166-1 code of the given lanugage.
 -}
@@ -145,4 +148,28 @@ de tz =
     , share = Messages.Page.Share.de tz
     , shareDetail = Messages.Page.ShareDetail.de tz
     , dashboard = Messages.Page.Dashboard.de tz
+    }
+
+
+fr : TimeZone -> Messages
+fr tz =
+    { lang = French
+    , timeZone = tz
+    , iso2 = "fr"
+    , label = "Français"
+    , flagIcon = "flag-icon flag-icon-fr"
+    , app = Messages.App.fr
+    , collectiveSettings = Messages.Page.CollectiveSettings.fr tz
+    , login = Messages.Page.Login.fr
+    , register = Messages.Page.Register.fr
+    , newInvite = Messages.Page.NewInvite.fr
+    , upload = Messages.Page.Upload.fr
+    , itemDetail = Messages.Page.ItemDetail.fr tz
+    , queue = Messages.Page.Queue.fr tz
+    , userSettings = Messages.Page.UserSettings.fr tz
+    , manageData = Messages.Page.ManageData.fr tz
+    , search = Messages.Page.Search.fr tz
+    , share = Messages.Page.Share.fr tz
+    , shareDetail = Messages.Page.ShareDetail.fr tz
+    , dashboard = Messages.Page.Dashboard.fr tz
     }

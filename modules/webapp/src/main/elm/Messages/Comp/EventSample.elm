@@ -8,6 +8,7 @@
 module Messages.Comp.EventSample exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -37,4 +38,12 @@ de =
     { eventType = Messages.Data.EventType.de
     , httpError = Messages.Comp.HttpError.de
     , selectEvent = "Ereignis wählen…"
+    }
+
+
+fr : Texts
+fr =
+    { eventType = Messages.Data.EventType.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , selectEvent = "Sélectionner un événement…"
     }

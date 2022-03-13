@@ -8,6 +8,7 @@
 module Messages.Comp.PersonForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -69,4 +70,22 @@ de =
     , contacts = "Kontakte"
     , contactTypeLabel = Messages.Data.ContactType.de
     , notes = "Notizen"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , addressForm = Messages.Comp.AddressForm.fr
+    , personUseLabel = Messages.Data.PersonUse.fr
+    , useOfPerson = "Rôle de cette personne"
+    , useAsConcerningOnly = "Concernée uniquement"
+    , useAsCorrespondentOnly = "Correspondante uniquement"
+    , useAsBoth = "Concernée et correspondante"
+    , dontUseForSuggestions = "ignorer des suggestions."
+    , chooseAnOrg = "Choisir une organisation"
+    , address = "Addresse"
+    , contacts = "Contacts"
+    , contactTypeLabel = Messages.Data.ContactType.fr
+    , notes = "Notes"
     }

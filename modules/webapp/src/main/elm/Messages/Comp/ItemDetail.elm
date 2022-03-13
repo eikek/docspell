@@ -8,6 +8,7 @@
 module Messages.Comp.ItemDetail exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -136,4 +137,42 @@ de tz =
     , close = "Schließen"
     , selectItem = "Zur Auswahl hinzufügen"
     , deselectItem = "Aus Auswahl entfernen"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { addFilesForm = Messages.Comp.ItemDetail.AddFilesForm.fr
+    , itemInfoHeader = Messages.Comp.ItemDetail.ItemInfoHeader.fr tz
+    , singleAttachment = Messages.Comp.ItemDetail.SingleAttachment.fr tz
+    , sentMails = Messages.Comp.SentMails.fr tz
+    , notes = Messages.Comp.ItemDetail.Notes.fr
+    , itemMail = Messages.Comp.ItemMail.fr
+    , detailEdit = Messages.Comp.DetailEdit.fr
+    , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , key = "Clé"
+    , backToSearchResults = "Retour aux résultat de recherche"
+    , previousItem = "Document précédent"
+    , nextItem = "Document suivant"
+    , sendMail = "Envoyer par mail"
+    , addMoreFiles = "Ajouter plus de fichier à ce document"
+    , confirmItemMetadata = "Valider  les metadonnées"
+    , confirm = "Valider"
+    , unconfirmItemMetadata = "Invalider  les metadonnées"
+    , reprocessItem = "Retraiter le document"
+    , deleteThisItem = "Supprimer ce document"
+    , undeleteThisItem = "Restorer  ce document"
+    , sentEmails = "E-Mail envoyés"
+    , sendThisItemViaEmail = "Envoyer  ce document par E-Mail"
+    , itemId = "Item ID"
+    , createdOn = "Créé le"
+    , lastUpdateOn = "Dernière mise à jour le"
+    , sendingMailNow = "e-mail en cours d'envoi…"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
+    , mailSendSuccessful = "Mail envoyé."
+    , showQrCode = "Afficher l'URL en  QR code"
+    , close = "Fermer"
+    , selectItem = "Sélectionner  ce document"
+    , deselectItem = "Désélectionner  ce document"
     }

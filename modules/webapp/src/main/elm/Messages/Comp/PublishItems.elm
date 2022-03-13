@@ -8,6 +8,7 @@
 module Messages.Comp.PublishItems exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -87,4 +88,27 @@ de tz =
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
     , doneLabel = "Fertig"
     , sendViaMail = "Per E-Mail versenden"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , shareForm = Messages.Comp.ShareForm.fr
+    , shareView = Messages.Comp.ShareView.fr tz
+    , shareMail = Messages.Comp.ShareMail.fr
+    , title = "Publier les documents"
+    , infoText = "La publication de documents crée un lien aléatoire, qui peut être utilisé par n'importe qui pour voir les documents. Ce lien ne peut  être deviné mais est public ! Il existe pour un certain temps et peut en plus être protégé par un mot de passe"
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.French tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.French tz
+    , submitPublish = "Publier"
+    , submitPublishTitle = "Publier les documents"
+    , cancelPublish = "Annuler"
+    , cancelPublishTitle = "Annuler la publication"
+    , publishSuccessful = "Documents publiés avec succès"
+    , publishInProcess = "Documents en cous de publication ..."
+    , correctFormErrors = "Veuillez corriger les erreurs du formulaire"
+    , doneLabel = "Terminé"
+    , sendViaMail = "Envoyer par mail"
     }

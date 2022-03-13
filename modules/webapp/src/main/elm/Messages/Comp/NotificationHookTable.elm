@@ -8,6 +8,7 @@
 module Messages.Comp.NotificationHookTable exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -49,4 +50,16 @@ de =
     , channel = "Kanal"
     , events = "Ereignisse"
     , allEvents = "Alle"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , eventType = Messages.Data.EventType.fr
+    , channelType = Messages.Data.ChannelType.fr
+    , enabled = "Activé"
+    , channel = "Canal"
+    , events = "Événements"
+    , allEvents = "Tout"
     }

@@ -8,6 +8,7 @@
 module Messages.Page.ManageData exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -63,4 +64,19 @@ de tz =
     , bookmarkManage = Messages.Comp.BookmarkManage.de
     , manageData = "Daten verwalten"
     , bookmarks = "Bookmarks"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , tagManage = Messages.Comp.TagManage.fr
+    , equipmentManage = Messages.Comp.EquipmentManage.fr
+    , orgManage = Messages.Comp.OrgManage.fr
+    , personManage = Messages.Comp.PersonManage.fr
+    , folderManage = Messages.Comp.FolderManage.fr tz
+    , customFieldManage = Messages.Comp.CustomFieldManage.fr tz
+    , bookmarkManage = Messages.Comp.BookmarkManage.fr
+    , manageData = "Gestion des métadonnées"
+    , bookmarks = "Favoris"
     }

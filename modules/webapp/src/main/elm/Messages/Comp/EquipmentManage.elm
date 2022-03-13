@@ -8,6 +8,7 @@
 module Messages.Comp.EquipmentManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -56,4 +57,18 @@ de =
     , reallyDeleteEquipment = "Diese Ausstattung wirklich löschen?"
     , deleteThisEquipment = "Ausstattung löschen"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , equipmentTable = Messages.Comp.EquipmentTable.fr
+    , equipmentForm = Messages.Comp.EquipmentForm.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , createNewEquipment = "Créer un nouvel équipement"
+    , newEquipment = "Nouvel équipement"
+    , reallyDeleteEquipment = "Confirmer la suppression de l'équipement ?"
+    , deleteThisEquipment = "Supprimer cet équipement"
+    , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
     }

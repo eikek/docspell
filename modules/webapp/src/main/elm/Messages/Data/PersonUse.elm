@@ -7,6 +7,7 @@
 
 module Messages.Data.PersonUse exposing
     ( de
+    , fr
     , gb
     )
 
@@ -43,3 +44,19 @@ de pu =
 
         Disabled ->
             "Deaktiviert"
+
+
+fr : PersonUse -> String
+fr pu =
+    case pu of
+        Correspondent ->
+            "Correspondante"
+
+        Concerning ->
+            "Concernée"
+
+        Both ->
+            "Les deux"
+
+        Disabled ->
+            "inactif"

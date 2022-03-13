@@ -8,6 +8,7 @@
 module Messages.Comp.ScanMailboxManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -60,4 +61,19 @@ de tz =
     , taskUpdated = "Auftrag aktualisiert."
     , taskStarted = "Auftrag gestartet."
     , taskDeleted = "Auftrag gelöscht."
+    }
+
+
+fr : TimeZone -> Texts
+fr tb =
+    { basics = Messages.Basics.fr
+    , form = Messages.Comp.ScanMailboxForm.fr tb
+    , table = Messages.Comp.ScanMailboxTable.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , newTask = "Nouvelle tâche"
+    , createNewTask = "Créer une nouvelle tâche de surveillance de boite mail"
+    , taskCreated = "Tâche créé"
+    , taskUpdated = "Tâche mise à jour"
+    , taskStarted = "Tâche démarrée."
+    , taskDeleted = "Tâche supprimée."
     }

@@ -8,6 +8,7 @@
 module Messages.Comp.SentMails exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -48,4 +49,16 @@ de tz =
     , sent = "Gesendet"
     , sender = "Absender"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German tz
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { from = "De"
+    , date = "Date"
+    , recipients = "Destinataires"
+    , subject = "Sujet"
+    , sent = "Envoyé"
+    , sender = "Expéditeur"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
     }

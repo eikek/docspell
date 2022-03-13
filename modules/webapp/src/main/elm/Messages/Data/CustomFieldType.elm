@@ -7,6 +7,7 @@
 
 module Messages.Data.CustomFieldType exposing
     ( de
+    , fr
     , gb
     )
 
@@ -49,3 +50,22 @@ de ft =
 
         Money ->
             "Geldbetrag"
+
+
+fr : CustomFieldType -> String
+fr ft =
+    case ft of
+        Text ->
+            "Texte"
+
+        Numeric ->
+            "Numerique"
+
+        Date ->
+            "Date"
+
+        Boolean ->
+            "Booléen"
+
+        Money ->
+            "Monétaire"

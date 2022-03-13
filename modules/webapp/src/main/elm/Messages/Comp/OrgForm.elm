@@ -8,6 +8,7 @@
 module Messages.Comp.OrgForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -63,4 +64,20 @@ de =
     , contacts = "Kontakte"
     , contactTypeLabel = Messages.Data.ContactType.de
     , notes = "Notizen"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , addressForm = Messages.Comp.AddressForm.fr
+    , orgUseLabel = Messages.Data.OrgUse.fr
+    , shortName = "Nom court"
+    , use = "Rôle"
+    , useAsCorrespondent = "Correspondant"
+    , dontUseForSuggestions = "Ignorer des suggestions."
+    , address = "Addresse"
+    , contacts = "Contacts"
+    , contactTypeLabel = Messages.Data.ContactType.fr
+    , notes = "Notes"
     }

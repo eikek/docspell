@@ -8,6 +8,7 @@
 module Messages.Comp.ItemDetail.ItemInfoHeader exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -46,4 +47,15 @@ de tz =
     , source = "Quelle"
     , new = "Neu"
     , formatDate = DF.formatDateLong Messages.UiLanguage.German tz
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , itemDate = "Date du document"
+    , dueDate = "Date d'échéance"
+    , source = "Source"
+    , new = "Nouveau"
+    , formatDate = DF.formatDateLong Messages.UiLanguage.French tz
     }

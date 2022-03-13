@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxView exposing (Texts, de, gb)
+module Messages.Comp.BoxView exposing (Texts, de, fr, gb)
 
 import Data.TimeZone exposing (TimeZone)
 import Messages.Comp.BoxQueryView
@@ -33,4 +33,12 @@ de tz =
     { queryView = Messages.Comp.BoxQueryView.de tz
     , statsView = Messages.Comp.BoxStatsView.de
     , uploadView = Messages.Comp.BoxUploadView.de
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { queryView = Messages.Comp.BoxQueryView.fr tz
+    , statsView = Messages.Comp.BoxStatsView.fr
+    , uploadView = Messages.Comp.BoxUploadView.fr
     }

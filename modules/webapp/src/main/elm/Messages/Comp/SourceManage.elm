@@ -8,6 +8,7 @@
 module Messages.Comp.SourceManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -97,4 +98,34 @@ de =
     , deleteThisSource = "Quelle löschen"
     , errorGeneratingQR = "Fehler beim Generieren des QR-Code"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , sourceTable = Messages.Comp.SourceTable.fr
+    , sourceForm = Messages.Comp.SourceForm.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , addSourceUrl = "Ajouter une url source"
+    , newSource = "Nouvelle source"
+    , publicUploads = "Envois publiques"
+    , sourceInfoText =
+        "Cette source défini les URL vers les lequelles n'importe qui peut vous envoyer"
+            ++ "des fichiers. Il y a une page web pouvant être partagée ou l'url de l'API"
+            ++ "peut être utilisée avec d'autres clients."
+    , itemsCreatedInfo =
+        \n ->
+            ""
+                ++ String.fromInt n
+                ++ " documents créés via cette source."
+    , publicUploadPage = "Page des envois publiques"
+    , copyToClipboard = "Copier dans le presse-papier"
+    , openInNewTab = "Ouvrir dans un nouvel onglet/fenêtre"
+    , publicUploadUrl = "URL pour l'API publique d'envoi"
+    , reallyDeleteSource = "Confirmer la suppression de cette source ?"
+    , createNewSource = "Créer une nouvelle source"
+    , deleteThisSource = "Supprimer cette source"
+    , errorGeneratingQR = "Erreur lors de la génération du  QR Code"
+    , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
     }
