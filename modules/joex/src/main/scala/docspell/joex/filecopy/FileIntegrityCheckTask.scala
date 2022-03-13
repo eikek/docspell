@@ -13,6 +13,7 @@ import docspell.backend.ops.OFileRepository
 import docspell.backend.ops.OFileRepository.IntegrityResult
 import docspell.common.{FileIntegrityCheckArgs, FileKey}
 import docspell.scheduler.{JobTaskResultEncoder, Task}
+import docspell.store.Store
 import docspell.store.records.RFileMeta
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder
@@ -54,9 +55,9 @@ object FileIntegrityCheckTask {
       }
   }
 
-  def apply[F[_]: Sync](ops: OFileRepository[F]): Task[F, Args, Result] =
+  def apply[F[_]: Sync](ops: OFileRepository[F], store: Store[F]): Task[F, Args, Result] =
     Task { ctx =>
-      ctx.store
+      store
         .transact(
           RFileMeta
             .findAll(ctx.args.pattern, 50)

@@ -149,91 +149,91 @@ object JoexAppImpl extends MailAddressCodec {
           .withTask(
             JobTask.json(
               ProcessItemArgs.taskName,
-              ItemHandler.newItem[F](cfg, itemOps, fts, analyser, regexNer),
-              ItemHandler.onCancel[F]
+              ItemHandler.newItem[F](cfg,store, itemOps, fts, analyser, regexNer),
+              ItemHandler.onCancel[F](store)
             )
           )
           .withTask(
             JobTask.json(
               ReProcessItemArgs.taskName,
-              ReProcessItem[F](cfg, fts, itemOps, analyser, regexNer),
+              ReProcessItem[F](cfg, fts, itemOps, analyser, regexNer, store),
               ReProcessItem.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               ScanMailboxArgs.taskName,
-              ScanMailboxTask[F](cfg.userTasks.scanMailbox, javaEmil, upload, joex),
+              ScanMailboxTask[F](cfg.userTasks.scanMailbox, store, javaEmil, upload, joex),
               ScanMailboxTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               MigrationTask.taskName,
-              MigrationTask[F](cfg.fullTextSearch, fts, createIndex),
+              MigrationTask[F](cfg.fullTextSearch, store, fts, createIndex),
               MigrationTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               ReIndexTask.taskName,
-              ReIndexTask[F](cfg.fullTextSearch, fts, createIndex),
+              ReIndexTask[F](cfg.fullTextSearch, store, fts, createIndex),
               ReIndexTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               HouseKeepingTask.taskName,
-              HouseKeepingTask[F](cfg, fileRepo),
+              HouseKeepingTask[F](cfg, store, fileRepo),
               HouseKeepingTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               PdfConvTask.taskName,
-              PdfConvTask[F](cfg),
+              PdfConvTask[F](cfg, store),
               PdfConvTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               ConvertAllPdfArgs.taskName,
-              ConvertAllPdfTask[F](jobStoreModule.jobs, joex),
+              ConvertAllPdfTask[F](jobStoreModule.jobs, joex, store),
               ConvertAllPdfTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               LearnClassifierArgs.taskName,
-              LearnClassifierTask[F](cfg.textAnalysis, analyser),
+              LearnClassifierTask[F](cfg.textAnalysis, store, analyser),
               LearnClassifierTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               MakePreviewArgs.taskName,
-              MakePreviewTask[F](cfg.extraction.preview),
+              MakePreviewTask[F](cfg.extraction.preview, store),
               MakePreviewTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               AllPreviewsArgs.taskName,
-              AllPreviewsTask[F](jobStoreModule.jobs, joex),
+              AllPreviewsTask[F](jobStoreModule.jobs, joex, store),
               AllPreviewsTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               MakePageCountArgs.taskName,
-              MakePageCountTask[F](),
+              MakePageCountTask[F](store),
               MakePageCountTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               AllPageCountTask.taskName,
-              AllPageCountTask[F](jobStoreModule.jobs, joex),
+              AllPageCountTask[F](store, jobStoreModule.jobs, joex),
               AllPageCountTask.onCancel[F]
             )
           )
@@ -250,6 +250,7 @@ object JoexAppImpl extends MailAddressCodec {
               UpdateCheckTask[F](
                 cfg.updateCheck,
                 cfg.sendMail,
+                store,
                 javaEmil,
                 updateCheck,
                 ThisVersion.default
@@ -260,28 +261,28 @@ object JoexAppImpl extends MailAddressCodec {
           .withTask(
             JobTask.json(
               PeriodicQueryTask.taskName,
-              PeriodicQueryTask[F](notification),
+              PeriodicQueryTask[F](store, notification),
               PeriodicQueryTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               PeriodicDueItemsTask.taskName,
-              PeriodicDueItemsTask[F](notification),
+              PeriodicDueItemsTask[F](store, notification),
               PeriodicDueItemsTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               FileCopyTaskArgs.taskName,
-              FileCopyTask[F](cfg),
+              FileCopyTask[F](cfg, store),
               FileCopyTask.onCancel[F]
             )
           )
           .withTask(
             JobTask.json(
               FileIntegrityCheckArgs.taskName,
-              FileIntegrityCheckTask[F](fileRepo),
+              FileIntegrityCheckTask[F](fileRepo, store),
               FileIntegrityCheckTask.onCancel[F]
             )
           )

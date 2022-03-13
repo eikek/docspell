@@ -10,7 +10,6 @@ import cats.data.OptionT
 import cats.data.{NonEmptyList => Nel}
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.ops.ONotification
 import docspell.common._
 import docspell.scheduler.Context
@@ -22,6 +21,7 @@ import docspell.query.ItemQuery
 import docspell.query.ItemQuery.Expr
 import docspell.query.ItemQuery.Expr.AndExpr
 import docspell.query.ItemQueryParser
+import docspell.store.Store
 import docspell.store.qb.Batch
 import docspell.store.queries.ListItem
 import docspell.store.queries.{QItem, Query}
@@ -36,11 +36,14 @@ object PeriodicQueryTask {
   def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn(s"Cancelling ${taskName.id} task"))
 
-  def apply[F[_]: Sync](notificationOps: ONotification[F]): Task[F, Args, Unit] =
+  def apply[F[_]: Sync](
+      store: Store[F],
+      notificationOps: ONotification[F]
+  ): Task[F, Args, Unit] =
     Task { ctx =>
       val limit = 7
       Timestamp.current[F].flatMap { now =>
-        withItems(ctx, limit, now) { items =>
+        withItems(ctx, store, limit, now) { items =>
           withEventContext(ctx, items, limit, now) { eventCtx =>
             withChannel(ctx, notificationOps) { channels =>
               notificationOps.sendMessage(ctx.logger, eventCtx, channels)
@@ -58,9 +61,11 @@ object PeriodicQueryTask {
   private def queryString(q: ItemQuery.Expr) =
     ItemQueryParser.asString(q)
 
-  def withQuery[F[_]: Sync](ctx: Context[F, Args])(cont: Query => F[Unit]): F[Unit] = {
+  def withQuery[F[_]: Sync](ctx: Context[F, Args], store: Store[F])(
+      cont: Query => F[Unit]
+  ): F[Unit] = {
     def fromBookmark(id: String) =
-      ctx.store
+      store
         .transact(RQueryBookmark.findByNameOrId(ctx.args.account, id))
         .map(_.map(_.query))
         .flatTap(q =>
@@ -68,7 +73,7 @@ object PeriodicQueryTask {
         )
 
     def fromShare(id: String) =
-      ctx.store
+      store
         .transact(RShare.findOneByCollective(ctx.args.account.collective, Some(true), id))
         .map(_.map(_.query))
         .flatTap(q =>
@@ -120,11 +125,16 @@ object PeriodicQueryTask {
     }
   }
 
-  def withItems[F[_]: Sync](ctx: Context[F, Args], limit: Int, now: Timestamp)(
+  def withItems[F[_]: Sync](
+      ctx: Context[F, Args],
+      store: Store[F],
+      limit: Int,
+      now: Timestamp
+  )(
       cont: Vector[ListItem] => F[Unit]
   ): F[Unit] =
-    withQuery(ctx) { query =>
-      val items = ctx.store
+    withQuery(ctx, store) { query =>
+      val items = store
         .transact(QItem.findItems(query, now.toUtcDate, 0, Batch.limit(limit)))
         .compile
         .to(Vector)

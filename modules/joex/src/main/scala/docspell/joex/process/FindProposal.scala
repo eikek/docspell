@@ -7,16 +7,15 @@
 package docspell.joex.process
 
 import java.time.ZoneId
-
 import cats.effect.Sync
 import cats.implicits._
 import cats.{Applicative, FlatMap}
-
 import docspell.analysis.contact._
 import docspell.common.MetaProposal.Candidate
 import docspell.common._
 import docspell.joex.Config
 import docspell.scheduler.{Context, Task}
+import docspell.store.Store
 import docspell.store.records._
 
 /** Super simple approach to find corresponding meta data to an item by looking up values
@@ -26,7 +25,8 @@ object FindProposal {
   type Args = ProcessItemArgs
 
   def apply[F[_]: Sync](
-      cfg: Config.TextAnalysis
+      cfg: Config.TextAnalysis,
+      store: Store[F]
   )(data: ItemData): Task[F, Args, ItemData] =
     Task { ctx =>
       val rmas = data.metas.map(rm => rm.copy(nerlabels = removeDuplicates(rm.nerlabels)))
@@ -34,15 +34,16 @@ object FindProposal {
         _ <- ctx.logger.info("Starting find-proposal")
         rmv <- rmas
           .traverse(rm =>
-            processAttachment(cfg, rm, data.findDates(rm), ctx)
+            processAttachment(cfg, rm, data.findDates(rm), ctx, store)
               .map(ml => rm.copy(proposals = ml))
           )
-        clp <- lookupClassifierProposals(ctx, data.classifyProposals)
+        clp <- lookupClassifierProposals(ctx, store, data.classifyProposals)
       } yield data.copy(metas = rmv, classifyProposals = clp)
     }
 
   def lookupClassifierProposals[F[_]: Sync](
       ctx: Context[F, Args],
+      store: Store[F],
       mpList: MetaProposalList
   ): F[MetaProposalList] = {
     val coll = ctx.args.meta.collective
@@ -50,7 +51,7 @@ object FindProposal {
     def lookup(mp: MetaProposal): F[Option[IdRef]] =
       mp.proposalType match {
         case MetaProposalType.CorrOrg =>
-          ctx.store
+          store
             .transact(
               ROrganization
                 .findLike(coll, mp.values.head.ref.name.toLowerCase, OrgUse.notDisabled)
@@ -60,7 +61,7 @@ object FindProposal {
               ctx.logger.debug(s"Found classifier organization for $mp: $oref")
             )
         case MetaProposalType.CorrPerson =>
-          ctx.store
+          store
             .transact(
               RPerson
                 .findLike(
@@ -74,7 +75,7 @@ object FindProposal {
               ctx.logger.debug(s"Found classifier corr-person for $mp: $oref")
             )
         case MetaProposalType.ConcPerson =>
-          ctx.store
+          store
             .transact(
               RPerson
                 .findLike(
@@ -88,7 +89,7 @@ object FindProposal {
               ctx.logger.debug(s"Found classifier conc-person for $mp: $oref")
             )
         case MetaProposalType.ConcEquip =>
-          ctx.store
+          store
             .transact(
               REquipment
                 .findLike(
@@ -123,9 +124,10 @@ object FindProposal {
       cfg: Config.TextAnalysis,
       rm: RAttachmentMeta,
       rd: Vector[NerDateLabel],
-      ctx: Context[F, ProcessItemArgs]
+      ctx: Context[F, Args],
+      store: Store[F]
   ): F[MetaProposalList] = {
-    val finder = Finder.searchExact(ctx).next(Finder.searchFuzzy(ctx))
+    val finder = Finder.searchExact(ctx, store).next(Finder.searchFuzzy(ctx, store))
     List(finder.find(rm.nerlabels), makeDateProposal(cfg, rd))
       .traverse(identity)
       .map(MetaProposalList.flatten)
@@ -215,19 +217,24 @@ object FindProposal {
     def unit[F[_]: Applicative](value: MetaProposalList): Finder[F] =
       _ => value.pure[F]
 
-    def searchExact[F[_]: Sync](ctx: Context[F, ProcessItemArgs]): Finder[F] =
+    def searchExact[F[_]: Sync](ctx: Context[F, Args], store: Store[F]): Finder[F] =
       labels =>
-        labels.toList.traverse(nl => search(nl, true, ctx)).map(MetaProposalList.flatten)
+        labels.toList
+          .traverse(nl => search(nl, true, ctx, store))
+          .map(MetaProposalList.flatten)
 
-    def searchFuzzy[F[_]: Sync](ctx: Context[F, ProcessItemArgs]): Finder[F] =
+    def searchFuzzy[F[_]: Sync](ctx: Context[F, Args], store: Store[F]): Finder[F] =
       labels =>
-        labels.toList.traverse(nl => search(nl, false, ctx)).map(MetaProposalList.flatten)
+        labels.toList
+          .traverse(nl => search(nl, false, ctx, store))
+          .map(MetaProposalList.flatten)
   }
 
   private def search[F[_]: Sync](
       nt: NerLabel,
       exact: Boolean,
-      ctx: Context[F, ProcessItemArgs]
+      ctx: Context[F, ProcessItemArgs],
+      store: Store[F]
   ): F[MetaProposalList] = {
     val value =
       if (exact) normalizeSearchValue(nt.label)
@@ -243,7 +250,7 @@ object FindProposal {
       nt.tag match {
         case NerTag.Organization =>
           ctx.logger.debug(s"Looking for organizations: $value") *>
-            ctx.store
+            store
               .transact(
                 ROrganization
                   .findLike(ctx.args.meta.collective, value, OrgUse.notDisabled)
@@ -251,20 +258,20 @@ object FindProposal {
               .map(MetaProposalList.from(MetaProposalType.CorrOrg, nt))
 
         case NerTag.Person =>
-          val s1 = ctx.store
+          val s1 = store
             .transact(
               RPerson
                 .findLike(ctx.args.meta.collective, value, PersonUse.concerningAndBoth)
             )
             .map(MetaProposalList.from(MetaProposalType.ConcPerson, nt))
-          val s2 = ctx.store
+          val s2 = store
             .transact(
               RPerson
                 .findLike(ctx.args.meta.collective, value, PersonUse.correspondentAndBoth)
             )
             .map(MetaProposalList.from(MetaProposalType.CorrPerson, nt))
           val s3 =
-            ctx.store
+            store
               .transact(
                 ROrganization
                   .findLike(ctx.args.meta.collective, value, OrgUse.notDisabled)
@@ -283,7 +290,7 @@ object FindProposal {
 
         case NerTag.Misc =>
           ctx.logger.debug(s"Looking for equipments: $value") *>
-            ctx.store
+            store
               .transact(
                 REquipment
                   .findLike(ctx.args.meta.collective, value, EquipmentUse.notDisabled)
@@ -291,7 +298,7 @@ object FindProposal {
               .map(MetaProposalList.from(MetaProposalType.ConcEquip, nt))
 
         case NerTag.Email =>
-          searchContact(nt, ContactKind.Email, value, ctx)
+          searchContact(nt, ContactKind.Email, value, ctx, store)
 
         case NerTag.Website =>
           if (!exact) {
@@ -301,9 +308,9 @@ object FindProposal {
               .map(_.toPrimaryDomain.asString)
               .map(s => s"%$s%")
               .getOrElse(value)
-            searchContact(nt, ContactKind.Website, searchString, ctx)
+            searchContact(nt, ContactKind.Website, searchString, ctx, store)
           } else
-            searchContact(nt, ContactKind.Website, value, ctx)
+            searchContact(nt, ContactKind.Website, value, ctx, store)
 
         case NerTag.Date =>
           // There is no database search required for this tag
@@ -315,18 +322,19 @@ object FindProposal {
       nt: NerLabel,
       kind: ContactKind,
       value: String,
-      ctx: Context[F, ProcessItemArgs]
+      ctx: Context[F, ProcessItemArgs],
+      store: Store[F]
   ): F[MetaProposalList] = {
-    val orgs = ctx.store
+    val orgs = store
       .transact(ROrganization.findLike(ctx.args.meta.collective, kind, value))
       .map(MetaProposalList.from(MetaProposalType.CorrOrg, nt))
-    val corrP = ctx.store
+    val corrP = store
       .transact(
         RPerson
           .findLike(ctx.args.meta.collective, kind, value, PersonUse.correspondentAndBoth)
       )
       .map(MetaProposalList.from(MetaProposalType.CorrPerson, nt))
-    val concP = ctx.store
+    val concP = store
       .transact(
         RPerson
           .findLike(ctx.args.meta.collective, kind, value, PersonUse.concerningAndBoth)

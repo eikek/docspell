@@ -12,6 +12,7 @@ import fs2.{Chunk, Stream}
 import docspell.backend.ops.OJoex
 import docspell.common._
 import docspell.scheduler.{Context, Job, JobStore, Task}
+import docspell.store.Store
 import docspell.store.records.RAttachment
 
 /* A task to find all non-converted pdf files (of a collective, or
@@ -21,11 +22,15 @@ import docspell.store.records.RAttachment
 object ConvertAllPdfTask {
   type Args = ConvertAllPdfArgs
 
-  def apply[F[_]: Sync](jobStore: JobStore[F], joex: OJoex[F]): Task[F, Args, Unit] =
+  def apply[F[_]: Sync](
+      jobStore: JobStore[F],
+      joex: OJoex[F],
+      store: Store[F]
+  ): Task[F, Args, Unit] =
     Task { ctx =>
       for {
         _ <- ctx.logger.info("Converting pdfs using ocrmypdf")
-        n <- submitConversionJobs(ctx, jobStore)
+        n <- submitConversionJobs(ctx, store, jobStore)
         _ <- ctx.logger.info(s"Submitted $n file conversion jobs")
         _ <- joex.notifyAllNodes
       } yield ()
@@ -36,9 +41,10 @@ object ConvertAllPdfTask {
 
   def submitConversionJobs[F[_]: Sync](
       ctx: Context[F, Args],
+      store: Store[F],
       jobStore: JobStore[F]
   ): F[Int] =
-    ctx.store
+    store
       .transact(RAttachment.findNonConvertedPdf(ctx.args.collective, 50))
       .chunks
       .flatMap(createJobs[F](ctx))

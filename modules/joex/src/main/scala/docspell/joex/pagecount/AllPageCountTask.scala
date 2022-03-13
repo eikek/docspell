@@ -13,6 +13,7 @@ import docspell.backend.JobFactory
 import docspell.backend.ops.OJoex
 import docspell.common._
 import docspell.scheduler.{Context, Job, JobStore, Task}
+import docspell.store.Store
 import docspell.store.records.RAttachment
 
 object AllPageCountTask {
@@ -20,11 +21,15 @@ object AllPageCountTask {
   val taskName = Ident.unsafe("all-page-count")
   type Args = Unit
 
-  def apply[F[_]: Sync](jobStore: JobStore[F], joex: OJoex[F]): Task[F, Args, Unit] =
+  def apply[F[_]: Sync](
+      store: Store[F],
+      jobStore: JobStore[F],
+      joex: OJoex[F]
+  ): Task[F, Args, Unit] =
     Task { ctx =>
       for {
         _ <- ctx.logger.info("Generating previews for attachments")
-        n <- submitConversionJobs(ctx, jobStore)
+        n <- submitConversionJobs(ctx, store, jobStore)
         _ <- ctx.logger.info(s"Submitted $n jobs")
         _ <- joex.notifyAllNodes
       } yield ()
@@ -35,9 +40,10 @@ object AllPageCountTask {
 
   def submitConversionJobs[F[_]: Sync](
       ctx: Context[F, Args],
+      store: Store[F],
       jobStore: JobStore[F]
   ): F[Int] =
-    ctx.store
+    store
       .transact(findAttachments)
       .chunks
       .flatMap(createJobs[F])

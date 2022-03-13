@@ -13,12 +13,14 @@ import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
 import docspell.scheduler.{Job, Task}
+import docspell.store.Store
 
 object MigrationTask {
   val taskName = Ident.unsafe("full-text-index")
 
   def apply[F[_]: Async](
       cfg: Config.FullTextSearch,
+      store: Store[F],
       fts: FtsClient[F],
       createIndex: CreateIndex[F]
   ): Task[F, Unit, Unit] =
@@ -28,7 +30,7 @@ object MigrationTask {
         Task(ctx =>
           for {
             migs <- migrationTasks[F](fts)
-            res <- Migration[F](cfg, fts, ctx.store, createIndex, ctx.logger).run(migs)
+            res <- Migration[F](cfg, fts, store, createIndex, ctx.logger).run(migs)
           } yield res
         )
       )

@@ -10,13 +10,12 @@ import cats.effect._
 import fs2.Stream
 
 import docspell.common.Ident
-import docspell.store.records.RJob
 
 trait Scheduler[F[_]] {
 
   def config: SchedulerConfig
 
-  def getRunning: F[Vector[RJob]]
+  def getRunning: F[Vector[Job[String]]]
 
   def requestCancel(jobId: Ident): F[Boolean]
 

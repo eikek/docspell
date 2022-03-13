@@ -14,17 +14,22 @@ import docspell.backend.ops.OJoex
 import docspell.common.MakePreviewArgs.StoreMode
 import docspell.common._
 import docspell.scheduler.{Context, Job, JobStore, Task}
+import docspell.store.Store
 import docspell.store.records.RAttachment
 
 object AllPreviewsTask {
 
   type Args = AllPreviewsArgs
 
-  def apply[F[_]: Sync](jobStore: JobStore[F], joex: OJoex[F]): Task[F, Args, Unit] =
+  def apply[F[_]: Sync](
+      jobStore: JobStore[F],
+      joex: OJoex[F],
+      store: Store[F]
+  ): Task[F, Args, Unit] =
     Task { ctx =>
       for {
         _ <- ctx.logger.info("Generating previews for attachments")
-        n <- submitConversionJobs(ctx, jobStore)
+        n <- submitConversionJobs(ctx, store, jobStore)
         _ <- ctx.logger.info(s"Submitted $n jobs")
         _ <- joex.notifyAllNodes
       } yield ()
@@ -35,9 +40,10 @@ object AllPreviewsTask {
 
   def submitConversionJobs[F[_]: Sync](
       ctx: Context[F, Args],
+      store: Store[F],
       jobStore: JobStore[F]
   ): F[Int] =
-    ctx.store
+    store
       .transact(findAttachments(ctx))
       .chunks
       .flatMap(createJobs[F](ctx))

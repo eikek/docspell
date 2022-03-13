@@ -12,7 +12,6 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2._
-
 import docspell.backend.ops.{OJoex, OUpload}
 import docspell.common._
 import docspell.joex.Config
@@ -20,8 +19,8 @@ import docspell.scheduler.{Context, Task}
 import docspell.logging.Logger
 import docspell.store.queries.QOrganization
 import docspell.store.records._
-
 import _root_.io.circe.syntax._
+import docspell.store.Store
 import emil.SearchQuery.{All, ReceivedDate}
 import emil.javamail.syntax._
 import emil.{MimeType => _, _}
@@ -32,6 +31,7 @@ object ScanMailboxTask {
 
   def apply[F[_]: Sync](
       cfg: Config.ScanMailbox,
+      store: Store[F],
       emil: Emil[F],
       upload: OUpload[F],
       joex: OJoex[F]
@@ -42,22 +42,22 @@ object ScanMailboxTask {
           s"=== Start importing mails for user ${ctx.args.account.user.id}"
         )
         _ <- ctx.logger.debug(s"Settings: ${ctx.args.asJson.noSpaces}")
-        mailCfg <- getMailSettings(ctx)
+        mailCfg <- getMailSettings(ctx, store)
         folders = ctx.args.folders.mkString(", ")
         userId = ctx.args.account.user
         imapConn = ctx.args.imapConnection
         _ <- ctx.logger.info(
           s"Reading mails for user ${userId.id} from ${imapConn.id}/$folders"
         )
-        _ <- importMails(cfg, mailCfg, emil, upload, joex, ctx)
+        _ <- importMails(cfg, mailCfg, emil, upload, joex, ctx, store)
       } yield ()
     }
 
   def onCancel[F[_]]: Task[F, ScanMailboxArgs, Unit] =
     Task.log(_.warn("Cancelling scan-mailbox task"))
 
-  def getMailSettings[F[_]: Sync](ctx: Context[F, Args]): F[RUserImap] =
-    ctx.store
+  def getMailSettings[F[_]: Sync](ctx: Context[F, Args], store: Store[F]): F[RUserImap] =
+    store
       .transact(RUserImap.getByName(ctx.args.account, ctx.args.imapConnection))
       .flatMap {
         case Some(c) => c.pure[F]
@@ -75,10 +75,11 @@ object ScanMailboxTask {
       theEmil: Emil[F],
       upload: OUpload[F],
       joex: OJoex[F],
-      ctx: Context[F, Args]
+      ctx: Context[F, Args],
+      store: Store[F]
   ): F[Unit] = {
     val mailer = theEmil(mailCfg.toMailConfig)
-    val impl = new Impl[F](cfg, ctx)
+    val impl = new Impl[F](cfg, ctx, store)
     val inFolders = ctx.args.folders.take(cfg.maxFolders)
 
     val getInitialInput =
@@ -142,7 +143,11 @@ object ScanMailboxTask {
       ScanResult(List(folder -> left), processed)
   }
 
-  final private class Impl[F[_]: Sync](cfg: Config.ScanMailbox, ctx: Context[F, Args]) {
+  final private class Impl[F[_]: Sync](
+      cfg: Config.ScanMailbox,
+      ctx: Context[F, Args],
+      store: Store[F]
+  ) {
 
     private def logOp[C](f: Logger[F] => F[Unit]): MailOp[F, C, Unit] =
       MailOp(_ => f(ctx.logger))
@@ -213,7 +218,7 @@ object ScanMailboxTask {
       NonEmptyList.fromFoldable(headers.flatMap(_.mh.messageId)) match {
         case Some(nl) =>
           for {
-            archives <- ctx.store.transact(
+            archives <- store.transact(
               RAttachmentArchive
                 .findByMessageIdAndCollective(nl, ctx.args.account.collective)
             )
@@ -237,7 +242,7 @@ object ScanMailboxTask {
         for {
           from <- OptionT.fromOption[F](mh.from)
           _ <- OptionT(
-            ctx.store.transact(
+            store.transact(
               QOrganization
                 .findPersonByContact(
                   ctx.args.account.collective,

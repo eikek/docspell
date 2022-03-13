@@ -13,7 +13,7 @@ import docspell.store.records.RJob
 class ContextImpl[F[_]: Functor, A](
     val args: A,
     val logger: Logger[F],
-    val store: Store[F],
+    store: Store[F],
     val config: SchedulerConfig,
     val jobId: Ident
 ) extends Context[F, A] {

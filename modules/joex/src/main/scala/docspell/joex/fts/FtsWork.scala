@@ -9,13 +9,13 @@ package docspell.joex.fts
 import cats._
 import cats.data.{Kleisli, NonEmptyList}
 import cats.implicits._
-
 import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
 import docspell.scheduler.Context
 import docspell.logging.Logger
+import docspell.store.Store
 
 object FtsWork {
   import syntax._
@@ -106,10 +106,11 @@ object FtsWork {
 
       def forContext(
           cfg: Config.FullTextSearch,
+          store: Store[F],
           fts: FtsClient[F],
           fulltext: CreateIndex[F]
       ): Kleisli[F, Context[F, _], Unit] =
-        mt.local(ctx => FtsContext(cfg, fts, fulltext, ctx))
+        mt.local(ctx => FtsContext(cfg, store, fulltext, fts, ctx.logger))
     }
   }
 }

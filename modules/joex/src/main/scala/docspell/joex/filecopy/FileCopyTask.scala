@@ -17,6 +17,7 @@ import docspell.logging.Logger
 import docspell.store.file.{BinnyUtils, FileRepository, FileRepositoryConfig}
 import binny.CopyTool.Counter
 import binny.{BinaryId, BinaryStore, CopyTool}
+import docspell.store.Store
 import io.circe.generic.semiauto.deriveCodec
 import io.circe.{Codec, Decoder, Encoder}
 
@@ -69,7 +70,7 @@ object FileCopyTask {
   def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn(s"Cancelling ${FileCopyTaskArgs.taskName.id} task"))
 
-  def apply[F[_]: Async](cfg: Config): Task[F, Args, CopyResult] =
+  def apply[F[_]: Async](cfg: Config, store: Store[F]): Task[F, Args, CopyResult] =
     Task { ctx =>
       val src = ctx.args.from
         .map(id =>
@@ -93,8 +94,8 @@ object FileCopyTask {
             .fromList(targets.filter(_ != srcConfig))
             .toRight(CopyResult.noTargetStore)
 
-          srcRepo = ctx.store.createFileRepository(srcConfig, true)
-          targetRepos = trgConfig.map(ctx.store.createFileRepository(_, false))
+          srcRepo = store.createFileRepository(srcConfig, true)
+          targetRepos = trgConfig.map(store.createFileRepository(_, false))
         } yield (srcRepo, targetRepos)
 
       data match {

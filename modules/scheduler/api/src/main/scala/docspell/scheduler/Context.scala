@@ -8,7 +8,6 @@ package docspell.scheduler
 
 import docspell.common._
 import docspell.logging.Logger
-import docspell.store.Store
 
 trait Context[F[_], A] { self =>
 
@@ -21,8 +20,6 @@ trait Context[F[_], A] { self =>
   def logger: Logger[F]
 
   def setProgress(percent: Int): F[Unit]
-
-  def store: Store[F]
 
   def isLastRetry: F[Boolean]
 

@@ -530,7 +530,7 @@ val schedulerApi = project
       Dependencies.fs2Core ++
         Dependencies.circeCore
   )
-  .dependsOn(loggingApi, common, store, pubsubApi)
+  .dependsOn(loggingApi, common, pubsubApi)
 
 val schedulerImpl = project
   .in(file("modules/scheduler/impl"))
@@ -540,7 +540,7 @@ val schedulerImpl = project
   .settings(
     name := "docspell-scheduler-impl"
   )
-  .dependsOn(schedulerApi, notificationApi, pubsubApi)
+  .dependsOn(store, schedulerApi, notificationApi, pubsubApi)
 
 val extract = project
   .in(file("modules/extract"))

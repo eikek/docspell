@@ -8,14 +8,15 @@ package docspell.joex.hk
 
 import cats.effect._
 import cats.implicits._
-
 import docspell.common._
 import docspell.scheduler.Task
+import docspell.store.Store
 import docspell.store.records._
 
 object CleanupRememberMeTask {
   def apply[F[_]: Sync](
-      cfg: HouseKeepingConfig.CleanupRememberMe
+      cfg: HouseKeepingConfig.CleanupRememberMe,
+      store: Store[F]
   ): Task[F, Unit, CleanupResult] =
     Task { ctx =>
       if (cfg.enabled)
@@ -23,7 +24,7 @@ object CleanupRememberMeTask {
           now <- Timestamp.current[F]
           ts = now - cfg.olderThan
           _ <- ctx.logger.info(s"Cleanup remember-me tokens older than $ts")
-          n <- ctx.store.transact(RRememberMe.deleteOlderThan(ts))
+          n <- store.transact(RRememberMe.deleteOlderThan(ts))
           _ <- ctx.logger.info(s"Removed $n tokens")
         } yield CleanupResult.of(n)
       else

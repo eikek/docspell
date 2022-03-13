@@ -10,9 +10,9 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import docspell.common._
-import docspell.scheduler.Context
 import docspell.scheduler.Task
 import docspell.scheduler.usertask.UserTask
+import docspell.store.Store
 import docspell.store.records.RUserEmail
 import emil._
 
@@ -37,6 +37,7 @@ object UpdateCheckTask {
   def apply[F[_]: Async](
       cfg: UpdateCheckConfig,
       sendCfg: MailSendConfig,
+      store: Store[F],
       emil: Emil[F],
       updateCheck: UpdateCheck[F],
       thisVersion: ThisVersion
@@ -50,7 +51,7 @@ object UpdateCheckTask {
           _ <- ctx.logger.debug(
             s"Get SMTP connection for ${cfg.senderAccount.asString} and ${cfg.smtpId}"
           )
-          smtpCfg <- findConnection(ctx, cfg)
+          smtpCfg <- findConnection(store, cfg)
           _ <- ctx.logger.debug("Checking for latest release at GitHub")
           latest <- updateCheck.latestRelease
           _ <- ctx.logger.debug(s"Got latest release: $latest.")
@@ -77,10 +78,10 @@ object UpdateCheckTask {
       Task.pure(())
 
   def findConnection[F[_]: Sync](
-      ctx: Context[F, _],
+      store: Store[F],
       cfg: UpdateCheckConfig
   ): F[RUserEmail] =
-    OptionT(ctx.store.transact(RUserEmail.getByName(cfg.senderAccount, cfg.smtpId)))
+    OptionT(store.transact(RUserEmail.getByName(cfg.senderAccount, cfg.smtpId)))
       .getOrElseF(
         Sync[F].raiseError(
           new Exception(

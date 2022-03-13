@@ -15,6 +15,7 @@ import docspell.joex.filecopy.FileIntegrityCheckTask
 import docspell.scheduler.{JobTaskResultEncoder, Task}
 import com.github.eikek.calev._
 import docspell.scheduler.usertask.UserTask
+import docspell.store.Store
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder
 
@@ -25,15 +26,16 @@ object HouseKeepingTask {
 
   def apply[F[_]: Async](
       cfg: Config,
+      store: Store[F],
       fileRepo: OFileRepository[F]
   ): Task[F, Unit, Result] = {
     val combined =
       (
-        CheckNodesTask(cfg.houseKeeping.checkNodes),
-        CleanupInvitesTask(cfg.houseKeeping.cleanupInvites),
-        CleanupJobsTask(cfg.houseKeeping.cleanupJobs),
-        CleanupRememberMeTask(cfg.houseKeeping.cleanupRememberMe),
-        IntegrityCheckTask(cfg.houseKeeping.integrityCheck, fileRepo)
+        CheckNodesTask(cfg.houseKeeping.checkNodes, store),
+        CleanupInvitesTask(cfg.houseKeeping.cleanupInvites, store),
+        CleanupJobsTask(cfg.houseKeeping.cleanupJobs, store),
+        CleanupRememberMeTask(cfg.houseKeeping.cleanupRememberMe, store),
+        IntegrityCheckTask(cfg.houseKeeping.integrityCheck, store, fileRepo)
       ).mapN(Result.apply)
 
     Task

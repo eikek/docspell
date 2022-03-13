@@ -18,7 +18,8 @@ import docspell.store.records._
 object CleanupJobsTask {
 
   def apply[F[_]: Sync](
-      cfg: HouseKeepingConfig.CleanupJobs
+      cfg: HouseKeepingConfig.CleanupJobs,
+      store: Store[F]
   ): Task[F, Unit, CleanupResult] =
     Task { ctx =>
       if (cfg.enabled)
@@ -26,7 +27,7 @@ object CleanupJobsTask {
           now <- Timestamp.current[F]
           ts = now - cfg.olderThan
           _ <- ctx.logger.info(s"Cleanup jobs older than $ts")
-          n <- deleteDoneJobs(ctx.store, ts, cfg.deleteBatch)
+          n <- deleteDoneJobs(store, ts, cfg.deleteBatch)
           _ <- ctx.logger.info(s"Removed $n jobs")
         } yield CleanupResult.of(n)
       else

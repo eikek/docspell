@@ -64,8 +64,23 @@ final class SchedulerImpl[F[_]: Async](
         .drain
     )
 
-  def getRunning: F[Vector[RJob]] =
-    state.get.flatMap(s => QJob.findAll(s.getRunning, store))
+  def getRunning: F[Vector[Job[String]]] =
+    state.get
+      .flatMap(s => QJob.findAll(s.getRunning, store))
+      .map(
+        _.map(rj =>
+          Job(
+            rj.id,
+            rj.task,
+            rj.group,
+            rj.args,
+            rj.subject,
+            rj.submitter,
+            rj.priority,
+            rj.tracker
+          )
+        )
+      )
 
   def requestCancel(jobId: Ident): F[Boolean] =
     logger.info(s"Scheduler requested to cancel job: ${jobId.id}") *>
