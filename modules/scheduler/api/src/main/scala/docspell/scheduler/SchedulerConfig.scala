@@ -20,11 +20,10 @@ case class SchedulerConfig(
 
 object SchedulerConfig {
 
-  val default = SchedulerConfig(
-    name = Ident.unsafe("default-scheduler"),
-    poolSize = 2 // math.max(2, Runtime.getRuntime.availableProcessors / 2)
-    ,
-    countingScheme = CountingScheme(2, 1),
+  def default(id: Ident) = SchedulerConfig(
+    name = id,
+    poolSize = 1,
+    countingScheme = CountingScheme(3, 1),
     retries = 5,
     retryDelay = Duration.seconds(30),
     logBufferSize = 500,

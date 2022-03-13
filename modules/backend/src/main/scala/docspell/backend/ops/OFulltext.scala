@@ -16,7 +16,7 @@ import docspell.common._
 import docspell.ftsclient._
 import docspell.query.ItemQuery._
 import docspell.query.ItemQueryDsl._
-import docspell.scheduler.JobQueue
+import docspell.scheduler.JobStore
 import docspell.store.queries.{QFolder, QItem, SelectedItem}
 import docspell.store.records.RJob
 import docspell.store.{Store, qb}
@@ -80,7 +80,7 @@ object OFulltext {
       itemSearch: OItemSearch[F],
       fts: FtsClient[F],
       store: Store[F],
-      queue: JobQueue[F],
+      jobStore: JobStore[F],
       joex: OJoex[F]
   ): Resource[F, OFulltext[F]] =
     Resource.pure[F, OFulltext[F]](new OFulltext[F] {
@@ -89,7 +89,7 @@ object OFulltext {
         for {
           _ <- logger.info(s"Re-index all.")
           job <- JobFactory.reIndexAll[F]
-          _ <- queue.insertIfNew(job) *> joex.notifyAllNodes
+          _ <- jobStore.insertIfNew(job.encode) *> joex.notifyAllNodes
         } yield ()
 
       def reindexCollective(account: AccountId): F[Unit] =
@@ -101,7 +101,7 @@ object OFulltext {
           job <- JobFactory.reIndex(account)
           _ <-
             if (exist.isDefined) ().pure[F]
-            else queue.insertIfNew(job) *> joex.notifyAllNodes
+            else jobStore.insertIfNew(job.encode) *> joex.notifyAllNodes
         } yield ()
 
       def findIndexOnly(maxNoteLen: Int)(
@@ -323,9 +323,7 @@ object OFulltext {
     def apply[A](implicit ev: ItemId[A]): ItemId[A] = ev
 
     def from[A](f: A => Ident): ItemId[A] =
-      new ItemId[A] {
-        def itemId(a: A) = f(a)
-      }
+      (a: A) => f(a)
 
     implicit val listItemId: ItemId[ListItem] =
       ItemId.from(_.id)

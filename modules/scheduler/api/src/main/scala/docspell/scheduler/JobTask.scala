@@ -43,7 +43,7 @@ object JobTask {
         str.parseJsonAs[A] match {
           case Right(a) => a.pure[F]
           case Left(ex) =>
-            Sync[F].raiseError(new Exception(s"Cannot parse task arguments: $str", ex))
+            Sync[F].raiseError(new Exception(s"Cannot parse task arguments: '$str'", ex))
         }
 
     JobTask(name, task.contramap(convert).map(E.encode), onCancel.contramap(convert))

@@ -7,10 +7,8 @@ import fs2.concurrent.SignallingRef
 
 object PeriodicSchedulerBuilder {
 
-  def build[F[_]: Async](
+  def resource[F[_]: Async](
       cfg: PeriodicSchedulerConfig,
-      sch: Scheduler[F],
-      queue: JobQueue[F],
       store: PeriodicTaskStore[F],
       pubsub: PubSubT[F]
   ): Resource[F, PeriodicScheduler[F]] =
@@ -19,8 +17,6 @@ object PeriodicSchedulerBuilder {
       state <- Resource.eval(SignallingRef(PeriodicSchedulerImpl.emptyState[F]))
       psch = new PeriodicSchedulerImpl[F](
         cfg,
-        sch,
-        queue,
         store,
         pubsub,
         waiter,

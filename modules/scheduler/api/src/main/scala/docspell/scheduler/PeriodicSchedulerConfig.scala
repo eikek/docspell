@@ -12,3 +12,8 @@ case class PeriodicSchedulerConfig(
     name: Ident,
     wakeupPeriod: Duration
 )
+
+object PeriodicSchedulerConfig {
+  def default(id: Ident): PeriodicSchedulerConfig =
+    PeriodicSchedulerConfig(id, Duration.minutes(10))
+}

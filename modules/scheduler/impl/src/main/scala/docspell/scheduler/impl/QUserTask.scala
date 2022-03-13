@@ -1,18 +1,47 @@
-package docspell.scheduler.usertask
+package docspell.scheduler.impl
 
-import cats.implicits._
 import cats.effect.Sync
+import cats.syntax.all._
 import com.github.eikek.calev.CalEvent
-import docspell.common._
+import docspell.common.{AccountId, Ident, Priority, Timestamp}
+import docspell.scheduler.usertask.{UserTask, UserTaskScope}
 import docspell.store.qb.DML
 import docspell.store.qb.DSL._
 import docspell.store.records.RPeriodicTask
-import doobie.ConnectionIO
 import fs2.Stream
-import io.circe.Encoder
+import io.circe.{Decoder, Encoder}
+import doobie._
 
 object QUserTask {
   private val RT = RPeriodicTask.T
+
+  implicit final class UserTaskCodec(ut: UserTask[String]) {
+    import docspell.common.syntax.all._
+
+    def decode[A](implicit D: Decoder[A]): Either[String, UserTask[A]] =
+      ut.args
+        .parseJsonAs[A]
+        .left
+        .map(_.getMessage)
+        .map(a => ut.copy(args = a))
+
+    def toPeriodicTask[F[_]: Sync](
+        scope: UserTaskScope,
+        subject: Option[String]
+    ): F[RPeriodicTask] =
+      QUserTask
+        .create[F](
+          ut.enabled,
+          scope,
+          ut.name,
+          ut.args,
+          subject.getOrElse(s"${scope.fold(_.user.id, _.id)}: ${ut.name.id}"),
+          Priority.Low,
+          ut.timer,
+          ut.summary
+        )
+        .map(r => r.copy(id = ut.id))
+  }
 
   def findAll(account: AccountId): Stream[ConnectionIO, UserTask[String]] =
     run(

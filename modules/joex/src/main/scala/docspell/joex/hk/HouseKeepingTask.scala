@@ -13,9 +13,8 @@ import docspell.common._
 import docspell.joex.Config
 import docspell.joex.filecopy.FileIntegrityCheckTask
 import docspell.scheduler.{JobTaskResultEncoder, Task}
-import docspell.store.records._
 import com.github.eikek.calev._
-import docspell.scheduler.usertask.{QUserTask, UserTaskScope}
+import docspell.scheduler.usertask.UserTask
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder
 
@@ -45,19 +44,15 @@ object HouseKeepingTask {
   def onCancel[F[_]]: Task[F, Unit, Unit] =
     Task.log[F, Unit](_.warn("Cancelling house-keeping task"))
 
-  def periodicTask[F[_]: Sync](ce: CalEvent): F[RPeriodicTask] =
-    QUserTask
-      .createJson(
-        true,
-        UserTaskScope(DocspellSystem.taskGroup),
-        taskName,
-        (),
-        "Docspell house-keeping",
-        Priority.Low,
-        ce,
-        None
-      )
-      .map(_.copy(id = periodicId))
+  def periodicTask[F[_]: Sync](ce: CalEvent): F[UserTask[Unit]] =
+    UserTask(
+      periodicId,
+      taskName,
+      true,
+      ce,
+      "Docspell house-keeping".some,
+      ()
+    ).pure[F]
 
   case class Result(
       checkNodes: CleanupResult,

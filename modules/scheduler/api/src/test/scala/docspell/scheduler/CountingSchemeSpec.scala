@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.joex.scheduler
+package docspell.scheduler
 
 import docspell.common.Priority
-
 import munit._
 
 class CountingSchemeSpec extends FunSuite {

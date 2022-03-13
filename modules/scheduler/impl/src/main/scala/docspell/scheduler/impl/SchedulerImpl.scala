@@ -14,7 +14,7 @@ import fs2.Stream
 import fs2.concurrent.SignallingRef
 import docspell.scheduler.msg.{CancelJob, JobDone, JobsNotify}
 import docspell.common._
-import docspell.scheduler.{JobQueue, _}
+import docspell.scheduler._
 import docspell.scheduler.impl.SchedulerImpl._
 import docspell.notification.api.Event
 import docspell.notification.api.EventSink
@@ -172,7 +172,7 @@ final class SchedulerImpl[F[_]: Async](
         for {
           _ <-
             logger.debug(s"Creating context for job ${job.info} to run cancellation $t")
-          ctx <- Context[F, String](job, job.args, config, logSink, store)
+          ctx <- ContextImpl[F, String](job, job.args, config, logSink, store)
           _ <- t.onCancel.run(ctx)
           _ <- state.modify(_.markCancelled(job))
           _ <- onFinish(job, JobTaskResult.empty, JobState.Cancelled)
@@ -196,7 +196,7 @@ final class SchedulerImpl[F[_]: Async](
       case Right(t) =>
         for {
           _ <- logger.debug(s"Creating context for job ${job.info} to run $t")
-          ctx <- Context[F, String](job, job.args, config, logSink, store)
+          ctx <- ContextImpl[F, String](job, job.args, config, logSink, store)
           jot = wrapTask(job, t.task, ctx)
           tok <- forkRun(job, jot.run(ctx), t.onCancel.run(ctx), ctx)
           _ <- state.modify(_.addRunning(job, tok))

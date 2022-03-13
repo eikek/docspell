@@ -48,22 +48,22 @@ case class RJob(
 
 object RJob {
 
-  def newJob[A](
+  def newJob(
       id: Ident,
       task: Ident,
       group: Ident,
-      args: A,
+      args: String,
       subject: String,
       submitted: Timestamp,
       submitter: Ident,
       priority: Priority,
       tracker: Option[Ident]
-  )(implicit E: Encoder[A]): RJob =
+  ): RJob =
     RJob(
       id,
       task,
       group,
-      E(args).noSpaces,
+      args,
       subject,
       submitted,
       submitter,
@@ -75,6 +75,29 @@ object RJob {
       None,
       None,
       None
+    )
+
+  def fromJson[A](
+      id: Ident,
+      task: Ident,
+      group: Ident,
+      args: A,
+      subject: String,
+      submitted: Timestamp,
+      submitter: Ident,
+      priority: Priority,
+      tracker: Option[Ident]
+  )(implicit E: Encoder[A]): RJob =
+    newJob(
+      id,
+      task,
+      group,
+      E(args).noSpaces,
+      subject,
+      submitted,
+      submitter,
+      priority,
+      tracker
     )
 
   final case class Table(alias: Option[String]) extends TableDef {

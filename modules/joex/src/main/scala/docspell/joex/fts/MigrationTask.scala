@@ -8,13 +8,11 @@ package docspell.joex.fts
 
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
-import docspell.scheduler.Task
-import docspell.store.records.RJob
+import docspell.scheduler.{Job, Task}
 
 object MigrationTask {
   val taskName = Ident.unsafe("full-text-index")
@@ -38,21 +36,18 @@ object MigrationTask {
   def onCancel[F[_]]: Task[F, Unit, Unit] =
     Task.log[F, Unit](_.warn("Cancelling full-text-index task"))
 
-  def job[F[_]: Sync]: F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-    } yield RJob.newJob(
-      id,
-      taskName,
-      DocspellSystem.taskGroup,
-      (),
-      "Create full-text index",
-      now,
-      DocspellSystem.taskGroup,
-      Priority.Low,
-      Some(DocspellSystem.migrationTaskTracker)
-    )
+  def job[F[_]: Sync]: F[Job[String]] =
+    Job
+      .createNew(
+        taskName,
+        DocspellSystem.taskGroup,
+        (),
+        "Create full-text index",
+        DocspellSystem.taskGroup,
+        Priority.Low,
+        Some(DocspellSystem.migrationTaskTracker)
+      )
+      .map(_.encode)
 
   def migrationTasks[F[_]: Async](fts: FtsClient[F]): F[List[Migration[F]]] =
     fts.initialize.map(_.map(fm => Migration.from(fm)))

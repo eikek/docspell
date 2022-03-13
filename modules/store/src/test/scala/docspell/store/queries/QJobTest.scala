@@ -30,7 +30,7 @@ class QJobTest extends CatsEffectSuite with StoreFixture with TestLoggingConfig 
   private val group2 = Ident.unsafe("group2")
 
   def createJob(group: Ident): RJob =
-    RJob.newJob[Unit](
+    RJob.fromJson[Unit](
       Ident.unsafe(s"job-${c.incrementAndGet()}"),
       Ident.unsafe("task"),
       group,

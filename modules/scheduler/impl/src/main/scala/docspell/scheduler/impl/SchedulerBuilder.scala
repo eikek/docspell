@@ -10,7 +10,7 @@ import cats.effect._
 import cats.effect.std.Semaphore
 import cats.implicits._
 import fs2.concurrent.SignallingRef
-import docspell.scheduler.{JobQueue, _}
+import docspell.scheduler._
 import docspell.notification.api.EventSink
 import docspell.pubsub.api.PubSubT
 import docspell.store.Store
@@ -19,7 +19,7 @@ case class SchedulerBuilder[F[_]: Async](
     config: SchedulerConfig,
     tasks: JobTaskRegistry[F],
     store: Store[F],
-    queue: Resource[F, JobQueue[F]],
+    queue: JobQueue[F],
     logSink: LogSink[F],
     pubSub: PubSubT[F],
     eventSink: EventSink[F]
@@ -34,14 +34,11 @@ case class SchedulerBuilder[F[_]: Async](
   def withTask[A](task: JobTask[F]): SchedulerBuilder[F] =
     withTaskRegistry(tasks.withTask(task))
 
-  def withQueue(queue: Resource[F, JobQueue[F]]): SchedulerBuilder[F] =
-    copy(queue = queue)
-
   def withLogSink(sink: LogSink[F]): SchedulerBuilder[F] =
     copy(logSink = sink)
 
   def withQueue(queue: JobQueue[F]): SchedulerBuilder[F] =
-    copy(queue = Resource.pure[F, JobQueue[F]](queue))
+    copy(queue = queue)
 
   def withPubSub(pubSubT: PubSubT[F]): SchedulerBuilder[F] =
     copy(pubSub = pubSubT)
@@ -53,14 +50,13 @@ case class SchedulerBuilder[F[_]: Async](
     resource.evalMap(sch => Async[F].start(sch.start.compile.drain).map(_ => sch))
 
   def resource: Resource[F, Scheduler[F]] = {
-    val scheduler: Resource[F, SchedulerImpl[F]] = for {
-      jq <- queue
-      waiter <- Resource.eval(SignallingRef(true))
-      state <- Resource.eval(SignallingRef(SchedulerImpl.emptyState[F]))
-      perms <- Resource.eval(Semaphore(config.poolSize.toLong))
+    val scheduler: F[SchedulerImpl[F]] = for {
+      waiter <- SignallingRef(true)
+      state <- SignallingRef(SchedulerImpl.emptyState[F])
+      perms <- Semaphore(config.poolSize.toLong)
     } yield new SchedulerImpl[F](
       config,
-      jq,
+      queue,
       pubSub,
       eventSink,
       tasks,
@@ -71,7 +67,7 @@ case class SchedulerBuilder[F[_]: Async](
       perms
     )
 
-    scheduler.evalTap(_.init).map(s => s: Scheduler[F])
+    Resource.eval(scheduler.flatTap(_.init)).map(s => s: Scheduler[F])
   }
 
 }
@@ -86,10 +82,9 @@ object SchedulerBuilder {
       config,
       JobTaskRegistry.empty[F],
       store,
-      JobQueue.create(store),
+      JobQueue(store),
       LogSink.db[F](store),
       PubSubT.noop[F],
       EventSink.silent[F]
     )
-
 }

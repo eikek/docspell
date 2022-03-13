@@ -20,8 +20,6 @@ import eu.timepit.fs2cron.calev.CalevScheduler
 
 final class PeriodicSchedulerImpl[F[_]: Async](
     val config: PeriodicSchedulerConfig,
-    sch: Scheduler[F],
-    queue: JobQueue[F],
     store: PeriodicTaskStore[F],
     pubSub: PubSubT[F],
     waiter: SignallingRef[F, Boolean],
@@ -119,11 +117,11 @@ final class PeriodicSchedulerImpl[F[_]: Async](
 
         case None =>
           logger.info(s"Submitting job for periodic task '${pj.task.id}'") *>
-            pj.toJob.flatMap(queue.insert) *> notifyJoex *> true.pure[F]
+            store.submit(pj) *> notifyJoex *> true.pure[F]
       }
 
   def notifyJoex: F[Unit] =
-    sch.notifyChange *> pubSub.publish1IgnoreErrors(JobsNotify(), ()).void
+    pubSub.publish1IgnoreErrors(JobsNotify(), ()).void
 
   def scheduleNotify(pj: RPeriodicTask): F[Unit] =
     Timestamp

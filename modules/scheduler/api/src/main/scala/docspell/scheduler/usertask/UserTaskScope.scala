@@ -20,7 +20,7 @@ sealed trait UserTaskScope { self: Product =>
   /** Maps to the account or uses the collective for both parts if the scope is collective
     * wide.
     */
-  private[usertask] def toAccountId: AccountId =
+  private[scheduler] def toAccountId: AccountId =
     AccountId(collective, fold(_.user, identity))
 }
 
@@ -49,4 +49,7 @@ object UserTaskScope {
 
   def apply(collective: Ident): UserTaskScope =
     UserTaskScope.collective(collective)
+
+  def system: UserTaskScope =
+    collective(DocspellSystem.taskGroup)
 }

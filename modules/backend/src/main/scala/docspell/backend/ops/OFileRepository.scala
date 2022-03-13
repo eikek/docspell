@@ -12,17 +12,22 @@ import cats.implicits._
 import docspell.backend.JobFactory
 import docspell.backend.ops.OFileRepository.IntegrityResult
 import docspell.common._
-import docspell.scheduler.JobQueue
+import docspell.scheduler.{Job, JobStore}
 import docspell.store.Store
-import docspell.store.records.RJob
 import scodec.bits.ByteVector
 
 trait OFileRepository[F[_]] {
 
   /** Inserts the job or return None if such a job already is running. */
-  def cloneFileRepository(args: FileCopyTaskArgs, notifyJoex: Boolean): F[Option[RJob]]
+  def cloneFileRepository(
+      args: FileCopyTaskArgs,
+      notifyJoex: Boolean
+  ): F[Option[Job[FileCopyTaskArgs]]]
 
-  def checkIntegrityAll(part: FileKeyPart, notifyJoex: Boolean): F[Option[RJob]]
+  def checkIntegrityAll(
+      part: FileKeyPart,
+      notifyJoex: Boolean
+  ): F[Option[Job[FileIntegrityCheckArgs]]]
 
   def checkIntegrity(key: FileKey, hash: Option[ByteVector]): F[Option[IntegrityResult]]
 }
@@ -33,7 +38,7 @@ object OFileRepository {
 
   def apply[F[_]: Async](
       store: Store[F],
-      queue: JobQueue[F],
+      jobStore: JobStore[F],
       joex: OJoex[F]
   ): Resource[F, OFileRepository[F]] =
     Resource.pure(new OFileRepository[F] {
@@ -42,17 +47,20 @@ object OFileRepository {
       def cloneFileRepository(
           args: FileCopyTaskArgs,
           notifyJoex: Boolean
-      ): F[Option[RJob]] =
+      ): F[Option[Job[FileCopyTaskArgs]]] =
         for {
           job <- JobFactory.fileCopy(args)
-          flag <- queue.insertIfNew(job)
+          flag <- jobStore.insertIfNew(job.encode)
           _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield Option.when(flag)(job)
 
-      def checkIntegrityAll(part: FileKeyPart, notifyJoex: Boolean): F[Option[RJob]] =
+      def checkIntegrityAll(
+          part: FileKeyPart,
+          notifyJoex: Boolean
+      ): F[Option[Job[FileIntegrityCheckArgs]]] =
         for {
           job <- JobFactory.integrityCheck(FileIntegrityCheckArgs(part))
-          flag <- queue.insertIfNew(job)
+          flag <- jobStore.insertIfNew(job.encode)
           _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield Option.when(flag)(job)
 

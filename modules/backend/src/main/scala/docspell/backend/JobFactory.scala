@@ -8,124 +8,91 @@ package docspell.backend
 
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.MailAddressCodec
 import docspell.common._
 import docspell.notification.api.PeriodicQueryArgs
-import docspell.store.records.RJob
+import docspell.scheduler.Job
 
 object JobFactory extends MailAddressCodec {
   def integrityCheck[F[_]: Sync](
       args: FileIntegrityCheckArgs,
       submitter: AccountId = DocspellSystem.account
-  ): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      job = RJob.newJob(
-        id,
-        FileIntegrityCheckArgs.taskName,
-        submitter.collective,
-        args,
-        s"Check integrity of files",
-        now,
-        submitter.user,
-        Priority.High,
-        Some(FileIntegrityCheckArgs.taskName)
-      )
-    } yield job
+  ): F[Job[FileIntegrityCheckArgs]] =
+    Job.createNew(
+      FileIntegrityCheckArgs.taskName,
+      submitter.collective,
+      args,
+      s"Check integrity of files",
+      submitter.user,
+      Priority.High,
+      Some(FileIntegrityCheckArgs.taskName)
+    )
 
   def fileCopy[F[_]: Sync](
       args: FileCopyTaskArgs,
       submitter: AccountId = DocspellSystem.account
-  ): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      job = RJob.newJob(
-        id,
-        FileCopyTaskArgs.taskName,
-        submitter.collective,
-        args,
-        s"Copying all files",
-        now,
-        submitter.user,
-        Priority.High,
-        Some(FileCopyTaskArgs.taskName)
-      )
-    } yield job
+  ): F[Job[FileCopyTaskArgs]] =
+    Job.createNew(
+      FileCopyTaskArgs.taskName,
+      submitter.collective,
+      args,
+      "Copying all files",
+      submitter.user,
+      Priority.High,
+      Some(FileCopyTaskArgs.taskName)
+    )
 
-  def periodicQuery[F[_]: Sync](args: PeriodicQueryArgs, submitter: AccountId): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      job = RJob.newJob(
-        id,
-        PeriodicQueryArgs.taskName,
-        submitter.collective,
-        args,
-        s"Running periodic query, notify via ${args.channels.map(_.channelType)}",
-        now,
-        submitter.user,
-        Priority.Low,
-        None
-      )
-    } yield job
+  def periodicQuery[F[_]: Sync](
+      args: PeriodicQueryArgs,
+      submitter: AccountId
+  ): F[Job[PeriodicQueryArgs]] =
+    Job.createNew(
+      PeriodicQueryArgs.taskName,
+      submitter.collective,
+      args,
+      s"Running periodic query, notify via ${args.channels.map(_.channelType)}",
+      submitter.user,
+      Priority.Low,
+      None
+    )
 
   def makePageCount[F[_]: Sync](
       args: MakePageCountArgs,
       account: Option[AccountId]
-  ): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      job = RJob.newJob(
-        id,
-        MakePageCountArgs.taskName,
-        account.map(_.collective).getOrElse(DocspellSystem.taskGroup),
-        args,
-        s"Find page-count metadata for ${args.attachment.id}",
-        now,
-        account.map(_.user).getOrElse(DocspellSystem.user),
-        Priority.Low,
-        Some(MakePageCountArgs.taskName / args.attachment)
-      )
-    } yield job
+  ): F[Job[MakePageCountArgs]] =
+    Job.createNew(
+      MakePageCountArgs.taskName,
+      account.map(_.collective).getOrElse(DocspellSystem.taskGroup),
+      args,
+      s"Find page-count metadata for ${args.attachment.id}",
+      account.map(_.user).getOrElse(DocspellSystem.user),
+      Priority.Low,
+      Some(MakePageCountArgs.taskName / args.attachment)
+    )
 
   def makePreview[F[_]: Sync](
       args: MakePreviewArgs,
       account: Option[AccountId]
-  ): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      job = RJob.newJob(
-        id,
-        MakePreviewArgs.taskName,
-        account.map(_.collective).getOrElse(DocspellSystem.taskGroup),
-        args,
-        s"Generate preview image",
-        now,
-        account.map(_.user).getOrElse(DocspellSystem.user),
-        Priority.Low,
-        Some(MakePreviewArgs.taskName / args.attachment)
-      )
-    } yield job
+  ): F[Job[MakePreviewArgs]] =
+    Job.createNew(
+      MakePreviewArgs.taskName,
+      account.map(_.collective).getOrElse(DocspellSystem.taskGroup),
+      args,
+      s"Generate preview image",
+      account.map(_.user).getOrElse(DocspellSystem.user),
+      Priority.Low,
+      Some(MakePreviewArgs.taskName / args.attachment)
+    )
 
   def allPreviews[F[_]: Sync](
       args: AllPreviewsArgs,
       submitter: Option[Ident]
-  ): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-    } yield RJob.newJob(
-      id,
+  ): F[Job[AllPreviewsArgs]] =
+    Job.createNew(
       AllPreviewsArgs.taskName,
       args.collective.getOrElse(DocspellSystem.taskGroup),
       args,
       "Create preview images",
-      now,
       submitter.getOrElse(DocspellSystem.user),
       Priority.Low,
       Some(DocspellSystem.allPreviewTaskTracker)
@@ -135,127 +102,91 @@ object JobFactory extends MailAddressCodec {
       collective: Option[Ident],
       submitter: Option[Ident],
       prio: Priority
-  ): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      job = RJob.newJob(
-        id,
-        ConvertAllPdfArgs.taskName,
-        collective.getOrElse(DocspellSystem.taskGroup),
-        ConvertAllPdfArgs(collective),
-        s"Convert all pdfs not yet converted",
-        now,
-        submitter.getOrElse(DocspellSystem.user),
-        prio,
-        collective
-          .map(c => c / ConvertAllPdfArgs.taskName)
-          .orElse(ConvertAllPdfArgs.taskName.some)
-      )
-    } yield job
+  ): F[Job[ConvertAllPdfArgs]] =
+    Job.createNew(
+      ConvertAllPdfArgs.taskName,
+      collective.getOrElse(DocspellSystem.taskGroup),
+      ConvertAllPdfArgs(collective),
+      s"Convert all pdfs not yet converted",
+      submitter.getOrElse(DocspellSystem.user),
+      prio,
+      collective
+        .map(c => c / ConvertAllPdfArgs.taskName)
+        .orElse(ConvertAllPdfArgs.taskName.some)
+    )
 
   def reprocessItem[F[_]: Sync](
       args: ReProcessItemArgs,
       account: AccountId,
       prio: Priority
-  ): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      job = RJob.newJob(
-        id,
-        ReProcessItemArgs.taskName,
-        account.collective,
-        args,
-        s"Re-process files of item ${args.itemId.id}",
-        now,
-        account.user,
-        prio,
-        Some(ReProcessItemArgs.taskName / args.itemId)
-      )
-    } yield job
+  ): F[Job[ReProcessItemArgs]] =
+    Job.createNew(
+      ReProcessItemArgs.taskName,
+      account.collective,
+      args,
+      s"Re-process files of item ${args.itemId.id}",
+      account.user,
+      prio,
+      Some(ReProcessItemArgs.taskName / args.itemId)
+    )
 
   def processItem[F[_]: Sync](
       args: ProcessItemArgs,
       account: AccountId,
       prio: Priority,
       tracker: Option[Ident]
-  ): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      job = RJob.newJob(
-        id,
-        ProcessItemArgs.taskName,
-        account.collective,
-        args,
-        args.makeSubject,
-        now,
-        account.user,
-        prio,
-        tracker
-      )
-    } yield job
+  ): F[Job[ProcessItemArgs]] =
+    Job.createNew(
+      ProcessItemArgs.taskName,
+      account.collective,
+      args,
+      args.makeSubject,
+      account.user,
+      prio,
+      tracker
+    )
 
   def processItems[F[_]: Sync](
       args: Vector[ProcessItemArgs],
       account: AccountId,
       prio: Priority,
       tracker: Option[Ident]
-  ): F[Vector[RJob]] = {
-    def create(now: Timestamp, arg: ProcessItemArgs): F[RJob] =
-      Ident
-        .randomId[F]
-        .map(id =>
-          RJob.newJob(
-            id,
-            ProcessItemArgs.taskName,
-            account.collective,
-            arg,
-            arg.makeSubject,
-            now,
-            account.user,
-            prio,
-            tracker
-          )
-        )
+  ): F[Vector[Job[ProcessItemArgs]]] = {
+    def create(arg: ProcessItemArgs): F[Job[ProcessItemArgs]] =
+      Job.createNew(
+        ProcessItemArgs.taskName,
+        account.collective,
+        arg,
+        arg.makeSubject,
+        account.user,
+        prio,
+        tracker
+      )
 
-    for {
-      now <- Timestamp.current[F]
-      jobs <- args.traverse(a => create(now, a))
-    } yield jobs
+    args.traverse(create)
   }
 
-  def reIndexAll[F[_]: Sync]: F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-    } yield RJob.newJob(
-      id,
+  def reIndexAll[F[_]: Sync]: F[Job[ReIndexTaskArgs]] =
+    Job.createNew(
       ReIndexTaskArgs.taskName,
       DocspellSystem.taskGroup,
       ReIndexTaskArgs(None),
-      s"Recreate full-text index",
-      now,
+      "Recreate full-text index",
       DocspellSystem.taskGroup,
       Priority.Low,
       Some(DocspellSystem.migrationTaskTracker)
     )
 
-  def reIndex[F[_]: Sync](account: AccountId): F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-      args = ReIndexTaskArgs(Some(account.collective))
-    } yield RJob.newJob(
-      id,
+  def reIndex[F[_]: Sync](account: AccountId): F[Job[ReIndexTaskArgs]] = {
+    val args = ReIndexTaskArgs(Some(account.collective))
+    Job.createNew(
       ReIndexTaskArgs.taskName,
       account.collective,
       args,
-      s"Recreate full-text index",
-      now,
+      "Recreate full-text index",
       account.user,
       Priority.Low,
       Some(ReIndexTaskArgs.tracker(args))
     )
+  }
 }

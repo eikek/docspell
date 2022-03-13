@@ -12,20 +12,19 @@ import fs2.{Chunk, Stream}
 import docspell.backend.JobFactory
 import docspell.backend.ops.OJoex
 import docspell.common._
-import docspell.scheduler.{Context, JobQueue, Task}
+import docspell.scheduler.{Context, Job, JobStore, Task}
 import docspell.store.records.RAttachment
-import docspell.store.records.RJob
 
 object AllPageCountTask {
 
   val taskName = Ident.unsafe("all-page-count")
   type Args = Unit
 
-  def apply[F[_]: Sync](queue: JobQueue[F], joex: OJoex[F]): Task[F, Args, Unit] =
+  def apply[F[_]: Sync](jobStore: JobStore[F], joex: OJoex[F]): Task[F, Args, Unit] =
     Task { ctx =>
       for {
         _ <- ctx.logger.info("Generating previews for attachments")
-        n <- submitConversionJobs(ctx, queue)
+        n <- submitConversionJobs(ctx, jobStore)
         _ <- ctx.logger.info(s"Submitted $n jobs")
         _ <- joex.notifyAllNodes
       } yield ()
@@ -36,14 +35,14 @@ object AllPageCountTask {
 
   def submitConversionJobs[F[_]: Sync](
       ctx: Context[F, Args],
-      queue: JobQueue[F]
+      jobStore: JobStore[F]
   ): F[Int] =
     ctx.store
       .transact(findAttachments)
       .chunks
       .flatMap(createJobs[F])
       .chunks
-      .evalMap(jobs => queue.insertAllIfNew(jobs.toVector).map(_ => jobs.size))
+      .evalMap(jobs => jobStore.insertAllIfNew(jobs.toVector).map(_ => jobs.size))
       .evalTap(n => ctx.logger.debug(s"Submitted $n jobs …"))
       .compile
       .foldMonoid
@@ -51,28 +50,25 @@ object AllPageCountTask {
   private def findAttachments[F[_]] =
     RAttachment.findAllWithoutPageCount(50)
 
-  private def createJobs[F[_]: Sync](ras: Chunk[RAttachment]): Stream[F, RJob] = {
-    def mkJob(ra: RAttachment): F[RJob] =
+  private def createJobs[F[_]: Sync](ras: Chunk[RAttachment]): Stream[F, Job[String]] = {
+    def mkJob(ra: RAttachment): F[Job[MakePageCountArgs]] =
       JobFactory.makePageCount(MakePageCountArgs(ra.id), None)
 
     val jobs = ras.traverse(mkJob)
-    Stream.evalUnChunk(jobs)
+    Stream.evalUnChunk(jobs).map(_.encode)
   }
 
-  def job[F[_]: Sync]: F[RJob] =
-    for {
-      id <- Ident.randomId[F]
-      now <- Timestamp.current[F]
-    } yield RJob.newJob(
-      id,
-      AllPageCountTask.taskName,
-      DocspellSystem.taskGroup,
-      (),
-      "Create all page-counts",
-      now,
-      DocspellSystem.taskGroup,
-      Priority.Low,
-      Some(DocspellSystem.allPageCountTaskTracker)
-    )
+  def job[F[_]: Sync]: F[Job[String]] =
+    Job
+      .createNew(
+        AllPageCountTask.taskName,
+        DocspellSystem.taskGroup,
+        (),
+        "Create all page-counts",
+        DocspellSystem.taskGroup,
+        Priority.Low,
+        Some(DocspellSystem.allPageCountTaskTracker)
+      )
+      .map(_.encode)
 
 }

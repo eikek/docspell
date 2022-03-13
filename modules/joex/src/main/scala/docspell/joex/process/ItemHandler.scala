@@ -65,7 +65,7 @@ object ItemHandler {
         .map(_ => data)
     )
 
-  def isLastRetry[F[_]: Sync]: Task[F, Args, Boolean] =
+  def isLastRetry[F[_]]: Task[F, Args, Boolean] =
     Task(_.isLastRetry)
 
   def safeProcess[F[_]: Async](

@@ -12,8 +12,7 @@ import cats.implicits._
 import docspell.common._
 import docspell.scheduler.Context
 import docspell.scheduler.Task
-import docspell.scheduler.usertask.{UserTask, UserTaskScope}
-import docspell.store.records.RPeriodicTask
+import docspell.scheduler.usertask.UserTask
 import docspell.store.records.RUserEmail
 import emil._
 
@@ -25,18 +24,15 @@ object UpdateCheckTask {
   def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn("Cancelling update-check task"))
 
-  def periodicTask[F[_]: Sync](cfg: UpdateCheckConfig): F[RPeriodicTask] =
+  def periodicTask[F[_]: Sync](cfg: UpdateCheckConfig): F[UserTask[Unit]] =
     UserTask(
       Ident.unsafe("docspell-update-check"),
       taskName,
       cfg.enabled,
       cfg.schedule,
-      None,
+      "Docspell Update Check".some,
       ()
-    ).encode.toPeriodicTask(
-      UserTaskScope(cfg.senderAccount.collective),
-      "Docspell Update Check".some
-    )
+    ).pure[F]
 
   def apply[F[_]: Async](
       cfg: UpdateCheckConfig,

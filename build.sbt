@@ -530,7 +530,7 @@ val schedulerApi = project
       Dependencies.fs2Core ++
         Dependencies.circeCore
   )
-  .dependsOn(loggingApi, common, store, notificationApi, pubsubApi)
+  .dependsOn(loggingApi, common, store, pubsubApi)
 
 val schedulerImpl = project
   .in(file("modules/scheduler/impl"))
@@ -837,7 +837,8 @@ val restserver = project
     ftssolr,
     oidc,
     pubsubNaive,
-    notificationImpl
+    notificationImpl,
+    schedulerImpl
   )
 
 // --- Website Documentation

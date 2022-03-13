@@ -9,6 +9,7 @@ package docspell.scheduler.impl
 import cats.effect._
 import cats.implicits._
 import docspell.common._
+import docspell.scheduler.{Job, JobStore}
 import docspell.store.queries.QPeriodicTask
 import docspell.store.records._
 import docspell.store.{AddResult, Store}
@@ -37,12 +38,18 @@ trait PeriodicTaskStore[F[_]] {
 
   /** Find all joex nodes as registered in the database. */
   def findJoexNodes: F[Vector[RNode]]
+
+  /** Creates a job from the given task and submits it into the job queue */
+  def submit(task: RPeriodicTask): F[Unit]
 }
 
 object PeriodicTaskStore {
 
-  def create[F[_]: Sync](store: Store[F]): Resource[F, PeriodicTaskStore[F]] =
-    Resource.pure[F, PeriodicTaskStore[F]](new PeriodicTaskStore[F] {
+  def apply[F[_]: Sync](
+      store: Store[F],
+      jobStore: JobStore[F]
+  ): PeriodicTaskStore[F] =
+    new PeriodicTaskStore[F] {
       private[this] val logger = docspell.logging.getLogger[F]
       def takeNext(
           worker: Ident,
@@ -116,5 +123,22 @@ object PeriodicTaskStore {
       def findJoexNodes: F[Vector[RNode]] =
         store.transact(RNode.findAll(NodeType.Joex))
 
-    })
+      def submit(task: RPeriodicTask) =
+        makeJob(task).flatMap(jobStore.insert)
+
+      def makeJob(rt: RPeriodicTask): F[Job[String]] =
+        Ident.randomId[F].map { id =>
+          Job(
+            id,
+            rt.task,
+            rt.group,
+            rt.args,
+            rt.subject,
+            rt.submitter,
+            rt.priority,
+            Some(id)
+          )
+        }
+
+    }
 }

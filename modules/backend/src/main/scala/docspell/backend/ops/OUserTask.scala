@@ -12,7 +12,6 @@ import cats.implicits._
 import fs2.Stream
 import docspell.common._
 import docspell.notification.api.{ChannelRef, PeriodicDueItemsArgs, PeriodicQueryArgs}
-import docspell.scheduler.JobQueue
 import docspell.scheduler.usertask.{UserTask, UserTaskScope, UserTaskStore}
 import docspell.store.Store
 import docspell.store.records.RNotificationChannel
@@ -84,7 +83,6 @@ object OUserTask {
   def apply[F[_]: Async](
       taskStore: UserTaskStore[F],
       store: Store[F],
-      queue: JobQueue[F],
       joex: OJoex[F]
   ): Resource[F, OUserTask[F]] =
     Resource.pure[F, OUserTask[F]](new OUserTask[F] {
@@ -93,10 +91,8 @@ object OUserTask {
           implicit E: Encoder[A]
       ): F[Unit] =
         for {
-          ptask <- task.encode.toPeriodicTask(scope, subject)
-          job <- ptask.toJob
-          _ <- queue.insert(job)
-          _ <- joex.notifyPeriodicTasks
+          _ <- taskStore.executeNow(scope, subject, task)
+          _ <- joex.notifyAllNodes
         } yield ()
 
       def getScanMailbox(scope: UserTaskScope): Stream[F, UserTask[ScanMailboxArgs]] =
