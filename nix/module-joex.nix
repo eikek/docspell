@@ -16,6 +16,10 @@ let
       address = "localhost";
       port = 7878;
     };
+    logging = {
+      minimum-level = "Info";
+      format = "Fancy";
+    };
     mail-debug = false;
     jdbc = {
       url = "jdbc:h2:///tmp/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE";
@@ -44,7 +48,7 @@ let
       wakeup-period = "10 minutes";
     };
     house-keeping = {
-      schedule = "Sun *-*-* 00:00:00";
+      schedule = "Sun *-*-* 00:00:00 UTC";
       cleanup-invites = {
         enabled = true;
         older-than = "30 days";
@@ -66,7 +70,7 @@ let
     update-check = {
       enabled = false;
       test-run = false;
-      schedule = "Sun *-*-* 00:00:00";
+      schedule = "Sun *-*-* 00:00:00 UTC";
       sender-account = "";
       smtp-id = "";
       recipients = [];
@@ -286,6 +290,26 @@ in {
         default = defaults.bind;
         description = "Address and port bind the rest server.";
       };
+
+      logging = mkOption {
+        type = types.submodule({
+          options = {
+            minimum-level = mkOption {
+              type = types.str;
+              default = defaults.logging.minimum-level;
+              description = "The minimum level for logging to control verbosity.";
+            };
+            format = mkOption {
+              type = types.str;
+              default = defaults.logging.format;
+              description = "The log format. One of: Fancy, Plain, Json or Logfmt";
+            };
+          };
+        });
+        default = defaults.logging;
+        description = "Settings for logging";
+      };
+
       mail-debug = mkOption {
         type = types.bool;
         default = defaults.mail-debug;

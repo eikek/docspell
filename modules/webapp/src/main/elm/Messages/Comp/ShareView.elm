@@ -8,9 +8,11 @@
 module Messages.Comp.ShareView exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.DateFormat as DF
 import Messages.UiLanguage
@@ -32,10 +34,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , date = DF.formatDateLong Messages.UiLanguage.English
+    , date = DF.formatDateLong Messages.UiLanguage.English tz
     , qrCodeError = "Error generating QR Code."
     , expiredInfo = "This share has expired."
     , disabledInfo = "This share is disabled."
@@ -49,10 +51,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , date = DF.formatDateLong Messages.UiLanguage.German
+    , date = DF.formatDateLong Messages.UiLanguage.German tz
     , qrCodeError = "Fehler beim Erzeugen des QR-Codes."
     , expiredInfo = "Diese Freigabe ist abgelaufen."
     , disabledInfo = "Diese Freigae ist nicht aktiv."
@@ -63,4 +65,21 @@ de =
     , passwordProtected = "Passwordgeschützt"
     , views = "Aufrufe"
     , lastAccess = "Letzter Zugriff"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , date = DF.formatDateLong Messages.UiLanguage.French tz
+    , qrCodeError = "Erreur  lors de la génération du QR Code"
+    , expiredInfo = "Ce partage a expiré."
+    , disabledInfo = "Ce partage est inactif."
+    , noName = "Sans nom"
+    , copyToClipboard = "Copier dans le presse-papier"
+    , openInNewTab = "Ouvrir dans un nouvel onglet/fenêtre"
+    , publishUntil = "Publié jusqu'au"
+    , passwordProtected = "Protégé par mot de passe"
+    , views = "Vues"
+    , lastAccess = "Dernier accès"
     }

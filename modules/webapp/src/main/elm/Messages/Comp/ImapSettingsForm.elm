@@ -8,6 +8,7 @@
 module Messages.Comp.ImapSettingsForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -72,4 +73,24 @@ de =
     , ignoreCertCheck = "Zertifikatprüfung ignorieren"
     , enableOAuth2 = "Aktiviere OAuth2-Authentifizierung"
     , oauth2Info = "Wenn dies aktiviert ist, wird via XOAuth authentifiziert wobei das Passwort als Access-Token verwendet wird."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , sslTypeLabel = Messages.Data.SSLType.fr
+    , connectionNamePlaceholder = "Nom de la connexion ex: gmail.com"
+    , connectionNameInfo = "Le nom de la connexion ne doit contenir i espace ni caractères spéciaux"
+    , imapHost = "Hôte IMAP"
+    , imapHostPlaceholder = "Nom de l'hôte IMAP ex: 'mail.gmail.com'"
+    , imapPort = "Port IMAP"
+    , imapUser = "Utilisateur IMAP"
+    , imapUserPlaceholder = "Identifiant IMAP, ex: 'your.name@gmail.com'"
+    , imapPassword = "Mot de passe IMAP"
+    , imapPasswordPlaceholder = "Mot de passe"
+    , ssl = "SSL"
+    , ignoreCertCheck = "Ignorer la vérification des certificats"
+    , enableOAuth2 = "Activer l'authentification OAuth2"
+    , oauth2Info = "Ceci permet la connexion via XOAuth en utilisant le mot de passe comme token d'accès"
     }

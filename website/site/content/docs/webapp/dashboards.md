@@ -7,22 +7,23 @@ mktoc = true
 
 # Dashboards
 
-The main page shows a dashboard that can be configured to show some
-aspects of your documents. The following shows the default dashboard
-that is bundled in the application:
+The main page shows a dashboard displaying some aspects of your
+documents. The following is the default dashboard that is bundled in
+the application:
 
 {{ figure2(light="dashboards-01.png", dark="dashboards-01_dark.png") }}
 
-It shows a predefined set of information, which can be customized. You
-can create multiple dashboards and switch between them, you can also
-define one as the "default" which is shown when the page loads.
+The dashboard can be customized. You can create multiple dashboards
+and switch between them. One dashboard is always the "default" which
+is shown when the page loads. It either is a custom one or the
+predefined one above.
 
 
 ## Side menu
 
 The side menu contains a list of useful links. The first loads the
-default dashboard. All others (and more) are available through the
-top-right menus as well.
+default dashboard. All others links (and more) are available through
+the top-right menus as well.
 
 The _Bookmarks_ section shows all your bookmarks and a click takes you
 directly to the search page with the corresponding bookmark active.
@@ -31,7 +32,7 @@ The _Settings_ section contains some links to useful settings and the
 _Manage_ section has links to metadata that can be managed separately.
 These links are fixed and cannot be changed.
 
-## Dasbhoard properties
+## Dashboard properties
 
 The main component on this page is the "dashboard". A dashboard has
 the following properties (all required):
@@ -76,7 +77,7 @@ removed and box decorations are enabled for the field overview box.
 
 {{ figure2(light="dashboards-03.png", dark="dashboards-03_dark.png") }}
 
-When you now edit this dasbhoard again, the message is gone and you
+When you now edit this dashboard again, the message is gone and you
 can change the dashboard and also delete it. You can also create a new
 dashboard or copy the current one.
 

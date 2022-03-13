@@ -13,13 +13,23 @@ import scala.reflect.ClassTag
 import fs2.io.file.Path
 
 import docspell.common._
+import docspell.logging.{Level, LogConfig}
 
 import com.github.eikek.calev.CalEvent
 import pureconfig.ConfigReader
 import pureconfig.error.{CannotConvert, FailureReason}
+import pureconfig.generic.{CoproductHint, FieldCoproductHint}
 import scodec.bits.ByteVector
 
 object Implicits {
+  // the value "s-3" looks strange, this is to allow to write "s3" in the config
+  implicit val fileStoreCoproductHint: CoproductHint[FileStoreConfig] =
+    new FieldCoproductHint[FileStoreConfig]("type") {
+      override def fieldValue(name: String) =
+        if (name.equalsIgnoreCase("S3")) "s3"
+        else super.fieldValue(name)
+    }
+
   implicit val accountIdReader: ConfigReader[AccountId] =
     ConfigReader[String].emap(reason(AccountId.parse))
 
@@ -40,6 +50,9 @@ object Implicits {
 
   implicit val identReader: ConfigReader[Ident] =
     ConfigReader[String].emap(reason(Ident.fromString))
+
+  implicit def identMapReader[B: ConfigReader]: ConfigReader[Map[Ident, B]] =
+    pureconfig.configurable.genericMapReader[Ident, B](reason(Ident.fromString))
 
   implicit val byteVectorReader: ConfigReader[ByteVector] =
     ConfigReader[String].emap(reason { str =>
@@ -62,6 +75,15 @@ object Implicits {
 
   implicit val nlpModeReader: ConfigReader[NlpMode] =
     ConfigReader[String].emap(reason(NlpMode.fromString))
+
+  implicit val logFormatReader: ConfigReader[LogConfig.Format] =
+    ConfigReader[String].emap(reason(LogConfig.Format.fromString))
+
+  implicit val logLevelReader: ConfigReader[Level] =
+    ConfigReader[String].emap(reason(Level.fromString))
+
+  implicit val fileStoreTypeReader: ConfigReader[FileStoreType] =
+    ConfigReader[String].emap(reason(FileStoreType.fromString))
 
   def reason[A: ClassTag](
       f: String => Either[String, A]

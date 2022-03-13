@@ -20,7 +20,7 @@ import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.{Conversions, NonEmptyListSupport}
 import docspell.restserver.http4s.ClientRequestInfo
-import docspell.store.usertask._
+import docspell.scheduler.usertask._
 
 import org.http4s._
 import org.http4s.circe.CirceEntityDecoder._

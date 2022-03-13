@@ -10,7 +10,7 @@ import cats.data.NonEmptyList
 import cats.implicits._
 import fs2.Stream
 
-import docspell.common._
+import docspell.common.{FileKey, _}
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
@@ -20,7 +20,7 @@ import doobie.implicits._
 case class RAttachment(
     id: Ident,
     itemId: Ident,
-    fileId: Ident,
+    fileId: FileKey,
     position: Int,
     created: Timestamp,
     name: Option[String]
@@ -32,7 +32,7 @@ object RAttachment {
 
     val id = Column[Ident]("attachid", this)
     val itemId = Column[Ident]("itemid", this)
-    val fileId = Column[Ident]("filemetaid", this)
+    val fileId = Column[FileKey]("filemetaid", this)
     val position = Column[Int]("position", this)
     val created = Column[Timestamp]("created", this)
     val name = Column[String]("name", this)
@@ -47,7 +47,7 @@ object RAttachment {
     DML.insert(
       T,
       T.all,
-      fr"${v.id},${v.itemId},${v.fileId.id},${v.position},${v.created},${v.name}"
+      fr"${v.id},${v.itemId},${v.fileId},${v.position},${v.created},${v.name}"
     )
 
   def decPositions(iId: Ident, lowerBound: Int, upperBound: Int): ConnectionIO[Int] =
@@ -77,7 +77,7 @@ object RAttachment {
 
   def updateFileIdAndName(
       attachId: Ident,
-      fId: Ident,
+      fId: FileKey,
       fname: Option[String]
   ): ConnectionIO[Int] =
     DML.update(
@@ -88,7 +88,7 @@ object RAttachment {
 
   def updateFileId(
       attachId: Ident,
-      fId: Ident
+      fId: FileKey
   ): ConnectionIO[Int] =
     DML.update(
       T,
@@ -182,7 +182,7 @@ object RAttachment {
   def findByItemCollectiveSource(
       id: Ident,
       coll: Ident,
-      fileIds: NonEmptyList[Ident]
+      fileIds: NonEmptyList[FileKey]
   ): ConnectionIO[Vector[RAttachment]] = {
     val i = RItem.as("i")
     val a = RAttachment.as("a")

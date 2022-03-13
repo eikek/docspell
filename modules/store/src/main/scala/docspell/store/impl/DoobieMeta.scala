@@ -14,8 +14,10 @@ import docspell.common.syntax.all._
 import docspell.jsonminiq.JsonMiniQuery
 import docspell.notification.api.{ChannelType, EventType}
 import docspell.query.{ItemQuery, ItemQueryParser}
+import docspell.store.file.BinnyUtils
 import docspell.totp.Key
 
+import binny.BinaryId
 import com.github.eikek.calev.CalEvent
 import doobie._
 import doobie.implicits.legacy.instant._
@@ -27,7 +29,7 @@ import scodec.bits.ByteVector
 
 trait DoobieMeta extends EmilDoobieMeta {
 
-  implicit val sqlLogging = LogHandler {
+  implicit val sqlLogging: LogHandler = LogHandler {
     case e @ Success(_, _, _, _) =>
       DoobieMeta.logger.trace("SQL " + e)
     case e =>
@@ -39,58 +41,64 @@ trait DoobieMeta extends EmilDoobieMeta {
       e.apply(a).noSpaces
     )
 
+  implicit val metaBinaryId: Meta[BinaryId] =
+    Meta[String].timap(BinaryId.apply)(_.id)
+
+  implicit val metaFileKey: Meta[FileKey] =
+    Meta[BinaryId].timap(BinnyUtils.unsafeBinaryIdToFileKey)(BinnyUtils.fileKeyToBinaryId)
+
   implicit val metaAccountSource: Meta[AccountSource] =
-    Meta[String].imap(AccountSource.unsafeFromString)(_.name)
+    Meta[String].timap(AccountSource.unsafeFromString)(_.name)
 
   implicit val metaDuration: Meta[Duration] =
-    Meta[Long].imap(Duration.millis)(_.millis)
+    Meta[Long].timap(Duration.millis)(_.millis)
 
   implicit val metaCollectiveState: Meta[CollectiveState] =
-    Meta[String].imap(CollectiveState.unsafe)(CollectiveState.asString)
+    Meta[String].timap(CollectiveState.unsafe)(CollectiveState.asString)
 
   implicit val metaUserState: Meta[UserState] =
-    Meta[String].imap(UserState.unsafe)(UserState.asString)
+    Meta[String].timap(UserState.unsafe)(UserState.asString)
 
   implicit val metaPassword: Meta[Password] =
-    Meta[String].imap(Password(_))(_.pass)
+    Meta[String].timap(Password(_))(_.pass)
 
   implicit val metaIdent: Meta[Ident] =
-    Meta[String].imap(Ident.unsafe)(_.id)
+    Meta[String].timap(Ident.unsafe)(_.id)
 
   implicit val metaContactKind: Meta[ContactKind] =
-    Meta[String].imap(ContactKind.unsafe)(_.asString)
+    Meta[String].timap(ContactKind.unsafe)(_.asString)
 
   implicit val metaTimestamp: Meta[Timestamp] =
-    Meta[Instant].imap(Timestamp(_))(_.value)
+    Meta[Instant].timap(Timestamp(_))(_.value)
 
   implicit val metaJobState: Meta[JobState] =
-    Meta[String].imap(JobState.unsafe)(_.name)
+    Meta[String].timap(JobState.unsafe)(_.name)
 
   implicit val metaDirection: Meta[Direction] =
-    Meta[Boolean].imap(flag =>
+    Meta[Boolean].timap(flag =>
       if (flag) Direction.Incoming: Direction else Direction.Outgoing: Direction
     )(d => Direction.isIncoming(d))
 
   implicit val metaPriority: Meta[Priority] =
-    Meta[Int].imap(Priority.fromInt)(Priority.toInt)
+    Meta[Int].timap(Priority.fromInt)(Priority.toInt)
 
   implicit val metaLogLevel: Meta[LogLevel] =
-    Meta[String].imap(LogLevel.unsafeString)(_.name)
+    Meta[String].timap(LogLevel.unsafeString)(_.name)
 
   implicit val metaLenientUri: Meta[LenientUri] =
-    Meta[String].imap(LenientUri.unsafe)(_.asString)
+    Meta[String].timap(LenientUri.unsafe)(_.asString)
 
   implicit val metaNodeType: Meta[NodeType] =
-    Meta[String].imap(NodeType.unsafe)(_.name)
+    Meta[String].timap(NodeType.unsafe)(_.name)
 
   implicit val metaLocalDate: Meta[LocalDate] =
-    Meta[String].imap(str => LocalDate.parse(str))(_.format(DateTimeFormatter.ISO_DATE))
+    Meta[String].timap(str => LocalDate.parse(str))(_.format(DateTimeFormatter.ISO_DATE))
 
   implicit val metaItemState: Meta[ItemState] =
-    Meta[String].imap(ItemState.unsafe)(_.name)
+    Meta[String].timap(ItemState.unsafe)(_.name)
 
   implicit val metNerTag: Meta[NerTag] =
-    Meta[String].imap(NerTag.unsafe)(_.name)
+    Meta[String].timap(NerTag.unsafe)(_.name)
 
   implicit val metaNerLabel: Meta[NerLabel] =
     jsonMeta[NerLabel]
@@ -108,7 +116,7 @@ trait DoobieMeta extends EmilDoobieMeta {
     jsonMeta[List[IdRef]]
 
   implicit val metaLanguage: Meta[Language] =
-    Meta[String].imap(Language.unsafe)(_.iso3)
+    Meta[String].timap(Language.unsafe)(_.iso3)
 
   implicit val metaCalEvent: Meta[CalEvent] =
     Meta[String].timap(CalEvent.unsafe)(_.asString)

@@ -20,7 +20,6 @@ import Html.Events exposing (onClick)
 import Messages.Page.Queue exposing (Texts)
 import Page.Queue.Data exposing (..)
 import Styles as S
-import Util.Time exposing (formatIsoDateTime)
 
 
 viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
@@ -91,7 +90,7 @@ viewSidebar texts visible _ _ model =
 
 
 viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
-viewContent texts _ _ model =
+viewContent texts _ settings model =
     let
         gridStyle =
             "grid gap-4 grid-cols-1 md:grid-cols-2"
@@ -109,7 +108,7 @@ viewContent texts _ _ model =
         ]
         [ case model.showLog of
             Just job ->
-                renderJobLog job
+                renderJobLog texts settings job
 
             Nothing ->
                 span [ class "hidden" ] []
@@ -120,7 +119,7 @@ viewContent texts _ _ model =
 
                 else
                     div [ class "flex flex-col space-y-2" ]
-                        (List.map (renderProgressCard texts model) model.state.progress)
+                        (List.map (renderProgressCard texts settings model) model.state.progress)
 
             QueueAll ->
                 if List.isEmpty model.state.completed && List.isEmpty model.state.completed then
@@ -187,8 +186,8 @@ filterJobDetails list state =
     List.filter isState list
 
 
-renderJobLog : JobDetail -> Html Msg
-renderJobLog job =
+renderJobLog : Texts -> UiSettings -> JobDetail -> Html Msg
+renderJobLog texts settings job =
     div
         [ class " absolute top-12 left-0 w-full h-full-12 z-40 flex flex-col items-center px-4 py-2 "
         , class "bg-white bg-opacity-80 dark:bg-black dark:bg-slate-900 dark:bg-opacity-90"
@@ -209,13 +208,13 @@ renderJobLog job =
                     ]
                 ]
             , div [ class styleJobLog ]
-                (List.map renderLogLine job.logs)
+                (List.map (renderLogLine texts settings) job.logs)
             ]
         ]
 
 
-renderProgressCard : Texts -> Model -> JobDetail -> Html Msg
-renderProgressCard texts model job =
+renderProgressCard : Texts -> UiSettings -> Model -> JobDetail -> Html Msg
+renderProgressCard texts settings model job =
     div [ class (S.box ++ "px-2 flex flex-col") ]
         [ Comp.Progress.topAttachedIndicating job.progress
         , Html.map (DimmerMsg job)
@@ -248,7 +247,7 @@ renderProgressCard texts model job =
             ]
         , div [ class "py-2", id "joblog" ]
             [ div [ class styleJobLog ]
-                (List.map renderLogLine job.logs)
+                (List.map (renderLogLine texts settings) job.logs)
             ]
         , div [ class "py-2 flex flex-row justify-end" ]
             [ button [ class S.secondaryButton, onClick (RequestCancelJob job) ]
@@ -263,8 +262,8 @@ styleJobLog =
     "bg-gray-900 text-xs leading-5 px-2 py-1 font-mono text-gray-100 overflow-auto max-h-96 rounded"
 
 
-renderLogLine : JobLogEvent -> Html Msg
-renderLogLine log =
+renderLogLine : Texts -> UiSettings -> JobLogEvent -> Html Msg
+renderLogLine texts settings log =
     let
         lineStyle =
             case String.toLower log.level of
@@ -284,7 +283,7 @@ renderLogLine log =
                     ""
     in
     span [ class lineStyle ]
-        [ formatIsoDateTime log.time |> text
+        [ texts.formatDateTime log.time |> text
         , text ": "
         , text log.message
         , br [] []

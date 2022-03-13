@@ -8,6 +8,7 @@
 module Messages.Comp.ShareMail exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -60,4 +61,22 @@ die freigegebenen Dokumente befinden sich hier:
 Freundliche Grüße
 """
     , mailSent = "E-Mail gesendet."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , itemMail = Messages.Comp.ItemMail.fr
+    , subjectTemplate = \mt -> "Documents Partagés" ++ (Maybe.map (\n -> ": " ++ n) mt |> Maybe.withDefault "")
+    , bodyTemplate = \url -> """Bonjour,
+
+Ci-joints les documents:
+
+    """ ++ url ++ """
+
+Cordialement
+"""
+    , mailSent = "Mail envoyé."
     }

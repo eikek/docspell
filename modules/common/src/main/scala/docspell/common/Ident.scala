@@ -25,13 +25,15 @@ case class Ident(id: String) {
     !isEmpty
 
   def /(next: Ident): Ident =
-    new Ident(id + "." + next.id)
+    new Ident(id + Ident.concatChar + next.id)
 }
 
 object Ident {
+  private val concatChar = '.'
   implicit val identEq: Eq[Ident] =
     Eq.by(_.id)
 
+  // Note, the slash *must not* be part of valid characters
   val chars: Set[Char] = (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_.@").toSet
 
   def randomUUID[F[_]: Sync]: F[Ident] =
@@ -75,5 +77,4 @@ object Ident {
 
   implicit val order: Order[Ident] =
     Order.by(_.id)
-
 }

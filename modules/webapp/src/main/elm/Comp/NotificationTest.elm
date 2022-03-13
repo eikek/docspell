@@ -126,6 +126,7 @@ view cfg model =
                         }
                 ]
             , rootClasses = "mb-1"
+            , sticky = True
             }
         , case model of
             ModelResp res ->
@@ -137,7 +138,7 @@ view cfg model =
                     [ text (String.join "\n" res.messages)
                     ]
 
-            ModelHttpError err ->
+            ModelHttpError _ ->
                 div [ class "" ]
                     []
 

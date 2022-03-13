@@ -17,6 +17,7 @@ import Browser.Dom as Dom
 import Comp.ItemDetail
 import Comp.ItemDetail.Model
 import Comp.LinkTarget exposing (LinkTarget)
+import Data.ItemIds exposing (ItemIds)
 import Http
 
 
@@ -45,4 +46,5 @@ type alias UpdateResult =
     , sub : Sub Msg
     , linkTarget : LinkTarget
     , removedItem : Maybe String
+    , selectedItems : ItemIds
     }

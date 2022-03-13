@@ -12,7 +12,9 @@ import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.joex.scheduler.Task
+import docspell.logging.Logger
+import docspell.scheduler.Task
+import docspell.store.Store
 
 /** After candidates have been determined, the set is reduced by doing some cross checks.
   * For example: if a organization is suggested as correspondent, the correspondent person
@@ -21,13 +23,15 @@ import docspell.joex.scheduler.Task
   */
 object CrossCheckProposals {
 
-  def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  def apply[F[_]: Sync](
+      store: Store[F]
+  )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
       val proposals = data.finalProposals
       val corrOrg = proposals.find(MetaProposalType.CorrOrg)
       (for {
         orgRef <- OptionT.fromOption[F](corrOrg)
-        persRefs <- OptionT.liftF(EvalProposals.findOrganizationRelation(data, ctx))
+        persRefs <- OptionT.liftF(EvalProposals.findOrganizationRelation(data, store))
         clProps <- OptionT.liftF(
           personOrgCheck[F](ctx.logger, data.classifyProposals, persRefs)(orgRef)
         )
@@ -52,7 +56,7 @@ object CrossCheckProposals {
     mpl.find(MetaProposalType.CorrPerson) match {
       case Some(ppl) =>
         val list = ppl.values.filter(c =>
-          persRefs.get(c.ref.id).exists(_.organization == Some(orgId))
+          persRefs.get(c.ref.id).exists(_.organization.contains(orgId))
         )
 
         if (ppl.values.toList == list) mpl.pure[F]

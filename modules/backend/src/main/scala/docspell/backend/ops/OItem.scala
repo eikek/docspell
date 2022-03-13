@@ -16,14 +16,14 @@ import docspell.backend.fulltext.CreateIndex
 import docspell.backend.item.Merge
 import docspell.common._
 import docspell.ftsclient.FtsClient
+import docspell.logging.Logger
 import docspell.notification.api.Event
+import docspell.scheduler.JobStore
 import docspell.store.queries.{QAttachment, QItem, QMoveAttachment}
-import docspell.store.queue.JobQueue
 import docspell.store.records._
 import docspell.store.{AddResult, Store, UpdateResult}
 
 import doobie.implicits._
-import org.log4s.getLogger
 
 trait OItem[F[_]] {
 
@@ -228,14 +228,14 @@ object OItem {
       store: Store[F],
       fts: FtsClient[F],
       createIndex: CreateIndex[F],
-      queue: JobQueue[F],
+      jobStore: JobStore[F],
       joex: OJoex[F]
   ): Resource[F, OItem[F]] =
     for {
       otag <- OTag(store)
       oorg <- OOrganization(store)
       oequip <- OEquipment(store)
-      logger <- Resource.pure[F, Logger[F]](Logger.log4s(getLogger))
+      logger <- Resource.pure[F, Logger[F]](docspell.logging.getLogger[F])
       oitem <- Resource.pure[F, OItem[F]](new OItem[F] {
 
         def merge(
@@ -288,7 +288,7 @@ object OItem {
                     )
                     ev = Event.TagsChanged.partial(
                       itemIds,
-                      added.toList.flatten.map(_.id).toList,
+                      added.toList.flatten.map(_.id),
                       Nil
                     )
                   } yield AttachedEvent(UpdateResult.success)(ev))
@@ -763,7 +763,7 @@ object OItem {
             job <- OptionT.liftF(
               JobFactory.reprocessItem[F](args, account, Priority.Low)
             )
-            _ <- OptionT.liftF(queue.insertIfNew(job))
+            _ <- OptionT.liftF(jobStore.insertIfNew(job.encode))
             _ <- OptionT.liftF(if (notifyJoex) joex.notifyAllNodes else ().pure[F])
           } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
 
@@ -777,7 +777,8 @@ object OItem {
             jobs <- items
               .map(item => ReProcessItemArgs(item, Nil))
               .traverse(arg => JobFactory.reprocessItem[F](arg, account, Priority.Low))
-            _ <- queue.insertAllIfNew(jobs)
+              .map(_.map(_.encode))
+            _ <- jobStore.insertAllIfNew(jobs)
             _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield items.size)
 
@@ -788,7 +789,7 @@ object OItem {
         ): F[UpdateResult] =
           for {
             job <- JobFactory.convertAllPdfs[F](collective, submitter, Priority.Low)
-            _ <- queue.insertIfNew(job)
+            _ <- jobStore.insertIfNew(job.encode)
             _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
@@ -799,7 +800,7 @@ object OItem {
         ): F[UpdateResult] =
           for {
             job <- JobFactory.makePreview[F](args, account.some)
-            _ <- queue.insertIfNew(job)
+            _ <- jobStore.insertIfNew(job.encode)
             _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
@@ -809,7 +810,7 @@ object OItem {
         ): F[UpdateResult] =
           for {
             job <- JobFactory.allPreviews[F](AllPreviewsArgs(None, storeMode), None)
-            _ <- queue.insertIfNew(job)
+            _ <- jobStore.insertIfNew(job.encode)
             _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 

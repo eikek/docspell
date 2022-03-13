@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.32.0-SNAPSHOT
+  version: 0.34.0-SNAPSHOT
   description: |
     This is the remote API to Docspell. Docspell is a free document
     management system focused on small groups or families.
@@ -2480,6 +2480,59 @@ paths:
       responses:
         422:
           description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /admin/files/cloneFileRepository:
+    post:
+      operationId: "admin-files-cloneFileRepository"
+      tags: [Admin]
+      summary: Copy all files into a new repository
+      description: |
+        Submits a task that will copy all files of the application
+        (from the default file repository) into another file
+        repository as specified in the request. The request may define
+        ids of file repository configurations that must be present in
+        the config file. An empty list means to copy to all enabled
+        file repositories from te default file repository.
+      security:
+        - adminHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FileRepositoryCloneRequest"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /admin/files/integrityCheck:
+    post:
+      operationId: "admin-files-integrityCheck"
+      tags: [ Admin ]
+      summary: Verifies the stored checksum
+      description: |
+        Submits a task that goes through the files and compares the
+        stored checksum (at the time of inserting) against a newly
+        calculated one.
+      security:
+        - adminHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FileIntegrityCheckRequest"
+      responses:
         200:
           description: Ok
           content:
@@ -5433,6 +5486,26 @@ paths:
 
 components:
   schemas:
+    FileIntegrityCheckRequest:
+      description: |
+        Data for running a file integrity check
+      properties:
+        collective:
+          type: string
+          format: ident
+          
+    FileRepositoryCloneRequest:
+      description: |
+        Clone the file repository to a new location.
+      required:
+        - targetRepositories
+      properties:
+        targetRepositories:
+          type: array
+          items:
+            type: string
+            format: ident
+
     BookmarkedQuery:
       description: |
         A query bookmark.

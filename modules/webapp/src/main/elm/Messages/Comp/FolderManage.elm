@@ -8,9 +8,11 @@
 module Messages.Comp.FolderManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.Comp.FolderDetail
 import Messages.Comp.FolderTable
@@ -26,23 +28,34 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , folderDetail = Messages.Comp.FolderDetail.gb
-    , folderTable = Messages.Comp.FolderTable.gb
+    , folderTable = Messages.Comp.FolderTable.gb tz
     , showOwningFoldersOnly = "Show owning folders only"
     , createNewFolder = "Create a new folder"
     , newFolder = "New Folder"
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , folderDetail = Messages.Comp.FolderDetail.de
-    , folderTable = Messages.Comp.FolderTable.de
+    , folderTable = Messages.Comp.FolderTable.de tz
     , showOwningFoldersOnly = "Nur besitzende Ordner anzeigen"
     , createNewFolder = "Neuen Ordner anlegen"
     , newFolder = "Neuer Ordner"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , folderDetail = Messages.Comp.FolderDetail.fr
+    , folderTable = Messages.Comp.FolderTable.fr tz
+    , showOwningFoldersOnly = "Afficher seulement les dossiers dont vous êtes propriétaire"
+    , createNewFolder = "Créer un nouveau dossier"
+    , newFolder = "Nouveau dossier"
     }

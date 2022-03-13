@@ -8,9 +8,11 @@
 module Messages.Comp.ShareManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -44,13 +46,13 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , httpError = Messages.Comp.HttpError.gb
-    , shareTable = Messages.Comp.ShareTable.gb
+    , shareTable = Messages.Comp.ShareTable.gb tz
     , shareForm = Messages.Comp.ShareForm.gb
-    , shareView = Messages.Comp.ShareView.gb
+    , shareView = Messages.Comp.ShareView.gb tz
     , shareMail = Messages.Comp.ShareMail.gb
     , newShare = "New share"
     , copyToClipboard = "Copy to clipboard"
@@ -69,12 +71,12 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , shareTable = Messages.Comp.ShareTable.de
+    , shareTable = Messages.Comp.ShareTable.de tz
     , shareForm = Messages.Comp.ShareForm.de
-    , shareView = Messages.Comp.ShareView.de
+    , shareView = Messages.Comp.ShareView.de tz
     , httpError = Messages.Comp.HttpError.de
     , shareMail = Messages.Comp.ShareMail.de
     , newShare = "Neue Freigabe"
@@ -91,4 +93,29 @@ de =
     , sendViaMail = "Per E-Mail versenden"
     , notOwnerInfo = "Nur der Benutzer, der diese Freigabe erstellt hat, kann diese auch ändern."
     , showOwningSharesOnly = "Nur meine Freigaben anzeigen"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , shareTable = Messages.Comp.ShareTable.fr tz
+    , shareForm = Messages.Comp.ShareForm.fr
+    , shareView = Messages.Comp.ShareView.fr tz
+    , shareMail = Messages.Comp.ShareMail.fr
+    , newShare = "Nouveau partage"
+    , copyToClipboard = "Copier dans le presse-papier"
+    , openInNewTab = "Ouvrir dans un nouvel onglet/fenêtre"
+    , publicUrl = "URL publique"
+    , reallyDeleteShare = "Confirmer la suppression de ce partage ?"
+    , createNewShare = "Créer un nouveau partage"
+    , deleteThisShare = "Supprimer un partage"
+    , errorGeneratingQR = "Erreur  lors de la génération du QR Code"
+    , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    , noName = "Sans nom"
+    , shareInformation = "Partager des informations"
+    , sendViaMail = "Envoyer par E-Mail"
+    , notOwnerInfo = "Seul l'utilisateur ayant créé ce partage peut modifier ses propiétés."
+    , showOwningSharesOnly = "Montrer seulement mes partages"
     }

@@ -7,23 +7,24 @@ object Dependencies {
 
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BinnyVersion = "0.2.2"
-  val CalevVersion = "0.6.1"
+  val BinnyVersion = "0.4.0"
+  val CalevVersion = "0.6.3"
+  val CatsVersion = "2.7.0"
+  val CatsEffectVersion = "3.3.7"
   val CatsParseVersion = "0.3.6"
   val CirceVersion = "0.14.1"
   val ClipboardJsVersion = "2.0.6"
   val DoobieVersion = "1.0.0-RC2"
-  val EmilVersion = "0.11.0"
-  val FlexmarkVersion = "0.62.2"
-  val FlywayVersion = "8.4.4"
-  val Fs2Version = "3.2.4"
-  val Fs2CronVersion = "0.7.1"
+  val EmilVersion = "0.11.2"
+  val FlexmarkVersion = "0.64.0"
+  val FlywayVersion = "8.5.2"
+  val Fs2Version = "3.2.5"
   val H2Version = "1.4.200"
   val Http4sVersion = "0.23.10"
   val Icu4jVersion = "70.1"
   val JavaOtpVersion = "0.3.1"
   val JsoupVersion = "1.14.3"
-  val JwtScalaVersion = "9.0.3"
+  val JwtScalaVersion = "9.0.4"
   val KindProjectorVersion = "0.10.3"
   val KittensVersion = "2.3.2"
   val LevigoJbig2Version = "2.0"
@@ -36,18 +37,29 @@ object Dependencies {
   val PdfboxVersion = "2.0.25"
   val PdfjsViewerVersion = "2.9.359"
   val PoiVersion = "4.1.2"
-  val PostgresVersion = "42.3.2"
+  val PostgresVersion = "42.3.3"
   val PureConfigVersion = "0.17.1"
   val ScalaJavaTimeVersion = "2.3.0"
   val ScodecBitsVersion = "1.1.30"
-  val Slf4jVersion = "1.7.35"
+  val ScribeVersion = "3.8.2"
+  val Slf4jVersion = "1.7.36"
+  val SourcecodeVersion = "0.2.8"
   val StanfordNlpVersion = "4.4.0"
-  val TikaVersion = "2.2.1"
-  val YamuscaVersion = "0.8.2"
-  val SwaggerUIVersion = "4.4.1-1"
-  val TestContainerVersion = "0.40.0"
-  val TwelveMonkeysVersion = "3.8.1"
+  val TikaVersion = "2.3.0"
+  val YamuscaVersion = "0.9.0"
+  val SwaggerUIVersion = "4.5.2"
+  val TestContainerVersion = "0.40.2"
+  val TwelveMonkeysVersion = "3.8.2"
   val JQueryVersion = "3.5.1"
+
+  val scribe = Seq(
+    "com.outr" %% "scribe" % ScribeVersion,
+    "com.outr" %% "scribe-slf4j" % ScribeVersion
+  )
+
+  val sourcecode = Seq(
+    "com.lihaoyi" %% "sourcecode" % SourcecodeVersion
+  )
 
   val jwtScala = Seq(
     "com.github.jwt-scala" %% "jwt-circe" % JwtScalaVersion
@@ -65,6 +77,14 @@ object Dependencies {
     "com.dimafeng" %% "testcontainers-scala-munit" % TestContainerVersion,
     "com.dimafeng" %% "testcontainers-scala-mariadb" % TestContainerVersion,
     "com.dimafeng" %% "testcontainers-scala-postgresql" % TestContainerVersion
+  )
+
+  val cats = Seq(
+    "org.typelevel" %% "cats-core" % CatsVersion
+  )
+
+  val catsEffect = Seq(
+    "org.typelevel" %% "cats-effect" % CatsEffectVersion
   )
 
   val catsParse = Seq(
@@ -89,7 +109,7 @@ object Dependencies {
     "com.github.eikek" %% "calev-core" % CalevVersion
   )
   val calevFs2 = Seq(
-    "eu.timepit" %% "fs2-cron-calev" % Fs2CronVersion
+    "com.github.eikek" %% "calev-fs2" % CalevVersion
   )
   val calevCirce = Seq(
     "com.github.eikek" %% "calev-circe" % CalevVersion
@@ -97,9 +117,6 @@ object Dependencies {
 
   val jclOverSlf4j = Seq(
     "org.slf4j" % "jcl-over-slf4j" % Slf4jVersion
-  )
-  val julOverSlf4j = Seq(
-    "org.slf4j" % "jul-to-slf4j" % Slf4jVersion
   )
 
   val poi = Seq(
@@ -210,10 +227,13 @@ object Dependencies {
     "org.mindrot" % "jbcrypt" % BcryptVersion
   )
 
-  val fs2 = Seq(
-    "co.fs2" %% "fs2-core" % Fs2Version,
+  val fs2Core = Seq(
+    "co.fs2" %% "fs2-core" % Fs2Version
+  )
+  val fs2Io = Seq(
     "co.fs2" %% "fs2-io" % Fs2Version
   )
+  val fs2 = fs2Core ++ fs2Io
 
   val http4sClient = Seq(
     "org.http4s" %% "http4s-blaze-client" % Http4sVersion
@@ -245,14 +265,14 @@ object Dependencies {
     "io.circe" %% "circe-generic-extras" % CirceVersion
   )
 
-  // https://github.com/Log4s/log4s;ASL 2.0
-  val loggingApi = Seq(
-    "org.log4s" %% "log4s" % Log4sVersion
-  )
+  // // https://github.com/Log4s/log4s;ASL 2.0
+  // val loggingApi = Seq(
+  //   "org.log4s" %% "log4s" % Log4sVersion
+  // )
 
-  val logging = Seq(
-    "ch.qos.logback" % "logback-classic" % LogbackVersion
-  )
+  // val logging = Seq(
+  //   "ch.qos.logback" % "logback-classic" % LogbackVersion
+  // )
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0
@@ -282,7 +302,9 @@ object Dependencies {
 
   val binny = Seq(
     "com.github.eikek" %% "binny-core" % BinnyVersion,
-    "com.github.eikek" %% "binny-jdbc" % BinnyVersion
+    "com.github.eikek" %% "binny-jdbc" % BinnyVersion,
+    "com.github.eikek" %% "binny-minio" % BinnyVersion,
+    "com.github.eikek" %% "binny-fs" % BinnyVersion
   )
 
   // https://github.com/flyway/flyway
@@ -293,7 +315,8 @@ object Dependencies {
   )
 
   val yamusca = Seq(
-    "com.github.eikek" %% "yamusca-core" % YamuscaVersion
+    "com.github.eikek" %% "yamusca-core" % YamuscaVersion,
+    "com.github.eikek" %% "yamusca-derive" % YamuscaVersion
   )
   val yamuscaCirce = Seq(
     "com.github.eikek" %% "yamusca-circe" % YamuscaVersion

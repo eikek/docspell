@@ -9,7 +9,6 @@ package docspell.joexapi.client
 import cats.effect._
 import cats.implicits._
 
-import docspell.common.syntax.all._
 import docspell.common.{Ident, LenientUri}
 import docspell.joexapi.model.BasicResult
 
@@ -17,7 +16,6 @@ import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.circe.CirceEntityDecoder
 import org.http4s.client.Client
 import org.http4s.{Method, Request, Uri}
-import org.log4s.getLogger
 
 trait JoexClient[F[_]] {
 
@@ -31,22 +29,21 @@ trait JoexClient[F[_]] {
 
 object JoexClient {
 
-  private[this] val logger = getLogger
-
   def apply[F[_]: Async](client: Client[F]): JoexClient[F] =
     new JoexClient[F] with CirceEntityDecoder {
+      private[this] val logger = docspell.logging.getLogger[F]
 
       def notifyJoex(base: LenientUri): F[BasicResult] = {
         val notifyUrl = base / "api" / "v1" / "notify"
         val req = Request[F](Method.POST, uri(notifyUrl))
-        logger.fdebug(s"Notify joex at ${notifyUrl.asString}") *>
+        logger.debug(s"Notify joex at ${notifyUrl.asString}") *>
           client.expect[BasicResult](req)
       }
 
       def notifyJoexIgnoreErrors(base: LenientUri): F[Unit] =
-        notifyJoex(base).attempt.map {
+        notifyJoex(base).attempt.flatMap {
           case Right(BasicResult(succ, msg)) =>
-            if (succ) ()
+            if (succ) ().pure[F]
             else
               logger.warn(
                 s"Notifying Joex instance '${base.asString}' returned with failure: $msg"

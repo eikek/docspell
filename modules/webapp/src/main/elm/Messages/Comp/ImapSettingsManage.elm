@@ -8,6 +8,7 @@
 module Messages.Comp.ImapSettingsManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -56,4 +57,18 @@ de =
     , reallyDeleteSettings = "Diese Verbindung wirklich löschen?"
     , deleteThisEntry = "Lösche diese Verbindung"
     , fillRequiredFields = "Bitte die erforderlichen Felder ausfüllen."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , imapForm = Messages.Comp.ImapSettingsForm.fr
+    , imapTable = Messages.Comp.ImapSettingsTable.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , addNewImapSettings = "Ajouter un connexion IMAP"
+    , newSettings = "Ajouter une nouvelle connexion"
+    , reallyDeleteSettings = "Confirmer la suppression de cette connexion ?"
+    , deleteThisEntry = "Supprimer cette entrée"
+    , fillRequiredFields = "Veuillez compléter les champs requis"
     }

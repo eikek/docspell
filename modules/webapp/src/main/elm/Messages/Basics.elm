@@ -8,6 +8,7 @@
 module Messages.Basics exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -141,5 +142,51 @@ Nachricht verschwindet dann.
     , shares = "Freigaben"
     , sources = "Quellen"
     , periodicQueries = "Periodische Abfragen"
+    , notificationHooks = "Webhooks"
+    }
+
+
+fr : Texts
+fr =
+    { incoming = "Recus"
+    , outgoing = "Envoyés"
+    , deleted = "Supprimés"
+    , tags = "Tags"
+    , items = "Documents"
+    , submit = "Envoyer"
+    , submitThisForm = "Envoyer ce formulaire"
+    , cancel = "Annuler"
+    , delete = "Supprimer"
+    , created = "Créé"
+    , edit = "Editer"
+    , back = "Retour"
+    , backToList = "Retour à la liste"
+    , searchPlaceholder = "Rechercher…"
+    , selectPlaceholder = "Sélectionner…"
+    , id = "Id"
+    , ok = "Ok"
+    , yes = "Oui"
+    , no = "Non"
+    , chooseTag = "Choisir un  tag…"
+    , loading = "Chargement…"
+    , name = "Nom"
+    , organization = "Organisation"
+    , person = "Personne"
+    , equipment = "Équipement"
+    , folder = "Dossier"
+    , date = "Date"
+    , correspondent = "Correspondant"
+    , concerning = "Concerné"
+    , customFields = "Champs Personnalisés"
+    , direction = "Direction"
+    , folderNotOwnerWarning =
+        """
+Vous n'êtes **pas membre** de ce dossier. Ce document sera désormais
+**masqué** de toute recherche. Utilisez un dossier dont vous êtes membre
+afin de rendre ce document visible. Ce message sera ainsi masqué.
+                      """
+    , shares = "Partages"
+    , sources = "Sources"
+    , periodicQueries = "Requêtes Périodiques"
     , notificationHooks = "Webhooks"
     }

@@ -25,6 +25,7 @@ import Comp.MenuBar as MB
 import Comp.PowerSearchInput
 import Data.CalEvent exposing (CalEvent)
 import Data.Flags exposing (Flags)
+import Data.TimeZone exposing (TimeZone)
 import Data.UiSettings exposing (UiSettings)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
@@ -196,7 +197,7 @@ makeSettings model =
         query =
             let
                 qstr =
-                    model.queryModel.input
+                    Comp.PowerSearchInput.getSearchString model.queryModel
 
                 bm =
                     Comp.BookmarkDropdown.getSelectedId model.bookmarkDropdown
@@ -254,13 +255,14 @@ withValidSettings mkcmd model =
             }
 
 
-update : Flags -> Msg -> Model -> UpdateResult
-update flags msg model =
+update : Flags -> TimeZone -> Msg -> Model -> UpdateResult
+update flags tz msg model =
     case msg of
         CalEventMsg lmsg ->
             let
                 ( cm, cc, cs ) =
                     Comp.CalEventInput.update flags
+                        tz
                         model.schedule
                         lmsg
                         model.scheduleModel
@@ -409,7 +411,6 @@ view texts extraClasses settings model =
                 [ Html.map QueryMsg
                     (Comp.PowerSearchInput.viewInput
                         { placeholder = texts.queryLabel
-                        , extraAttrs = []
                         }
                         model.queryModel
                     )
@@ -490,6 +491,7 @@ view texts extraClasses settings model =
                     [ startOnceBtn
                     ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ classList

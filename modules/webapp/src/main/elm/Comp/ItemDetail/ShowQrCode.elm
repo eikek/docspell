@@ -8,13 +8,11 @@
 module Comp.ItemDetail.ShowQrCode exposing (UrlId(..), qrCodeElementId, view, view1)
 
 import Api
-import Comp.Basic as B
 import Comp.ItemDetail.Model exposing (Model, Msg(..), isShowQrAttach, isShowQrItem)
 import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import QRCode
 import Styles as S
 import Svg.Attributes as SvgA
@@ -72,16 +70,17 @@ view1 flags classes urlId =
                     , icon = Just "fa fa-print"
                     , label = "Print"
                     }
-                ]
-            , end =
-                [ MB.SecondaryButton
+                , MB.SecondaryButton
                     { tagger = toggleShowQr
                     , title = "Close"
                     , icon = Just "fa fa-times"
                     , label = "Close"
                     }
                 ]
+            , end =
+                []
             , rootClasses = "w-full mt-2 mb-4"
+            , sticky = True
             }
         , div [ class "flex flex-col sm:flex-row sm:space-x-2" ]
             [ div

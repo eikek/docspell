@@ -17,10 +17,8 @@ import org.http4s._
 import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
-import org.log4s.getLogger
 
 object CodeFlowRoutes {
-  private[this] val log4sLogger = getLogger
 
   def apply[F[_]: Async](
       enabled: Boolean,
@@ -38,7 +36,7 @@ object CodeFlowRoutes {
   ): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
-    val logger = Logger.log4s[F](log4sLogger)
+    val logger = docspell.logging.getLogger[F]
     HttpRoutes.of[F] {
       case req @ GET -> Root / Ident(id) =>
         config.findProvider(id) match {

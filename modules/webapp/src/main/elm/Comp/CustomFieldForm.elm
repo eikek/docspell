@@ -416,4 +416,5 @@ viewButtons2 texts model =
             else
                 []
         , rootClasses = "mb-4"
+        , sticky = True
         }

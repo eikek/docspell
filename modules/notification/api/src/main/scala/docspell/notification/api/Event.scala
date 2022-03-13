@@ -12,7 +12,7 @@ import cats.implicits._
 
 import docspell.common._
 
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, Json}
 
 /** An event generated in the platform. */
 sealed trait Event {
@@ -203,7 +203,9 @@ object Event {
       args: String,
       state: JobState,
       subject: String,
-      submitter: Ident
+      submitter: Ident,
+      resultData: Json,
+      resultMsg: Option[String]
   ) extends Event {
     val eventType = JobDone
     val baseUrl = None
@@ -220,7 +222,9 @@ object Event {
           "",
           JobState.running,
           "Process 3 files",
-          account.user
+          account.user,
+          Json.Null,
+          None
         )
       } yield ev
   }

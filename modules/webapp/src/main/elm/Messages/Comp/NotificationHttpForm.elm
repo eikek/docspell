@@ -8,6 +8,7 @@
 module Messages.Comp.NotificationHttpForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -31,4 +32,11 @@ de : Texts
 de =
     { basics = Messages.Basics.de
     , httpUrl = "URL"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , httpUrl = "URL HTTP"
     }

@@ -11,6 +11,7 @@ import Comp.Basic as B
 import Comp.ItemDetail.MultiEditMenu
 import Comp.MenuBar as MB
 import Comp.SearchMenu
+import Data.Environment as Env
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -22,8 +23,8 @@ import Set
 import Styles as S
 
 
-view : Texts -> Flags -> UiSettings -> Model -> Html Msg
-view texts flags settings model =
+view : Texts -> Env.View -> Model -> Html Msg
+view texts env model =
     div
         [ class "flex flex-col"
         ]
@@ -49,25 +50,26 @@ view texts flags settings model =
                 ]
             , start = []
             , rootClasses = "text-sm w-full bg-blue-50 pt-2 hidden"
+            , sticky = True
             }
         , div [ class "flex flex-col" ]
             (case model.viewMode of
                 SelectView svm ->
                     case svm.action of
                         EditSelected ->
-                            viewEditMenu texts flags svm settings
+                            viewEditMenu texts env.flags svm env.settings
 
                         _ ->
-                            viewSearch texts flags settings model
+                            viewSearch texts env model
 
                 _ ->
-                    viewSearch texts flags settings model
+                    viewSearch texts env model
             )
         ]
 
 
-viewSearch : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
-viewSearch texts flags settings model =
+viewSearch : Texts -> Env.View -> Model -> List (Html Msg)
+viewSearch texts env model =
     [ MB.viewSide
         { start =
             [ MB.CustomElement <|
@@ -81,18 +83,20 @@ viewSearch texts flags settings model =
             ]
         , end = []
         , rootClasses = "my-1 text-xs hidden sm:flex"
+        , sticky = True
         }
     , let
         searchMenuCfg =
             { overrideTabLook = \_ -> identity
+            , selectedItems = env.selectedItems
             }
       in
       Html.map SearchMenuMsg
         (Comp.SearchMenu.viewDrop2 texts.searchMenu
             model.dragDropData
-            flags
+            env.flags
             searchMenuCfg
-            settings
+            env.settings
             model.searchMenuModel
         )
     ]
@@ -140,6 +144,7 @@ viewEditMenu texts flags svm settings =
             ]
         , end = []
         , rootClasses = "mt-2 text-sm"
+        , sticky = True
         }
     , Html.map EditMenuMsg
         (Comp.ItemDetail.MultiEditMenu.view2

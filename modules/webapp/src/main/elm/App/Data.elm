@@ -19,6 +19,7 @@ import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
+import Data.ItemIds exposing (ItemIds)
 import Data.ServerEvent exposing (ServerEvent)
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme exposing (UiTheme)
@@ -69,6 +70,7 @@ type alias Model =
     , langMenuOpen : Bool
     , showNewItemsArrived : Bool
     , jobsWaiting : Int
+    , selectedItems : ItemIds
     }
 
 
@@ -133,6 +135,7 @@ init key url flags_ settings =
       , langMenuOpen = False
       , showNewItemsArrived = False
       , jobsWaiting = 0
+      , selectedItems = Data.ItemIds.empty
       }
     , Cmd.batch
         [ Cmd.map DashboardMsg dbc

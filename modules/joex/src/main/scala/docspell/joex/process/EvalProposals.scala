@@ -12,25 +12,28 @@ import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.Task
+import docspell.store.Store
 import docspell.store.records.{RAttachmentMeta, RPerson}
 
 /** Calculate weights for candidates that adds the most likely candidate a lower number.
   */
 object EvalProposals {
 
-  def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    Task { ctx =>
+  def apply[F[_]: Sync](
+      store: Store[F]
+  )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+    Task { _ =>
       for {
         now <- Timestamp.current[F]
-        personRefs <- findOrganizationRelation[F](data, ctx)
+        personRefs <- findOrganizationRelation[F](data, store)
         metas = data.metas.map(calcCandidateWeight(now.toUtcDate, personRefs))
       } yield data.copy(metas = metas)
     }
 
   def findOrganizationRelation[F[_]: Sync](
       data: ItemData,
-      ctx: Context[F, _]
+      store: Store[F]
   ): F[Map[Ident, PersonRef]] = {
     val corrPersIds = data.metas
       .map(_.proposals)
@@ -38,7 +41,7 @@ object EvalProposals {
       .flatMap(_.find(MetaProposalType.CorrPerson))
       .flatMap(_.values.toList.map(_.ref.id))
       .toSet
-    ctx.store
+    store
       .transact(RPerson.findOrganization(corrPersIds))
       .map(_.map(p => (p.id, p)).toMap)
   }

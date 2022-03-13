@@ -25,6 +25,7 @@ import Comp.ItemCard
 import Comp.LinkTarget exposing (LinkTarget)
 import Data.Flags exposing (Flags)
 import Data.ItemArrange exposing (ItemArrange)
+import Data.ItemIds exposing (ItemIdChange)
 import Data.ItemSelection exposing (ItemSelection)
 import Data.Items
 import Data.UiSettings exposing (UiSettings)
@@ -33,7 +34,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Comp.ItemCardList exposing (Texts)
 import Page exposing (Page(..))
-import Set exposing (Set)
 import Styles as S
 import Util.ItemDragDrop as DD
 import Util.List
@@ -84,7 +84,7 @@ type alias UpdateResult =
     { model : Model
     , cmd : Cmd Msg
     , dragModel : DD.Model
-    , selection : ItemSelection
+    , selection : ItemIdChange
     , linkTarget : LinkTarget
     , toggleOpenRow : Maybe String
     }
@@ -106,7 +106,7 @@ updateDrag dm _ msg model =
             UpdateResult newModel
                 Cmd.none
                 dm
-                Data.ItemSelection.Inactive
+                Data.ItemIds.noChange
                 Comp.LinkTarget.LinkNone
                 Nothing
 
@@ -115,7 +115,7 @@ updateDrag dm _ msg model =
                 UpdateResult model
                     Cmd.none
                     dm
-                    Data.ItemSelection.Inactive
+                    Data.ItemIds.noChange
                     Comp.LinkTarget.LinkNone
                     Nothing
 
@@ -127,7 +127,7 @@ updateDrag dm _ msg model =
                 UpdateResult newModel
                     Cmd.none
                     dm
-                    Data.ItemSelection.Inactive
+                    Data.ItemIds.noChange
                     Comp.LinkTarget.LinkNone
                     Nothing
 
@@ -154,7 +154,7 @@ updateDrag dm _ msg model =
             UpdateResult { model | results = removeItemById id model.results }
                 Cmd.none
                 dm
-                Data.ItemSelection.Inactive
+                Data.ItemIds.noChange
                 Comp.LinkTarget.LinkNone
                 Nothing
 
@@ -208,7 +208,9 @@ itemContainerCss : ViewConfig -> String
 itemContainerCss cfg =
     case cfg.arrange of
         Data.ItemArrange.Cards ->
-            "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2"
+            "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 "
+                ++ "xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6 "
+                ++ "5xl:grid-cols-8 6xl:grid-cols-10 gap-2"
 
         Data.ItemArrange.List ->
             "flex flex-col divide-y"

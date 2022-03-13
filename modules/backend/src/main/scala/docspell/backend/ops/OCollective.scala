@@ -14,11 +14,11 @@ import docspell.backend.JobFactory
 import docspell.backend.PasswordCrypt
 import docspell.backend.ops.OCollective._
 import docspell.common._
+import docspell.scheduler.JobStore
+import docspell.scheduler.usertask.{UserTask, UserTaskScope, UserTaskStore}
 import docspell.store.UpdateResult
 import docspell.store.queries.{QCollective, QUser}
-import docspell.store.queue.JobQueue
 import docspell.store.records._
-import docspell.store.usertask.{UserTask, UserTaskScope, UserTaskStore}
 import docspell.store.{AddResult, Store}
 
 import com.github.eikek.calev._
@@ -133,7 +133,7 @@ object OCollective {
   def apply[F[_]: Async](
       store: Store[F],
       uts: UserTaskStore[F],
-      queue: JobQueue[F],
+      jobStore: JobStore[F],
       joex: OJoex[F]
   ): Resource[F, OCollective[F]] =
     Resource.pure[F, OCollective[F]](new OCollective[F] {
@@ -196,32 +196,32 @@ object OCollective {
         for {
           id <- Ident.randomId[F]
           args = LearnClassifierArgs(collective)
-          ut <- UserTask(
+          ut = UserTask(
             id,
             LearnClassifierArgs.taskName,
             true,
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
             None,
             args
-          ).encode.toPeriodicTask(UserTaskScope(collective), args.makeSubject.some)
-          job <- ut.toJob
-          _ <- queue.insert(job)
+          )
+          _ <- uts
+            .updateOneTask(UserTaskScope(collective), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
         } yield ()
 
       def startEmptyTrash(args: EmptyTrashArgs): F[Unit] =
         for {
           id <- Ident.randomId[F]
-          ut <- UserTask(
+          ut = UserTask(
             id,
             EmptyTrashArgs.taskName,
             true,
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
             None,
             args
-          ).encode.toPeriodicTask(UserTaskScope(args.collective), args.makeSubject.some)
-          job <- ut.toJob
-          _ <- queue.insert(job)
+          )
+          _ <- uts
+            .updateOneTask(UserTaskScope(args.collective), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
         } yield ()
 
@@ -321,7 +321,7 @@ object OCollective {
             AllPreviewsArgs(Some(account.collective), storeMode),
             Some(account.user)
           )
-          _ <- queue.insertIfNew(job)
+          _ <- jobStore.insertIfNew(job.encode)
           _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield UpdateResult.success
 

@@ -11,6 +11,7 @@ import cats.implicits._
 import fs2.{Pipe, Stream}
 
 import docspell.common._
+import docspell.logging.Logger
 import docspell.store.syntax.MimeTypes._
 
 import emil.javamail.syntax._
@@ -69,7 +70,7 @@ object ReadMail {
           HtmlBodyViewConfig.default.copy(
             textToHtml = MarkdownBody.makeHtml(markdownCfg)
           )
-        ).map(makeHtmlBinary[F] _).map(b => Some(b))
+        ).map(makeHtmlBinary[F]).map(b => Some(b))
       }
 
     for {

@@ -18,9 +18,11 @@ import Comp.PowerSearchInput
 import Comp.PublishItems
 import Comp.SearchMenu
 import Comp.SearchStatsView
+import Data.Environment as Env
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
 import Data.ItemArrange
+import Data.ItemIds exposing (ItemIds)
 import Data.ItemSelection
 import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
@@ -36,27 +38,27 @@ import Styles as S
 import Util.Html
 
 
-viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar texts visible flags settings model =
+viewSidebar : Texts -> Env.View -> Model -> Html Msg
+viewSidebar texts env model =
     div
         [ id "sidebar"
         , class S.sidebar
         , class S.sidebarBg
-        , classList [ ( "hidden", not visible ) ]
+        , classList [ ( "hidden", not env.sidebarVisible ) ]
         ]
-        [ Page.Search.SideMenu.view texts.sideMenu flags settings model
+        [ Page.Search.SideMenu.view texts.sideMenu env model
         ]
 
 
-viewContent : Texts -> Flags -> UiSettings -> Model -> Html Msg
-viewContent texts flags settings model =
+viewContent : Texts -> Env.View -> Model -> Html Msg
+viewContent texts env model =
     div
         [ id "item-card-list" -- this id is used in scroll-to-card
         , class S.content
         ]
-        (searchStats texts flags settings model
-            ++ itemsBar texts flags settings model
-            ++ mainView texts flags settings model
+        (searchStats texts env.flags env.settings model
+            ++ itemsBar texts env model
+            ++ mainView texts env model
             ++ confirmModal texts model
         )
 
@@ -65,8 +67,8 @@ viewContent texts flags settings model =
 --- Helpers
 
 
-mainView : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
-mainView texts flags settings model =
+mainView : Texts -> Env.View -> Model -> List (Html Msg)
+mainView texts env model =
     let
         otherView =
             case model.viewMode of
@@ -75,13 +77,13 @@ mainView texts flags settings model =
                         MergeSelected ->
                             Just
                                 [ div [ class "sm:relative mb-2" ]
-                                    (itemMergeView texts settings svm)
+                                    (itemMergeView texts env.settings svm)
                                 ]
 
                         PublishSelected ->
                             Just
                                 [ div [ class "sm:relative mb-2" ]
-                                    (itemPublishView texts settings flags svm)
+                                    (itemPublishView texts env.settings env.flags svm)
                                 ]
 
                         _ ->
@@ -90,7 +92,7 @@ mainView texts flags settings model =
                 PublishView pm ->
                     Just
                         [ div [ class "sm:relative mb-2" ]
-                            (publishResults texts settings flags model pm)
+                            (publishResults texts env.settings env.flags model pm)
                         ]
 
                 SearchView ->
@@ -101,8 +103,8 @@ mainView texts flags settings model =
             body
 
         Nothing ->
-            bookmarkQueryWidget texts settings flags model
-                ++ itemCardList texts flags settings model
+            bookmarkQueryWidget texts env.settings env.flags model
+                ++ itemCardList texts env model
 
 
 bookmarkQueryWidget : Texts -> UiSettings -> Flags -> Model -> List (Html Msg)
@@ -182,21 +184,21 @@ confirmModal texts model =
             []
 
 
-itemsBar : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
-itemsBar texts flags settings model =
+itemsBar : Texts -> Env.View -> Model -> List (Html Msg)
+itemsBar texts env model =
     case model.viewMode of
         SearchView ->
-            [ defaultMenuBar texts flags settings model ]
+            [ defaultMenuBar texts env model ]
 
         SelectView svm ->
-            [ editMenuBar texts model svm ]
+            [ editMenuBar texts model env.selectedItems svm ]
 
         PublishView _ ->
-            [ defaultMenuBar texts flags settings model ]
+            [ defaultMenuBar texts env model ]
 
 
-defaultMenuBar : Texts -> Flags -> UiSettings -> Model -> Html Msg
-defaultMenuBar texts flags settings model =
+defaultMenuBar : Texts -> Env.View -> Model -> Html Msg
+defaultMenuBar texts env model =
     let
         btnStyle =
             S.secondaryBasicButton ++ " text-sm"
@@ -224,7 +226,7 @@ defaultMenuBar texts flags settings model =
                         |> Maybe.withDefault (value "")
                     , class (String.replace "rounded" "" S.textInput)
                     , class "py-2 text-sm"
-                    , if flags.config.fullTextSearchEnabled then
+                    , if env.flags.config.fullTextSearchEnabled then
                         class " border-r-0 rounded-l"
 
                       else
@@ -235,7 +237,7 @@ defaultMenuBar texts flags settings model =
                     [ class S.secondaryBasicButtonPlain
                     , class "text-sm px-4 py-2 border rounded-r"
                     , classList
-                        [ ( "hidden", not flags.config.fullTextSearchEnabled )
+                        [ ( "hidden", not env.flags.config.fullTextSearchEnabled )
                         ]
                     , href "#"
                     , onClick ToggleSearchType
@@ -250,7 +252,6 @@ defaultMenuBar texts flags settings model =
                 [ Html.map PowerSearchMsg
                     (Comp.PowerSearchInput.viewInput
                         { placeholder = texts.powerSearchPlaceholder
-                        , extraAttrs = []
                         }
                         model.powerSearchInput
                     )
@@ -259,10 +260,10 @@ defaultMenuBar texts flags settings model =
                 ]
 
         isCardView =
-            settings.itemSearchArrange == Data.ItemArrange.Cards
+            env.settings.itemSearchArrange == Data.ItemArrange.Cards
 
         isListView =
-            settings.itemSearchArrange == Data.ItemArrange.List
+            env.settings.itemSearchArrange == Data.ItemArrange.List
 
         menuSep =
             { icon = i [] []
@@ -275,7 +276,7 @@ defaultMenuBar texts flags settings model =
     MB.view
         { start =
             [ MB.CustomElement <|
-                if settings.powerSearchEnabled then
+                if env.settings.powerSearchEnabled then
                     powerSearchBar
 
                 else
@@ -315,7 +316,7 @@ defaultMenuBar texts flags settings model =
                 , menuOpen = model.viewMenuOpen
                 , items =
                     [ { icon =
-                            if settings.itemSearchShowGroups then
+                            if env.settings.itemSearchShowGroups then
                                 i [ class "fa fa-check-square font-thin" ] []
 
                             else
@@ -369,16 +370,16 @@ defaultMenuBar texts flags settings model =
                     , menuSep
                     , { label = texts.shareResults
                       , icon = Icons.shareIcon ""
-                      , disabled = createQuery model == Nothing
+                      , disabled = createQuery env.selectedItems model == Nothing
                       , attrs =
                             [ title <|
-                                if createQuery model == Nothing then
+                                if createQuery env.selectedItems model == Nothing then
                                     texts.nothingSelectedToShare
 
                                 else
                                     texts.publishCurrentQueryTitle
                             , href "#"
-                            , if createQuery model == Nothing then
+                            , if createQuery env.selectedItems model == Nothing then
                                 class ""
 
                               else
@@ -387,16 +388,16 @@ defaultMenuBar texts flags settings model =
                       }
                     , { label = texts.bookmarkQuery
                       , icon = i [ class "fa fa-bookmark" ] []
-                      , disabled = createQuery model == Nothing
+                      , disabled = createQuery env.selectedItems model == Nothing
                       , attrs =
                             [ title <|
-                                if createQuery model == Nothing then
+                                if createQuery env.selectedItems model == Nothing then
                                     texts.nothingToBookmark
 
                                 else
                                     texts.bookmarkQuery
                             , href "#"
-                            , if createQuery model == Nothing then
+                            , if createQuery env.selectedItems model == Nothing then
                                 class ""
 
                               else
@@ -404,7 +405,7 @@ defaultMenuBar texts flags settings model =
                             ]
                       }
                     , { label =
-                            if settings.cardPreviewFullWidth then
+                            if env.settings.cardPreviewFullWidth then
                                 texts.fullHeightPreviewTitle
 
                             else
@@ -416,7 +417,7 @@ defaultMenuBar texts flags settings model =
                             , onClick TogglePreviewFullWidth
                             , classList
                                 [ ( "hidden sm:inline-block", False )
-                                , ( "bg-gray-200 dark:bg-slate-600", settings.cardPreviewFullWidth )
+                                , ( "bg-gray-200 dark:bg-slate-600", env.settings.cardPreviewFullWidth )
                                 ]
                             ]
                       }
@@ -424,14 +425,15 @@ defaultMenuBar texts flags settings model =
                 }
             ]
         , rootClasses = "mb-2 pt-1 dark:bg-slate-700 items-center text-sm"
+        , sticky = True
         }
 
 
-editMenuBar : Texts -> Model -> SelectViewModel -> Html Msg
-editMenuBar texts model svm =
+editMenuBar : Texts -> Model -> ItemIds -> SelectViewModel -> Html Msg
+editMenuBar texts model selectedItems svm =
     let
         selectCount =
-            Set.size svm.ids
+            Data.ItemIds.size selectedItems
 
         btnStyle =
             S.secondaryBasicButton ++ " text-sm"
@@ -551,6 +553,7 @@ editMenuBar texts model svm =
                 }
             ]
         , rootClasses = "mb-2 pt-2 sticky top-0 text-sm"
+        , sticky = True
         }
 
 
@@ -564,8 +567,8 @@ searchStats texts _ settings model =
         []
 
 
-itemCardList : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
-itemCardList texts flags settings model =
+itemCardList : Texts -> Env.View -> Model -> List (Html Msg)
+itemCardList texts env model =
     let
         previewUrl attach =
             Api.attachmentPreviewURL attach.id
@@ -580,15 +583,15 @@ itemCardList texts flags settings model =
             , previewUrlFallback = previewUrlFallback
             , attachUrl = .id >> Api.fileURL
             , detailPage = .id >> ItemDetailPage
-            , arrange = settings.itemSearchArrange
-            , showGroups = settings.itemSearchShowGroups
+            , arrange = env.settings.itemSearchArrange
+            , showGroups = env.settings.itemSearchShowGroups
             , rowOpen = \id -> Set.member "all" model.itemRowsOpen || Set.member id model.itemRowsOpen
             }
 
         itemViewCfg =
             case model.viewMode of
-                SelectView svm ->
-                    viewCfg (Data.ItemSelection.Active svm.ids)
+                SelectView _ ->
+                    viewCfg (Data.ItemSelection.Active env.selectedItems)
 
                 _ ->
                     viewCfg Data.ItemSelection.Inactive
@@ -596,11 +599,11 @@ itemCardList texts flags settings model =
     [ Html.map ItemCardListMsg
         (Comp.ItemCardList.view texts.itemCardList
             itemViewCfg
-            settings
-            flags
+            env.settings
+            env.flags
             model.itemListModel
         )
-    , loadMore texts settings model
+    , loadMore texts env.settings model
     ]
 
 

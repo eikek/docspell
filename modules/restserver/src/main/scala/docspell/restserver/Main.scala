@@ -9,17 +9,17 @@ package docspell.restserver
 import cats.effect._
 
 import docspell.common._
-
-import org.log4s.getLogger
+import docspell.logging.impl.ScribeConfigure
 
 object Main extends IOApp {
-  private[this] val logger: Logger[IO] = Logger.log4s(getLogger)
 
   private val connectEC =
     ThreadFactories.fixed[IO](5, ThreadFactories.ofName("docspell-dbconnect"))
 
   def run(args: List[String]) = for {
     cfg <- ConfigFile.loadConfig[IO](args)
+    _ <- ScribeConfigure.configure[IO](cfg.logging)
+    logger = docspell.logging.getLogger[IO]
     banner = Banner(
       "REST Server",
       BuildInfo.version,
@@ -28,7 +28,8 @@ object Main extends IOApp {
       Option(System.getProperty("config.file")),
       cfg.appId,
       cfg.baseUrl,
-      Some(cfg.fullTextSearch.solr.url).filter(_ => cfg.fullTextSearch.enabled)
+      Some(cfg.fullTextSearch.solr.url).filter(_ => cfg.fullTextSearch.enabled),
+      cfg.backend.files.defaultStoreConfig
     )
     _ <- logger.info(s"\n${banner.render("***>")}")
     _ <-

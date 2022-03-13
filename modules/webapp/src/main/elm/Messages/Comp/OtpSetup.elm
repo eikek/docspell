@@ -8,9 +8,11 @@
 module Messages.Comp.OtpSetup exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Comp.HttpError
 import Messages.DateFormat
@@ -43,10 +45,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { httpError = Messages.Comp.HttpError.gb
-    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.English
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.English tz
     , errorTitle = "Error"
     , stateErrorInfoText = "There was a problem determining the current state of your two factor authentication scheme:"
     , errorGeneratingQR = "Error generating QR Code"
@@ -70,10 +72,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { httpError = Messages.Comp.HttpError.de
-    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.German
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.German tz
     , errorTitle = "Fehler"
     , stateErrorInfoText = "Es gab ein Problem, den Status der Zwei-Faktor-Authentifizierung zu ermittlen:"
     , errorGeneratingQR = "Fehler beim Generieren des QR-Code"
@@ -94,4 +96,34 @@ de =
     , reloadToTryAgain = "Um es noch einmal zu versuchen, bitte die Seite neu laden."
     , twoFactorNowActive = "Die Zwei-Faktor-Authentifizierung ist nun aktiv!"
     , revertInfo = "Es kann jederzeit zur normalen Passwort-Authentifizierung zurück gegangen werden (dazu Seite neu laden)."
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { httpError = Messages.Comp.HttpError.fr
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.French tz
+    , errorTitle = "Erreur"
+    , stateErrorInfoText = "Erreur pour déterminer l'état actuel de votre schéma d'authentification à  deux facteurs"
+    , errorGeneratingQR = "Erreur lors de la génération du QR code"
+    , initErrorInfo = "Erreur lors de l'initialisation  de l'authentification deux facteurs."
+    , confirmErrorInfo = "Erreur lors de la confirmation de la configuration."
+    , disableErrorInfo = "Erreur pour désactiver l'A2F"
+    , twoFaActiveSince = "Authentification deux facteurs active depuis "
+    , revert2FAText = "Si vous souhaitez revenir à l'authentification par mot de passe seul, vous pouvez le faire ici. Il sera possible de réactiver le deuxième facteur plus tard."
+    , disableButton = "Désactiver A2F"
+    , disableConfirmBoxInfo = "Entre un code TOTP et cliquer sur le bouton pour désactiver A2F"
+    , setupTwoFactorAuth = "Paramétrer l'authentification 2 facteurs (A2F)"
+    , setupTwoFactorAuthInfo =
+        "Il est possible d'ajouter un deuxième facteur en utilisant un mot de passe à usage unique. "
+            ++ "En cliquant sur le bouton, un nouveau de mot de passe est généré permettant de se connecter via l'application mobile. "
+            ++ "L'application fournira un code à 6 chiffres qu'il faudra reporter dans le champs pour confirmer et finaliser la configuration"
+    , activateButton = "Activer l'authentification 2 facteurs"
+    , setupConfirmLabel = "Confirmer"
+    , scanQRCode = "Scanner le QR code avec votre appareil et entrer le code à 6 chiffres."
+    , codeInvalid = "Le code est invalide !"
+    , ifNotQRCode = " Si vous ne pouvez pas utiliser le QR code, entrer le mot de passe à usage unique:"
+    , reloadToTryAgain = "Pour recommencer, merci de recharger la page."
+    , twoFactorNowActive = "L'authentification deux facteurs est désormais active !"
+    , revertInfo = "Il est possible de revenir à l'authentification par mot de passe seul à tout moment (recharger la page)."
     }

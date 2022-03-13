@@ -285,6 +285,7 @@ view texts flags cfg settings model =
                     }
                 ]
             , rootClasses = ""
+            , sticky = True
             }
         , div
             [ class S.errorMessage

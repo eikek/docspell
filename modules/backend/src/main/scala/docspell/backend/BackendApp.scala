@@ -10,14 +10,13 @@ import cats.effect._
 
 import docspell.backend.auth.Login
 import docspell.backend.fulltext.CreateIndex
-import docspell.backend.msg.JobQueuePublish
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
 import docspell.ftsclient.FtsClient
 import docspell.notification.api.{EventExchange, NotificationModule}
 import docspell.pubsub.api.PubSubT
+import docspell.scheduler.JobStoreModule
 import docspell.store.Store
-import docspell.store.usertask.UserTaskStore
 import docspell.totp.Totp
 
 import emil.Emil
@@ -50,6 +49,7 @@ trait BackendApp[F[_]] {
   def events: EventExchange[F]
   def notification: ONotification[F]
   def bookmarks: OQueryBookmarks[F]
+  def fileRepository: OFileRepository[F]
 }
 
 object BackendApp {
@@ -59,29 +59,43 @@ object BackendApp {
       javaEmil: Emil[F],
       ftsClient: FtsClient[F],
       pubSubT: PubSubT[F],
+      schedulerModule: JobStoreModule[F],
       notificationMod: NotificationModule[F]
   ): Resource[F, BackendApp[F]] =
     for {
-      utStore <- UserTaskStore(store)
-      queue <- JobQueuePublish(store, pubSubT, notificationMod)
       totpImpl <- OTotp(store, Totp.default)
       loginImpl <- Login[F](store, Totp.default)
       signupImpl <- OSignup[F](store)
       joexImpl <- OJoex(pubSubT)
-      collImpl <- OCollective[F](store, utStore, queue, joexImpl)
+      collImpl <- OCollective[F](
+        store,
+        schedulerModule.userTasks,
+        schedulerModule.jobs,
+        joexImpl
+      )
       sourceImpl <- OSource[F](store)
       tagImpl <- OTag[F](store)
       equipImpl <- OEquipment[F](store)
       orgImpl <- OOrganization(store)
-      uploadImpl <- OUpload(store, queue, joexImpl)
+      uploadImpl <- OUpload(store, schedulerModule.jobs, joexImpl)
       nodeImpl <- ONode(store)
       jobImpl <- OJob(store, joexImpl, pubSubT)
       createIndex <- CreateIndex.resource(ftsClient, store)
-      itemImpl <- OItem(store, ftsClient, createIndex, queue, joexImpl)
+      itemImpl <- OItem(store, ftsClient, createIndex, schedulerModule.jobs, joexImpl)
       itemSearchImpl <- OItemSearch(store)
-      fulltextImpl <- OFulltext(itemSearchImpl, ftsClient, store, queue, joexImpl)
+      fulltextImpl <- OFulltext(
+        itemSearchImpl,
+        ftsClient,
+        store,
+        schedulerModule.jobs,
+        joexImpl
+      )
       mailImpl <- OMail(store, javaEmil)
-      userTaskImpl <- OUserTask(utStore, store, queue, joexImpl)
+      userTaskImpl <- OUserTask(
+        schedulerModule.userTasks,
+        store,
+        joexImpl
+      )
       folderImpl <- OFolder(store)
       customFieldsImpl <- OCustomFields(store)
       simpleSearchImpl = OSimpleSearch(fulltextImpl, itemSearchImpl)
@@ -91,6 +105,7 @@ object BackendApp {
       )
       notifyImpl <- ONotification(store, notificationMod)
       bookmarksImpl <- OQueryBookmarks(store)
+      fileRepoImpl <- OFileRepository(store, schedulerModule.jobs, joexImpl)
     } yield new BackendApp[F] {
       val pubSub = pubSubT
       val login = loginImpl
@@ -118,5 +133,6 @@ object BackendApp {
       val events = notificationMod
       val notification = notifyImpl
       val bookmarks = bookmarksImpl
+      val fileRepository = fileRepoImpl
     }
 }

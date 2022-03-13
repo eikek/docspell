@@ -8,6 +8,7 @@
 module Messages.Comp.SourceForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -100,4 +101,38 @@ importieren: `*.pdf`. Globs können auch mittels OR kombiniert werden:
             ++ "wird verwendet, falls hier nicht angegeben."
     , languageLabel = Messages.Data.Language.de
     , attachmentsOnly = "Bei E-Mails nur die Anhänge importieren"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , tagDropdown = Messages.Comp.TagDropdown.fr
+    , description = "Description"
+    , enabled = "Actif"
+    , priority = "Priorité"
+    , priorityInfo = "Ordre de priorité utilisé par le programmateur lors du traitement des fichiers envoyés."
+    , metadata = "Metadonnées"
+    , metadataInfoText =
+        "Les métadonnées mentionnées ici sont automatiquement assignées à chaque fichier envoyé "
+            ++ "via cette source, à moins d'être écrasées par les métadonnées de la requête d'envoi."
+            ++ "Les tags de la requête sont ajoutés à ceux définis ici."
+    , folderInfo = "Choisir le dossier où seront déposés automatiquement les documents."
+    , tagsInfo = "Choisir les tags qui seront assignés aux documents."
+    , fileFilter = "Filtre de fichier"
+    , fileFilterInfo = """
+
+Spécifier un filtre type 'glob' afin de filtrer les fichiers
+à l'envoi d'archives (ex: pour mail et zip). Par Example, pour
+extraire uniquement les fichiers pdf: `*.pdf`.
+Les filtre 'glob' peuvent être combinés avec OR, comme cela:
+`.pdf|mail.html`.
+
+"""
+    , language = "Langue"
+    , languageInfo =
+        "Utilisé pour l'extraction et l'analyse du texte. La langue"
+            ++ "par défaut du groupe est utilisée, si rien n'est spécifié ici."
+    , languageLabel = Messages.Data.Language.fr
+    , attachmentsOnly = "Importer uniquement les pièces-jointes pour les mails."
     }

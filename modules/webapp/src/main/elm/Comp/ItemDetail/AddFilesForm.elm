@@ -56,6 +56,14 @@ view texts model =
                 ]
                 [ text texts.reset
                 ]
+            , div [ class "flex-grow" ] []
+            , button
+                [ class S.secondaryButton
+                , href "#"
+                , onClick AddFilesToggle
+                ]
+                [ text texts.basics.cancel
+                ]
             ]
         , div
             [ classList

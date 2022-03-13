@@ -85,12 +85,12 @@ view texts flags settings model pos attach =
                 , style "max-height" "calc(100vh - 140px)"
                 , style "min-height" "500px"
                 ]
-                [ embed
-                    [ src <| Data.UiSettings.pdfUrl settings flags fileUrl
-                    , class "absolute h-full w-full top-0 left-0 mx-0 py-0"
+                [ Data.UiSettings.pdfView settings
+                    flags
+                    fileUrl
+                    [ class "absolute h-full w-full top-0 left-0 mx-0 py-0"
                     , id "ds-pdf-view-iframe"
                     ]
-                    []
                 ]
         ]
 
@@ -170,13 +170,13 @@ attachHeader texts settings model _ attach =
     in
     div [ class "flex flex-col sm:flex-row items-center w-full" ]
         [ attachSelectToggle False
-        , div [ class "text-base font-bold flex-grow w-full text-center sm:text-left break-all" ]
+        , div [ class "text-base font-bold flex-grow w-full text-left break-all" ]
             [ text attachName
             , text " ("
             , text (Util.Size.bytesReadable Util.Size.B (toFloat attach.size))
             , text ")"
             ]
-        , div [ class "flex flex-row justify-end items-center" ]
+        , div [ class "flex flex-row justify-end items-center w-full" ]
             [ attachSelectToggle True
             , a
                 [ href fileUrl

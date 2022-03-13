@@ -8,7 +8,11 @@ package docspell.joex.process
 
 import docspell.common._
 import docspell.joex.process.ItemData.AttachmentDates
+import docspell.scheduler.JobTaskResultEncoder
 import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
+
+import io.circe.syntax.EncoderOps
+import io.circe.{Encoder, Json}
 
 /** Data that is carried across all processing tasks.
   *
@@ -35,7 +39,7 @@ case class ItemData(
     attachments: Vector[RAttachment],
     metas: Vector[RAttachmentMeta],
     dateLabels: Vector[AttachmentDates],
-    originFile: Map[Ident, Ident], // maps RAttachment.id -> FileMeta.id
+    originFile: Map[Ident, FileKey], // maps RAttachment.id -> FileMeta.id
     givenMeta: MetaProposalList, // given meta data not associated to a specific attachment
     // a list of tags (names or ids) attached to the item if they exist
     tags: List[String],
@@ -94,4 +98,49 @@ object ItemData {
       dates.map(dl => dl.label.copy(label = dl.date.toString))
   }
 
+  // Used to encode the result passed to the job-done event
+  implicit val jsonEncoder: Encoder[ItemData] =
+    Encoder.instance { data =>
+      val metaMap = data.metas.groupMap(_.id)(identity)
+      Json.obj(
+        "id" -> data.item.id.asJson,
+        "name" -> data.item.name.asJson,
+        "collective" -> data.item.cid.asJson,
+        "source" -> data.item.source.asJson,
+        "attachments" -> data.attachments
+          .map(a =>
+            Json.obj(
+              "id" -> a.id.asJson,
+              "name" -> a.name.asJson,
+              "content" -> metaMap.get(a.id).flatMap(_.head.content).asJson,
+              "language" -> metaMap.get(a.id).flatMap(_.head.language).asJson,
+              "pages" -> metaMap.get(a.id).flatMap(_.head.pages).asJson
+            )
+          )
+          .asJson,
+        "tags" -> data.tags.asJson,
+        "assumedTags" -> data.classifyTags.asJson,
+        "assumedCorrOrg" -> data.finalProposals
+          .find(MetaProposalType.CorrOrg)
+          .map(_.values.head.ref)
+          .asJson
+      )
+    }
+
+  implicit val jobTaskResultEncoder: JobTaskResultEncoder[ItemData] =
+    JobTaskResultEncoder.fromJson[ItemData].withMessage { data =>
+      val tags =
+        if (data.tags.isEmpty && data.classifyTags.isEmpty) ""
+        else (data.tags ++ data.classifyTags).mkString("[", ", ", "]")
+
+      val corg =
+        data.finalProposals.find(MetaProposalType.CorrOrg).map(_.values.head.ref.name)
+      val cpers =
+        data.finalProposals.find(MetaProposalType.CorrPerson).map(_.values.head.ref.name)
+      val org = corg match {
+        case Some(o) => s" by $o" + cpers.map(p => s"/$p").getOrElse("")
+        case None    => cpers.map(p => s" by $p").getOrElse("")
+      }
+      s"Processed '${data.item.name}' $tags$org"
+    }
 }

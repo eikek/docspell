@@ -305,6 +305,7 @@ viewTable2 texts model =
                     , label = texts.newPerson
                     }
                 ]
+            , sticky = True
             , rootClasses = "mb-4"
             }
         , Html.map TableMsg (Comp.PersonTable.view2 texts.personTable model.order model.tableModel)
@@ -377,6 +378,7 @@ viewForm2 texts settings model =
                 else
                     []
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , div
             [ classList

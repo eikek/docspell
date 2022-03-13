@@ -15,7 +15,8 @@ import fs2.Stream
 import docspell.common._
 import docspell.extract.pdfbox.PdfboxPreview
 import docspell.extract.pdfbox.PreviewConfig
-import docspell.joex.scheduler._
+import docspell.scheduler._
+import docspell.store.Store
 import docspell.store.queries.QAttachment
 import docspell.store.records.RAttachment
 import docspell.store.records._
@@ -26,7 +27,7 @@ import docspell.store.records._
   */
 object AttachmentPreview {
 
-  def apply[F[_]: Sync](pcfg: PreviewConfig)(
+  def apply[F[_]: Sync](pcfg: PreviewConfig, store: Store[F])(
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
@@ -36,7 +37,7 @@ object AttachmentPreview {
         )
         preview <- PdfboxPreview(pcfg)
         _ <- item.attachments
-          .traverse(createPreview(ctx, preview))
+          .traverse(createPreview(ctx, store, preview))
           .attempt
           .flatMap {
             case Right(_) => ().pure[F]
@@ -50,16 +51,17 @@ object AttachmentPreview {
 
   def createPreview[F[_]: Sync](
       ctx: Context[F, _],
+      store: Store[F],
       preview: PdfboxPreview[F]
   )(
       ra: RAttachment
   ): F[Option[RAttachmentPreview]] =
-    findMime[F](ctx)(ra).flatMap {
+    findMime[F](store)(ra).flatMap {
       case MimeType.PdfMatch(_) =>
-        preview.previewPNG(loadFile(ctx)(ra)).flatMap {
+        preview.previewPNG(loadFile(store)(ra)).flatMap {
           case Some(out) =>
             ctx.logger.debug("Preview generated, saving to database…") *>
-              createRecord(ctx, out, ra).map(_.some)
+              createRecord(store, ra.fileId.collective, out, ra).map(_.some)
           case None =>
             ctx.logger
               .info(s"Preview could not be generated. Maybe the pdf has no pages?") *>
@@ -72,7 +74,8 @@ object AttachmentPreview {
     }
 
   private def createRecord[F[_]: Sync](
-      ctx: Context[F, _],
+      store: Store[F],
+      collective: Ident,
       png: Stream[F, Byte],
       ra: RAttachment
   ): F[RAttachmentPreview] = {
@@ -82,22 +85,26 @@ object AttachmentPreview {
     for {
       fileId <- png
         .through(
-          ctx.store.fileStore.save(MimeTypeHint(name.map(_.fullName), Some("image/png")))
+          store.fileRepo.save(
+            collective,
+            FileCategory.PreviewImage,
+            MimeTypeHint(name.map(_.fullName), Some("image/png"))
+          )
         )
         .compile
         .lastOrError
       now <- Timestamp.current[F]
       rp = RAttachmentPreview(ra.id, fileId, name.map(_.fullName), now)
-      _ <- QAttachment.deletePreview(ctx.store)(ra.id)
-      _ <- ctx.store.transact(RAttachmentPreview.insert(rp))
+      _ <- QAttachment.deletePreview(store)(ra.id)
+      _ <- store.transact(RAttachmentPreview.insert(rp))
     } yield rp
   }
 
-  def findMime[F[_]: Functor](ctx: Context[F, _])(ra: RAttachment): F[MimeType] =
-    OptionT(ctx.store.transact(RFileMeta.findById(ra.fileId)))
+  def findMime[F[_]: Functor](store: Store[F])(ra: RAttachment): F[MimeType] =
+    OptionT(store.transact(RFileMeta.findById(ra.fileId)))
       .map(_.mimetype)
       .getOrElse(MimeType.octetStream)
 
-  def loadFile[F[_]](ctx: Context[F, _])(ra: RAttachment): Stream[F, Byte] =
-    ctx.store.fileStore.getBytes(ra.fileId)
+  def loadFile[F[_]](store: Store[F])(ra: RAttachment): Stream[F, Byte] =
+    store.fileRepo.getBytes(ra.fileId)
 }

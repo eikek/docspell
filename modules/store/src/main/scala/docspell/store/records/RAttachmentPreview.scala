@@ -8,7 +8,7 @@ package docspell.store.records
 
 import cats.data.NonEmptyList
 
-import docspell.common._
+import docspell.common.{FileKey, _}
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
@@ -20,7 +20,7 @@ import doobie.implicits._
   */
 case class RAttachmentPreview(
     id: Ident, // same as RAttachment.id
-    fileId: Ident,
+    fileId: FileKey,
     name: Option[String],
     created: Timestamp
 )
@@ -30,7 +30,7 @@ object RAttachmentPreview {
     val tableName = "attachment_preview"
 
     val id = Column[Ident]("id", this)
-    val fileId = Column[Ident]("file_id", this)
+    val fileId = Column[FileKey]("file_id", this)
     val name = Column[String]("filename", this)
     val created = Column[Timestamp]("created", this)
 

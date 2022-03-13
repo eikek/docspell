@@ -8,9 +8,11 @@
 module Messages.Comp.ScanMailboxManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -32,10 +34,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tb =
     { basics = Messages.Basics.gb
-    , form = Messages.Comp.ScanMailboxForm.gb
+    , form = Messages.Comp.ScanMailboxForm.gb tb
     , table = Messages.Comp.ScanMailboxTable.gb
     , httpError = Messages.Comp.HttpError.gb
     , newTask = "New Task"
@@ -47,10 +49,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , form = Messages.Comp.ScanMailboxForm.de
+    , form = Messages.Comp.ScanMailboxForm.de tz
     , table = Messages.Comp.ScanMailboxTable.de
     , httpError = Messages.Comp.HttpError.de
     , newTask = "Neuer Auftrag"
@@ -59,4 +61,19 @@ de =
     , taskUpdated = "Auftrag aktualisiert."
     , taskStarted = "Auftrag gestartet."
     , taskDeleted = "Auftrag gelöscht."
+    }
+
+
+fr : TimeZone -> Texts
+fr tb =
+    { basics = Messages.Basics.fr
+    , form = Messages.Comp.ScanMailboxForm.fr tb
+    , table = Messages.Comp.ScanMailboxTable.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , newTask = "Nouvelle tâche"
+    , createNewTask = "Créer une nouvelle tâche de surveillance de boite mail"
+    , taskCreated = "Tâche créé"
+    , taskUpdated = "Tâche mise à jour"
+    , taskStarted = "Tâche démarrée."
+    , taskDeleted = "Tâche supprimée."
     }

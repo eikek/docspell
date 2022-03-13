@@ -27,8 +27,7 @@ object ClientSettingsRoutes {
       backend: BackendApp[F],
       token: ShareToken
   ): HttpRoutes[F] = {
-    val logger = Logger.log4s[F](org.log4s.getLogger)
-
+    val logger = docspell.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 

@@ -12,7 +12,7 @@ import cats.implicits._
 import fs2.concurrent.SignallingRef
 import fs2.{Pipe, Stream}
 
-import docspell.common.Logger
+import docspell.logging.Logger
 
 trait PubSubT[F[_]] {
 
@@ -33,7 +33,7 @@ trait PubSubT[F[_]] {
 
 object PubSubT {
   def noop[F[_]: Async]: PubSubT[F] =
-    PubSubT(PubSub.noop[F], Logger.off[F])
+    PubSubT(PubSub.noop[F], Logger.offF[F])
 
   def apply[F[_]: Async](pubSub: PubSub[F], logger: Logger[F]): PubSubT[F] =
     new PubSubT[F] {
@@ -57,7 +57,7 @@ object PubSubT {
             m.body.as[A](topic.codec) match {
               case Right(a) => Stream.emit(Message(m.head, a))
               case Left(err) =>
-                logger.s
+                logger.stream
                   .error(err)(
                     s"Could not decode message to topic ${topic.name} to ${topic.msgClass}: ${m.body.noSpaces}"
                   )

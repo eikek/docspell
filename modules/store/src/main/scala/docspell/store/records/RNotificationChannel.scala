@@ -192,7 +192,7 @@ object RNotificationChannel {
   ): OptionT[ConnectionIO, RNotificationChannel] =
     for {
       time <- OptionT.liftF(Timestamp.current[ConnectionIO])
-      logger = Logger.log4s[ConnectionIO](org.log4s.getLogger)
+      logger = docspell.logging.getLogger[ConnectionIO]
       r <-
         channel match {
           case Channel.Mail(_, name, conn, recipients) =>

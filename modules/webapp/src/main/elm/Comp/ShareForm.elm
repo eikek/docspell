@@ -100,7 +100,7 @@ getShare model =
             ( model.share.id
             , { name = model.name
               , query =
-                    model.queryModel.input
+                    Comp.PowerSearchInput.getSearchString model.queryModel
                         |> Maybe.withDefault ""
               , enabled = model.enabled
               , password = model.password
@@ -211,7 +211,6 @@ view texts model =
                 [ Html.map QueryMsg
                     (Comp.PowerSearchInput.viewInput
                         { placeholder = texts.queryLabel
-                        , extraAttrs = []
                         }
                         model.queryModel
                     )

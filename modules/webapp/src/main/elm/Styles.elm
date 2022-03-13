@@ -189,6 +189,26 @@ secondaryButtonHover =
     " hover:bg-gray-400 dark:hover:bg-slate-300 "
 
 
+
+--- Secondary Basic Button
+
+
+secondaryBasicButtonNoColor : String
+secondaryBasicButtonNoColor =
+    " my-auto whitespace-nowrap text-center shadow-none focus:outline-none focus:ring focus:ring-opacity-75 "
+
+
+secondaryBasicButtonMain : String
+secondaryBasicButtonMain =
+    secondaryBasicButtonNoColor
+        ++ " border-gray-500 dark:border-slate-500 text-gray-500 dark:text-slate-400 "
+
+
+secondaryBasicButtonHover : String
+secondaryBasicButtonHover =
+    " hover:bg-gray-600 hover:text-white dark:hover:text-white dark:hover:bg-slate-500 dark:hover:text-slate-100 "
+
+
 secondaryBasicButton : String
 secondaryBasicButton =
     secondaryBasicButtonRounded ++ secondaryBasicButtonPlain
@@ -202,20 +222,6 @@ secondaryBasicButtonPlain =
 secondaryBasicButtonRounded : String
 secondaryBasicButtonRounded =
     " rounded border px-4 py-2 "
-
-
-
---- Secondary Basic Button
-
-
-secondaryBasicButtonMain : String
-secondaryBasicButtonMain =
-    " my-auto whitespace-nowrap border-gray-500 dark:border-slate-500 text-gray-500 dark:text-slate-400 text-center shadow-none focus:outline-none focus:ring focus:ring-opacity-75 "
-
-
-secondaryBasicButtonHover : String
-secondaryBasicButtonHover =
-    " hover:bg-gray-600 hover:text-white dark:hover:text-white dark:hover:bg-slate-500 dark:hover:text-slate-100 "
 
 
 
@@ -245,6 +251,18 @@ undeleteButton =
 deleteLabel : String
 deleteLabel =
     "label my-auto whitespace-nowrap border border-red-500 dark:border-lightred-500 text-red-500 dark:text-orange-500 text-center focus:outline-none focus:ring focus:ring-opacity-75 hover:bg-red-600 hover:text-white dark:hover:text-white dark:hover:bg-orange-500 dark:hover:text-slate-900"
+
+
+
+--- Green Button
+
+
+greenButton : String
+greenButton =
+    secondaryBasicButtonNoColor
+        ++ secondaryBasicButtonRounded
+        ++ " dark:bg-lime-600 dark:bg-opacity-30 dark:border-lime-600 dark:text-lime-400 "
+        ++ " bg-lime-600  border-lime-600 text-white"
 
 
 

@@ -5,6 +5,7 @@
  */
 
 package docspell.backend.ops
+
 import cats.effect._
 import cats.implicits._
 
@@ -13,8 +14,6 @@ import docspell.common._
 import docspell.store.records.{RTotp, RUser}
 import docspell.store.{AddResult, Store, UpdateResult}
 import docspell.totp.{Key, OnetimePassword, Totp}
-
-import org.log4s.getLogger
 
 trait OTotp[F[_]] {
 
@@ -38,8 +37,6 @@ trait OTotp[F[_]] {
 }
 
 object OTotp {
-  private[this] val logger = getLogger
-
   sealed trait OtpState {
     def isEnabled: Boolean
     def isDisabled = !isEnabled
@@ -86,7 +83,7 @@ object OTotp {
 
   def apply[F[_]: Async](store: Store[F], totp: Totp): Resource[F, OTotp[F]] =
     Resource.pure[F, OTotp[F]](new OTotp[F] {
-      val log = Logger.log4s[F](logger)
+      val log = docspell.logging.getLogger[F]
 
       def initialize(accountId: AccountId): F[InitResult] =
         for {

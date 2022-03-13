@@ -6,10 +6,8 @@
 
 package docspell.common
 
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import java.time.{Instant, LocalDate, ZoneId}
+import java.time.{Duration => _, _}
 
 import cats.effect.Sync
 
@@ -57,7 +55,7 @@ case class Timestamp(value: Instant) {
 }
 
 object Timestamp {
-  val UTC = ZoneId.of("UTC")
+  val UTC: ZoneId = ZoneOffset.UTC
 
   val Epoch = Timestamp(Instant.EPOCH)
 

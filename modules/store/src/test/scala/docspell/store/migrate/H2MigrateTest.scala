@@ -9,11 +9,12 @@ package docspell.store.migrate
 import cats.effect.IO
 import cats.effect.unsafe.implicits._
 
+import docspell.logging.TestLoggingConfig
 import docspell.store.StoreFixture
 
 import munit.FunSuite
 
-class H2MigrateTest extends FunSuite {
+class H2MigrateTest extends FunSuite with TestLoggingConfig {
 
   test("h2 empty schema migration") {
     val jdbc = StoreFixture.memoryDB("h2test")

@@ -8,6 +8,7 @@
 module Messages.Page.ShareDetail exposing (..)
 
 import Data.Fields exposing (Field)
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -31,13 +32,13 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { passwordForm = Messages.Comp.SharePasswordForm.gb
     , basics = Messages.Basics.gb
     , field = Messages.Data.Fields.gb
-    , formatDateLong = Messages.DateFormat.formatDateLong English
-    , formatDateShort = Messages.DateFormat.formatDateShort English
+    , formatDateLong = Messages.DateFormat.formatDateLong English tz
+    , formatDateShort = Messages.DateFormat.formatDateShort English tz
     , authFailed = "This share does not exist."
     , httpError = Messages.Comp.HttpError.gb
     , tagsAndFields = "Tags & Fields"
@@ -46,16 +47,31 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { passwordForm = Messages.Comp.SharePasswordForm.de
     , basics = Messages.Basics.de
     , field = Messages.Data.Fields.de
-    , formatDateLong = Messages.DateFormat.formatDateLong German
-    , formatDateShort = Messages.DateFormat.formatDateShort German
+    , formatDateLong = Messages.DateFormat.formatDateLong German tz
+    , formatDateShort = Messages.DateFormat.formatDateShort German tz
     , authFailed = "Diese Freigabe existiert nicht."
     , httpError = Messages.Comp.HttpError.de
     , tagsAndFields = "Tags & Felder"
     , noName = "Kein Name"
     , unconfirmed = "Nicht bestätigt"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { passwordForm = Messages.Comp.SharePasswordForm.fr
+    , basics = Messages.Basics.fr
+    , field = Messages.Data.Fields.fr
+    , formatDateLong = Messages.DateFormat.formatDateLong French tz
+    , formatDateShort = Messages.DateFormat.formatDateShort French tz
+    , authFailed = "Ce partage n'existe pas."
+    , httpError = Messages.Comp.HttpError.fr
+    , tagsAndFields = "Tags & champs"
+    , noName = "Aucun nom"
+    , unconfirmed = "Non validé"
     }

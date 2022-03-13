@@ -8,7 +8,7 @@ package docspell.store.records
 
 import cats.data.NonEmptyList
 
-import docspell.common._
+import docspell.common.{FileKey, _}
 import docspell.store.qb.DSL._
 import docspell.store.qb.TableDef
 import docspell.store.qb._
@@ -21,7 +21,7 @@ import doobie.implicits._
   */
 case class RAttachmentArchive(
     id: Ident, // same as RAttachment.id
-    fileId: Ident,
+    fileId: FileKey,
     name: Option[String],
     messageId: Option[String],
     created: Timestamp
@@ -32,7 +32,7 @@ object RAttachmentArchive {
     val tableName = "attachment_archive"
 
     val id = Column[Ident]("id", this)
-    val fileId = Column[Ident]("file_id", this)
+    val fileId = Column[FileKey]("file_id", this)
     val name = Column[String]("filename", this)
     val messageId = Column[String]("message_id", this)
     val created = Column[Timestamp]("created", this)
@@ -59,7 +59,7 @@ object RAttachmentArchive {
   def delete(attachId: Ident): ConnectionIO[Int] =
     DML.delete(T, T.id === attachId)
 
-  def deleteAll(fId: Ident): ConnectionIO[Int] =
+  def deleteAll(fId: FileKey): ConnectionIO[Int] =
     DML.delete(T, T.fileId === fId)
 
   def findByIdAndCollective(

@@ -8,6 +8,7 @@
 module Messages.Page.Register exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -72,4 +73,24 @@ de =
     , registrationSuccessful = "Registratierung erfolgreich."
     , passwordsDontMatch = "Die Passwörten stimmen nicht überein."
     , allFieldsRequired = "Alle Felder müssen ausgefüllt werden!"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , signupToDocspell = "S'inscrire à Docspell"
+    , collectiveId = "Groupe ID"
+    , collective = "Groupe"
+    , userLogin = "Identifiant Utilisateur"
+    , username = "Utilisateur"
+    , password = "Mot de passe"
+    , passwordRepeat = "Mot de passe (confirmation)"
+    , invitationKey = "Clé d'invitation"
+    , alreadySignedUp = "Déja inscrit ?"
+    , signIn = "Se Connecter"
+    , registrationSuccessful = "Inscription accomplie."
+    , passwordsDontMatch = "Les mots de passe ne correspondent pas."
+    , allFieldsRequired = "Tous les champs sont requis !"
     }

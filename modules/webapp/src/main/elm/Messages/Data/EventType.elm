@@ -8,6 +8,7 @@
 module Messages.Data.EventType exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -75,4 +76,33 @@ de et =
         JobDone ->
             { name = "Auftrag beendet"
             , info = "Wenn ein Auftrag beendet wurde"
+            }
+
+
+fr : EventType -> Texts
+fr et =
+    case et of
+        TagsChanged ->
+            { name = "Tags changés"
+            , info = "Quand un tag est ajouté ou supprimé d'un document"
+            }
+
+        SetFieldValue ->
+            { name = "Valeur de champs affectée"
+            , info = "Quand une valeur est affectée à un champs personnalisé"
+            }
+
+        DeleteFieldValue ->
+            { name = "Champs supprimé"
+            , info = "Quand un champs personnalisé est supprimé"
+            }
+
+        JobSubmitted ->
+            { name = "Tâche soumise"
+            , info = "Quand une nouvelle tâche est soumise"
+            }
+
+        JobDone ->
+            { name = "Tâche terminée"
+            , info = "Quand une tâche est terminée"
             }

@@ -8,6 +8,7 @@
 module Messages.Page.NewInvite exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -75,5 +76,30 @@ generiert werden.
 Um eine Einladung zu erstellen, wird das Passwort aus der
 Konfiguration benötigt.
 
+"""
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , createNewInvitations = "Créer de nouvelles invitations"
+    , invitationKey = "Clé d'invitation"
+    , password = "Mot de passe"
+    , reset = "Reset"
+    , newInvitationCreated = "Nouvelle invitation créée."
+    , inviteInfo =
+        """
+Docspell requiert une invitation pour s'inscrire. Les
+invitations peuvent être créées ici et envoyées  à des
+amis afin qu'ils puissent s'inscrire.
+
+Chaque invitation peut être utilisée uniquement une
+seule fois.  Chaque nouvelle personne invitée nécessitera
+la création d'une nouvelle clé.
+
+La création d'invitation requiert de fournir le mot 
+de passe configuré.
 """
     }

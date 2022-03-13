@@ -38,7 +38,6 @@ object FlywayMigrate {
         .locations(locations: _*)
         .load()
 
-      fw.repair()
       fw.migrate()
     }
 }

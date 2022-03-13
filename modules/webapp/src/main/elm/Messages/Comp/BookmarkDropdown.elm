@@ -8,6 +8,7 @@
 module Messages.Comp.BookmarkDropdown exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -40,4 +41,14 @@ de =
     , personal = "Persönlich"
     , collective = "Kollektiv"
     , share = "Freigabe"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , placeholder = "Favoris…"
+    , personal = "Personnel"
+    , collective = "Groupe"
+    , share = "Partage"
     }

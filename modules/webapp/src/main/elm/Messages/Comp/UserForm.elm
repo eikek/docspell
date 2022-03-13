@@ -8,6 +8,7 @@
 module Messages.Comp.UserForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -40,4 +41,14 @@ de =
     , state = "Status"
     , email = "E-Mail"
     , password = "Passwort"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , login = "Identifiant"
+    , state = "Etat"
+    , email = "E-Mail"
+    , password = "Mot de passe"
     }

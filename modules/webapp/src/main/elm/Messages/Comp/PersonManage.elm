@@ -8,6 +8,7 @@
 module Messages.Comp.PersonManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -56,4 +57,18 @@ de =
     , reallyDeletePerson = "Die Person wirklich löschen?"
     , deleteThisPerson = "Person löschen"
     , correctFormErrors = "Bitte korrigiere die Fehler im Formular."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , personForm = Messages.Comp.PersonForm.fr
+    , personTable = Messages.Comp.PersonTable.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , newPerson = "Nouvelle personne"
+    , createNewPerson = "Créer une nouvelle personne"
+    , reallyDeletePerson = "Confirmer la suppression de cette personne ?"
+    , deleteThisPerson = "Supprimer cette personne"
+    , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
     }

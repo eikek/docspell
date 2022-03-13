@@ -8,9 +8,11 @@
 module Messages.Comp.DueItemsTaskForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.CalEventInput
@@ -57,10 +59,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , calEventInput = Messages.Comp.CalEventInput.gb
+    , calEventInput = Messages.Comp.CalEventInput.gb tz
     , httpError = Messages.Comp.HttpError.gb
     , channelForm = Messages.Comp.ChannelForm.gb
     , tagDropdown = Messages.Comp.TagDropdown.gb
@@ -98,10 +100,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , calEventInput = Messages.Comp.CalEventInput.de
+    , calEventInput = Messages.Comp.CalEventInput.de tz
     , httpError = Messages.Comp.HttpError.de
     , channelForm = Messages.Comp.ChannelForm.de
     , tagDropdown = Messages.Comp.TagDropdown.de
@@ -136,4 +138,45 @@ de =
     , queryLabel = "Abfrage"
     , channelRequired = "Ein Versandkanal muss angegeben werden."
     , channelHeader = "Kanäle"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , calEventInput = Messages.Comp.CalEventInput.fr tz
+    , httpError = Messages.Comp.HttpError.fr
+    , channelForm = Messages.Comp.ChannelForm.fr
+    , tagDropdown = Messages.Comp.TagDropdown.fr
+    , channelType = Messages.Data.ChannelType.fr
+    , channelRef = Messages.Comp.ChannelRefInput.fr
+    , reallyDeleteTask = "Confirmer la suppression de cette tâche ?"
+    , startOnce = "Lancer une une seule fois"
+    , startTaskNow = "Démarrer cette tâche maintenant"
+    , deleteThisTask = "Supprimer cette tâche"
+    , enableDisable = "Activer ou désactiver cette tâche."
+    , summary = "Résumé"
+    , summaryInfo = "Lisible pour un humain, juste pour affichage"
+    , tagsInclude = "Tags à inclure (and)"
+    , tagsIncludeInfo = "Les documents doivent avoir tous les tags spécifiés ici."
+    , tagsExclude = "Tags à exclure (or)"
+    , tagsExcludeInfo = "Les documents ne doivent avoir aucun tag spécifié ici"
+    , remindDaysLabel = "Jours de rappel"
+    , remindDaysInfo = "Sélectionner les document avec un date d'échéance *plus petite que* `aujourd'hui+jours_restant`"
+    , capOverdue = "Documents à échéance dépassée"
+    , capOverdueInfo = "Si coché, seuls les documents avec une date d'échéance *supérieur à * `aujourd'hui - jours_restant` sont retenus."
+    , schedule = "Programmation"
+    , scheduleClickForHelp = "Cliquer ici pour l'aide"
+    , scheduleInfo =
+        "Spécifie quand et à quelle fréquence cette tâche doit se lancer."
+            ++ "Utiliser les jours de la semaine à l'anglaise en 3 lettres. Soit une valeur simple, "
+            ++ "une liste (ex: 1,2,3), un interval (ex: 1..3) ou  un '*' (pour ous) "
+            ++ "est autorisé pour chaque partie."
+    , connectionMissing = "Aucune connexion E-mail de configuré, aller dans Paramètres E-Mail pour en ajouter une."
+    , invalidCalEvent = "L'événement du calendrier n'est pas valide"
+    , remindDaysRequired = "Le nombre de jour de rappel est requis"
+    , recipientsRequired = "Au moins un destinataire est requis."
+    , queryLabel = "Requête"
+    , channelRequired = "Un canal valide doit être entré."
+    , channelHeader = "Canaux"
     }

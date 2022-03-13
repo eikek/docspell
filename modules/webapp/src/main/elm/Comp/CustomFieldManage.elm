@@ -233,6 +233,7 @@ viewTable2 texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map TableMsg
             (Comp.CustomFieldTable.view2 texts.fieldTable

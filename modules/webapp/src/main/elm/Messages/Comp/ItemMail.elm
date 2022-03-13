@@ -8,6 +8,7 @@
 module Messages.Comp.ItemMail exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -69,4 +70,23 @@ de =
     , sendLabel = "Senden"
     , moreRecipients = "Weitere…"
     , lessRecipients = "Weniger…"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , selectConnection = "Selectionner la connexion..."
+    , sendVia = "Envoyer via"
+    , recipients = "Destinataire(s)"
+    , ccRecipients = "CC"
+    , bccRecipients = "BCC"
+    , subject = "Sujet"
+    , body = "Corps"
+    , includeAllAttachments = "Inclure toutes les pièces-jointes"
+    , connectionMissing = "Aucune connection E-mail configurée. Pour en ajouter, aller dans Paramètres utilisateur."
+    , sendLabel = "Envoyer"
+    , moreRecipients = "Plus…"
+    , lessRecipients = "Moins…"
     }

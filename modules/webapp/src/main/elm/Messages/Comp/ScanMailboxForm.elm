@@ -8,9 +8,11 @@
 module Messages.Comp.ScanMailboxForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.CalEventInput
@@ -80,10 +82,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , calEventInput = Messages.Comp.CalEventInput.gb
+    , calEventInput = Messages.Comp.CalEventInput.gb tz
     , httpError = Messages.Comp.HttpError.gb
     , tagDropdown = Messages.Comp.TagDropdown.gb
     , reallyDeleteTask = "Really delete this scan mailbox task?"
@@ -165,10 +167,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , calEventInput = Messages.Comp.CalEventInput.de
+    , calEventInput = Messages.Comp.CalEventInput.de tz
     , httpError = Messages.Comp.HttpError.de
     , tagDropdown = Messages.Comp.TagDropdown.de
     , reallyDeleteTask = "Den Auftrag wirklich löschen?"
@@ -242,4 +244,86 @@ kann hier ein Wert für alle festgelegt werden. Bei 'Automatisch' wird auf den S
     , save = "Speichern"
     , saveNewTitle = "Einen neuen Auftrag speichern"
     , updateTitle = "Den Auftrag aktualisieren"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , calEventInput = Messages.Comp.CalEventInput.fr tz
+    , httpError = Messages.Comp.HttpError.fr
+    , tagDropdown = Messages.Comp.TagDropdown.fr
+    , reallyDeleteTask = "Confirmer la suppression de cette tâche ?"
+    , startOnce = "Exécuter une seule fois"
+    , startNow = "Exécuter cette tâche maintenant"
+    , deleteThisTask = "Supprimer cette tâche"
+    , generalTab = "Général"
+    , processingTab = "En cours d'exécution"
+    , additionalFilterTab = "Filtre additionnel"
+    , postProcessingTab = "Traitement ad hoc"
+    , metadataTab = "Metadonnées"
+    , scheduleTab = "Programmation"
+    , processingTabInfo = "Ces paramètres définissent quel mails sont récupérés sur la boite mail."
+    , additionalFilterTabInfo = "Ces filtres sont aplliqués à tous les mails récupérés afin de trier ceux qui doivent être importés."
+    , postProcessingTabInfo = "Ceci définit ce qui arrive aux mails qui sont importés"
+    , metadataTabInfo = "Défini les métadonnées qui seront affectées à tous les documents créés par cette tâche."
+    , scheduleTabInfo = "Defini quand les mails doivent être importés"
+    , selectConnection = "Choisir une connexion..."
+    , enableDisable = "Active ou désactive cette tâche."
+    , mailbox = "Mailbox"
+    , summary = "Résumé"
+    , summaryInfo = "Un texte pour humain, uniquement pour affichage"
+    , connectionInfo = "La connexion IMAP utilisée pour récupérer les mails"
+    , folders = "Dossiers"
+    , foldersInfo = "Le dossier où chercher les mails"
+    , receivedHoursInfo = "Sélectionner les mails plus récent que `maintenant - HeureDepuisRéception`"
+    , receivedHoursLabel = "Heures depuis réception"
+    , fileFilter = "Filtre de fichier"
+    , fileFilterInfo =
+        "Entrer un filtre 'glob' pour les pièces-jointes. Par example, pour extraire uniquement les pdf:"
+            ++ " `*.pdf`. Pour inclure le corps du meassage, ajouter des fichiers html ou"
+            ++ " `mail.html`. Les Globs peuvent être combinés avec OR:"
+            ++ " `*.pdf|mail.html`. Aucun filtre par défaut correspond à `*`"
+            ++ " qui revient à tout inclure"
+    , subjectFilter = "Filtre de sujet"
+    , subjectFilterInfo =
+        "Entrer un filtre 'glob' s'appliquant au sujet. Par exemple: "
+            ++ "`*Scanned Document*`. Aucun filtre correspond à `*` qui revient à tout inclure."
+    , postProcessingLabel = "Appliquer le traitement add hoc tous les mails"
+    , postProcessingInfo =
+        "Quand des mails sont récupérés mais non importés du fait de 'filtres additionnels', cette option permet de "
+            ++ "controler s'ils doivent être déplacés vers un dossier cible ou supprimés."
+            ++ " Si non coché, seuls les mails importés bénéficient d'un traitement add hoc, les autres restent où ils sont."
+    , targetFolder = "Dossier cible"
+    , targetFolderInfo = "Déplacer les mails vers ce dossier"
+    , deleteMailLabel = "Effacer les mails importés"
+    , deleteMailInfo =
+        "Supprimer ou non tous les mails importés dans docspell. Ceci ne s'applique que si le dossier cible n'est pas défini"
+    , itemDirection = "Sens des documents"
+    , automatic = "Automatique"
+    , itemDirectionInfo =
+        "Défini le sens pour un document. Si vous savez que tous les mails sont entrant ou sortant"
+            ++ ", il est possible le fixer ici. Sinon ce sera déviné en regardant l'émetteur et le destinataire"
+    , itemFolder = "Dossier documents"
+    , itemFolderInfo = "Placer tous les documents d'une boite mail dans un dossier"
+    , tagsInfo = "Choisir les tags à appliquer aux documents"
+    , documentLanguage = "Langue"
+    , documentLanguageInfo =
+        "Utilisé pour l'extraction et l'analyse du texte. La langue"
+            ++ "par défaut du groupe est utilisée, si non spécifié"
+    , schedule = "Programmation"
+    , scheduleClickForHelp = "Cliquer pour l'aide"
+    , scheduleInfo =
+        "Spécifie la fréquence à laquelle cette tâche doit être lancée"
+            ++ "Utiliser les jours de la semaine anglais en 3 lettres. Soit un valeur simple, "
+            ++ "une liste (ex: 1,2,3), un interval (ex: 1..3) ou '*' (pour tous) "
+            ++ "est autorisé pour chaque partie."
+    , connectionMissing = "Pas de connexion mail configurée. Aller dans parmètres mail pour en ajouter une."
+    , noProcessingFolders = "Pas de dossier de traitement donné"
+    , invalidCalEvent = "L'événement calendaire n'est pas valide"
+    , attachmentsOnlyLabel = "Importer uniquement les pièces-jointes"
+    , attachmentsOnlyInfo = "Ignore le corps des messages et importe uniquement les pièces-jointes"
+    , save = "Enregistrer"
+    , saveNewTitle = "Enregistrer une nouvelle tâche"
+    , updateTitle = "Mettre à jour la tâche"
     }

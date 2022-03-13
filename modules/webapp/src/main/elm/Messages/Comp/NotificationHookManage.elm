@@ -8,6 +8,7 @@
 module Messages.Comp.NotificationHookManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -81,4 +82,26 @@ de =
     , invalidJsonFilter = \m -> "Ereignisfilter ist falsch: " ++ m
     , updateWebhook = "Webhook aktualisieren"
     , addWebhook = "Neuen Webhook hinzufügen"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , notificationForm = Messages.Comp.NotificationHookForm.fr
+    , notificationTable = Messages.Comp.NotificationHookTable.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , channelType = Messages.Data.ChannelType.fr
+    , newHook = "Nouveau webhook"
+    , httpRequest = "Requête HTTP"
+    , hookCreated = "Webhook créé"
+    , hookUpdated = "Webhook mis à jour"
+    , hookStarted = "Webhook démarré"
+    , hookDeleted = "Webhook supprimé"
+    , deleteThisHook = "Supprimer ce webhook"
+    , reallyDeleteHook = "Confirmer la suppression de ce webhook ?"
+    , formInvalid = "Veuillez remplir tous les champs requis"
+    , invalidJsonFilter = \m -> "Filtre d'événement invalide " ++ m
+    , updateWebhook = "Mettre à jour le webhook"
+    , addWebhook = "Ajouter un webhook"
     }

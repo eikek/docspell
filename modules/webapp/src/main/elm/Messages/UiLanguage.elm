@@ -17,10 +17,12 @@ module Messages.UiLanguage exposing
 type UiLanguage
     = English
     | German
+    | French
 
 
 all : List UiLanguage
 all =
     [ English
     , German
+    , French
     ]

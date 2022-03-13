@@ -8,9 +8,11 @@
 module Messages.Comp.ItemCardList exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Comp.ItemCard
 
 
@@ -19,13 +21,19 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
-    { itemCard = Messages.Comp.ItemCard.gb
+gb : TimeZone -> Texts
+gb tz =
+    { itemCard = Messages.Comp.ItemCard.gb tz
     }
 
 
-de : Texts
-de =
-    { itemCard = Messages.Comp.ItemCard.de
+de : TimeZone -> Texts
+de tz =
+    { itemCard = Messages.Comp.ItemCard.de tz
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { itemCard = Messages.Comp.ItemCard.fr tz
     }

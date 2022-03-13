@@ -42,6 +42,7 @@ import Comp.PublishItems
 import Comp.SearchMenu
 import Data.Flags exposing (Flags)
 import Data.ItemArrange exposing (ItemArrange)
+import Data.ItemIds exposing (ItemIds)
 import Data.ItemNav exposing (ItemNav)
 import Data.ItemQuery as Q
 import Data.Items
@@ -84,8 +85,7 @@ type ConfirmModalValue
 
 
 type alias SelectViewModel =
-    { ids : Set String
-    , action : SelectActionMode
+    { action : SelectActionMode
     , confirmModal : Maybe ConfirmModalValue
     , editModel : Comp.ItemDetail.MultiEditMenu.Model
     , mergeModel : Comp.ItemMerge.Model
@@ -97,8 +97,7 @@ type alias SelectViewModel =
 
 initSelectViewModel : Flags -> SelectViewModel
 initSelectViewModel flags =
-    { ids = Set.empty
-    , action = NoneAction
+    { action = NoneAction
     , confirmModal = Nothing
     , editModel = Comp.ItemDetail.MultiEditMenu.init
     , mergeModel = Comp.ItemMerge.init []
@@ -235,6 +234,7 @@ type Msg
     | ToggleExpandCollapseRows
     | ToggleBookmarkCurrentQueryView
     | BookmarkQueryMsg Comp.BookmarkQueryManage.Msg
+    | ItemSelectionChanged
 
 
 type SearchType
@@ -258,6 +258,7 @@ type alias SearchParam =
     , pageSize : Int
     , offset : Int
     , scroll : Bool
+    , selectedItems : ItemIds
     }
 
 
@@ -276,7 +277,7 @@ doSearchDefaultCmd param model =
     let
         smask =
             Q.request model.searchMenuModel.searchMode <|
-                createQuery model
+                createQuery param.selectedItems model
 
         mask =
             { smask
@@ -294,11 +295,11 @@ doSearchDefaultCmd param model =
         Api.itemSearch param.flags mask ItemSearchAddResp
 
 
-createQuery : Model -> Maybe Q.ItemQuery
-createQuery model =
+createQuery : ItemIds -> Model -> Maybe Q.ItemQuery
+createQuery selectedItems model =
     Q.and
-        [ Comp.SearchMenu.getItemQuery model.searchMenuModel
-        , Maybe.map Q.Fragment model.powerSearchInput.input
+        [ Comp.SearchMenu.getItemQuery selectedItems model.searchMenuModel
+        , Maybe.map Q.Fragment (Comp.PowerSearchInput.getSearchString model.powerSearchInput)
         ]
 
 

@@ -270,7 +270,7 @@ update texts settings navKey flags msg model =
                 PeriodicQuery pqm ->
                     let
                         ( pqm_, pqc, pqs ) =
-                            Comp.PeriodicQueryTaskManage.update flags lm pqm
+                            Comp.PeriodicQueryTaskManage.update flags settings.timeZone lm pqm
                     in
                     ( { model | content = PeriodicQuery pqm_ }
                     , Cmd.map PeriodicQueryMsg pqc

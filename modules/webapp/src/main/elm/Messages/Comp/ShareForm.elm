@@ -8,6 +8,7 @@
 module Messages.Comp.ShareForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -43,4 +44,15 @@ de =
     , password = "Passwort"
     , publishUntil = "Publiziert bis"
     , clearPassword = "Passwort entfernen"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , queryLabel = "Requête"
+    , enabled = "Actif"
+    , password = "Mot de passe"
+    , publishUntil = "Publié jusqu'au"
+    , clearPassword = "Supprimer le mot de passe"
     }

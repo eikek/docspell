@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.common
+package db.migration.data
 
+import docspell.common._
 import docspell.common.syntax.all._
 
 import io.circe._

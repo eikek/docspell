@@ -13,7 +13,7 @@ import cats.effect._
 import cats.implicits._
 import fs2.io.file.{Files, Path}
 
-import docspell.common.Logger
+import docspell.logging.Logger
 
 import pureconfig.{ConfigReader, ConfigSource}
 

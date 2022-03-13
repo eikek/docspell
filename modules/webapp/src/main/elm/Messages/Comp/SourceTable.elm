@@ -8,6 +8,7 @@
 module Messages.Comp.SourceTable exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -46,4 +47,16 @@ de =
     , priority = "Priorität"
     , id = "ID"
     , show = "Anzeigen"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , abbrev = "Abbrev"
+    , enabled = "Actif"
+    , counter = "Compteur"
+    , priority = "Priorité"
+    , id = "Id"
+    , show = "Montrer"
     }

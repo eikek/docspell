@@ -31,7 +31,7 @@ import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onFocus, onInput)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Messages.Comp.ItemMail exposing (Texts)
 import Styles as S

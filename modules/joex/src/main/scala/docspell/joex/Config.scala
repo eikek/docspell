@@ -19,14 +19,16 @@ import docspell.ftssolr.SolrConfig
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.hk.HouseKeepingConfig
 import docspell.joex.routes.InternalHeader
-import docspell.joex.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.joex.updatecheck.UpdateCheckConfig
+import docspell.logging.LogConfig
 import docspell.pubsub.naive.PubSubConfig
+import docspell.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.store.JdbcConfig
 
 case class Config(
     appId: Ident,
     baseUrl: LenientUri,
+    logging: LogConfig,
     bind: Config.Bind,
     jdbc: JdbcConfig,
     scheduler: SchedulerConfig,

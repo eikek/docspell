@@ -12,7 +12,6 @@ import cats.Monoid
 import cats.effect.Async
 
 import docspell.backend.signup.{Config => SignupConfig}
-import docspell.common.Logger
 import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, Validation}
 import docspell.oidc.{ProviderConfig, SignatureAlgo}
@@ -23,13 +22,20 @@ import pureconfig.generic.auto._
 import scodec.bits.ByteVector
 
 object ConfigFile {
-  private[this] val unsafeLogger = org.log4s.getLogger
+  private[this] val unsafeLogger = docspell.logging.unsafeLogger
+
+  // IntelliJ is wrong, this is required
   import Implicits._
 
   def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
-    val logger = Logger.log4s(unsafeLogger)
+    val logger = docspell.logging.getLogger[F]
     val validate =
-      Validation.of(generateSecretIfEmpty, duplicateOpenIdProvider, signKeyVsUserUrl)
+      Validation.of(
+        generateSecretIfEmpty,
+        duplicateOpenIdProvider,
+        signKeyVsUserUrl,
+        filesValidate
+      )
     ConfigFactory
       .default[F, Config](logger, "docspell.server")(args, validate)
   }
@@ -97,4 +103,7 @@ object ConfigFile {
             .map(checkProvider)
         )
     }
+
+  def filesValidate: Validation[Config] =
+    Validation(cfg => cfg.backend.files.validate.map(_ => cfg))
 }

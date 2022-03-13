@@ -12,14 +12,15 @@ import cats.implicits._
 
 import docspell.backend.ops.ONotification
 import docspell.common._
-import docspell.joex.scheduler.Context
-import docspell.joex.scheduler.Task
 import docspell.notification.api.EventContext
 import docspell.notification.api.NotificationChannel
 import docspell.notification.api.PeriodicDueItemsArgs
 import docspell.query.Date
 import docspell.query.ItemQuery._
 import docspell.query.ItemQueryDsl._
+import docspell.scheduler.Context
+import docspell.scheduler.Task
+import docspell.store.Store
 import docspell.store.qb.Batch
 import docspell.store.queries.ListItem
 import docspell.store.queries.{QItem, Query}
@@ -32,11 +33,14 @@ object PeriodicDueItemsTask {
   def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn(s"Cancelling ${taskName.id} task"))
 
-  def apply[F[_]: Sync](notificationOps: ONotification[F]): Task[F, Args, Unit] =
+  def apply[F[_]: Sync](
+      store: Store[F],
+      notificationOps: ONotification[F]
+  ): Task[F, Args, Unit] =
     Task { ctx =>
       val limit = 7
       Timestamp.current[F].flatMap { now =>
-        withItems(ctx, limit, now) { items =>
+        withItems(ctx, store, limit, now) { items =>
           withEventContext(ctx, items, limit, now) { eventCtx =>
             withChannel(ctx, notificationOps) { channels =>
               notificationOps.sendMessage(ctx.logger, eventCtx, channels)
@@ -51,7 +55,12 @@ object PeriodicDueItemsTask {
   ): F[Unit] =
     TaskOperations.withChannel(ctx.logger, ctx.args.channels, ctx.args.account, ops)(cont)
 
-  def withItems[F[_]: Sync](ctx: Context[F, Args], limit: Int, now: Timestamp)(
+  def withItems[F[_]: Sync](
+      ctx: Context[F, Args],
+      store: Store[F],
+      limit: Int,
+      now: Timestamp
+  )(
       cont: Vector[ListItem] => F[Unit]
   ): F[Unit] = {
     val rightDate = Date((now + Duration.days(ctx.args.remindDays.toLong)).toMillis)
@@ -77,7 +86,7 @@ object PeriodicDueItemsTask {
 
     for {
       res <-
-        ctx.store
+        store
           .transact(
             QItem
               .findItems(q, now.toUtcDate, 0, Batch.limit(limit))

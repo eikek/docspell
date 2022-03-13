@@ -8,6 +8,7 @@
 module Messages.Comp.DueItemsTaskList exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -41,4 +42,14 @@ de =
     , summary = "Kurzbeschreibung"
     , schedule = "Zeitplan"
     , connection = "Kanal"
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , channelType = Messages.Data.ChannelType.fr
+    , summary = "Résumé"
+    , schedule = "Programmation"
+    , connection = "Canal"
     }

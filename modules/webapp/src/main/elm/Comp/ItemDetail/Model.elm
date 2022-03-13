@@ -53,9 +53,11 @@ import Comp.KeyInput
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.MarkdownInput
 import Comp.SentMails
+import Comp.SimpleTextInput
 import Comp.TagDropdown
 import Data.Direction exposing (Direction)
 import Data.Fields exposing (Field)
+import Data.ItemIds exposing (ItemIdChange)
 import DatePicker exposing (DatePicker)
 import Dict exposing (Dict)
 import File exposing (File)
@@ -65,8 +67,6 @@ import Html5.DragDrop as DD
 import Http
 import Page exposing (Page(..))
 import Set exposing (Set)
-import Throttle exposing (Throttle)
-import Util.Tag
 
 
 type alias Model =
@@ -83,8 +83,8 @@ type alias Model =
     , folderModel : Comp.Dropdown.Model IdName
     , allFolders : List FolderItem
     , nameModel : String
+    , nameInput : Comp.SimpleTextInput.Model
     , nameState : SaveNameState
-    , nameSaveThrottle : Throttle Msg
     , notesModel : Maybe String
     , notesField : NotesField
     , itemModal : Maybe ConfirmModalValue
@@ -114,10 +114,10 @@ type alias Model =
     , keyInputModel : Comp.KeyInput.Model
     , customFieldsModel : Comp.CustomFieldMultiInput.Model
     , customFieldSavingIcon : Dict String String
-    , customFieldThrottle : Throttle Msg
     , allTags : List Tag
     , allPersons : Dict String Person
     , attachmentDropdownOpen : Bool
+    , mobileItemMenuOpen : Bool
     , editMenuTabsOpen : Set String
     , viewMode : ViewMode
     , showQrModel : ShowQrModel
@@ -217,9 +217,9 @@ emptyModel =
     , concEquipModel = Comp.Dropdown.makeSingle
     , folderModel = Comp.Dropdown.makeSingle
     , allFolders = []
+    , nameInput = Comp.SimpleTextInput.initDefault Nothing
     , nameModel = ""
     , nameState = SaveSuccess
-    , nameSaveThrottle = Throttle.create 1
     , notesModel = Nothing
     , notesField = ViewNotes
     , itemModal = Nothing
@@ -249,10 +249,10 @@ emptyModel =
     , keyInputModel = Comp.KeyInput.init
     , customFieldsModel = Comp.CustomFieldMultiInput.initWith []
     , customFieldSavingIcon = Dict.empty
-    , customFieldThrottle = Throttle.create 1
     , allTags = []
     , allPersons = Dict.empty
     , attachmentDropdownOpen = False
+    , mobileItemMenuOpen = False
     , editMenuTabsOpen = Set.empty
     , viewMode = SimpleView
     , showQrModel = initShowQrModel
@@ -283,7 +283,6 @@ type Msg
     | GetOrgResp (Result Http.Error ReferenceList)
     | GetPersonResp (Result Http.Error PersonList)
     | GetEquipResp (Result Http.Error EquipmentList)
-    | SetName String
     | SetNotes String
     | ToggleEditNotes
     | NotesEditMsg Comp.MarkdownInput.Msg
@@ -347,7 +346,6 @@ type Msg
     | StartEditEquipModal
     | ResetHiddenMsg Field (Result Http.Error BasicResult)
     | SaveNameResp (Result Http.Error BasicResult)
-    | UpdateThrottle
     | KeyInputMsg Comp.KeyInput.Msg
     | ToggleAttachMenu
     | UiSettingsUpdated
@@ -356,6 +354,7 @@ type Msg
     | CustomFieldSaveResp CustomField String (Result Http.Error BasicResult)
     | CustomFieldRemoveResp String (Result Http.Error BasicResult)
     | ToggleAttachmentDropdown
+    | ToggleMobileItemMenu
     | ToggleAkkordionTab String
     | ToggleOpenAllAkkordionTabs
     | RequestReprocessFile String
@@ -368,6 +367,8 @@ type Msg
     | ToggleShowQrItem String
     | ToggleShowQrAttach String
     | PrintElement String
+    | SetNameMsg Comp.SimpleTextInput.Msg
+    | ToggleSelectItem
 
 
 type SaveNameState
@@ -382,22 +383,23 @@ type alias UpdateResult =
     , sub : Sub Msg
     , linkTarget : LinkTarget
     , removedItem : Maybe String
+    , selectionChange : ItemIdChange
     }
 
 
 resultModel : Model -> UpdateResult
 resultModel model =
-    UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone Nothing
+    UpdateResult model Cmd.none Sub.none Comp.LinkTarget.LinkNone Nothing Data.ItemIds.noChange
 
 
 resultModelCmd : ( Model, Cmd Msg ) -> UpdateResult
 resultModelCmd ( model, cmd ) =
-    UpdateResult model cmd Sub.none Comp.LinkTarget.LinkNone Nothing
+    UpdateResult model cmd Sub.none Comp.LinkTarget.LinkNone Nothing Data.ItemIds.noChange
 
 
 resultModelCmdSub : ( Model, Cmd Msg, Sub Msg ) -> UpdateResult
 resultModelCmdSub ( model, cmd, sub ) =
-    UpdateResult model cmd sub Comp.LinkTarget.LinkNone Nothing
+    UpdateResult model cmd sub Comp.LinkTarget.LinkNone Nothing Data.ItemIds.noChange
 
 
 personMatchesOrg : Model -> Bool

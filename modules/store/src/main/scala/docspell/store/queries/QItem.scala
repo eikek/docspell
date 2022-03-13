@@ -14,8 +14,7 @@ import cats.effect.Sync
 import cats.implicits._
 import fs2.Stream
 
-import docspell.common.syntax.all._
-import docspell.common.{IdRef, _}
+import docspell.common.{FileKey, IdRef, _}
 import docspell.query.ItemQuery
 import docspell.store.Store
 import docspell.store.qb.DSL._
@@ -25,10 +24,9 @@ import docspell.store.records._
 
 import doobie.implicits._
 import doobie.{Query => _, _}
-import org.log4s.getLogger
 
 object QItem {
-  private[this] val logger = getLogger
+  private[this] val logger = docspell.logging.getLogger[ConnectionIO]
 
   private val equip = REquipment.as("e")
   private val org = ROrganization.as("o")
@@ -81,7 +79,7 @@ object QItem {
         )
       ]
       .option
-    logger.trace(s"Find item query: $cq")
+    logger.asUnsafe.trace(s"Find item query: $cq")
     val attachs = RAttachment.findByItemWithMeta(id)
     val sources = RAttachmentSource.findByItemWithMeta(id)
     val archives = RAttachmentArchive.findByItemWithMeta(id)
@@ -181,8 +179,8 @@ object QItem {
       .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
       .limit(batch)
       .build
-    logger.trace(s"List $batch items: $sql")
-    sql.query[ListItem].stream
+    logger.stream.trace(s"List $batch items: $sql").drain ++
+      sql.query[ListItem].stream
   }
 
   def searchStats(today: LocalDate)(q: Query): ConnectionIO[SearchSummary] =
@@ -359,8 +357,7 @@ object QItem {
     query.attemptSql.flatMap {
       case Right(res) => res.pure[ConnectionIO]
       case Left(ex) =>
-        Logger
-          .log4s[ConnectionIO](logger)
+        logger
           .error(ex)(
             s"Calculating custom field summary failed. You may have invalid custom field values according to their type."
           ) *>
@@ -405,8 +402,8 @@ object QItem {
         .orderBy(Tids.weight.desc)
         .build
 
-      logger.trace(s"fts query: $from")
-      from.query[ListItem].stream
+      logger.stream.trace(s"fts query: $from").drain ++
+        from.query[ListItem].stream
     }
 
   /** Same as `findItems` but resolves the tags for each item. Note that this is
@@ -445,7 +442,7 @@ object QItem {
       cfields <- Stream.eval(findCustomFieldValuesForItem(item.id))
     } yield ListItemWithTags(
       item,
-      ftags.toList.sortBy(_.name),
+      RTag.sort(ftags.toList),
       attachs.sortBy(_.position),
       cfields.toList
     )
@@ -470,7 +467,7 @@ object QItem {
     } yield tn + rn + n + mn + cf + im
 
   private def findByFileIdsQuery(
-      fileMetaIds: Nel[Ident],
+      fileMetaIds: Nel[FileKey],
       states: Option[Nel[ItemState]]
   ): Select.SimpleSelect = {
     val i = RItem.as("i")
@@ -490,7 +487,7 @@ object QItem {
     ).distinct
   }
 
-  def findOneByFileIds(fileMetaIds: Seq[Ident]): ConnectionIO[Option[RItem]] =
+  def findOneByFileIds(fileMetaIds: Seq[FileKey]): ConnectionIO[Option[RItem]] =
     Nel.fromList(fileMetaIds.toList) match {
       case Some(nel) =>
         findByFileIdsQuery(nel, None).limit(1).build.query[RItem].option
@@ -499,7 +496,7 @@ object QItem {
     }
 
   def findByFileIds(
-      fileMetaIds: Seq[Ident],
+      fileMetaIds: Seq[FileKey],
       states: Nel[ItemState]
   ): ConnectionIO[Vector[RItem]] =
     Nel.fromList(fileMetaIds.toList) match {
@@ -512,17 +509,17 @@ object QItem {
   def findByChecksum(
       checksum: String,
       collective: Ident,
-      excludeFileMeta: Set[Ident]
+      excludeFileMeta: Set[FileKey]
   ): ConnectionIO[Vector[RItem]] = {
     val qq = findByChecksumQuery(checksum, collective, excludeFileMeta).build
-    logger.debug(s"FindByChecksum: $qq")
-    qq.query[RItem].to[Vector]
+    logger.debug(s"FindByChecksum: $qq") *>
+      qq.query[RItem].to[Vector]
   }
 
   def findByChecksumQuery(
       checksum: String,
       collective: Ident,
-      excludeFileMeta: Set[Ident]
+      excludeFileMeta: Set[FileKey]
   ): Select = {
     val m1 = RFileMeta.as("m1")
     val m2 = RFileMeta.as("m2")
@@ -695,7 +692,7 @@ object QItem {
 
   private def contentMax(maxLen: Int): SelectExpr =
     if (maxLen <= 0) {
-      logger.debug("Max text length limit disabled")
+      logger.asUnsafe.debug("Max text length limit disabled")
       m.content.s
     } else substring(m.content.s, 0, maxLen).s
 
@@ -703,11 +700,11 @@ object QItem {
       q: Select
   ): ConnectionIO[TextAndTag] =
     for {
-      _ <- logger.ftrace[ConnectionIO](
+      _ <- logger.trace(
         s"query: $q  (${itemId.id}, ${collective.id})"
       )
       texts <- q.build.query[(String, Option[TextAndTag.TagName])].to[List]
-      _ <- logger.ftrace[ConnectionIO](
+      _ <- logger.trace(
         s"Got ${texts.size} text and tag entries for item ${itemId.id}"
       )
       tag = texts.headOption.flatMap(_._2)

@@ -16,7 +16,8 @@ case class HouseKeepingConfig(
     cleanupInvites: CleanupInvites,
     cleanupJobs: CleanupJobs,
     cleanupRememberMe: CleanupRememberMe,
-    checkNodes: CheckNodes
+    checkNodes: CheckNodes,
+    integrityCheck: IntegrityCheck
 )
 
 object HouseKeepingConfig {
@@ -29,4 +30,5 @@ object HouseKeepingConfig {
 
   case class CheckNodes(enabled: Boolean, minNotFound: Int)
 
+  case class IntegrityCheck(enabled: Boolean)
 }

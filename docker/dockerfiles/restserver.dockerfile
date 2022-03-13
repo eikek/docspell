@@ -4,8 +4,9 @@ ARG version=
 ARG restserver_url=
 ARG TARGETPLATFORM
 
-RUN JDKPKG="openjdk11"; \
-    if [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then JDKPKG="openjdk8"; fi; \
+RUN JDKPKG="openjdk11-jre"; \
+    if [[ $TARGETPLATFORM = linux/arm* ]]; then JDKPKG="openjdk8-jre"; fi; \
+    apk update && \
     apk add --no-cache $JDKPKG bash tzdata
 
 WORKDIR /opt

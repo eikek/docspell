@@ -135,7 +135,8 @@ object NotificationRoutes extends NonEmptyListSupport {
             user.account,
             baseUrl.some
           )
-          resp <- Ok(NotificationChannelTestResult(res.success, res.logMessages.toList))
+          messages = res.logEvents.map(_.asString)
+          resp <- Ok(NotificationChannelTestResult(res.success, messages.toList))
         } yield resp
     }
   }

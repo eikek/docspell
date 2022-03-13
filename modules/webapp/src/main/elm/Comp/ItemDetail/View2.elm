@@ -27,8 +27,10 @@ import Comp.ItemDetail.SingleAttachment
 import Comp.ItemMail
 import Comp.MenuBar as MB
 import Comp.SentMails
+import Data.Environment as Env
 import Data.Flags exposing (Flags)
 import Data.Icons as Icons
+import Data.ItemIds
 import Data.ItemNav exposing (ItemNav)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
@@ -39,12 +41,13 @@ import Page exposing (Page(..))
 import Styles as S
 
 
-view : Texts -> Flags -> ItemNav -> UiSettings -> Model -> Html Msg
-view texts flags inav settings model =
+view : Texts -> ItemNav -> Env.View -> Model -> Html Msg
+view texts inav env model =
     div [ class "flex flex-col h-full" ]
-        [ header texts settings model
-        , menuBar texts inav settings model
-        , body texts flags inav settings model
+        [ header texts inav env model
+
+        --        , menuBar texts inav settings model
+        , body texts env.flags inav env.settings model
         , itemModal texts model
         ]
 
@@ -59,21 +62,35 @@ itemModal texts model =
             span [ class "hidden" ] []
 
 
-header : Texts -> UiSettings -> Model -> Html Msg
-header texts settings model =
+header : Texts -> ItemNav -> Env.View -> Model -> Html Msg
+header texts inav env model =
     div [ class "my-3" ]
-        [ Comp.ItemDetail.ItemInfoHeader.view texts.itemInfoHeader settings model ]
+        [ Comp.ItemDetail.ItemInfoHeader.view texts.itemInfoHeader
+            env.settings
+            model
+            (menuBar texts inav env model)
+        ]
 
 
-menuBar : Texts -> ItemNav -> UiSettings -> Model -> Html Msg
-menuBar texts inav settings model =
+menuBar : Texts -> ItemNav -> Env.View -> Model -> Html Msg
+menuBar texts inav env model =
     let
         keyDescr name =
-            if settings.itemDetailShortcuts && model.menuOpen then
+            if env.settings.itemDetailShortcuts && model.menuOpen then
                 " " ++ texts.key ++ "'" ++ name ++ "'."
 
             else
                 ""
+
+        isSelected =
+            Data.ItemIds.isMember env.selectedItems model.item.id
+
+        foldSelected fsel funsel =
+            if isSelected then
+                fsel
+
+            else
+                funsel
     in
     MB.view
         { start =
@@ -136,6 +153,7 @@ menuBar texts inav settings model =
                     [ classList
                         [ ( "bg-gray-200 dark:bg-slate-600", model.mailOpen )
                         ]
+                    , class "hidden md:block"
                     , title texts.sendMail
                     , onClick ToggleMail
                     , class S.secondaryBasicButton
@@ -148,6 +166,7 @@ menuBar texts inav settings model =
                     [ classList
                         [ ( "bg-gray-200 dark:bg-slate-600", model.addFilesOpen )
                         ]
+                    , class "hidden md:block"
                     , if model.addFilesOpen then
                         title texts.close
 
@@ -164,6 +183,7 @@ menuBar texts inav settings model =
                     [ classList
                         [ ( "bg-gray-200 dark:bg-slate-600", isShowQrItem model.showQrModel )
                         ]
+                    , class "hidden md:block"
                     , if isShowQrItem model.showQrModel then
                         title texts.close
 
@@ -176,6 +196,11 @@ menuBar texts inav settings model =
                     [ Icons.showQrIcon ""
                     ]
             , MB.CustomElement <|
+                div
+                    [ class "flex flex-grow md:hidden"
+                    ]
+                    []
+            , MB.CustomElement <|
                 a
                     [ class S.primaryButton
                     , href "#"
@@ -183,24 +208,131 @@ menuBar texts inav settings model =
                     , title texts.confirmItemMetadata
                     , classList [ ( "hidden", model.item.state /= "created" ) ]
                     ]
-                    [ i [ class "fa fa-check mr-2" ] []
-                    , text texts.confirm
+                    [ i [ class "fa fa-check" ] []
+                    , span [ class "hidden ml-0 sm:ml-2 sm:inline" ]
+                        [ text texts.confirm ]
                     ]
+            , MB.Dropdown
+                { linkIcon = "fa fa-bars"
+                , label = ""
+                , linkClass =
+                    [ ( "md:hidden", True )
+                    , ( S.secondaryBasicButton, True )
+                    ]
+                , toggleMenu = ToggleMobileItemMenu
+                , menuOpen = model.mobileItemMenuOpen
+                , items =
+                    [ { icon =
+                            foldSelected
+                                (i [ class "fa fa-check-square dark:text-lime-400 text-lime-600" ] [])
+                                (i [ class "fa-regular fa-plus" ] [])
+                      , label = foldSelected texts.deselectItem texts.selectItem
+                      , disabled = False
+                      , attrs =
+                            [ href "#"
+                            , onClick ToggleSelectItem
+                            ]
+                      }
+                    , { icon = i [ class "fa fa-envelope font-thin" ] []
+                      , label = texts.sendMail
+                      , disabled = False
+                      , attrs =
+                            [ href "#"
+                            , onClick ToggleMail
+                            ]
+                      }
+                    , { icon = Icons.addFilesIcon2 ""
+                      , label = texts.addMoreFiles
+                      , disabled = False
+                      , attrs =
+                            [ href "#"
+                            , onClick AddFilesToggle
+                            ]
+                      }
+                    , { icon = Icons.showQrIcon ""
+                      , label = texts.showQrCode
+                      , disabled = False
+                      , attrs =
+                            [ href "#"
+                            , onClick (ToggleShowQrItem model.item.id)
+                            ]
+                      }
+                    , { icon = i [] []
+                      , label = "separator"
+                      , disabled = False
+                      , attrs =
+                            []
+                      }
+                    , { icon = i [ class "fa fa-eye-slash font-thin" ] []
+                      , label = texts.unconfirmItemMetadata
+                      , disabled = False
+                      , attrs =
+                            [ href "#"
+                            , onClick UnconfirmItem
+                            , classList [ ( "hidden", model.item.state == "created" ) ]
+                            ]
+                      }
+                    , { icon = i [ class "fa fa-redo" ] []
+                      , label = texts.reprocessItem
+                      , disabled = False
+                      , attrs =
+                            [ href "#"
+                            , onClick RequestReprocessItem
+                            ]
+                      }
+                    , if model.item.state == "deleted" then
+                        { icon = i [ class "fa fa-trash-restore" ] []
+                        , label = texts.undeleteThisItem
+                        , disabled = False
+                        , attrs =
+                            [ href "#"
+                            , onClick RestoreItem
+                            ]
+                        }
+
+                      else
+                        { icon = i [ class "fa fa-trash", class "text-red-500 dark:text-orange-500" ] []
+                        , label = texts.deleteThisItem
+                        , disabled = False
+                        , attrs =
+                            [ href "#"
+                            , onClick RequestDelete
+                            ]
+                        }
+                    ]
+                }
             ]
         , end =
             [ MB.CustomElement <|
+                a
+                    [ href "#"
+                    , onClick ToggleSelectItem
+                    , title (foldSelected texts.deselectItem texts.selectItem)
+                    , class "hidden md:flex flex-row items-center h-full "
+                    , classList
+                        [ ( S.greenButton, isSelected )
+                        , ( S.secondaryBasicButton, not isSelected )
+                        ]
+                    ]
+                    [ foldSelected
+                        (i [ class "fa fa-square-check" ] [])
+                        (i [ class "fa fa-plus" ] [])
+                    ]
+            , MB.CustomElement <|
                 a
                     [ class S.secondaryBasicButton
                     , href "#"
                     , onClick UnconfirmItem
                     , title texts.unconfirmItemMetadata
-                    , classList [ ( "hidden", model.item.state == "created" ) ]
+                    , class "hidden"
+                    , classList [ ( "md:block", model.item.state /= "created" ) ]
                     ]
                     [ i [ class "fa fa-eye-slash font-thin" ] []
                     ]
             , MB.CustomElement <|
                 a
                     [ class S.secondaryBasicButton
+                    , class "hidden md:block"
                     , href "#"
                     , onClick RequestReprocessItem
                     , title texts.reprocessItem
@@ -211,6 +343,7 @@ menuBar texts inav settings model =
                 MB.CustomElement <|
                     a
                         [ class S.undeleteButton
+                        , class "hidden md:block"
                         , href "#"
                         , onClick RestoreItem
                         , title texts.undeleteThisItem
@@ -222,6 +355,7 @@ menuBar texts inav settings model =
                 MB.CustomElement <|
                     a
                         [ class S.deleteButton
+                        , class "hidden md:block"
                         , href "#"
                         , onClick RequestDelete
                         , title texts.deleteThisItem
@@ -229,21 +363,39 @@ menuBar texts inav settings model =
                         [ i [ class "fa fa-trash" ] []
                         ]
             ]
-        , rootClasses = "mb-2"
+        , rootClasses = "mb-2 md:mt-2"
+        , sticky = False
         }
 
 
 body : Texts -> Flags -> ItemNav -> UiSettings -> Model -> Html Msg
 body texts flags _ settings model =
     div [ class "grid gap-2 grid-cols-1 md:grid-cols-3 h-full" ]
-        [ leftArea texts flags settings model
-        , rightArea texts flags settings model
+        [ div [ class "flex flex-col hidden md:block h-full" ]
+            [ itemActions texts flags settings model ""
+            , notesAndSentMails texts flags settings model "h-full"
+            ]
+        , attachmentView texts flags settings model "order-2 col-span-2"
+        , itemActions texts flags settings model "order-1 md:hidden"
+        , notesAndSentMails texts flags settings model "order-3 md:hidden"
         ]
 
 
-leftArea : Texts -> Flags -> UiSettings -> Model -> Html Msg
-leftArea texts flags settings model =
-    div [ class "w-full md:order-first md:mr-2 flex flex-col" ]
+attachmentView : Texts -> Flags -> UiSettings -> Model -> String -> Html Msg
+attachmentView texts flags settings model classes =
+    div
+        [ class "h-full"
+        , class classes
+        ]
+        (attachmentsBody texts flags settings model)
+
+
+itemActions : Texts -> Flags -> UiSettings -> Model -> String -> Html Msg
+itemActions texts flags settings model classes =
+    div
+        [ class "w-full md:mr-2 flex flex-col"
+        , class classes
+        ]
         [ addDetailForm texts settings model
         , sendMailForm texts settings model
         , Comp.ItemDetail.AddFilesForm.view texts.addFilesForm model
@@ -251,7 +403,16 @@ leftArea texts flags settings model =
             (S.border ++ " mb-4")
             model
             (Comp.ItemDetail.ShowQrCode.Item model.item.id)
-        , Comp.ItemDetail.Notes.view texts.notes model
+        ]
+
+
+notesAndSentMails : Texts -> Flags -> UiSettings -> Model -> String -> Html Msg
+notesAndSentMails texts _ _ model classes =
+    div
+        [ class "w-full md:mr-2 flex flex-col"
+        , class classes
+        ]
+        [ Comp.ItemDetail.Notes.view texts.notes model
         , div
             [ classList
                 [ ( "hidden", Comp.SentMails.isEmpty model.sentMails )
@@ -266,12 +427,6 @@ leftArea texts flags settings model =
         , div [ class "flex-grow" ] []
         , itemIdInfo texts model
         ]
-
-
-rightArea : Texts -> Flags -> UiSettings -> Model -> Html Msg
-rightArea texts flags settings model =
-    div [ class "md:col-span-2 h-full" ]
-        (attachmentsBody texts flags settings model)
 
 
 attachmentsBody : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)

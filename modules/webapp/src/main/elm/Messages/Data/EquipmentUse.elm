@@ -7,6 +7,7 @@
 
 module Messages.Data.EquipmentUse exposing
     ( de
+    , fr
     , gb
     )
 
@@ -31,3 +32,13 @@ de pu =
 
         Disabled ->
             "Deaktiviert"
+
+
+fr : EquipmentUse -> String
+fr pu =
+    case pu of
+        Concerning ->
+            "Concerné"
+
+        Disabled ->
+            "Inactif"

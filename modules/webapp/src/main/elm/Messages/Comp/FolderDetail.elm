@@ -8,6 +8,7 @@
 module Messages.Comp.FolderDetail exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -69,4 +70,23 @@ de =
     , folderCreated = "Der Ordner wurde erstellt."
     , nameChangeSuccessful = "Der Name wurde aktualisiert."
     , deleteSuccessful = "Der Ordner wurde gelöscht."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , reallyDeleteThisFolder = "Confirmer la suppression de ce dossier ?"
+    , autoOwnerInfo = "Le créateur d'un nouveau dossier en est automatiquement propriétaire."
+    , modifyInfo = "Modifier le nom ou les membres de ce dossier."
+    , notOwnerInfo = "Vous n'êtes pas propriétaire de ce dossier donc pas autorisé à le modifier."
+    , members = "Membres"
+    , addMember = "Ajouter un nouveau membre"
+    , add = "Ajouter"
+    , removeMember = "Supprimer ce membre"
+    , deleteThisFolder = "Supprimer ce dossier"
+    , folderCreated = "Dossier créé"
+    , nameChangeSuccessful = "Nom modifié"
+    , deleteSuccessful = "Dossier supprimé"
     }

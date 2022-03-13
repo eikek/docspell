@@ -261,6 +261,7 @@ viewTable2 texts model =
                     }
                 ]
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map TableMsg (Comp.SourceTable.view2 texts.sourceTable model.sources)
         , B.loadingDimmer
@@ -302,6 +303,7 @@ viewLinks2 texts flags _ source =
                 ]
             , end = []
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , p [ class "text-lg pt-2 opacity-75" ]
             [ text texts.sourceInfoText
@@ -449,6 +451,7 @@ viewForm2 texts flags settings model =
                 else
                     []
             , rootClasses = "mb-4"
+            , sticky = True
             }
         , Html.map FormMsg
             (Comp.SourceForm.view2 flags texts.sourceForm settings model.formModel)

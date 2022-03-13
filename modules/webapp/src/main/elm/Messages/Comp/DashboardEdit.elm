@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.DashboardEdit exposing (Texts, de, gb)
+module Messages.Comp.DashboardEdit exposing (Texts, de, fr, gb)
 
 import Messages.Basics
 import Messages.Comp.BoxEdit
@@ -54,4 +54,19 @@ de =
     , newBox = "Neue Kachel"
     , defaultDashboard = "Standard Dashboard"
     , gap = "Abstand"
+    }
+
+
+fr : Texts
+fr =
+    { boxView = Messages.Comp.BoxEdit.fr
+    , boxContent = Messages.Data.BoxContent.fr
+    , basics = Messages.Basics.fr
+    , accountScope = Messages.Data.AccountScope.fr
+    , namePlaceholder = "Nom du  tableau de bord "
+    , columns = "Colonnes"
+    , dashboardBoxes = "Boites du tableau de bord"
+    , newBox = "Nouvelle boite"
+    , defaultDashboard = "Tableau de bord par défaut"
+    , gap = "Espace"
     }

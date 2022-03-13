@@ -8,9 +8,11 @@
 module Messages.Comp.PeriodicQueryTaskForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.BookmarkDropdown
@@ -49,10 +51,10 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , calEventInput = Messages.Comp.CalEventInput.gb
+    , calEventInput = Messages.Comp.CalEventInput.gb tz
     , channelForm = Messages.Comp.ChannelForm.gb
     , httpError = Messages.Comp.HttpError.gb
     , bookmarkDropdown = Messages.Comp.BookmarkDropdown.gb
@@ -83,10 +85,10 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , calEventInput = Messages.Comp.CalEventInput.de
+    , calEventInput = Messages.Comp.CalEventInput.de tz
     , channelForm = Messages.Comp.ChannelForm.de
     , httpError = Messages.Comp.HttpError.de
     , bookmarkDropdown = Messages.Comp.BookmarkDropdown.de
@@ -114,4 +116,38 @@ de =
     , messageContentLabel = "Anfang der Nachricht"
     , messageContentInfo = "Dieser Text wird an den Anfang der generierten Nachricht angefügt."
     , messageContentPlaceholder = "Hallo, hier ist Docspell mit den nächsten Themen …"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , calEventInput = Messages.Comp.CalEventInput.fr tz
+    , channelForm = Messages.Comp.ChannelForm.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , bookmarkDropdown = Messages.Comp.BookmarkDropdown.fr
+    , channelRef = Messages.Comp.ChannelRefInput.fr
+    , reallyDeleteTask = "Confirmer la suppresion de cette tâche ?"
+    , startOnce = "Exécuter une seule fois"
+    , startTaskNow = "Démarrer cette tâche maintenant"
+    , deleteThisTask = "Supprimer cette tâche"
+    , enableDisable = "Activer ou désactiver cette tâche"
+    , summary = "Résumé"
+    , summaryInfo = "Un nom, uniquement pour affichage"
+    , schedule = "Programmation"
+    , scheduleClickForHelp = "Cliquer pour l'aide"
+    , scheduleInfo =
+        "Spécifie la fréquence à laquelle cette tâche doit être lancée"
+            ++ "Utiliser les jours de la semaine anglais en 3 lettres. Soit un valeur simple, "
+            ++ "une liste (ex: 1,2,3), un interval (ex: 1..3) ou '*' (pour tous) "
+            ++ "est autorisé pour chaque partie."
+    , invalidCalEvent = "Evénement calendaire invalide"
+    , queryLabel = "Requête"
+    , channelRequired = "Un canal valide doit être spécifié"
+    , queryStringRequired = "Un requête sous forme de chaine de caractères et/ou favoris sont requis"
+    , channelHeader = "Canaux"
+    , messageContentTitle = "Personnaliser le message"
+    , messageContentLabel = "Début du message"
+    , messageContentInfo = "Texte ajouté au message généré"
+    , messageContentPlaceholder = "Bonjour, docspell vous informe de l'arrivée de nouveaux documents."
     }

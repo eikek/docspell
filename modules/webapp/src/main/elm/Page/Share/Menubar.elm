@@ -31,7 +31,6 @@ view texts flags model =
                     [ Html.map PowerSearchMsg
                         (Comp.PowerSearchInput.viewInput
                             { placeholder = texts.powerSearchPlaceholder
-                            , extraAttrs = []
                             }
                             model.powerSearchInput
                         )
@@ -151,4 +150,5 @@ view texts flags model =
                 }
             ]
         , rootClasses = "mb-2 pt-1 dark:bg-slate-700 items-center text-sm"
+        , sticky = True
         }

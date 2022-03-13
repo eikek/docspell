@@ -8,10 +8,12 @@
 module Messages.Comp.ItemDetail.EditForm exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
 import Data.Direction exposing (Direction)
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.Comp.CustomFieldMultiInput
 import Messages.Comp.TagDropdown
@@ -43,8 +45,8 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , customFieldInput = Messages.Comp.CustomFieldMultiInput.gb
     , tagDropdown = Messages.Comp.TagDropdown.gb
@@ -62,13 +64,13 @@ gb =
     , editEquipment = "Edit equipment"
     , suggestions = "Suggestions"
     , noSuggestions = "No suggestions"
-    , formatDate = DF.formatDateLong Messages.UiLanguage.English
+    , formatDate = DF.formatDateLong Messages.UiLanguage.English tz
     , direction = Messages.Data.Direction.gb
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , customFieldInput = Messages.Comp.CustomFieldMultiInput.de
     , tagDropdown = Messages.Comp.TagDropdown.de
@@ -86,6 +88,30 @@ de =
     , editEquipment = "Ausstattung ändern"
     , suggestions = "Vorschläge"
     , noSuggestions = "Keine Vorschläge"
-    , formatDate = DF.formatDateLong Messages.UiLanguage.German
+    , formatDate = DF.formatDateLong Messages.UiLanguage.German tz
     , direction = Messages.Data.Direction.de
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , customFieldInput = Messages.Comp.CustomFieldMultiInput.fr
+    , tagDropdown = Messages.Comp.TagDropdown.fr
+    , createNewCustomField = "Créer un nouveau champs personnalisé"
+    , chooseDirection = "Choisir un sens…"
+    , dueDateTab = "Date d'échéance"
+    , addNewOrg = "Ajouter une nouvelle organisation"
+    , editOrg = "Editer une organisation"
+    , chooseOrg = "Choisir une organisation"
+    , addNewCorrespondentPerson = "Ajouter un correspondant"
+    , editPerson = "Editer uncorrespondant"
+    , personOrgInfo = "Le correspondant n'appartient pas à l'organisation."
+    , addNewConcerningPerson = "Ajouter une personne concernée"
+    , addNewEquipment = "Ajouter un nouvel équipement"
+    , editEquipment = "Editer un équipement"
+    , suggestions = "Suggestions"
+    , noSuggestions = "Aucune suggestion"
+    , formatDate = DF.formatDateLong Messages.UiLanguage.French tz
+    , direction = Messages.Data.Direction.fr
     }

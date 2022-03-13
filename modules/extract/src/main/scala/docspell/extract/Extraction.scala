@@ -18,6 +18,7 @@ import docspell.extract.poi.{PoiExtract, PoiType}
 import docspell.extract.rtf.RtfExtract
 import docspell.files.ImageSize
 import docspell.files.TikaMimetype
+import docspell.logging.Logger
 
 trait Extraction[F[_]] {
 

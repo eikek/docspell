@@ -13,8 +13,8 @@ import docspell.notification.api._
 import docspell.notification.impl.AbstractEventContext
 
 import doobie._
-import io.circe.Encoder
 import io.circe.syntax._
+import io.circe.{Encoder, Json}
 import yamusca.implicits._
 
 final case class JobDoneCtx(event: Event.JobDone, data: JobDoneCtx.Data)
@@ -23,9 +23,14 @@ final case class JobDoneCtx(event: Event.JobDone, data: JobDoneCtx.Data)
   val content = data.asJson
 
   val titleTemplate = Right(mustache"{{eventType}} (by *{{account.user}}*)")
-  val bodyTemplate = Right(
-    mustache"""{{#content}}_'{{subject}}'_ finished {{/content}}"""
-  )
+  val bodyTemplate =
+    data.resultMsg match {
+      case None =>
+        Right(mustache"""{{#content}}_'{{subject}}'_ finished {{/content}}""")
+      case Some(msg) =>
+        val tpl = s"""{{#content}}$msg{{/content}}"""
+        yamusca.imports.mustache.parse(tpl).left.map(_._2)
+    }
 }
 
 object JobDoneCtx {
@@ -45,14 +50,25 @@ object JobDoneCtx {
       args: String,
       state: JobState,
       subject: String,
-      submitter: Ident
+      submitter: Ident,
+      resultData: Json,
+      resultMsg: Option[String]
   )
   object Data {
     implicit val jsonEncoder: Encoder[Data] =
       io.circe.generic.semiauto.deriveEncoder
 
     def apply(ev: Event.JobDone): Data =
-      Data(ev.jobId, ev.group, ev.task, ev.args, ev.state, ev.subject, ev.submitter)
+      Data(
+        ev.jobId,
+        ev.group,
+        ev.task,
+        ev.args,
+        ev.state,
+        ev.subject,
+        ev.submitter,
+        ev.resultData,
+        ev.resultMsg
+      )
   }
-
 }

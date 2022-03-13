@@ -18,7 +18,8 @@ import fs2.Stream
 import docspell.common._
 import docspell.files.Zip
 import docspell.joex.mail._
-import docspell.joex.scheduler._
+import docspell.scheduler._
+import docspell.store.Store
 import docspell.store.records._
 
 import emil.Mail
@@ -32,40 +33,43 @@ import emil.Mail
   * This step assumes an existing premature item, it traverses its attachments.
   */
 object ExtractArchive {
+  type Args = ProcessItemArgs
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async](store: Store[F])(
       item: ItemData
-  ): Task[F, ProcessItemArgs, ItemData] =
-    multiPass(item, None).map(_._2)
+  ): Task[F, Args, ItemData] =
+    multiPass(store, item, None).map(_._2)
 
   def multiPass[F[_]: Async](
+      store: Store[F],
       item: ItemData,
       archive: Option[RAttachmentArchive]
-  ): Task[F, ProcessItemArgs, (Option[RAttachmentArchive], ItemData)] =
-    singlePass(item, archive).flatMap { t =>
+  ): Task[F, Args, (Option[RAttachmentArchive], ItemData)] =
+    singlePass(store, item, archive).flatMap { t =>
       if (t._1.isEmpty) Task.pure(t)
-      else multiPass(t._2, t._1)
+      else multiPass(store, t._2, t._1)
     }
 
   def singlePass[F[_]: Async](
+      store: Store[F],
       item: ItemData,
       archive: Option[RAttachmentArchive]
-  ): Task[F, ProcessItemArgs, (Option[RAttachmentArchive], ItemData)] =
+  ): Task[F, Args, (Option[RAttachmentArchive], ItemData)] =
     Task { ctx =>
       def extract(ra: RAttachment, pos: Int): F[Extracted] =
-        findMime(ctx)(ra).flatMap(m => extractSafe(ctx, archive)(ra, pos, m))
+        findMime(store)(ra).flatMap(m => extractSafe(ctx, store, archive)(ra, pos, m))
 
       for {
-        lastPos <- ctx.store.transact(RAttachment.nextPosition(item.item.id))
+        lastPos <- store.transact(RAttachment.nextPosition(item.item.id))
         extracts <-
           item.attachments.zipWithIndex
             .traverse(t => extract(t._1, lastPos + t._2))
             .map(Monoid[Extracted].combineAll)
             .map(fixPositions)
         nra = extracts.files
-        _ <- extracts.files.traverse(storeAttachment(ctx))
+        _ <- extracts.files.traverse(storeAttachment(store))
         naa = extracts.archives
-        _ <- naa.traverse(storeArchive(ctx))
+        _ <- naa.traverse(storeArchive(store))
       } yield naa.headOption -> item.copy(
         attachments = nra,
         originFile = item.originFile ++ nra.map(a => a.id -> a.fileId).toMap,
@@ -82,25 +86,26 @@ object ExtractArchive {
     if (extract.archives.isEmpty) extract
     else extract.updatePositions
 
-  def findMime[F[_]: Functor](ctx: Context[F, _])(ra: RAttachment): F[MimeType] =
-    OptionT(ctx.store.transact(RFileMeta.findById(ra.fileId)))
+  def findMime[F[_]: Functor](store: Store[F])(ra: RAttachment): F[MimeType] =
+    OptionT(store.transact(RFileMeta.findById(ra.fileId)))
       .map(_.mimetype)
       .getOrElse(MimeType.octetStream)
 
   def extractSafe[F[_]: Async](
-      ctx: Context[F, ProcessItemArgs],
+      ctx: Context[F, Args],
+      store: Store[F],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int, mime: MimeType): F[Extracted] =
     mime match {
-      case MimeType.ZipMatch(_) if ra.name.exists(_.endsWith(".zip")) =>
+      case MimeType.ZipMatch(_) if ra.name.exists(_.toLowerCase.endsWith(".zip")) =>
         ctx.logger.info(s"Extracting zip archive ${ra.name.getOrElse("<noname>")}.") *>
-          extractZip(ctx, archive)(ra, pos)
-            .flatMap(cleanupParents(ctx, ra, archive))
+          extractZip(ctx, store, archive)(ra, pos)
+            .flatMap(cleanupParents(ctx, store, ra, archive))
 
       case MimeType.EmailMatch(_) =>
         ctx.logger.info(s"Reading e-mail ${ra.name.getOrElse("<noname>")}") *>
-          extractMail(ctx, archive)(ra, pos)
-            .flatMap(cleanupParents(ctx, ra, archive))
+          extractMail(ctx, store, archive)(ra, pos)
+            .flatMap(cleanupParents(ctx, store, ra, archive))
 
       case _ =>
         ctx.logger.debug(s"Not an archive: ${mime.asString}") *>
@@ -109,6 +114,7 @@ object ExtractArchive {
 
   def cleanupParents[F[_]: Sync](
       ctx: Context[F, _],
+      store: Store[F],
       ra: RAttachment,
       archive: Option[RAttachmentArchive]
   )(extracted: Extracted): F[Extracted] =
@@ -118,40 +124,42 @@ object ExtractArchive {
           _ <- ctx.logger.debug(
             s"Extracted inner attachment ${ra.name}. Remove it completely."
           )
-          _ <- ctx.store.transact(RAttachmentArchive.delete(ra.id))
-          _ <- ctx.store.transact(RAttachment.delete(ra.id))
-          _ <- ctx.store.fileStore.delete(ra.fileId)
+          _ <- store.transact(RAttachmentArchive.delete(ra.id))
+          _ <- store.transact(RAttachment.delete(ra.id))
+          _ <- store.fileRepo.delete(ra.fileId)
         } yield extracted
       case None =>
         for {
           _ <- ctx.logger.debug(
             s"Extracted attachment ${ra.name}. Remove it from the item."
           )
-          _ <- ctx.store.transact(RAttachment.delete(ra.id))
+          _ <- store.transact(RAttachment.delete(ra.id))
         } yield extracted.copy(files = extracted.files.filter(_.id != ra.id))
     }
 
   def extractZip[F[_]: Async](
-      ctx: Context[F, ProcessItemArgs],
+      ctx: Context[F, Args],
+      store: Store[F],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int): F[Extracted] = {
-    val zipData = ctx.store.fileStore.getBytes(ra.fileId)
+    val zipData = store.fileRepo.getBytes(ra.fileId)
     val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
     ctx.logger.debug(s"Filtering zip entries with '${glob.asString}'") *>
       zipData
         .through(Zip.unzipP[F](8192, glob))
         .zipWithIndex
-        .flatMap(handleEntry(ctx, ra, pos, archive, None))
+        .flatMap(handleEntry(ctx, store, ra, pos, archive, None))
         .foldMonoid
         .compile
         .lastOrError
   }
 
   def extractMail[F[_]: Async](
-      ctx: Context[F, ProcessItemArgs],
+      ctx: Context[F, Args],
+      store: Store[F],
       archive: Option[RAttachmentArchive]
   )(ra: RAttachment, pos: Int): F[Extracted] = {
-    val email: Stream[F, Byte] = ctx.store.fileStore.getBytes(ra.fileId)
+    val email: Stream[F, Byte] = store.fileRepo.getBytes(ra.fileId)
 
     val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
     val attachOnly = ctx.args.meta.attachmentsOnly.getOrElse(false)
@@ -169,7 +177,9 @@ object ExtractArchive {
           ReadMail
             .mailToEntries(ctx.logger, glob, attachOnly)(mail)
             .zipWithIndex
-            .flatMap(handleEntry(ctx, ra, pos, archive, mId)) ++ Stream.eval(givenMeta)
+            .flatMap(handleEntry(ctx, store, ra, pos, archive, mId)) ++ Stream.eval(
+            givenMeta
+          )
         }
         .foldMonoid
         .compile
@@ -183,7 +193,8 @@ object ExtractArchive {
       .getOrElse(Extracted.empty)
 
   def handleEntry[F[_]: Sync](
-      ctx: Context[F, _],
+      ctx: Context[F, Args],
+      store: Store[F],
       ra: RAttachment,
       pos: Int,
       archive: Option[RAttachmentArchive],
@@ -193,7 +204,10 @@ object ExtractArchive {
   ): Stream[F, Extracted] = {
     val (entry, subPos) = tentry
     val mimeHint = MimeTypeHint.filename(entry.name).withAdvertised(entry.mime.asString)
-    val fileId = entry.data.through(ctx.store.fileStore.save(mimeHint))
+    val fileId = entry.data.through(
+      store.fileRepo
+        .save(ctx.args.meta.collective, FileCategory.AttachmentSource, mimeHint)
+    )
 
     Stream.eval(ctx.logger.debug(s"Extracted ${entry.name}. Storing as attachment.")) >>
       fileId.evalMap { fid =>
@@ -213,16 +227,16 @@ object ExtractArchive {
 
   }
 
-  def storeAttachment[F[_]: Sync](ctx: Context[F, _])(ra: RAttachment): F[Int] = {
-    val insert = CreateItem.insertAttachment(ctx)(ra)
+  def storeAttachment[F[_]: Sync](store: Store[F])(ra: RAttachment): F[Int] = {
+    val insert = CreateItem.insertAttachment(store)(ra)
     for {
-      n1 <- ctx.store.transact(RAttachment.updatePosition(ra.id, ra.position))
+      n1 <- store.transact(RAttachment.updatePosition(ra.id, ra.position))
       n2 <- if (n1 > 0) 0.pure[F] else insert
     } yield n1 + n2
   }
 
-  def storeArchive[F[_]](ctx: Context[F, _])(aa: RAttachmentArchive): F[Int] =
-    ctx.store.transact(RAttachmentArchive.insert(aa))
+  def storeArchive[F[_]](store: Store[F])(aa: RAttachmentArchive): F[Int] =
+    store.transact(RAttachmentArchive.insert(aa))
 
   case class Extracted(
       files: Vector[RAttachment],

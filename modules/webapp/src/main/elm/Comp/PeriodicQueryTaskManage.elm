@@ -16,12 +16,11 @@ module Comp.PeriodicQueryTaskManage exposing
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.PeriodicQuerySettings exposing (PeriodicQuerySettings)
-import Comp.ChannelMenu
 import Comp.MenuBar as MB
 import Comp.PeriodicQueryTaskForm
 import Comp.PeriodicQueryTaskList
-import Data.ChannelType exposing (ChannelType)
 import Data.Flags exposing (Flags)
+import Data.TimeZone exposing (TimeZone)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -83,8 +82,8 @@ init flags =
 --- Update
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update flags msg model =
+update : Flags -> TimeZone -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update flags tz msg model =
     case msg of
         GetDataResp (Ok items) ->
             ( { model
@@ -132,7 +131,7 @@ update flags msg model =
                     let
                         --( mm, action, mc ) =
                         result =
-                            Comp.PeriodicQueryTaskForm.update flags lm dm
+                            Comp.PeriodicQueryTaskForm.update flags tz lm dm
 
                         ( model_, cmd_ ) =
                             case result.action of
@@ -305,6 +304,7 @@ viewList2 texts model =
                 }
             ]
         , rootClasses = "mb-4"
+        , sticky = True
         }
     , Html.map ListMsg
         (Comp.PeriodicQueryTaskList.view2 texts.notificationTable

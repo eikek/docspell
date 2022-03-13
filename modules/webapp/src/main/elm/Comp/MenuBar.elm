@@ -41,6 +41,7 @@ type alias MenuBar msg =
     { start : List (Item msg)
     , end : List (Item msg)
     , rootClasses : String
+    , sticky : Bool
     }
 
 
@@ -125,7 +126,8 @@ view1 classes mb =
     in
     div
         [ class mb.rootClasses
-        , class "flex flex-col sm:flex-row space-y-1 sm:space-y-0 sticky top-0 z-40"
+        , class "flex flex-col md:flex-row space-y-1 md:space-y-0"
+        , classList [ ( "sticky top-0 z-40", mb.sticky ) ]
         , class classes
         ]
         [ left
@@ -296,7 +298,7 @@ makeButton btnType model =
                 []
 
             else
-                [ span [ class (iconMargin ++ " hidden sm:inline") ]
+                [ span [ class (iconMargin ++ " hidden md:inline") ]
                     [ text model.label
                     ]
                 ]

@@ -8,9 +8,11 @@
 module Messages.Page.Queue exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
 import Messages.Comp.HttpError
@@ -44,8 +46,8 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , httpError = Messages.Comp.HttpError.gb
     , currentlyRunning = "Currently Running"
@@ -66,13 +68,13 @@ gb =
     , retries = "Retries"
     , changePriority = "Change priority of this job"
     , prio = "Prio"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.English tz
     , sidebarTitle = "Processing"
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , httpError = Messages.Comp.HttpError.de
     , currentlyRunning = "Wird ausgeführt"
@@ -93,6 +95,33 @@ de =
     , retries = "Versuche"
     , changePriority = "Priorität des Jobs ändern"
     , prio = "Prio"
-    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.German tz
     , sidebarTitle = "Verarbeitung"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , currentlyRunning = "En cours d'exécution"
+    , queue = "Tâches"
+    , waiting = "En attente"
+    , errored = "En échec"
+    , success = "Complétées"
+    , cancelled = "Annulées"
+    , noJobsRunning = "Aucune tâche en cours d'exécution."
+    , noJobsDisplay = "Aucune tâche à afficher."
+    , noJobsWaiting = "Aucune tâche en attente."
+    , noJobsFailed = "Aucune tâche échouée à afficher."
+    , noJobsSuccess = "Aucune tâche complétée à afficher."
+    , noJobsCancelled = "Aucune tâche annulée à afficher.."
+    , deleteThisJob = "Annuler/Supprimer cette tâche ?"
+    , showLog = "Afficher le journal"
+    , remove = "Supprimer"
+    , retries = "Réessais"
+    , changePriority = "Changer la priorité de cette tâche."
+    , prio = "Prio"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
+    , sidebarTitle = "En cours"
     }

@@ -8,9 +8,11 @@
 module Messages.Page.Search exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.Comp.BookmarkQueryManage
 import Messages.Comp.ItemCardList
@@ -61,14 +63,14 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
-    , itemCardList = Messages.Comp.ItemCardList.gb
+    , itemCardList = Messages.Comp.ItemCardList.gb tz
     , searchStatsView = Messages.Comp.SearchStatsView.gb
     , sideMenu = Messages.Page.SearchSideMenu.gb
-    , itemMerge = Messages.Comp.ItemMerge.gb
-    , publishItems = Messages.Comp.PublishItems.gb
+    , itemMerge = Messages.Comp.ItemMerge.gb tz
+    , publishItems = Messages.Comp.PublishItems.gb tz
     , bookmarkManage = Messages.Comp.BookmarkQueryManage.gb
     , contentSearch = "Content search…"
     , searchInNames = "Search in names…"
@@ -103,14 +105,14 @@ gb =
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
-    , itemCardList = Messages.Comp.ItemCardList.de
+    , itemCardList = Messages.Comp.ItemCardList.de tz
     , searchStatsView = Messages.Comp.SearchStatsView.de
     , sideMenu = Messages.Page.SearchSideMenu.de
-    , itemMerge = Messages.Comp.ItemMerge.de
-    , publishItems = Messages.Comp.PublishItems.de
+    , itemMerge = Messages.Comp.ItemMerge.de tz
+    , publishItems = Messages.Comp.PublishItems.de tz
     , bookmarkManage = Messages.Comp.BookmarkQueryManage.de
     , contentSearch = "Volltextsuche…"
     , searchInNames = "Suche in Namen…"
@@ -142,4 +144,46 @@ de =
     , expandCollapseRows = "Alle ein-/ausklappen"
     , bookmarkQuery = "Abfrage merken"
     , nothingToBookmark = "Keine Abfrage vorhanden"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , itemCardList = Messages.Comp.ItemCardList.fr tz
+    , searchStatsView = Messages.Comp.SearchStatsView.fr
+    , sideMenu = Messages.Page.SearchSideMenu.fr
+    , itemMerge = Messages.Comp.ItemMerge.fr tz
+    , publishItems = Messages.Comp.PublishItems.fr tz
+    , bookmarkManage = Messages.Comp.BookmarkQueryManage.fr
+    , contentSearch = "Recherche..."
+    , searchInNames = "Recherche par nom..."
+    , selectModeTitle = "Select Mode"
+    , fullHeightPreviewTitle = "Aperçu pleine hauteur   "
+    , fullWidthPreviewTitle = "Aperçu pleine largeur"
+    , powerSearchPlaceholder = "Requête..."
+    , reallyReprocessQuestion = "Confirmer le retraitement de tous les documents sélectionnés? Les métadonnées des documents non validées pourront changer."
+    , reallyDeleteQuestion = "Confirmer la suppression de tous les documents sélectionnés ?"
+    , reallyRestoreQuestion = "Restorer tous les documents sélectionnés ?"
+    , editSelectedItems = \n -> "Éditer " ++ String.fromInt n ++ " documents sélectionnés"
+    , reprocessSelectedItems = \n -> "Retraiter " ++ String.fromInt n ++ " documents sélectionnés"
+    , deleteSelectedItems = \n -> "Supprimer " ++ String.fromInt n ++ " documents sélectionnés"
+    , undeleteSelectedItems = \n -> "Restorer " ++ String.fromInt n ++ " documents sélectionnés"
+    , selectAllVisible = "Sélectionner tous les visible"
+    , selectNone = "Sélectionner aucun"
+    , resetSearchForm = "Réinitialiser le formulaire de recherche"
+    , exitSelectMode = "Quitter le mode sélection"
+    , mergeItemsTitle = \n -> "Fusionner " ++ String.fromInt n ++ " documents sélectionnés"
+    , publishItemsTitle = \n -> "Publier " ++ String.fromInt n ++ " documents sélectionnés"
+    , publishCurrentQueryTitle = "Publier les résultats en cours"
+    , shareResults = "Partager les résultats"
+    , nothingSelectedToShare = "Tout partager ne marche pas. Il faut donner des critères."
+    , loadMore = "Charger plus..."
+    , thatsAll = "C'est tout !"
+    , showItemGroups = "Groupe par mois"
+    , listView = "Vue en liste"
+    , tileView = "Vue en tuile"
+    , expandCollapseRows = "Étendre/Réduire tout"
+    , bookmarkQuery = "Requête de favoris"
+    , nothingToBookmark = "Rien n'est sélectionné en favori"
     }

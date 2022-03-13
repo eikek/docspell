@@ -14,7 +14,9 @@ import docspell.analysis.TextAnalyser
 import docspell.backend.ops.OCollective
 import docspell.common._
 import docspell.joex.Config
-import docspell.joex.scheduler._
+import docspell.logging.Logger
+import docspell.scheduler._
+import docspell.store.Store
 import docspell.store.records.{RClassifierModel, RClassifierSetting}
 
 object LearnClassifierTask {
@@ -28,14 +30,16 @@ object LearnClassifierTask {
 
   def apply[F[_]: Async](
       cfg: Config.TextAnalysis,
+      store: Store[F],
       analyser: TextAnalyser[F]
   ): Task[F, Args, Unit] =
-    learnTags(cfg, analyser)
-      .flatMap(_ => learnItemEntities(cfg, analyser))
+    learnTags(cfg, store, analyser)
+      .flatMap(_ => learnItemEntities(cfg, store, analyser))
       .flatMap(_ => Task(_ => Sync[F].delay(System.gc())))
 
   private def learnItemEntities[F[_]: Async](
       cfg: Config.TextAnalysis,
+      store: Store[F],
       analyser: TextAnalyser[F]
   ): Task[F, Args, Unit] =
     Task { ctx =>
@@ -43,6 +47,7 @@ object LearnClassifierTask {
         LearnItemEntities
           .learnAll(
             analyser,
+            store,
             ctx.args.collective,
             cfg.classification.itemCount,
             cfg.maxLength
@@ -53,16 +58,17 @@ object LearnClassifierTask {
 
   private def learnTags[F[_]: Async](
       cfg: Config.TextAnalysis,
+      store: Store[F],
       analyser: TextAnalyser[F]
   ): Task[F, Args, Unit] =
     Task { ctx =>
       val learnTags =
         for {
-          sett <- findActiveSettings[F](ctx, cfg)
+          sett <- findActiveSettings[F](ctx, store, cfg)
           maxItems = cfg.classification.itemCountOrWhenLower(sett.itemCount)
           _ <- OptionT.liftF(
             LearnTags
-              .learnAllTagCategories(analyser)(
+              .learnAllTagCategories(analyser, store)(
                 ctx.args.collective,
                 maxItems,
                 cfg.maxLength
@@ -73,34 +79,38 @@ object LearnClassifierTask {
       // learn classifier models from active tag categories
       learnTags.getOrElseF(logInactiveWarning(ctx.logger)) *>
         // delete classifier model files for categories that have been removed
-        clearObsoleteTagModels(ctx) *>
+        clearObsoleteTagModels(ctx, store) *>
         // when tags are deleted, categories may get removed. fix the json array
-        ctx.store
+        store
           .transact(RClassifierSetting.fixCategoryList(ctx.args.collective))
           .map(_ => ())
     }
 
-  private def clearObsoleteTagModels[F[_]: Sync](ctx: Context[F, Args]): F[Unit] =
+  private def clearObsoleteTagModels[F[_]: Sync](
+      ctx: Context[F, Args],
+      store: Store[F]
+  ): F[Unit] =
     for {
-      list <- ctx.store.transact(
+      list <- store.transact(
         ClassifierName.findOrphanTagModels(ctx.args.collective)
       )
       _ <- ctx.logger.info(
         s"Found ${list.size} obsolete model files that are deleted now."
       )
-      n <- ctx.store.transact(RClassifierModel.deleteAll(list.map(_.id)))
+      n <- store.transact(RClassifierModel.deleteAll(list.map(_.id)))
       _ <- list
         .map(_.fileId)
-        .traverse(id => ctx.store.fileStore.delete(id))
+        .traverse(id => store.fileRepo.delete(id))
       _ <- ctx.logger.debug(s"Deleted $n model files.")
     } yield ()
 
   private def findActiveSettings[F[_]: Sync](
       ctx: Context[F, Args],
+      store: Store[F],
       cfg: Config.TextAnalysis
   ): OptionT[F, OCollective.Classifier] =
     if (cfg.classification.enabled)
-      OptionT(ctx.store.transact(RClassifierSetting.findById(ctx.args.collective)))
+      OptionT(store.transact(RClassifierSetting.findById(ctx.args.collective)))
         .filter(_.autoTagEnabled)
         .map(OCollective.Classifier.fromRecord)
     else

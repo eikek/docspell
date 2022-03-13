@@ -391,6 +391,7 @@ viewForm texts settings outerModel model =
             else
                 []
         , rootClasses = "mb-4"
+        , sticky = True
         }
     , div [ class "mt-2" ]
         [ viewState texts outerModel
@@ -445,6 +446,7 @@ viewList texts model =
             [ Comp.ChannelMenu.channelMenu texts.channelType menuModel
             ]
         , rootClasses = "mb-4"
+        , sticky = True
         }
     , Html.map TableMsg
         (Comp.NotificationChannelTable.view texts.notificationTable

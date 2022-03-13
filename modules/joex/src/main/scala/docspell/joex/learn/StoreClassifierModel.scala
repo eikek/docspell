@@ -12,27 +12,18 @@ import fs2.io.file.Files
 
 import docspell.analysis.classifier.ClassifierModel
 import docspell.common._
-import docspell.joex.scheduler._
+import docspell.logging.Logger
 import docspell.store.Store
 import docspell.store.records.RClassifierModel
 
 object StoreClassifierModel {
 
   def handleModel[F[_]: Async](
-      ctx: Context[F, _],
+      store: Store[F],
+      logger: Logger[F],
       collective: Ident,
       modelName: ClassifierName
   )(
-      trainedModel: ClassifierModel
-  ): F[Unit] =
-    handleModel(ctx.store, ctx.logger)(collective, modelName, trainedModel)
-
-  def handleModel[F[_]: Async](
-      store: Store[F],
-      logger: Logger[F]
-  )(
-      collective: Ident,
-      modelName: ClassifierName,
       trainedModel: ClassifierModel
   ): F[Unit] =
     for {
@@ -42,7 +33,12 @@ object StoreClassifierModel {
       _ <- logger.debug(s"Storing new trained model for: ${modelName.name}")
       fileData = Files[F].readAll(trainedModel.model)
       newFileId <-
-        fileData.through(store.fileStore.save(MimeTypeHint.none)).compile.lastOrError
+        fileData
+          .through(
+            store.fileRepo.save(collective, FileCategory.Classifier, MimeTypeHint.none)
+          )
+          .compile
+          .lastOrError
       _ <- store.transact(
         RClassifierModel.updateFile(collective, modelName.name, newFileId)
       )
@@ -50,7 +46,7 @@ object StoreClassifierModel {
       _ <- oldFile match {
         case Some(fid) =>
           logger.debug(s"Deleting old model file ${fid.id}") *>
-            store.fileStore.delete(fid)
+            store.fileRepo.delete(fid)
         case None => ().pure[F]
       }
     } yield ()

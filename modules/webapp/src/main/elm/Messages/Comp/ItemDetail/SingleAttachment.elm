@@ -8,9 +8,11 @@
 module Messages.Comp.ItemDetail.SingleAttachment exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Comp.AttachmentMeta
 import Messages.Comp.ItemDetail.ConfirmModal
 
@@ -35,9 +37,9 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
-    { attachmentMeta = Messages.Comp.AttachmentMeta.gb
+gb : TimeZone -> Texts
+gb tz =
+    { attachmentMeta = Messages.Comp.AttachmentMeta.gb tz
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.gb
     , noName = "No name"
     , openFileInNewTab = "Open file in new tab"
@@ -56,9 +58,9 @@ gb =
     }
 
 
-de : Texts
-de =
-    { attachmentMeta = Messages.Comp.AttachmentMeta.de
+de : TimeZone -> Texts
+de tz =
+    { attachmentMeta = Messages.Comp.AttachmentMeta.de tz
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.de
     , noName = "Kein Name"
     , openFileInNewTab = "Anhang im neuen Tab öffnen"
@@ -74,4 +76,25 @@ de =
     , exitSelectMode = "Auswahlmodus beenden"
     , deleteAttachments = "Anhänge löschen"
     , showQrCode = "Link als QR Code anzeigen"
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { attachmentMeta = Messages.Comp.AttachmentMeta.fr tz
+    , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.fr
+    , noName = "Sans nom"
+    , openFileInNewTab = "Ouvrir le fichier dans un nouvel onglet"
+    , downloadFile = "Télécharger le fichier"
+    , renameFile = "Renommer le fichier"
+    , downloadOriginalArchiveFile = "Télécharger l'archive original"
+    , originalFile = "Fichier original"
+    , renderPdfByBrowser = "Rendu des pdf pas le navigateur"
+    , viewExtractedData = "Voir les données extraites"
+    , reprocessFile = "Retraiter ce fichier"
+    , deleteThisFile = "Supprimer ce fichier"
+    , selectModeTitle = "Mode sélection"
+    , exitSelectMode = "Quitter le mode sélection"
+    , deleteAttachments = "Supprimer les pièces-jointes"
+    , showQrCode = "Afficher l'URL en QR code"
     }

@@ -9,7 +9,7 @@ package docspell.notification.impl
 import cats.effect._
 import cats.implicits._
 
-import docspell.common._
+import docspell.logging.Logger
 import docspell.notification.api._
 
 import emil.Emil

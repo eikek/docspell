@@ -18,6 +18,7 @@ import Api.Model.CalEventCheck exposing (CalEventCheck)
 import Api.Model.CalEventCheckResult exposing (CalEventCheckResult)
 import Data.CalEvent exposing (CalEvent)
 import Data.Flags exposing (Flags)
+import Data.TimeZone exposing (TimeZone)
 import Data.Validated exposing (Validated(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -109,8 +110,8 @@ isCheckError model =
             False
 
 
-update : Flags -> Maybe CalEvent -> Msg -> Model -> ( Model, Cmd Msg, Maybe CalEvent )
-update flags mev msg model =
+update : Flags -> TimeZone -> Maybe CalEvent -> Msg -> Model -> ( Model, Cmd Msg, Maybe CalEvent )
+update flags tz mev msg model =
     let
         ev =
             Maybe.withDefault model.inner mev
@@ -153,7 +154,7 @@ update flags mev msg model =
             ( m
             , Cmd.none
             , if res.success then
-                Just event
+                Just { event | timeZone = tz }
 
               else
                 Nothing

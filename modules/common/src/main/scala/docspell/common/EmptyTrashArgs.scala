@@ -33,7 +33,7 @@ object EmptyTrashArgs {
 
   val taskName = Ident.unsafe("empty-trash")
 
-  val defaultSchedule = CalEvent.unsafe("*-*-1/7 03:00:00")
+  val defaultSchedule = CalEvent.unsafe("*-*-1/7 03:00:00 UTC")
 
   def periodicTaskId(coll: Ident): Ident =
     Ident.unsafe(s"docspell") / taskName / coll

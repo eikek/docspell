@@ -8,6 +8,7 @@
 module Messages.Comp.EmailSettingsManage exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
@@ -56,4 +57,18 @@ de =
     , reallyDeleteConnection = "Diese Verbindung wirklich löschen?"
     , deleteThisEntry = "Verbindung löschen"
     , fillRequiredFields = "Bitte die erforderlichen Felder ausfüllen."
+    }
+
+
+fr : Texts
+fr =
+    { basics = Messages.Basics.fr
+    , settingsForm = Messages.Comp.EmailSettingsForm.fr
+    , settingsTable = Messages.Comp.EmailSettingsTable.fr
+    , httpError = Messages.Comp.HttpError.fr
+    , newSettings = "Nouvelle Connexion"
+    , addNewSmtpSettings = "Ajouter un serveur SMTP"
+    , reallyDeleteConnection = "Confirmer la suppression de cette connexion ?"
+    , deleteThisEntry = "Supprimer cette connexion"
+    , fillRequiredFields = "Veuillez compléter les champs requis."
     }

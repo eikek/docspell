@@ -32,7 +32,7 @@ cd "$(dirname "$0")"
 
 trap "{ docker buildx rm docspell-builder; }" EXIT
 
-platforms="linux/amd64,linux/aarch64,linux/arm/v7"
+platforms="linux/amd64,linux/arm64,linux/arm/v7"
 docker buildx create --name docspell-builder --use
 
 case $version in

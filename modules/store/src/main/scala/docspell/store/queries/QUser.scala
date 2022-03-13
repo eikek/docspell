@@ -16,7 +16,7 @@ import docspell.store.records._
 import doobie._
 
 object QUser {
-  private val logger = Logger.log4s[ConnectionIO](org.log4s.getLogger)
+  private[this] val logger = docspell.logging.getLogger[ConnectionIO]
 
   final case class UserData(
       ownedFolders: List[Ident],

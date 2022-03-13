@@ -8,9 +8,11 @@
 module Messages.Page.UserSettings exposing
     ( Texts
     , de
+    , fr
     , gb
     )
 
+import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.Comp.ChangePasswordForm
 import Messages.Comp.DueItemsTaskManage
@@ -58,19 +60,19 @@ type alias Texts =
     }
 
 
-gb : Texts
-gb =
+gb : TimeZone -> Texts
+gb tz =
     { basics = Messages.Basics.gb
     , changePasswordForm = Messages.Comp.ChangePasswordForm.gb
     , uiSettingsManage = Messages.Comp.UiSettingsManage.gb
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.gb
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.gb
-    , notificationManage = Messages.Comp.DueItemsTaskManage.gb
-    , scanMailboxManage = Messages.Comp.ScanMailboxManage.gb
+    , notificationManage = Messages.Comp.DueItemsTaskManage.gb tz
+    , scanMailboxManage = Messages.Comp.ScanMailboxManage.gb tz
     , notificationHookManage = Messages.Comp.NotificationHookManage.gb
-    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.gb
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.gb tz
     , channelManage = Messages.Comp.NotificationChannelManage.gb
-    , otpSetup = Messages.Comp.OtpSetup.gb
+    , otpSetup = Messages.Comp.OtpSetup.gb tz
     , userSettings = "User Settings"
     , uiSettings = "UI Settings"
     , notifications = "Notifications"
@@ -121,19 +123,19 @@ must be created before.
     }
 
 
-de : Texts
-de =
+de : TimeZone -> Texts
+de tz =
     { basics = Messages.Basics.de
     , changePasswordForm = Messages.Comp.ChangePasswordForm.de
     , uiSettingsManage = Messages.Comp.UiSettingsManage.de
     , emailSettingsManage = Messages.Comp.EmailSettingsManage.de
     , imapSettingsManage = Messages.Comp.ImapSettingsManage.de
-    , notificationManage = Messages.Comp.DueItemsTaskManage.de
-    , scanMailboxManage = Messages.Comp.ScanMailboxManage.de
+    , notificationManage = Messages.Comp.DueItemsTaskManage.de tz
+    , scanMailboxManage = Messages.Comp.ScanMailboxManage.de tz
     , notificationHookManage = Messages.Comp.NotificationHookManage.de
-    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.de
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.de tz
     , channelManage = Messages.Comp.NotificationChannelManage.de
-    , otpSetup = Messages.Comp.OtpSetup.de
+    , otpSetup = Messages.Comp.OtpSetup.de tz
     , userSettings = "Benutzereinstellung"
     , uiSettings = "Oberfläche"
     , notifications = "Benachrichtigungen"
@@ -181,4 +183,68 @@ erstellt werden muss.
     , periodicQueryInfoText = "Hier können beliebige Abfragen definiert werden, welche regelmäßig ausgeführt werden."
     , channels = "Benachrichtigungskanäle"
     , channelInfoText = "Über Kanäle werden Notifizierungen versendet."
+    }
+
+
+fr : TimeZone -> Texts
+fr tz =
+    { basics = Messages.Basics.fr
+    , changePasswordForm = Messages.Comp.ChangePasswordForm.fr
+    , uiSettingsManage = Messages.Comp.UiSettingsManage.fr
+    , emailSettingsManage = Messages.Comp.EmailSettingsManage.fr
+    , imapSettingsManage = Messages.Comp.ImapSettingsManage.fr
+    , notificationManage = Messages.Comp.DueItemsTaskManage.fr tz
+    , scanMailboxManage = Messages.Comp.ScanMailboxManage.fr tz
+    , notificationHookManage = Messages.Comp.NotificationHookManage.fr
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.fr tz
+    , channelManage = Messages.Comp.NotificationChannelManage.fr
+    , otpSetup = Messages.Comp.OtpSetup.fr tz
+    , userSettings = "Paramètres utilisateur"
+    , uiSettings = "Paramètres UI"
+    , notifications = "Notifications"
+    , scanMailbox = "Scanner Boite Mail"
+    , emailSettingSmtp = "Configuration E-Mail (SMTP)"
+    , emailSettingImap = "Configuration E-Mail (IMAP)"
+    , changePassword = "Changer le mot de passe"
+    , channelSettings = "Canaux de notifications"
+    , uiSettingsInfo =
+        "Ces paramètres n'affectent que l'interface web. Les paramètres peuvent être enregistrer "
+            ++ " dans les profiles utilsateur ou de groupe. Les paramètres utilsateurs ont la priorité."
+    , scanMailboxInfo1 =
+        "Docspell scanne les dossiers de votre boite mail pour importer vos mails. "
+            ++ "La connexion doit être configurée"
+            ++ " dans les paramètres email (imap)."
+    , scanMailboxInfo2 =
+        """
+            Docpsell parcourt tous les dossiers configurés et importe
+            les mails correspondant aux critères de recherche. Les
+            mails précédement importés (avec documents toujours présents)
+            sont ignorés. Après import d'un mail dans docspell, il
+            est possible de le déplacer dans un autre répertoire, le
+            supprimer ou ne rien faire. Dans ce dernier cas
+            la programmation devra être ajustée afin de ne pas
+            relir ce mail encore une fois."""
+    , otpMenu = "Authentification à 2 facteurs"
+    , dueItems = "requête des Documents à échéance"
+    , notificationInfoText = """
+
+Docspell peut envoyer des notifications pour divers événements. 
+Les canaux suivants sont possible pour envoyer des message: 
+[Matrix](https://matrix.org), [Gotify](https://gotify.net) or E-Mail.
+Enfin il est possible d'envoyer de vrai requête http avec les détails
+de l'événement contenus dans le payload.
+
+De plus, il est possible de paramétrer des requêtes exécutées périodiquement
+dont les résultats seront transmis via une notification.
+
+Le paramétrage d'une notification nécessite la création au préalable d'au
+moins un canal de communication.
+
+"""
+    , webhookInfoText = """Les webhooksWebhooks executent une requête http en réponse à certains évenements dans docspell.
+"""
+    , dueItemsInfoText = """Docspell peut vous notifier quand la data d'échéance de vos documents approche.  """
+    , periodicQueryInfoText = "Des requêtes périodiques peuvent être définies."
+    , channels = "Canaux de notification"
+    , channelInfoText = "Les canaux sont utilisés pour envoyer des messages de notification."
     }
