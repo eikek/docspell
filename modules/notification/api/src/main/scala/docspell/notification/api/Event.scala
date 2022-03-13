@@ -204,7 +204,8 @@ object Event {
       state: JobState,
       subject: String,
       submitter: Ident,
-      result: Json
+      resultData: Json,
+      resultMsg: Option[String]
   ) extends Event {
     val eventType = JobDone
     val baseUrl = None
@@ -222,7 +223,8 @@ object Event {
           JobState.running,
           "Process 3 files",
           account.user,
-          Json.Null
+          Json.Null,
+          None
         )
       } yield ev
   }

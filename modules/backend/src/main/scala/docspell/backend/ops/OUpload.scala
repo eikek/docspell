@@ -14,8 +14,8 @@ import fs2.Stream
 
 import docspell.backend.JobFactory
 import docspell.common._
+import docspell.scheduler.{Job, JobStore}
 import docspell.store.Store
-import docspell.store.queue.JobQueue
 import docspell.store.records._
 
 trait OUpload[F[_]] {
@@ -108,7 +108,7 @@ object OUpload {
 
   def apply[F[_]: Sync](
       store: Store[F],
-      queue: JobQueue[F],
+      jobStore: JobStore[F],
       joex: OJoex[F]
   ): Resource[F, OUpload[F]] =
     Resource.pure[F, OUpload[F]](new OUpload[F] {
@@ -187,10 +187,10 @@ object OUpload {
 
       private def submitJobs(
           notifyJoex: Boolean
-      )(jobs: Vector[RJob]): F[OUpload.UploadResult] =
+      )(jobs: Vector[Job[String]]): F[OUpload.UploadResult] =
         for {
           _ <- logger.debug(s"Storing jobs: $jobs")
-          _ <- queue.insertAll(jobs)
+          _ <- jobStore.insertAll(jobs)
           _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield UploadResult.Success
 
@@ -244,7 +244,9 @@ object OUpload {
           account: AccountId,
           prio: Priority,
           tracker: Option[Ident]
-      ): F[Vector[RJob]] =
-        JobFactory.processItems[F](args, account, prio, tracker)
+      ): F[Vector[Job[String]]] =
+        JobFactory
+          .processItems[F](args, account, prio, tracker)
+          .map(_.map(_.encode))
     })
 }

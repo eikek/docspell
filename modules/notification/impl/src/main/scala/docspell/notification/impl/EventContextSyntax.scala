@@ -18,8 +18,9 @@ trait EventContextSyntax {
   implicit final class EventContextOps(self: EventContext) {
     def withDefault[F[_]](logger: Logger[F])(f: (String, String) => F[Unit]): F[Unit] =
       (for {
-        tt <- self.defaultTitle
-        tb <- self.defaultBody
+        dm <- self.defaultMessage
+        tt = dm.title
+        tb = dm.body
       } yield f(tt, tb)).fold(logError(logger), identity)
 
     def withJsonMessage[F[_]](logger: Logger[F])(f: Json => F[Unit]): F[Unit] =

@@ -13,10 +13,9 @@ import fs2.Stream
 
 import docspell.common._
 import docspell.notification.api.{ChannelRef, PeriodicDueItemsArgs, PeriodicQueryArgs}
+import docspell.scheduler.usertask.{UserTask, UserTaskScope, UserTaskStore}
 import docspell.store.Store
-import docspell.store.queue.JobQueue
 import docspell.store.records.RNotificationChannel
-import docspell.store.usertask._
 
 import io.circe.Encoder
 
@@ -86,7 +85,6 @@ object OUserTask {
   def apply[F[_]: Async](
       taskStore: UserTaskStore[F],
       store: Store[F],
-      queue: JobQueue[F],
       joex: OJoex[F]
   ): Resource[F, OUserTask[F]] =
     Resource.pure[F, OUserTask[F]](new OUserTask[F] {
@@ -95,9 +93,7 @@ object OUserTask {
           implicit E: Encoder[A]
       ): F[Unit] =
         for {
-          ptask <- task.encode.toPeriodicTask(scope, subject)
-          job <- ptask.toJob
-          _ <- queue.insert(job)
+          _ <- taskStore.executeNow(scope, subject, task)
           _ <- joex.notifyAllNodes
         } yield ()
 
@@ -124,7 +120,7 @@ object OUserTask {
       ): F[Unit] =
         for {
           _ <- taskStore.updateTask[ScanMailboxArgs](scope, subject, task)
-          _ <- joex.notifyAllNodes
+          _ <- joex.notifyPeriodicTasks
         } yield ()
 
       def getNotifyDueItems(
@@ -153,7 +149,7 @@ object OUserTask {
       ): F[Unit] =
         for {
           _ <- taskStore.updateTask[PeriodicDueItemsArgs](scope, subject, task)
-          _ <- joex.notifyAllNodes
+          _ <- joex.notifyPeriodicTasks
         } yield ()
 
       def getPeriodicQuery(scope: UserTaskScope): Stream[F, UserTask[PeriodicQueryArgs]] =
@@ -180,7 +176,7 @@ object OUserTask {
       ): F[Unit] =
         for {
           _ <- taskStore.updateTask[PeriodicQueryArgs](scope, subject, task)
-          _ <- joex.notifyAllNodes
+          _ <- joex.notifyPeriodicTasks
         } yield ()
 
       // When retrieving arguments containing channel references, we must update

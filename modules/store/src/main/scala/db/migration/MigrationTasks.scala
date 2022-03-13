@@ -15,7 +15,7 @@ import docspell.common.syntax.StringSyntax._
 import docspell.notification.api._
 import docspell.store.records._
 
-import db.migration.data.{PeriodicDueItemsArgsOld, PeriodicQueryArgsOld}
+import db.migration.data._
 import doobie._
 import doobie.implicits._
 import doobie.util.transactor.Strategy

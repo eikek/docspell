@@ -18,8 +18,9 @@ import docspell.joex.Config
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.learn.{ClassifierName, Classify, LearnClassifierTask}
 import docspell.joex.process.ItemData.AttachmentDates
-import docspell.joex.scheduler.Context
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Context
+import docspell.scheduler.Task
+import docspell.store.Store
 import docspell.store.records.{RAttachmentMeta, RClassifierSetting}
 
 object TextAnalysis {
@@ -28,7 +29,8 @@ object TextAnalysis {
   def apply[F[_]: Async](
       cfg: Config.TextAnalysis,
       analyser: TextAnalyser[F],
-      nerFile: RegexNerFile[F]
+      nerFile: RegexNerFile[F],
+      store: Store[F]
   )(item: ItemData): Task[F, Args, ItemData] =
     Task { ctx =>
       for {
@@ -41,18 +43,19 @@ object TextAnalysis {
             )
         _ <- ctx.logger.debug(s"Storing tags: ${t.map(_._1.copy(content = None))}")
         _ <- t.traverse(m =>
-          ctx.store.transact(RAttachmentMeta.updateLabels(m._1.id, m._1.nerlabels))
+          store.transact(RAttachmentMeta.updateLabels(m._1.id, m._1.nerlabels))
         )
 
         v = t.toVector
-        autoTagEnabled <- getActiveAutoTag(ctx, cfg)
+        autoTagEnabled <- getActiveAutoTag(ctx, store, cfg)
         tag <-
-          if (autoTagEnabled) predictTags(ctx, cfg, item.metas, analyser.classifier)
+          if (autoTagEnabled)
+            predictTags(ctx, store, cfg, item.metas, analyser.classifier)
           else List.empty[String].pure[F]
 
         classProposals <-
           if (cfg.classification.enabled)
-            predictItemEntities(ctx, cfg, item.metas, analyser.classifier)
+            predictItemEntities(ctx, store, cfg, item.metas, analyser.classifier)
           else MetaProposalList.empty.pure[F]
 
         e <- s
@@ -86,16 +89,17 @@ object TextAnalysis {
 
   def predictTags[F[_]: Async](
       ctx: Context[F, Args],
+      store: Store[F],
       cfg: Config.TextAnalysis,
       metas: Vector[RAttachmentMeta],
       classifier: TextClassifier[F]
   ): F[List[String]] = {
     val text = metas.flatMap(_.content).mkString(LearnClassifierTask.pageSep)
     val classifyWith: ClassifierName => F[Option[String]] =
-      makeClassify(ctx, cfg, classifier)(text)
+      makeClassify(ctx, store, cfg, classifier)(text)
 
     for {
-      names <- ctx.store.transact(
+      names <- store.transact(
         ClassifierName.findTagClassifiers(ctx.args.meta.collective)
       )
       _ <- ctx.logger.debug(s"Guessing tags for ${names.size} categories")
@@ -105,6 +109,7 @@ object TextAnalysis {
 
   def predictItemEntities[F[_]: Async](
       ctx: Context[F, Args],
+      store: Store[F],
       cfg: Config.TextAnalysis,
       metas: Vector[RAttachmentMeta],
       classifier: TextClassifier[F]
@@ -116,7 +121,7 @@ object TextAnalysis {
         mtype: MetaProposalType
     ): F[Option[MetaProposal]] =
       for {
-        label <- makeClassify(ctx, cfg, classifier)(text).apply(cname)
+        label <- makeClassify(ctx, store, cfg, classifier)(text).apply(cname)
       } yield label.map(str =>
         MetaProposal(mtype, Candidate(IdRef(Ident.unsafe(""), str), Set.empty))
       )
@@ -136,13 +141,14 @@ object TextAnalysis {
 
   private def makeClassify[F[_]: Async](
       ctx: Context[F, Args],
+      store: Store[F],
       cfg: Config.TextAnalysis,
       classifier: TextClassifier[F]
   )(text: String): ClassifierName => F[Option[String]] =
     Classify[F](
       ctx.logger,
       cfg.workingDir,
-      ctx.store,
+      store,
       classifier,
       ctx.args.meta.collective,
       text
@@ -150,10 +156,11 @@ object TextAnalysis {
 
   private def getActiveAutoTag[F[_]: Sync](
       ctx: Context[F, Args],
+      store: Store[F],
       cfg: Config.TextAnalysis
   ): F[Boolean] =
     if (cfg.classification.enabled)
-      ctx.store
+      store
         .transact(RClassifierSetting.findById(ctx.args.meta.collective))
         .map(_.exists(_.autoTagEnabled))
         .flatTap(enabled =>

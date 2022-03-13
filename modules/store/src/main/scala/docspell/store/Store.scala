@@ -12,7 +12,7 @@ import cats.effect._
 import cats.~>
 import fs2._
 
-import docspell.store.file.FileRepository
+import docspell.store.file.{FileRepository, FileRepositoryConfig}
 import docspell.store.impl.StoreImpl
 
 import com.zaxxer.hikari.HikariDataSource
@@ -28,6 +28,11 @@ trait Store[F[_]] {
 
   def fileRepo: FileRepository[F]
 
+  def createFileRepository(
+      cfg: FileRepositoryConfig,
+      withAttributeStore: Boolean
+  ): FileRepository[F]
+
   def add(insert: ConnectionIO[Int], exists: ConnectionIO[Boolean]): F[AddResult]
 }
 
@@ -35,7 +40,7 @@ object Store {
 
   def create[F[_]: Async](
       jdbc: JdbcConfig,
-      chunkSize: Int,
+      fileRepoConfig: FileRepositoryConfig,
       connectEC: ExecutionContext
   ): Resource[F, Store[F]] = {
     val acquire = Sync[F].delay(new HikariDataSource())
@@ -50,8 +55,8 @@ object Store {
         ds.setDriverClassName(jdbc.driverClass)
       }
       xa = HikariTransactor(ds, connectEC)
-      fr = FileRepository.genericJDBC(xa, ds, chunkSize)
-      st = new StoreImpl[F](fr, jdbc, xa)
+      fr = FileRepository.apply(xa, ds, fileRepoConfig, true)
+      st = new StoreImpl[F](fr, jdbc, ds, xa)
       _ <- Resource.eval(st.migrate)
     } yield st
   }

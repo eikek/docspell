@@ -10,7 +10,7 @@ import cats.effect.Async
 
 import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, Validation}
-import docspell.joex.scheduler.CountingScheme
+import docspell.scheduler.CountingScheme
 
 import emil.MailAddress
 import emil.javamail.syntax._
@@ -19,6 +19,7 @@ import pureconfig.generic.auto._
 import yamusca.imports._
 
 object ConfigFile {
+  // IntelliJ is wrong, this is required
   import Implicits._
 
   def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
@@ -51,6 +52,7 @@ object ConfigFile {
       Validation.failWhen(
         cfg => cfg.updateCheck.enabled && cfg.updateCheck.subject.els.isEmpty,
         "No subject given for enabled update check!"
-      )
+      ),
+      Validation(cfg => cfg.files.validate.map(_ => cfg))
     )
 }

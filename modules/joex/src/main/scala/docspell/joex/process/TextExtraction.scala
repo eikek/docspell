@@ -13,12 +13,13 @@ import cats.implicits._
 import docspell.common._
 import docspell.extract.{ExtractConfig, ExtractResult, Extraction}
 import docspell.ftsclient.{FtsClient, TextData}
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
+import docspell.store.Store
 import docspell.store.records.{RAttachment, RAttachmentMeta, RFileMeta}
 
 object TextExtraction {
 
-  def apply[F[_]: Async](cfg: ExtractConfig, fts: FtsClient[F])(
+  def apply[F[_]: Async](cfg: ExtractConfig, fts: FtsClient[F], store: Store[F])(
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
@@ -30,6 +31,7 @@ object TextExtraction {
         txt <- item.attachments.traverse(
           extractTextIfEmpty(
             ctx,
+            store,
             cfg,
             ctx.args.meta.language,
             ctx.args.meta.collective,
@@ -38,7 +40,7 @@ object TextExtraction {
         )
         _ <- ctx.logger.debug("Storing extracted texts …")
         _ <-
-          txt.toList.traverse(res => ctx.store.transact(RAttachmentMeta.upsert(res.am)))
+          txt.toList.traverse(res => store.transact(RAttachmentMeta.upsert(res.am)))
         _ <- ctx.logger.debug(s"Extracted text stored.")
         idxItem = TextData.item(
           item.item.id,
@@ -65,6 +67,7 @@ object TextExtraction {
 
   def extractTextIfEmpty[F[_]: Async](
       ctx: Context[F, ProcessItemArgs],
+      store: Store[F],
       cfg: ExtractConfig,
       lang: Language,
       collective: Ident,
@@ -91,13 +94,14 @@ object TextExtraction {
         ctx.logger.info("TextExtraction skipped, since text is already available.") *>
           makeTextData((rm, Nil)).pure[F]
       case _ =>
-        extractTextToMeta[F](ctx, cfg, lang, item)(ra)
+        extractTextToMeta[F](ctx, store, cfg, lang, item)(ra)
           .map(makeTextData)
     }
   }
 
   def extractTextToMeta[F[_]: Async](
       ctx: Context[F, _],
+      store: Store[F],
       cfg: ExtractConfig,
       lang: Language,
       item: ItemData
@@ -105,8 +109,8 @@ object TextExtraction {
     for {
       _ <- ctx.logger.debug(s"Extracting text for attachment ${stripAttachmentName(ra)}")
       dst <- Duration.stopTime[F]
-      fids <- filesToExtract(ctx)(item, ra)
-      res <- extractTextFallback(ctx, cfg, ra, lang)(fids)
+      fids <- filesToExtract(store)(item, ra)
+      res <- extractTextFallback(ctx, store, cfg, ra, lang)(fids)
       meta = item.changeMeta(
         ra.id,
         lang,
@@ -123,14 +127,14 @@ object TextExtraction {
     } yield (meta, tags)
 
   def extractText[F[_]: Sync](
-      ctx: Context[F, _],
+      store: Store[F],
       extr: Extraction[F],
       lang: Language
   )(fileId: FileKey): F[ExtractResult] = {
-    val data = ctx.store.fileRepo.getBytes(fileId)
+    val data = store.fileRepo.getBytes(fileId)
 
     def findMime: F[MimeType] =
-      OptionT(ctx.store.fileRepo.findMeta(fileId))
+      OptionT(store.fileRepo.findMeta(fileId))
         .map(_.mimetype)
         .getOrElse(MimeType.octetStream)
 
@@ -140,6 +144,7 @@ object TextExtraction {
 
   private def extractTextFallback[F[_]: Async](
       ctx: Context[F, _],
+      store: Store[F],
       cfg: ExtractConfig,
       ra: RAttachment,
       lang: Language
@@ -151,7 +156,7 @@ object TextExtraction {
       case id :: rest =>
         val extr = Extraction.create[F](ctx.logger, cfg)
 
-        extractText[F](ctx, extr, lang)(id)
+        extractText[F](store, extr, lang)(id)
           .flatMap {
             case res @ ExtractResult.Success(_, _) =>
               res.some.pure[F]
@@ -161,12 +166,12 @@ object TextExtraction {
                 .warn(
                   s"Cannot extract text from file ${stripAttachmentName(ra)}: unsupported format ${mt.asString}. Try with converted file."
                 )
-                .flatMap(_ => extractTextFallback[F](ctx, cfg, ra, lang)(rest))
+                .flatMap(_ => extractTextFallback[F](ctx, store, cfg, ra, lang)(rest))
 
             case ExtractResult.Failure(ex) =>
               ctx.logger
                 .warn(s"Cannot extract text: ${ex.getMessage}. Try with converted file")
-                .flatMap(_ => extractTextFallback[F](ctx, cfg, ra, lang)(rest))
+                .flatMap(_ => extractTextFallback[F](ctx, store, cfg, ra, lang)(rest))
           }
     }
 
@@ -176,13 +181,13 @@ object TextExtraction {
     * If the source file is a PDF, then use the converted file. This may then already
     * contain the text if ocrmypdf is enabled. If it is disabled, both files are the same.
     */
-  private def filesToExtract[F[_]: Sync](ctx: Context[F, _])(
+  private def filesToExtract[F[_]: Sync](store: Store[F])(
       item: ItemData,
       ra: RAttachment
   ): F[List[FileKey]] =
     item.originFile.get(ra.id) match {
       case Some(sid) =>
-        ctx.store.transact(RFileMeta.findMime(sid)).map {
+        store.transact(RFileMeta.findMime(sid)).map {
           case Some(MimeType.PdfMatch(_)) =>
             List(ra.fileId)
           case _ =>

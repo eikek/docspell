@@ -12,9 +12,9 @@ import fs2.Stream
 
 import docspell.backend.ops.{OItem, OItemSearch}
 import docspell.common._
-import docspell.joex.scheduler._
+import docspell.scheduler._
+import docspell.scheduler.usertask.UserTask
 import docspell.store.records.RItem
-import docspell.store.usertask.UserTask
 
 import com.github.eikek.calev.CalEvent
 

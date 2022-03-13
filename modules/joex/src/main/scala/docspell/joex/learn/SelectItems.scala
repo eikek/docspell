@@ -10,7 +10,6 @@ import fs2.{Pipe, Stream}
 
 import docspell.analysis.classifier.TextClassifier.Data
 import docspell.common._
-import docspell.joex.scheduler.Context
 import docspell.store.Store
 import docspell.store.qb.Batch
 import docspell.store.queries.{QItem, TextAndTag}
@@ -21,16 +20,7 @@ object SelectItems {
   val pageSep = LearnClassifierTask.pageSep
   val noClass = LearnClassifierTask.noClass
 
-  def forCategory[F[_]](ctx: Context[F, _], collective: Ident)(
-      maxItems: Int,
-      category: String,
-      maxTextLen: Int
-  ): Stream[F, Data] =
-    forCategory(ctx.store, collective, maxItems, category, maxTextLen)
-
-  def forCategory[F[_]](
-      store: Store[F],
-      collective: Ident,
+  def forCategory[F[_]](store: Store[F], collective: Ident)(
       maxItems: Int,
       category: String,
       maxTextLen: Int

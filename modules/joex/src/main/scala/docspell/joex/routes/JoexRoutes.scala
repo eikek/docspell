@@ -12,7 +12,7 @@ import cats.implicits._
 import docspell.common.{Duration, Ident, Timestamp}
 import docspell.joex.JoexApp
 import docspell.joexapi.model._
-import docspell.store.records.{RJob, RJobLog}
+import docspell.store.records.RJobLog
 
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityEncoder._
@@ -67,17 +67,19 @@ object JoexRoutes {
     }
   }
 
-  def mkJob(j: RJob): Job =
+  // TODO !!
+
+  def mkJob(j: docspell.scheduler.Job[String]): Job =
     Job(
       j.id,
       j.subject,
-      j.submitted,
+      Timestamp.Epoch,
       j.priority,
-      j.retries,
-      j.progress,
-      j.started.getOrElse(Timestamp.Epoch)
+      -1,
+      -1,
+      Timestamp.Epoch
     )
 
-  def mkJobLog(j: RJob, jl: Vector[RJobLog]): JobAndLog =
+  def mkJobLog(j: docspell.scheduler.Job[String], jl: Vector[RJobLog]): JobAndLog =
     JobAndLog(mkJob(j), jl.map(r => JobLogEvent(r.created, r.level, r.message)).toList)
 }

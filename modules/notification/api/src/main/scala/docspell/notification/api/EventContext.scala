@@ -31,30 +31,25 @@ trait EventContext {
       "content" -> content
     )
 
-  def defaultTitle: Either[String, String]
-  def defaultTitleHtml: Either[String, String]
-
-  def defaultBody: Either[String, String]
-  def defaultBodyHtml: Either[String, String]
+  def defaultMessage: Either[String, EventMessage]
+  def defaultMessageHtml: Either[String, EventMessage]
 
   def defaultBoth: Either[String, String]
   def defaultBothHtml: Either[String, String]
 
   lazy val asJsonWithMessage: Either[String, Json] =
     for {
-      tt1 <- defaultTitle
-      tb1 <- defaultBody
-      tt2 <- defaultTitleHtml
-      tb2 <- defaultBodyHtml
+      dm1 <- defaultMessage
+      dm2 <- defaultMessageHtml
       data = asJson
       msg = Json.obj(
         "message" -> Json.obj(
-          "title" -> tt1.asJson,
-          "body" -> tb1.asJson
+          "title" -> dm1.title.asJson,
+          "body" -> dm1.body.asJson
         ),
         "messageHtml" -> Json.obj(
-          "title" -> tt2.asJson,
-          "body" -> tb2.asJson
+          "title" -> dm2.title.asJson,
+          "body" -> dm2.body.asJson
         )
       )
     } yield data.withObject(o1 => msg.withObject(o2 => o1.deepMerge(o2).asJson))
@@ -65,10 +60,8 @@ object EventContext {
     new EventContext {
       val event = ev
       def content = Json.obj()
-      def defaultTitle = Right("")
-      def defaultTitleHtml = Right("")
-      def defaultBody = Right("")
-      def defaultBodyHtml = Right("")
+      def defaultMessage = Right(EventMessage.empty)
+      def defaultMessageHtml = Right(EventMessage.empty)
       def defaultBoth = Right("")
       def defaultBothHtml = Right("")
     }

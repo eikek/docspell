@@ -10,22 +10,26 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common._
-import docspell.joex.scheduler.Task
+import docspell.scheduler.Task
+import docspell.store.Store
 import docspell.store.records._
 
 object CleanupRememberMeTask {
-
-  def apply[F[_]: Sync](cfg: HouseKeepingConfig.CleanupRememberMe): Task[F, Unit, Unit] =
+  def apply[F[_]: Sync](
+      cfg: HouseKeepingConfig.CleanupRememberMe,
+      store: Store[F]
+  ): Task[F, Unit, CleanupResult] =
     Task { ctx =>
       if (cfg.enabled)
         for {
           now <- Timestamp.current[F]
           ts = now - cfg.olderThan
           _ <- ctx.logger.info(s"Cleanup remember-me tokens older than $ts")
-          n <- ctx.store.transact(RRememberMe.deleteOlderThan(ts))
+          n <- store.transact(RRememberMe.deleteOlderThan(ts))
           _ <- ctx.logger.info(s"Removed $n tokens")
-        } yield ()
+        } yield CleanupResult.of(n)
       else
-        ctx.logger.info("CleanupRememberMe task is disabled in the configuration")
+        ctx.logger.info("CleanupRememberMe task is disabled in the configuration") *>
+          CleanupResult.disabled.pure[F]
     }
 }

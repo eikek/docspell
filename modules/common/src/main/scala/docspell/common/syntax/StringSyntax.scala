@@ -6,10 +6,8 @@
 
 package docspell.common.syntax
 
-import cats.implicits._
-
 import io.circe.Decoder
-import io.circe.parser._
+import io.circe.parser
 
 trait StringSyntax {
   implicit class EvenMoreStringOps(s: String) {
@@ -18,9 +16,8 @@ trait StringSyntax {
 
     def parseJsonAs[A](implicit d: Decoder[A]): Either[Throwable, A] =
       for {
-        json <- parse(s).leftMap(_.underlying)
-        value <- json.as[A]
-      } yield value
+        json <- parser.decode[A](s)
+      } yield json
   }
 }
 

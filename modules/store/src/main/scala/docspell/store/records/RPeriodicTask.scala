@@ -13,12 +13,10 @@ import cats.implicits._
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
-import docspell.store.usertask.UserTaskScope
 
 import com.github.eikek.calev.CalEvent
 import doobie._
 import doobie.implicits._
-import io.circe.Encoder
 
 /** A periodic task is a special job description, that shares a few properties of a
   * `RJob`. It must provide all information to create a `RJob` value eventually.
@@ -64,66 +62,6 @@ case class RPeriodicTask(
 }
 
 object RPeriodicTask {
-
-  def create[F[_]: Sync](
-      enabled: Boolean,
-      scope: UserTaskScope,
-      task: Ident,
-      args: String,
-      subject: String,
-      priority: Priority,
-      timer: CalEvent,
-      summary: Option[String]
-  ): F[RPeriodicTask] =
-    Ident
-      .randomId[F]
-      .flatMap(id =>
-        Timestamp
-          .current[F]
-          .map { now =>
-            RPeriodicTask(
-              id,
-              enabled,
-              task,
-              scope.collective,
-              args,
-              subject,
-              scope.fold(_.user, identity),
-              priority,
-              None,
-              None,
-              timer,
-              timer
-                .nextElapse(now.atZone(Timestamp.UTC))
-                .map(_.toInstant)
-                .map(Timestamp.apply)
-                .getOrElse(Timestamp.Epoch),
-              now,
-              summary
-            )
-          }
-      )
-
-  def createJson[F[_]: Sync, A](
-      enabled: Boolean,
-      scope: UserTaskScope,
-      task: Ident,
-      args: A,
-      subject: String,
-      priority: Priority,
-      timer: CalEvent,
-      summary: Option[String]
-  )(implicit E: Encoder[A]): F[RPeriodicTask] =
-    create[F](
-      enabled,
-      scope,
-      task,
-      E(args).noSpaces,
-      subject,
-      priority,
-      timer,
-      summary
-    )
 
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "periodic_task"

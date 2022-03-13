@@ -16,8 +16,9 @@ import docspell.common._
 import binny._
 
 final class FileRepositoryImpl[F[_]: Sync](
-    bs: BinaryStore[F],
-    attrStore: AttributeStore[F],
+    val config: FileRepositoryConfig,
+    val bs: BinaryStore[F],
+    val attrStore: AttributeStore[F],
     keyFun: FileKey => BinaryId
 ) extends FileRepository[F] {
 

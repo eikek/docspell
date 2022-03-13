@@ -7,7 +7,7 @@
 package docspell.joex
 
 import docspell.common.Ident
-import docspell.joex.scheduler.{PeriodicScheduler, Scheduler}
+import docspell.scheduler.{PeriodicScheduler, Scheduler}
 import docspell.store.records.RJobLog
 
 trait JoexApp[F[_]] {

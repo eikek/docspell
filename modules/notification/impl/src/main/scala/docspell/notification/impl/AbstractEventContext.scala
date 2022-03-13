@@ -6,7 +6,7 @@
 
 package docspell.notification.impl
 
-import docspell.notification.api.EventContext
+import docspell.notification.api.{EventContext, EventMessage}
 
 import yamusca.circe._
 import yamusca.implicits._
@@ -24,17 +24,17 @@ abstract class AbstractEventContext extends EventContext {
   def renderHtml(template: Template): String =
     Markdown.toHtml(render(template))
 
-  lazy val defaultTitle: Either[String, String] =
-    titleTemplate.map(render)
+  lazy val defaultMessage: Either[String, EventMessage] =
+    for {
+      title <- titleTemplate.map(render)
+      body <- bodyTemplate.map(render)
+    } yield EventMessage(title, body)
 
-  lazy val defaultTitleHtml: Either[String, String] =
-    titleTemplate.map(renderHtml)
-
-  lazy val defaultBody: Either[String, String] =
-    bodyTemplate.map(render)
-
-  lazy val defaultBodyHtml: Either[String, String] =
-    bodyTemplate.map(renderHtml)
+  lazy val defaultMessageHtml: Either[String, EventMessage] =
+    for {
+      title <- titleTemplate.map(renderHtml)
+      body <- bodyTemplate.map(renderHtml)
+    } yield EventMessage(title, body)
 
   lazy val defaultBoth: Either[String, String] =
     for {

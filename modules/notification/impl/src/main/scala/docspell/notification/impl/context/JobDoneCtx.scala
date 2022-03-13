@@ -23,9 +23,14 @@ final case class JobDoneCtx(event: Event.JobDone, data: JobDoneCtx.Data)
   val content = data.asJson
 
   val titleTemplate = Right(mustache"{{eventType}} (by *{{account.user}}*)")
-  val bodyTemplate = Right(
-    mustache"""{{#content}}_'{{subject}}'_ finished {{/content}}"""
-  )
+  val bodyTemplate =
+    data.resultMsg match {
+      case None =>
+        Right(mustache"""{{#content}}_'{{subject}}'_ finished {{/content}}""")
+      case Some(msg) =>
+        val tpl = s"""{{#content}}$msg{{/content}}"""
+        yamusca.imports.mustache.parse(tpl).left.map(_._2)
+    }
 }
 
 object JobDoneCtx {
@@ -46,7 +51,8 @@ object JobDoneCtx {
       state: JobState,
       subject: String,
       submitter: Ident,
-      result: Json
+      resultData: Json,
+      resultMsg: Option[String]
   )
   object Data {
     implicit val jsonEncoder: Encoder[Data] =
@@ -61,7 +67,8 @@ object JobDoneCtx {
         ev.state,
         ev.subject,
         ev.submitter,
-        ev.result
+        ev.resultData,
+        ev.resultMsg
       )
   }
 }

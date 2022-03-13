@@ -12,7 +12,6 @@ import fs2.io.file.Files
 
 import docspell.analysis.classifier.ClassifierModel
 import docspell.common._
-import docspell.joex.scheduler._
 import docspell.logging.Logger
 import docspell.store.Store
 import docspell.store.records.RClassifierModel
@@ -20,20 +19,11 @@ import docspell.store.records.RClassifierModel
 object StoreClassifierModel {
 
   def handleModel[F[_]: Async](
-      ctx: Context[F, _],
+      store: Store[F],
+      logger: Logger[F],
       collective: Ident,
       modelName: ClassifierName
   )(
-      trainedModel: ClassifierModel
-  ): F[Unit] =
-    handleModel(ctx.store, ctx.logger)(collective, modelName, trainedModel)
-
-  def handleModel[F[_]: Async](
-      store: Store[F],
-      logger: Logger[F]
-  )(
-      collective: Ident,
-      modelName: ClassifierName,
       trainedModel: ClassifierModel
   ): F[Unit] =
     for {

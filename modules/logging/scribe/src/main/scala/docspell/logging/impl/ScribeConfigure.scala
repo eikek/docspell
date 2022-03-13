@@ -22,10 +22,12 @@ object ScribeConfigure {
     Sync[F].delay {
       replaceJUL()
       val docspellLogger = scribe.Logger("docspell")
-      val flywayLogger = scribe.Logger("org.flywaydb")
+
       unsafeConfigure(scribe.Logger.root, cfg.copy(minimumLevel = getRootMinimumLevel))
       unsafeConfigure(docspellLogger, cfg)
-      unsafeConfigure(flywayLogger, cfg)
+      unsafeConfigure(scribe.Logger("org.flywaydb"), cfg)
+      unsafeConfigure(scribe.Logger("binny"), cfg)
+      unsafeConfigure(scribe.Logger("org.http4s"), cfg)
     }
 
   private[this] def getRootMinimumLevel: Level =

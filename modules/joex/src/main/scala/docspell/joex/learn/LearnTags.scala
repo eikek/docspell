@@ -12,13 +12,15 @@ import cats.implicits._
 
 import docspell.analysis.TextAnalyser
 import docspell.common._
-import docspell.joex.scheduler._
+import docspell.scheduler._
+import docspell.store.Store
 import docspell.store.records.RClassifierSetting
 
 object LearnTags {
 
   def learnTagCategory[F[_]: Async, A](
       analyser: TextAnalyser[F],
+      store: Store[F],
       collective: Ident,
       maxItems: Int,
       maxTextLen: Int
@@ -26,12 +28,14 @@ object LearnTags {
       category: String
   ): Task[F, A, Unit] =
     Task { ctx =>
-      val data = SelectItems.forCategory(ctx, collective)(maxItems, category, maxTextLen)
+      val data =
+        SelectItems.forCategory(store, collective)(maxItems, category, maxTextLen)
       ctx.logger.info(s"Learn classifier for tag category: $category") *>
         analyser.classifier.trainClassifier(ctx.logger, data)(
           Kleisli(
             StoreClassifierModel.handleModel(
-              ctx,
+              store,
+              ctx.logger,
               collective,
               ClassifierName.tagCategory(category)
             )
@@ -39,15 +43,15 @@ object LearnTags {
         )
     }
 
-  def learnAllTagCategories[F[_]: Async, A](analyser: TextAnalyser[F])(
+  def learnAllTagCategories[F[_]: Async, A](analyser: TextAnalyser[F], store: Store[F])(
       collective: Ident,
       maxItems: Int,
       maxTextLen: Int
   ): Task[F, A, Unit] =
     Task { ctx =>
       for {
-        cats <- ctx.store.transact(RClassifierSetting.getActiveCategories(collective))
-        task = learnTagCategory[F, A](analyser, collective, maxItems, maxTextLen) _
+        cats <- store.transact(RClassifierSetting.getActiveCategories(collective))
+        task = learnTagCategory[F, A](analyser, store, collective, maxItems, maxTextLen) _
         _ <- cats.map(task).traverse(_.run(ctx))
       } yield ()
     }

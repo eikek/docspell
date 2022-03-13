@@ -11,20 +11,25 @@ import cats.effect.Sync
 import cats.implicits._
 
 import docspell.common._
-import docspell.joex.scheduler.{Context, Task}
+import docspell.scheduler.{Context, Task}
+import docspell.store.Store
 import docspell.store.records.RItem
 
 object LinkProposal {
 
-  def onlyNew[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  def onlyNew[F[_]: Sync](
+      store: Store[F]
+  )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     if (data.item.state.isValid)
       Task
         .log[F, ProcessItemArgs](_.debug(s"Not linking proposals on existing item"))
         .map(_ => data)
     else
-      LinkProposal[F](data)
+      LinkProposal[F](store)(data)
 
-  def apply[F[_]: Sync](data: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  def apply[F[_]: Sync](
+      store: Store[F]
+  )(data: ItemData): Task[F, ProcessItemArgs, ItemData] =
     if (data.item.state == ItemState.Confirmed)
       Task
         .log[F, ProcessItemArgs](_.debug(s"Not linking proposals on confirmed item"))
@@ -35,7 +40,7 @@ object LinkProposal {
 
         ctx.logger.info(s"Starting linking proposals") *>
           MetaProposalType.all
-            .traverse(applyValue(data, proposals, ctx))
+            .traverse(applyValue(data, proposals, ctx, store))
             .map(result => ctx.logger.info(s"Results from proposal processing: $result"))
             .map(_ => data)
       }
@@ -43,7 +48,8 @@ object LinkProposal {
   def applyValue[F[_]: Sync](
       data: ItemData,
       proposalList: MetaProposalList,
-      ctx: Context[F, ProcessItemArgs]
+      ctx: Context[F, ProcessItemArgs],
+      store: Store[F]
   )(mpt: MetaProposalType): F[Result] =
     data.givenMeta.find(mpt).orElse(proposalList.find(mpt)) match {
       case None =>
@@ -51,29 +57,30 @@ object LinkProposal {
           Result.noneFound(mpt).pure[F]
       case Some(a) if a.isSingleValue =>
         ctx.logger.info(s"Found one candidate for ${a.proposalType}") *>
-          setItemMeta(data.item.id, ctx, a.proposalType, a.values.head.ref.id).map(_ =>
-            Result.single(mpt)
+          setItemMeta(data.item.id, ctx, store, a.proposalType, a.values.head.ref.id).map(
+            _ => Result.single(mpt)
           )
       case Some(a) =>
         val ids = a.values.map(_.ref.id.id)
         ctx.logger.info(
           s"Found many (${a.size}, $ids) candidates for ${a.proposalType}. Setting first."
         ) *>
-          setItemMeta(data.item.id, ctx, a.proposalType, a.values.head.ref.id).map(_ =>
-            Result.multiple(mpt)
+          setItemMeta(data.item.id, ctx, store, a.proposalType, a.values.head.ref.id).map(
+            _ => Result.multiple(mpt)
           )
     }
 
   def setItemMeta[F[_]: Sync](
       itemId: Ident,
       ctx: Context[F, ProcessItemArgs],
+      store: Store[F],
       mpt: MetaProposalType,
       value: Ident
   ): F[Int] =
     mpt match {
       case MetaProposalType.CorrOrg =>
         ctx.logger.debug(s"Updating item organization with: ${value.id}") *>
-          ctx.store.transact(
+          store.transact(
             RItem.updateCorrOrg(
               NonEmptyList.of(itemId),
               ctx.args.meta.collective,
@@ -82,7 +89,7 @@ object LinkProposal {
           )
       case MetaProposalType.ConcPerson =>
         ctx.logger.debug(s"Updating item concerning person with: $value") *>
-          ctx.store.transact(
+          store.transact(
             RItem.updateConcPerson(
               NonEmptyList.of(itemId),
               ctx.args.meta.collective,
@@ -91,7 +98,7 @@ object LinkProposal {
           )
       case MetaProposalType.CorrPerson =>
         ctx.logger.debug(s"Updating item correspondent person with: $value") *>
-          ctx.store.transact(
+          store.transact(
             RItem.updateCorrPerson(
               NonEmptyList.of(itemId),
               ctx.args.meta.collective,
@@ -100,7 +107,7 @@ object LinkProposal {
           )
       case MetaProposalType.ConcEquip =>
         ctx.logger.debug(s"Updating item concerning equipment with: $value") *>
-          ctx.store.transact(
+          store.transact(
             RItem.updateConcEquip(
               NonEmptyList.of(itemId),
               ctx.args.meta.collective,
@@ -112,7 +119,7 @@ object LinkProposal {
           case Some(ld) =>
             val ts = Timestamp.from(ld.atStartOfDay(Timestamp.UTC))
             ctx.logger.debug(s"Updating item date ${value.id}") *>
-              ctx.store.transact(
+              store.transact(
                 RItem.updateDate(
                   NonEmptyList.of(itemId),
                   ctx.args.meta.collective,
@@ -128,7 +135,7 @@ object LinkProposal {
           case Some(ld) =>
             val ts = Timestamp.from(ld.atStartOfDay(Timestamp.UTC))
             ctx.logger.debug(s"Updating item due-date suggestion ${value.id}") *>
-              ctx.store.transact(
+              store.transact(
                 RItem.updateDueDate(
                   NonEmptyList.of(itemId),
                   ctx.args.meta.collective,
