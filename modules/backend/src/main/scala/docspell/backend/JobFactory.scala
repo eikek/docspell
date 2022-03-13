@@ -8,6 +8,7 @@ package docspell.backend
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.MailAddressCodec
 import docspell.common._
 import docspell.notification.api.PeriodicQueryArgs

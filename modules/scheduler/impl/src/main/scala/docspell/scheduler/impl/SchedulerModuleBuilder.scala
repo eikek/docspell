@@ -1,13 +1,15 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.scheduler.impl
 
 import cats.effect._
+
 import docspell.common.Ident
-import docspell.scheduler.{
-  JobTaskRegistry,
-  PeriodicSchedulerConfig,
-  SchedulerConfig,
-  SchedulerModule
-}
+import docspell.scheduler._
 
 case class SchedulerModuleBuilder[F[_]: Async] private (
     periodicSchedulerConfig: PeriodicSchedulerConfig,

@@ -12,15 +12,17 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2._
+
 import docspell.backend.ops.{OJoex, OUpload}
 import docspell.common._
 import docspell.joex.Config
-import docspell.scheduler.{Context, Task}
 import docspell.logging.Logger
+import docspell.scheduler.{Context, Task}
+import docspell.store.Store
 import docspell.store.queries.QOrganization
 import docspell.store.records._
+
 import _root_.io.circe.syntax._
-import docspell.store.Store
 import emil.SearchQuery.{All, ReceivedDate}
 import emil.javamail.syntax._
 import emil.{MimeType => _, _}

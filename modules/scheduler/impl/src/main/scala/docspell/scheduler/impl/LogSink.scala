@@ -8,12 +8,13 @@ package docspell.scheduler.impl
 
 import cats.effect._
 import cats.implicits._
+import fs2.Pipe
+
 import docspell.common._
 import docspell.logging
 import docspell.scheduler.LogEvent
 import docspell.store.Store
 import docspell.store.records.RJobLog
-import fs2.Pipe
 
 trait LogSink[F[_]] {
 

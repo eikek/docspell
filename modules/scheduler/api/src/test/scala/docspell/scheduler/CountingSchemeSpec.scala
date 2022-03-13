@@ -7,6 +7,7 @@
 package docspell.scheduler
 
 import docspell.common.Priority
+
 import munit._
 
 class CountingSchemeSpec extends FunSuite {

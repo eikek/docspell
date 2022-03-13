@@ -9,16 +9,17 @@ package docspell.joex.notify
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.ops.ONotification
 import docspell.common._
-import docspell.scheduler.Context
-import docspell.scheduler.Task
 import docspell.notification.api.EventContext
 import docspell.notification.api.NotificationChannel
 import docspell.notification.api.PeriodicDueItemsArgs
 import docspell.query.Date
 import docspell.query.ItemQuery._
 import docspell.query.ItemQueryDsl._
+import docspell.scheduler.Context
+import docspell.scheduler.Task
 import docspell.store.Store
 import docspell.store.qb.Batch
 import docspell.store.queries.ListItem

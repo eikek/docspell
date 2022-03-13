@@ -10,6 +10,7 @@ import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
 import docspell.analysis.TextAnalyser
 import docspell.analysis.classifier.TextClassifier.Data
 import docspell.common._

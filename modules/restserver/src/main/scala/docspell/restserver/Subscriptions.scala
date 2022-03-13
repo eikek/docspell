@@ -9,6 +9,7 @@ package docspell.restserver
 import cats.effect.Async
 import fs2.Stream
 import fs2.concurrent.Topic
+
 import docspell.pubsub.api.PubSubT
 import docspell.restserver.ws.OutputEvent
 import docspell.scheduler.msg.{JobDone, JobSubmitted}

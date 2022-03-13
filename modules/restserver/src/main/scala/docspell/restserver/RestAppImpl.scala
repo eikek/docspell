@@ -9,6 +9,7 @@ package docspell.restserver
 import cats.effect._
 import fs2.Stream
 import fs2.concurrent.Topic
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.{AuthToken, ShareToken}
 import docspell.ftsclient.FtsClient
@@ -24,6 +25,7 @@ import docspell.restserver.webapp.{TemplateRoutes, Templates, WebjarRoutes}
 import docspell.restserver.ws.{OutputEvent, WebSocketRoutes}
 import docspell.scheduler.impl.JobStoreModuleBuilder
 import docspell.store.Store
+
 import emil.javamail.JavaMailEmil
 import org.http4s.HttpRoutes
 import org.http4s.client.Client

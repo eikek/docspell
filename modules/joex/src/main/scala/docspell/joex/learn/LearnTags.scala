@@ -9,6 +9,7 @@ package docspell.joex.learn
 import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
+
 import docspell.analysis.TextAnalyser
 import docspell.common._
 import docspell.scheduler._

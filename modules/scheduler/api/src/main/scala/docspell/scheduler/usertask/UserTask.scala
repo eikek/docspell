@@ -6,8 +6,9 @@
 
 package docspell.scheduler.usertask
 
-import com.github.eikek.calev.CalEvent
 import docspell.common._
+
+import com.github.eikek.calev.CalEvent
 import io.circe.Encoder
 
 final case class UserTask[A](

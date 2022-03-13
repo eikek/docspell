@@ -9,6 +9,7 @@ package docspell.backend.ops
 import cats.Applicative
 import cats.effect._
 import cats.implicits._
+
 import docspell.common.Ident
 import docspell.pubsub.api.PubSubT
 import docspell.scheduler.msg.{CancelJob, JobsNotify, PeriodicTaskNotify}

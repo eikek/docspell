@@ -9,12 +9,14 @@ package docspell.joex.filecopy
 import cats.Monoid
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.ops.OFileRepository
 import docspell.backend.ops.OFileRepository.IntegrityResult
 import docspell.common.{FileIntegrityCheckArgs, FileKey}
 import docspell.scheduler.{JobTaskResultEncoder, Task}
 import docspell.store.Store
 import docspell.store.records.RFileMeta
+
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder
 

@@ -11,6 +11,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
 import docspell.common._
 import docspell.convert.ConversionResult
 import docspell.convert.extern.OcrMyPdf
@@ -18,6 +19,7 @@ import docspell.joex.Config
 import docspell.scheduler.{Context, Task}
 import docspell.store.Store
 import docspell.store.records._
+
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 

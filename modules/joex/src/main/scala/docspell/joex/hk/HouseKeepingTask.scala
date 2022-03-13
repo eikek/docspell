@@ -8,14 +8,16 @@ package docspell.joex.hk
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.ops.OFileRepository
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.filecopy.FileIntegrityCheckTask
-import docspell.scheduler.{JobTaskResultEncoder, Task}
-import com.github.eikek.calev._
 import docspell.scheduler.usertask.UserTask
+import docspell.scheduler.{JobTaskResultEncoder, Task}
 import docspell.store.Store
+
+import com.github.eikek.calev._
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder
 

@@ -7,6 +7,7 @@
 package docspell.backend.msg
 
 import cats.data.NonEmptyList
+
 import docspell.pubsub.api.TypedTopic
 import docspell.scheduler.msg._
 

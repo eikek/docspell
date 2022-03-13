@@ -1,3 +1,9 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.scheduler.impl
 
 import cats.effect.Sync
@@ -5,7 +11,6 @@ import cats.syntax.all._
 
 import docspell.common.Timestamp
 import docspell.scheduler._
-
 import docspell.store.Store
 import docspell.store.records.RJob
 

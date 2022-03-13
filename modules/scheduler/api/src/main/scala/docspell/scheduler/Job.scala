@@ -1,8 +1,16 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.scheduler
 
 import cats.effect.Sync
 import cats.syntax.functor._
+
 import docspell.common._
+
 import io.circe.Encoder
 
 final case class Job[A](

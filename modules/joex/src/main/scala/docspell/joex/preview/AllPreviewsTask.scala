@@ -9,11 +9,12 @@ package docspell.joex.preview
 import cats.effect._
 import cats.implicits._
 import fs2.{Chunk, Stream}
+
 import docspell.backend.JobFactory
 import docspell.backend.ops.OJoex
 import docspell.common.MakePreviewArgs.StoreMode
 import docspell.common._
-import docspell.scheduler.{Context, Job, JobStore, Task}
+import docspell.scheduler._
 import docspell.store.Store
 import docspell.store.records.RAttachment
 

@@ -10,9 +10,10 @@ import cats.data.NonEmptyList
 import cats.data.OptionT
 import cats.effect.Sync
 import cats.implicits._
+
 import docspell.common._
-import docspell.scheduler.Task
 import docspell.logging.Logger
+import docspell.scheduler.Task
 import docspell.store.Store
 
 /** After candidates have been determined, the set is reduced by doing some cross checks.

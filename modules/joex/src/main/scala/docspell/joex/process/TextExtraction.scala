@@ -9,6 +9,7 @@ package docspell.joex.process
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.extract.{ExtractConfig, ExtractResult, Extraction}
 import docspell.ftsclient.{FtsClient, TextData}

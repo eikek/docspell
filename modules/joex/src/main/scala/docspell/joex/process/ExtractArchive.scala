@@ -14,12 +14,14 @@ import cats.implicits._
 import cats.kernel.Monoid
 import cats.kernel.Order
 import fs2.Stream
+
 import docspell.common._
 import docspell.files.Zip
 import docspell.joex.mail._
 import docspell.scheduler._
 import docspell.store.Store
 import docspell.store.records._
+
 import emil.Mail
 
 /** Goes through all attachments and extracts archive files, like zip files. The process

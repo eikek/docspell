@@ -7,8 +7,10 @@
 package docspell.scheduler.usertask
 
 import cats.data.OptionT
-import docspell.common._
 import fs2.Stream
+
+import docspell.common._
+
 import io.circe._
 
 /** User tasks are `RPeriodicTask`s that can be managed by the user. The user can change

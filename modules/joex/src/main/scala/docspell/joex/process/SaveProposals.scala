@@ -8,10 +8,11 @@ package docspell.joex.process
 
 import cats.effect.Sync
 import cats.implicits._
+
 import docspell.common._
 import docspell.scheduler.{Context, Task}
-import docspell.store.{AddResult, Store}
 import docspell.store.records._
+import docspell.store.{AddResult, Store}
 
 /** Saves the proposals in the database */
 object SaveProposals {

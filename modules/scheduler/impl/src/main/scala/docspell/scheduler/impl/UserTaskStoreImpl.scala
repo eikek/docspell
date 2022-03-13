@@ -1,15 +1,23 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.scheduler.impl
 
-import cats.effect._
-import docspell.scheduler.usertask.UserTaskStore
 import cats.data.OptionT
+import cats.effect._
 import cats.implicits._
+import fs2.Stream
+
 import docspell.common._
+import docspell.scheduler.impl.QUserTask.UserTaskCodec
+import docspell.scheduler.usertask.UserTaskStore
 import docspell.scheduler.usertask._
 import docspell.store.{AddResult, Store}
-import fs2.Stream
+
 import io.circe._
-import QUserTask.UserTaskCodec
 
 final class UserTaskStoreImpl[F[_]: Sync](
     store: Store[F],

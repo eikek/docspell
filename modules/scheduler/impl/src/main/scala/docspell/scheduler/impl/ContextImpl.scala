@@ -1,8 +1,14 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.scheduler.impl
 
 import cats._
-import cats.syntax.all._
 import cats.effect._
+import cats.syntax.all._
 
 import docspell.common._
 import docspell.logging.Logger

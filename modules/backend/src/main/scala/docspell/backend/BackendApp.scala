@@ -7,6 +7,7 @@
 package docspell.backend
 
 import cats.effect._
+
 import docspell.backend.auth.Login
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
@@ -17,6 +18,7 @@ import docspell.pubsub.api.PubSubT
 import docspell.scheduler.JobStoreModule
 import docspell.store.Store
 import docspell.totp.Totp
+
 import emil.Emil
 
 trait BackendApp[F[_]] {

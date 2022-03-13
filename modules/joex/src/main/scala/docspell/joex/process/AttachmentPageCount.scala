@@ -11,6 +11,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
 import docspell.common._
 import docspell.extract.pdfbox.PdfMetaData
 import docspell.extract.pdfbox.PdfboxExtract

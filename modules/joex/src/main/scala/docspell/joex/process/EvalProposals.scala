@@ -7,8 +7,10 @@
 package docspell.joex.process
 
 import java.time.{LocalDate, Period}
+
 import cats.effect.Sync
 import cats.implicits._
+
 import docspell.common._
 import docspell.scheduler.Task
 import docspell.store.Store

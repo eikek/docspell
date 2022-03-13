@@ -12,16 +12,18 @@ import cats.effect.std.Semaphore
 import cats.implicits._
 import fs2.Stream
 import fs2.concurrent.SignallingRef
-import docspell.scheduler.msg.{CancelJob, JobDone, JobsNotify}
+
 import docspell.common._
-import docspell.scheduler._
-import docspell.scheduler.impl.SchedulerImpl._
 import docspell.notification.api.Event
 import docspell.notification.api.EventSink
 import docspell.pubsub.api.PubSubT
+import docspell.scheduler._
+import docspell.scheduler.impl.SchedulerImpl._
+import docspell.scheduler.msg.{CancelJob, JobDone, JobsNotify}
 import docspell.store.Store
 import docspell.store.queries.QJob
 import docspell.store.records.RJob
+
 import io.circe.Json
 
 final class SchedulerImpl[F[_]: Async](

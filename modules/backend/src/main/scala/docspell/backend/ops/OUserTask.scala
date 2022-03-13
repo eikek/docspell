@@ -10,11 +10,13 @@ import cats.data.{NonEmptyList, OptionT}
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
 import docspell.common._
 import docspell.notification.api.{ChannelRef, PeriodicDueItemsArgs, PeriodicQueryArgs}
 import docspell.scheduler.usertask.{UserTask, UserTaskScope, UserTaskStore}
 import docspell.store.Store
 import docspell.store.records.RNotificationChannel
+
 import io.circe.Encoder
 
 trait OUserTask[F[_]] {

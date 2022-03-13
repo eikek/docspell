@@ -9,9 +9,11 @@ package docspell.store.records
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
+
 import com.github.eikek.calev.CalEvent
 import doobie._
 import doobie.implicits._

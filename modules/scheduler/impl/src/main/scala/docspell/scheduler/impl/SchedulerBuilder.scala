@@ -10,9 +10,10 @@ import cats.effect._
 import cats.effect.std.Semaphore
 import cats.implicits._
 import fs2.concurrent.SignallingRef
-import docspell.scheduler._
+
 import docspell.notification.api.EventSink
 import docspell.pubsub.api.PubSubT
+import docspell.scheduler._
 import docspell.store.Store
 
 case class SchedulerBuilder[F[_]: Async](

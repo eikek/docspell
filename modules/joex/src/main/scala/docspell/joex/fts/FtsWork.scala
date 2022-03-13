@@ -9,12 +9,13 @@ package docspell.joex.fts
 import cats._
 import cats.data.{Kleisli, NonEmptyList}
 import cats.implicits._
+
 import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
-import docspell.scheduler.Context
 import docspell.logging.Logger
+import docspell.scheduler.Context
 import docspell.store.Store
 
 object FtsWork {

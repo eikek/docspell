@@ -11,6 +11,7 @@ import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
 import docspell.common._
 import docspell.convert.ConversionResult.Handler
 import docspell.convert.SanitizeHtml

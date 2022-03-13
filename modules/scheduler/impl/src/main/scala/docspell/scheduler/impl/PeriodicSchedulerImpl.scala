@@ -10,12 +10,14 @@ import cats.effect._
 import cats.implicits._
 import fs2._
 import fs2.concurrent.SignallingRef
+
 import docspell.common._
 import docspell.pubsub.api.PubSubT
 import docspell.scheduler._
 import docspell.scheduler.impl.PeriodicSchedulerImpl.State
 import docspell.scheduler.msg.{JobsNotify, PeriodicTaskNotify}
 import docspell.store.records.RPeriodicTask
+
 import eu.timepit.fs2cron.calev.CalevScheduler
 
 final class PeriodicSchedulerImpl[F[_]: Async](

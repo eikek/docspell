@@ -8,6 +8,7 @@ package docspell.joex.hk
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.ops.OFileRepository
 import docspell.common._
 import docspell.joex.filecopy.FileIntegrityCheckTask

@@ -8,12 +8,14 @@ package docspell.joex.process
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.scheduler.{Context, Task}
 import docspell.store.Store
 import docspell.store.queries.QItem
 import docspell.store.records.RFileMeta
 import docspell.store.records.RJob
+
 import doobie._
 
 object DuplicateCheck {

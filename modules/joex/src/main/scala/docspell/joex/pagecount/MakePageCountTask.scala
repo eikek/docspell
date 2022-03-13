@@ -8,6 +8,7 @@ package docspell.joex.pagecount
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.joex.process.AttachmentPageCount
 import docspell.scheduler.Context

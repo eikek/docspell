@@ -10,10 +10,9 @@ import cats.data.OptionT
 import cats.data.{NonEmptyList => Nel}
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.ops.ONotification
 import docspell.common._
-import docspell.scheduler.Context
-import docspell.scheduler.Task
 import docspell.notification.api.EventContext
 import docspell.notification.api.NotificationChannel
 import docspell.notification.api.PeriodicQueryArgs
@@ -21,6 +20,8 @@ import docspell.query.ItemQuery
 import docspell.query.ItemQuery.Expr
 import docspell.query.ItemQuery.Expr.AndExpr
 import docspell.query.ItemQueryParser
+import docspell.scheduler.Context
+import docspell.scheduler.Task
 import docspell.store.Store
 import docspell.store.qb.Batch
 import docspell.store.queries.ListItem

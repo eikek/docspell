@@ -8,6 +8,7 @@ package docspell.joex.hk
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.scheduler.Task
 import docspell.store.Store

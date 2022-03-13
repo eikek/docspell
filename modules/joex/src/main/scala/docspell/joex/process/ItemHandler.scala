@@ -10,6 +10,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
 import docspell.analysis.TextAnalyser
 import docspell.backend.ops.OItem
 import docspell.common.{ItemState, ProcessItemArgs}

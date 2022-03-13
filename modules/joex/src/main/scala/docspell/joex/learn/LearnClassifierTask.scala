@@ -9,12 +9,13 @@ package docspell.joex.learn
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.analysis.TextAnalyser
 import docspell.backend.ops.OCollective
 import docspell.common._
 import docspell.joex.Config
-import docspell.scheduler._
 import docspell.logging.Logger
+import docspell.scheduler._
 import docspell.store.Store
 import docspell.store.records.{RClassifierModel, RClassifierSetting}
 

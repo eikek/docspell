@@ -9,6 +9,7 @@ package docspell.joex.process
 import cats.Traverse
 import cats.effect._
 import cats.implicits._
+
 import docspell.analysis.classifier.TextClassifier
 import docspell.analysis.{NlpSettings, TextAnalyser}
 import docspell.common.MetaProposal.Candidate

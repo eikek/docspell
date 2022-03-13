@@ -8,6 +8,7 @@ package docspell.joex.preview
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.extract.pdfbox.PdfboxPreview
 import docspell.extract.pdfbox.PreviewConfig

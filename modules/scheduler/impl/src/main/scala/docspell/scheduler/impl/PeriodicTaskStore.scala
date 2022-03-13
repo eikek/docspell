@@ -8,6 +8,7 @@ package docspell.scheduler.impl
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.scheduler.{Job, JobStore}
 import docspell.store.queries.QPeriodicTask

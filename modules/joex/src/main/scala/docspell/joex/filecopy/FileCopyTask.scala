@@ -9,15 +9,17 @@ package docspell.joex.filecopy
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
+
 import docspell.common.FileCopyTaskArgs.Selection
 import docspell.common.{FileCopyTaskArgs, Ident}
 import docspell.joex.Config
-import docspell.scheduler.{JobTaskResultEncoder, Task}
 import docspell.logging.Logger
+import docspell.scheduler.{JobTaskResultEncoder, Task}
+import docspell.store.Store
 import docspell.store.file.{BinnyUtils, FileRepository, FileRepositoryConfig}
+
 import binny.CopyTool.Counter
 import binny.{BinaryId, BinaryStore, CopyTool}
-import docspell.store.Store
 import io.circe.generic.semiauto.deriveCodec
 import io.circe.{Codec, Decoder, Encoder}
 

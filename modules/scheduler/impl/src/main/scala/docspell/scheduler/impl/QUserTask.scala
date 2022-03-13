@@ -1,16 +1,24 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.scheduler.impl
 
 import cats.effect.Sync
 import cats.syntax.all._
-import com.github.eikek.calev.CalEvent
-import docspell.common.{AccountId, Ident, Priority, Timestamp}
+import fs2.Stream
+
+import docspell.common._
 import docspell.scheduler.usertask.{UserTask, UserTaskScope}
 import docspell.store.qb.DML
 import docspell.store.qb.DSL._
 import docspell.store.records.RPeriodicTask
-import fs2.Stream
-import io.circe.{Decoder, Encoder}
+
+import com.github.eikek.calev.CalEvent
 import doobie._
+import io.circe.{Decoder, Encoder}
 
 object QUserTask {
   private val RT = RPeriodicTask.T

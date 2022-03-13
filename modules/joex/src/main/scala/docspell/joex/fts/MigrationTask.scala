@@ -8,6 +8,7 @@ package docspell.joex.fts
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._

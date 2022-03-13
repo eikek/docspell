@@ -8,11 +8,13 @@ package docspell.joex.hk
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
-import docspell.scheduler.Task
 import docspell.logging.Logger
+import docspell.scheduler.Task
 import docspell.store.Store
 import docspell.store.records._
+
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
 

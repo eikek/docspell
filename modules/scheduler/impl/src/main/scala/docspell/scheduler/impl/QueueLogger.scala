@@ -1,13 +1,20 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.scheduler.impl
 
-import cats.syntax.all._
 import cats.effect.std.Queue
 import cats.effect.{Async, Sync}
+import cats.syntax.all._
+import fs2.Stream
+
 import docspell.common.{Ident, LogLevel}
 import docspell.logging
 import docspell.logging.{Level, Logger}
 import docspell.scheduler.LogEvent
-import fs2.Stream
 
 object QueueLogger {
 
