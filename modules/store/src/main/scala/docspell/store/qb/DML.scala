@@ -27,6 +27,13 @@ object DML extends DoobieMeta {
   def insert(table: TableDef, cols: Nel[Column[_]], values: Fragment): ConnectionIO[Int] =
     insertFragment(table, cols, List(values)).update.run
 
+  def insertSilent(
+      table: TableDef,
+      cols: Nel[Column[_]],
+      values: Fragment
+  ): ConnectionIO[Int] =
+    insertFragment(table, cols, List(values)).update(LogHandler.nop).run
+
   def insertMany(
       table: TableDef,
       cols: Nel[Column[_]],

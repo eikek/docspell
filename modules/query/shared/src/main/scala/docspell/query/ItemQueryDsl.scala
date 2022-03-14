@@ -78,5 +78,7 @@ object ItemQueryDsl {
     def tagsEq(values: NonEmptyList[String]): Expr =
       Expr.TagsMatch(TagOperator.AllMatch, values)
 
+    def itemIdsIn(values: NonEmptyList[String]): Expr =
+      Expr.InExpr(Attr.ItemId, values)
   }
 }
