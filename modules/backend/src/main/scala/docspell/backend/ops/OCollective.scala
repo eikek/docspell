@@ -205,7 +205,7 @@ object OCollective {
             args
           )
           _ <- uts
-            .updateOneTask(UserTaskScope(collective), args.makeSubject.some, ut)
+            .executeNow(UserTaskScope(collective), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
         } yield ()
 
@@ -221,7 +221,7 @@ object OCollective {
             args
           )
           _ <- uts
-            .updateOneTask(UserTaskScope(args.collective), args.makeSubject.some, ut)
+            .executeNow(UserTaskScope(args.collective), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
         } yield ()
 
