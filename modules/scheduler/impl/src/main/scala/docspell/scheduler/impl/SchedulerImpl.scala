@@ -21,7 +21,6 @@ import docspell.scheduler._
 import docspell.scheduler.impl.SchedulerImpl._
 import docspell.scheduler.msg.{CancelJob, JobDone, JobsNotify}
 import docspell.store.Store
-import docspell.store.queries.QJob
 import docspell.store.records.RJob
 
 import io.circe.Json
