@@ -317,7 +317,7 @@ fr tz =
     , documentLanguageInfo =
         "Utilisé pour l'extraction et l'analyse du texte. La langue"
             ++ "par défaut du groupe est utilisée, si non spécifié"
-    , scanRecursivelyInfo = "Recherchez également les courriels dans les sous-dossiers des dossiers donnés."
+    , scanRecursivelyInfo = "Rechercher également les mails dans les sous-dossiers des dossiers spécifiés."
     , scanRecursivelyLabel = "Analyse récursive des dossiers"
     , schedule = "Programmation"
     , scheduleClickForHelp = "Cliquer pour l'aide"
