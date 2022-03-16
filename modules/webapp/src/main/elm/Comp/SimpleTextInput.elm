@@ -119,6 +119,7 @@ type alias Result =
     , change : ValueChange
     , cmd : Cmd Msg
     , sub : Sub Msg
+    , keyPressed : Maybe KeyCode
     }
 
 
@@ -144,6 +145,7 @@ update msg (Model model) =
             , change = ValueUnchanged
             , cmd = cmd
             , sub = makeSub model newThrottle
+            , keyPressed = Nothing
             }
 
         UpdateThrottle ->
@@ -155,6 +157,7 @@ update msg (Model model) =
             , change = ValueUnchanged
             , cmd = cmd
             , sub = makeSub model newThrottle
+            , keyPressed = Nothing
             }
 
         DelayedSet ->
@@ -172,14 +175,22 @@ update msg (Model model) =
                 unit model
 
         KeyPressed (Just Util.Html.Enter) ->
-            if model.cfg.setOnEnter then
-                publishChange model
+            let
+                res =
+                    if model.cfg.setOnEnter then
+                        publishChange model
 
-            else
-                unit model
+                    else
+                        unit model
+            in
+            { res | keyPressed = Just Util.Html.Enter }
 
-        KeyPressed _ ->
-            unit model
+        KeyPressed kc ->
+            let
+                res =
+                    unit model
+            in
+            { res | keyPressed = kc }
 
 
 publishChange : InnerModel -> Result
@@ -192,6 +203,7 @@ publishChange model =
             (ValueUpdated model.value)
             Cmd.none
             (makeSub model model.throttle)
+            Nothing
 
 
 unit : InnerModel -> Result
@@ -200,6 +212,7 @@ unit model =
     , change = ValueUnchanged
     , cmd = Cmd.none
     , sub = makeSub model model.throttle
+    , keyPressed = Nothing
     }
 
 

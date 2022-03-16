@@ -6,7 +6,8 @@
 
 
 module Util.String exposing
-    ( crazyEncode
+    ( appendIfAbsent
+    , crazyEncode
     , ellipsis
     , isBlank
     , isNothingOrBlank
@@ -15,6 +16,7 @@ module Util.String exposing
     )
 
 import Base64
+import Html exposing (strong)
 
 
 crazyEncode : String -> String
@@ -66,3 +68,12 @@ isNothingOrBlank : Maybe String -> Bool
 isNothingOrBlank ms =
     Maybe.map isBlank ms
         |> Maybe.withDefault True
+
+
+appendIfAbsent : String -> String -> String
+appendIfAbsent suffix str =
+    if String.endsWith suffix str then
+        str
+
+    else
+        str ++ suffix

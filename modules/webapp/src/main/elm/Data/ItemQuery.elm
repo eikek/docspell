@@ -22,6 +22,7 @@ import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.ItemQuery as RQ
 import Data.Direction exposing (Direction)
 import Data.SearchMode exposing (SearchMode)
+import Util.String
 
 
 type TagMatch
@@ -58,6 +59,7 @@ type ItemQuery
     | Source AttrMatch String
     | Dir Direction
     | ItemIdIn (List String)
+    | ItemIdMatch String
     | ItemName AttrMatch String
     | AllNames String
     | Contents String
@@ -206,6 +208,13 @@ render q =
 
         ItemIdIn ids ->
             "id~=" ++ String.join "," ids
+
+        ItemIdMatch id ->
+            if String.length id == 47 then
+                "id" ++ attrMatch Eq ++ id
+
+            else
+                "id" ++ attrMatch Like ++ Util.String.appendIfAbsent "*" id
 
         ItemName m str ->
             "name" ++ attrMatch m ++ quoteStr str

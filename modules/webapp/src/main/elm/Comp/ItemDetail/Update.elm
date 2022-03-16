@@ -46,6 +46,7 @@ import Comp.ItemDetail.Model
         , resultModelCmd
         , resultModelCmdSub
         )
+import Comp.ItemLinkForm
 import Comp.ItemMail
 import Comp.KeyInput
 import Comp.LinkTarget
@@ -95,6 +96,13 @@ update inav env msg model =
 
                 ( cm, cc ) =
                     Comp.CustomFieldMultiInput.init env.flags
+
+                ( ilm, ilc ) =
+                    if model.item.id == "" then
+                        ( model.itemLinkModel, Cmd.none )
+
+                    else
+                        Comp.ItemLinkForm.init env.flags model.item.id
             in
             resultModelCmd
                 ( { model
@@ -104,6 +112,7 @@ update inav env msg model =
                     , visibleAttach = 0
                     , attachMenuOpen = False
                     , customFieldsModel = cm
+                    , itemLinkModel = ilm
                   }
                 , Cmd.batch
                     [ getOptions env.flags
@@ -111,6 +120,7 @@ update inav env msg model =
                     , Cmd.map DueDatePickerMsg dpc
                     , Cmd.map ItemMailMsg ic
                     , Cmd.map CustomFieldMsg cc
+                    , Cmd.map ItemLinkFormMsg ilc
                     , Api.getSentMails env.flags model.item.id SentMailsResp
                     ]
                 )
@@ -217,6 +227,9 @@ update inav env msg model =
                     else
                         Cmd.none
 
+                ( ilm, ilc ) =
+                    Comp.ItemLinkForm.init env.flags item.id
+
                 lastModel =
                     res9.model
             in
@@ -237,6 +250,7 @@ update inav env msg model =
                     , dueDate = item.dueDate
                     , visibleAttach = 0
                     , modalEdit = Nothing
+                    , itemLinkModel = ilm
                 }
             , cmd =
                 Cmd.batch
@@ -254,6 +268,7 @@ update inav env msg model =
                     , Api.getSentMails env.flags item.id SentMailsResp
                     , Api.getPersons env.flags "" Data.PersonOrder.NameAsc GetPersonResp
                     , Cmd.map CustomFieldMsg (Comp.CustomFieldMultiInput.initCmd env.flags)
+                    , Cmd.map ItemLinkFormMsg ilc
                     ]
             , sub =
                 Sub.batch
@@ -1612,6 +1627,17 @@ update inav env msg model =
                     Data.ItemIds.toggle env.selectedItems model.item.id
             in
             { res | selectionChange = newSelection }
+
+        ItemLinkFormMsg lm ->
+            let
+                ( ilm, ilc, ils ) =
+                    Comp.ItemLinkForm.update env.flags lm model.itemLinkModel
+            in
+            resultModelCmdSub
+                ( { model | itemLinkModel = ilm }
+                , Cmd.map ItemLinkFormMsg ilc
+                , Sub.map ItemLinkFormMsg ils
+                )
 
 
 

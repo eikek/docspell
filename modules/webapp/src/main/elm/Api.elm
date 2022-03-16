@@ -13,6 +13,7 @@ module Api exposing
     , addCorrPerson
     , addDashboard
     , addMember
+    , addRelatedItems
     , addShare
     , addTag
     , addTagsMultiple
@@ -91,6 +92,7 @@ module Api exposing
     , getPersonFull
     , getPersons
     , getPersonsLight
+    , getRelatedItems
     , getScanMailbox
     , getSentMails
     , getShare
@@ -130,6 +132,8 @@ module Api exposing
     , refreshSession
     , register
     , removeMember
+    , removeRelatedItem
+    , removeRelatedItems
     , removeTagsMultiple
     , replaceDashboard
     , reprocessItem
@@ -227,7 +231,9 @@ import Api.Model.ImapSettingsList exposing (ImapSettingsList)
 import Api.Model.InviteResult exposing (InviteResult)
 import Api.Model.ItemDetail exposing (ItemDetail)
 import Api.Model.ItemInsights exposing (ItemInsights)
+import Api.Model.ItemLightGroup exposing (ItemLightGroup)
 import Api.Model.ItemLightList exposing (ItemLightList)
+import Api.Model.ItemLinkData exposing (ItemLinkData)
 import Api.Model.ItemProposals exposing (ItemProposals)
 import Api.Model.ItemQuery exposing (ItemQuery)
 import Api.Model.ItemUploadMeta exposing (ItemUploadMeta)
@@ -3002,6 +3008,48 @@ verifyJsonFilter flags query receive =
         { url = flags.config.baseUrl ++ "/api/v1/sec/notification/hook/verifyJsonFilter"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.StringValue.encode (StringValue query))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+
+--- Item Links
+
+
+getRelatedItems : Flags -> String -> (Result Http.Error ItemLightGroup -> msg) -> Cmd msg
+getRelatedItems flags itemId receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/itemlink/" ++ itemId
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.ItemLightGroup.decoder
+        }
+
+
+addRelatedItems : Flags -> ItemLinkData -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addRelatedItems flags data receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/itemlink/addAll"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemLinkData.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+removeRelatedItems : Flags -> ItemLinkData -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+removeRelatedItems flags data receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/itemlink/removeAll"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemLinkData.encode data)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+removeRelatedItem : Flags -> String -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+removeRelatedItem flags item1 item2 receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/itemlink/" ++ item1 ++ "/" ++ item2
+        , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
