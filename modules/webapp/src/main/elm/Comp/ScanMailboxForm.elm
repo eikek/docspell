@@ -68,6 +68,7 @@ type alias Model =
     , targetFolder : Maybe String
     , foldersModel : Comp.StringListInput.Model
     , folders : List String
+    , scanRecursively : Bool
     , direction : Maybe Direction
     , schedule : Maybe CalEvent
     , scheduleModel : Comp.CalEventInput.Model
@@ -156,6 +157,7 @@ type Msg
     | ReceivedHoursMsg Comp.IntField.Msg
     | SetTargetFolder String
     | FoldersMsg Comp.StringListInput.Msg
+    | ToggleScanRecursively
     | DirectionMsg (Maybe Direction)
     | YesNoDeleteMsg Comp.YesNoDimmer.Msg
     | GetFolderResp (Result Http.Error FolderList)
@@ -200,6 +202,7 @@ initWith flags s =
         , receivedHours = s.receivedSinceHours
         , targetFolder = s.targetFolder
         , folders = s.folders
+        , scanRecursively = s.scanRecursively
         , schedule = Just newSchedule
         , direction = Maybe.andThen Data.Direction.fromString s.direction
         , scheduleModel = sm
@@ -246,6 +249,7 @@ init flags =
       , receivedHoursModel = Comp.IntField.init (Just 1) Nothing True
       , foldersModel = Comp.StringListInput.init
       , folders = []
+      , scanRecursively = False
       , targetFolder = Nothing
       , direction = Nothing
       , schedule = Just initialSchedule
@@ -316,6 +320,7 @@ makeSettings model =
                 , deleteMail = model.deleteMail
                 , targetFolder = model.targetFolder
                 , folders = folders
+                , scanRecursively = model.scanRecursively
                 , direction = Maybe.map Data.Direction.asString model.direction
                 , schedule = Data.CalEvent.makeEvent timer
                 , itemFolder = model.itemFolderId
@@ -493,6 +498,12 @@ update flags tz msg model =
                 | foldersModel = fm
                 , folders = newList
               }
+            , NoAction
+            , Cmd.none
+            )
+
+        ToggleScanRecursively ->
+            ( { model | scanRecursively = not model.scanRecursively }
             , NoAction
             , Cmd.none
             )
@@ -961,6 +972,17 @@ viewGeneral2 texts settings model =
 viewProcessing2 : Texts -> Model -> List (Html Msg)
 viewProcessing2 texts model =
     [ div [ class "mb-4" ]
+        [ MB.viewItem <|
+            MB.Checkbox
+                { id = "scanmail-scan-recursively"
+                , value = model.scanRecursively
+                , label = texts.scanRecursivelyLabel
+                , tagger = \_ -> ToggleScanRecursively
+                }
+            , span [ class "opacity-50 text-sm mt-1" ]
+            [ Markdown.toHtml [] texts.scanRecursivelyInfo ]
+        ]
+    , div [ class "mb-4" ]
         [ label [ class S.inputLabel ]
             [ text texts.folders
             , B.inputRequired

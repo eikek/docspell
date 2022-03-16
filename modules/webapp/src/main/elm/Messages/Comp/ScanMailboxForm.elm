@@ -68,6 +68,8 @@ type alias Texts =
     , tagsInfo : String
     , documentLanguage : String
     , documentLanguageInfo : String
+    , scanRecursivelyInfo : String
+    , scanRecursivelyLabel : String
     , schedule : String
     , scheduleClickForHelp : String
     , scheduleInfo : String
@@ -149,6 +151,8 @@ gb tz =
     , documentLanguageInfo =
         "Used for text extraction and text analysis. The "
             ++ "collective's default language is used, if not specified here."
+    , scanRecursivelyInfo = "Scan the sub-folders of the given folders for emails too."
+    , scanRecursivelyLabel = "Scan folders recursively"
     , schedule = "Schedule"
     , scheduleClickForHelp = "Click here for help"
     , scheduleInfo =
@@ -229,6 +233,8 @@ kann hier ein Wert für alle festgelegt werden. Bei 'Automatisch' wird auf den S
     , documentLanguageInfo =
         "Wird für Texterkennung und -analyse verwendet. Die Standardsprache des Kollektivs "
             ++ "wird verwendet, falls hier nicht angegeben."
+    , scanRecursivelyInfo = "Auch die Unterordner der gegebenen Ordner nach E-Mails durchsuchen."
+    , scanRecursivelyLabel = "Ordner rekursiv scannen"
     , schedule = "Zeitplan"
     , scheduleClickForHelp = "Klicke für Hilfe"
     , scheduleInfo =
@@ -311,6 +317,8 @@ fr tz =
     , documentLanguageInfo =
         "Utilisé pour l'extraction et l'analyse du texte. La langue"
             ++ "par défaut du groupe est utilisée, si non spécifié"
+    , scanRecursivelyInfo = "Rechercher également les mails dans les sous-dossiers des dossiers spécifiés."
+    , scanRecursivelyLabel = "Analyse récursive des dossiers"
     , schedule = "Programmation"
     , scheduleClickForHelp = "Cliquer pour l'aide"
     , scheduleInfo =
