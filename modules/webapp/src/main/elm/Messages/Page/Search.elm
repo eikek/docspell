@@ -67,6 +67,15 @@ type alias Texts =
     , cancelMergeTitle : String
     , mergeSuccessful : String
     , mergeInProcess : String
+    , mergeHeader : String
+    , linkItemsTitle : Int -> String
+    , linkItemsMessage : String
+    , submitLinkItems : String
+    , submitLinkItemsTitle : String
+    , cancelLinkItemsTitle : String
+    , linkItemsSuccessful : String
+    , linkItemsInProcess : String
+    , linkItemsHeader : String
     }
 
 
@@ -116,6 +125,15 @@ gb tz =
     , cancelMergeTitle = "Back to select view"
     , mergeSuccessful = "Items merged successfully"
     , mergeInProcess = "Items are merged …"
+    , linkItemsTitle = \n -> "Link " ++ String.fromInt n ++ " items"
+    , linkItemsMessage = "There must be at least 2 items in the list. The first is the target item and all remaining are added to its related items list."
+    , submitLinkItems = "Link"
+    , submitLinkItemsTitle = ""
+    , cancelLinkItemsTitle = ""
+    , linkItemsSuccessful = "Linking items successful"
+    , linkItemsInProcess = "Linking items ..."
+    , mergeHeader = "Merge Items"
+    , linkItemsHeader = "Link Items"
     }
 
 
@@ -165,6 +183,15 @@ de tz =
     , cancelMergeTitle = "Zurück zur Auswahl"
     , mergeSuccessful = "Die Dokumente wurden erfolgreich zusammengeführt."
     , mergeInProcess = "Dokumente werden zusammengeführt…"
+    , linkItemsTitle = \n -> String.fromInt n ++ " Dokumente verknüpfen"
+    , linkItemsMessage = "Die Liste muss mindestens 2 Dokumenta haben. Das erste Dokument erhält alle folgenden als verknüpfte Dokumente."
+    , submitLinkItems = "Verknüpfen"
+    , submitLinkItemsTitle = ""
+    , cancelLinkItemsTitle = ""
+    , linkItemsSuccessful = "Das Verknüpfen war erflogreich"
+    , linkItemsInProcess = "Dokumente werden verknüpft ..."
+    , mergeHeader = "Dokumente zusammenführen"
+    , linkItemsHeader = "Dokument verknüpfen"
     }
 
 
@@ -214,4 +241,13 @@ fr tz =
     , cancelMergeTitle = "Annuler la fusion"
     , mergeSuccessful = "Documents fusionnés avec succès"
     , mergeInProcess = "Fusion en cours ..."
+    , linkItemsTitle = \n -> String.fromInt n ++ " Lier des documents"
+    , linkItemsMessage = "La liste doit comporter au moins deux documents. Le premier document reçoit tous les documents suivants en tant que documents liés."
+    , submitLinkItems = "Relier"
+    , submitLinkItemsTitle = ""
+    , cancelLinkItemsTitle = ""
+    , linkItemsSuccessful = "L'association a été un succès"
+    , linkItemsInProcess = "Relier en cours ..."
+    , mergeHeader = "Fusionner des documents"
+    , linkItemsHeader = "Lier des documents"
     }

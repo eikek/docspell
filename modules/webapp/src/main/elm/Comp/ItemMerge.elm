@@ -235,9 +235,11 @@ flatten list =
 
 
 type alias ViewConfig =
-    { infoMessage : String
+    { title : String
+    , infoMessage : String
     , warnMessage : String
     , actionButton : String
+    , actionIcon : String
     , actionTitle : String
     , cancelTitle : String
     , actionSuccessful : String
@@ -249,7 +251,7 @@ view : Texts -> ViewConfig -> UiSettings -> Model -> Html Msg
 view texts cfg settings model =
     div [ class "px-2 mb-4" ]
         [ h1 [ class S.header1 ]
-            [ text texts.title
+            [ text cfg.title
             , a
                 [ class "ml-2"
                 , class S.link
@@ -278,7 +280,7 @@ view texts cfg settings model =
                 [ MB.PrimaryButton
                     { tagger = SubmitAction
                     , title = cfg.actionTitle
-                    , icon = Just "fa fa-less-than"
+                    , icon = Just cfg.actionIcon
                     , label = cfg.actionButton
                     }
                 , MB.SecondaryButton

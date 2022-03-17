@@ -555,7 +555,7 @@ update texts bookmarkId lastViewedItemId env msg model =
                 _ ->
                     resultModelCmd env.selectedItems ( model, Cmd.none )
 
-        MergeSelectedItems ->
+        MergeSelectedItems createModel ->
             case model.viewMode of
                 SelectView svm ->
                     if svm.action == MergeSelected then
@@ -565,7 +565,7 @@ update texts bookmarkId lastViewedItemId env msg model =
                                     SelectView
                                         { svm
                                             | action = NoneAction
-                                            , mergeModel = Comp.ItemMerge.init []
+                                            , mergeModel = createModel <| Comp.ItemMerge.init []
                                         }
                               }
                             , Cmd.none
@@ -584,7 +584,7 @@ update texts bookmarkId lastViewedItemId env msg model =
                                             SelectView
                                                 { svm
                                                     | action = MergeSelected
-                                                    , mergeModel = mm
+                                                    , mergeModel = createModel mm
                                                 }
                                       }
                                     , Cmd.map MergeItemsMsg mc
@@ -600,11 +600,16 @@ update texts bookmarkId lastViewedItemId env msg model =
             case model.viewMode of
                 SelectView svm ->
                     let
-                        action =
-                            Api.mergeItemsTask env.flags
+                        ( mergeModel, createModel, action ) =
+                            case svm.mergeModel of
+                                MergeItems a ->
+                                    ( a, MergeItems, Api.mergeItemsTask env.flags )
+
+                                LinkItems a ->
+                                    ( a, LinkItems, Api.addRelatedItemsTask env.flags )
 
                         result =
-                            Comp.ItemMerge.update env.flags action lmsg svm.mergeModel
+                            Comp.ItemMerge.update env.flags action lmsg mergeModel
 
                         nextView =
                             case result.outcome of
@@ -612,7 +617,7 @@ update texts bookmarkId lastViewedItemId env msg model =
                                     SelectView { svm | action = NoneAction }
 
                                 Comp.ItemMerge.OutcomeNotYet ->
-                                    SelectView { svm | mergeModel = result.model }
+                                    SelectView { svm | mergeModel = createModel result.model }
 
                                 Comp.ItemMerge.OutcomeActionDone ->
                                     SearchView

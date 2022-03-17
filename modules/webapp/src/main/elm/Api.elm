@@ -14,6 +14,7 @@ module Api exposing
     , addDashboard
     , addMember
     , addRelatedItems
+    , addRelatedItemsTask
     , addShare
     , addTag
     , addTagsMultiple
@@ -3041,6 +3042,25 @@ addRelatedItems flags data receive =
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.ItemLinkData.encode data)
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addRelatedItemsTask : Flags -> List String -> Task.Task Http.Error BasicResult
+addRelatedItemsTask flags ids =
+    let
+        itemData =
+            { item = List.head ids |> Maybe.withDefault ""
+            , related = List.tail ids |> Maybe.withDefault []
+            }
+    in
+    Http2.authTask
+        { url = flags.config.baseUrl ++ "/api/v1/sec/itemlink/addAll"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.ItemLinkData.encode itemData)
+        , method = "POST"
+        , headers = []
+        , resolver = Http2.jsonResolver Api.Model.BasicResult.decoder
+        , timeout = Nothing
         }
 
 
