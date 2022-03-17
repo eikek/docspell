@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.store.queries
+package docspell.scheduler.impl
 
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicLong
@@ -14,8 +14,7 @@ import cats.implicits._
 import docspell.common._
 import docspell.logging.TestLoggingConfig
 import docspell.store.StoreFixture
-import docspell.store.records.RJob
-import docspell.store.records.RJobGroupUse
+import docspell.store.records.{RJob, RJobGroupUse}
 
 import doobie.implicits._
 import munit._

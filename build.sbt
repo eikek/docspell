@@ -540,7 +540,12 @@ val schedulerImpl = project
   .settings(
     name := "docspell-scheduler-impl"
   )
-  .dependsOn(store, schedulerApi, notificationApi, pubsubApi)
+  .dependsOn(
+    store % "compile->compile;test->test",
+    schedulerApi,
+    notificationApi,
+    pubsubApi
+  )
 
 val extract = project
   .in(file("modules/extract"))

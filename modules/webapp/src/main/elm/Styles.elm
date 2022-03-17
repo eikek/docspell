@@ -233,9 +233,14 @@ deleteButton =
     deleteButtonMain ++ deleteButtonHover
 
 
+deleteButtonBase : String
+deleteButtonBase =
+    " my-auto whitespace-nowrap border border-red-500 dark:border-lightred-500 text-red-500 dark:text-orange-500 text-center "
+
+
 deleteButtonMain : String
 deleteButtonMain =
-    " rounded my-auto whitespace-nowrap border border-red-500 dark:border-lightred-500 text-red-500 dark:text-orange-500 text-center px-4 py-2 shadow-none focus:outline-none focus:ring focus:ring-opacity-75 "
+    " rounded px-4 py-2 shadow-none focus:outline-none focus:ring focus:ring-opacity-75 " ++ deleteButtonBase
 
 
 deleteButtonHover : String

@@ -48,6 +48,7 @@ import Comp.DatePicker
 import Comp.DetailEdit
 import Comp.Dropdown
 import Comp.Dropzone
+import Comp.ItemLinkForm
 import Comp.ItemMail
 import Comp.KeyInput
 import Comp.LinkTarget exposing (LinkTarget)
@@ -121,6 +122,7 @@ type alias Model =
     , editMenuTabsOpen : Set String
     , viewMode : ViewMode
     , showQrModel : ShowQrModel
+    , itemLinkModel : Comp.ItemLinkForm.Model
     }
 
 
@@ -256,6 +258,7 @@ emptyModel =
     , editMenuTabsOpen = Set.empty
     , viewMode = SimpleView
     , showQrModel = initShowQrModel
+    , itemLinkModel = Comp.ItemLinkForm.emptyModel
     }
 
 
@@ -369,6 +372,7 @@ type Msg
     | PrintElement String
     | SetNameMsg Comp.SimpleTextInput.Msg
     | ToggleSelectItem
+    | ItemLinkFormMsg Comp.ItemLinkForm.Msg
 
 
 type SaveNameState

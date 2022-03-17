@@ -129,8 +129,41 @@ itemPublishView texts settings flags svm =
 
 itemMergeView : Texts -> UiSettings -> SelectViewModel -> List (Html Msg)
 itemMergeView texts settings svm =
+    let
+        cfgMerge =
+            { infoMessage = texts.mergeInfoText
+            , warnMessage = texts.mergeDeleteWarn
+            , actionButton = texts.submitMerge
+            , actionTitle = texts.submitMergeTitle
+            , cancelTitle = texts.cancelMergeTitle
+            , actionSuccessful = texts.mergeSuccessful
+            , actionInProcess = texts.mergeInProcess
+            , title = texts.mergeHeader
+            , actionIcon = "fa fa-less-than"
+            }
+
+        cfgLink =
+            { infoMessage = ""
+            , warnMessage = texts.linkItemsMessage
+            , actionButton = texts.submitLinkItems
+            , actionTitle = texts.submitLinkItemsTitle
+            , cancelTitle = texts.cancelLinkItemsTitle
+            , actionSuccessful = texts.linkItemsSuccessful
+            , actionInProcess = texts.linkItemsInProcess
+            , title = texts.linkItemsHeader
+            , actionIcon = "fa fa-link"
+            }
+
+        ( mergeModel, cfg ) =
+            case svm.mergeModel of
+                MergeItems a ->
+                    ( a, cfgMerge )
+
+                LinkItems a ->
+                    ( a, cfgLink )
+    in
     [ Html.map MergeItemsMsg
-        (Comp.ItemMerge.view texts.itemMerge settings svm.mergeModel)
+        (Comp.ItemMerge.view texts.itemMerge cfg settings mergeModel)
     ]
 
 
@@ -485,7 +518,7 @@ editMenuBar texts model selectedItems svm =
                     ]
                 }
             , MB.CustomButton
-                { tagger = MergeSelectedItems
+                { tagger = MergeSelectedItems MergeItems
                 , label = ""
                 , icon = Just "fa fa-less-than"
                 , title = texts.mergeItemsTitle selectCount
@@ -500,6 +533,17 @@ editMenuBar texts model selectedItems svm =
                 , label = ""
                 , icon = Just Icons.share
                 , title = texts.publishItemsTitle selectCount
+                , inputClass =
+                    [ ( btnStyle, True )
+                    , ( "bg-gray-200 dark:bg-slate-600", svm.action == PublishSelected )
+                    , ( "hidden", model.searchMenuModel.searchMode == Data.SearchMode.Trashed )
+                    ]
+                }
+            , MB.CustomButton
+                { tagger = MergeSelectedItems LinkItems
+                , label = ""
+                , icon = Just Icons.linkItems
+                , title = texts.linkItemsTitle selectCount
                 , inputClass =
                     [ ( btnStyle, True )
                     , ( "bg-gray-200 dark:bg-slate-600", svm.action == PublishSelected )

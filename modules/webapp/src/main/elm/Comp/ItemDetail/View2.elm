@@ -24,6 +24,7 @@ import Comp.ItemDetail.Model
 import Comp.ItemDetail.Notes
 import Comp.ItemDetail.ShowQrCode
 import Comp.ItemDetail.SingleAttachment
+import Comp.ItemLinkForm
 import Comp.ItemMail
 import Comp.MenuBar as MB
 import Comp.SentMails
@@ -45,8 +46,6 @@ view : Texts -> ItemNav -> Env.View -> Model -> Html Msg
 view texts inav env model =
     div [ class "flex flex-col h-full" ]
         [ header texts inav env model
-
-        --        , menuBar texts inav settings model
         , body texts env.flags inav env.settings model
         , itemModal texts model
         ]
@@ -407,12 +406,18 @@ itemActions texts flags settings model classes =
 
 
 notesAndSentMails : Texts -> Flags -> UiSettings -> Model -> String -> Html Msg
-notesAndSentMails texts _ _ model classes =
+notesAndSentMails texts _ settings model classes =
     div
         [ class "w-full md:mr-2 flex flex-col"
         , class classes
         ]
         [ Comp.ItemDetail.Notes.view texts.notes model
+        , div [ class "mb-4 mt-4" ]
+            [ div [ class "font-bold text-lg" ]
+                [ text texts.relatedItems
+                ]
+            , Html.map ItemLinkFormMsg (Comp.ItemLinkForm.view texts.itemLinkForm settings model.itemLinkModel)
+            ]
         , div
             [ classList
                 [ ( "hidden", Comp.SentMails.isEmpty model.sentMails )

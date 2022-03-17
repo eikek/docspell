@@ -128,6 +128,7 @@ final class RestAppImpl[F[_]: Async](
       "queue" -> JobQueueRoutes(backend, token),
       "item" -> ItemRoutes(config, backend, token),
       "items" -> ItemMultiRoutes(config, backend, token),
+      "itemlink" -> ItemLinkRoutes(token.account, backend.itemLink),
       "attachment" -> AttachmentRoutes(backend, token),
       "attachments" -> AttachmentMultiRoutes(backend, token),
       "upload" -> UploadRoutes.secured(backend, config, token),

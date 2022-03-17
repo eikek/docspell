@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.scheduler
+package docspell.scheduler.impl
 
 import cats.effect.Sync
 import cats.implicits._
@@ -13,6 +13,8 @@ import docspell.common._
 
 case class LogEvent(
     jobId: Ident,
+    taskName: Ident,
+    group: Ident,
     jobInfo: String,
     time: Timestamp,
     level: LogLevel,
@@ -29,10 +31,14 @@ object LogEvent {
 
   def create[F[_]: Sync](
       jobId: Ident,
+      taskName: Ident,
+      group: Ident,
       jobInfo: String,
       level: LogLevel,
       msg: String
   ): F[LogEvent] =
-    Timestamp.current[F].map(now => LogEvent(jobId, jobInfo, now, level, msg))
+    Timestamp
+      .current[F]
+      .map(now => LogEvent(jobId, taskName, group, jobInfo, now, level, msg))
 
 }

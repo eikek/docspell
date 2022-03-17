@@ -7,6 +7,7 @@
 
 module Page.Search.Data exposing
     ( ConfirmModalValue(..)
+    , ItemMergeModel(..)
     , Model
     , Msg(..)
     , SearchParam
@@ -88,11 +89,16 @@ type alias SelectViewModel =
     { action : SelectActionMode
     , confirmModal : Maybe ConfirmModalValue
     , editModel : Comp.ItemDetail.MultiEditMenu.Model
-    , mergeModel : Comp.ItemMerge.Model
+    , mergeModel : ItemMergeModel
     , publishModel : Comp.PublishItems.Model
     , saveNameState : SaveNameState
     , saveCustomFieldState : Set String
     }
+
+
+type ItemMergeModel
+    = MergeItems Comp.ItemMerge.Model
+    | LinkItems Comp.ItemMerge.Model
 
 
 initSelectViewModel : Flags -> SelectViewModel
@@ -100,7 +106,7 @@ initSelectViewModel flags =
     { action = NoneAction
     , confirmModal = Nothing
     , editModel = Comp.ItemDetail.MultiEditMenu.init
-    , mergeModel = Comp.ItemMerge.init []
+    , mergeModel = MergeItems (Comp.ItemMerge.init [])
     , publishModel = Tuple.first (Comp.PublishItems.init flags)
     , saveNameState = SaveSuccess
     , saveCustomFieldState = Set.empty
@@ -221,7 +227,7 @@ type Msg
     | ReprocessSelectedConfirmed
     | ClientSettingsSaveResp (Result Http.Error BasicResult)
     | RemoveItem String
-    | MergeSelectedItems
+    | MergeSelectedItems (Comp.ItemMerge.Model -> ItemMergeModel)
     | MergeItemsMsg Comp.ItemMerge.Msg
     | PublishSelectedItems
     | PublishItemsMsg Comp.PublishItems.Msg

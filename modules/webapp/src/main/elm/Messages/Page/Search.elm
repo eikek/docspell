@@ -60,6 +60,22 @@ type alias Texts =
     , expandCollapseRows : String
     , bookmarkQuery : String
     , nothingToBookmark : String
+    , submitMerge : String
+    , mergeInfoText : String
+    , mergeDeleteWarn : String
+    , submitMergeTitle : String
+    , cancelMergeTitle : String
+    , mergeSuccessful : String
+    , mergeInProcess : String
+    , mergeHeader : String
+    , linkItemsTitle : Int -> String
+    , linkItemsMessage : String
+    , submitLinkItems : String
+    , submitLinkItemsTitle : String
+    , cancelLinkItemsTitle : String
+    , linkItemsSuccessful : String
+    , linkItemsInProcess : String
+    , linkItemsHeader : String
     }
 
 
@@ -102,6 +118,22 @@ gb tz =
     , expandCollapseRows = "Expand/Collapse all"
     , bookmarkQuery = "Bookmark query"
     , nothingToBookmark = "Nothing selected to bookmark"
+    , submitMerge = "Merge"
+    , mergeInfoText = "When merging items the first item in the list acts as the target. Every other items metadata is copied into the target item. If the property is a single value (like correspondent), it is only set if not already present. Tags, custom fields and attachments are added. The items can be reordered using drag&drop."
+    , mergeDeleteWarn = "Note that all items but the first one is deleted after a successful merge!"
+    , submitMergeTitle = "Merge the documents now"
+    , cancelMergeTitle = "Back to select view"
+    , mergeSuccessful = "Items merged successfully"
+    , mergeInProcess = "Items are merged …"
+    , linkItemsTitle = \n -> "Link " ++ String.fromInt n ++ " items"
+    , linkItemsMessage = "There must be at least 2 items in the list. The first is the target item and all remaining are added to its related items list."
+    , submitLinkItems = "Link"
+    , submitLinkItemsTitle = ""
+    , cancelLinkItemsTitle = ""
+    , linkItemsSuccessful = "Linking items successful"
+    , linkItemsInProcess = "Linking items ..."
+    , mergeHeader = "Merge Items"
+    , linkItemsHeader = "Link Items"
     }
 
 
@@ -144,6 +176,22 @@ de tz =
     , expandCollapseRows = "Alle ein-/ausklappen"
     , bookmarkQuery = "Abfrage merken"
     , nothingToBookmark = "Keine Abfrage vorhanden"
+    , submitMerge = "Zusammenführen"
+    , mergeInfoText = "Beim Zusammenführen der Dokumente, wird das erste in der Liste als Zieldokument verwendet. Die Metadaten der anderen Dokumente werden der Reihe nach auf des Zieldokument geschrieben. Metadaten die nur einen Wert haben, werden nur gesetzt falls noch kein Wert existiert. Tags, Benutzerfelder und Anhänge werden zu dem Zieldokument hinzugefügt. Die Einträge können mit Drag&Drop umgeordnet werden."
+    , mergeDeleteWarn = "Bitte beachte, dass nach erfolgreicher Zusammenführung alle anderen Dokumente gelöscht werden!"
+    , submitMergeTitle = "Dokumente jetzt zusammenführen"
+    , cancelMergeTitle = "Zurück zur Auswahl"
+    , mergeSuccessful = "Die Dokumente wurden erfolgreich zusammengeführt."
+    , mergeInProcess = "Dokumente werden zusammengeführt…"
+    , linkItemsTitle = \n -> String.fromInt n ++ " Dokumente verknüpfen"
+    , linkItemsMessage = "Die Liste muss mindestens 2 Dokumenta haben. Das erste Dokument erhält alle folgenden als verknüpfte Dokumente."
+    , submitLinkItems = "Verknüpfen"
+    , submitLinkItemsTitle = ""
+    , cancelLinkItemsTitle = ""
+    , linkItemsSuccessful = "Das Verknüpfen war erflogreich"
+    , linkItemsInProcess = "Dokumente werden verknüpft ..."
+    , mergeHeader = "Dokumente zusammenführen"
+    , linkItemsHeader = "Dokument verknüpfen"
     }
 
 
@@ -186,4 +234,20 @@ fr tz =
     , expandCollapseRows = "Étendre/Réduire tout"
     , bookmarkQuery = "Requête de favoris"
     , nothingToBookmark = "Rien n'est sélectionné en favori"
+    , submitMerge = "Fusionner"
+    , mergeInfoText = "Lors d'une fusion, le premier document sert de cible. Les métadonnées des autres documents sont ajoutées à la cible. Si la propriété est un valeur seule (comme correspondant), ceci est ajouté si pas déjà présent. Tags, champs personnalisés et pièces-jointes sont ajoutés. Les documents peuvent être réordonnés avec le glisser/déposer."
+    , mergeDeleteWarn = "Veuillez noter que tous les documents sont supprimés après une fusion réussie !"
+    , submitMergeTitle = "Lancer la fusion"
+    , cancelMergeTitle = "Annuler la fusion"
+    , mergeSuccessful = "Documents fusionnés avec succès"
+    , mergeInProcess = "Fusion en cours ..."
+    , linkItemsTitle = \n -> String.fromInt n ++ " Lier des documents"
+    , linkItemsMessage = "La liste doit comporter au moins deux documents. Le premier document reçoit tous les documents suivants en tant que documents liés."
+    , submitLinkItems = "Relier"
+    , submitLinkItemsTitle = ""
+    , cancelLinkItemsTitle = ""
+    , linkItemsSuccessful = "L'association a été un succès"
+    , linkItemsInProcess = "Relier en cours ..."
+    , mergeHeader = "Fusionner des documents"
+    , linkItemsHeader = "Lier des documents"
     }

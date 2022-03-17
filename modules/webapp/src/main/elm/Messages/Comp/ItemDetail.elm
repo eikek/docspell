@@ -21,6 +21,7 @@ import Messages.Comp.ItemDetail.ConfirmModal
 import Messages.Comp.ItemDetail.ItemInfoHeader
 import Messages.Comp.ItemDetail.Notes
 import Messages.Comp.ItemDetail.SingleAttachment
+import Messages.Comp.ItemLinkForm
 import Messages.Comp.ItemMail
 import Messages.Comp.SentMails
 import Messages.DateFormat as DF
@@ -36,6 +37,7 @@ type alias Texts =
     , itemMail : Messages.Comp.ItemMail.Texts
     , detailEdit : Messages.Comp.DetailEdit.Texts
     , confirmModal : Messages.Comp.ItemDetail.ConfirmModal.Texts
+    , itemLinkForm : Messages.Comp.ItemLinkForm.Texts
     , httpError : Http.Error -> String
     , key : String
     , backToSearchResults : String
@@ -61,6 +63,7 @@ type alias Texts =
     , close : String
     , selectItem : String
     , deselectItem : String
+    , relatedItems : String
     }
 
 
@@ -74,6 +77,7 @@ gb tz =
     , itemMail = Messages.Comp.ItemMail.gb
     , detailEdit = Messages.Comp.DetailEdit.gb
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.gb
+    , itemLinkForm = Messages.Comp.ItemLinkForm.gb tz
     , httpError = Messages.Comp.HttpError.gb
     , key = "Key"
     , backToSearchResults = "Back to search results"
@@ -99,6 +103,7 @@ gb tz =
     , close = "Close"
     , selectItem = "Select this item"
     , deselectItem = "Deselect this item"
+    , relatedItems = "Linked items"
     }
 
 
@@ -112,6 +117,7 @@ de tz =
     , itemMail = Messages.Comp.ItemMail.de
     , detailEdit = Messages.Comp.DetailEdit.de
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.de
+    , itemLinkForm = Messages.Comp.ItemLinkForm.de tz
     , httpError = Messages.Comp.HttpError.de
     , key = "Taste"
     , backToSearchResults = "Zurück zur Suche"
@@ -137,6 +143,7 @@ de tz =
     , close = "Schließen"
     , selectItem = "Zur Auswahl hinzufügen"
     , deselectItem = "Aus Auswahl entfernen"
+    , relatedItems = "Verknüpfte Dokumente"
     }
 
 
@@ -150,6 +157,7 @@ fr tz =
     , itemMail = Messages.Comp.ItemMail.fr
     , detailEdit = Messages.Comp.DetailEdit.fr
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.fr
+    , itemLinkForm = Messages.Comp.ItemLinkForm.fr tz
     , httpError = Messages.Comp.HttpError.fr
     , key = "Clé"
     , backToSearchResults = "Retour aux résultat de recherche"
@@ -175,4 +183,5 @@ fr tz =
     , close = "Fermer"
     , selectItem = "Sélectionner  ce document"
     , deselectItem = "Désélectionner  ce document"
+    , relatedItems = "Documents associés"
     }
