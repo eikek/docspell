@@ -600,8 +600,11 @@ update texts bookmarkId lastViewedItemId env msg model =
             case model.viewMode of
                 SelectView svm ->
                     let
+                        action =
+                            Api.mergeItemsTask env.flags
+
                         result =
-                            Comp.ItemMerge.update env.flags lmsg svm.mergeModel
+                            Comp.ItemMerge.update env.flags action lmsg svm.mergeModel
 
                         nextView =
                             case result.outcome of
@@ -611,13 +614,13 @@ update texts bookmarkId lastViewedItemId env msg model =
                                 Comp.ItemMerge.OutcomeNotYet ->
                                     SelectView { svm | mergeModel = result.model }
 
-                                Comp.ItemMerge.OutcomeMerged ->
+                                Comp.ItemMerge.OutcomeActionDone ->
                                     SearchView
 
                         model_ =
                             { model | viewMode = nextView }
                     in
-                    if result.outcome == Comp.ItemMerge.OutcomeMerged then
+                    if result.outcome == Comp.ItemMerge.OutcomeActionDone then
                         update texts
                             bookmarkId
                             lastViewedItemId

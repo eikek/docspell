@@ -115,6 +115,7 @@ module Api exposing
     , loginSession
     , logout
     , mergeItems
+    , mergeItemsTask
     , moveAttachmentBefore
     , newInvite
     , openIdAuthLink
@@ -1717,18 +1718,26 @@ getJobQueueStateTask flags =
 --- Item (Mulit Edit)
 
 
+mergeItemsTask : Flags -> List String -> Task.Task Http.Error BasicResult
+mergeItemsTask flags ids =
+    Http2.authTask
+        { url = flags.config.baseUrl ++ "/api/v1/sec/items/merge"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.IdList.encode (IdList ids))
+        , method = "POST"
+        , headers = []
+        , resolver = Http2.jsonResolver Api.Model.BasicResult.decoder
+        , timeout = Nothing
+        }
+
+
 mergeItems :
     Flags
     -> List String
     -> (Result Http.Error BasicResult -> msg)
     -> Cmd msg
 mergeItems flags items receive =
-    Http2.authPost
-        { url = flags.config.baseUrl ++ "/api/v1/sec/items/merge"
-        , account = getAccount flags
-        , body = Http.jsonBody (Api.Model.IdList.encode (IdList items))
-        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
-        }
+    mergeItemsTask flags items |> Task.attempt receive
 
 
 reprocessMultiple :

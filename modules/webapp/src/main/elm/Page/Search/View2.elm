@@ -129,8 +129,19 @@ itemPublishView texts settings flags svm =
 
 itemMergeView : Texts -> UiSettings -> SelectViewModel -> List (Html Msg)
 itemMergeView texts settings svm =
+    let
+        cfg =
+            { infoMessage = texts.mergeInfoText
+            , warnMessage = texts.mergeDeleteWarn
+            , actionButton = texts.submitMerge
+            , actionTitle = texts.submitMergeTitle
+            , cancelTitle = texts.cancelMergeTitle
+            , actionSuccessful = texts.mergeSuccessful
+            , actionInProcess = texts.mergeInProcess
+            }
+    in
     [ Html.map MergeItemsMsg
-        (Comp.ItemMerge.view texts.itemMerge settings svm.mergeModel)
+        (Comp.ItemMerge.view texts.itemMerge cfg settings svm.mergeModel)
     ]
 
 

@@ -36,6 +36,7 @@ import Html5.DragDrop as DD
 import Http
 import Messages.Comp.ItemMerge exposing (Texts)
 import Styles as S
+import Task exposing (Task)
 import Util.CustomField
 import Util.Item
 import Util.List
@@ -89,18 +90,22 @@ type alias DDMsg =
 type FormState
     = FormStateInitial
     | FormStateHttp Http.Error
-    | FormStateMergeSuccessful
+    | FormStateActionSuccessful
     | FormStateError String
-    | FormStateMergeInProcess
+    | FormStateActionInProcess
 
 
 
 --- Update
 
 
+type alias Action =
+    List String -> Task Http.Error BasicResult
+
+
 type Outcome
     = OutcomeCancel
-    | OutcomeMerged
+    | OutcomeActionDone
     | OutcomeNotYet
 
 
@@ -123,15 +128,15 @@ type Msg
     = ItemResp (Result Http.Error ItemLightList)
     | ToggleInfoText
     | DragDrop (DD.Msg Int Int)
-    | SubmitMerge
-    | CancelMerge
-    | MergeResp (Result Http.Error BasicResult)
+    | SubmitAction
+    | CancelAction
+    | ActionResp (Result Http.Error BasicResult)
     | RemoveItem String
     | MoveItem Int Int
 
 
-update : Flags -> Msg -> Model -> UpdateResult
-update flags msg model =
+update : Flags -> Action -> Msg -> Model -> UpdateResult
+update _ action msg model =
     case msg of
         ItemResp (Ok list) ->
             notDoneResult ( init (flatten list), Cmd.none )
@@ -139,11 +144,11 @@ update flags msg model =
         ItemResp (Err err) ->
             notDoneResult ( { model | formState = FormStateHttp err }, Cmd.none )
 
-        MergeResp (Ok result) ->
+        ActionResp (Ok result) ->
             if result.success then
-                { model = { model | formState = FormStateMergeSuccessful }
+                { model = { model | formState = FormStateActionSuccessful }
                 , cmd = Cmd.none
-                , outcome = OutcomeMerged
+                , outcome = OutcomeActionDone
                 }
 
             else
@@ -152,7 +157,7 @@ update flags msg model =
                 , outcome = OutcomeNotYet
                 }
 
-        MergeResp (Err err) ->
+        ActionResp (Err err) ->
             { model = { model | formState = FormStateHttp err }
             , cmd = Cmd.none
             , outcome = OutcomeNotYet
@@ -203,17 +208,17 @@ update flags msg model =
             in
             notDoneResult ( { model | items = items }, Cmd.none )
 
-        SubmitMerge ->
+        SubmitAction ->
             let
                 ids =
                     List.map .id model.items
             in
             notDoneResult
-                ( { model | formState = FormStateMergeInProcess }
-                , Api.mergeItems flags ids MergeResp
+                ( { model | formState = FormStateActionInProcess }
+                , action ids |> Task.attempt ActionResp
                 )
 
-        CancelMerge ->
+        CancelAction ->
             { model = model
             , cmd = Cmd.none
             , outcome = OutcomeCancel
@@ -229,14 +234,26 @@ flatten list =
 --- View
 
 
-view : Texts -> UiSettings -> Model -> Html Msg
-view texts settings model =
+type alias ViewConfig =
+    { infoMessage : String
+    , warnMessage : String
+    , actionButton : String
+    , actionTitle : String
+    , cancelTitle : String
+    , actionSuccessful : String
+    , actionInProcess : String
+    }
+
+
+view : Texts -> ViewConfig -> UiSettings -> Model -> Html Msg
+view texts cfg settings model =
     div [ class "px-2 mb-4" ]
         [ h1 [ class S.header1 ]
             [ text texts.title
             , a
                 [ class "ml-2"
                 , class S.link
+                , classList [ ( "hidden", cfg.infoMessage == "" ) ]
                 , href "#"
                 , onClick ToggleInfoText
                 ]
@@ -245,36 +262,37 @@ view texts settings model =
             ]
         , p
             [ class S.infoMessage
-            , classList [ ( "hidden", not model.showInfoText ) ]
+            , classList [ ( "hidden", not model.showInfoText || cfg.infoMessage == "" ) ]
             ]
-            [ text texts.infoText
+            [ text cfg.infoMessage
             ]
         , p
             [ class S.warnMessage
             , class "mt-2"
+            , classList [ ( "hidden", cfg.warnMessage == "" ) ]
             ]
-            [ text texts.deleteWarn
+            [ text cfg.warnMessage
             ]
         , MB.view <|
             { start =
                 [ MB.PrimaryButton
-                    { tagger = SubmitMerge
-                    , title = texts.submitMergeTitle
+                    { tagger = SubmitAction
+                    , title = cfg.actionTitle
                     , icon = Just "fa fa-less-than"
-                    , label = texts.submitMerge
+                    , label = cfg.actionButton
                     }
                 , MB.SecondaryButton
-                    { tagger = CancelMerge
-                    , title = texts.cancelMergeTitle
+                    { tagger = CancelAction
+                    , title = cfg.cancelTitle
                     , icon = Just "fa fa-times"
-                    , label = texts.cancelMerge
+                    , label = texts.cancelView
                     }
                 ]
             , end = []
             , rootClasses = "my-4"
             , sticky = True
             }
-        , renderFormState texts model
+        , renderFormState texts cfg model
         , div [ class "flex-col px-2" ]
             (List.indexedMap (itemCard texts settings model) model.items)
         ]
@@ -494,8 +512,8 @@ mainTagsAndFields2 settings item =
         (renderFields ++ renderTags)
 
 
-renderFormState : Texts -> Model -> Html Msg
-renderFormState texts model =
+renderFormState : Texts -> ViewConfig -> Model -> Html Msg
+renderFormState texts cfg model =
     case model.formState of
         FormStateInitial ->
             span [ class "hidden" ] []
@@ -516,18 +534,18 @@ renderFormState texts model =
                 [ text (texts.httpError err)
                 ]
 
-        FormStateMergeSuccessful ->
+        FormStateActionSuccessful ->
             div
                 [ class S.successMessage
                 , class "my-2"
                 ]
-                [ text texts.mergeSuccessful
+                [ text cfg.actionSuccessful
                 ]
 
-        FormStateMergeInProcess ->
+        FormStateActionInProcess ->
             Comp.Basic.loadingDimmer
                 { active = True
-                , label = texts.mergeInProcess
+                , label = cfg.actionInProcess
                 }
 
 
