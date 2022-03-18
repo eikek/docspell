@@ -13,7 +13,7 @@ import docspell.ftssolr.SolrConfig
 import docspell.logging.LogConfig
 import docspell.oidc.ProviderConfig
 import docspell.pubsub.naive.PubSubConfig
-import docspell.restserver.Config.OpenIdConfig
+import docspell.restserver.Config.{OpenIdConfig, ServerOptions}
 import docspell.restserver.auth.OpenId
 import docspell.restserver.http4s.InternalHeader
 
@@ -26,6 +26,7 @@ case class Config(
     internalUrl: LenientUri,
     logging: LogConfig,
     bind: Config.Bind,
+    serverOptions: ServerOptions,
     backend: BackendConfig,
     auth: Login.Config,
     showClassificationSettings: Boolean,
@@ -50,6 +51,11 @@ case class Config(
 
 object Config {
 
+  case class ServerOptions(
+      responseTimeout: Duration,
+      enableHttp2: Boolean,
+      maxConnections: Int
+  )
   case class Bind(address: String, port: Int)
 
   case class AdminEndpoint(secret: String)
