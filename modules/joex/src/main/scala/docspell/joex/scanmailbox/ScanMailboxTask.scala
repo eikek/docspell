@@ -24,6 +24,7 @@ import docspell.store.records._
 
 import _root_.io.circe.syntax._
 import emil.SearchQuery.{All, ReceivedDate}
+import emil.SearchResult.searchResultMonoid
 import emil.javamail.syntax._
 import emil.{MimeType => _, _}
 
@@ -98,7 +99,12 @@ object ScanMailboxTask {
       if (acc.noneLeft(name)) acc.pure[F]
       else
         mailer
-          .run(impl.handleFolder(theEmil.access, upload)(name))
+          .run(
+            impl.handleFolder(theEmil.access, upload)(
+              name,
+              ctx.args.scanRecursively.getOrElse(false)
+            )
+          )
           .map(_ ++ acc)
 
     Stream
@@ -155,12 +161,15 @@ object ScanMailboxTask {
       MailOp(_ => f(ctx.logger))
 
     def handleFolder[C](a: Access[F, C], upload: OUpload[F])(
-        name: String
+        name: String,
+        scanRecursively: Boolean
     ): MailOp[F, C, ScanResult] =
       for {
         _ <- Kleisli.liftF(ctx.logger.info(s"Processing folder $name"))
         folder <- requireFolder(a)(name)
-        search <- searchMails(a)(folder)
+        search <-
+          if (scanRecursively) searchMailsRecursively(a)(folder)
+          else searchMails(a)(folder)
         items = search.mails.map(MailHeaderItem(_))
         headers <- Kleisli.liftF(
           filterSubjects(items).flatMap(filterMessageIds)
@@ -174,6 +183,15 @@ object ScanMailboxTask {
         a.findFolder(None, name)
           .map(_.toRight(new Exception(s"Folder '$name' not found")))
           .mapF(_.rethrow)
+
+    def searchMailsRecursively[C](
+        a: Access[F, C]
+    )(folder: MailFolder): MailOp[F, C, SearchResult[MailHeader]] =
+      for {
+        subFolders <- a.listFoldersRecursive(Some(folder))
+        foldersToSearch = Vector(folder) ++ subFolders
+        search <- foldersToSearch.traverse(searchMails(a))
+      } yield searchResultMonoid.combineAll(search)
 
     def searchMails[C](
         a: Access[F, C]

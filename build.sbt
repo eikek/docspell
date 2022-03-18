@@ -364,7 +364,8 @@ val files = project
       val files = (base ** (_.isFile)).pair(sbt.io.Path.relativeTo(base))
       val lines = files.toList.map(_._2).map { s =>
         val ident = s.replaceAll("[^a-zA-Z0-9_]+", "_")
-        ident -> s"""val $ident = createUrl("$s")"""
+        val sanitized = s.replace('\\', '/')
+        ident -> s"""val $ident = createUrl("$sanitized")"""
       }
       val content = s"""package docspell.files
 
@@ -540,7 +541,12 @@ val schedulerImpl = project
   .settings(
     name := "docspell-scheduler-impl"
   )
-  .dependsOn(store, schedulerApi, notificationApi, pubsubApi)
+  .dependsOn(
+    store % "compile->compile;test->test",
+    schedulerApi,
+    notificationApi,
+    pubsubApi
+  )
 
 val extract = project
   .in(file("modules/extract"))

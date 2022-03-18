@@ -11,7 +11,6 @@ import cats.implicits._
 
 import docspell.common._
 import docspell.store.Store
-import docspell.store.queries.QJob
 import docspell.store.records.RJob
 
 trait JobQueue[F[_]] {

@@ -3675,6 +3675,99 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/itemlink/{itemId}:
+    get:
+      operationId: "sec-itemlink-get"
+      tags: [ Item ]
+      summary: Get related items
+      description: |
+        Returns a list of related items for the given one.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/itemId"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemLightGroup"
+
+  /sec/itemlink/{itemId}/{id}:
+    delete:
+      operationId: "sec-itemlink-delete"
+      tags: [Item]
+      summary: Delete an item from the list of related items
+      description: |
+        Deletes the item `id` from the list of related items on
+        `itemId`.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/itemId"
+        - $ref: "#/components/parameters/id"          
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/itemlink/addAll:
+    post:
+      operationId: "sec-itemlink-appendall-post"
+      tags: [ Item ]
+      summary: Add more items as related
+      description: |
+        Add one or more items to anothers list of related items.
+        Duplicates are ignored.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemLinkData"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/itemlink/removeAll:
+    post:
+      operationId: "sec-itemlink-removeall-post"
+      tags: [ Item ]
+      summary: Remove items from the list of related items
+      description: |
+        Remove all given items from the list of related items
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemLinkData"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
 
   /sec/items/merge:
     post:
@@ -5486,6 +5579,22 @@ paths:
 
 components:
   schemas:
+    ItemLinkData:
+      description: |
+        Data for changing the list of related items.
+      required:
+        - item
+        - related
+      properties:
+        item:
+          type: string
+          format: ident
+        related:
+          type: array
+          items:
+            type: string
+            format: ident
+
     FileIntegrityCheckRequest:
       description: |
         Data for running a file integrity check
@@ -6407,6 +6516,7 @@ components:
       required:
         - id
         - enabled
+        - scanRecursively
         - imapConnection
         - schedule
         - folders
@@ -6426,6 +6536,10 @@ components:
           type: array
           items:
             type: string
+        scanRecursively:
+          type: boolean
+          description: |
+            Scan folders recursively for new mails.
         schedule:
           type: string
           format: calevent

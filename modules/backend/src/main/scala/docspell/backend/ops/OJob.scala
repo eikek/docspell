@@ -16,7 +16,7 @@ import docspell.pubsub.api.PubSubT
 import docspell.scheduler.msg.JobDone
 import docspell.store.Store
 import docspell.store.UpdateResult
-import docspell.store.queries.QJob
+import docspell.store.queries.QJobQueue
 import docspell.store.records.{RJob, RJobLog}
 
 trait OJob[F[_]] {
@@ -64,7 +64,7 @@ object OJob {
       def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState] =
         store
           .transact(
-            QJob.queueStateSnapshot(collective, maxResults.toLong)
+            QJobQueue.queueStateSnapshot(collective, maxResults.toLong)
           )
           .map(t => JobDetail(t._1, t._2))
           .compile

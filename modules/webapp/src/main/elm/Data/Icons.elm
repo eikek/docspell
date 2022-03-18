@@ -47,6 +47,7 @@ module Data.Icons exposing
     , folderIcon
     , gotifyIcon
     , itemDatesIcon
+    , linkItems
     , matrixIcon
     , metadata
     , metadataIcon
@@ -148,6 +149,11 @@ trashIcon classes =
 share : String
 share =
     "fa fa-share-alt"
+
+
+linkItems : String
+linkItems =
+    "fa fa-link"
 
 
 shareIcon : String -> Html msg

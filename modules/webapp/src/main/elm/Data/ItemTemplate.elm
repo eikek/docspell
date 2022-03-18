@@ -13,6 +13,7 @@ module Data.ItemTemplate exposing
     , concat
     , concerning
     , corrOrg
+    , corrOrgOrPerson
     , corrPerson
     , correspondent
     , dateLong
@@ -227,6 +228,11 @@ corrPerson =
 correspondent : ItemTemplate
 correspondent =
     combine ", " corrOrg corrPerson
+
+
+corrOrgOrPerson : ItemTemplate
+corrOrgOrPerson =
+    firstNonEmpty [ corrOrg, corrPerson ]
 
 
 concPerson : ItemTemplate

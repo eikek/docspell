@@ -14,12 +14,13 @@ import fs2.Stream
 import docspell.common.{Ident, LogLevel}
 import docspell.logging
 import docspell.logging.{Level, Logger}
-import docspell.scheduler.LogEvent
 
 object QueueLogger {
 
   def create[F[_]: Sync](
       jobId: Ident,
+      taskName: Ident,
+      group: Ident,
       jobInfo: String,
       q: Queue[F, LogEvent]
   ): Logger[F] =
@@ -27,7 +28,14 @@ object QueueLogger {
 
       def log(logEvent: logging.LogEvent) =
         LogEvent
-          .create[F](jobId, jobInfo, level2Level(logEvent.level), logEvent.msg())
+          .create[F](
+            jobId,
+            taskName,
+            group,
+            jobInfo,
+            level2Level(logEvent.level),
+            logEvent.msg()
+          )
           .flatMap { ev =>
             val event =
               logEvent.findErrors.headOption
@@ -42,13 +50,15 @@ object QueueLogger {
 
   def apply[F[_]: Async](
       jobId: Ident,
+      taskName: Ident,
+      group: Ident,
       jobInfo: String,
       bufferSize: Int,
       sink: LogSink[F]
   ): F[Logger[F]] =
     for {
       q <- Queue.circularBuffer[F, LogEvent](bufferSize)
-      log = create(jobId, jobInfo, q)
+      log = create(jobId, taskName, group, jobInfo, q)
       _ <- Async[F].start(
         Stream.fromQueueUnterminated(q).through(sink.receive).compile.drain
       )

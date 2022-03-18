@@ -59,7 +59,14 @@ object ContextImpl {
     val log = docspell.logging.getLogger[F]
     for {
       _ <- log.trace("Creating logger for task run")
-      logger <- QueueLogger(job.id, job.info, config.logBufferSize, logSink)
+      logger <- QueueLogger(
+        job.id,
+        job.task,
+        job.group,
+        job.info,
+        config.logBufferSize,
+        logSink
+      )
       _ <- log.trace("Logger created, instantiating context")
       ctx = create[F, A](job.id, arg, config, logger, store)
     } yield ctx

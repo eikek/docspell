@@ -188,7 +188,7 @@ trait Conversions {
       ItemLightGroup(g._1, g._2.map(mkItemLight).toList)
 
     val gs =
-      groups.map(mkGroup _).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
+      groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
     ItemLightList(gs)
   }
 
@@ -199,7 +199,7 @@ trait Conversions {
       ItemLightGroup(g._1, g._2.map(mkItemLightWithTags).toList)
 
     val gs =
-      groups.map(mkGroup _).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
+      groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
     ItemLightList(gs)
   }
 
@@ -210,7 +210,7 @@ trait Conversions {
       ItemLightGroup(g._1, g._2.map(mkItemLightWithTags).toList)
 
     val gs =
-      groups.map(mkGroup _).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
+      groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
     ItemLightList(gs)
   }
 

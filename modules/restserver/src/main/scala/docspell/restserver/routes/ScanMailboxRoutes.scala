@@ -115,6 +115,7 @@ object ScanMailboxRoutes {
         ScanMailboxArgs(
           user,
           settings.imapConnection,
+          Option(settings.scanRecursively),
           settings.folders,
           settings.receivedSinceHours.map(_.toLong).map(Duration.hours),
           settings.targetFolder,
@@ -150,6 +151,7 @@ object ScanMailboxRoutes {
       task.summary,
       conn.getOrElse(Ident.unsafe("")),
       task.args.folders,
+      task.args.scanRecursively.getOrElse(false),
       task.timer,
       task.args.receivedSince.map(_.hours.toInt),
       task.args.targetFolder,

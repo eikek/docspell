@@ -23,6 +23,8 @@ case class ScanMailboxArgs(
     account: AccountId,
     // the configured imap connection
     imapConnection: Ident,
+    // scan folders recursively
+    scanRecursively: Option[Boolean],
     // what folders to search
     folders: List[String],
     // only select mails received since then
