@@ -21,6 +21,11 @@ let
       address = "localhost";
       port = 7880;
     };
+    server-options = {
+      enable-http-2 = false;
+      max-connections = 1024;
+      response-timeout = "45s";
+    };
     logging = {
       minimum-level = "Info";
       format = "Fancy";
@@ -212,6 +217,30 @@ in {
         });
         default = defaults.bind;
         description = "Address and port bind the rest server.";
+      };
+
+      server-options = mkOption {
+        type = types.submodule({
+          options = {
+            enable-http-2 = mkOption {
+              type = types.bool;
+              default = defaults.server-options.enable-http-2;
+              description = "Whether to enable http2";
+            };
+            max-connections = mkOption {
+              type = types.int;
+              default = defaults.server-options.max-connections;
+              description = "Maximum number of client connections";
+            };
+            response-timeout = mkOption {
+              type = types.str;
+              default = defaults.server-options.response-timeout;
+              description = "Timeout when waiting for the response.";
+            };
+          };
+        });
+        default = defaults.server-options;
+        description = "Tuning the http server";
       };
 
       logging = mkOption {
