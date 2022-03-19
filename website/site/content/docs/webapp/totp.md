@@ -17,10 +17,7 @@ For anything more, consider a dedicated account management tool and
 
 A user can enable a TOTP as a second factor in their user settings. It
 is required to have some external device to hold the shared secret. A
-popular way is using your phone. Some Android apps are for example
-[Aegis](https://f-droid.org/en/packages/com.beemdevelopment.aegis/) or
-[andOTP](https://f-droid.org/en/packages/org.shadowice.flocke.andotp/);
-and there are others as well.
+popular way is using your phone.
 
 In user settings, go to _Two Factor Authentication_ and click on
 _Activate two-factor authentication_. This then shows you a QR code:
