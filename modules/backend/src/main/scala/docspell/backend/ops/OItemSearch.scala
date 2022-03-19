@@ -134,8 +134,7 @@ object OItemSearch {
 
       def findItem(id: Ident, collective: Ident): F[Option[ItemData]] =
         store
-          .transact(QItem.findItem(id))
-          .map(opt => opt.flatMap(_.filterCollective(collective)))
+          .transact(QItem.findItem(id, collective))
 
       def findItems(maxNoteLen: Int)(q: Query, batch: Batch): F[Vector[ListItem]] =
         Timestamp

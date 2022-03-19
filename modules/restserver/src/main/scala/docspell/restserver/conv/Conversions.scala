@@ -139,7 +139,8 @@ trait Conversions {
       data.sources.map((mkAttachmentSource _).tupled).toList,
       data.archives.map((mkAttachmentArchive _).tupled).toList,
       data.tags.map(mkTag).toList,
-      data.customFields.map(mkItemFieldValue).toList
+      data.customFields.map(mkItemFieldValue).toList,
+      data.relatedItems.map(mkItemLight).toList
     )
 
   def mkItemFieldValue(v: OItemSearch.ItemFieldValue): ItemFieldValue =
@@ -239,6 +240,7 @@ trait Conversions {
       Nil, // attachments
       Nil, // tags
       Nil, // customfields
+      Nil, // related items
       i.notes,
       Nil // highlight
     )
@@ -254,7 +256,8 @@ trait Conversions {
       .copy(
         tags = i.tags.map(mkTag),
         attachments = i.attachments.map(mkAttachmentLight),
-        customfields = i.customfields.map(mkItemFieldValue)
+        customfields = i.customfields.map(mkItemFieldValue),
+        relatedItems = i.relatedItems
       )
 
   private def mkAttachmentLight(qa: QAttachmentLight): AttachmentLight =

@@ -15,7 +15,8 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common.{FileKey, IdRef, _}
-import docspell.query.ItemQuery
+import docspell.query.ItemQuery.Expr.ValidItemStates
+import docspell.query.{ItemQuery, ItemQueryDsl}
 import docspell.store.Store
 import docspell.store.qb.DSL._
 import docspell.store.qb._
@@ -47,7 +48,7 @@ object QItem {
       .unique
       .map(_ + items.size)
 
-  def findItem(id: Ident): ConnectionIO[Option[ItemData]] = {
+  def findItem(id: Ident, collective: Ident): ConnectionIO[Option[ItemData]] = {
     val ref = RItem.as("ref")
     val cq =
       Select(
@@ -85,6 +86,7 @@ object QItem {
     val archives = RAttachmentArchive.findByItemWithMeta(id)
     val tags = RTag.findByItem(id)
     val customfields = findCustomFieldValuesForItem(id)
+    val related = findRelatedItems(id, collective)
 
     for {
       data <- q
@@ -93,10 +95,28 @@ object QItem {
       arch <- archives
       ts <- tags
       cfs <- customfields
+      rel <- related
     } yield data.map(d =>
-      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, d._7, ts, att, srcs, arch, cfs)
+      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, d._7, ts, att, srcs, arch, cfs, rel)
     )
   }
+
+  def findRelatedItems(id: Ident, collective: Ident): ConnectionIO[Vector[ListItem]] =
+    RItemLink
+      .findLinked(collective, id)
+      .map(v => Nel.fromList(v.toList))
+      .flatMap {
+        case None =>
+          Vector.empty[ListItem].pure[ConnectionIO]
+        case Some(nel) =>
+          val expr =
+            ItemQuery.Expr.and(ValidItemStates, ItemQueryDsl.Q.itemIdsIn(nel.map(_.id)))
+          val account = AccountId(collective, Ident.unsafe(""))
+
+          findItemsBase(Query.Fix(account, Some(expr), None), LocalDate.EPOCH, 0).build
+            .query[ListItem]
+            .to[Vector]
+      }
 
   def findCustomFieldValuesForItem(
       itemId: Ident
@@ -440,11 +460,13 @@ object QItem {
       attachs <- Stream.eval(findAttachmentLight(item.id))
       ftags = tags.flatten.filter(t => t.collective == collective)
       cfields <- Stream.eval(findCustomFieldValuesForItem(item.id))
+      related <- Stream.eval(RItemLink.findLinked(collective, item.id))
     } yield ListItemWithTags(
       item,
       RTag.sort(ftags.toList),
       attachs.sortBy(_.position),
-      cfields.toList
+      cfields.toList,
+      related.toList
     )
   }
 

@@ -5,7 +5,7 @@
 -}
 
 
-module Comp.ItemLinkForm exposing (Model, Msg, emptyModel, init, update, view)
+module Comp.ItemLinkForm exposing (Model, Msg, emptyModel, init, initWith, update, view)
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
@@ -65,6 +65,20 @@ type Msg
     | UpdateRelatedResp (Result Http.Error BasicResult)
     | DeleteRelatedItem ItemLight
     | ToggleEditMode
+
+
+initWith : String -> List ItemLight -> Model
+initWith target related =
+    let
+        cfg =
+            Comp.ItemSearchInput.defaultConfig
+    in
+    { itemSearchModel = Comp.ItemSearchInput.init cfg
+    , relatedItems = related
+    , targetItemId = target
+    , editMode = AddRelated
+    , formState = FormOk
+    }
 
 
 init : Flags -> String -> ( Model, Cmd Msg )

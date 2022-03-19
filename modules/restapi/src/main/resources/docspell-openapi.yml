@@ -2533,6 +2533,8 @@ paths:
             schema:
               $ref: "#/components/schemas/FileIntegrityCheckRequest"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -7194,6 +7196,7 @@ components:
         - archives
         - tags
         - customfields
+        - relatedItems
       properties:
         id:
           type: string
@@ -7257,6 +7260,13 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ItemFieldValue"
+        relatedItems:
+          description: |
+            All related items to this item. The list contains items
+            without more details being resolved.
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemLight"
     Attachment:
       description: |
         Information about an attachment to an item.
@@ -8001,6 +8011,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ItemFieldValue"
+        relatedItems:
+          type: array
+          items:
+            type: string
+            format: ident
         notes:
           description: |
             Some prefix of the item notes.

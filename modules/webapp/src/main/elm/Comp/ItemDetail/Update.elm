@@ -97,12 +97,12 @@ update inav env msg model =
                 ( cm, cc ) =
                     Comp.CustomFieldMultiInput.init env.flags
 
-                ( ilm, ilc ) =
+                ilm =
                     if model.item.id == "" then
-                        ( model.itemLinkModel, Cmd.none )
+                        model.itemLinkModel
 
                     else
-                        Comp.ItemLinkForm.init env.flags model.item.id
+                        Comp.ItemLinkForm.initWith model.item.id model.item.relatedItems
             in
             resultModelCmd
                 ( { model
@@ -120,7 +120,6 @@ update inav env msg model =
                     , Cmd.map DueDatePickerMsg dpc
                     , Cmd.map ItemMailMsg ic
                     , Cmd.map CustomFieldMsg cc
-                    , Cmd.map ItemLinkFormMsg ilc
                     , Api.getSentMails env.flags model.item.id SentMailsResp
                     ]
                 )
