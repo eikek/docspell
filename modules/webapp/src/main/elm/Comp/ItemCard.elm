@@ -34,7 +34,6 @@ import Html.Events exposing (onClick)
 import Markdown
 import Messages.Comp.ItemCard exposing (Texts)
 import Page exposing (Page(..))
-import Set exposing (Set)
 import Styles as S
 import Util.CustomField
 import Util.ItemDragDrop as DD
@@ -336,7 +335,7 @@ viewRow texts cfg settings flags model item =
                         , IT.render subtitleTemplate (templateCtx texts) item |> text
                         ]
                     , div [ class "opacity-90" ]
-                        [ mainTagsAndFields2 settings "flex truncate overflow-hidden flex-nowrap text-xs justify-start hidden md:flex" item
+                        [ mainTagsAndFields2 texts settings "flex truncate overflow-hidden flex-nowrap text-xs justify-start hidden md:flex" item
                         ]
                     ]
                 ]
@@ -449,7 +448,7 @@ viewRow texts cfg settings flags model item =
                                 (IT.render IT.source (templateCtx texts) item)
                             ]
                         ]
-                    , mainTagsAndFields2 settings "justify-start text-sm" item
+                    , mainTagsAndFields2 texts settings "justify-start text-sm" item
                     , notesContent2 settings item
                     ]
                 ]
@@ -718,13 +717,13 @@ mainContent2 texts _ cardColor isCreated isDeleted settings _ item =
             , IT.render subtitlePattern (templateCtx texts) item |> text
             ]
         , div [ class "" ]
-            [ mainTagsAndFields2 settings "justify-end text-xs" item
+            [ mainTagsAndFields2 texts settings "justify-end text-xs" item
             ]
         ]
 
 
-mainTagsAndFields2 : UiSettings -> String -> ItemLight -> Html Msg
-mainTagsAndFields2 settings extraCss item =
+mainTagsAndFields2 : Texts -> UiSettings -> String -> ItemLight -> Html Msg
+mainTagsAndFields2 texts settings extraCss item =
     let
         fieldHidden f =
             Data.UiSettings.fieldHidden settings f
@@ -765,6 +764,22 @@ mainTagsAndFields2 settings extraCss item =
 
             else
                 List.map showTag item.tags
+
+        renderRelated =
+            if List.isEmpty item.relatedItems then
+                []
+
+            else
+                [ a
+                    [ class "label ml-1 mt-1 font-semibold hover:opacity-75 py-1"
+                    , class "border-gray-500 dark:border-slate-300"
+                    , href "#"
+                    , onClick (SetLinkTarget <| Comp.LinkTarget.LinkRelatedItems (item.id :: item.relatedItems))
+                    , title texts.showRelatedItems
+                    ]
+                    [ i [ class "fa fa-link" ] []
+                    ]
+                ]
     in
     div
         [ classList
@@ -773,7 +788,7 @@ mainTagsAndFields2 settings extraCss item =
             ]
         , class extraCss
         ]
-        (renderFields ++ renderTags)
+        (renderFields ++ renderTags ++ renderRelated)
 
 
 previewImage2 : Texts -> ViewConfig -> UiSettings -> Model -> ItemLight -> Html Msg

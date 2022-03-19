@@ -38,6 +38,7 @@ toItemLight detail =
     , tags = detail.tags
     , customfields = detail.customfields
     , notes = detail.notes
+    , relatedItems = List.map .id detail.relatedItems
     , highlighting = []
     }
 

@@ -104,6 +104,7 @@ type alias Model =
     , sourceModel : Maybe String
     , allBookmarks : Comp.BookmarkChooser.Model
     , selectedBookmarks : Comp.BookmarkChooser.Selection
+    , selectedItems : List String
     , includeSelection : Bool
     , openTabs : Set String
     , searchMode : SearchMode
@@ -152,6 +153,7 @@ init flags =
     , sourceModel = Nothing
     , allBookmarks = Comp.BookmarkChooser.init Data.Bookmarks.empty
     , selectedBookmarks = Comp.BookmarkChooser.emptySelection
+    , selectedItems = []
     , includeSelection = False
     , openTabs = Set.fromList [ "Tags", "Inbox" ]
     , searchMode = Data.SearchMode.Normal
@@ -311,6 +313,7 @@ getItemQuery selectedItems model =
         , textSearch.fullText
             |> Maybe.map Q.Contents
         , whenNotEmpty bookmarks Q.And
+        , whenNotEmpty model.selectedItems Q.ItemIdIn
         ]
 
 
@@ -356,6 +359,7 @@ resetModel model =
         , customValues = Data.CustomFieldChange.emptyCollect
         , sourceModel = Nothing
         , selectedBookmarks = Comp.BookmarkChooser.emptySelection
+        , selectedItems = []
         , includeSelection = False
         , searchMode = Data.SearchMode.Normal
     }
@@ -397,6 +401,7 @@ type Msg
     | SetFolder IdName
     | SetTag String
     | SetBookmark String
+    | SetSelectedItems (List String)
     | SetCustomField ItemFieldValue
     | CustomFieldMsg Comp.CustomFieldMultiInput.Msg
     | SetSource String
@@ -458,6 +463,9 @@ linkTargetMsg linkTarget =
 
         Comp.LinkTarget.LinkBookmark id ->
             Just <| SetBookmark id
+
+        Comp.LinkTarget.LinkRelatedItems ids ->
+            Just <| SetSelectedItems ids
 
 
 type alias NextState =
@@ -607,6 +615,19 @@ updateDrop ddm flags settings msg model =
             , cmd = Cmd.none
             , sub = Sub.none
             , stateChange = sel /= model.selectedBookmarks
+            , dragDrop = DD.DragDropData ddm Nothing
+            , selectionChange = Data.ItemIds.noChange
+            }
+
+        SetSelectedItems ids ->
+            let
+                nextModel =
+                    resetModel model
+            in
+            { model = { nextModel | selectedItems = ids }
+            , cmd = Cmd.none
+            , sub = Sub.none
+            , stateChange = ids /= model.selectedItems
             , dragDrop = DD.DragDropData ddm Nothing
             , selectionChange = Data.ItemIds.noChange
             }
