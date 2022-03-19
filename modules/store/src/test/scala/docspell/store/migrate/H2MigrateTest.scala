@@ -18,8 +18,15 @@ class H2MigrateTest extends FunSuite with TestLoggingConfig {
 
   test("h2 empty schema migration") {
     val jdbc = StoreFixture.memoryDB("h2test")
-    val result = FlywayMigrate.run[IO](jdbc).unsafeRunSync()
-    assert(result.migrationsExecuted > 0)
-  }
+    val ds = StoreFixture.dataSource(jdbc)
+    val result =
+      ds.flatMap(StoreFixture.makeXA).use { xa =>
+        FlywayMigrate[IO](jdbc, xa).run
+      }
 
+    assert(result.unsafeRunSync().migrationsExecuted > 0)
+
+    // a second time to apply fixup migrations
+    assert(result.unsafeRunSync().migrationsExecuted == 0)
+  }
 }

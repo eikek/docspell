@@ -17,7 +17,9 @@ import docspell.store.migrate.FlywayMigrate
 
 import doobie._
 import munit._
-import org.h2.jdbcx.JdbcConnectionPool
+import org.h2.jdbcx.{JdbcConnectionPool, JdbcDataSource}
+import org.mariadb.jdbc.MariaDbDataSource
+import org.postgresql.ds.PGConnectionPoolDataSource
 
 trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
 
@@ -26,7 +28,7 @@ trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
     for {
       ds <- StoreFixture.dataSource(cfg)
       xa <- StoreFixture.makeXA(ds)
-      _ <- Resource.eval(FlywayMigrate.run[IO](cfg))
+      _ <- Resource.eval(FlywayMigrate[IO](cfg, xa).run)
     } yield xa
   }
 
@@ -52,7 +54,30 @@ object StoreFixture {
 
   def dataSource(jdbc: JdbcConfig): Resource[IO, JdbcConnectionPool] = {
     def jdbcConnPool =
-      JdbcConnectionPool.create(jdbc.url.asString, jdbc.user, jdbc.password)
+      jdbc.dbmsName match {
+        case Some("mariadb") =>
+          val ds = new MariaDbDataSource()
+          ds.setUrl(jdbc.url.asString)
+          ds.setUser(jdbc.user)
+          ds.setPassword(jdbc.password)
+          JdbcConnectionPool.create(ds)
+
+        case Some("postgresql") =>
+          val ds = new PGConnectionPoolDataSource()
+          ds.setURL(jdbc.url.asString)
+          ds.setUser(jdbc.user)
+          ds.setPassword(jdbc.password)
+          JdbcConnectionPool.create(ds)
+
+        case Some("h2") =>
+          val ds = new JdbcDataSource()
+          ds.setURL(jdbc.url.asString)
+          ds.setUser(jdbc.user)
+          ds.setPassword(jdbc.password)
+          JdbcConnectionPool.create(ds)
+
+        case n => sys.error(s"Unknown db name: $n")
+      }
 
     Resource.make(IO(jdbcConnPool))(cp => IO(cp.dispose()))
   }
