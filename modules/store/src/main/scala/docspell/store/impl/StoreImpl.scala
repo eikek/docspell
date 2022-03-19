@@ -37,7 +37,7 @@ final class StoreImpl[F[_]: Async](
     FunctionK.lift(transact)
 
   def migrate: F[Int] =
-    FlywayMigrate.run[F](jdbc).map(_.migrationsExecuted)
+    FlywayMigrate[F](jdbc, xa).run.map(_.migrationsExecuted)
 
   def transact[A](prg: ConnectionIO[A]): F[A] =
     prg.transact(xa)
