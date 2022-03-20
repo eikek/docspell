@@ -131,6 +131,22 @@ object JobFactory extends MailAddressCodec {
       Some(ReProcessItemArgs.taskName / args.itemId)
     )
 
+  def multiUpload[F[_]: Sync](
+      args: ProcessItemArgs,
+      account: AccountId,
+      prio: Priority,
+      tracker: Option[Ident]
+  ): F[Job[ProcessItemArgs]] =
+    Job.createNew(
+      ProcessItemArgs.multiUploadTaskName,
+      account.collective,
+      args,
+      args.makeSubject,
+      account.user,
+      prio,
+      tracker
+    )
+
   def processItem[F[_]: Sync](
       args: ProcessItemArgs,
       account: AccountId,
@@ -148,11 +164,11 @@ object JobFactory extends MailAddressCodec {
     )
 
   def processItems[F[_]: Sync](
-      args: Vector[ProcessItemArgs],
+      args: List[ProcessItemArgs],
       account: AccountId,
       prio: Priority,
       tracker: Option[Ident]
-  ): F[Vector[Job[ProcessItemArgs]]] = {
+  ): F[List[Job[ProcessItemArgs]]] = {
     def create(arg: ProcessItemArgs): F[Job[ProcessItemArgs]] =
       Job.createNew(
         ProcessItemArgs.taskName,

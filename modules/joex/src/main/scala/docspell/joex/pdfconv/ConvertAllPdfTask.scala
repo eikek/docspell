@@ -10,7 +10,6 @@ import cats.effect._
 import cats.implicits._
 import fs2.{Chunk, Stream}
 
-import docspell.backend.ops.OJoex
 import docspell.common._
 import docspell.scheduler._
 import docspell.store.Store
@@ -25,7 +24,6 @@ object ConvertAllPdfTask {
 
   def apply[F[_]: Sync](
       jobStore: JobStore[F],
-      joex: OJoex[F],
       store: Store[F]
   ): Task[F, Args, Unit] =
     Task { ctx =>
@@ -33,7 +31,6 @@ object ConvertAllPdfTask {
         _ <- ctx.logger.info("Converting pdfs using ocrmypdf")
         n <- submitConversionJobs(ctx, store, jobStore)
         _ <- ctx.logger.info(s"Submitted $n file conversion jobs")
-        _ <- joex.notifyAllNodes
       } yield ()
     }
 

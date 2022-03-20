@@ -388,7 +388,7 @@ object ItemRoutes {
         for {
           data <- req.as[IdList]
           _ <- logger.debug(s"Re-process item ${id.id}")
-          res <- backend.item.reprocess(id, data.ids, user.account, true)
+          res <- backend.item.reprocess(id, data.ids, user.account)
           resp <- Ok(Conversions.basicResult(res, "Re-process task submitted."))
         } yield resp
 

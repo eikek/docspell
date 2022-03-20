@@ -23,7 +23,6 @@ trait OUpload[F[_]] {
   def submit(
       data: OUpload.UploadData[F],
       account: AccountId,
-      notifyJoex: Boolean,
       itemId: Option[Ident]
   ): F[OUpload.UploadResult]
 
@@ -34,21 +33,19 @@ trait OUpload[F[_]] {
   def submit(
       data: OUpload.UploadData[F],
       sourceId: Ident,
-      notifyJoex: Boolean,
       itemId: Option[Ident]
   ): F[OUpload.UploadResult]
 
   final def submitEither(
       data: OUpload.UploadData[F],
       accOrSrc: Either[Ident, AccountId],
-      notifyJoex: Boolean,
       itemId: Option[Ident]
   ): F[OUpload.UploadResult] =
     accOrSrc match {
       case Right(acc) =>
-        submit(data, acc, notifyJoex, itemId)
+        submit(data, acc, itemId)
       case Left(srcId) =>
-        submit(data, srcId, notifyJoex, itemId)
+        submit(data, srcId, itemId)
     }
 }
 
@@ -68,7 +65,8 @@ object OUpload {
       fileFilter: Glob,
       tags: List[String],
       language: Option[Language],
-      attachmentsOnly: Option[Boolean]
+      attachmentsOnly: Option[Boolean],
+      flattenArchives: Option[Boolean]
   )
 
   case class UploadData[F[_]](
@@ -108,15 +106,13 @@ object OUpload {
 
   def apply[F[_]: Sync](
       store: Store[F],
-      jobStore: JobStore[F],
-      joex: OJoex[F]
+      jobStore: JobStore[F]
   ): Resource[F, OUpload[F]] =
     Resource.pure[F, OUpload[F]](new OUpload[F] {
       private[this] val logger = docspell.logging.getLogger[F]
       def submit(
           data: OUpload.UploadData[F],
           account: AccountId,
-          notifyJoex: Boolean,
           itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
         (for {
@@ -146,12 +142,10 @@ object OUpload {
             false,
             data.meta.attachmentsOnly
           )
-          args =
-            if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
-            else Vector(ProcessItemArgs(meta, files.toList))
-          jobs <- right(makeJobs(args, account, data.priority, data.tracker))
+          args = ProcessItemArgs(meta, files.toList)
+          jobs <- right(makeJobs(data, args, account))
           _ <- right(logger.debug(s"Storing jobs: $jobs"))
-          res <- right(submitJobs(notifyJoex)(jobs))
+          res <- right(submitJobs(jobs.map(_.encode)))
           _ <- right(
             store.transact(
               RSource.incrementCounter(data.meta.sourceAbbrev, account.collective)
@@ -162,7 +156,6 @@ object OUpload {
       def submit(
           data: OUpload.UploadData[F],
           sourceId: Ident,
-          notifyJoex: Boolean,
           itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
         (for {
@@ -182,16 +175,13 @@ object OUpload {
             priority = src.source.priority
           )
           accId = AccountId(src.source.cid, src.source.sid)
-          result <- OptionT.liftF(submit(updata, accId, notifyJoex, itemId))
+          result <- OptionT.liftF(submit(updata, accId, itemId))
         } yield result).getOrElse(UploadResult.noSource)
 
-      private def submitJobs(
-          notifyJoex: Boolean
-      )(jobs: Vector[Job[String]]): F[OUpload.UploadResult] =
+      private def submitJobs(jobs: List[Job[String]]): F[OUpload.UploadResult] =
         for {
           _ <- logger.debug(s"Storing jobs: $jobs")
           _ <- jobStore.insertAll(jobs)
-          _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield UploadResult.Success
 
       /** Saves the file into the database. */
@@ -240,13 +230,24 @@ object OUpload {
         else right(().pure[F])
 
       private def makeJobs(
-          args: Vector[ProcessItemArgs],
-          account: AccountId,
-          prio: Priority,
-          tracker: Option[Ident]
-      ): F[Vector[Job[String]]] =
-        JobFactory
-          .processItems[F](args, account, prio, tracker)
-          .map(_.map(_.encode))
+          data: UploadData[F],
+          args: ProcessItemArgs,
+          account: AccountId
+      ): F[List[Job[ProcessItemArgs]]] =
+        if (data.meta.flattenArchives.getOrElse(false))
+          JobFactory
+            .multiUpload(args, account, data.priority, data.tracker)
+            .map(List(_))
+        else if (data.multiple)
+          JobFactory.processItems(
+            args.files.map(f => args.copy(files = List(f))),
+            account,
+            data.priority,
+            data.tracker
+          )
+        else
+          JobFactory
+            .processItem[F](args, account, data.priority, data.tracker)
+            .map(List(_))
     })
 }

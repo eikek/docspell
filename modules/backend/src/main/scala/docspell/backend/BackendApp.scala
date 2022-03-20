@@ -78,18 +78,17 @@ object BackendApp {
       tagImpl <- OTag[F](store)
       equipImpl <- OEquipment[F](store)
       orgImpl <- OOrganization(store)
-      uploadImpl <- OUpload(store, schedulerModule.jobs, joexImpl)
+      uploadImpl <- OUpload(store, schedulerModule.jobs)
       nodeImpl <- ONode(store)
       jobImpl <- OJob(store, joexImpl, pubSubT)
       createIndex <- CreateIndex.resource(ftsClient, store)
-      itemImpl <- OItem(store, ftsClient, createIndex, schedulerModule.jobs, joexImpl)
+      itemImpl <- OItem(store, ftsClient, createIndex, schedulerModule.jobs)
       itemSearchImpl <- OItemSearch(store)
       fulltextImpl <- OFulltext(
         itemSearchImpl,
         ftsClient,
         store,
-        schedulerModule.jobs,
-        joexImpl
+        schedulerModule.jobs
       )
       mailImpl <- OMail(store, javaEmil)
       userTaskImpl <- OUserTask(
@@ -106,7 +105,7 @@ object BackendApp {
       )
       notifyImpl <- ONotification(store, notificationMod)
       bookmarksImpl <- OQueryBookmarks(store)
-      fileRepoImpl <- OFileRepository(store, schedulerModule.jobs, joexImpl)
+      fileRepoImpl <- OFileRepository(store, schedulerModule.jobs)
       itemLinkImpl <- Resource.pure(OItemLink(store, itemSearchImpl))
     } yield new BackendApp[F] {
       val pubSub = pubSubT

@@ -40,6 +40,8 @@ object ProcessItemArgs {
 
   val taskName = Ident.unsafe("process-item")
 
+  val multiUploadTaskName = Ident.unsafe("multi-upload-process")
+
   case class ProcessMeta(
       collective: Ident,
       itemId: Option[Ident],

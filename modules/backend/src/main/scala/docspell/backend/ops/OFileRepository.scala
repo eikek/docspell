@@ -21,15 +21,9 @@ import scodec.bits.ByteVector
 trait OFileRepository[F[_]] {
 
   /** Inserts the job or return None if such a job already is running. */
-  def cloneFileRepository(
-      args: FileCopyTaskArgs,
-      notifyJoex: Boolean
-  ): F[Option[Job[FileCopyTaskArgs]]]
+  def cloneFileRepository(args: FileCopyTaskArgs): F[Option[Job[FileCopyTaskArgs]]]
 
-  def checkIntegrityAll(
-      part: FileKeyPart,
-      notifyJoex: Boolean
-  ): F[Option[Job[FileIntegrityCheckArgs]]]
+  def checkIntegrityAll(part: FileKeyPart): F[Option[Job[FileIntegrityCheckArgs]]]
 
   def checkIntegrity(key: FileKey, hash: Option[ByteVector]): F[Option[IntegrityResult]]
 }
@@ -40,30 +34,23 @@ object OFileRepository {
 
   def apply[F[_]: Async](
       store: Store[F],
-      jobStore: JobStore[F],
-      joex: OJoex[F]
+      jobStore: JobStore[F]
   ): Resource[F, OFileRepository[F]] =
     Resource.pure(new OFileRepository[F] {
       private[this] val logger = docspell.logging.getLogger[F]
 
-      def cloneFileRepository(
-          args: FileCopyTaskArgs,
-          notifyJoex: Boolean
-      ): F[Option[Job[FileCopyTaskArgs]]] =
+      def cloneFileRepository(args: FileCopyTaskArgs): F[Option[Job[FileCopyTaskArgs]]] =
         for {
           job <- JobFactory.fileCopy(args)
           flag <- jobStore.insertIfNew(job.encode)
-          _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield Option.when(flag)(job)
 
       def checkIntegrityAll(
-          part: FileKeyPart,
-          notifyJoex: Boolean
+          part: FileKeyPart
       ): F[Option[Job[FileIntegrityCheckArgs]]] =
         for {
           job <- JobFactory.integrityCheck(FileIntegrityCheckArgs(part))
           flag <- jobStore.insertIfNew(job.encode)
-          _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield Option.when(flag)(job)
 
       def checkIntegrity(

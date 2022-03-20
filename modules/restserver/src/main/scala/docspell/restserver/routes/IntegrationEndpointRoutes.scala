@@ -111,7 +111,7 @@ object IntegrationEndpointRoutes {
         cfg.backend.files.validMimeTypes
       )
       account = AccountId(coll, DocspellSystem.user)
-      result <- backend.upload.submit(updata, account, true, None)
+      result <- backend.upload.submit(updata, account, None)
       res <- Ok(basicResult(result))
     } yield res
   }

@@ -39,7 +39,7 @@ object EmptyTrashTask {
   def apply[F[_]: Async](
       itemOps: OItem[F],
       itemSearchOps: OItemSearch[F]
-  ): Task[F, Args, Unit] =
+  ): Task[F, Args, Result] =
     Task { ctx =>
       for {
         now <- Timestamp.current[F]
@@ -49,7 +49,7 @@ object EmptyTrashTask {
         )
         nDeleted <- deleteAll(ctx.args, maxDate, itemOps, itemSearchOps, ctx)
         _ <- ctx.logger.info(s"Finished deleting $nDeleted items")
-      } yield ()
+      } yield Result(nDeleted)
     }
 
   private def deleteAll[F[_]: Async](

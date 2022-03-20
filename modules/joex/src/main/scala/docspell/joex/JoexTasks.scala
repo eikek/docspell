@@ -20,6 +20,7 @@ import docspell.joex.filecopy.{FileCopyTask, FileIntegrityCheckTask}
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk.HouseKeepingTask
 import docspell.joex.learn.LearnClassifierTask
+import docspell.joex.multiupload.MultiUploadArchiveTask
 import docspell.joex.notify.{PeriodicDueItemsTask, PeriodicQueryTask}
 import docspell.joex.pagecount.{AllPageCountTask, MakePageCountTask}
 import docspell.joex.pdfconv.{ConvertAllPdfTask, PdfConvTask}
@@ -62,6 +63,13 @@ final class JoexTasks[F[_]: Async](
           ProcessItemArgs.taskName,
           ItemHandler.newItem[F](cfg, store, itemOps, fts, analyser, regexNer),
           ItemHandler.onCancel[F](store)
+        )
+      )
+      .withTask(
+        JobTask.json(
+          ProcessItemArgs.multiUploadTaskName,
+          MultiUploadArchiveTask[F](store, jobStoreModule.jobs),
+          MultiUploadArchiveTask.onCancel[F](store)
         )
       )
       .withTask(
@@ -109,7 +117,7 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           ConvertAllPdfArgs.taskName,
-          ConvertAllPdfTask[F](jobStoreModule.jobs, joex, store),
+          ConvertAllPdfTask[F](jobStoreModule.jobs, store),
           ConvertAllPdfTask.onCancel[F]
         )
       )
@@ -130,7 +138,7 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           AllPreviewsArgs.taskName,
-          AllPreviewsTask[F](jobStoreModule.jobs, joex, store),
+          AllPreviewsTask[F](jobStoreModule.jobs, store),
           AllPreviewsTask.onCancel[F]
         )
       )
@@ -144,7 +152,7 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           AllPageCountTask.taskName,
-          AllPageCountTask[F](store, jobStoreModule.jobs, joex),
+          AllPageCountTask[F](store, jobStoreModule.jobs),
           AllPageCountTask.onCancel[F]
         )
       )
@@ -212,16 +220,16 @@ object JoexTasks {
     for {
       joex <- OJoex(pubSub)
       store = jobStoreModule.store
-      upload <- OUpload(store, jobStoreModule.jobs, joex)
+      upload <- OUpload(store, jobStoreModule.jobs)
       fts <- createFtsClient(cfg)(httpClient)
       createIndex <- CreateIndex.resource(fts, store)
-      itemOps <- OItem(store, fts, createIndex, jobStoreModule.jobs, joex)
+      itemOps <- OItem(store, fts, createIndex, jobStoreModule.jobs)
       itemSearchOps <- OItemSearch(store)
       analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
       regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
       updateCheck <- UpdateCheck.resource(httpClient)
       notification <- ONotification(store, notificationModule)
-      fileRepo <- OFileRepository(store, jobStoreModule.jobs, joex)
+      fileRepo <- OFileRepository(store, jobStoreModule.jobs)
     } yield new JoexTasks[F](
       cfg,
       store,

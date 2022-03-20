@@ -327,7 +327,8 @@ object ScanMailboxTask {
           args.fileFilter.getOrElse(Glob.all),
           args.tags.getOrElse(Nil),
           args.language,
-          args.attachmentsOnly
+          args.attachmentsOnly,
+          None
         )
         data = OUpload.UploadData(
           multiple = false,
@@ -336,7 +337,7 @@ object ScanMailboxTask {
           priority = Priority.Low,
           tracker = None
         )
-        res <- upload.submit(data, ctx.args.account, false, None)
+        res <- upload.submit(data, ctx.args.account, None)
       } yield res
     }
 

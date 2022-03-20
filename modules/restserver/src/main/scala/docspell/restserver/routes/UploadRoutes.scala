@@ -96,7 +96,7 @@ object UploadRoutes {
           prio,
           cfg.backend.files.validMimeTypes
         )
-        result <- backend.upload.submitEither(updata, accOrSrc, true, itemId)
+        result <- backend.upload.submitEither(updata, accOrSrc, itemId)
         res <- Ok(basicResult(result))
       } yield res
     }

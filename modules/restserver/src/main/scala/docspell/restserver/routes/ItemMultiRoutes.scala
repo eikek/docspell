@@ -181,7 +181,7 @@ object ItemMultiRoutes extends NonEmptyListSupport with MultiIdSupport {
         for {
           json <- req.as[IdList]
           items <- requireNonEmpty(json.ids)
-          res <- backend.item.reprocessAll(items, user.account, true)
+          res <- backend.item.reprocessAll(items, user.account)
           resp <- Ok(Conversions.basicResult(res, "Re-process task(s) submitted."))
         } yield resp
 

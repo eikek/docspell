@@ -7514,6 +7514,15 @@ components:
             If `true` (the default) each file in the upload request
             results in a separate item. If it is set to `false`, then
             all files in the request are put into a single item.
+        flattenArchives:
+          type: boolean
+          default: false
+          description: |
+            This implies `multiple = true` and will (when `true`)
+            treat every ZIP file as a container of independent files
+            that will result in separate items. When this is `false`
+            then each zip file will result in one item with its
+            contents being the attachments.
         direction:
           type: string
           format: direction

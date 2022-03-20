@@ -43,6 +43,7 @@ type alias Model =
     , skipDuplicates : Bool
     , languageModel : Comp.FixedDropdown.Model Language
     , language : Maybe Language
+    , flattenArchives : Bool
     }
 
 
@@ -56,6 +57,7 @@ type Msg
     | DropzoneMsg Comp.Dropzone.Msg
     | ToggleSkipDuplicates
     | LanguageMsg (Comp.FixedDropdown.Msg Language)
+    | ToggleFlattenArchives
 
 
 init : Model
@@ -71,6 +73,7 @@ init =
     , languageModel =
         Comp.FixedDropdown.init Data.Language.all
     , language = Nothing
+    , flattenArchives = False
     }
 
 
@@ -132,10 +135,43 @@ update sourceId flags msg model =
             ( { model | incoming = not model.incoming }, Cmd.none, Sub.none )
 
         ToggleSingleItem ->
-            ( { model | singleItem = not model.singleItem }, Cmd.none, Sub.none )
+            let
+                newFlag =
+                    not model.singleItem
+            in
+            ( { model
+                | singleItem = newFlag
+                , flattenArchives =
+                    if newFlag then
+                        False
+
+                    else
+                        model.flattenArchives
+              }
+            , Cmd.none
+            , Sub.none
+            )
 
         ToggleSkipDuplicates ->
             ( { model | skipDuplicates = not model.skipDuplicates }, Cmd.none, Sub.none )
+
+        ToggleFlattenArchives ->
+            let
+                newFlag =
+                    not model.flattenArchives
+            in
+            ( { model
+                | flattenArchives = newFlag
+                , singleItem =
+                    if newFlag then
+                        False
+
+                    else
+                        model.singleItem
+              }
+            , Cmd.none
+            , Sub.none
+            )
 
         SubmitUpload ->
             let
@@ -153,6 +189,7 @@ update sourceId flags msg model =
                             else
                                 Just "outgoing"
                         , language = Maybe.map Data.Language.toIso3 model.language
+                        , flattenArchives = Just model.flattenArchives
                     }
 
                 fileids =
@@ -400,6 +437,20 @@ renderForm texts model =
                         []
                     , span [ class "ml-2" ]
                         [ text texts.allFilesOneItem
+                        ]
+                    ]
+                ]
+            , div [ class "flex flex-col mb-3" ]
+                [ label [ class "inline-flex items-center" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , checked model.flattenArchives
+                        , onCheck (\_ -> ToggleFlattenArchives)
+                        , class Styles.checkboxInput
+                        ]
+                        []
+                    , span [ class "ml-2" ]
+                        [ text texts.flattenArchives
                         ]
                     ]
                 ]
