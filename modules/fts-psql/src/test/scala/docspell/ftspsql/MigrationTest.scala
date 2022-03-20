@@ -1,17 +1,20 @@
 package docspell.ftspsql
 
 import cats.effect._
-import cats.effect.unsafe.implicits._
 import docspell.logging.{Level, LogConfig}
-//import cats.implicits._
+import munit.CatsEffectSuite
 import com.dimafeng.testcontainers.PostgreSQLContainer
 import com.dimafeng.testcontainers.munit.TestContainerForAll
 import docspell.common._
 import docspell.logging.TestLoggingConfig
-import munit.FunSuite
 import org.testcontainers.utility.DockerImageName
+import doobie.implicits._
 
-class MigrationTest extends FunSuite with TestContainerForAll with TestLoggingConfig {
+class MigrationTest
+    extends CatsEffectSuite
+    with PgFixtures
+    with TestContainerForAll
+    with TestLoggingConfig {
   override val containerDef: PostgreSQLContainer.Def =
     PostgreSQLContainer.Def(DockerImageName.parse("postgres:14"))
 
@@ -23,9 +26,19 @@ class MigrationTest extends FunSuite with TestContainerForAll with TestLoggingCo
   test("create schema") {
     withContainers { cnt =>
       val jdbc =
-        PsqlConfig(LenientUri.unsafe(cnt.jdbcUrl), cnt.username, Password(cnt.password))
+        PsqlConfig.defaults(
+          LenientUri.unsafe(cnt.jdbcUrl),
+          cnt.username,
+          Password(cnt.password)
+        )
 
-      new DbMigration[IO](jdbc).run.void.unsafeRunSync()
+      for {
+        _ <- DbMigration[IO](jdbc).run
+        n <- runQuery(cnt)(
+          sql"SELECT count(*) FROM ${FtsRepository.table}".query[Int].unique
+        )
+        _ = assertEquals(n, 0)
+      } yield ()
     }
   }
 }

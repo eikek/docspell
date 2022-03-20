@@ -8,7 +8,7 @@ trait DoobieMeta {
 
   implicit val sqlLogging: LogHandler = LogHandler {
     case e @ Success(_, _, _, _) =>
-      DoobieMeta.logger.trace("SQL " + e)
+      DoobieMeta.logger.debug("SQL " + e)
     case e =>
       DoobieMeta.logger.error(s"SQL Failure: $e")
   }

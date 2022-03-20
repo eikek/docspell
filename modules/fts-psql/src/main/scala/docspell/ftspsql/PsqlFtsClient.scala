@@ -17,6 +17,19 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
     extends FtsClient[F] {
   val engine = Ident.unsafe("postgres")
 
+  val config = cfg
+  private[ftspsql] val transactor = xa
+
+  private[this] val searchSummary =
+    FtsRepository.searchSummary(cfg.pgQueryParser, cfg.rankNormalization) _
+  private[this] val search =
+    FtsRepository.search(cfg.pgQueryParser, cfg.rankNormalization) _
+
+  private[this] val replaceChunk =
+    FtsRepository.replaceChunk(FtsRepository.getPgConfig(cfg.pgConfigSelect)) _
+  private[this] val updateChunk =
+    FtsRepository.updateChunk(FtsRepository.getPgConfig(cfg.pgConfigSelect)) _
+
   def initialize: F[List[FtsMigration[F]]] =
     Sync[F].pure(
       List(
@@ -49,8 +62,8 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
   def search(q: FtsQuery): F[FtsResult] =
     for {
       startNanos <- Sync[F].delay(System.nanoTime())
-      summary <- FtsRepository.searchSummary(q).transact(xa)
-      results <- FtsRepository.search(q, true).transact(xa)
+      summary <- searchSummary(q).transact(xa)
+      results <- search(q, true).transact(xa)
       endNanos <- Sync[F].delay(System.nanoTime())
       duration = Duration.nanos(endNanos - startNanos)
       res = SearchResult
@@ -63,9 +76,8 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
       .map(FtsRecord.fromTextData)
       .chunkN(50)
       .evalMap(chunk =>
-        logger.debug(s"Update fts index with ${chunk.size} records") *> FtsRepository
-          .replaceChunk(chunk)
-          .transact(xa)
+        logger.debug(s"Add to fts index ${chunk.size} records") *>
+          replaceChunk(chunk).transact(xa)
       )
       .compile
       .drain
@@ -74,7 +86,10 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
     data
       .map(FtsRecord.fromTextData)
       .chunkN(50)
-      .evalMap(chunk => FtsRepository.updateChunk(chunk).transact(xa))
+      .evalMap(chunk =>
+        logger.debug(s"Update fts index with ${chunk.size} records") *>
+          updateChunk(chunk).transact(xa)
+      )
       .compile
       .drain
 
@@ -124,8 +139,9 @@ object PsqlFtsClient {
       xa = HikariTransactor[F](ds, connectEC)
 
       pc = new PsqlFtsClient[F](cfg, xa)
-      // _ <- Resource.eval(st.migrate)
     } yield pc
   }
 
+  def fromTransactor[F[_]: Async](cfg: PsqlConfig, xa: Transactor[F]): PsqlFtsClient[F] =
+    new PsqlFtsClient[F](cfg, xa)
 }

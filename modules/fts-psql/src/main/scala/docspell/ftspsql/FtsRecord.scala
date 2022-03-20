@@ -5,7 +5,7 @@ import docspell.common.{Ident, Language}
 import docspell.ftsclient.TextData
 
 final case class FtsRecord(
-    id: String,
+    id: Ident,
     itemId: Ident,
     collective: Ident,
     language: Language,
@@ -30,7 +30,7 @@ object FtsRecord {
             text
           ) =>
         FtsRecord(
-          td.id.id,
+          td.id,
           item,
           collective,
           language,
@@ -43,7 +43,7 @@ object FtsRecord {
         )
       case TextData.Item(item, collective, folder, name, notes, language) =>
         FtsRecord(
-          td.id.id,
+          td.id,
           item,
           collective,
           language,

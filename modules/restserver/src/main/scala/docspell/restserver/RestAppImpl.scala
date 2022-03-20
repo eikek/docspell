@@ -195,7 +195,7 @@ object RestAppImpl {
     if (cfg.fullTextSearch.enabled)
       Resource.pure[F, FtsClient[F]](
         new PsqlFtsClient[F](
-          PsqlConfig(
+          PsqlConfig.defaults(
             cfg.backend.jdbc.url,
             cfg.backend.jdbc.user,
             Password(cfg.backend.jdbc.password)

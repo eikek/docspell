@@ -256,7 +256,7 @@ object JoexTasks {
     if (cfg.fullTextSearch.enabled)
       Resource.pure[F, FtsClient[F]](
         new PsqlFtsClient[F](
-          PsqlConfig(cfg.jdbc.url, cfg.jdbc.user, Password(cfg.jdbc.password)),
+          PsqlConfig.defaults(cfg.jdbc.url, cfg.jdbc.user, Password(cfg.jdbc.password)),
           store.transactor
         )
       )

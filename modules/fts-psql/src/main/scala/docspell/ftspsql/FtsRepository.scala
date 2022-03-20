@@ -10,11 +10,13 @@ import fs2.Chunk
 object FtsRepository extends DoobieMeta {
   val table = fr"ftspsql_search"
 
-  def searchSummary(q: FtsQuery): ConnectionIO[SearchSummary] = {
-    val selectRank = mkSelectRank
-    val query = mkQueryPart(q)
+  def searchSummary(pq: PgQueryParser, rn: RankNormalization)(
+      q: FtsQuery
+  ): ConnectionIO[SearchSummary] = {
+    val selectRank = mkSelectRank(rn)
+    val query = mkQueryPart(pq, q)
 
-    sql"""select count(id), max($selectRank)
+    sql"""select count(id), coalesce(max($selectRank), 0)
          |from $table, $query
          |where ${mkCondition(q)} AND query @@ text_index 
          |""".stripMargin
@@ -22,11 +24,11 @@ object FtsRepository extends DoobieMeta {
       .unique
   }
 
-  def search(
+  def search(pq: PgQueryParser, rn: RankNormalization)(
       q: FtsQuery,
       withHighlighting: Boolean
   ): ConnectionIO[Vector[SearchResult]] = {
-    val selectRank = mkSelectRank
+    val selectRank = mkSelectRank(rn)
 
     val hlOption =
       s"startsel=${q.highlight.pre},stopsel=${q.highlight.post}"
@@ -44,7 +46,7 @@ object FtsRepository extends DoobieMeta {
     val select =
       fr"id, item_id, collective, lang, attach_id, folder_id, attach_name, item_name, $selectRank as rank, $selectHl"
 
-    val query = mkQueryPart(q)
+    val query = mkQueryPart(pq, q)
 
     sql"""select $select 
          |from $table, $query
@@ -74,16 +76,22 @@ object FtsRepository extends DoobieMeta {
     List(items, folders).flatten.foldLeft(coll)(_ ++ fr"AND" ++ _)
   }
 
-  private def mkQueryPart(q: FtsQuery): Fragment =
-    fr"websearch_to_tsquery(fts_config, ${q.q}) query"
+  private def mkQueryPart(p: PgQueryParser, q: FtsQuery): Fragment = {
+    val fname = Fragment.const(p.name)
+    fr"$fname(fts_config, ${q.q}) query"
+  }
 
-  private def mkSelectRank: Fragment =
-    fr"ts_rank_cd(text_index, query, 4)"
+  private def mkSelectRank(rn: RankNormalization): Fragment = {
+    val bits = rn.value.toNonEmptyList.map(n => sql"$n").reduceLeft(_ ++ sql"|" ++ _)
+    fr"ts_rank_cd(text_index, query, $bits)"
+  }
 
-  def replaceChunk(r: Chunk[FtsRecord]): ConnectionIO[Int] =
-    r.traverse(replace).map(_.foldLeft(0)(_ + _))
+  def replaceChunk(pgConfig: Language => String)(r: Chunk[FtsRecord]): ConnectionIO[Int] =
+    r.traverse(replace(pgConfig)).map(_.foldLeft(0)(_ + _))
 
-  def replace(r: FtsRecord): ConnectionIO[Int] =
+  def replace(
+      pgConfig: Language => String
+  )(r: FtsRecord): ConnectionIO[Int] =
     (fr"INSERT INTO $table (id,item_id,collective,lang,attach_id,folder_id,attach_name,attach_content,item_name,item_notes,fts_config) VALUES (" ++
       commas(
         sql"${r.id}",
@@ -107,7 +115,7 @@ object FtsRepository extends DoobieMeta {
         sql"fts_config = ${pgConfig(r.language)}::regconfig"
       )).update.run
 
-  def update(r: FtsRecord): ConnectionIO[Int] =
+  def update(pgConfig: Language => String)(r: FtsRecord): ConnectionIO[Int] =
     (fr"UPDATE $table SET" ++ commas(
       sql"lang = ${r.language}",
       sql"folder_id = ${r.folderId}",
@@ -118,8 +126,8 @@ object FtsRepository extends DoobieMeta {
       sql"fts_config = ${pgConfig(r.language)}::regconfig"
     ) ++ fr"WHERE id = ${r.id}").update.run
 
-  def updateChunk(r: Chunk[FtsRecord]): ConnectionIO[Int] =
-    r.traverse(update).map(_.foldLeft(0)(_ + _))
+  def updateChunk(pgConfig: Language => String)(r: Chunk[FtsRecord]): ConnectionIO[Int] =
+    r.traverse(update(pgConfig)).map(_.foldLeft(0)(_ + _))
 
   def updateFolder(
       itemId: Ident,
@@ -154,7 +162,10 @@ object FtsRepository extends DoobieMeta {
   private def commas(fr: Fragment, frn: Fragment*): Fragment =
     frn.foldLeft(fr)(_ ++ fr"," ++ _)
 
-  def pgConfig(language: Language): String =
+  def getPgConfig(select: PartialFunction[Language, String])(language: Language): String =
+    select.applyOrElse(language, defaultPgConfig)
+
+  def defaultPgConfig(language: Language): String =
     language match {
       case Language.English    => "english"
       case Language.German     => "german"
@@ -163,7 +174,6 @@ object FtsRepository extends DoobieMeta {
       case Language.Spanish    => "spanish"
       case Language.Hungarian  => "hungarian"
       case Language.Portuguese => "portuguese"
-      case Language.Czech      => "simple" // ?
       case Language.Danish     => "danish"
       case Language.Finnish    => "finnish"
       case Language.Norwegian  => "norwegian"
@@ -171,7 +181,8 @@ object FtsRepository extends DoobieMeta {
       case Language.Russian    => "russian"
       case Language.Romanian   => "romanian"
       case Language.Dutch      => "dutch"
-      case Language.Latvian    => "lithuanian" // ?
+      case Language.Czech      => "simple"
+      case Language.Latvian    => "simple"
       case Language.Japanese   => "simple"
       case Language.Hebrew     => "simple"
     }
