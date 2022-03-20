@@ -354,7 +354,8 @@ trait Conversions {
               m.fileFilter.getOrElse(Glob.all),
               m.tags.map(_.items).getOrElse(Nil),
               m.language,
-              m.attachmentsOnly
+              m.attachmentsOnly,
+              m.flattenArchives
             )
           )
         )
@@ -370,6 +371,7 @@ trait Conversions {
             false,
             Glob.all,
             Nil,
+            None,
             None,
             None
           )

@@ -327,7 +327,8 @@ object ScanMailboxTask {
           args.fileFilter.getOrElse(Glob.all),
           args.tags.getOrElse(Nil),
           args.language,
-          args.attachmentsOnly
+          args.attachmentsOnly,
+          None
         )
         data = OUpload.UploadData(
           multiple = false,

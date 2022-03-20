@@ -6,6 +6,8 @@
 
 package docspell.scheduler
 
+import docspell.common.Ident
+
 trait JobStore[F[_]] {
 
   /** Inserts the job into the queue to get picked up as soon as possible. The job must
@@ -24,4 +26,5 @@ trait JobStore[F[_]] {
 
   def insertAllIfNew(jobs: Seq[Job[String]]): F[List[Boolean]]
 
+  def findById(jobId: Ident): F[Option[Job[String]]]
 }

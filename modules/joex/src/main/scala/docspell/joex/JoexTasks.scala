@@ -20,6 +20,7 @@ import docspell.joex.filecopy.{FileCopyTask, FileIntegrityCheckTask}
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk.HouseKeepingTask
 import docspell.joex.learn.LearnClassifierTask
+import docspell.joex.multiupload.MultiUploadArchiveTask
 import docspell.joex.notify.{PeriodicDueItemsTask, PeriodicQueryTask}
 import docspell.joex.pagecount.{AllPageCountTask, MakePageCountTask}
 import docspell.joex.pdfconv.{ConvertAllPdfTask, PdfConvTask}
@@ -62,6 +63,13 @@ final class JoexTasks[F[_]: Async](
           ProcessItemArgs.taskName,
           ItemHandler.newItem[F](cfg, store, itemOps, fts, analyser, regexNer),
           ItemHandler.onCancel[F](store)
+        )
+      )
+      .withTask(
+        JobTask.json(
+          ProcessItemArgs.multiUploadTaskName,
+          MultiUploadArchiveTask[F](store, jobStoreModule.jobs),
+          MultiUploadArchiveTask.onCancel[F](store)
         )
       )
       .withTask(

@@ -9,7 +9,7 @@ package docspell.scheduler.impl
 import cats.effect._
 import cats.implicits._
 
-import docspell.common.JobState
+import docspell.common.{Ident, JobState}
 import docspell.notification.api.{Event, EventSink}
 import docspell.pubsub.api.PubSubT
 import docspell.scheduler._
@@ -64,6 +64,9 @@ final class JobStorePublish[F[_]: Sync](
         else ().pure[F]
       }
     }
+
+  def findById(jobId: Ident) =
+    delegate.findById(jobId)
 }
 
 object JobStorePublish {

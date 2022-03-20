@@ -35,6 +35,7 @@ type alias Texts =
         }
     , selectedFiles : String
     , languageLabel : Language -> String
+    , flattenArchives : String
     }
 
 
@@ -65,6 +66,7 @@ gb =
         }
     , selectedFiles = "Selected Files"
     , languageLabel = Messages.Data.Language.gb
+    , flattenArchives = "Extract zip file contents into separate items, in contrast to a single document with multiple attachments."
     }
 
 
@@ -95,6 +97,7 @@ de =
         }
     , selectedFiles = "Ausgewählte Dateien"
     , languageLabel = Messages.Data.Language.de
+    , flattenArchives = "ZIP Dateien in separate Dokumente entpacken, anstatt ein Dokument mit mehreren Anhängen."
     }
 
 
@@ -125,4 +128,5 @@ fr =
         }
     , selectedFiles = "Fichiers séléctionnés"
     , languageLabel = Messages.Data.Language.fr
+    , flattenArchives = "Décompresser les fichiers ZIP dans des documents séparés au lieu de créer un document avec plusieurs pièces jointes."
     }

@@ -6,10 +6,11 @@
 
 package docspell.scheduler.impl
 
+import cats.data.OptionT
 import cats.effect.Sync
 import cats.syntax.all._
 
-import docspell.common.Timestamp
+import docspell.common.{Ident, Timestamp}
 import docspell.scheduler._
 import docspell.store.Store
 import docspell.store.records.RJob
@@ -71,6 +72,14 @@ final class JobStoreImpl[F[_]: Sync](store: Store[F]) extends JobStore[F] {
             logger.error(ex)("Could not insert job. Skipping it.").as(false)
         })
     }
+
+  def findById(jobId: Ident) =
+    OptionT(store.transact(RJob.findById(jobId)))
+      .map(toJob)
+      .value
+
+  def toJob(r: RJob): Job[String] =
+    Job(r.id, r.task, r.group, r.args, r.subject, r.submitter, r.priority, r.tracker)
 
   def toRecord(job: Job[String], timestamp: Timestamp): RJob =
     RJob.newJob(

@@ -68,7 +68,8 @@ object OUpload {
       fileFilter: Glob,
       tags: List[String],
       language: Option[Language],
-      attachmentsOnly: Option[Boolean]
+      attachmentsOnly: Option[Boolean],
+      flattenArchives: Option[Boolean]
   )
 
   case class UploadData[F[_]](
@@ -146,12 +147,10 @@ object OUpload {
             false,
             data.meta.attachmentsOnly
           )
-          args =
-            if (data.multiple) files.map(f => ProcessItemArgs(meta, List(f)))
-            else Vector(ProcessItemArgs(meta, files.toList))
-          jobs <- right(makeJobs(args, account, data.priority, data.tracker))
+          args = ProcessItemArgs(meta, files.toList)
+          jobs <- right(makeJobs(data, args, account))
           _ <- right(logger.debug(s"Storing jobs: $jobs"))
-          res <- right(submitJobs(notifyJoex)(jobs))
+          res <- right(submitJobs(notifyJoex)(jobs.map(_.encode)))
           _ <- right(
             store.transact(
               RSource.incrementCounter(data.meta.sourceAbbrev, account.collective)
@@ -187,7 +186,7 @@ object OUpload {
 
       private def submitJobs(
           notifyJoex: Boolean
-      )(jobs: Vector[Job[String]]): F[OUpload.UploadResult] =
+      )(jobs: List[Job[String]]): F[OUpload.UploadResult] =
         for {
           _ <- logger.debug(s"Storing jobs: $jobs")
           _ <- jobStore.insertAll(jobs)
@@ -240,13 +239,24 @@ object OUpload {
         else right(().pure[F])
 
       private def makeJobs(
-          args: Vector[ProcessItemArgs],
-          account: AccountId,
-          prio: Priority,
-          tracker: Option[Ident]
-      ): F[Vector[Job[String]]] =
-        JobFactory
-          .processItems[F](args, account, prio, tracker)
-          .map(_.map(_.encode))
+          data: UploadData[F],
+          args: ProcessItemArgs,
+          account: AccountId
+      ): F[List[Job[ProcessItemArgs]]] =
+        if (data.meta.flattenArchives.getOrElse(false))
+          JobFactory
+            .multiUpload(args, account, data.priority, data.tracker)
+            .map(List(_))
+        else if (data.multiple)
+          JobFactory.processItems(
+            args.files.map(f => args.copy(files = List(f))),
+            account,
+            data.priority,
+            data.tracker
+          )
+        else
+          JobFactory
+            .processItem[F](args, account, data.priority, data.tracker)
+            .map(List(_))
     })
 }
