@@ -7,13 +7,13 @@
 package docspell.joex
 
 import cats.effect.{Async, Resource}
-
 import docspell.analysis.TextAnalyser
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
 import docspell.common._
 import docspell.ftsclient.FtsClient
-import docspell.ftssolr.SolrFtsClient
+import docspell.ftspsql.{PsqlConfig, PsqlFtsClient}
+//import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.emptytrash.EmptyTrashTask
 import docspell.joex.filecopy.{FileCopyTask, FileIntegrityCheckTask}
@@ -33,7 +33,6 @@ import docspell.pubsub.api.PubSubT
 import docspell.scheduler.impl.JobStoreModuleBuilder
 import docspell.scheduler.{JobStoreModule, JobTask, JobTaskRegistry}
 import docspell.store.Store
-
 import emil.Emil
 import org.http4s.client.Client
 
@@ -221,7 +220,7 @@ object JoexTasks {
       joex <- OJoex(pubSub)
       store = jobStoreModule.store
       upload <- OUpload(store, jobStoreModule.jobs)
-      fts <- createFtsClient(cfg)(httpClient)
+      fts <- createFtsClient(cfg, store)
       createIndex <- CreateIndex.resource(fts, store)
       itemOps <- OItem(store, fts, createIndex, jobStoreModule.jobs)
       itemSearchOps <- OItemSearch(store)
@@ -249,8 +248,17 @@ object JoexTasks {
     )
 
   private def createFtsClient[F[_]: Async](
-      cfg: Config
-  )(client: Client[F]): Resource[F, FtsClient[F]] =
-    if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
+      cfg: Config,
+      store: Store[F] /*,
+      client: Client[F] */
+  ): Resource[F, FtsClient[F]] =
+    // if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
+    if (cfg.fullTextSearch.enabled)
+      Resource.pure[F, FtsClient[F]](
+        new PsqlFtsClient[F](
+          PsqlConfig(cfg.jdbc.url, cfg.jdbc.user, Password(cfg.jdbc.password)),
+          store.transactor
+        )
+      )
     else Resource.pure[F, FtsClient[F]](FtsClient.none[F])
 }

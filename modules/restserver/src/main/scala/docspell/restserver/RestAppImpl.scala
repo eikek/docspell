@@ -9,11 +9,12 @@ package docspell.restserver
 import cats.effect._
 import fs2.Stream
 import fs2.concurrent.Topic
-
 import docspell.backend.BackendApp
 import docspell.backend.auth.{AuthToken, ShareToken}
+import docspell.common.Password
 import docspell.ftsclient.FtsClient
-import docspell.ftssolr.SolrFtsClient
+import docspell.ftspsql.{PsqlConfig, PsqlFtsClient}
+//import docspell.ftssolr.SolrFtsClient
 import docspell.notification.api.NotificationModule
 import docspell.notification.impl.NotificationModuleImpl
 import docspell.oidc.CodeFlowRoutes
@@ -25,7 +26,6 @@ import docspell.restserver.webapp.{TemplateRoutes, Templates, WebjarRoutes}
 import docspell.restserver.ws.{OutputEvent, WebSocketRoutes}
 import docspell.scheduler.impl.JobStoreModuleBuilder
 import docspell.store.Store
-
 import emil.javamail.JavaMailEmil
 import org.http4s.HttpRoutes
 import org.http4s.client.Client
@@ -163,7 +163,7 @@ object RestAppImpl {
     val logger = docspell.logging.getLogger[F](s"restserver-${cfg.appId.id}")
 
     for {
-      ftsClient <- createFtsClient(cfg)(httpClient)
+      ftsClient <- createFtsClient(cfg, store)
       pubSubT = PubSubT(pubSub, logger)
       javaEmil = JavaMailEmil(cfg.backend.mailSettings)
       notificationMod <- Resource.eval(
@@ -188,8 +188,21 @@ object RestAppImpl {
   }
 
   private def createFtsClient[F[_]: Async](
-      cfg: Config
-  )(client: Client[F]): Resource[F, FtsClient[F]] =
-    if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
+      cfg: Config,
+      store: Store[F] /*, client: Client[F] */
+  ): Resource[F, FtsClient[F]] =
+    // if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
+    if (cfg.fullTextSearch.enabled)
+      Resource.pure[F, FtsClient[F]](
+        new PsqlFtsClient[F](
+          PsqlConfig(
+            cfg.backend.jdbc.url,
+            cfg.backend.jdbc.user,
+            Password(cfg.backend.jdbc.password)
+          ),
+          store.transactor
+        )
+      )
     else Resource.pure[F, FtsClient[F]](FtsClient.none[F])
+
 }

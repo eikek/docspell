@@ -619,6 +619,20 @@ val ftssolr = project
   )
   .dependsOn(common, ftsclient)
 
+val ftspsql = project
+  .in(file("modules/fts-psql"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettings
+  .settings(
+    name := "docspell-fts-psql",
+    libraryDependencies ++=
+      Dependencies.doobie ++
+        Dependencies.postgres ++
+        Dependencies.flyway
+  )
+  .dependsOn(common, ftsclient, store % "compile->test;test->test")
+
 val restapi = project
   .in(file("modules/restapi"))
   .disablePlugins(RevolverPlugin)
@@ -769,6 +783,7 @@ val joex = project
     joexapi,
     restapi,
     ftssolr,
+    ftspsql,
     pubsubNaive,
     notificationImpl,
     schedulerImpl
@@ -841,6 +856,7 @@ val restserver = project
     backend,
     webapp,
     ftssolr,
+    ftspsql,
     oidc,
     pubsubNaive,
     notificationImpl,
@@ -926,6 +942,7 @@ val root = project
     analysis,
     ftsclient,
     ftssolr,
+    ftspsql,
     files,
     store,
     joexapi,
