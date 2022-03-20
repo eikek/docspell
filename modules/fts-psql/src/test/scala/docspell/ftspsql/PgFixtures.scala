@@ -1,15 +1,23 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.ftspsql
 
+import javax.sql.DataSource
+
+import cats.effect._
 import cats.syntax.all._
-import com.dimafeng.testcontainers.PostgreSQLContainer
+
 import docspell.common._
+import docspell.ftsclient.TextData
 import docspell.store.{JdbcConfig, StoreFixture}
+
+import com.dimafeng.testcontainers.PostgreSQLContainer
 import doobie._
 import doobie.implicits._
-import cats.effect._
-import docspell.ftsclient.TextData
-
-import javax.sql.DataSource
 
 trait PgFixtures {
   def ident(n: String): Ident = Ident.unsafe(n)

@@ -1,11 +1,19 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.ftspsql
 
 import cats.data.NonEmptyList
+import fs2.Chunk
+
 import docspell.common._
 import docspell.ftsclient.FtsQuery
+
 import doobie._
 import doobie.implicits._
-import fs2.Chunk
 
 object FtsRepository extends DoobieMeta {
   val table = fr"ftspsql_search"

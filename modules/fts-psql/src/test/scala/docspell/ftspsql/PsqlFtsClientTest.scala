@@ -1,14 +1,22 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.ftspsql
 
+import cats.effect._
 import cats.syntax.all._
+
+import docspell.ftsclient.{FtsQuery, TextData}
+import docspell.logging.{Level, LogConfig, TestLoggingConfig}
+
 import com.dimafeng.testcontainers.PostgreSQLContainer
 import com.dimafeng.testcontainers.munit.TestContainerForAll
-import docspell.logging.{Level, LogConfig, TestLoggingConfig}
+import doobie.implicits._
 import munit.CatsEffectSuite
 import org.testcontainers.utility.DockerImageName
-import cats.effect._
-import docspell.ftsclient.{FtsQuery, TextData}
-import doobie.implicits._
 
 class PsqlFtsClientTest
     extends CatsEffectSuite

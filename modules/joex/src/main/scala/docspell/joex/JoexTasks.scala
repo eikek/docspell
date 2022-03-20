@@ -7,13 +7,13 @@
 package docspell.joex
 
 import cats.effect.{Async, Resource}
+
 import docspell.analysis.TextAnalyser
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.ftspsql.{PsqlConfig, PsqlFtsClient}
-//import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.emptytrash.EmptyTrashTask
 import docspell.joex.filecopy.{FileCopyTask, FileIntegrityCheckTask}
@@ -33,6 +33,7 @@ import docspell.pubsub.api.PubSubT
 import docspell.scheduler.impl.JobStoreModuleBuilder
 import docspell.scheduler.{JobStoreModule, JobTask, JobTaskRegistry}
 import docspell.store.Store
+
 import emil.Emil
 import org.http4s.client.Client
 

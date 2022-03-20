@@ -8,6 +8,7 @@ package docspell.backend.fulltext
 
 import cats.data.NonEmptyList
 import cats.effect._
+
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.ftsclient.TextData

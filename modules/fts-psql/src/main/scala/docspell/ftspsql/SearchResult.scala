@@ -1,8 +1,14 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.ftspsql
 
 import docspell.common._
-import docspell.ftsclient.FtsResult.{ItemMatch, MatchData}
 import docspell.ftsclient.FtsResult
+import docspell.ftsclient.FtsResult.{ItemMatch, MatchData}
 
 final case class SearchResult(
     id: Ident,

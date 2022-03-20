@@ -1,17 +1,25 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.ftspsql
+
+import scala.concurrent.ExecutionContext
 
 import cats.effect._
 import cats.implicits._
-import com.zaxxer.hikari.HikariDataSource
+import fs2.Stream
+
 import docspell.common._
 import docspell.ftsclient._
 import docspell.logging.Logger
+
+import com.zaxxer.hikari.HikariDataSource
 import doobie._
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
-import fs2.Stream
-
-import scala.concurrent.ExecutionContext
 
 final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
     extends FtsClient[F] {
