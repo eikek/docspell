@@ -23,8 +23,13 @@ object Cmd {
   }
 
   def exec(cmd: Seq[String], wd: Option[File]): Result = {
+    val command =
+      sys.props.get("os.name").getOrElse("").toLowerCase match {
+        case win if win.startsWith("windows") => Seq ("cmd", "/C") ++ cmd
+        case _ => cmd
+      }
     val capt = new Capture
-    val rc = Process(cmd, wd).!(capt.logger)
+    val rc = Process(command, wd).!(capt.logger)
     Result(rc, capt.out.get.mkString("\n"), capt.err.get.mkString("\n"))
   }
 
