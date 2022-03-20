@@ -8,7 +8,6 @@ package docspell.backend.fulltext
 
 import cats.data.NonEmptyList
 import cats.effect._
-
 import docspell.common._
 import docspell.ftsclient.FtsClient
 import docspell.ftsclient.TextData
@@ -62,7 +61,14 @@ object CreateIndex {
         val items = store
           .transact(QItem.allNameAndNotes(collective, itemIds, chunkSize))
           .map(nn =>
-            TextData.item(nn.id, nn.collective, nn.folder, Option(nn.name), nn.notes)
+            TextData.item(
+              nn.id,
+              nn.collective,
+              nn.folder,
+              Option(nn.name),
+              nn.notes,
+              nn.language
+            )
           )
 
         fts.indexData(logger, attachs ++ items)
