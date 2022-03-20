@@ -11,7 +11,6 @@ import cats.implicits._
 import fs2.{Chunk, Stream}
 
 import docspell.backend.JobFactory
-import docspell.backend.ops.OJoex
 import docspell.common._
 import docspell.scheduler._
 import docspell.store.Store
@@ -24,15 +23,13 @@ object AllPageCountTask {
 
   def apply[F[_]: Sync](
       store: Store[F],
-      jobStore: JobStore[F],
-      joex: OJoex[F]
+      jobStore: JobStore[F]
   ): Task[F, Args, Unit] =
     Task { ctx =>
       for {
         _ <- ctx.logger.info("Generating previews for attachments")
         n <- submitConversionJobs(ctx, store, jobStore)
         _ <- ctx.logger.info(s"Submitted $n jobs")
-        _ <- joex.notifyAllNodes
       } yield ()
     }
 

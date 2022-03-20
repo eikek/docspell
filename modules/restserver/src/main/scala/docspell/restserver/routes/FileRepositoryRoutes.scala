@@ -32,7 +32,7 @@ object FileRepositoryRoutes {
         for {
           input <- req.as[FileRepositoryCloneRequest]
           args = makeTaskArgs(input)
-          job <- backend.fileRepository.cloneFileRepository(args, true)
+          job <- backend.fileRepository.cloneFileRepository(args)
           result = BasicResult(
             job.isDefined,
             job.fold(s"Job for '${FileCopyTaskArgs.taskName.id}' already running")(j =>
@@ -46,7 +46,7 @@ object FileRepositoryRoutes {
       case req @ POST -> Root / "integrityCheck" =>
         for {
           input <- req.as[FileKeyPart]
-          job <- backend.fileRepository.checkIntegrityAll(input, true)
+          job <- backend.fileRepository.checkIntegrityAll(input)
           result = BasicResult(
             job.isDefined,
             job.fold(s"Job for '${FileCopyTaskArgs.taskName.id}' already running")(j =>

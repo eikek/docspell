@@ -121,8 +121,7 @@ object AttachmentRoutes {
         for {
           res <- backend.item.generatePreview(
             MakePreviewArgs.replace(id),
-            user.account,
-            true
+            user.account
           )
           resp <- Ok(
             Conversions.basicResult(res, "Generating preview image task submitted.")
@@ -169,7 +168,7 @@ object AttachmentRoutes {
     HttpRoutes.of {
       case POST -> Root / "generatePreviews" =>
         for {
-          res <- backend.item.generateAllPreviews(MakePreviewArgs.StoreMode.Replace, true)
+          res <- backend.item.generateAllPreviews(MakePreviewArgs.StoreMode.Replace)
           resp <- Ok(
             Conversions.basicResult(res, "Generate all previews task submitted.")
           )
@@ -178,7 +177,7 @@ object AttachmentRoutes {
       case POST -> Root / "convertallpdfs" =>
         for {
           res <-
-            backend.item.convertAllPdf(None, None, true)
+            backend.item.convertAllPdf(None, None)
           resp <- Ok(Conversions.basicResult(res, "Convert all PDFs task submitted"))
         } yield resp
     }

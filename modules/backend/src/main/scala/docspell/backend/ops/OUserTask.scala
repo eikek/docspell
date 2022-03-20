@@ -92,10 +92,7 @@ object OUserTask {
       def executeNow[A](scope: UserTaskScope, subject: Option[String], task: UserTask[A])(
           implicit E: Encoder[A]
       ): F[Unit] =
-        for {
-          _ <- taskStore.executeNow(scope, subject, task)
-          _ <- joex.notifyAllNodes
-        } yield ()
+        taskStore.executeNow(scope, subject, task)
 
       def getScanMailbox(scope: UserTaskScope): Stream[F, UserTask[ScanMailboxArgs]] =
         taskStore
