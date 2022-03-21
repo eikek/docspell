@@ -1,5 +1,4 @@
 import com.github.eikek.sbt.openapi._
-import scala.sys.process._
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
 import de.heikoseeberger.sbtheader.CommentBlockCreator
@@ -1015,13 +1014,11 @@ def compileElm(
   logger.info("Compile elm files ...")
   val target =
     outBase / "META-INF" / "resources" / "webjars" / artifact / version / "docspell-app.js"
-  val cmd = Seq("elm", "make") ++ mode.flags ++ Seq("--output", target.toString)
-  val proc = Process(
-    cmd ++ Seq(wd / "src" / "main" / "elm" / "Main.elm").map(_.toString),
-    Some(wd)
-  )
-  val out = proc.!!
-  logger.info(out)
+  val cmd = (Seq("elm", "make")
+    ++ mode.flags
+    ++ Seq("--output", target.toString)
+    ++ Seq(wd / "src" / "main" / "elm" / "Main.elm").map(_.toString))
+  Cmd.run(cmd, wd, logger)
   val targetGZ = file(target.toString + ".gz")
   IO.gzip(target, targetGZ)
   Seq(target, targetGZ)
