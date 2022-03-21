@@ -24,8 +24,8 @@ object Cmd {
 
   def exec(cmd: Seq[String], wd: Option[File]): Result = {
     val command =
-      sys.props.get("os.name").getOrElse("").toLowerCase match {
-        case win if win.startsWith("windows") => Seq ("cmd", "/C") ++ cmd
+      sys.props.get("os.name") match {
+        case Some(name) if name.toLowerCase.startsWith("windows") => Seq ("cmd", "/C") ++ cmd
         case _ => cmd
       }
     val capt = new Capture
