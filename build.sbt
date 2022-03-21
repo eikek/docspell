@@ -319,19 +319,6 @@ val common = project
   )
   .dependsOn(loggingApi)
 
-val config = project
-  .in(file("modules/config"))
-  .disablePlugins(RevolverPlugin)
-  .settings(sharedSettings)
-  .withTestSettings
-  .settings(
-    name := "docspell-config",
-    libraryDependencies ++=
-      Dependencies.fs2 ++
-        Dependencies.pureconfig
-  )
-  .dependsOn(common, loggingApi)
-
 val loggingScribe = project
   .in(file("modules/logging/scribe"))
   .disablePlugins(RevolverPlugin)
@@ -728,6 +715,20 @@ val webapp = project
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
   .dependsOn(query.js)
+
+// Config project shared among the two applications only
+val config = project
+  .in(file("modules/config"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettings
+  .settings(
+    name := "docspell-config",
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+        Dependencies.pureconfig
+  )
+  .dependsOn(common, loggingApi, ftspsql, store)
 
 // --- Application(s)
 

@@ -52,7 +52,7 @@ object JoexServer {
         httpClient
       )(Topics.all.map(_.topic))
 
-      joexApp <- JoexAppImpl.create[F](cfg, signal, store, httpClient, pubSub)
+      joexApp <- JoexAppImpl.create[F](cfg, signal, store, httpClient, pubSub, pools)
 
       httpApp = Router(
         "/internal" -> InternalHeader(settings.internalRouteKey) {

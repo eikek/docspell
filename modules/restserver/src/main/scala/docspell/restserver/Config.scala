@@ -9,6 +9,7 @@ package docspell.restserver
 import docspell.backend.auth.Login
 import docspell.backend.{Config => BackendConfig}
 import docspell.common._
+import docspell.config.{FtsType, PgFtsConfig}
 import docspell.ftssolr.SolrConfig
 import docspell.logging.LogConfig
 import docspell.oidc.ProviderConfig
@@ -92,7 +93,26 @@ object Config {
     }
   }
 
-  case class FullTextSearch(enabled: Boolean, solr: SolrConfig)
+  case class FullTextSearch(
+      enabled: Boolean,
+      backend: FtsType,
+      solr: SolrConfig,
+      postgresql: PgFtsConfig
+  ) {
+
+    def info: String =
+      if (!enabled) "Disabled."
+      else
+        backend match {
+          case FtsType.Solr =>
+            s"Solr(${solr.url.asString})"
+          case FtsType.PostgreSQL =>
+            if (postgresql.useDefaultConnection)
+              "PostgreSQL(default)"
+            else
+              s"PostgreSQL(${postgresql.jdbc.url.asString})"
+        }
+  }
 
   object FullTextSearch {}
 

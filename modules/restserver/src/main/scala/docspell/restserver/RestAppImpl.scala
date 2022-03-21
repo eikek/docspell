@@ -12,9 +12,11 @@ import fs2.concurrent.Topic
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.{AuthToken, ShareToken}
-import docspell.common.Password
+import docspell.common.Pools
+import docspell.config.FtsType
 import docspell.ftsclient.FtsClient
-import docspell.ftspsql.{PsqlConfig, PsqlFtsClient}
+import docspell.ftspsql.PsqlFtsClient
+import docspell.ftssolr.SolrFtsClient
 import docspell.notification.api.NotificationModule
 import docspell.notification.impl.NotificationModuleImpl
 import docspell.oidc.CodeFlowRoutes
@@ -156,6 +158,7 @@ object RestAppImpl {
 
   def create[F[_]: Async](
       cfg: Config,
+      pools: Pools,
       store: Store[F],
       httpClient: Client[F],
       pubSub: PubSub[F],
@@ -164,7 +167,7 @@ object RestAppImpl {
     val logger = docspell.logging.getLogger[F](s"restserver-${cfg.appId.id}")
 
     for {
-      ftsClient <- createFtsClient(cfg, store)
+      ftsClient <- createFtsClient(cfg, pools, store, httpClient)
       pubSubT = PubSubT(pubSub, logger)
       javaEmil = JavaMailEmil(cfg.backend.mailSettings)
       notificationMod <- Resource.eval(
@@ -190,20 +193,24 @@ object RestAppImpl {
 
   private def createFtsClient[F[_]: Async](
       cfg: Config,
-      store: Store[F] /*, client: Client[F] */
+      pools: Pools,
+      store: Store[F],
+      client: Client[F]
   ): Resource[F, FtsClient[F]] =
-    // if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
     if (cfg.fullTextSearch.enabled)
-      Resource.pure[F, FtsClient[F]](
-        new PsqlFtsClient[F](
-          PsqlConfig.defaults(
-            cfg.backend.jdbc.url,
-            cfg.backend.jdbc.user,
-            Password(cfg.backend.jdbc.password)
-          ),
-          store.transactor
-        )
-      )
+      cfg.fullTextSearch.backend match {
+        case FtsType.Solr =>
+          SolrFtsClient(cfg.fullTextSearch.solr, client)
+
+        case FtsType.PostgreSQL =>
+          val psqlCfg = cfg.fullTextSearch.postgresql.toPsqlConfig(cfg.backend.jdbc)
+          if (cfg.fullTextSearch.postgresql.useDefaultConnection)
+            Resource.pure[F, FtsClient[F]](
+              new PsqlFtsClient[F](psqlCfg, store.transactor)
+            )
+          else
+            PsqlFtsClient(psqlCfg, pools.connectEC)
+      }
     else Resource.pure[F, FtsClient[F]](FtsClient.none[F])
 
 }

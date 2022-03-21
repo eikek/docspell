@@ -10,9 +10,11 @@ import java.nio.file.{Path => JPath}
 
 import scala.reflect.ClassTag
 
+import cats.syntax.all._
 import fs2.io.file.Path
 
 import docspell.common._
+import docspell.ftspsql.{PgQueryParser, RankNormalization}
 import docspell.logging.{Level, LogConfig}
 
 import com.github.eikek.calev.CalEvent
@@ -85,11 +87,28 @@ object Implicits {
   implicit val fileStoreTypeReader: ConfigReader[FileStoreType] =
     ConfigReader[String].emap(reason(FileStoreType.fromString))
 
-  def reason[A: ClassTag](
-      f: String => Either[String, A]
-  ): String => Either[FailureReason, A] =
+  implicit val pgQueryParserReader: ConfigReader[PgQueryParser] =
+    ConfigReader[String].emap(reason(PgQueryParser.fromName))
+
+  implicit val pgRankNormalizationReader: ConfigReader[RankNormalization] =
+    ConfigReader[List[Int]].emap(
+      reason(ints => ints.traverse(RankNormalization.byNumber).map(_.reduce(_ && _)))
+    )
+
+  implicit val languageReader: ConfigReader[Language] =
+    ConfigReader[String].emap(reason(Language.fromString))
+
+  implicit def languageMapReader[B: ConfigReader]: ConfigReader[Map[Language, B]] =
+    pureconfig.configurable.genericMapReader[Language, B](reason(Language.fromString))
+
+  implicit val ftsTypeReader: ConfigReader[FtsType] =
+    ConfigReader[String].emap(reason(FtsType.fromName))
+
+  def reason[T, A: ClassTag](
+      f: T => Either[String, A]
+  ): T => Either[FailureReason, A] =
     in =>
       f(in).left.map(str =>
-        CannotConvert(in, implicitly[ClassTag[A]].runtimeClass.toString, str)
+        CannotConvert(in.toString, implicitly[ClassTag[A]].runtimeClass.toString, str)
       )
 }

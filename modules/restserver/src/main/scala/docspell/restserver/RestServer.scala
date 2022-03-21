@@ -88,7 +88,7 @@ object RestServer {
         store,
         httpClient
       )(Topics.all.map(_.topic))
-      restApp <- RestAppImpl.create[F](cfg, store, httpClient, pubSub, wsTopic)
+      restApp <- RestAppImpl.create[F](cfg, pools, store, httpClient, pubSub, wsTopic)
     } yield (restApp, pubSub, setting)
 
   def createHttpApp[F[_]: Async](

@@ -12,8 +12,10 @@ import docspell.analysis.TextAnalyser
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
 import docspell.common._
+import docspell.config.FtsType
 import docspell.ftsclient.FtsClient
-import docspell.ftspsql.{PsqlConfig, PsqlFtsClient}
+import docspell.ftspsql.PsqlFtsClient
+import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.emptytrash.EmptyTrashTask
 import docspell.joex.filecopy.{FileCopyTask, FileIntegrityCheckTask}
@@ -211,6 +213,7 @@ object JoexTasks {
 
   def resource[F[_]: Async](
       cfg: Config,
+      pools: Pools,
       jobStoreModule: JobStoreModuleBuilder.Module[F],
       httpClient: Client[F],
       pubSub: PubSubT[F],
@@ -221,7 +224,7 @@ object JoexTasks {
       joex <- OJoex(pubSub)
       store = jobStoreModule.store
       upload <- OUpload(store, jobStoreModule.jobs)
-      fts <- createFtsClient(cfg, store)
+      fts <- createFtsClient(cfg, pools, store, httpClient)
       createIndex <- CreateIndex.resource(fts, store)
       itemOps <- OItem(store, fts, createIndex, jobStoreModule.jobs)
       itemSearchOps <- OItemSearch(store)
@@ -250,16 +253,23 @@ object JoexTasks {
 
   private def createFtsClient[F[_]: Async](
       cfg: Config,
-      store: Store[F] /*,
-      client: Client[F] */
+      pools: Pools,
+      store: Store[F],
+      client: Client[F]
   ): Resource[F, FtsClient[F]] =
-    // if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
     if (cfg.fullTextSearch.enabled)
-      Resource.pure[F, FtsClient[F]](
-        new PsqlFtsClient[F](
-          PsqlConfig.defaults(cfg.jdbc.url, cfg.jdbc.user, Password(cfg.jdbc.password)),
-          store.transactor
-        )
-      )
+      cfg.fullTextSearch.backend match {
+        case FtsType.Solr =>
+          SolrFtsClient(cfg.fullTextSearch.solr, client)
+
+        case FtsType.PostgreSQL =>
+          val psqlCfg = cfg.fullTextSearch.postgresql.toPsqlConfig(cfg.jdbc)
+          if (cfg.fullTextSearch.postgresql.useDefaultConnection)
+            Resource.pure[F, FtsClient[F]](
+              new PsqlFtsClient[F](psqlCfg, store.transactor)
+            )
+          else
+            PsqlFtsClient(psqlCfg, pools.connectEC)
+      }
     else Resource.pure[F, FtsClient[F]](FtsClient.none[F])
 }
