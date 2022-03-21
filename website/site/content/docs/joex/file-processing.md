@@ -80,7 +80,7 @@ line are required. As you see for `wkhtmltopdf` the page size is fixed
 to DIN A4. Other commands are configured like this as well.
 
 For the default values, please see the [configuration
-page](@/docs/configure/_index.md#joex).
+page](@/docs/configure/main.md#joex).
 
 ## Duplicate Check
 

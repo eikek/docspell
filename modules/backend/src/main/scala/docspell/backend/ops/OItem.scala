@@ -605,7 +605,14 @@ object OItem {
                 .transact(RItem.updateNotes(item, collective, notes))
             )
             .flatTap(
-              onSuccessIgnoreError(fts.updateItemNotes(logger, item, collective, notes))
+              onSuccessIgnoreError {
+                store
+                  .transact(RCollective.findLanguage(collective))
+                  .map(_.getOrElse(Language.English))
+                  .flatMap(lang =>
+                    fts.updateItemNotes(logger, item, collective, lang, notes)
+                  )
+              }
             )
 
         def setName(item: Ident, name: String, collective: Ident): F[UpdateResult] =
@@ -615,7 +622,14 @@ object OItem {
                 .transact(RItem.updateName(item, collective, name))
             )
             .flatTap(
-              onSuccessIgnoreError(fts.updateItemName(logger, item, collective, name))
+              onSuccessIgnoreError {
+                store
+                  .transact(RCollective.findLanguage(collective))
+                  .map(_.getOrElse(Language.English))
+                  .flatMap(lang =>
+                    fts.updateItemName(logger, item, collective, lang, name)
+                  )
+              }
             )
 
         def setNameMultiple(
@@ -733,10 +747,17 @@ object OItem {
             )
             .flatTap(
               onSuccessIgnoreError(
-                OptionT(store.transact(RAttachment.findItemId(attachId)))
-                  .semiflatMap(itemId =>
-                    fts.updateAttachmentName(logger, itemId, attachId, collective, name)
-                  )
+                OptionT(store.transact(RAttachment.findItemAndLanguage(attachId)))
+                  .semiflatMap { case (itemId, lang) =>
+                    fts.updateAttachmentName(
+                      logger,
+                      itemId,
+                      attachId,
+                      collective,
+                      lang.getOrElse(Language.English),
+                      name
+                    )
+                  }
                   .fold(())(identity)
               )
             )

@@ -30,10 +30,10 @@ result in long processing times for OCR and text analysis. The board
 should provide 4G of RAM (like the current RPi4), especially if also a
 database and solr are running next to it. The memory required by joex
 depends on the config and document language. Please pick a value that
-suits your setup from [here](@/docs/configure/_index.md#memory-usage).
-For boards like the RPi, it might be necessary to use
-`nlp.mode=basic`, rather than `nlp.mode=full`. You should also set the
-joex pool size to 1.
+suits your setup from
+[here](@/docs/configure/file-processing.md#memory-usage). For boards
+like the RPi, it might be necessary to use `nlp.mode=basic`, rather
+than `nlp.mode=full`. You should also set the joex pool size to 1.
 
 An example: on this [UP
 board](https://up-board.org/up/specifications/) with an Intel Atom

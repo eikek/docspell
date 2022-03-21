@@ -236,8 +236,18 @@ object RAttachment {
       n3 <- DML.delete(T, T.id === attachId)
     } yield n0 + n1 + n2 + n3
 
-  def findItemId(attachId: Ident): ConnectionIO[Option[Ident]] =
-    Select(T.itemId.s, from(T), T.id === attachId).build.query[Ident].option
+  def findItemAndLanguage(
+      attachId: Ident
+  ): ConnectionIO[Option[(Ident, Option[Language])]] = {
+    val a = RAttachment.as("a")
+    val m = RAttachmentMeta.as("m")
+
+    Select(
+      select(a.itemId, m.language),
+      from(a).leftJoin(m, m.id === a.id),
+      a.id === attachId
+    ).build.query[(Ident, Option[Language])].option
+  }
 
   def findAll(
       coll: Option[Ident],

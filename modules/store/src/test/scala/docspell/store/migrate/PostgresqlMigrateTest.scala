@@ -23,7 +23,7 @@ class PostgresqlMigrateTest
     with TestContainerForAll
     with TestLoggingConfig {
   override val containerDef: PostgreSQLContainer.Def =
-    PostgreSQLContainer.Def(DockerImageName.parse("postgres:13"))
+    PostgreSQLContainer.Def(DockerImageName.parse("postgres:14"))
 
   test("postgres empty schema migration") {
     assume(Docker.existsUnsafe, "docker doesn't exist!")

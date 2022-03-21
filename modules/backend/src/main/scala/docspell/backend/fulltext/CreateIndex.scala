@@ -62,7 +62,14 @@ object CreateIndex {
         val items = store
           .transact(QItem.allNameAndNotes(collective, itemIds, chunkSize))
           .map(nn =>
-            TextData.item(nn.id, nn.collective, nn.folder, Option(nn.name), nn.notes)
+            TextData.item(
+              nn.id,
+              nn.collective,
+              nn.folder,
+              Option(nn.name),
+              nn.notes,
+              nn.language
+            )
           )
 
         fts.indexData(logger, attachs ++ items)

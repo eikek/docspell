@@ -4,6 +4,11 @@ let
   full-text-search = {
     enabled = true;
     solr.url = "http://localhost:${toString config.services.solr.port}/solr/docspell";
+    postgresql = {
+      pg-config = {
+        "german" = "my-germam";
+      };
+    };
   };
 in
 {

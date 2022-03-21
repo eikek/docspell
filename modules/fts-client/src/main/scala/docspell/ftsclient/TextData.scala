@@ -18,6 +18,8 @@ sealed trait TextData {
 
   def folder: Option[Ident]
 
+  def language: Language
+
   final def fold[A](f: TextData.Attachment => A, g: TextData.Item => A): A =
     this match {
       case a: TextData.Attachment => f(a)
@@ -32,7 +34,7 @@ object TextData {
       attachId: Ident,
       collective: Ident,
       folder: Option[Ident],
-      lang: Language,
+      language: Language,
       name: Option[String],
       text: Option[String]
   ) extends TextData {
@@ -57,7 +59,8 @@ object TextData {
       collective: Ident,
       folder: Option[Ident],
       name: Option[String],
-      notes: Option[String]
+      notes: Option[String],
+      language: Language
   ) extends TextData {
 
     val id = Ident.unsafe("item") / item
@@ -69,8 +72,9 @@ object TextData {
       collective: Ident,
       folder: Option[Ident],
       name: Option[String],
-      notes: Option[String]
+      notes: Option[String],
+      lang: Language
   ): TextData =
-    Item(item, collective, folder, name, notes)
+    Item(item, collective, folder, name, notes, lang)
 
 }

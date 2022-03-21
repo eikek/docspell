@@ -576,7 +576,8 @@ object QItem {
       collective: Ident,
       folder: Option[Ident],
       name: String,
-      notes: Option[String]
+      notes: Option[String],
+      language: Language
   )
   def allNameAndNotes(
       coll: Option[Ident],
@@ -584,10 +585,11 @@ object QItem {
       chunkSize: Int
   ): Stream[ConnectionIO, NameAndNotes] = {
     val i = RItem.as("i")
+    val c = RCollective.as("c")
 
     Select(
-      select(i.id, i.cid, i.folder, i.name, i.notes),
-      from(i)
+      select(i.id, i.cid, i.folder, i.name, i.notes, c.language),
+      from(i).innerJoin(c, c.id === i.cid)
     ).where(
       i.state.in(ItemState.validStates) &&?
         itemIds.map(ids => i.id.in(ids)) &&?

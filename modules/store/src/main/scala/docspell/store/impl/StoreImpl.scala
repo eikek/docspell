@@ -24,8 +24,9 @@ final class StoreImpl[F[_]: Async](
     val fileRepo: FileRepository[F],
     jdbc: JdbcConfig,
     ds: DataSource,
-    xa: Transactor[F]
+    val transactor: Transactor[F]
 ) extends Store[F] {
+  private[this] val xa = transactor
 
   def createFileRepository(
       cfg: FileRepositoryConfig,

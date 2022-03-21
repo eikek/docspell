@@ -323,8 +323,8 @@ full detail.
 These are a set of commands that simply call a route at the server to
 submit a maintenance task or to reset the password of some user. These
 commands require the [admin
-secret](@/docs/configure/_index.md#admin-endpoint) either in the
-config file or as an argument.
+secret](@/docs/configure/admin-endpoint.md) either in the config file
+or as an argument.
 
 ### Reset user password
 

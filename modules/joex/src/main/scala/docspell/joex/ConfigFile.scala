@@ -9,7 +9,7 @@ package docspell.joex
 import cats.effect.Async
 
 import docspell.config.Implicits._
-import docspell.config.{ConfigFactory, Validation}
+import docspell.config.{ConfigFactory, FtsType, Validation}
 import docspell.scheduler.CountingScheme
 
 import emil.MailAddress
@@ -53,6 +53,14 @@ object ConfigFile {
         cfg => cfg.updateCheck.enabled && cfg.updateCheck.subject.els.isEmpty,
         "No subject given for enabled update check!"
       ),
-      Validation(cfg => cfg.files.validate.map(_ => cfg))
+      Validation(cfg => cfg.files.validate.map(_ => cfg)),
+      Validation.failWhen(
+        cfg =>
+          cfg.fullTextSearch.enabled &&
+            cfg.fullTextSearch.backend == FtsType.PostgreSQL &&
+            cfg.fullTextSearch.postgresql.useDefaultConnection &&
+            !cfg.jdbc.dbmsName.contains("postgresql"),
+        s"PostgreSQL defined fulltext search backend with default-connection, which is not a PostgreSQL connection!"
+      )
     )
 }
