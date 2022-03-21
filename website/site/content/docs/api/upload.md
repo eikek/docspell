@@ -163,7 +163,7 @@ on the same host or network).
 
 The endpoint is disabled by default, an admin must change the
 `docspell.server.integration-endpoint.enabled` flag to `true` in the
-[configuration file](@/docs/configure/_index.md#rest-server).
+[configuration file](@/docs/configure/main.md#rest-server).
 
 If queried by a `GET` request, it returns whether it is enabled and
 the collective exists.

@@ -11,7 +11,8 @@ Docspell has built-in support for two-factor (2FA) authentication
 using
 [TOTP](https://en.wikipedia.org/wiki/Time-based_One-Time_Password)s.
 For anything more, consider a dedicated account management tool and
-[OpenID Connect](@/docs/configure/_index.md#openid-connect-oauth2).
+[OpenID
+Connect](@/docs/configure/authentication.md#openid-connect-oauth2).
 
 ## Setup
 
@@ -65,7 +66,7 @@ client](@/docs/tools/cli.md) to execute an admin command that removes
 2FA for a given user.
 
 For this to work, you need to [enable the admin
-endpoint](@/docs/configure/_index.md#admin-endpoint). Then execute the
+endpoint](@/docs/configure/admin-endpoint.md). Then execute the
 `disable-2fa` admin command and specify the complete account.
 
 ```

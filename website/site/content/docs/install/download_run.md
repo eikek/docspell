@@ -74,9 +74,10 @@ $ ./docspell-joex*/bin/docspell-joex
 ```
 
 This will startup both components using the default configuration.
-Please refer to the [configuration page](@/docs/configure/_index.md)
-for how to create a custom config file. Once you have your config
-file, simply pass it as argument to the command:
+Please refer to the [configuration
+page](@/docs/configure/main.md) for how to create a custom
+config file. Once you have your config file, simply pass it as
+argument to the command:
 
 ```
 $ ./docspell-restserver*/bin/docspell-restserver /path/to/server-config.conf
@@ -110,7 +111,7 @@ Fulltext search is powered by [SOLR](https://solr.apache.org). You
 need to install solr and create a core for docspell. Then cange the
 solr url for both components (restserver and joex) accordingly. See
 the relevant section in the [config
-page](@/docs/configure/_index.md#full-text-search).
+page](@/docs/configure/fulltext-search.md).
 
 
 ### Watching a directory

@@ -14,7 +14,8 @@ template = "docs.html"
 - Handle multiple documents as one unit
 - OCR using [tesseract](https://github.com/tesseract-ocr/tesseract)
 - [Full-Text Search](@/docs/webapp/finding.md#full-text-search) based
-  on [Apache SOLR](https://solr.apache.org)
+  on [Apache SOLR](https://solr.apache.org) or [PostgreSQL's text
+  search](https://www.postgresql.org/docs/14/textsearch.html)
 - Conversion to PDF: all files are converted into a PDF file. PDFs
   with only images (as often returned from scanners) are converted
   into searchable PDF/A pdfs.
@@ -36,7 +37,8 @@ template = "docs.html"
   [REST Api](@/docs/api/_index.md); allows to [generate
   clients](https://openapi-generator.tech/docs/generators) for many
   languages
-- [OpenID Connect](@/docs/configure/_index.md#openid-connect-oauth2)
+- [OpenID
+  Connect](@/docs/configure/authentication.md#openid-connect-oauth2)
   support allows Docspell to integrate into your SSO setup, for
   example with keycloak.
 - Two-Factor Authentication using [TOTP](@/docs/webapp/totp.md) built
