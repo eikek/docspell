@@ -110,7 +110,7 @@ Fulltext search is powered by [SOLR](https://solr.apache.org). You
 need to install solr and create a core for docspell. Then cange the
 solr url for both components (restserver and joex) accordingly. See
 the relevant section in the [config
-page](@/docs/configure/_index.md#full-text-search-solr).
+page](@/docs/configure/_index.md#full-text-search).
 
 
 ### Watching a directory
