@@ -1,5 +1,5 @@
 +++
-title = "Features and Limitations"
+title = "Features"
 weight = 9
 insert_anchor_links = "right"
 description = "A list of features and limitations."
@@ -14,8 +14,9 @@ template = "docs.html"
 - Handle multiple documents as one unit
 - OCR using [tesseract](https://github.com/tesseract-ocr/tesseract)
 - [Full-Text Search](@/docs/webapp/finding.md#full-text-search) based
-  on [Apache SOLR](https://solr.apache.org) or [PostgreSQL's text
-  search](https://www.postgresql.org/docs/14/textsearch.html)
+  on [Apache SOLR](@/docs/configure/fulltext-search.md#solr) or
+  [PostgreSQL's text
+  search](@/docs/configure/fulltext-search.md#postgresql)
 - Conversion to PDF: all files are converted into a PDF file. PDFs
   with only images (as often returned from scanners) are converted
   into searchable PDF/A pdfs.
@@ -64,6 +65,9 @@ template = "docs.html"
 - Everything stored in a SQL database: PostgreSQL, MariaDB or H2
   - H2 is embedded, a "one-file-only" database, avoids installing db
     servers
+- Choose a [file backend](@/docs/configure/file-backends.md) to store
+  files right in the database, in a S3 compatible storage or also use
+  the filesystem directly
 - Support for encrypted PDFs
 - Files supported:
   - Documents:

@@ -11,12 +11,17 @@ template = "docs.html"
 
 ## Where are my files stored?
 
-Everything, including all files, are stored in the database.
+Everything, including all files, are stored in the database by
+default.
 
-Now that seems to put off some people coming to Docspell, so here are
-some thoughts on why this is and why it may be not such a big deal. It
-was a conscious decision and the option to hold all files in the file
-system was considered, but not chosen in the end.
+For the files there are alternatives: you can configure a S3 storage
+and even using the filesystem directly is possible. I wouldn't
+recommend the latter, especially not if networks are between the
+nodes. The recommended default is using the database, as it was the
+only way until 0.34.0, thus the others are not well battle tested.
+
+Here are some thoughts on why the decision was made for using the
+database only previous to 0.34.0.
 
 First, it was clear that a database *is* required in order to support
 the planned features. It is required to efficiently support a

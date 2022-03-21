@@ -1,5 +1,5 @@
 +++
-title = "Feed Data into Docspell"
+title = "Documents → Docspell"
 weight = 8
 description = "Shows several ways for getting data into Docspell."
 insert_anchor_links = "right"
