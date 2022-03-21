@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.33.0
+                    0.34.0
                 </div>
             </div>
 
@@ -236,7 +236,7 @@
            title="Shows several ways for getting data into Docspell."
            class="block w-full"
         >
-            Feed Data Into Docspell
+            Documents → Docspell
         </a>
     </div>
     
@@ -256,7 +256,7 @@
            title="A list of features and limitations."
            class="block w-full"
         >
-            Features And Limitations
+            Features
         </a>
     </div>
     
@@ -272,12 +272,76 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;main&#x2F;"
            title="Describes the configuration file and shows all default settings."
            class="block w-full"
         >
             Configuration
         </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/main/" class="w-full block">
+                Main
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/bind/" class="w-full block">
+                Bind
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/database/" class="w-full block">
+                Database
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/file-backends/" class="w-full block">
+                File Backends
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/fulltext-search/" class="w-full block">
+                Full-Text Search
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/admin-endpoint/" class="w-full block">
+                Admin Endpoint
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/authentication/" class="w-full block">
+                Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/registration/" class="w-full block">
+                Registration
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/baseurl/" class="w-full block">
+                Base Url
+            </a>
+        </div>
+        
     </div>
     
 
@@ -675,7 +739,7 @@ protected <code>/sec/*</code> routes. It can be either specfied as a cookie or
 via the header <code>Docspell-Share-Auth</code>.</p>
 <h3 id="openid-connect">OpenID Connect<a class="zola-anchor" href="#openid-connect" aria-label="Anchor link for: openid-connect">🔗</a></h3>
 <p>Docspell can be configured to be a relying party for OpenID Connect.
-Please see <a href="https://docspell.org/docs/configure/#openid-connect-oauth2">the config
+Please see <a href="https://docspell.org/docs/configure/authentication/#openid-connect-oauth2">the config
 section</a> for
 details.</p>
 <h2 id="admin">Admin<a class="zola-anchor" href="#admin" aria-label="Anchor link for: admin">🔗</a></h2>
@@ -690,7 +754,7 @@ requests must provide it as a http header <code>Docspell-Admin-Secret</code>.</p
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> curl<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>XPOST</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>H</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>Docspell-Admin-Secret: test123<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> http://localhost:7880/api/v1/admin/fts/reIndexAll</span>
 </span></code></pre>
 <p>To enable these endpoints, you must provide a secret in the
-<a href="https://docspell.org/docs/configure/#admin-endpoint">configuration</a>.</p>
+<a href="https://docspell.org/docs/configure/admin-endpoint/">configuration</a>.</p>
 <h2 id="live-api">Live Api<a class="zola-anchor" href="#live-api" aria-label="Anchor link for: live-api">🔗</a></h2>
 <p>Besides the statically generated documentation at this site, the rest
 server provides a swagger generated api documenation, that allows
@@ -808,7 +872,7 @@ url:</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.33.0
+            Docspell 0.34.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

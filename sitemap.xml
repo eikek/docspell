@@ -34,6 +34,36 @@
         <loc>https://docspell.org/docs/configure/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/configure/admin-endpoint/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/configure/authentication/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/configure/baseurl/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/configure/bind/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/configure/database/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/configure/file-backends/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/configure/file-processing/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/configure/fulltext-search/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/configure/main/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/configure/registration/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/dev/</loc>
     </url>
     <url>

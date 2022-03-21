@@ -20,7 +20,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Features and Limitations - Docspell">
+<meta name="og:site_name" content="Features - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -33,7 +33,7 @@
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
 
-        <title>Features and Limitations - Docspell Documentatios</title>
+        <title>Features - Docspell Documentatios</title>
         <link rel="stylesheet" href="/styles.css">
 
         <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.33.0
+                    0.34.0
                 </div>
             </div>
 
@@ -236,7 +236,7 @@
            title="Shows several ways for getting data into Docspell."
            class="block w-full"
         >
-            Feed Data Into Docspell
+            Documents → Docspell
         </a>
     </div>
     
@@ -256,7 +256,7 @@
            title="A list of features and limitations."
            class="block w-full"
         >
-            Features And Limitations
+            Features
         </a>
     </div>
     
@@ -272,12 +272,76 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;main&#x2F;"
            title="Describes the configuration file and shows all default settings."
            class="block w-full"
         >
             Configuration
         </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/main/" class="w-full block">
+                Main
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/bind/" class="w-full block">
+                Bind
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/database/" class="w-full block">
+                Database
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/file-backends/" class="w-full block">
+                File Backends
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/fulltext-search/" class="w-full block">
+                Full-Text Search
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/admin-endpoint/" class="w-full block">
+                Admin Endpoint
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/authentication/" class="w-full block">
+                Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/registration/" class="w-full block">
+                Registration
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/baseurl/" class="w-full block">
+                Base Url
+            </a>
+        </div>
+        
     </div>
     
 
@@ -642,7 +706,9 @@ account)</li>
 <li>Handle multiple documents as one unit</li>
 <li>OCR using <a href="https://github.com/tesseract-ocr/tesseract">tesseract</a></li>
 <li><a href="https://docspell.org/docs/webapp/finding/#full-text-search">Full-Text Search</a> based
-on <a href="https://solr.apache.org">Apache SOLR</a></li>
+on <a href="https://docspell.org/docs/configure/fulltext-search/#solr">Apache SOLR</a> or
+<a href="https://docspell.org/docs/configure/fulltext-search/#postgresql">PostgreSQL's text
+search</a></li>
 <li>Conversion to PDF: all files are converted into a PDF file. PDFs
 with only images (as often returned from scanners) are converted
 into searchable PDF/A pdfs.</li>
@@ -664,7 +730,8 @@ jobs, set priorities</li>
 <a href="https://docspell.org/docs/api/">REST Api</a>; allows to <a href="https://openapi-generator.tech/docs/generators">generate
 clients</a> for many
 languages</li>
-<li><a href="https://docspell.org/docs/configure/#openid-connect-oauth2">OpenID Connect</a>
+<li><a href="https://docspell.org/docs/configure/authentication/#openid-connect-oauth2">OpenID
+Connect</a>
 support allows Docspell to integrate into your SSO setup, for
 example with keycloak.</li>
 <li>Two-Factor Authentication using <a href="https://docspell.org/docs/webapp/totp/">TOTP</a> built
@@ -693,6 +760,9 @@ can be scaled-out independently</li>
 servers</li>
 </ul>
 </li>
+<li>Choose a <a href="https://docspell.org/docs/configure/file-backends/">file backend</a> to store
+files right in the database, in a S3 compatible storage or also use
+the filesystem directly</li>
 <li>Support for encrypted PDFs</li>
 <li>Files supported:
 <ul>
@@ -747,7 +817,7 @@ considering docspell at the moment.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.33.0
+            Docspell 0.34.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

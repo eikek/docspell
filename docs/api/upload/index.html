@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.33.0
+                    0.34.0
                 </div>
             </div>
 
@@ -236,7 +236,7 @@
            title="Shows several ways for getting data into Docspell."
            class="block w-full"
         >
-            Feed Data Into Docspell
+            Documents → Docspell
         </a>
     </div>
     
@@ -256,7 +256,7 @@
            title="A list of features and limitations."
            class="block w-full"
         >
-            Features And Limitations
+            Features
         </a>
     </div>
     
@@ -272,12 +272,76 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;"
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;main&#x2F;"
            title="Describes the configuration file and shows all default settings."
            class="block w-full"
         >
             Configuration
         </a>
+    </div>
+    
+    <div class="mb-2">
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/main/" class="w-full block">
+                Main
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/bind/" class="w-full block">
+                Bind
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/database/" class="w-full block">
+                Database
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/file-backends/" class="w-full block">
+                File Backends
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/file-processing/" class="w-full block">
+                File Processing
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/fulltext-search/" class="w-full block">
+                Full-Text Search
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/admin-endpoint/" class="w-full block">
+                Admin Endpoint
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/authentication/" class="w-full block">
+                Authentication
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/registration/" class="w-full block">
+                Registration
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/baseurl/" class="w-full block">
+                Base Url
+            </a>
+        </div>
+        
     </div>
     
 
@@ -672,6 +736,7 @@ specified via a JSON structure in a part with name <code>meta</code>:</p>
 <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> fileFilter<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
 <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> language<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
 <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> attachmentsOnly<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
+<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> flattenArchives<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
 <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <ul>
@@ -727,6 +792,18 @@ used.</p>
 only the attachments are imported. An e-mail without any attachments
 is therefore skipped.</p>
 </li>
+<li>
+<p><code>flattenArchives</code> is flag to control how zip files are treated. When
+this is <code>false</code> (the default), then one zip file results in one item
+and its contents are the attachments. If you rather want the
+contents to be treated as independent files, then set this to
+<code>true</code>. This will submit each entry in the zip file as a separate
+processing job. Note: when this is <code>true</code> the zip file is just a
+container and doesn't contain other useful information and therefore
+is <em>NOT</em> kept in docspell, only its contents are. Also note that
+only the uploaded zip files are extracted once (not recursively), so
+if it contains other zip files, they are treated as normal.</p>
+</li>
 </ul>
 <h1 id="endpoints">Endpoints<a class="zola-anchor" href="#endpoints" aria-label="Anchor link for: endpoints">🔗</a></h1>
 <p>Docspell needs to know the collective that owns the files. There are
@@ -767,7 +844,7 @@ be useful to connect other trusted applications to docspell (that run
 on the same host or network).</p>
 <p>The endpoint is disabled by default, an admin must change the
 <code>docspell.server.integration-endpoint.enabled</code> flag to <code>true</code> in the
-<a href="https://docspell.org/docs/configure/#rest-server">configuration file</a>.</p>
+<a href="https://docspell.org/docs/configure/main/#rest-server">configuration file</a>.</p>
 <p>If queried by a <code>GET</code> request, it returns whether it is enabled and
 the collective exists.</p>
 <p>It is also possible to check for existing files using their sha256
@@ -787,7 +864,7 @@ this endpoint.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.33.0
+            Docspell 0.34.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
