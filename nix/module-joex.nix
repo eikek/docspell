@@ -213,12 +213,24 @@ Docpell Update Check
     };
     full-text-search = {
       enabled = false;
+      backend = "solr";
       solr = {
         url = "http://localhost:8983/solr/docspell";
         commit-within = 1000;
         log-verbose = false;
         def-type = "lucene";
         q-op = "OR";
+      };
+      postgresql = {
+        use-default-connection = false;
+        jdbc = {
+          url = "jdbc:postgresql://server:5432/db";
+          user = "pguser";
+          password = "";
+        };
+        pg-config = {};
+        pg-query-parser = "websearch_to_tsquery";
+        pg-rank-normalization = [ 4 ];
       };
       migration = {
         index-all-chunk = 10;
@@ -1371,6 +1383,12 @@ in {
                 Currently the SOLR search platform is supported.
               '';
             };
+            backend = mkOption {
+              type = types.str;
+              default = defaults.full-text-search.backend;
+              description = "The backend to use, either solr or postgresql";
+            };
+
             solr = mkOption {
               type = types.submodule({
                 options = {
@@ -1408,6 +1426,61 @@ in {
               default = defaults.full-text-search.solr;
               description = "Configuration for the SOLR backend.";
             };
+
+            postgresql = mkOption {
+              type = types.submodule({
+                options = {
+                  use-default-connection = mkOption {
+                    type = types.bool;
+                    default = defaults.full-text-search.postgresql.use-default-connection;
+                    description = "Whether to use the primary db connection.";
+                  };
+                  jdbc = mkOption {
+                    type = types.submodule ({
+                      options = {
+                        url = mkOption {
+                          type = types.str;
+                          default = defaults.jdbc.url;
+                          description = ''
+                            The URL to the database.
+                          '';
+                        };
+                        user = mkOption {
+                          type = types.str;
+                          default = defaults.jdbc.user;
+                          description = "The user name to connect to the database.";
+                        };
+                        password = mkOption {
+                          type = types.str;
+                          default = defaults.jdbc.password;
+                          description = "The password to connect to the database.";
+                        };
+                      };
+                    });
+                    default = defaults.full-text-search.postgresql.jdbc;
+                    description = "Database connection settings";
+                  };
+                  pg-config = mkOption {
+                    type = types.attrs;
+                    default = defaults.full-text-search.postgresql.pg-config;
+                    description = "";
+                  };
+                  pg-query-parser = mkOption {
+                    type = types.str;
+                    default = defaults.full-text-search.postgresql.pg-query-parser;
+                    description = "";
+                  };
+                  pg-rank-normalization = mkOption {
+                    type = types.listOf types.int;
+                    default = defaults.full-text-search.postgresql.pg-rank-normalization;
+                    description = "";
+                  };
+                };
+              });
+              default = defaults.full-text-search.postgresql;
+              description = "PostgreSQL for fulltext search";
+            };
+
             migration = mkOption {
               type = types.submodule({
                 options = {
