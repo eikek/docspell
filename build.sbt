@@ -999,8 +999,7 @@ def compileElm(
   val cmd = (Seq("elm", "make")
     ++ mode.flags
     ++ Seq("--output", target.toString)
-    ++ Seq(wd / "src" / "main" / "elm" / "Main.elm").map(_.toString)
-    )
+    ++ Seq(wd / "src" / "main" / "elm" / "Main.elm").map(_.toString))
   Cmd.run(cmd, wd, logger)
   val targetGZ = file(target.toString + ".gz")
   IO.gzip(target, targetGZ)
