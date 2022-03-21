@@ -784,7 +784,7 @@ mainTagsAndFields2 texts settings extraCss item =
     div
         [ classList
             [ ( "flex flex-row items-center flex-wrap font-medium", True )
-            , ( "hidden", hideTags && hideFields )
+            , ( "hidden", hideTags && hideFields && List.isEmpty item.relatedItems )
             ]
         , class extraCss
         ]
