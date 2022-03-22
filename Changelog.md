@@ -406,7 +406,7 @@ Complete
 
 - Joex: A new section for configuring the update task has been added.
   See section `update-check` in the default [config
-  file](https://docspell.org/docs/configure/#joex).
+  file](https://docspell.org/docs/configure/main/#joex).
 
 
 ## v0.25.1
@@ -791,7 +791,7 @@ Please open an issue if want more languages to be included.
   - all text analysis steps are now configurable that makes it
     possible to adapt it better to your data and machine. 
   - The docs have been updated with some details
-    [here](https://docspell.org/docs/configure/#file-processing) and
+    [here](https://docspell.org/docs/configure/file-processing/) and
     [here](https://docspell.org/docs/joex/file-processing/#text-analysis).
 - more languages (#488)
   - Adds: Spanish, Italian, Portuguese, Czech, Dutch, Danish, Finnish,
@@ -855,8 +855,8 @@ Please open an issue if want more languages to be included.
   - the config regarding text analysis changed, there are new config
     options, like `nlp.mode` and the `max-due-date-years` has been
     moved inside `text-anlysis`. Please have a look at the new
-    [default config](https://docspell.org/docs/configure/#joex) if you
-    changed something there.
+    [default config](https://docspell.org/docs/configure/main/#joex)
+    if you changed something there.
   - The `regex-ner` section has changed: the `enabled` flag has been
     removed, you can now limit the number of entries using
     `max-entries` to apply and `0` means to disable it.
