@@ -97,4 +97,20 @@ object StoreFixture {
       store = new StoreImpl[IO](fr, jdbc, ds, xa)
       _ <- Resource.eval(store.migrate)
     } yield store
+
+  def restoreH2Dump(resourceName: String, ds: DataSource): IO[Unit] =
+    Option(getClass.getResource(resourceName)).map(_.getFile) match {
+      case Some(file) =>
+        IO {
+          org.log4s.getLogger.info(s"Restoring dump from $file")
+          val stmt = ds.getConnection.createStatement()
+          val sql = s"RUNSCRIPT FROM '$file'"
+          stmt.execute(sql)
+          stmt.close()
+        }
+
+      case None =>
+        IO.raiseError(new Exception(s"Resource not found: $resourceName"))
+    }
+
 }

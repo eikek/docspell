@@ -6,6 +6,7 @@
 
 package docspell.store.migrate
 
+import cats.data.OptionT
 import cats.effect.Sync
 import cats.implicits._
 
@@ -59,11 +60,16 @@ class FlywayMigrate[F[_]: Sync](jdbc: JdbcConfig, xa: Transactor[F]) {
       case true =>
         ().pure[F]
       case false =>
-        for {
-          fw <- createFlyway(MigrationKind.Fixups)
-          _ <- logger.info(s"!!! Running fixup migrations")
-          _ <- Sync[F].blocking(fw.migrate())
-        } yield ()
+        (for {
+          current <- OptionT(getSchemaVersion)
+          _ <- OptionT
+            .fromOption[F](versionComponents(current))
+            .filter(v => v._1 >= 1 && v._2 >= 33)
+          fw <- OptionT.liftF(createFlyway(MigrationKind.Fixups))
+          _ <- OptionT.liftF(logger.info(s"!!! Running fixup migrations"))
+          _ <- OptionT.liftF(Sync[F].blocking(fw.migrate()))
+        } yield ())
+          .getOrElseF(logger.info(s"Fixup migrations not applied."))
     }
 
   private def isSchemaEmpty: F[Boolean] =
@@ -73,6 +79,19 @@ class FlywayMigrate[F[_]: Sync](jdbc: JdbcConfig, xa: Transactor[F]) {
       .attemptSql
       .transact(xa)
       .map(_.isLeft)
+
+  private def getSchemaVersion: F[Option[String]] =
+    sql"select version from flyway_schema_history where success = true order by installed_rank desc limit 1"
+      .query[String]
+      .option
+      .transact(xa)
+
+  private def versionComponents(v: String): Option[(Int, Int, Int)] =
+    v.split('.').toList.map(_.toIntOption) match {
+      case Some(a) :: Some(b) :: Some(c) :: Nil =>
+        Some((a, b, c))
+      case _ => None
+    }
 }
 
 object FlywayMigrate {
