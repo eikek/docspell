@@ -20,7 +20,6 @@ import docspell.restserver.http4s.ResponseGenerator
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.multipart.Multipart
 import org.log4s._
 
 object UploadRoutes {
@@ -80,17 +79,26 @@ object UploadRoutes {
   ): F[Response[F]] = {
     import dsl._
 
-    for {
-      multipart <- req.as[Multipart[F]]
-      updata <- readMultipart(
-        multipart,
-        "webapp",
-        logger,
-        prio,
-        cfg.backend.files.validMimeTypes
-      )
-      result <- backend.upload.submitEither(updata, accOrSrc, true, itemId)
-      res <- Ok(basicResult(result))
-    } yield res
+    val decodeMultipart =
+      EntityDecoder
+        .mixedMultipartResource(
+          maxSizeBeforeWrite = 10 * 1024 * 1024
+        )
+        .evalMap(_.decode(req, strict = false).value)
+        .rethrow
+
+    decodeMultipart.use { multipart =>
+      for {
+        updata <- readMultipart(
+          multipart,
+          "webapp",
+          logger,
+          prio,
+          cfg.backend.files.validMimeTypes
+        )
+        result <- backend.upload.submitEither(updata, accOrSrc, itemId)
+        res <- Ok(basicResult(result))
+      } yield res
+    }
   }
 }

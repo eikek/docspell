@@ -17,7 +17,9 @@ import docspell.store.migrate.FlywayMigrate
 
 import doobie._
 import munit._
-import org.h2.jdbcx.JdbcConnectionPool
+import org.h2.jdbcx.{JdbcConnectionPool, JdbcDataSource}
+import org.mariadb.jdbc.MariaDbDataSource
+import org.postgresql.ds.PGConnectionPoolDataSource
 
 trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
 
@@ -26,7 +28,7 @@ trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
     for {
       ds <- StoreFixture.dataSource(cfg)
       xa <- StoreFixture.makeXA(ds)
-      _ <- Resource.eval(FlywayMigrate.run[IO](cfg))
+      _ <- Resource.eval(FlywayMigrate[IO](cfg, xa).run)
     } yield xa
   }
 
@@ -52,7 +54,30 @@ object StoreFixture {
 
   def dataSource(jdbc: JdbcConfig): Resource[IO, JdbcConnectionPool] = {
     def jdbcConnPool =
-      JdbcConnectionPool.create(jdbc.url.asString, jdbc.user, jdbc.password)
+      jdbc.dbmsName match {
+        case Some("mariadb") =>
+          val ds = new MariaDbDataSource()
+          ds.setUrl(jdbc.url.asString)
+          ds.setUser(jdbc.user)
+          ds.setPassword(jdbc.password)
+          JdbcConnectionPool.create(ds)
+
+        case Some("postgresql") =>
+          val ds = new PGConnectionPoolDataSource()
+          ds.setURL(jdbc.url.asString)
+          ds.setUser(jdbc.user)
+          ds.setPassword(jdbc.password)
+          JdbcConnectionPool.create(ds)
+
+        case Some("h2") =>
+          val ds = new JdbcDataSource()
+          ds.setURL(jdbc.url.asString)
+          ds.setUser(jdbc.user)
+          ds.setPassword(jdbc.password)
+          JdbcConnectionPool.create(ds)
+
+        case n => sys.error(s"Unknown db name: $n")
+      }
 
     Resource.make(IO(jdbcConnPool))(cp => IO(cp.dispose()))
   }
@@ -72,4 +97,20 @@ object StoreFixture {
       store = new StoreImpl[IO](fr, jdbc, ds, xa)
       _ <- Resource.eval(store.migrate)
     } yield store
+
+  def restoreH2Dump(resourceName: String, ds: DataSource): IO[Unit] =
+    Option(getClass.getResource(resourceName)).map(_.getFile) match {
+      case Some(file) =>
+        IO {
+          org.log4s.getLogger.info(s"Restoring dump from $file")
+          val stmt = ds.getConnection.createStatement()
+          val sql = s"RUNSCRIPT FROM '$file'"
+          stmt.execute(sql)
+          stmt.close()
+        }
+
+      case None =>
+        IO.raiseError(new Exception(s"Resource not found: $resourceName"))
+    }
+
 }

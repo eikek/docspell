@@ -59,7 +59,7 @@ via the header `Docspell-Share-Auth`.
 
 Docspell can be configured to be a relying party for OpenID Connect.
 Please see [the config
-section](@/docs/configure/_index.md#openid-connect-oauth2) for
+section](@/docs/configure/authentication.md#openid-connect-oauth2) for
 details.
 
 
@@ -80,7 +80,7 @@ $ curl -XPOST -H "Docspell-Admin-Secret: test123" http://localhost:7880/api/v1/a
 ```
 
 To enable these endpoints, you must provide a secret in the
-[configuration](@/docs/configure/_index.md#admin-endpoint).
+[configuration](@/docs/configure/admin-endpoint.md).
 
 ## Live Api
 

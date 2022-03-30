@@ -52,6 +52,9 @@ object RestServer {
               BlazeServerBuilder[F]
                 .bindHttp(cfg.bind.port, cfg.bind.address)
                 .withoutBanner
+                .withResponseHeaderTimeout(cfg.serverOptions.responseTimeout.toScala)
+                .enableHttp2(cfg.serverOptions.enableHttp2)
+                .withMaxConnections(cfg.serverOptions.maxConnections)
                 .withHttpWebSocketApp(
                   createHttpApp(setting, pubSub, restApp)
                 )
@@ -85,7 +88,7 @@ object RestServer {
         store,
         httpClient
       )(Topics.all.map(_.topic))
-      restApp <- RestAppImpl.create[F](cfg, store, httpClient, pubSub, wsTopic)
+      restApp <- RestAppImpl.create[F](cfg, pools, store, httpClient, pubSub, wsTopic)
     } yield (restApp, pubSub, setting)
 
   def createHttpApp[F[_]: Async](

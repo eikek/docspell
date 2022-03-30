@@ -9,11 +9,12 @@ package docspell.restserver
 import docspell.backend.auth.Login
 import docspell.backend.{Config => BackendConfig}
 import docspell.common._
+import docspell.config.{FtsType, PgFtsConfig}
 import docspell.ftssolr.SolrConfig
 import docspell.logging.LogConfig
 import docspell.oidc.ProviderConfig
 import docspell.pubsub.naive.PubSubConfig
-import docspell.restserver.Config.OpenIdConfig
+import docspell.restserver.Config.{OpenIdConfig, ServerOptions}
 import docspell.restserver.auth.OpenId
 import docspell.restserver.http4s.InternalHeader
 
@@ -26,6 +27,7 @@ case class Config(
     internalUrl: LenientUri,
     logging: LogConfig,
     bind: Config.Bind,
+    serverOptions: ServerOptions,
     backend: BackendConfig,
     auth: Login.Config,
     showClassificationSettings: Boolean,
@@ -50,6 +52,11 @@ case class Config(
 
 object Config {
 
+  case class ServerOptions(
+      responseTimeout: Duration,
+      enableHttp2: Boolean,
+      maxConnections: Int
+  )
   case class Bind(address: String, port: Int)
 
   case class AdminEndpoint(secret: String)
@@ -86,7 +93,26 @@ object Config {
     }
   }
 
-  case class FullTextSearch(enabled: Boolean, solr: SolrConfig)
+  case class FullTextSearch(
+      enabled: Boolean,
+      backend: FtsType,
+      solr: SolrConfig,
+      postgresql: PgFtsConfig
+  ) {
+
+    def info: String =
+      if (!enabled) "Disabled."
+      else
+        backend match {
+          case FtsType.Solr =>
+            s"Solr(${solr.url.asString})"
+          case FtsType.PostgreSQL =>
+            if (postgresql.useDefaultConnection)
+              "PostgreSQL(default)"
+            else
+              s"PostgreSQL(${postgresql.jdbc.url.asString})"
+        }
+  }
 
   object FullTextSearch {}
 

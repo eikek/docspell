@@ -1,5 +1,4 @@
 import com.github.eikek.sbt.openapi._
-import scala.sys.process._
 import com.typesafe.sbt.SbtGit.GitKeys._
 import docspell.build._
 import de.heikoseeberger.sbtheader.CommentBlockCreator
@@ -319,19 +318,6 @@ val common = project
   )
   .dependsOn(loggingApi)
 
-val config = project
-  .in(file("modules/config"))
-  .disablePlugins(RevolverPlugin)
-  .settings(sharedSettings)
-  .withTestSettings
-  .settings(
-    name := "docspell-config",
-    libraryDependencies ++=
-      Dependencies.fs2 ++
-        Dependencies.pureconfig
-  )
-  .dependsOn(common, loggingApi)
-
 val loggingScribe = project
   .in(file("modules/logging/scribe"))
   .disablePlugins(RevolverPlugin)
@@ -619,6 +605,20 @@ val ftssolr = project
   )
   .dependsOn(common, ftsclient)
 
+val ftspsql = project
+  .in(file("modules/fts-psql"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettings
+  .settings(
+    name := "docspell-fts-psql",
+    libraryDependencies ++=
+      Dependencies.doobie ++
+        Dependencies.postgres ++
+        Dependencies.flyway
+  )
+  .dependsOn(common, ftsclient, store % "compile->test;test->test")
+
 val restapi = project
   .in(file("modules/restapi"))
   .disablePlugins(RevolverPlugin)
@@ -715,6 +715,20 @@ val webapp = project
   )
   .dependsOn(query.js)
 
+// Config project shared among the two applications only
+val config = project
+  .in(file("modules/config"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettings
+  .settings(
+    name := "docspell-config",
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+        Dependencies.pureconfig
+  )
+  .dependsOn(common, loggingApi, ftspsql, store)
+
 // --- Application(s)
 
 val joex = project
@@ -769,6 +783,7 @@ val joex = project
     joexapi,
     restapi,
     ftssolr,
+    ftspsql,
     pubsubNaive,
     notificationImpl,
     schedulerImpl
@@ -841,6 +856,7 @@ val restserver = project
     backend,
     webapp,
     ftssolr,
+    ftspsql,
     oidc,
     pubsubNaive,
     notificationImpl,
@@ -926,6 +942,7 @@ val root = project
     analysis,
     ftsclient,
     ftssolr,
+    ftspsql,
     files,
     store,
     joexapi,
@@ -997,13 +1014,11 @@ def compileElm(
   logger.info("Compile elm files ...")
   val target =
     outBase / "META-INF" / "resources" / "webjars" / artifact / version / "docspell-app.js"
-  val cmd = Seq("elm", "make") ++ mode.flags ++ Seq("--output", target.toString)
-  val proc = Process(
-    cmd ++ Seq(wd / "src" / "main" / "elm" / "Main.elm").map(_.toString),
-    Some(wd)
-  )
-  val out = proc.!!
-  logger.info(out)
+  val cmd = (Seq("elm", "make")
+    ++ mode.flags
+    ++ Seq("--output", target.toString)
+    ++ Seq(wd / "src" / "main" / "elm" / "Main.elm").map(_.toString))
+  Cmd.run(cmd, wd, logger)
   val targetGZ = file(target.toString + ".gz")
   IO.gzip(target, targetGZ)
   Seq(target, targetGZ)

@@ -24,8 +24,9 @@ final class StoreImpl[F[_]: Async](
     val fileRepo: FileRepository[F],
     jdbc: JdbcConfig,
     ds: DataSource,
-    xa: Transactor[F]
+    val transactor: Transactor[F]
 ) extends Store[F] {
+  private[this] val xa = transactor
 
   def createFileRepository(
       cfg: FileRepositoryConfig,
@@ -37,7 +38,7 @@ final class StoreImpl[F[_]: Async](
     FunctionK.lift(transact)
 
   def migrate: F[Int] =
-    FlywayMigrate.run[F](jdbc).map(_.migrationsExecuted)
+    FlywayMigrate[F](jdbc, xa).run.map(_.migrationsExecuted)
 
   def transact[A](prg: ConnectionIO[A]): F[A] =
     prg.transact(xa)

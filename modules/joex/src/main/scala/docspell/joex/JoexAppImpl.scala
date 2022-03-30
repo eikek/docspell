@@ -102,7 +102,8 @@ object JoexAppImpl extends MailAddressCodec {
       termSignal: SignallingRef[F, Boolean],
       store: Store[F],
       httpClient: Client[F],
-      pubSub: PubSub[F]
+      pubSub: PubSub[F],
+      pools: Pools
   ): Resource[F, JoexApp[F]] =
     for {
       joexLogger <- Resource.pure(docspell.logging.getLogger[F](s"joex-${cfg.appId.id}"))
@@ -120,6 +121,7 @@ object JoexAppImpl extends MailAddressCodec {
 
       tasks <- JoexTasks.resource(
         cfg,
+        pools,
         jobStoreModule,
         httpClient,
         pubSubT,

@@ -68,19 +68,24 @@ trait FtsClient[F[_]] {
       logger: Logger[F],
       itemId: Ident,
       collective: Ident,
+      language: Language,
       name: String
   ): F[Unit] =
-    updateIndex(logger, TextData.item(itemId, collective, None, Some(name), None))
+    updateIndex(
+      logger,
+      TextData.item(itemId, collective, None, Some(name), None, language)
+    )
 
   def updateItemNotes(
       logger: Logger[F],
       itemId: Ident,
       collective: Ident,
+      language: Language,
       notes: Option[String]
   ): F[Unit] =
     updateIndex(
       logger,
-      TextData.item(itemId, collective, None, None, Some(notes.getOrElse("")))
+      TextData.item(itemId, collective, None, None, Some(notes.getOrElse("")), language)
     )
 
   def updateAttachmentName(
@@ -88,6 +93,7 @@ trait FtsClient[F[_]] {
       itemId: Ident,
       attachId: Ident,
       collective: Ident,
+      language: Language,
       name: Option[String]
   ): F[Unit] =
     updateIndex(
@@ -97,7 +103,7 @@ trait FtsClient[F[_]] {
         attachId,
         collective,
         None,
-        Language.English,
+        language,
         Some(name.getOrElse("")),
         None
       )

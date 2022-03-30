@@ -9,11 +9,11 @@ package docspell.scheduler.impl
 import cats.effect._
 import cats.implicits._
 
-import docspell.common.JobState
+import docspell.common.{Ident, JobState}
 import docspell.notification.api.{Event, EventSink}
 import docspell.pubsub.api.PubSubT
 import docspell.scheduler._
-import docspell.scheduler.msg.JobSubmitted
+import docspell.scheduler.msg.{JobSubmitted, JobsNotify}
 import docspell.store.Store
 
 final class JobStorePublish[F[_]: Sync](
@@ -40,30 +40,42 @@ final class JobStorePublish[F[_]: Sync](
     pubsub.publish1(JobSubmitted.topic, msg(job)).as(()) *>
       eventSink.offer(event(job))
 
+  private def notifyJoex: F[Unit] =
+    pubsub.publish1IgnoreErrors(JobsNotify(), ()).void
+
   def insert(job: Job[String]) =
-    delegate.insert(job).flatTap(_ => publish(job))
+    delegate.insert(job).flatTap(_ => publish(job) *> notifyJoex)
 
   def insertIfNew(job: Job[String]) =
     delegate.insertIfNew(job).flatTap {
-      case true  => publish(job)
+      case true  => publish(job) *> notifyJoex
       case false => ().pure[F]
     }
 
   def insertAll(jobs: Seq[Job[String]]) =
-    delegate.insertAll(jobs).flatTap { results =>
-      results.zip(jobs).traverse { case (res, job) =>
-        if (res) publish(job)
-        else ().pure[F]
+    delegate
+      .insertAll(jobs)
+      .flatTap { results =>
+        results.zip(jobs).traverse { case (res, job) =>
+          if (res) publish(job)
+          else ().pure[F]
+        }
       }
-    }
+      .flatTap(_ => notifyJoex)
 
   def insertAllIfNew(jobs: Seq[Job[String]]) =
-    delegate.insertAllIfNew(jobs).flatTap { results =>
-      results.zip(jobs).traverse { case (res, job) =>
-        if (res) publish(job)
-        else ().pure[F]
+    delegate
+      .insertAllIfNew(jobs)
+      .flatTap { results =>
+        results.zip(jobs).traverse { case (res, job) =>
+          if (res) publish(job)
+          else ().pure[F]
+        }
       }
-    }
+      .flatTap(_ => notifyJoex)
+
+  def findById(jobId: Ident) =
+    delegate.findById(jobId)
 }
 
 object JobStorePublish {

@@ -11,7 +11,7 @@ import cats.effect.unsafe.implicits._
 
 import docspell.common.LenientUri
 import docspell.logging.TestLoggingConfig
-import docspell.store.JdbcConfig
+import docspell.store.{JdbcConfig, StoreFixture}
 
 import com.dimafeng.testcontainers.PostgreSQLContainer
 import com.dimafeng.testcontainers.munit.TestContainerForAll
@@ -23,15 +23,23 @@ class PostgresqlMigrateTest
     with TestContainerForAll
     with TestLoggingConfig {
   override val containerDef: PostgreSQLContainer.Def =
-    PostgreSQLContainer.Def(DockerImageName.parse("postgres:13"))
+    PostgreSQLContainer.Def(DockerImageName.parse("postgres:14"))
 
   test("postgres empty schema migration") {
     assume(Docker.existsUnsafe, "docker doesn't exist!")
     withContainers { cnt =>
       val jdbc =
         JdbcConfig(LenientUri.unsafe(cnt.jdbcUrl), cnt.username, cnt.password)
-      val result = FlywayMigrate.run[IO](jdbc).unsafeRunSync()
-      assert(result.migrationsExecuted > 0)
+
+      val ds = StoreFixture.dataSource(jdbc)
+      val result =
+        ds.flatMap(StoreFixture.makeXA).use { xa =>
+          FlywayMigrate[IO](jdbc, xa).run
+        }
+      assert(result.unsafeRunSync().migrationsExecuted > 0)
+
+      // a second time to apply fixup migrations
+      assert(result.unsafeRunSync().migrationsExecuted == 0)
     }
   }
 }

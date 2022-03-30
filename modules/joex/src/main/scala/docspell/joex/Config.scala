@@ -13,6 +13,7 @@ import docspell.analysis.TextAnalysisConfig
 import docspell.analysis.classifier.TextClassifierConfig
 import docspell.backend.Config.Files
 import docspell.common._
+import docspell.config.{FtsType, PgFtsConfig}
 import docspell.convert.ConvertConfig
 import docspell.extract.ExtractConfig
 import docspell.ftssolr.SolrConfig
@@ -65,9 +66,25 @@ object Config {
 
   case class FullTextSearch(
       enabled: Boolean,
+      backend: FtsType,
       migration: FullTextSearch.Migration,
-      solr: SolrConfig
-  )
+      solr: SolrConfig,
+      postgresql: PgFtsConfig
+  ) {
+
+    def info: String =
+      if (!enabled) "Disabled."
+      else
+        backend match {
+          case FtsType.Solr =>
+            s"Solr(${solr.url.asString})"
+          case FtsType.PostgreSQL =>
+            if (postgresql.useDefaultConnection)
+              "PostgreSQL(default)"
+            else
+              s"PostgreSQL(${postgresql.jdbc.url.asString})"
+        }
+  }
 
   object FullTextSearch {
 

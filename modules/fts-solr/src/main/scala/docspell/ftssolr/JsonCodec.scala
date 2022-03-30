@@ -22,7 +22,7 @@ trait JsonCodec {
     new Encoder[TextData.Attachment] {
       final def apply(td: TextData.Attachment): Json = {
         val cnt =
-          (Field.contentField(td.lang).name, Json.fromString(td.text.getOrElse("")))
+          (Field.contentField(td.language).name, Json.fromString(td.text.getOrElse("")))
 
         Json.fromFields(
           cnt :: List(
@@ -165,7 +165,7 @@ trait JsonCodec {
         val setter = List(
           td.name.map(n => (Field.attachmentName.name, Map("set" -> n.asJson).asJson)),
           td.text.map(txt =>
-            (Field.contentField(td.lang).name, Map("set" -> txt.asJson).asJson)
+            (Field.contentField(td.language).name, Map("set" -> txt.asJson).asJson)
           )
         ).flatten
         Json.fromFields(

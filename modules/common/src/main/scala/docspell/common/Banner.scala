@@ -14,7 +14,7 @@ case class Banner(
     configFile: Option[String],
     appId: Ident,
     baseUrl: LenientUri,
-    ftsUrl: Option[LenientUri],
+    ftsInfo: Option[String],
     fileStoreConfig: FileStoreConfig
 ) {
 
@@ -35,7 +35,7 @@ case class Banner(
       s"Id:       ${appId.id}",
       s"Base-Url: ${baseUrl.asString}",
       s"Database: ${jdbcUrl.asString}",
-      s"Fts:      ${ftsUrl.map(_.asString).getOrElse("-")}",
+      s"Fts:      ${ftsInfo.getOrElse("-")}",
       s"Config:   ${configFile.getOrElse("")}",
       s"FileRepo: ${fileStoreConfig}",
       ""

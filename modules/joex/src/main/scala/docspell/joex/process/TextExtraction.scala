@@ -47,9 +47,10 @@ object TextExtraction {
           ctx.args.meta.collective,
           ctx.args.meta.folderId,
           item.item.name.some,
-          None
+          None,
+          ctx.args.meta.language
         )
-        _ <- fts.indexData(ctx.logger, (idxItem +: txt.map(_.td)).toSeq: _*)
+        _ <- fts.indexData(ctx.logger, (idxItem +: txt.map(_.td)): _*)
         dur <- start
         extractedTags = txt.flatMap(_.tags).distinct.toList
         _ <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}.")

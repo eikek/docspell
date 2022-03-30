@@ -183,14 +183,12 @@ trait OItem[F[_]] {
   def reprocess(
       item: Ident,
       attachments: List[Ident],
-      account: AccountId,
-      notifyJoex: Boolean
+      account: AccountId
   ): F[UpdateResult]
 
   def reprocessAll(
       items: Nel[Ident],
-      account: AccountId,
-      notifyJoex: Boolean
+      account: AccountId
   ): F[UpdateResult]
 
   /** Submits a task that finds all non-converted pdfs and triggers converting them using
@@ -198,22 +196,17 @@ trait OItem[F[_]] {
     */
   def convertAllPdf(
       collective: Option[Ident],
-      submitter: Option[Ident],
-      notifyJoex: Boolean
+      submitter: Option[Ident]
   ): F[UpdateResult]
 
   /** Submits a task that (re)generates the preview image for an attachment. */
   def generatePreview(
       args: MakePreviewArgs,
-      account: AccountId,
-      notifyJoex: Boolean
+      account: AccountId
   ): F[UpdateResult]
 
   /** Submits a task that (re)generates the preview images for all attachments. */
-  def generateAllPreviews(
-      storeMode: MakePreviewArgs.StoreMode,
-      notifyJoex: Boolean
-  ): F[UpdateResult]
+  def generateAllPreviews(storeMode: MakePreviewArgs.StoreMode): F[UpdateResult]
 
   /** Merges a list of items into one item. The remaining items are deleted. */
   def merge(
@@ -228,8 +221,7 @@ object OItem {
       store: Store[F],
       fts: FtsClient[F],
       createIndex: CreateIndex[F],
-      jobStore: JobStore[F],
-      joex: OJoex[F]
+      jobStore: JobStore[F]
   ): Resource[F, OItem[F]] =
     for {
       otag <- OTag(store)
@@ -613,7 +605,14 @@ object OItem {
                 .transact(RItem.updateNotes(item, collective, notes))
             )
             .flatTap(
-              onSuccessIgnoreError(fts.updateItemNotes(logger, item, collective, notes))
+              onSuccessIgnoreError {
+                store
+                  .transact(RCollective.findLanguage(collective))
+                  .map(_.getOrElse(Language.English))
+                  .flatMap(lang =>
+                    fts.updateItemNotes(logger, item, collective, lang, notes)
+                  )
+              }
             )
 
         def setName(item: Ident, name: String, collective: Ident): F[UpdateResult] =
@@ -623,7 +622,14 @@ object OItem {
                 .transact(RItem.updateName(item, collective, name))
             )
             .flatTap(
-              onSuccessIgnoreError(fts.updateItemName(logger, item, collective, name))
+              onSuccessIgnoreError {
+                store
+                  .transact(RCollective.findLanguage(collective))
+                  .map(_.getOrElse(Language.English))
+                  .flatMap(lang =>
+                    fts.updateItemName(logger, item, collective, lang, name)
+                  )
+              }
             )
 
         def setNameMultiple(
@@ -741,10 +747,17 @@ object OItem {
             )
             .flatTap(
               onSuccessIgnoreError(
-                OptionT(store.transact(RAttachment.findItemId(attachId)))
-                  .semiflatMap(itemId =>
-                    fts.updateAttachmentName(logger, itemId, attachId, collective, name)
-                  )
+                OptionT(store.transact(RAttachment.findItemAndLanguage(attachId)))
+                  .semiflatMap { case (itemId, lang) =>
+                    fts.updateAttachmentName(
+                      logger,
+                      itemId,
+                      attachId,
+                      collective,
+                      lang.getOrElse(Language.English),
+                      name
+                    )
+                  }
                   .fold(())(identity)
               )
             )
@@ -752,8 +765,7 @@ object OItem {
         def reprocess(
             item: Ident,
             attachments: List[Ident],
-            account: AccountId,
-            notifyJoex: Boolean
+            account: AccountId
         ): F[UpdateResult] =
           (for {
             _ <- OptionT(
@@ -764,13 +776,11 @@ object OItem {
               JobFactory.reprocessItem[F](args, account, Priority.Low)
             )
             _ <- OptionT.liftF(jobStore.insertIfNew(job.encode))
-            _ <- OptionT.liftF(if (notifyJoex) joex.notifyAllNodes else ().pure[F])
           } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
 
         def reprocessAll(
             items: Nel[Ident],
-            account: AccountId,
-            notifyJoex: Boolean
+            account: AccountId
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(for {
             items <- store.transact(RItem.filterItems(items, account.collective))
@@ -779,39 +789,32 @@ object OItem {
               .traverse(arg => JobFactory.reprocessItem[F](arg, account, Priority.Low))
               .map(_.map(_.encode))
             _ <- jobStore.insertAllIfNew(jobs)
-            _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield items.size)
 
         def convertAllPdf(
             collective: Option[Ident],
-            submitter: Option[Ident],
-            notifyJoex: Boolean
+            submitter: Option[Ident]
         ): F[UpdateResult] =
           for {
             job <- JobFactory.convertAllPdfs[F](collective, submitter, Priority.Low)
             _ <- jobStore.insertIfNew(job.encode)
-            _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
         def generatePreview(
             args: MakePreviewArgs,
-            account: AccountId,
-            notifyJoex: Boolean
+            account: AccountId
         ): F[UpdateResult] =
           for {
             job <- JobFactory.makePreview[F](args, account.some)
             _ <- jobStore.insertIfNew(job.encode)
-            _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
         def generateAllPreviews(
-            storeMode: MakePreviewArgs.StoreMode,
-            notifyJoex: Boolean
+            storeMode: MakePreviewArgs.StoreMode
         ): F[UpdateResult] =
           for {
             job <- JobFactory.allPreviews[F](AllPreviewsArgs(None, storeMode), None)
             _ <- jobStore.insertIfNew(job.encode)
-            _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
           } yield UpdateResult.success
 
         private def onSuccessIgnoreError(update: F[Unit])(ar: UpdateResult): F[Unit] =

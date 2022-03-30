@@ -81,8 +81,7 @@ object OFulltext {
       itemSearch: OItemSearch[F],
       fts: FtsClient[F],
       store: Store[F],
-      jobStore: JobStore[F],
-      joex: OJoex[F]
+      jobStore: JobStore[F]
   ): Resource[F, OFulltext[F]] =
     Resource.pure[F, OFulltext[F]](new OFulltext[F] {
       val logger = docspell.logging.getLogger[F]
@@ -90,7 +89,7 @@ object OFulltext {
         for {
           _ <- logger.info(s"Re-index all.")
           job <- JobFactory.reIndexAll[F]
-          _ <- jobStore.insertIfNew(job.encode) *> joex.notifyAllNodes
+          _ <- jobStore.insertIfNew(job.encode)
         } yield ()
 
       def reindexCollective(account: AccountId): F[Unit] =
@@ -102,7 +101,7 @@ object OFulltext {
           job <- JobFactory.reIndex(account)
           _ <-
             if (exist.isDefined) ().pure[F]
-            else jobStore.insertIfNew(job.encode) *> joex.notifyAllNodes
+            else jobStore.insertIfNew(job.encode)
         } yield ()
 
       def findIndexOnly(maxNoteLen: Int)(

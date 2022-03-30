@@ -78,8 +78,7 @@ trait OCollective[F[_]] {
     */
   def generatePreviews(
       storeMode: MakePreviewArgs.StoreMode,
-      account: AccountId,
-      notifyJoex: Boolean
+      account: AccountId
   ): F[UpdateResult]
 }
 
@@ -206,7 +205,6 @@ object OCollective {
           )
           _ <- uts
             .executeNow(UserTaskScope(collective), args.makeSubject.some, ut)
-          _ <- joex.notifyAllNodes
         } yield ()
 
       def startEmptyTrash(args: EmptyTrashArgs): F[Unit] =
@@ -222,7 +220,6 @@ object OCollective {
           )
           _ <- uts
             .executeNow(UserTaskScope(args.collective), args.makeSubject.some, ut)
-          _ <- joex.notifyAllNodes
         } yield ()
 
       def findSettings(collective: Ident): F[Option[OCollective.Settings]] =
@@ -313,8 +310,7 @@ object OCollective {
 
       def generatePreviews(
           storeMode: MakePreviewArgs.StoreMode,
-          account: AccountId,
-          notifyJoex: Boolean
+          account: AccountId
       ): F[UpdateResult] =
         for {
           job <- JobFactory.allPreviews[F](
@@ -322,7 +318,6 @@ object OCollective {
             Some(account.user)
           )
           _ <- jobStore.insertIfNew(job.encode)
-          _ <- if (notifyJoex) joex.notifyAllNodes else ().pure[F]
         } yield UpdateResult.success
 
     })

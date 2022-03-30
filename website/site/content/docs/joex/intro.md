@@ -23,7 +23,7 @@ For larger installations, it is probably better to run several joex
 components on different machines. That works out of the box, as long
 as all components point to the same database and use different
 `app-id`s (see [configuring
-docspell](@/docs/configure/_index.md#app-id)).
+docspell](@/docs/configure/main.md#app-id)).
 
 When files are submitted to docspell, they are stored in the database
 and all known joex components are notified about new work. Then they

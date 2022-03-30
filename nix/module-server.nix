@@ -21,6 +21,11 @@ let
       address = "localhost";
       port = 7880;
     };
+    server-options = {
+      enable-http-2 = false;
+      max-connections = 1024;
+      response-timeout = "45s";
+    };
     logging = {
       minimum-level = "Info";
       format = "Fancy";
@@ -56,6 +61,17 @@ let
         log-verbose = false;
         def-type = "lucene";
         q-op = "OR";
+      };
+      postgresql = {
+        use-default-connection = false;
+        jdbc = {
+          url = "jdbc:postgresql://server:5432/db";
+          user = "pguser";
+          password = "";
+        };
+        pg-config = {};
+        pg-query-parser = "websearch_to_tsquery";
+        pg-rank-normalization = [ 4 ];
       };
     };
     auth = {
@@ -212,6 +228,30 @@ in {
         });
         default = defaults.bind;
         description = "Address and port bind the rest server.";
+      };
+
+      server-options = mkOption {
+        type = types.submodule({
+          options = {
+            enable-http-2 = mkOption {
+              type = types.bool;
+              default = defaults.server-options.enable-http-2;
+              description = "Whether to enable http2";
+            };
+            max-connections = mkOption {
+              type = types.int;
+              default = defaults.server-options.max-connections;
+              description = "Maximum number of client connections";
+            };
+            response-timeout = mkOption {
+              type = types.str;
+              default = defaults.server-options.response-timeout;
+              description = "Timeout when waiting for the response.";
+            };
+          };
+        });
+        default = defaults.server-options;
+        description = "Tuning the http server";
       };
 
       logging = mkOption {
@@ -545,6 +585,60 @@ in {
               });
               default = defaults.full-text-search.solr;
               description = "Configuration for the SOLR backend.";
+            };
+
+            postgresql = mkOption {
+              type = types.submodule({
+                options = {
+                  use-default-connection = mkOption {
+                    type = types.bool;
+                    default = defaults.full-text-search.postgresql.use-default-connection;
+                    description = "Whether to use the primary db connection.";
+                  };
+                  jdbc = mkOption {
+                    type = types.submodule ({
+                      options = {
+                        url = mkOption {
+                          type = types.str;
+                          default = defaults.jdbc.url;
+                          description = ''
+                            The URL to the database.
+                          '';
+                        };
+                        user = mkOption {
+                          type = types.str;
+                          default = defaults.jdbc.user;
+                          description = "The user name to connect to the database.";
+                        };
+                        password = mkOption {
+                          type = types.str;
+                          default = defaults.jdbc.password;
+                          description = "The password to connect to the database.";
+                        };
+                      };
+                    });
+                    default = defaults.full-text-search.postgresql.jdbc;
+                    description = "Database connection settings";
+                  };
+                  pg-config = mkOption {
+                    type = types.attrs;
+                    default = defaults.full-text-search.postgresql.pg-config;
+                    description = "";
+                  };
+                  pg-query-parser = mkOption {
+                    type = types.str;
+                    default = defaults.full-text-search.postgresql.pg-query-parser;
+                    description = "";
+                  };
+                  pg-rank-normalization = mkOption {
+                    type = types.listOf types.int;
+                    default = defaults.full-text-search.postgresql.pg-rank-normalization;
+                    description = "";
+                  };
+                };
+              });
+              default = defaults.full-text-search.postgresql;
+              description = "PostgreSQL for fulltext search";
             };
           };
         });

@@ -102,7 +102,7 @@ When using H2, make sure that all components access the same database
 – the jdbc url must point to the same file. Then, it is important to
 add the options
 `;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE` at the end
-of the url. See the [config page](@/docs/configure/_index.md#jdbc) for
+of the url. See the [config page](@/docs/configure/database.md) for
 an example.
 
 For large installations, PostgreSQL or MariaDB is recommended. Create

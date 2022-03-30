@@ -34,6 +34,8 @@ trait Store[F[_]] {
   ): FileRepository[F]
 
   def add(insert: ConnectionIO[Int], exists: ConnectionIO[Boolean]): F[AddResult]
+
+  def transactor: Transactor[F]
 }
 
 object Store {

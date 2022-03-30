@@ -11,7 +11,6 @@ import cats.implicits._
 import fs2.{Chunk, Stream}
 
 import docspell.backend.JobFactory
-import docspell.backend.ops.OJoex
 import docspell.common.MakePreviewArgs.StoreMode
 import docspell.common._
 import docspell.scheduler._
@@ -24,7 +23,6 @@ object AllPreviewsTask {
 
   def apply[F[_]: Sync](
       jobStore: JobStore[F],
-      joex: OJoex[F],
       store: Store[F]
   ): Task[F, Args, Unit] =
     Task { ctx =>
@@ -32,7 +30,6 @@ object AllPreviewsTask {
         _ <- ctx.logger.info("Generating previews for attachments")
         n <- submitConversionJobs(ctx, store, jobStore)
         _ <- ctx.logger.info(s"Submitted $n jobs")
-        _ <- joex.notifyAllNodes
       } yield ()
     }
 

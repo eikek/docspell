@@ -36,6 +36,7 @@ type LinkTarget
     | LinkCustomField ItemFieldValue
     | LinkSource String
     | LinkBookmark String
+    | LinkRelatedItems (List String)
     | LinkNone
 
 

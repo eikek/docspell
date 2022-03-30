@@ -12,7 +12,9 @@ import docspell.analysis.TextAnalyser
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
 import docspell.common._
+import docspell.config.FtsType
 import docspell.ftsclient.FtsClient
+import docspell.ftspsql.PsqlFtsClient
 import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.emptytrash.EmptyTrashTask
@@ -20,6 +22,7 @@ import docspell.joex.filecopy.{FileCopyTask, FileIntegrityCheckTask}
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
 import docspell.joex.hk.HouseKeepingTask
 import docspell.joex.learn.LearnClassifierTask
+import docspell.joex.multiupload.MultiUploadArchiveTask
 import docspell.joex.notify.{PeriodicDueItemsTask, PeriodicQueryTask}
 import docspell.joex.pagecount.{AllPageCountTask, MakePageCountTask}
 import docspell.joex.pdfconv.{ConvertAllPdfTask, PdfConvTask}
@@ -62,6 +65,13 @@ final class JoexTasks[F[_]: Async](
           ProcessItemArgs.taskName,
           ItemHandler.newItem[F](cfg, store, itemOps, fts, analyser, regexNer),
           ItemHandler.onCancel[F](store)
+        )
+      )
+      .withTask(
+        JobTask.json(
+          ProcessItemArgs.multiUploadTaskName,
+          MultiUploadArchiveTask[F](store, jobStoreModule.jobs),
+          MultiUploadArchiveTask.onCancel[F](store)
         )
       )
       .withTask(
@@ -109,7 +119,7 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           ConvertAllPdfArgs.taskName,
-          ConvertAllPdfTask[F](jobStoreModule.jobs, joex, store),
+          ConvertAllPdfTask[F](jobStoreModule.jobs, store),
           ConvertAllPdfTask.onCancel[F]
         )
       )
@@ -130,7 +140,7 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           AllPreviewsArgs.taskName,
-          AllPreviewsTask[F](jobStoreModule.jobs, joex, store),
+          AllPreviewsTask[F](jobStoreModule.jobs, store),
           AllPreviewsTask.onCancel[F]
         )
       )
@@ -144,7 +154,7 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           AllPageCountTask.taskName,
-          AllPageCountTask[F](store, jobStoreModule.jobs, joex),
+          AllPageCountTask[F](store, jobStoreModule.jobs),
           AllPageCountTask.onCancel[F]
         )
       )
@@ -203,6 +213,7 @@ object JoexTasks {
 
   def resource[F[_]: Async](
       cfg: Config,
+      pools: Pools,
       jobStoreModule: JobStoreModuleBuilder.Module[F],
       httpClient: Client[F],
       pubSub: PubSubT[F],
@@ -212,16 +223,16 @@ object JoexTasks {
     for {
       joex <- OJoex(pubSub)
       store = jobStoreModule.store
-      upload <- OUpload(store, jobStoreModule.jobs, joex)
-      fts <- createFtsClient(cfg)(httpClient)
+      upload <- OUpload(store, jobStoreModule.jobs)
+      fts <- createFtsClient(cfg, pools, store, httpClient)
       createIndex <- CreateIndex.resource(fts, store)
-      itemOps <- OItem(store, fts, createIndex, jobStoreModule.jobs, joex)
+      itemOps <- OItem(store, fts, createIndex, jobStoreModule.jobs)
       itemSearchOps <- OItemSearch(store)
       analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
       regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
       updateCheck <- UpdateCheck.resource(httpClient)
       notification <- ONotification(store, notificationModule)
-      fileRepo <- OFileRepository(store, jobStoreModule.jobs, joex)
+      fileRepo <- OFileRepository(store, jobStoreModule.jobs)
     } yield new JoexTasks[F](
       cfg,
       store,
@@ -241,8 +252,24 @@ object JoexTasks {
     )
 
   private def createFtsClient[F[_]: Async](
-      cfg: Config
-  )(client: Client[F]): Resource[F, FtsClient[F]] =
-    if (cfg.fullTextSearch.enabled) SolrFtsClient(cfg.fullTextSearch.solr, client)
+      cfg: Config,
+      pools: Pools,
+      store: Store[F],
+      client: Client[F]
+  ): Resource[F, FtsClient[F]] =
+    if (cfg.fullTextSearch.enabled)
+      cfg.fullTextSearch.backend match {
+        case FtsType.Solr =>
+          SolrFtsClient(cfg.fullTextSearch.solr, client)
+
+        case FtsType.PostgreSQL =>
+          val psqlCfg = cfg.fullTextSearch.postgresql.toPsqlConfig(cfg.jdbc)
+          if (cfg.fullTextSearch.postgresql.useDefaultConnection)
+            Resource.pure[F, FtsClient[F]](
+              new PsqlFtsClient[F](psqlCfg, store.transactor)
+            )
+          else
+            PsqlFtsClient(psqlCfg, pools.connectEC)
+      }
     else Resource.pure[F, FtsClient[F]](FtsClient.none[F])
 }

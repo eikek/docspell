@@ -13,7 +13,7 @@ import cats.effect.Async
 
 import docspell.backend.signup.{Config => SignupConfig}
 import docspell.config.Implicits._
-import docspell.config.{ConfigFactory, Validation}
+import docspell.config.{ConfigFactory, FtsType, Validation}
 import docspell.oidc.{ProviderConfig, SignatureAlgo}
 import docspell.restserver.auth.OpenId
 
@@ -106,4 +106,15 @@ object ConfigFile {
 
   def filesValidate: Validation[Config] =
     Validation(cfg => cfg.backend.files.validate.map(_ => cfg))
+
+  def postgresFtsValidate: Validation[Config] =
+    Validation.failWhen(
+      cfg =>
+        cfg.fullTextSearch.enabled &&
+          cfg.fullTextSearch.backend == FtsType.PostgreSQL &&
+          cfg.fullTextSearch.postgresql.useDefaultConnection &&
+          !cfg.backend.jdbc.dbmsName.contains("postgresql"),
+      s"PostgreSQL defined fulltext search backend with default-connection, which is not a PostgreSQL connection!"
+    )
+
 }

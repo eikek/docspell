@@ -1,5 +1,55 @@
 # Changelog
 
+## v0.34.0
+
+*Mar 31, 2022*
+
+- French translation (#1440): The UI is now available in French!
+  Thanks to @jgirardet.
+- Link Items (#528): Link items together directly (without using
+  custom fields) and see all related items quickly on the search page.
+- Import mails recursively (#1260): The scanmailbox task can now go
+  through folders recursively. Thanks to @Moerfi666 and @seijikun.
+- Fulltext search via PostgreSQL (#424): Another backend for full-text
+  search was added that is backed by PostgreSQL's text search feature.
+  You can now choose between SOLR and PostgreSQL for fulltext search.
+- More file backends (#1379): Next to storing the files in the
+  database, you can now choose to store them in a S3 compatible
+  storage or use the filesystem directly.
+- Flat zip upload (#1366): An option has been added to the upload
+  metadata that will unpack zip files and process each entry
+  separately (instead of treating a zip file as a single item).
+- Fix to upload large files (#1339): Uploaded files are not loaded
+  entirely into memory allowing to upload large files.
+- Fix previously published db migration (#1454, #1436): Unfortunately,
+  there was an db migration in the last release that caused problems
+  on some installations. A fix for this migration has been added.
+- Fix build to run on windows (#1449, #1461): Building docspell on
+  windows has been improved by @arittner.
+
+For some of the new features, you need the new version of
+[dsc](https://github.com/docspell/dsc).
+
+### Rest API Changes
+
+- adds routes to clone file repositories and the integrity check
+- adds routes to support linking items
+- `ScanMailboxSettings` has a new flag `scanRecursively`
+- `ItemDetail` and `ItemLight` contain a new field to transport
+  related/linked items
+- `ItemUploadMeta` has a new flag to specify whether zip files should
+  be treated as a container only, and be "flattened" into the list of
+  uploaded files
+
+### Configuration Changes
+
+- rest server only: added options to tune the http server
+- joex only: adds a file integrity check to the regular house keeping tasks
+- configuration for postgresql based full-text search
+- extend `files` config adding the different storage backends for
+  files
+
+
 ## v0.33.0
 
 *Mar 6, 2022*
@@ -356,7 +406,7 @@ Complete
 
 - Joex: A new section for configuring the update task has been added.
   See section `update-check` in the default [config
-  file](https://docspell.org/docs/configure/#joex).
+  file](https://docspell.org/docs/configure/main/#joex).
 
 
 ## v0.25.1
@@ -741,7 +791,7 @@ Please open an issue if want more languages to be included.
   - all text analysis steps are now configurable that makes it
     possible to adapt it better to your data and machine. 
   - The docs have been updated with some details
-    [here](https://docspell.org/docs/configure/#file-processing) and
+    [here](https://docspell.org/docs/configure/file-processing/) and
     [here](https://docspell.org/docs/joex/file-processing/#text-analysis).
 - more languages (#488)
   - Adds: Spanish, Italian, Portuguese, Czech, Dutch, Danish, Finnish,
@@ -805,8 +855,8 @@ Please open an issue if want more languages to be included.
   - the config regarding text analysis changed, there are new config
     options, like `nlp.mode` and the `max-due-date-years` has been
     moved inside `text-anlysis`. Please have a look at the new
-    [default config](https://docspell.org/docs/configure/#joex) if you
-    changed something there.
+    [default config](https://docspell.org/docs/configure/main/#joex)
+    if you changed something there.
   - The `regex-ner` section has changed: the `enabled` flag has been
     removed, you can now limit the number of entries using
     `max-entries` to apply and `0` means to disable it.

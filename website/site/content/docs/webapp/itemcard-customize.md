@@ -19,15 +19,15 @@ _UI Settings_. Among other things, there is a _Item Cards_ section:
 This defines how many of the item notes to display in the card. You
 can set it to `0` to not show any notes at all. This is only a "soft
 limit", there is also a "hard limit" in [docspell's
-configuration](@/docs/configure/_index.md#rest-server) (see `max-note-length`),
-that is an upper limit to this value.
+configuration](@/docs/configure/main.md#rest-server) (see
+`max-note-length`), that is an upper limit to this value.
 
 ### Size of item preview
 
 The item preview is an image of the first page of the first
 attachment. You can change the order of attachments in the item detail
 view. This image has a predefined size, which is specified [docspell's
-configuration](@/docs/configure/_index.md#joex) (see
+configuration](@/docs/configure/main.md#joex) (see
 `extraction.preview.dpi`). The size for displaying it, can be
 specified via this setting. A _small_ preview uses about 80px width, a
 _medium_ one 160px and _large_ means to use the available space in the

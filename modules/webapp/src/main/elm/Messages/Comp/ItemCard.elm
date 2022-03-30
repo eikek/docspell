@@ -30,6 +30,7 @@ type alias Texts =
     , formatDateLong : Int -> String
     , formatDateShort : Int -> String
     , directionLabel : Direction -> String
+    , showRelatedItems : String
     }
 
 
@@ -44,6 +45,7 @@ gb tz =
     , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.English tz
     , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.English tz
     , directionLabel = Messages.Data.Direction.gb
+    , showRelatedItems = "Show linked items"
     }
 
 
@@ -58,6 +60,7 @@ de tz =
     , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.German tz
     , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.German tz
     , directionLabel = Messages.Data.Direction.de
+    , showRelatedItems = "Verknüpfte Dokumente anzeigen"
     }
 
 
@@ -72,4 +75,5 @@ fr tz =
     , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.French tz
     , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.French tz
     , directionLabel = Messages.Data.Direction.fr
+    , showRelatedItems = "Afficher les documents liés"
     }
