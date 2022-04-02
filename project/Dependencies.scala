@@ -11,7 +11,7 @@ object Dependencies {
   val CalevVersion = "0.6.3"
   val CatsVersion = "2.7.0"
   val CatsEffectVersion = "3.3.9"
-  val CatsParseVersion = "0.3.6"
+  val CatsParseVersion = "0.3.7"
   val CirceVersion = "0.14.1"
   val ClipboardJsVersion = "2.0.6"
   val DoobieVersion = "1.0.0-RC2"
