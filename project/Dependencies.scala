@@ -10,7 +10,7 @@ object Dependencies {
   val BinnyVersion = "0.4.0"
   val CalevVersion = "0.6.3"
   val CatsVersion = "2.7.0"
-  val CatsEffectVersion = "3.3.10"
+  val CatsEffectVersion = "3.3.11"
   val CatsParseVersion = "0.3.7"
   val CirceVersion = "0.14.1"
   val ClipboardJsVersion = "2.0.6"
