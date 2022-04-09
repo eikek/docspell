@@ -64,7 +64,7 @@ class FlywayMigrate[F[_]: Sync](jdbc: JdbcConfig, xa: Transactor[F]) {
           current <- OptionT(getSchemaVersion)
           _ <- OptionT
             .fromOption[F](versionComponents(current))
-            .filter(v => v._1 >= 1 && v._2 >= 33)
+            .filter(v => v._1 >= 1 && v._2 >= 32)
           fw <- OptionT.liftF(createFlyway(MigrationKind.Fixups))
           _ <- OptionT.liftF(logger.info(s"!!! Running fixup migrations"))
           _ <- OptionT.liftF(Sync[F].blocking(fw.migrate()))
