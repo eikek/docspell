@@ -17,6 +17,7 @@ module Page exposing
     , isOpen
     , isSearchPage
     , isSecured
+    , isSharePage
     , loginPage
     , loginPageReferrer
     , pageFromString
@@ -142,6 +143,16 @@ loginPage p =
 
         _ ->
             LoginPage { emptyLoginData | referrer = Just p }
+
+
+isSharePage : Page -> Bool
+isSharePage page =
+    case page of
+        SharePage _ ->
+            True
+
+        _ ->
+            False
 
 
 isSearchPage : Page -> Bool

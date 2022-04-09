@@ -19,6 +19,7 @@ import Page.Share.Data exposing (..)
 import Page.Share.Menubar as Menubar
 import Page.Share.Results as Results
 import Page.Share.Sidebar as Sidebar
+import Page.Share.TopContent as TopContent
 import Styles as S
 
 
@@ -80,6 +81,7 @@ mainContent texts flags shareId model =
             ]
         , Menubar.view texts flags model
         , errorMessage texts model
+        , TopContent.view texts flags model
         , Results.view texts model.uiSettings flags shareId model
         ]
 

@@ -31,9 +31,16 @@ object FileCategory {
   case object AttachmentConvert extends FileCategory
   case object PreviewImage extends FileCategory
   case object Classifier extends FileCategory
+  case object DownloadAll extends FileCategory
 
   val all: NonEmptyList[FileCategory] =
-    NonEmptyList.of(AttachmentSource, AttachmentConvert, PreviewImage, Classifier)
+    NonEmptyList.of(
+      AttachmentSource,
+      AttachmentConvert,
+      PreviewImage,
+      Classifier,
+      DownloadAll
+    )
 
   def fromString(str: String): Either[String, FileCategory] =
     all.find(_.id.id == str).toRight(s"Unknown category: $str")

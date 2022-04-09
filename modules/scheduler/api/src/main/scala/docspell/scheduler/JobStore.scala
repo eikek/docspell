@@ -18,7 +18,8 @@ trait JobStore[F[_]] {
   /** Inserts the job into the queue only, if there is no job with the same tracker-id
     * running at the moment. The job id must be a new unique id.
     *
-    * If the job has no tracker defined, it is simply inserted.
+    * If the job has no tracker defined, it is simply inserted. It returns `true` if the
+    * job was inserted.
     */
   def insertIfNew(job: Job[String]): F[Boolean]
 

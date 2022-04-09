@@ -11,6 +11,7 @@ import Api
 import Comp.Basic as B
 import Comp.BookmarkQueryManage
 import Comp.ConfirmModal
+import Comp.DownloadAll
 import Comp.ItemCardList
 import Comp.ItemMerge
 import Comp.MenuBar as MB
@@ -108,11 +109,17 @@ mainView texts env model =
 
 
 bookmarkQueryWidget : Texts -> UiSettings -> Flags -> Model -> List (Html Msg)
-bookmarkQueryWidget texts _ _ model =
+bookmarkQueryWidget texts _ flags model =
     case model.topWidgetModel of
         BookmarkQuery m ->
             [ div [ class "px-2 mb-4 border-l border-r border-b dark:border-slate-600" ]
                 [ Html.map BookmarkQueryMsg (Comp.BookmarkQueryManage.view texts.bookmarkManage m)
+                ]
+            ]
+
+        DownloadAll m ->
+            [ div [ class "mb-4 border-l border-r border-b dark:border-slate-600" ]
+                [ Html.map DownloadAllMsg (Comp.DownloadAll.view flags texts.downloadAllComp m)
                 ]
             ]
 
@@ -435,6 +442,24 @@ defaultMenuBar texts env model =
 
                               else
                                 onClick ToggleBookmarkCurrentQueryView
+                            ]
+                      }
+                    , { label = texts.downloadAll
+                      , icon = i [ class "fa fa-download" ] []
+                      , disabled = createQuery env.selectedItems model == Nothing
+                      , attrs =
+                            [ title <|
+                                if createQuery env.selectedItems model == Nothing then
+                                    texts.downloadAllQueryNeeded
+
+                                else
+                                    texts.downloadAll
+                            , href "#"
+                            , if createQuery env.selectedItems model == Nothing then
+                                class ""
+
+                              else
+                                onClick ToggleDownloadAllView
                             ]
                       }
                     , { label =

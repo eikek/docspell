@@ -35,6 +35,8 @@ type alias Config =
     , maxPageSize : Int
     , maxNoteLength : Int
     , showClassificationSettings : Bool
+    , downloadAllMaxFiles : Int
+    , downloadAllMaxSize : Int
     , openIdAuth : List OpenIdAuth
     }
 

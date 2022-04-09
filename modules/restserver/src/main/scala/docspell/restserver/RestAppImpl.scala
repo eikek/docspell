@@ -93,8 +93,10 @@ final class RestAppImpl[F[_]: Async](
       "search" -> ShareSearchRoutes(backend, config, token),
       "attachment" -> ShareAttachmentRoutes(backend, token),
       "item" -> ShareItemRoutes(backend, token),
-      "clientSettings" -> ClientSettingsRoutes.share(backend, token)
+      "clientSettings" -> ClientSettingsRoutes.share(backend, token),
+      "downloadAll" -> DownloadAllRoutes.forShare(config.downloadAll, backend, token)
     )
+
   def openRoutes(
       client: Client[F]
   ): HttpRoutes[F] =
@@ -149,7 +151,8 @@ final class RestAppImpl[F[_]: Async](
       "customfield" -> CustomFieldRoutes(backend, token),
       "clientSettings" -> ClientSettingsRoutes(backend, token),
       "notification" -> NotificationRoutes(config, backend, token),
-      "querybookmark" -> BookmarkRoutes(backend, token)
+      "querybookmark" -> BookmarkRoutes(backend, token),
+      "downloadAll" -> DownloadAllRoutes(config.downloadAll, backend, token)
     )
 
 }

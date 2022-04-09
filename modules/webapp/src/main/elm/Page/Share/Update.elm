@@ -8,6 +8,7 @@
 module Page.Share.Update exposing (UpdateResult, update)
 
 import Api
+import Comp.DownloadAll
 import Comp.ItemCardList
 import Comp.LinkTarget exposing (LinkTarget)
 import Comp.PowerSearchInput
@@ -19,7 +20,10 @@ import Data.ItemQuery as Q
 import Data.SearchMode
 import Data.UiSettings exposing (UiSettings)
 import Page.Share.Data exposing (..)
+import Process
 import Set
+import Task
+import Time
 import Util.Html
 import Util.Maybe
 import Util.Update
@@ -252,30 +256,97 @@ update flags settings shareId msg model =
         UiSettingsResp (Err _) ->
             noSub ( model, Cmd.none )
 
+        DownloadAllMsg lm ->
+            case model.topContent of
+                TopContentDownload dm ->
+                    let
+                        res =
+                            Comp.DownloadAll.update flags lm dm
+
+                        nextModel =
+                            if res.closed then
+                                TopContentHidden
+
+                            else
+                                TopContentDownload res.model
+
+                        -- The share page can't use websockets (not authenticated) so need to poll
+                        -- for new download state
+                        checkSub =
+                            if Comp.DownloadAll.isPreparing res.model then
+                                Process.sleep 3500
+                                    |> Task.perform (always (DownloadAllMsg Comp.DownloadAll.checkDownload))
+
+                            else
+                                Cmd.none
+                    in
+                    { model = { model | topContent = nextModel }
+                    , cmd =
+                        Cmd.batch
+                            [ Cmd.map DownloadAllMsg res.cmd
+                            , checkSub
+                            ]
+                    , sub = Sub.none
+                    }
+
+                _ ->
+                    noSub ( model, Cmd.none )
+
+        ToggleDownloadAll ->
+            let
+                vm =
+                    model.viewMode
+
+                nextVm =
+                    { vm | menuOpen = False }
+            in
+            case model.topContent of
+                TopContentHidden ->
+                    let
+                        query =
+                            createQuery flags model
+                                |> Maybe.withDefault (Q.DateMs Q.Gt 0)
+
+                        am =
+                            Comp.DownloadAll.AccessShare shareId
+
+                        ( dm, dc ) =
+                            Comp.DownloadAll.init am flags (Q.render query)
+                    in
+                    noSub ( { model | topContent = TopContentDownload dm, viewMode = nextVm }, Cmd.map DownloadAllMsg dc )
+
+                TopContentDownload _ ->
+                    noSub ( { model | topContent = TopContentHidden, viewMode = nextVm }, Cmd.none )
+
 
 noSub : ( Model, Cmd Msg ) -> UpdateResult
 noSub ( m, c ) =
     UpdateResult m c Sub.none
 
 
+createQuery : Flags -> Model -> Maybe Q.ItemQuery
+createQuery flags model =
+    Q.and
+        [ Comp.SearchMenu.getItemQuery Data.ItemIds.empty model.searchMenuModel
+        , Maybe.map Q.Fragment <|
+            case model.searchMode of
+                SearchBarNormal ->
+                    Comp.PowerSearchInput.getSearchString model.powerSearchInput
+
+                SearchBarContent ->
+                    if flags.config.fullTextSearchEnabled then
+                        Maybe.map (Q.Contents >> Q.render) model.contentSearch
+
+                    else
+                        Maybe.map (Q.AllNames >> Q.render) model.contentSearch
+        ]
+
+
 makeSearchCmd : Flags -> Bool -> Model -> Cmd Msg
 makeSearchCmd flags doInit model =
     let
         xq =
-            Q.and
-                [ Comp.SearchMenu.getItemQuery Data.ItemIds.empty model.searchMenuModel
-                , Maybe.map Q.Fragment <|
-                    case model.searchMode of
-                        SearchBarNormal ->
-                            Comp.PowerSearchInput.getSearchString model.powerSearchInput
-
-                        SearchBarContent ->
-                            if flags.config.fullTextSearchEnabled then
-                                Maybe.map (Q.Contents >> Q.render) model.contentSearch
-
-                            else
-                                Maybe.map (Q.AllNames >> Q.render) model.contentSearch
-                ]
+            createQuery flags model
 
         request mq =
             { offset = Nothing

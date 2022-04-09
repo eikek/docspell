@@ -14,6 +14,7 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
+import Comp.DownloadAll
 import Data.AppEvent exposing (AppEvent(..))
 import Data.Environment as Env
 import Data.Flags
@@ -317,6 +318,9 @@ updateWithSub msg model =
                         isProcessItem =
                             task == "process-item"
 
+                        isDownloadZip =
+                            task == "download-query-zip"
+
                         newModel =
                             { model
                                 | showNewItemsArrived = isProcessItem && not (Page.isSearchPage model.page)
@@ -325,6 +329,9 @@ updateWithSub msg model =
                     in
                     if Page.isSearchPage model.page && isProcessItem then
                         updateSearch texts Page.Search.Data.RefreshView newModel
+
+                    else if Page.isSearchPage model.page && isDownloadZip then
+                        updateSearch texts (Page.Search.Data.DownloadAllMsg Comp.DownloadAll.checkDownload) newModel
 
                     else if Page.isDashboardPage model.page && isProcessItem then
                         updateDashboard texts Page.Dashboard.Data.reloadDashboardData newModel

@@ -10,11 +10,27 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.MailAddressCodec
+import docspell.backend.task.DownloadZipArgs
 import docspell.common._
 import docspell.notification.api.PeriodicQueryArgs
 import docspell.scheduler.Job
 
 object JobFactory extends MailAddressCodec {
+  def downloadZip[F[_]: Sync](
+      args: DownloadZipArgs,
+      summaryId: Ident,
+      submitter: AccountId
+  ): F[Job[DownloadZipArgs]] =
+    Job.createNew(
+      DownloadZipArgs.taskName,
+      submitter.collective,
+      args,
+      s"Prepare zip file for query",
+      submitter.user,
+      Priority.High,
+      Some(summaryId)
+    )
+
   def integrityCheck[F[_]: Sync](
       args: FileIntegrityCheckArgs,
       submitter: AccountId = DocspellSystem.account
@@ -25,7 +41,7 @@ object JobFactory extends MailAddressCodec {
       args,
       s"Check integrity of files",
       submitter.user,
-      Priority.High,
+      Priority.Low,
       Some(FileIntegrityCheckArgs.taskName)
     )
 

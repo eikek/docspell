@@ -11,12 +11,14 @@ import cats.effect.{Async, Resource}
 import docspell.analysis.TextAnalyser
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
+import docspell.backend.task.DownloadZipArgs
 import docspell.common._
 import docspell.config.FtsType
 import docspell.ftsclient.FtsClient
 import docspell.ftspsql.PsqlFtsClient
 import docspell.ftssolr.SolrFtsClient
 import docspell.joex.analysis.RegexNerFile
+import docspell.joex.download.DownloadZipTask
 import docspell.joex.emptytrash.EmptyTrashTask
 import docspell.joex.filecopy.{FileCopyTask, FileIntegrityCheckTask}
 import docspell.joex.fts.{MigrationTask, ReIndexTask}
@@ -54,8 +56,11 @@ final class JoexTasks[F[_]: Async](
     upload: OUpload[F],
     createIndex: CreateIndex[F],
     joex: OJoex[F],
+    jobs: OJob[F],
     itemSearch: OItemSearch[F]
 ) {
+  val downloadAll: ODownloadAll[F] =
+    ODownloadAll(store, jobs, jobStoreModule.jobs)
 
   def get: JobTaskRegistry[F] =
     JobTaskRegistry
@@ -105,7 +110,7 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           HouseKeepingTask.taskName,
-          HouseKeepingTask[F](cfg, store, fileRepo),
+          HouseKeepingTask[F](cfg, store, fileRepo, downloadAll),
           HouseKeepingTask.onCancel[F]
         )
       )
@@ -207,6 +212,17 @@ final class JoexTasks[F[_]: Async](
           FileIntegrityCheckTask.onCancel[F]
         )
       )
+      .withTask(
+        JobTask.json(
+          DownloadZipArgs.taskName,
+          DownloadZipTask[F](
+            cfg.files.chunkSize,
+            store,
+            ODownloadAll(store, jobs, jobStoreModule.jobs)
+          ),
+          DownloadZipTask.onCancel[F]
+        )
+      )
 }
 
 object JoexTasks {
@@ -233,6 +249,7 @@ object JoexTasks {
       updateCheck <- UpdateCheck.resource(httpClient)
       notification <- ONotification(store, notificationModule)
       fileRepo <- OFileRepository(store, jobStoreModule.jobs)
+      jobs <- OJob(store, joex, pubSub)
     } yield new JoexTasks[F](
       cfg,
       store,
@@ -248,6 +265,7 @@ object JoexTasks {
       upload,
       createIndex,
       joex,
+      jobs,
       itemSearchOps
     )
 

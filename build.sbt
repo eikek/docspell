@@ -275,11 +275,23 @@ val openapiScalaSettings = Seq(
           field.copy(typeDef =
             TypeDef("EventType", Imports("docspell.notification.api.EventType"))
           )
-
       case "jsonminiq" =>
         field =>
           field.copy(typeDef =
             TypeDef("JsonMiniQuery", Imports("docspell.jsonminiq.JsonMiniQuery"))
+          )
+      case "downloadalltype" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("DownloadAllType", Imports("docspell.common.DownloadAllType"))
+          )
+      case "bytesize" =>
+        field =>
+          field.copy(typeDef = TypeDef("ByteSize", Imports("docspell.common.ByteSize")))
+      case "downloadstate" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("DownloadState", Imports("docspell.common.DownloadState"))
           )
     })
 )

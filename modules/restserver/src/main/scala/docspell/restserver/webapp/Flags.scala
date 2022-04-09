@@ -7,7 +7,7 @@
 package docspell.restserver.webapp
 
 import docspell.backend.signup.{Config => SignupConfig}
-import docspell.common.{Ident, LenientUri}
+import docspell.common.{ByteSize, Ident, LenientUri}
 import docspell.restserver.{BuildInfo, Config}
 
 import io.circe._
@@ -26,6 +26,8 @@ case class Flags(
     maxPageSize: Int,
     maxNoteLength: Int,
     showClassificationSettings: Boolean,
+    downloadAllMaxFiles: Int,
+    downloadAllMaxSize: ByteSize,
     uiVersion: Int,
     openIdAuth: List[Flags.OpenIdAuth]
 )
@@ -42,6 +44,8 @@ object Flags {
       cfg.maxItemPageSize,
       cfg.maxNoteLength,
       cfg.showClassificationSettings,
+      cfg.downloadAll.maxFiles,
+      cfg.downloadAll.maxSize,
       uiVersion,
       cfg.openid.filter(_.enabled).map(c => OpenIdAuth(c.provider.providerId, c.display))
     )
@@ -62,6 +66,9 @@ object Flags {
 
   implicit val jsonEncoder: Encoder[Flags] =
     deriveEncoder[Flags]
+
+  implicit def yamuscaByteSizeConverter: ValueConverter[ByteSize] =
+    ValueConverter.of(sz => Value.fromString(sz.bytes.toString))
 
   implicit def yamuscaIdentConverter: ValueConverter[Ident] =
     ValueConverter.of(id => Value.fromString(id.id))
