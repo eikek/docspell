@@ -23,8 +23,8 @@ jobs:
       - uses: bahmutov/npm-install@v1
         with:
           working-directory: modules/webapp
-      - name: Coursier cache
-        uses: coursier/cache-action@v6
+      # - name: Coursier cache
+      #   uses: coursier/cache-action@v6
       - name: Set current version
         run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
       - name: sbt make-pkg (${{ env.DOCSPELL_VERSION }})
