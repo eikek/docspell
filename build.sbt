@@ -1,5 +1,5 @@
 import com.github.eikek.sbt.openapi._
-import com.typesafe.sbt.SbtGit.GitKeys._
+import com.github.sbt.git.SbtGit.GitKeys._
 import docspell.build._
 import de.heikoseeberger.sbtheader.CommentBlockCreator
 
