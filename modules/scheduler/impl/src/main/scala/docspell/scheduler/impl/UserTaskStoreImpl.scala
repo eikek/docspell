@@ -44,7 +44,7 @@ final class UserTaskStoreImpl[F[_]: Sync](
       implicit E: Encoder[A]
   ): F[Int] = {
     val exists = QUserTask.exists(ut.id)
-    val insert = QUserTask.insert(scope, subject, ut.encode)
+    val insert = QUserTask.insert(scope, subject, ut.encode, silent = true)
     store.add(insert, exists).flatMap {
       case AddResult.Success =>
         1.pure[F]
@@ -101,7 +101,9 @@ final class UserTaskStoreImpl[F[_]: Sync](
         } yield task
       case Nil =>
         val task = ut.encode
-        store.transact(QUserTask.insert(scope, subject, task)).map(_ => task)
+        store
+          .transact(QUserTask.insert(scope, subject, task, silent = false))
+          .map(_ => task)
     }
 
   def deleteAll(scope: UserTaskScope, name: Ident): F[Int] =

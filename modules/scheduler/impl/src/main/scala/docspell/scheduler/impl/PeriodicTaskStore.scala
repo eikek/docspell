@@ -103,10 +103,11 @@ object PeriodicTaskStore {
 
       def insert(task: RPeriodicTask): F[Unit] = {
         val update = store.transact(RPeriodicTask.update(task))
-        val insertAttempt = store.transact(RPeriodicTask.insert(task)).attempt.map {
-          case Right(n) => n > 0
-          case Left(_)  => false
-        }
+        val insertAttempt =
+          store.transact(RPeriodicTask.insert(task, silent = true)).attempt.map {
+            case Right(n) => n > 0
+            case Left(_)  => false
+          }
 
         for {
           n1 <- update
@@ -116,7 +117,7 @@ object PeriodicTaskStore {
       }
 
       def add(task: RPeriodicTask): F[AddResult] = {
-        val insert = RPeriodicTask.insert(task)
+        val insert = RPeriodicTask.insert(task, silent = true)
         val exists = RPeriodicTask.exists(task.id)
         store.add(insert, exists)
       }
