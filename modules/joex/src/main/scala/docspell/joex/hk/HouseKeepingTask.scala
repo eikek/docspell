@@ -9,7 +9,7 @@ package docspell.joex.hk
 import cats.effect._
 import cats.implicits._
 
-import docspell.backend.ops.OFileRepository
+import docspell.backend.ops.{ODownloadAll, OFileRepository}
 import docspell.common._
 import docspell.joex.Config
 import docspell.joex.filecopy.FileIntegrityCheckTask
@@ -29,7 +29,8 @@ object HouseKeepingTask {
   def apply[F[_]: Async](
       cfg: Config,
       store: Store[F],
-      fileRepo: OFileRepository[F]
+      fileRepo: OFileRepository[F],
+      downloadAll: ODownloadAll[F]
   ): Task[F, Unit, Result] = {
     val combined =
       (
@@ -37,6 +38,7 @@ object HouseKeepingTask {
         CleanupInvitesTask(cfg.houseKeeping.cleanupInvites, store),
         CleanupJobsTask(cfg.houseKeeping.cleanupJobs, store),
         CleanupRememberMeTask(cfg.houseKeeping.cleanupRememberMe, store),
+        CleanupDownloadsTask(cfg.houseKeeping.cleanupDownloads, downloadAll),
         IntegrityCheckTask(cfg.houseKeeping.integrityCheck, store, fileRepo)
       ).mapN(Result.apply)
 
@@ -63,6 +65,7 @@ object HouseKeepingTask {
       cleanupInvites: CleanupResult,
       cleanupJobs: CleanupResult,
       cleanupRememberMe: CleanupResult,
+      cleanupDownloads: CleanupResult,
       integrityCheck: FileIntegrityCheckTask.Result
   )
 
@@ -76,6 +79,7 @@ object HouseKeepingTask {
           s"- Invites removed: ${r.cleanupInvites.asString}\n" +
           s"- Jobs removed: ${r.cleanupJobs.asString}\n" +
           s"- RememberMe removed: ${r.cleanupRememberMe.asString}\n" +
+          s"- Downloads remove: ${r.cleanupDownloads.asString}\n" +
           s"- Integrity check: ok=${r.integrityCheck.ok}, failed=${r.integrityCheck.failedKeys.size}, notFound=${r.integrityCheck.notFoundKeys.size}"
       }
 

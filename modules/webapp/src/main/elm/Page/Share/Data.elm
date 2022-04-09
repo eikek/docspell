@@ -5,13 +5,23 @@
 -}
 
 
-module Page.Share.Data exposing (Mode(..), Model, Msg(..), PageError(..), SearchBarMode(..), init, initCmd)
+module Page.Share.Data exposing
+    ( Mode(..)
+    , Model
+    , Msg(..)
+    , PageError(..)
+    , SearchBarMode(..)
+    , TopContentModel(..)
+    , init
+    , initCmd
+    )
 
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Api.Model.ShareSecret exposing (ShareSecret)
 import Api.Model.ShareVerifyResult exposing (ShareVerifyResult)
+import Comp.DownloadAll
 import Comp.ItemCardList
 import Comp.PowerSearchInput
 import Comp.SearchMenu
@@ -42,6 +52,11 @@ type SearchBarMode
     | SearchBarContent
 
 
+type TopContentModel
+    = TopContentHidden
+    | TopContentDownload Comp.DownloadAll.Model
+
+
 type alias Model =
     { mode : Mode
     , verifyResult : ShareVerifyResult
@@ -61,6 +76,7 @@ type alias Model =
         , arrange : ItemArrange
         , rowsOpen : Set String
         }
+    , topContent : TopContentModel
     }
 
 
@@ -84,6 +100,7 @@ emptyModel flags =
         , arrange = Data.ItemArrange.Cards
         , rowsOpen = Set.empty
         }
+    , topContent = TopContentHidden
     }
 
 
@@ -122,3 +139,5 @@ type Msg
     | ToggleViewMenu
     | ToggleArrange ItemArrange
     | ToggleShowGroups
+    | DownloadAllMsg Comp.DownloadAll.Msg
+    | ToggleDownloadAll

@@ -15,6 +15,7 @@ module Messages.Page.Search exposing
 import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
 import Messages.Comp.BookmarkQueryManage
+import Messages.Comp.DownloadAll
 import Messages.Comp.ItemCardList
 import Messages.Comp.ItemMerge
 import Messages.Comp.PublishItems
@@ -30,6 +31,7 @@ type alias Texts =
     , itemMerge : Messages.Comp.ItemMerge.Texts
     , publishItems : Messages.Comp.PublishItems.Texts
     , bookmarkManage : Messages.Comp.BookmarkQueryManage.Texts
+    , downloadAllComp : Messages.Comp.DownloadAll.Texts
     , contentSearch : String
     , searchInNames : String
     , selectModeTitle : String
@@ -76,6 +78,8 @@ type alias Texts =
     , linkItemsSuccessful : String
     , linkItemsInProcess : String
     , linkItemsHeader : String
+    , downloadAll : String
+    , downloadAllQueryNeeded : String
     }
 
 
@@ -88,6 +92,7 @@ gb tz =
     , itemMerge = Messages.Comp.ItemMerge.gb tz
     , publishItems = Messages.Comp.PublishItems.gb tz
     , bookmarkManage = Messages.Comp.BookmarkQueryManage.gb
+    , downloadAllComp = Messages.Comp.DownloadAll.gb
     , contentSearch = "Content search…"
     , searchInNames = "Search in names…"
     , selectModeTitle = "Select Mode"
@@ -134,6 +139,8 @@ gb tz =
     , linkItemsInProcess = "Linking items ..."
     , mergeHeader = "Merge Items"
     , linkItemsHeader = "Link Items"
+    , downloadAll = "Download all"
+    , downloadAllQueryNeeded = "Apply a criteria to reduce what to download."
     }
 
 
@@ -146,6 +153,7 @@ de tz =
     , itemMerge = Messages.Comp.ItemMerge.de tz
     , publishItems = Messages.Comp.PublishItems.de tz
     , bookmarkManage = Messages.Comp.BookmarkQueryManage.de
+    , downloadAllComp = Messages.Comp.DownloadAll.de
     , contentSearch = "Volltextsuche…"
     , searchInNames = "Suche in Namen…"
     , selectModeTitle = "Auswahlmodus"
@@ -192,6 +200,8 @@ de tz =
     , linkItemsInProcess = "Dokumente werden verknüpft ..."
     , mergeHeader = "Dokumente zusammenführen"
     , linkItemsHeader = "Dokument verknüpfen"
+    , downloadAll = "Alle herunterladen"
+    , downloadAllQueryNeeded = "Alles kann nicht heruntergeladen werden, es muss etwas gesucht werden."
     }
 
 
@@ -204,6 +214,7 @@ fr tz =
     , itemMerge = Messages.Comp.ItemMerge.fr tz
     , publishItems = Messages.Comp.PublishItems.fr tz
     , bookmarkManage = Messages.Comp.BookmarkQueryManage.fr
+    , downloadAllComp = Messages.Comp.DownloadAll.fr
     , contentSearch = "Recherche..."
     , searchInNames = "Recherche par nom..."
     , selectModeTitle = "Select Mode"
@@ -250,4 +261,6 @@ fr tz =
     , linkItemsInProcess = "Relier en cours ..."
     , mergeHeader = "Fusionner des documents"
     , linkItemsHeader = "Lier des documents"
+    , downloadAll = "Télécharger tout"
+    , downloadAllQueryNeeded = "Tout ne peut pas être téléchargé, il faut chercher quelque chose."
     }

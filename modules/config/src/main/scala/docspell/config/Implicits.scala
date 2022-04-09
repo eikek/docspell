@@ -104,6 +104,9 @@ object Implicits {
   implicit val ftsTypeReader: ConfigReader[FtsType] =
     ConfigReader[String].emap(reason(FtsType.fromName))
 
+  implicit val byteSizeReader: ConfigReader[ByteSize] =
+    ConfigReader[String].emap(reason(ByteSize.parse))
+
   def reason[T, A: ClassTag](
       f: T => Either[String, A]
   ): T => Either[FailureReason, A] =

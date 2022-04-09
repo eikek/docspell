@@ -6,6 +6,7 @@
 
 package docspell.common
 
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.{Duration => _, _}
 
@@ -46,6 +47,11 @@ case class Timestamp(value: Instant) {
   def atUTC: ZonedDateTime = atZone(Timestamp.UTC)
 
   def asString: String = value.toString
+
+  def forFilename: String =
+    DateTimeFormatter
+      .ofPattern("YYYY-MM-dd'T'HH-mm-ss")
+      .format(value.atOffset(ZoneOffset.UTC))
 
   def <(other: Timestamp): Boolean =
     this.value.isBefore(other.value)

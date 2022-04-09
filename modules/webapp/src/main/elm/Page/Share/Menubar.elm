@@ -146,6 +146,15 @@ view texts flags model =
                             , onClick (ToggleArrange Data.ItemArrange.Cards)
                             ]
                       }
+                    , { label = texts.downloadAllLabel
+                      , icon = i [ class "fa fa-download" ] []
+                      , disabled = False
+                      , attrs =
+                            [ title texts.downloadAllLabel
+                            , href "#"
+                            , onClick ToggleDownloadAll
+                            ]
+                      }
                     ]
                 }
             ]

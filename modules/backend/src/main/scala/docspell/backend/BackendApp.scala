@@ -51,6 +51,7 @@ trait BackendApp[F[_]] {
   def bookmarks: OQueryBookmarks[F]
   def fileRepository: OFileRepository[F]
   def itemLink: OItemLink[F]
+  def downloadAll: ODownloadAll[F]
 }
 
 object BackendApp {
@@ -107,6 +108,7 @@ object BackendApp {
       bookmarksImpl <- OQueryBookmarks(store)
       fileRepoImpl <- OFileRepository(store, schedulerModule.jobs)
       itemLinkImpl <- Resource.pure(OItemLink(store, itemSearchImpl))
+      downloadAllImpl <- Resource.pure(ODownloadAll(store, jobImpl, schedulerModule.jobs))
     } yield new BackendApp[F] {
       val pubSub = pubSubT
       val login = loginImpl
@@ -136,5 +138,6 @@ object BackendApp {
       val bookmarks = bookmarksImpl
       val fileRepository = fileRepoImpl
       val itemLink = itemLinkImpl
+      val downloadAll = downloadAllImpl
     }
 }

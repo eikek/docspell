@@ -47,6 +47,12 @@ trait DSL extends DoobieMeta {
   def select(e: SelectExpr, es: SelectExpr*): Nel[SelectExpr] =
     Nel(e, es.toList)
 
+  def combineNel[A](e: Nel[A], more: Nel[A]*): Nel[A] =
+    Nel
+      .fromFoldable(more)
+      .map(tail => tail.prepend(e).flatMap(identity))
+      .getOrElse(e)
+
   def select(c: Column[_], cs: Column[_]*): Nel[SelectExpr] =
     Nel(c, cs.toList).map(col => SelectExpr.SelectColumn(col, None))
 

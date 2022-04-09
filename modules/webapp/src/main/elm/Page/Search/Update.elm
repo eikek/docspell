@@ -13,6 +13,7 @@ module Page.Search.Update exposing
 import Api
 import Api.Model.ItemLightList exposing (ItemLightList)
 import Comp.BookmarkQueryManage
+import Comp.DownloadAll
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange(..))
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
@@ -892,14 +893,46 @@ update texts bookmarkId lastViewedItemId env msg model =
                 Nothing ->
                     resultModelCmd env.selectedItems ( model, Cmd.none )
 
+        ToggleDownloadAllView ->
+            case createQuery env.selectedItems model of
+                Just q ->
+                    case model.topWidgetModel of
+                        DownloadAll _ ->
+                            resultModelCmd env.selectedItems
+                                ( { model
+                                    | topWidgetModel = TopWidgetHidden
+                                    , viewMenuOpen = False
+                                  }
+                                , Cmd.none
+                                )
+
+                        _ ->
+                            let
+                                ( qm, qc ) =
+                                    Comp.DownloadAll.init Comp.DownloadAll.AccessUser env.flags (Q.render q)
+                            in
+                            resultModelCmd env.selectedItems
+                                ( { model | topWidgetModel = DownloadAll qm, viewMenuOpen = False }
+                                , Cmd.map DownloadAllMsg qc
+                                )
+
+                Nothing ->
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
+
         ToggleBookmarkCurrentQueryView ->
             case createQuery env.selectedItems model of
                 Just q ->
                     case model.topWidgetModel of
                         BookmarkQuery _ ->
-                            resultModelCmd env.selectedItems ( { model | topWidgetModel = TopWidgetHidden, viewMenuOpen = False }, Cmd.none )
+                            resultModelCmd env.selectedItems
+                                ( { model
+                                    | topWidgetModel = TopWidgetHidden
+                                    , viewMenuOpen = False
+                                  }
+                                , Cmd.none
+                                )
 
-                        TopWidgetHidden ->
+                        _ ->
                             let
                                 ( qm, qc ) =
                                     Comp.BookmarkQueryManage.init (Q.render q)
@@ -947,7 +980,30 @@ update texts bookmarkId lastViewedItemId env msg model =
                         , Sub.map BookmarkQueryMsg res.sub
                         )
 
-                TopWidgetHidden ->
+                _ ->
+                    resultModelCmd env.selectedItems ( model, Cmd.none )
+
+        DownloadAllMsg lm ->
+            case model.topWidgetModel of
+                DownloadAll bm ->
+                    let
+                        res =
+                            Comp.DownloadAll.update env.flags lm bm
+
+                        nextModel =
+                            if res.closed then
+                                TopWidgetHidden
+
+                            else
+                                DownloadAll res.model
+                    in
+                    makeResult env.selectedItems
+                        ( { model | topWidgetModel = nextModel }
+                        , Cmd.map DownloadAllMsg res.cmd
+                        , Sub.none
+                        )
+
+                _ ->
                     resultModelCmd env.selectedItems ( model, Cmd.none )
 
         PublishViewMsg lmsg ->

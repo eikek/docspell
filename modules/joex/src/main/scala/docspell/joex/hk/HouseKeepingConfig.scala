@@ -16,6 +16,7 @@ case class HouseKeepingConfig(
     cleanupInvites: CleanupInvites,
     cleanupJobs: CleanupJobs,
     cleanupRememberMe: CleanupRememberMe,
+    cleanupDownloads: CleanupDownloads,
     checkNodes: CheckNodes,
     integrityCheck: IntegrityCheck
 )
@@ -25,6 +26,8 @@ object HouseKeepingConfig {
   case class CleanupInvites(enabled: Boolean, olderThan: Duration)
 
   case class CleanupJobs(enabled: Boolean, olderThan: Duration, deleteBatch: Int)
+
+  case class CleanupDownloads(enabled: Boolean, olderThan: Duration)
 
   case class CleanupRememberMe(enabled: Boolean, olderThan: Duration)
 

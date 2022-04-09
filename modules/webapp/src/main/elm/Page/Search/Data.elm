@@ -33,6 +33,7 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Api.Model.SearchStats exposing (SearchStats)
 import Browser.Dom as Dom
 import Comp.BookmarkQueryManage
+import Comp.DownloadAll
 import Comp.ItemCardList
 import Comp.ItemDetail.FormChange exposing (FormChange)
 import Comp.ItemDetail.MultiEditMenu exposing (SaveNameState(..))
@@ -76,6 +77,7 @@ type alias Model =
 
 type TopWidgetModel
     = TopWidgetHidden
+    | DownloadAll Comp.DownloadAll.Model
     | BookmarkQuery Comp.BookmarkQueryManage.Model
 
 
@@ -239,7 +241,9 @@ type Msg
     | ToggleArrange ItemArrange
     | ToggleExpandCollapseRows
     | ToggleBookmarkCurrentQueryView
+    | ToggleDownloadAllView
     | BookmarkQueryMsg Comp.BookmarkQueryManage.Msg
+    | DownloadAllMsg Comp.DownloadAll.Msg
     | ItemSelectionChanged
 
 

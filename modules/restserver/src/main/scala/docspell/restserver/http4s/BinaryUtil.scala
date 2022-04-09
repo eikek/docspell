@@ -11,7 +11,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
-import docspell.backend.ops.OItemSearch.{AttachmentData, AttachmentPreviewData}
+import docspell.backend.ops.OItemSearch.{AttachmentPreviewData, BinaryData}
 import docspell.backend.ops._
 import docspell.restapi.model.BasicResult
 import docspell.restserver.http4s.{QueryParam => QP}
@@ -27,7 +27,7 @@ import org.typelevel.ci.CIString
 object BinaryUtil {
 
   def respond[F[_]: Async](dsl: Http4sDsl[F], req: Request[F])(
-      fileData: Option[AttachmentData[F]]
+      fileData: Option[BinaryData[F]]
   ): F[Response[F]] = {
     import dsl._
 
@@ -42,7 +42,7 @@ object BinaryUtil {
   }
 
   def respondHead[F[_]: Async](dsl: Http4sDsl[F])(
-      fileData: Option[AttachmentData[F]]
+      fileData: Option[BinaryData[F]]
   ): F[Response[F]] = {
     import dsl._
 

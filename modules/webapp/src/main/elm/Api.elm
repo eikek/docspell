@@ -60,6 +60,9 @@ module Api exposing
     , deleteTag
     , deleteUser
     , disableOtp
+    , downloadAllLink
+    , downloadAllPrefetch
+    , downloadAllSubmit
     , fileURL
     , getAllDashboards
     , getAttachmentMeta
@@ -175,6 +178,9 @@ module Api exposing
     , setTagsMultiple
     , setUnconfirmed
     , shareAttachmentPreviewURL
+    , shareDownloadAllLink
+    , shareDownloadAllPrefetch
+    , shareDownloadAllSubmit
     , shareFileURL
     , shareItemBasePreviewURL
     , shareSendMail
@@ -218,6 +224,8 @@ import Api.Model.CustomFieldList exposing (CustomFieldList)
 import Api.Model.CustomFieldValue exposing (CustomFieldValue)
 import Api.Model.DeleteUserData exposing (DeleteUserData)
 import Api.Model.DirectionValue exposing (DirectionValue)
+import Api.Model.DownloadAllRequest exposing (DownloadAllRequest)
+import Api.Model.DownloadAllSummary exposing (DownloadAllSummary)
 import Api.Model.EmailSettings exposing (EmailSettings)
 import Api.Model.EmailSettingsList exposing (EmailSettingsList)
 import Api.Model.EmptyTrashSetting exposing (EmptyTrashSetting)
@@ -3081,6 +3089,70 @@ removeRelatedItem flags item1 item2 receive =
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
+
+
+
+--- DownloadAll
+
+
+downloadAllPrefetch : Flags -> DownloadAllRequest -> (Result Http.Error DownloadAllSummary -> msg) -> Cmd msg
+downloadAllPrefetch flags req receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/downloadAll/prefetch"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.DownloadAllRequest.encode req)
+        , expect = Http.expectJson receive Api.Model.DownloadAllSummary.decoder
+        }
+
+
+downloadAllSubmit : Flags -> DownloadAllRequest -> (Result Http.Error DownloadAllSummary -> msg) -> Cmd msg
+downloadAllSubmit flags req receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/downloadAll/submit"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.DownloadAllRequest.encode req)
+        , expect = Http.expectJson receive Api.Model.DownloadAllSummary.decoder
+        }
+
+
+downloadAllLink : Flags -> String -> String
+downloadAllLink flags id =
+    flags.config.baseUrl ++ "/api/v1/sec/downloadAll/file/" ++ id
+
+
+shareDownloadAllPrefetch :
+    Flags
+    -> String
+    -> DownloadAllRequest
+    -> (Result Http.Error DownloadAllSummary -> msg)
+    -> Cmd msg
+shareDownloadAllPrefetch flags token req receive =
+    Http2.sharePost
+        { url = flags.config.baseUrl ++ "/api/v1/share/downloadAll/prefetch"
+        , token = token
+        , body = Http.jsonBody (Api.Model.DownloadAllRequest.encode req)
+        , expect = Http.expectJson receive Api.Model.DownloadAllSummary.decoder
+        }
+
+
+shareDownloadAllSubmit :
+    Flags
+    -> String
+    -> DownloadAllRequest
+    -> (Result Http.Error DownloadAllSummary -> msg)
+    -> Cmd msg
+shareDownloadAllSubmit flags token req receive =
+    Http2.sharePost
+        { url = flags.config.baseUrl ++ "/api/v1/share/downloadAll/submit"
+        , token = token
+        , body = Http.jsonBody (Api.Model.DownloadAllRequest.encode req)
+        , expect = Http.expectJson receive Api.Model.DownloadAllSummary.decoder
+        }
+
+
+shareDownloadAllLink : Flags -> String -> String
+shareDownloadAllLink flags id =
+    flags.config.baseUrl ++ "/api/v1/share/downloadAll/file/" ++ id
 
 
 

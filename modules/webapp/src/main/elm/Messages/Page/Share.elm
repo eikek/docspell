@@ -10,6 +10,7 @@ module Messages.Page.Share exposing (..)
 import Data.TimeZone exposing (TimeZone)
 import Http
 import Messages.Basics
+import Messages.Comp.DownloadAll
 import Messages.Comp.HttpError
 import Messages.Comp.ItemCardList
 import Messages.Comp.SearchMenu
@@ -21,6 +22,7 @@ type alias Texts =
     , basics : Messages.Basics.Texts
     , itemCardList : Messages.Comp.ItemCardList.Texts
     , passwordForm : Messages.Comp.SharePasswordForm.Texts
+    , downloadAll : Messages.Comp.DownloadAll.Texts
     , httpError : Http.Error -> String
     , authFailed : String
     , fulltextPlaceholder : String
@@ -30,6 +32,7 @@ type alias Texts =
     , showItemGroups : String
     , listView : String
     , tileView : String
+    , downloadAllLabel : String
     }
 
 
@@ -39,6 +42,7 @@ gb tz =
     , basics = Messages.Basics.gb
     , itemCardList = Messages.Comp.ItemCardList.gb tz
     , passwordForm = Messages.Comp.SharePasswordForm.gb
+    , downloadAll = Messages.Comp.DownloadAll.gb
     , authFailed = "This share does not exist."
     , httpError = Messages.Comp.HttpError.gb
     , fulltextPlaceholder = "Fulltext search…"
@@ -48,6 +52,7 @@ gb tz =
     , showItemGroups = "Group by month"
     , listView = "List view"
     , tileView = "Tile view"
+    , downloadAllLabel = "Download all"
     }
 
 
@@ -57,6 +62,7 @@ de tz =
     , basics = Messages.Basics.de
     , itemCardList = Messages.Comp.ItemCardList.de tz
     , passwordForm = Messages.Comp.SharePasswordForm.de
+    , downloadAll = Messages.Comp.DownloadAll.de
     , authFailed = "Diese Freigabe existiert nicht."
     , httpError = Messages.Comp.HttpError.de
     , fulltextPlaceholder = "Volltextsuche…"
@@ -66,6 +72,7 @@ de tz =
     , showItemGroups = "nach Monat gruppieren"
     , listView = "Listenansicht"
     , tileView = "Kachelansicht"
+    , downloadAllLabel = "Alles herunterladen"
     }
 
 
@@ -75,6 +82,7 @@ fr tz =
     , basics = Messages.Basics.fr
     , itemCardList = Messages.Comp.ItemCardList.fr tz
     , passwordForm = Messages.Comp.SharePasswordForm.fr
+    , downloadAll = Messages.Comp.DownloadAll.fr
     , authFailed = "Ce partage n'existe pas."
     , httpError = Messages.Comp.HttpError.fr
     , fulltextPlaceholder = "Recherche en texte entier..."
@@ -84,4 +92,5 @@ fr tz =
     , showItemGroups = "Grouper par mois"
     , listView = "Affichage liste"
     , tileView = "Affichage tuile"
+    , downloadAllLabel = "Télécharger tout"
     }

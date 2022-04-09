@@ -11,7 +11,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common.{FileKey, _}
-import docspell.store.file.BinnyUtils
+import docspell.store.file.{BinnyUtils, FileMetadata}
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
@@ -25,7 +25,10 @@ final case class RFileMeta(
     mimetype: MimeType,
     length: ByteSize,
     checksum: ByteVector
-)
+) {
+  def toFileMetadata: FileMetadata =
+    FileMetadata(id, created, mimetype, length, checksum)
+}
 
 object RFileMeta {
   final case class Table(alias: Option[String]) extends TableDef {

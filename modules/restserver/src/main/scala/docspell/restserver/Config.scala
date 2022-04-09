@@ -14,7 +14,7 @@ import docspell.ftssolr.SolrConfig
 import docspell.logging.LogConfig
 import docspell.oidc.ProviderConfig
 import docspell.pubsub.naive.PubSubConfig
-import docspell.restserver.Config.{OpenIdConfig, ServerOptions}
+import docspell.restserver.Config.{DownloadAllCfg, OpenIdConfig, ServerOptions}
 import docspell.restserver.auth.OpenId
 import docspell.restserver.http4s.InternalHeader
 
@@ -36,7 +36,8 @@ case class Config(
     maxNoteLength: Int,
     fullTextSearch: Config.FullTextSearch,
     adminEndpoint: Config.AdminEndpoint,
-    openid: List[OpenIdConfig]
+    openid: List[OpenIdConfig],
+    downloadAll: DownloadAllCfg
 ) {
   def openIdEnabled: Boolean =
     openid.exists(_.enabled)
@@ -51,6 +52,7 @@ case class Config(
 }
 
 object Config {
+  case class DownloadAllCfg(maxFiles: Int, maxSize: ByteSize)
 
   case class ServerOptions(
       responseTimeout: Duration,

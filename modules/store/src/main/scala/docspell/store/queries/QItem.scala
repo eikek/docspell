@@ -38,9 +38,11 @@ object QItem {
   private val cf = RCustomField.as("cf")
   private val cv = RCustomFieldValue.as("cvf")
   private val a = RAttachment.as("a")
+  private val as = RAttachmentSource.as("ras")
   private val m = RAttachmentMeta.as("m")
   private val tag = RTag.as("t")
   private val ti = RTagItem.as("ti")
+  private val meta = RFileMeta.as("fmeta")
 
   def countAttachmentsAndItems(items: Nel[Ident]): ConnectionIO[Int] =
     Select(count(a.id).s, from(a), a.itemId.in(items)).build
@@ -174,6 +176,87 @@ object QItem {
         .map(of => OrderBy.asc(coalesce(of(i).s, i.created.s).s))
         .getOrElse(OrderBy.desc(coalesce(i.itemDate.s, i.created.s).s))
     )
+  }
+
+  private def findFilesQuery(
+      q: Query,
+      ftype: DownloadAllType,
+      today: LocalDate,
+      maxFiles: Int
+  ): Select =
+    findItemsBase(q.fix, today, 0)
+      .changeFrom(_.innerJoin(a, a.itemId === i.id).innerJoin(as, a.id === as.id))
+      .changeFrom(from =>
+        ftype match {
+          case DownloadAllType.Converted =>
+            from.innerJoin(meta, meta.id === a.fileId)
+          case DownloadAllType.Original =>
+            from.innerJoin(meta, meta.id === as.fileId)
+        }
+      )
+      .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+      .limit(maxFiles)
+
+  def findFiles(
+      q: Query,
+      ftype: DownloadAllType,
+      today: LocalDate,
+      maxFiles: Int,
+      chunkSize: Int
+  ): Stream[ConnectionIO, RFileMeta] = {
+    val query = findFilesQuery(q, ftype, today, maxFiles)
+      .withSelect(
+        meta.all.map(_.s).append(coalesce(i.itemDate.s, i.created.s).s)
+      )
+
+    query.build
+      .query[RFileMeta]
+      .streamWithChunkSize(chunkSize)
+  }
+
+  def findFilesDetailed(
+      q: Query,
+      ftype: DownloadAllType,
+      today: LocalDate,
+      maxFiles: Int,
+      chunkSize: Int
+  ): Stream[ConnectionIO, ItemFileMeta] = {
+    val fname = ftype match {
+      case DownloadAllType.Converted => a.name
+      case DownloadAllType.Original  => as.name
+    }
+
+    val query = findFilesQuery(q, ftype, today, maxFiles)
+      .withSelect(
+        combineNel(
+          select(
+            i.id.s,
+            i.name.s,
+            i.state.s,
+            coalesce(i.itemDate.s, i.created.s).s,
+            i.dueDate.s,
+            i.source.s,
+            i.incoming.s,
+            i.created.s,
+            org.oid.s,
+            org.name.s,
+            pers0.pid.s,
+            pers0.name.s,
+            pers1.pid.s,
+            pers1.name.s,
+            equip.eid.s,
+            equip.name.s,
+            f.id.s,
+            f.name.s
+          ),
+          select(fname.s),
+          select(meta.all)
+        )
+      )
+
+    query.build
+      .query[ItemFileMeta]
+      .streamWithChunkSize(chunkSize)
   }
 
   def queryCondFromExpr(today: LocalDate, coll: Ident, q: ItemQuery.Expr): Condition = {
