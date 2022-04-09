@@ -302,7 +302,7 @@ viewForm texts settings outerModel model =
                 |> Maybe.map .id
 
         newChannel =
-            channelId |> (==) (Just "")
+            channelId == Just "" || channelId == Nothing
 
         headline =
             case Comp.ChannelForm.channelType model of
