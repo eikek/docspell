@@ -89,11 +89,12 @@ object QUserTask {
   def insert(
       scope: UserTaskScope,
       subject: Option[String],
-      task: UserTask[String]
+      task: UserTask[String],
+      silent: Boolean
   ): ConnectionIO[Int] =
     for {
       r <- task.toPeriodicTask[ConnectionIO](scope, subject)
-      n <- RPeriodicTask.insert(r)
+      n <- RPeriodicTask.insert(r, silent)
     } yield n
 
   def update(

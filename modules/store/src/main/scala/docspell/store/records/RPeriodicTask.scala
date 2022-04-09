@@ -115,14 +115,13 @@ object RPeriodicTask {
   def setEnabledByTask(taskName: Ident, enabled: Boolean): ConnectionIO[Int] =
     DML.update(T, T.task === taskName, DML.set(T.enabled.setTo(enabled)))
 
-  def insert(v: RPeriodicTask): ConnectionIO[Int] =
-    DML.insert(
-      T,
-      T.all,
-      fr"${v.id},${v.enabled},${v.task},${v.group},${v.args}," ++
-        fr"${v.subject},${v.submitter},${v.priority},${v.worker}," ++
-        fr"${v.marked},${v.timer},${v.nextrun},${v.created},${v.summary}"
-    )
+  def insert(v: RPeriodicTask, silent: Boolean): ConnectionIO[Int] = {
+    val values = fr"${v.id},${v.enabled},${v.task},${v.group},${v.args}," ++
+      fr"${v.subject},${v.submitter},${v.priority},${v.worker}," ++
+      fr"${v.marked},${v.timer},${v.nextrun},${v.created},${v.summary}"
+    if (silent) DML.insertSilent(T, T.all, values)
+    else DML.insert(T, T.all, values)
+  }
 
   def update(v: RPeriodicTask): ConnectionIO[Int] =
     DML.update(
