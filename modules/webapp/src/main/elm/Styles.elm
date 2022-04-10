@@ -395,7 +395,7 @@ editLinkTableCellStyle =
 
 dimmer : String
 dimmer =
-    " absolute top-0 left-0 w-full h-full bg-black bg-opacity-90 dark:bg-slate-900 dark:bg-opacity-90 z-30 flex flex-col items-center justify-center px-4 md:px-8 py-2 "
+    " absolute top-0 left-0 w-full h-full bg-black bg-opacity-90 dark:bg-slate-900 dark:bg-opacity-90 z-50 flex flex-col items-center justify-center px-4 md:px-8 py-2 "
 
 
 dimmerLight : String
