@@ -83,6 +83,10 @@ let
         valid = "30 days";
       };
     };
+    download-all = {
+      max-files = 500;
+      max-size = "1400M";
+    };
     openid = {
       enabled = false;
       display = "";
@@ -317,6 +321,25 @@ in {
         });
         default = defaults.auth;
         description = "Authentication";
+      };
+
+      download-all = mkOption {
+        type = types.submodule({
+          options = {
+            max-files = mkOption {
+              type = types.int;
+              default = defaults.download-all.max-files;
+              description = "How many files to allow in a zip.";
+            };
+            max-size = mkOption {
+              type = types.str;
+              default = defaults.download-all.max-size;
+              description = "The maximum (uncompressed) size of the zip file contents.";
+            };
+          };
+        });
+        default = defaults.download-all;
+        description = "";
       };
 
       openid = mkOption {

@@ -62,6 +62,10 @@ let
         enabled = true;
         older-than = "30 days";
       };
+      cleanup-downloads = {
+        enabled = true;
+        older-than = "14 days";
+      };
       check-nodes = {
         enabled = true;
         min-not-found = 2;
@@ -601,6 +605,26 @@ in {
               default = defaults.house-keeping.cleanup-remember-me;
               description = "Settings for cleaning up remember me tokens.";
             };
+
+            cleanup-downloads = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.house-keeping.cleanup-downloads.enabled;
+                    description = "Whether this task is enabled.";
+                  };
+                  older-than = mkOption {
+                    type = types.str;
+                    default = defaults.house-keeping.cleanup-downloads.older-than;
+                    description = "The miminum age of a download file to delete.";
+                  };
+                };
+              });
+              default = defaults.house-keeping.cleanup-downloads;
+              description = "";
+            };
+
             check-nodes = mkOption {
               type = types.submodule({
                 options = {
