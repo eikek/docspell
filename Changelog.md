@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.35.0
+
+*Apr 14, 2022*
+
+- Download multiple documents as zip (#1093). The webui allows to
+  download multiple files as a zip archive. The zip file is created at
+  the server and cached for a while.
+- New project [ds4e](https://github.com/docspell/ds4e) providing some
+  utilises to access Docspell from Emacs.
+- Increase size for password fields in the database (#1508)
+- Hide the delete button in new notifciation channel forms (#1506)
+- Fix logging (#1468), non-errors were logged as errors. 
+- Apply the migration fix from last version only from 0.32.0 onwards
+  (#1469)
+- Fix typos in UI (#1510, @monnypython)
+- Add support for Postgres FTS in nix module (#1512, @LeSuisse)
+
+### Rest API Changes
+
+- adds routes to create and download multiple files
+
+### Configuration Changes
+
+- restserver: add limits for creating zip files from search queries
+- joex: settings for new cleanup task that removes zip files that
+  exceed some configured age
+
+
 ## v0.34.0
 
 *Mar 31, 2022*
