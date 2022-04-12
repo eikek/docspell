@@ -167,9 +167,8 @@ export QEMU_NET_OPTS "hostfwd=tcp::7880-:7880"
 
 # Release
 
-The CI and making a release is done via [github
-actions](https://docs.github.com/en/actions). The workflow is roughly
-like this:
+The CI and making a release is done via github actions. The workflow
+is roughly like this:
 
 - each PR is only merged if the `sbt ci` task returns successfully.
   This is ensured by the `ci.yml` workflow that triggers on each pull

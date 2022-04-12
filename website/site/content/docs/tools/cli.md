@@ -12,9 +12,6 @@ The **d**oc**s**pell **c**lient, short
 docspell through the command line. It is also aims to be useful for
 your own scripts and programs.
 
-It is supposed to replace most of the shell scripts from the `tools/`
-directory.
-
 It is a work in progress; eventually most of the
 [api](@/docs/api/_index.md) will be covered.
 

@@ -22,6 +22,7 @@ highlight_themes_css = [
 [link_checker]
 skip_prefixes = [
   "http://localhost",
+  "https://docs.github.com", # doesn't allow checking anymore
   "/openapi",
   "https://www.abisource.com" # has bad ssl config
 ]

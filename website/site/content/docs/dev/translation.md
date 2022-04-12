@@ -360,7 +360,7 @@ You can publish your work to this repo in various ways:
 This is the preferred way, because it means less work for me :). If
 you have a github account, you can create a pull request. Here is a
 quick walk-through. There is a thorough help [at
-github](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests).
+github](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
 
 1. Fork this repository in the github webapp
 2. Go to the docspell source root you checked out in the terminal. Run:

@@ -41,10 +41,14 @@ must be extracted and installed manually somewhere in your `$PATH`.
 
 ## Using deb files
 
+Please checkout this comprehensive
+[guide](https://github.com/andreklug/docspell-debian) for installing
+on a Debian system.
+
 Packages are also provided at the release page:
 
-- [docspell-restserver_{{version()}}_all.deb](https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-restserver_{{version()}}_all.deb)
-- [docspell-joex_{{version()}}_all.deb](https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-joex_{{version()}}_all.deb)
+- <a href="https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-restserver_{{version()}}_all.deb">docspell-restserver_{{version()}}_all.deb</a>
+- <a href="https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-joex_{{version()}}_all.deb">docspell-joex_{{version()}}_all.deb</a>
 
 The DEB packages can be installed on Debian, or Debian based Distros:
 
@@ -57,10 +61,6 @@ or `docspell-joex` from a terminal window.
 
 The packages come with a systemd unit file that will be installed to
 autostart the services.
-
-The provided scripts in `docspell-tools-{{version()}}.zip` must be
-extracted and installed manually somewhere in your `$PATH`. There are
-no deb files provided.
 
 
 # Running
