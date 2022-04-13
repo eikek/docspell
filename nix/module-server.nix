@@ -55,6 +55,7 @@ let
     };
     full-text-search = {
       enabled = false;
+      backend = "solr";
       solr = {
         url = "http://localhost:8983/solr/docspell";
         commit-within = 1000;
@@ -545,9 +546,12 @@ in {
                 The full-text search feature can be disabled. It requires an
                 additional index server which needs additional memory and disk
                 space. It can be enabled later any time.
-
-                Currently the SOLR search platform is supported.
               '';
+            };
+            backend = mkOption {
+              type = types.str;
+              default = defaults.full-text-search.backend;
+              description = "The backend to use, either solr or postgresql";
             };
             solr = mkOption {
               type = types.submodule({
