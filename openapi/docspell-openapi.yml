@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.34.0
+  version: 0.35.0
   description: |
     This is the remote API to Docspell. Docspell is a free document
     management system focused on small groups or families.
@@ -263,6 +263,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+
   /admin/fts/reIndexAll:
     post:
       operationId: "admin-fts-reindex-all"
@@ -333,6 +334,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CheckFileResult"
+
   /sec/upload/item:
     post:
       operationId: "sec-upload-new-item"
@@ -424,6 +426,130 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+
+  /sec/downloadAll/prefetch:
+    post:
+      operationId: "sec-downloadall-prefetch"
+      tags: [Download]
+      summary: Return information about a potential zip download
+      description: |
+        This endpoint calculates the number of files and
+        (uncompressed) size of the zip file that would be created with
+        this request.
+
+        It also checks against configured thresholds and tells whether
+        the server allows to ask for a download using this query.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadAllRequest"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadAllSummary"
+  /sec/downloadAll/submit:
+    post:
+      operationId: "sec-downloadall-submit"
+      tags: [Download]
+      summary: Submits a job to create a zip containing all files in the query
+      description: |
+        A job is submitted to create a ZIP file containing all the
+        files that are included in the given query.
+
+        Once the job is done, the returned ID can be used to download
+        the zip file.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadAllRequest"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadAllSummary"
+
+  /sec/downloadAll/cancel/{id}:
+    put:
+      operationId: "sec-downloadall-cancel"
+      tags: [Download]
+      summary: Cancels potentially running jobs to create a download archive
+      description: |
+        If a job is running (created via the `submit` endpoint) to
+        prepare a zip file for download, it is cancelled. The id is
+        the download id as defined in the `prefetch` or `submit`
+        responses.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"      
+
+  /sec/downloadAll/file/{id}:
+    get:
+      operationId: "sec-downloadall-get-file"
+      tags: [Download]
+      summary: Download the zip file given the id
+      description: |
+        Download the zip file to the given id.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        404:
+          description: NotFound
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+    delete:
+      operationId: "sec-downloadall-delete-file"
+      tags: [Download]
+      summary: Deletets the zip file given the id
+      description: |
+        Deletes the zip file to the given id.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"      
+
   /open/integration/item/{id}:
     get:
       operationId: "open-integration-item-check-collective"
@@ -2372,6 +2498,92 @@ paths:
             application/json:
               schema: {}
 
+  /share/downloadAll/prefetch:
+    post:
+      operationId: "share-downloadall-prefetch"
+      tags: [Download, Share]
+      summary: Return information about a potential zip download
+      description: |
+        This endpoint calculates the number of files and
+        (uncompressed) size of the zip file that would be created with
+        this request.
+
+        It also checks against configured thresholds and tells whether
+        the server allows to ask for a download using this query.
+
+        This variant adds the query of the share and the `fileType`
+        property in the request is ignored. It is always fixed to
+        `converted`.
+      security:
+        - shareTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadAllRequest"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadAllSummary"
+  /share/downloadAll/submit:
+    post:
+      operationId: "share-downloadall-submit"
+      tags: [Download, Share]
+      summary: Submits a job to create a zip containing all files in the query
+      description: |
+        A job is submitted to create a ZIP file containing all the
+        files that are included in the given query.
+
+        Once the job is done, the returned ID can be used to download
+        the zip file.
+
+        This variant adds the query of the share and the `fileType`
+        property in the request is ignored. It is always fixed to
+        `converted`.        
+      security:
+        - shareTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadAllRequest"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadAllSummary"
+  /share/downloadAll/file/{id}:
+    get:
+      operationId: "share-downloadall-get-file"
+      tags: [Download, Share]
+      summary: Download the zip file given the id
+      description: |
+        Download the zip file to the given id.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - shareTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        404:
+          description: NotFound
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
 
   /admin/user/resetPassword:
     post:
@@ -5581,6 +5793,59 @@ paths:
 
 components:
   schemas:
+    DownloadAllSummary:
+      description: |
+        Information about a ZIP download.
+      required:
+        - id
+        - fileCount
+        - uncompressedSize
+        - state
+      properties:
+        id:
+          type: string
+          format: ident
+          description: Unique identifier for the download request
+        fileCount:
+          type: integer
+          format: int32
+          description: How many files are included
+        uncompressedSize:
+          type: integer
+          format: bytesize
+          description: The sum of sizes of all included files
+        state:
+          type: string
+          format: downloadstate
+          enum:
+            - forbidden
+            - notpresent
+            - preparing
+            - present
+            - empty
+          description: |
+            A state for the download, it may not exist yet or be
+            forbidden because it exceeds configured thresholds. Then a
+            job may be running to create it or the file is present and
+            ready to download.
+
+    DownloadAllRequest:
+      description: |
+        A request to download all files included in a query.
+      required:
+        - query
+        - fileType
+      properties:
+        query:
+          type: string
+          format: itemquery
+        fileType:
+          type: string
+          format: downloadalltype
+          enum:
+            - converted
+            - original
+      
     ItemLinkData:
       description: |
         Data for changing the list of related items.

@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.34.0
+                    0.35.0
                 </div>
             </div>
 
@@ -534,6 +534,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/tools/ds4e/" class="w-full block">
+                Emacs
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/tools/smtpgateway/" class="w-full block">
                 Smtp Gateway With Exim
             </a>
@@ -799,7 +805,7 @@ which can be configured:</p>
 you need to add an option to use G1GC (<code>-XX:+UseG1GC</code>), for java11
 this is not necessary (but doesn't hurt either). This could look like
 this:</p>
-<pre class="z-code"><code><span class="z-text z-plain">./docspell-joex-&lt;pre data-shortcode&gt;0.34.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
+<pre class="z-code"><code><span class="z-text z-plain">./docspell-joex-&lt;pre data-shortcode&gt;0.35.0&lt;/pre&gt;/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
 </span></code></pre>
 <p>Using these options you can define how much memory the JVM process is
 able to use. This might be necessary to adopt depending on the usage
@@ -913,6 +919,15 @@ all details, while the others may omit some for readability</li>
       <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> How long the remember me cookie/token is valid.</span><span class="z-comment z-line z-number-sign z-shell">
 </span>      valid = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>30 days<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
     <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+
+  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Settings for &quot;download as zip&quot;</span><span class="z-comment z-line z-number-sign z-shell">
+</span>  download-all <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> How many files to allow in a zip.</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    max-files = 500
+
+    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> The maximum (uncompressed) size of the zip file contents.</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    max-size = 1400M
   <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
 
   <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Configures OpenID Connect (OIDC) or OAuth2 authentication. Only</span><span class="z-comment z-line z-number-sign z-shell">
@@ -1462,6 +1477,17 @@ all details, while the others may omit some for readability</li>
 </span>      <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Since the data to delete may get large, it can be configured</span><span class="z-comment z-line z-number-sign z-shell">
 </span>      <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> whether more or less memory should be used.</span><span class="z-comment z-line z-number-sign z-shell">
 </span>      delete-batch = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>100<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+    <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+
+    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Zip files created for downloading multiple files are cached and</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> can be cleared periodically.</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    cleanup-downloads = <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+
+      <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Whether to enable clearing old download archives.</span><span class="z-comment z-line z-number-sign z-shell">
+</span>      enabled = true
+
+      <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> The minimum age of a download file to be deleted.</span><span class="z-comment z-line z-number-sign z-shell">
+</span>      older-than = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>14 days<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
     <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
 
     <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Removes node entries that are not reachable anymore.</span><span class="z-comment z-line z-number-sign z-shell">
@@ -2140,6 +2166,12 @@ default values.</p>
 <span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_BIND_ADDRESS</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>localhost<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
 <span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_BIND_PORT</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">7880</span>
 
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  How many files to allow in a zip.</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_DOWNLOAD__ALL_MAX__FILES</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">500</span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  The maximum (uncompressed) size of the zip file contents.</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_DOWNLOAD__ALL_MAX__SIZE</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>1400M<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Which backend to use, either solr or postgresql</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_FULL__TEXT__SEARCH_BACKEND</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>solr<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
 
@@ -2384,6 +2416,12 @@ default values.</p>
 
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  How often the node must be unreachable, before it is removed.</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_HOUSE__KEEPING_CHECK__NODES_MIN__NOT__FOUND</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">2</span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Whether to enable clearing old download archives.</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_HOUSE__KEEPING_CLEANUP__DOWNLOADS_ENABLED</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">true</span>
+
+<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  The minimum age of a download file to be deleted.</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_HOUSE__KEEPING_CLEANUP__DOWNLOADS_OLDER__THAN</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>14 days<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
 
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Whether this task is enabled.</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_HOUSE__KEEPING_CLEANUP__INVITES_ENABLED</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">true</span>
@@ -2643,7 +2681,7 @@ default values.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.34.0
+            Docspell 0.35.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
