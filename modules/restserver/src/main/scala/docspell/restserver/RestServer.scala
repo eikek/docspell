@@ -42,6 +42,9 @@ object RestServer {
         .map(_ => KeepAlive)
         .through(wsTopic.publish)
 
+      logger = docspell.logging.getLogger[F]
+      _ <- logger.info(s"Starting server with options ${cfg.serverOptions}")
+
       server =
         Stream
           .resource(createApp(cfg, pools, wsTopic))
