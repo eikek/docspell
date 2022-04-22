@@ -11,6 +11,7 @@ import java.nio.file.Paths
 import fs2.io.file.Path
 
 import docspell.common._
+import docspell.common.util.File
 
 case class OcrConfig(
     maxImageSize: Int,

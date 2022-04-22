@@ -12,6 +12,7 @@ import cats.implicits._
 import fs2.io.file.Path
 
 import docspell.common._
+import docspell.common.util.File
 import docspell.store.Store
 import docspell.store.queries.QCollective
 import docspell.store.records.REquipment

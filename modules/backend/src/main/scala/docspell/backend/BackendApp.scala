@@ -8,11 +8,14 @@ package docspell.backend
 
 import cats.effect._
 
+import docspell.backend.BackendCommands.EventContext
 import docspell.backend.auth.Login
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
 import docspell.backend.signup.OSignup
+import docspell.common.bc.BackendCommandRunner
 import docspell.ftsclient.FtsClient
+import docspell.joexapi.client.JoexClient
 import docspell.notification.api.{EventExchange, NotificationModule}
 import docspell.pubsub.api.PubSubT
 import docspell.scheduler.JobStoreModule
@@ -20,6 +23,7 @@ import docspell.store.Store
 import docspell.totp.Totp
 
 import emil.Emil
+import org.http4s.client.Client
 
 trait BackendApp[F[_]] {
 
@@ -35,6 +39,7 @@ trait BackendApp[F[_]] {
   def job: OJob[F]
   def item: OItem[F]
   def itemSearch: OItemSearch[F]
+  def attachment: OAttachment[F]
   def fulltext: OFulltext[F]
   def mail: OMail[F]
   def joex: OJoex[F]
@@ -52,23 +57,30 @@ trait BackendApp[F[_]] {
   def fileRepository: OFileRepository[F]
   def itemLink: OItemLink[F]
   def downloadAll: ODownloadAll[F]
+  def addons: OAddons[F]
+
+  def commands(eventContext: Option[EventContext]): BackendCommandRunner[F, Unit]
 }
 
 object BackendApp {
 
   def create[F[_]: Async](
+      cfg: Config,
       store: Store[F],
       javaEmil: Emil[F],
+      httpClient: Client[F],
       ftsClient: FtsClient[F],
       pubSubT: PubSubT[F],
       schedulerModule: JobStoreModule[F],
       notificationMod: NotificationModule[F]
   ): Resource[F, BackendApp[F]] =
     for {
+      nodeImpl <- ONode(store)
       totpImpl <- OTotp(store, Totp.default)
       loginImpl <- Login[F](store, Totp.default)
       signupImpl <- OSignup[F](store)
-      joexImpl <- OJoex(pubSubT)
+      joexClient = JoexClient(httpClient)
+      joexImpl <- OJoex(pubSubT, nodeImpl, joexClient)
       collImpl <- OCollective[F](
         store,
         schedulerModule.userTasks,
@@ -80,7 +92,6 @@ object BackendApp {
       equipImpl <- OEquipment[F](store)
       orgImpl <- OOrganization(store)
       uploadImpl <- OUpload(store, schedulerModule.jobs)
-      nodeImpl <- ONode(store)
       jobImpl <- OJob(store, joexImpl, pubSubT)
       createIndex <- CreateIndex.resource(ftsClient, store)
       itemImpl <- OItem(store, ftsClient, createIndex, schedulerModule.jobs)
@@ -109,6 +120,16 @@ object BackendApp {
       fileRepoImpl <- OFileRepository(store, schedulerModule.jobs)
       itemLinkImpl <- Resource.pure(OItemLink(store, itemSearchImpl))
       downloadAllImpl <- Resource.pure(ODownloadAll(store, jobImpl, schedulerModule.jobs))
+      attachImpl <- Resource.pure(OAttachment(store, ftsClient, schedulerModule.jobs))
+      addonsImpl <- Resource.pure(
+        OAddons(
+          cfg.addons,
+          store,
+          schedulerModule.userTasks,
+          schedulerModule.jobs,
+          joexImpl
+        )
+      )
     } yield new BackendApp[F] {
       val pubSub = pubSubT
       val login = loginImpl
@@ -139,5 +160,10 @@ object BackendApp {
       val fileRepository = fileRepoImpl
       val itemLink = itemLinkImpl
       val downloadAll = downloadAllImpl
+      val addons = addonsImpl
+      val attachment = attachImpl
+
+      def commands(eventContext: Option[EventContext]) =
+        BackendCommands.fromBackend(this, eventContext)
     }
 }

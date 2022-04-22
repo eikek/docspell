@@ -6,6 +6,8 @@
 
 package docspell.common
 
+import fs2.io.file.Path
+
 case class MimeTypeHint(filename: Option[String], advertised: Option[String]) {
 
   def withName(name: String): MimeTypeHint =
@@ -20,6 +22,9 @@ object MimeTypeHint {
 
   def filename(name: String): MimeTypeHint =
     MimeTypeHint(Some(name), None)
+
+  def filename(file: Path): MimeTypeHint =
+    filename(file.fileName.toString)
 
   def advertised(mimeType: MimeType): MimeTypeHint =
     advertised(mimeType.asString)

@@ -29,7 +29,8 @@ case class Flags(
     downloadAllMaxFiles: Int,
     downloadAllMaxSize: ByteSize,
     uiVersion: Int,
-    openIdAuth: List[Flags.OpenIdAuth]
+    openIdAuth: List[Flags.OpenIdAuth],
+    addonsEnabled: Boolean
 )
 
 object Flags {
@@ -47,7 +48,8 @@ object Flags {
       cfg.downloadAll.maxFiles,
       cfg.downloadAll.maxSize,
       uiVersion,
-      cfg.openid.filter(_.enabled).map(c => OpenIdAuth(c.provider.providerId, c.display))
+      cfg.openid.filter(_.enabled).map(c => OpenIdAuth(c.provider.providerId, c.display)),
+      cfg.backend.addons.enabled
     )
 
   final case class OpenIdAuth(provider: Ident, name: String)

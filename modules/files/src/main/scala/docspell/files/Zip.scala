@@ -8,11 +8,12 @@ package docspell.files
 
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
-import java.nio.file.Paths
 import java.util.zip.{ZipEntry, ZipInputStream, ZipOutputStream}
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.{Files, Path}
 import fs2.{Pipe, Stream}
 
 import docspell.common.Binary
@@ -27,15 +28,71 @@ object Zip {
   ): Pipe[F, (String, Stream[F, Byte]), Byte] =
     in => zipJava(logger, chunkSize, in.through(deduplicate))
 
-  def unzipP[F[_]: Async](chunkSize: Int, glob: Glob): Pipe[F, Byte, Binary[F]] =
-    s => unzip[F](chunkSize, glob)(s)
+  def unzip[F[_]: Async](
+      chunkSize: Int,
+      glob: Glob
+  ): Pipe[F, Byte, Binary[F]] =
+    s => unzipStream[F](chunkSize, glob)(s)
 
-  def unzip[F[_]: Async](chunkSize: Int, glob: Glob)(
+  def unzipStream[F[_]: Async](chunkSize: Int, glob: Glob)(
       data: Stream[F, Byte]
   ): Stream[F, Binary[F]] =
     data
       .through(fs2.io.toInputStream[F])
       .flatMap(in => unzipJava(in, chunkSize, glob))
+
+  def saveTo[F[_]: Async](
+      logger: Logger[F],
+      targetDir: Path,
+      moveUp: Boolean
+  ): Pipe[F, Binary[F], Path] =
+    binaries =>
+      binaries
+        .filter(e => !e.name.endsWith("/"))
+        .evalMap { entry =>
+          val out = targetDir / entry.name
+          val createParent =
+            OptionT
+              .fromOption[F](out.parent)
+              .flatMapF(parent =>
+                Files[F]
+                  .exists(parent)
+                  .map(flag => Option.when(!flag)(parent))
+              )
+              .semiflatMap(p => Files[F].createDirectories(p))
+              .getOrElse(())
+
+          logger.trace(s"Unzip ${entry.name} -> $out") *>
+            createParent *>
+            entry.data.through(Files[F].writeAll(out)).compile.drain
+        }
+        .drain ++ Stream
+        .eval(if (moveUp) moveContentsUp(logger)(targetDir) else ().pure[F])
+        .as(targetDir)
+
+  private def moveContentsUp[F[_]: Sync: Files](logger: Logger[F])(dir: Path): F[Unit] =
+    Files[F]
+      .list(dir)
+      .take(2)
+      .compile
+      .toList
+      .flatMap {
+        case subdir :: Nil =>
+          Files[F].isDirectory(subdir).flatMap {
+            case false => ().pure[F]
+            case true =>
+              Files[F]
+                .list(subdir)
+                .filter(p => p != dir)
+                .evalTap(c => logger.trace(s"Move $c -> ${dir / c.fileName}"))
+                .evalMap(child => Files[F].move(child, dir / child.fileName))
+                .compile
+                .drain
+          }
+
+        case _ =>
+          ().pure[F]
+      }
 
   def unzipJava[F[_]: Async](
       in: InputStream,
@@ -55,7 +112,7 @@ object Zip {
       .unNoneTerminate
       .filter(ze => glob.matchFilenameOrPath(ze.getName()))
       .map { ze =>
-        val name = Paths.get(ze.getName()).getFileName.toString
+        val name = ze.getName()
         val data =
           fs2.io.readInputStream[F]((zin: InputStream).pure[F], chunkSize, false)
         Binary(name, data)

@@ -122,8 +122,45 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /addon/config:
+    get:
+      operationId: "v1-addon-config-get"
+      tags: [ Addons ]
+      summary: What is supported running addons
+      description: |
+        Return what this joex supports when executing addons.
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddonSupport"
+
 components:
   schemas:
+    AddonSupport:
+      description: |
+        How this joex supports executing addons.
+      required:
+        - nodeId
+        - runners
+      properties:
+        nodeId:
+          type: string
+          format: ident
+        runners:
+          type: array
+          items:
+            type: string
+            format: addon-runner-type
+            enum:
+              - nix-flake
+              - docker
+              - trivial
+
     JobAndLog:
       description: |
         Some more details about the job.

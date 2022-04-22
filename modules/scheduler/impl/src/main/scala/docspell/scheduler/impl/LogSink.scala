@@ -34,6 +34,7 @@ object LogSink {
       .capture("task", e.taskName)
       .capture("group", e.group)
       .capture("jobInfo", e.jobInfo)
+      .captureAll(e.data)
 
     e.level match {
       case LogLevel.Info =>

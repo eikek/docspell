@@ -119,6 +119,9 @@ object RAttachmentMeta {
   def updatePageCount(mid: Ident, pageCount: Option[Int]): ConnectionIO[Int] =
     DML.update(T, T.id === mid, DML.set(T.pages.setTo(pageCount)))
 
+  def updateContent(id: Ident, text: String): ConnectionIO[Int] =
+    DML.update(T, T.id === id, DML.set(T.content.setTo(text)))
+
   def delete(attachId: Ident): ConnectionIO[Int] =
     DML.delete(T, T.id === attachId)
 }

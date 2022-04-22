@@ -264,6 +264,9 @@ object Dependencies {
   val circeGenericExtra = Seq(
     "io.circe" %% "circe-generic-extras" % CirceVersion
   )
+  val circeYaml = Seq(
+    "io.circe" %% "circe-yaml" % CirceVersion
+  )
 
   // // https://github.com/Log4s/log4s;ASL 2.0
   // val loggingApi = Seq(

@@ -309,20 +309,22 @@ object RItem {
   def updateFolder(
       itemId: Ident,
       coll: Ident,
-      folderId: Option[Ident]
-  ): ConnectionIO[Int] =
+      folderIdOrName: Option[String]
+  ): ConnectionIO[(Int, Option[Ident])] =
     for {
       t <- currentTime
-      fid <- folderId match {
-        case Some(f) => RFolder.requireIdByIdOrName(f, f.id, coll).map(_.some)
-        case None    => None.pure[ConnectionIO]
+      fid <- folderIdOrName match {
+        case Some(f) =>
+          val fid = Ident.fromString(f).getOrElse(Ident.unsafe(""))
+          RFolder.requireIdByIdOrName(fid, f, coll).map(_.some)
+        case None => None.pure[ConnectionIO]
       }
       n <- DML.update(
         T,
         T.cid === coll && T.id === itemId,
         DML.set(T.folder.setTo(fid), T.updated.setTo(t))
       )
-    } yield n
+    } yield (n, fid)
 
   def updateNotes(itemId: Ident, coll: Ident, text: Option[String]): ConnectionIO[Int] =
     for {
@@ -333,6 +335,26 @@ object RItem {
         DML.set(T.notes.setTo(text), T.updated.setTo(t))
       )
     } yield n
+
+  def appendNotes(
+      itemId: Ident,
+      cid: Ident,
+      text: String,
+      sep: Option[String]
+  ): ConnectionIO[Option[String]] = {
+    val curNotes =
+      Select(select(T.notes), from(T), T.cid === cid && T.id === itemId).build
+        .query[Option[String]]
+        .option
+
+    curNotes.flatMap {
+      case Some(notes) =>
+        val newText = notes.map(_ + sep.getOrElse("")).getOrElse("") + text
+        updateNotes(itemId, cid, Some(newText)).as(newText.some)
+      case None =>
+        (None: Option[String]).pure[ConnectionIO]
+    }
+  }
 
   def updateName(itemId: Ident, coll: Ident, itemName: String): ConnectionIO[Int] =
     for {

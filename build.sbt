@@ -293,6 +293,15 @@ val openapiScalaSettings = Seq(
           field.copy(typeDef =
             TypeDef("DownloadState", Imports("docspell.common.DownloadState"))
           )
+      case "addon-trigger-type" =>
+        field =>
+          field.copy(typeDef =
+            TypeDef("AddonTriggerType", Imports("docspell.addons.AddonTriggerType"))
+          )
+      case "addon-runner-type" =>
+        field =>
+          field
+            .copy(typeDef = TypeDef("RunnerType", Imports("docspell.addons.RunnerType")))
     })
 )
 
@@ -325,6 +334,7 @@ val common = project
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.circe ++
+        Dependencies.circeGenericExtra ++
         Dependencies.calevCore ++
         Dependencies.calevCirce
   )
@@ -351,7 +361,7 @@ val files = project
   .in(file("modules/files"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .withTestSettings
+  .withTestSettingsDependsOn(loggingScribe)
   .settings(
     name := "docspell-files",
     libraryDependencies ++=
@@ -448,6 +458,19 @@ val notificationApi = project
   )
   .dependsOn(common, loggingScribe)
 
+val addonlib = project
+  .in(file("modules/addonlib"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettingsDependsOn(loggingScribe)
+  .settings(
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+        Dependencies.circe ++
+        Dependencies.circeYaml
+  )
+  .dependsOn(common, files, loggingScribe)
+
 val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
@@ -469,7 +492,16 @@ val store = project
     libraryDependencies ++=
       Dependencies.testContainer.map(_ % Test)
   )
-  .dependsOn(common, query.jvm, totp, files, notificationApi, jsonminiq, loggingScribe)
+  .dependsOn(
+    common,
+    addonlib,
+    query.jvm,
+    totp,
+    files,
+    notificationApi,
+    jsonminiq,
+    loggingScribe
+  )
 
 val notificationImpl = project
   .in(file("modules/notification/impl"))
@@ -647,7 +679,7 @@ val restapi = project
     openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc
   )
-  .dependsOn(common, query.jvm, notificationApi, jsonminiq)
+  .dependsOn(common, query.jvm, notificationApi, jsonminiq, addonlib)
 
 val joexapi = project
   .in(file("modules/joexapi"))
@@ -667,7 +699,7 @@ val joexapi = project
     openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc
   )
-  .dependsOn(common, loggingScribe)
+  .dependsOn(common, loggingScribe, addonlib)
 
 val backend = project
   .in(file("modules/backend"))
@@ -683,6 +715,7 @@ val backend = project
         Dependencies.emil
   )
   .dependsOn(
+    addonlib,
     store,
     notificationApi,
     joexapi,
@@ -739,7 +772,7 @@ val config = project
       Dependencies.fs2 ++
         Dependencies.pureconfig
   )
-  .dependsOn(common, loggingApi, ftspsql, store)
+  .dependsOn(common, loggingApi, ftspsql, store, addonlib)
 
 // --- Application(s)
 
@@ -946,6 +979,7 @@ val root = project
   )
   .aggregate(
     common,
+    addonlib,
     loggingApi,
     loggingScribe,
     config,

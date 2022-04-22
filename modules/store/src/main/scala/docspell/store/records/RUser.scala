@@ -152,6 +152,14 @@ object RUser {
       .query[Ident]
       .option
 
+  case class IdAndLogin(uid: Ident, login: Ident)
+  def getIdByIdOrLogin(idOrLogin: Ident): ConnectionIO[Option[IdAndLogin]] =
+    Select(
+      select(T.uid, T.login),
+      from(T),
+      T.uid === idOrLogin || T.login === idOrLogin
+    ).build.query[IdAndLogin].option
+
   def getIdByAccount(account: AccountId): ConnectionIO[Ident] =
     OptionT(findIdByAccount(account)).getOrElseF(
       Sync[ConnectionIO].raiseError(

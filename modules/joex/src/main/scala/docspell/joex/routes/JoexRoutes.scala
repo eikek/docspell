@@ -10,7 +10,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common.{Duration, Ident, Timestamp}
-import docspell.joex.JoexApp
+import docspell.joex.{Config, JoexApp}
 import docspell.joexapi.model._
 import docspell.store.records.RJobLog
 
@@ -20,7 +20,7 @@ import org.http4s.dsl.Http4sDsl
 
 object JoexRoutes {
 
-  def apply[F[_]: Async](app: JoexApp[F]): HttpRoutes[F] = {
+  def apply[F[_]: Async](cfg: Config, app: JoexApp[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
     HttpRoutes.of[F] {
@@ -64,6 +64,11 @@ object JoexRoutes {
             BasicResult(flag, if (flag) "Cancel request submitted" else "Job not found")
           )
         } yield resp
+
+      case GET -> Root / "addon" / "config" =>
+        val data =
+          AddonSupport(cfg.appId, cfg.addons.executorConfig.runner)
+        Ok(data)
     }
   }
 
