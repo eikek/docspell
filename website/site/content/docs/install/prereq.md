@@ -69,9 +69,9 @@ sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-e
 
 # Apache SOLR
 
-SOLR is used to provide the fulltext search feature. This feature can
-be disabled, so installing SOLR is optional. But without it, there is
-no fulltext search.
+SOLR is a very powerful fulltext search engine and can be used to
+provide the fulltext search feature. This feature is disabled by
+default, so installing SOLR is optional.
 
 When installing manually (i.e. not via docker), just install solr and
 create a core as described in the [solr
@@ -83,11 +83,21 @@ When using the provided `docker-compose.yml` setup, SOLR is already setup.
 
 SOLR must be reachable from all joex and all rest server components.
 
+{% infobubble(title="Multiple fulltext search backends") %}
+
+Docspell can also use
+[PostgreSQL](@/docs/configure/fulltext-search.md#postgresql) as its
+fulltext search backend. This is not as powerful, but doesn't require
+to install SOLR.
+
+{% end %}
+
+
 # Database
 
 Both components must have access to a SQL database. The SQL database
-contains all data (including binary files) and is the central
-component of docspell. Docspell has support these databases:
+contains all data (including binary files by default) and is the
+central component of docspell. Docspell has support these databases:
 
 - PostreSQL
 - MariaDB

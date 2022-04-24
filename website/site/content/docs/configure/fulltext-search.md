@@ -29,6 +29,9 @@ full-text-search {
 All docspell components must provide the same fulltext search
 configuration.
 
+The features provided for full text search depends on the backend.
+Docspell only hands the query to the backend and thus content queries
+may not work across different fulltext search backends.
 
 ## SOLR
 
@@ -46,8 +49,8 @@ subsection:
   }
 ```
 
-The default configuration at the end of this page contains more
-information about each setting.
+The [default configuration](@/docs/configure/main.md#default-config)
+contains more information about each setting.
 
 The `solr.url` is the mandatory setting that you need to change to
 point to your SOLR instance. Then you need to set the `enabled` flag
@@ -60,7 +63,7 @@ That will provide you with the connection url (the last part is the
 core name). If Docspell detects an empty core it will run a schema
 setup on start automatically.
 
-The `full-text-search.solr` options are the same for joex and the
+The `full-text-search.solr` options must be the same for joex and the
 restserver.
 
 Sometimes it is necessary to re-create the entire index, for example

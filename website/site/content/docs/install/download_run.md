@@ -1,5 +1,5 @@
 +++
-title = "Download & Run"
+title = "Manual Installation"
 weight = 22
 +++
 
