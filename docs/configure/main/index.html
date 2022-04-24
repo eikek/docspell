@@ -184,7 +184,7 @@
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
-                Download &amp; Run
+                Manual Installation
             </a>
         </div>
         
@@ -1120,13 +1120,13 @@ all details, while the others may omit some for readability</li>
 </span>    secret = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
   <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
 
-  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Configuration of the full-text search engine.</span><span class="z-comment z-line z-number-sign z-shell">
+  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Configuration of the full-text search engine. (the same must be used for joex)</span><span class="z-comment z-line z-number-sign z-shell">
 </span>  full-text-search <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
     <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> The full-text search feature can be disabled. It requires an</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> additional index server which needs additional memory and disk</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> space. It can be enabled later any time.</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">
-</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Currently the SOLR search platform is supported.</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Currently the SOLR search platform and PostgreSQL is supported.</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    enabled = false
 
     <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Which backend to use, either solr or postgresql</span><span class="z-comment z-line z-number-sign z-shell">
@@ -1991,13 +1991,13 @@ Docpell Update Check
     <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
   <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
 
-  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Configuration of the full-text search engine.</span><span class="z-comment z-line z-number-sign z-shell">
+  <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Configuration of the full-text search engine. (the same must be used for restserver)</span><span class="z-comment z-line z-number-sign z-shell">
 </span>  full-text-search <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
     <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> The full-text search feature can be disabled. It requires an</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> additional index server which needs additional memory and disk</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> space. It can be enabled later any time.</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">
-</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Currently the SOLR search platform is supported.</span><span class="z-comment z-line z-number-sign z-shell">
+</span>    <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Currently the SOLR search platform and PostgreSQL is supported.</span><span class="z-comment z-line z-number-sign z-shell">
 </span>    enabled = false
 
     <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Which backend to use, either solr or postgresql</span><span class="z-comment z-line z-number-sign z-shell">
@@ -2179,7 +2179,7 @@ default values.</p>
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  additional index server which needs additional memory and disk</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  space. It can be enabled later any time.</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> </span><span class="z-comment z-line z-number-sign z-shell">
-</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Currently the SOLR search platform is supported.</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Currently the SOLR search platform and PostgreSQL is supported.</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_FULL__TEXT__SEARCH_ENABLED</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">false</span>
 <span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_FULL__TEXT__SEARCH_POSTGRESQL_JDBC_PASSWORD</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
 <span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_SERVER_FULL__TEXT__SEARCH_POSTGRESQL_JDBC_URL</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell"><span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>jdbc:postgresql://server:5432/db<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
@@ -2374,7 +2374,7 @@ default values.</p>
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  additional index server which needs additional memory and disk</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  space. It can be enabled later any time.</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> </span><span class="z-comment z-line z-number-sign z-shell">
-</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Currently the SOLR search platform is supported.</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Currently the SOLR search platform and PostgreSQL is supported.</span><span class="z-comment z-line z-number-sign z-shell">
 </span><span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_JOEX_FULL__TEXT__SEARCH_ENABLED</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">false</span>
 
 <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  Chunk size to use when indexing data from the database. This</span><span class="z-comment z-line z-number-sign z-shell">

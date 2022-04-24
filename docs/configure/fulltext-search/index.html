@@ -184,7 +184,7 @@
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/install/download-run/" class="w-full block">
-                Download &amp; Run
+                Manual Installation
             </a>
         </div>
         
@@ -721,6 +721,9 @@ below and then choose the backend:</p>
 </span></code></pre>
 <p>All docspell components must provide the same fulltext search
 configuration.</p>
+<p>The features provided for full text search depends on the backend.
+Docspell only hands the query to the backend and thus content queries
+may not work across different fulltext search backends.</p>
 <h2 id="solr">SOLR<a class="zola-anchor" href="#solr" aria-label="Anchor link for: solr">🔗</a></h2>
 <p><a href="https://solr.apache.org">Apache SOLR</a> can be used to provide the
 full-text search. This is defined in the <code>full-text-search.solr</code>
@@ -733,8 +736,8 @@ subsection:</p>
     <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
   <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
 </span></code></pre>
-<p>The default configuration at the end of this page contains more
-information about each setting.</p>
+<p>The <a href="https://docspell.org/docs/configure/main/#default-config">default configuration</a>
+contains more information about each setting.</p>
 <p>The <code>solr.url</code> is the mandatory setting that you need to change to
 point to your SOLR instance. Then you need to set the <code>enabled</code> flag
 to <code>true</code>.</p>
@@ -744,7 +747,7 @@ documentation</a>.
 That will provide you with the connection url (the last part is the
 core name). If Docspell detects an empty core it will run a schema
 setup on start automatically.</p>
-<p>The <code>full-text-search.solr</code> options are the same for joex and the
+<p>The <code>full-text-search.solr</code> options must be the same for joex and the
 restserver.</p>
 <p>Sometimes it is necessary to re-create the entire index, for example
 if you upgrade SOLR or delete the core to provide a new one (see
