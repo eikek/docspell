@@ -794,6 +794,29 @@ certificates and acts as a proxy for the application at
     <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
 <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
 </span></code></pre>
+<h1 id="caddy">Caddy<a class="zola-anchor" href="#caddy" aria-label="Anchor link for: caddy">🔗</a></h1>
+<pre class="z-code"><code><span class="z-text z-plain">docspell.example.com {
+    reverse_proxy http://192.168.1.11:7880
+}
+</span></code></pre>
+<h1 id="traefik-2">Traefik 2<a class="zola-anchor" href="#traefik-2" aria-label="Anchor link for: traefik-2">🔗</a></h1>
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">http</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">routers</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">docspell</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">rule</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>Host(`docspell.example.com`)<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">service</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">docspell</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">entryPoints</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+      <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml">web-secure</span> <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> or whatever you named it for SSL
+</span>
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">services</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">docspell</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">loadBalancer</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+        <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">servers</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+          <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">url</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">http://192.168.1.11:7880</span> <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> the ip of the container, localhost if you use docker port mapping
+</span>        <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">healthCheck</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+          <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">path</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">/api/info/version</span>
+</span></code></pre>
 
   
 
@@ -862,6 +885,24 @@ certificates and acts as a proxy for the application at
                         <i class="fa fa-hashtag mr-1"></i>
                         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#nginx" class="hover:text-stone-900 dark:hover:text-stone-100">
                             Nginx
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#caddy" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Caddy
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#traefik-2" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Traefik 2
                         </a>
                         
                     </div>
