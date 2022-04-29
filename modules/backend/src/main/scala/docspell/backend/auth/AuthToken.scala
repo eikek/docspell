@@ -20,11 +20,17 @@ case class AuthToken(
     nowMillis: Long,
     account: AccountId,
     requireSecondFactor: Boolean,
+    valid: Option[Duration],
     salt: String,
     sig: String
 ) {
   def asString =
-    s"$nowMillis-${TokenUtil.b64enc(account.asString)}-$requireSecondFactor-$salt-$sig"
+    valid match {
+      case Some(v) =>
+        s"$nowMillis-${TokenUtil.b64enc(account.asString)}-$requireSecondFactor-${v.seconds}-$salt-$sig"
+      case None =>
+        s"$nowMillis-${TokenUtil.b64enc(account.asString)}-$requireSecondFactor-$salt-$sig"
+    }
 
   def sigValid(key: ByteVector): Boolean = {
     val newSig = TokenUtil.sign(this, key)
@@ -36,7 +42,10 @@ case class AuthToken(
   def notExpired(validity: Duration): Boolean =
     !isExpired(validity)
 
-  def isExpired(validity: Duration): Boolean = {
+  def isExpired(defaultValidity: Duration): Boolean = {
+    val validity = valid
+      .filter(_.millis > 0)
+      .getOrElse(defaultValidity)
     val ends = Instant.ofEpochMilli(nowMillis).plusMillis(validity.millis)
     Instant.now.isAfter(ends)
   }
@@ -49,14 +58,26 @@ case class AuthToken(
 object AuthToken {
 
   def fromString(s: String): Either[String, AuthToken] =
-    s.split("\\-", 5) match {
+    s.split("\\-", 6) match {
+      case Array(ms, as, fa, vs, salt, sig) =>
+        for {
+          millis <- TokenUtil.asInt(ms).toRight("Cannot read authenticator data")
+          acc <- TokenUtil.b64dec(as).toRight("Cannot read authenticator data")
+          accId <- AccountId.parse(acc)
+          twofac <- Right[String, Boolean](java.lang.Boolean.parseBoolean(fa))
+          valid <- TokenUtil
+            .asInt(vs)
+            .toRight("Cannot read authenticator data")
+            .map(Duration.seconds)
+        } yield AuthToken(millis, accId, twofac, Some(valid), salt, sig)
+
       case Array(ms, as, fa, salt, sig) =>
         for {
           millis <- TokenUtil.asInt(ms).toRight("Cannot read authenticator data")
           acc <- TokenUtil.b64dec(as).toRight("Cannot read authenticator data")
           accId <- AccountId.parse(acc)
           twofac <- Right[String, Boolean](java.lang.Boolean.parseBoolean(fa))
-        } yield AuthToken(millis, accId, twofac, salt, sig)
+        } yield AuthToken(millis, accId, twofac, None, salt, sig)
 
       case _ =>
         Left("Invalid authenticator")
@@ -65,12 +86,13 @@ object AuthToken {
   def user[F[_]: Sync](
       accountId: AccountId,
       requireSecondFactor: Boolean,
-      key: ByteVector
+      key: ByteVector,
+      valid: Option[Duration]
   ): F[AuthToken] =
     for {
       salt <- Common.genSaltString[F]
       millis = Instant.now.toEpochMilli
-      cd = AuthToken(millis, accountId, requireSecondFactor, salt, "")
+      cd = AuthToken(millis, accountId, requireSecondFactor, valid, salt, "")
       sig = TokenUtil.sign(cd, key)
     } yield cd.copy(sig = sig)
 
@@ -78,7 +100,14 @@ object AuthToken {
     for {
       now <- Timestamp.current[F]
       salt <- Common.genSaltString[F]
-      data = AuthToken(now.toMillis, token.account, token.requireSecondFactor, salt, "")
+      data = AuthToken(
+        now.toMillis,
+        token.account,
+        token.requireSecondFactor,
+        token.valid,
+        salt,
+        ""
+      )
       sig = TokenUtil.sign(data, key)
     } yield data.copy(sig = sig)
 }

@@ -135,7 +135,7 @@ object Login {
         val okResult: F[Result] =
           for {
             _ <- store.transact(RUser.updateLogin(sf.token.account))
-            newToken <- AuthToken.user(sf.token.account, false, config.serverSecret)
+            newToken <- AuthToken.user(sf.token.account, false, config.serverSecret, None)
             rem <- OptionT
               .whenF(sf.rememberMe && config.rememberMe.enabled)(
                 insertRememberToken(store, sf.token.account, config)
@@ -178,7 +178,7 @@ object Login {
         def okResult(acc: AccountId) =
           for {
             _ <- store.transact(RUser.updateLogin(acc))
-            token <- AuthToken.user(acc, false, config.serverSecret)
+            token <- AuthToken.user(acc, false, config.serverSecret, None)
           } yield Result.ok(token, None)
 
         def doLogin(rid: Ident) =
@@ -253,7 +253,7 @@ object Login {
           _ <-
             if (require2FA) ().pure[F]
             else store.transact(RUser.updateLogin(acc))
-          token <- AuthToken.user(acc, require2FA, config.serverSecret)
+          token <- AuthToken.user(acc, require2FA, config.serverSecret, None)
           rem <- OptionT
             .whenF(!require2FA && rememberMe && config.rememberMe.enabled)(
               insertRememberToken(store, acc, config)
