@@ -23,7 +23,9 @@ private[auth] object TokenUtil {
 
   def sign(cd: AuthToken, key: ByteVector): String = {
     val raw =
-      cd.nowMillis.toString + cd.account.asString + cd.requireSecondFactor + cd.salt
+      cd.nowMillis.toString + cd.account.asString + cd.requireSecondFactor + cd.salt + cd.valid
+        .map(_.seconds.toString)
+        .getOrElse("")
     signRaw(raw, key)
   }
 
