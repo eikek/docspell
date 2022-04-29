@@ -102,3 +102,33 @@ server {
     }
 }
 ```
+
+# Caddy
+
+```
+docspell.example.com {
+    reverse_proxy http://192.168.1.11:7880
+}
+```
+
+
+# Traefik 2
+
+```yaml
+http:
+
+  routers:
+    docspell:
+      rule: "Host(`docspell.example.com`)"
+      service: docspell
+      entryPoints:
+      - web-secure # or whatever you named it for SSL
+
+  services:
+    docspell:
+      loadBalancer:
+        servers:
+          - url: http://192.168.1.11:7880 # the ip of the container, localhost if you use docker port mapping
+        healthCheck:
+          path: /api/info/version
+```
