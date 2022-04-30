@@ -26,6 +26,9 @@ final case class LogEvent(
   def data[A: Encoder](key: String, value: => A): LogEvent =
     copy(data = data.updated(key, () => Encoder[A].apply(value)))
 
+  def addData(m: Map[String, Json]): LogEvent =
+    copy(data = data ++ m.view.mapValues(json => () => json).toMap)
+
   def addMessage(msg: => String): LogEvent =
     copy(additional = (() => Left(msg)) :: additional)
 

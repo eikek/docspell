@@ -31,9 +31,7 @@ class PsqlFtsClientTest
   private val table = FtsRepository.table
 
   override def docspellLogConfig: LogConfig =
-    LogConfig(Level.Debug, LogConfig.Format.Fancy)
-
-  override def rootMinimumLevel = Level.Warn
+    super.docspellLogConfig.docspellLevel(Level.Debug)
 
   test("insert data into index") {
     withContainers { cnt =>

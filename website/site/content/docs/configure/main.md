@@ -158,9 +158,9 @@ Please have a look at the corresponding
 
 # Logging
 
-By default, docspell logs to stdout. This works well, when managed by
-systemd or other inits. Logging can be configured in the configuration
-file or via environment variables. There are only two settings:
+Docspell logs to stdout. This works well, when managed by systemd or
+similar tools. Logging can be configured in the configuration file or
+via environment variables. There are these settings:
 
 - `minimum-level` specifies the log level to control the verbosity.
   Levels are ordered from: *Trace*, *Debug*, *Info*, *Warn* and
@@ -169,8 +169,13 @@ file or via environment variables. There are only two settings:
   formats for humans: *Plain* and *Fancy*. And two more suited for
   machine consumption: *Json* and *Logfmt*. The *Json* format contains
   all details, while the others may omit some for readability
+- `levels` optional _logger name_ to _level_ mappings to override the
+  log level for specific loggers. If not mentioned here, everything is
+  logged with `minimum-level`.
 
-These settings are the same for joex and the restserver component.
+The default settings for joex and restserver are the same and
+configure a minimum level of `Warn` and override some loggers with
+`Info`.
 
 # Default Config
 ## Rest Server
