@@ -16,40 +16,36 @@ import scribe.jul.JULHandler
 import scribe.writer.SystemOutWriter
 
 object ScribeConfigure {
-  private[this] val docspellRootVerbose = "DOCSPELL_ROOT_LOGGER_LEVEL"
-
   def configure[F[_]: Sync](cfg: LogConfig): F[Unit] =
     Sync[F].delay {
       replaceJUL()
-      val docspellLogger = scribe.Logger("docspell")
-
-      unsafeConfigure(scribe.Logger.root, cfg.copy(minimumLevel = getRootMinimumLevel))
-      unsafeConfigure(docspellLogger, cfg)
-      unsafeConfigure(scribe.Logger("org.flywaydb"), cfg)
-      unsafeConfigure(scribe.Logger("binny"), cfg)
-      unsafeConfigure(scribe.Logger("org.http4s"), cfg)
+      unsafeConfigure(cfg)
     }
 
-  private[this] def getRootMinimumLevel: Level =
-    Option(System.getenv(docspellRootVerbose))
-      .map(Level.fromString)
-      .flatMap {
-        case Right(level) => Some(level)
-        case Left(err) =>
-          scribe.warn(
-            s"Environment variable '$docspellRootVerbose' has invalid value: $err"
-          )
-          None
-      }
-      .getOrElse(Level.Error)
+  def unsafeConfigure(cfg: LogConfig): Unit = {
+    unsafeConfigure(scribe.Logger.root, cfg.format, cfg.minimumLevel)
+    cfg.levels.foreach { case (name, level) =>
+      unsafeConfigure(scribe.Logger(name), cfg.format, level)
+    }
+  }
 
-  def unsafeConfigure(logger: scribe.Logger, cfg: LogConfig): Unit = {
+  def unsafeConfigure(logger: String, cfg: LogConfig): Unit = {
+    val log = scribe.Logger(logger)
+    val level = cfg.levels.getOrElse(logger, cfg.minimumLevel)
+    unsafeConfigure(log, cfg.format, level)
+  }
+
+  def unsafeConfigure(
+      logger: scribe.Logger,
+      format: LogConfig.Format,
+      level: Level
+  ): Unit = {
     val mods = List[scribe.Logger => scribe.Logger](
       _.clearHandlers(),
-      _.withMinimumLevel(ScribeWrapper.convertLevel(cfg.minimumLevel)),
+      _.withMinimumLevel(ScribeWrapper.convertLevel(level)),
       l =>
         if (logger.id == scribe.Logger.RootId) {
-          cfg.format match {
+          format match {
             case Format.Fancy =>
               l.withHandler(formatter = Formatter.enhanced, writer = SystemOutWriter)
             case Format.Plain =>

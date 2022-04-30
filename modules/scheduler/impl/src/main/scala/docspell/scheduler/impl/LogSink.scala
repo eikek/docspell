@@ -29,12 +29,13 @@ object LogSink {
     }
 
   def logInternal[F[_]: Sync](e: LogEvent): F[Unit] = {
-    val logger = docspell.logging.getLogger[F]
+    val logger = docspell.logging.getLogger[F](e.taskName.id)
     val addData: logging.LogEvent => logging.LogEvent =
       _.data("jobId", e.jobId)
         .data("task", e.taskName)
         .data("group", e.group)
         .data("jobInfo", e.jobInfo)
+        .addData(e.data)
 
     e.level match {
       case LogLevel.Info =>

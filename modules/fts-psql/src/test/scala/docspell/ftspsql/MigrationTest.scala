@@ -27,9 +27,7 @@ class MigrationTest
     PostgreSQLContainer.Def(DockerImageName.parse("postgres:14"))
 
   override def docspellLogConfig: LogConfig =
-    LogConfig(Level.Debug, LogConfig.Format.Fancy)
-
-  override def rootMinimumLevel = Level.Warn
+    super.docspellLogConfig.docspellLevel(Level.Debug)
 
   test("create schema") {
     withContainers { cnt =>

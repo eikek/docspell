@@ -15,6 +15,9 @@ import docspell.common.{Ident, LogLevel}
 import docspell.logging
 import docspell.logging.{Level, Logger}
 
+/** Background tasks use this logger to emit the log events to a queue. The consumer is
+  * [[LogSink]], which picks up log events in a separate thread.
+  */
 object QueueLogger {
 
   def create[F[_]: Sync](
@@ -34,7 +37,8 @@ object QueueLogger {
             group,
             jobInfo,
             level2Level(logEvent.level),
-            logEvent.msg()
+            logEvent.msg(),
+            logEvent.data.view.mapValues(f => f()).toMap
           )
           .flatMap { ev =>
             val event =
