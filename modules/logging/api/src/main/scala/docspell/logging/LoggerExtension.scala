@@ -13,7 +13,7 @@ trait LoggerExtension[F[_]] { self: Logger[F] =>
 
   def stream: Logger[Stream[F, *]] =
     new Logger[Stream[F, *]] {
-      def log(ev: LogEvent) =
+      def log(ev: => LogEvent) =
         Stream.eval(self.log(ev))
 
       def asUnsafe = self.asUnsafe

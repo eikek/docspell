@@ -12,8 +12,8 @@ import sourcecode._
 final case class LogEvent(
     level: Level,
     msg: () => String,
-    additional: List[() => LogEvent.AdditionalMsg],
-    data: Map[String, () => Json],
+    additional: LazyList[LogEvent.AdditionalMsg],
+    data: LazyMap[String, Json],
     pkg: Pkg,
     fileName: FileName,
     name: Name,
@@ -24,21 +24,21 @@ final case class LogEvent(
     s"${level.name} ${name.value}/${fileName}:${line.value} - ${msg()}"
 
   def data[A: Encoder](key: String, value: => A): LogEvent =
-    copy(data = data.updated(key, () => Encoder[A].apply(value)))
+    copy(data = data.updated(key, Encoder[A].apply(value)))
 
   def addData(m: Map[String, Json]): LogEvent =
-    copy(data = data ++ m.view.mapValues(json => () => json).toMap)
+    copy(data = data.addMap(m))
 
   def addMessage(msg: => String): LogEvent =
-    copy(additional = (() => Left(msg)) :: additional)
+    copy(additional = Left(msg) #:: additional)
 
   def addError(ex: Throwable): LogEvent =
-    copy(additional = (() => Right(ex)) :: additional)
+    copy(additional = Right(ex) #:: additional)
 
   def findErrors: List[Throwable] =
-    additional.map(a => a()).collect { case Right(ex) =>
+    additional.collect { case Right(ex) =>
       ex
-    }
+    }.toList
 }
 
 object LogEvent {
@@ -50,5 +50,6 @@ object LogEvent {
       fileName: FileName,
       name: Name,
       line: Line
-  ): LogEvent = LogEvent(l, () => m, Nil, Map.empty, pkg, fileName, name, line)
+  ): LogEvent =
+    LogEvent(l, () => m, LazyList.empty, LazyMap.empty, pkg, fileName, name, line)
 }
