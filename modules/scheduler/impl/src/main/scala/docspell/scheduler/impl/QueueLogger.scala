@@ -29,7 +29,7 @@ object QueueLogger {
   ): Logger[F] =
     new Logger[F] {
 
-      def log(logEvent: logging.LogEvent) =
+      def log(logEvent: => logging.LogEvent) =
         LogEvent
           .create[F](
             jobId,
@@ -38,7 +38,7 @@ object QueueLogger {
             jobInfo,
             level2Level(logEvent.level),
             logEvent.msg(),
-            logEvent.data.view.mapValues(f => f()).toMap
+            logEvent.data.toMap
           )
           .flatMap { ev =>
             val event =
