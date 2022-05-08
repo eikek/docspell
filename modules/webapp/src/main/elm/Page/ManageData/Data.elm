@@ -12,6 +12,8 @@ module Page.ManageData.Data exposing
     , init
     )
 
+import Comp.AddonArchiveManage
+import Comp.AddonRunConfigManage
 import Comp.BookmarkManage
 import Comp.CustomFieldManage
 import Comp.EquipmentManage
@@ -31,6 +33,8 @@ type alias Model =
     , folderManageModel : Comp.FolderManage.Model
     , fieldManageModel : Comp.CustomFieldManage.Model
     , bookmarkModel : Comp.BookmarkManage.Model
+    , addonArchiveModel : Comp.AddonArchiveManage.Model
+    , addonRunConfigModel : Comp.AddonRunConfigManage.Model
     }
 
 
@@ -42,6 +46,12 @@ init flags =
 
         ( bm, bc ) =
             Comp.BookmarkManage.init flags
+
+        ( aam, aac ) =
+            Comp.AddonArchiveManage.init flags
+
+        ( arm, arc ) =
+            Comp.AddonRunConfigManage.init flags
     in
     ( { currentTab = Just TagTab
       , tagManageModel = m2
@@ -51,10 +61,14 @@ init flags =
       , folderManageModel = Comp.FolderManage.empty
       , fieldManageModel = Comp.CustomFieldManage.empty
       , bookmarkModel = bm
+      , addonArchiveModel = aam
+      , addonRunConfigModel = arm
       }
     , Cmd.batch
         [ Cmd.map TagManageMsg c2
         , Cmd.map BookmarkMsg bc
+        , Cmd.map AddonArchiveMsg aac
+        , Cmd.map AddonRunConfigMsg arc
         ]
     )
 
@@ -67,6 +81,8 @@ type Tab
     | FolderTab
     | CustomFieldTab
     | BookmarkTab
+    | AddonArchiveTab
+    | AddonRunConfigTab
 
 
 type Msg
@@ -78,3 +94,5 @@ type Msg
     | FolderMsg Comp.FolderManage.Msg
     | CustomFieldMsg Comp.CustomFieldManage.Msg
     | BookmarkMsg Comp.BookmarkManage.Msg
+    | AddonArchiveMsg Comp.AddonArchiveManage.Msg
+    | AddonRunConfigMsg Comp.AddonRunConfigManage.Msg

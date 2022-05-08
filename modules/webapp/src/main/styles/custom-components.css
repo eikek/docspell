@@ -96,4 +96,8 @@
   .markdown-preview a {
       @apply text-blue-400 hover:text-blue-500 dark:text-sky-200 dark:hover:text-sky-100 cursor-pointer;
   }
+
+  .markdown-preview pre {
+      @apply font-mono px-2 py-2 text-sm border dark:border-slate-600 rounded my-2;
+  }
 }

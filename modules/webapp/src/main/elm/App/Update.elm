@@ -14,6 +14,7 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
+import Comp.AddonArchiveManage
 import Comp.DownloadAll
 import Data.AppEvent exposing (AppEvent(..))
 import Data.Environment as Env
@@ -345,6 +346,9 @@ updateWithSub msg model =
                 Ok (JobsWaiting n) ->
                     ( { model | jobsWaiting = max 0 n }, Cmd.none, Sub.none )
 
+                Ok (AddonInstalled info) ->
+                    updateManageData (Page.ManageData.Data.AddonArchiveMsg <| Comp.AddonArchiveManage.addonInstallResult info) model
+
                 Err _ ->
                     ( model, Cmd.none, Sub.none )
 
@@ -640,7 +644,7 @@ updateManageData : Page.ManageData.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Ms
 updateManageData lmsg model =
     let
         ( lm, lc, ls ) =
-            Page.ManageData.Update.update model.flags lmsg model.manageDataModel
+            Page.ManageData.Update.update model.flags model.uiSettings lmsg model.manageDataModel
     in
     ( { model | manageDataModel = lm }
     , Cmd.map ManageDataMsg lc
