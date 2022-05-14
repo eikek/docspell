@@ -101,7 +101,7 @@ services:
       - POSTGRES_DB=dbname
 
   solr:
-    image: solr:8
+    image: solr:9
     container_name: docspell-solr
     restart: unless-stopped
     volumes:
