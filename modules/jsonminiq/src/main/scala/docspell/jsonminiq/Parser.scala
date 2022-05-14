@@ -80,7 +80,7 @@ private[jsonminiq] object Parser {
 
   val segment = {
     val firstSegment = fieldSelect1 | arraySelect1 | match1
-    val nextSegment = (dot *> fieldSelect1) | arraySelect1 | match1
+    val nextSegment = dot *> fieldSelect1 | arraySelect1 | match1
 
     (firstSegment ~ nextSegment.rep0).map { case (head, tail) =>
       tail.foldLeft(head)(_ >> _)

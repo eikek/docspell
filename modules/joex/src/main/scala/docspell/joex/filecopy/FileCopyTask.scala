@@ -101,7 +101,7 @@ object FileCopyTask {
         } yield (srcRepo, targetRepos)
 
       data match {
-        case Right((from, tos)) =>
+        case Right(from, tos) =>
           ctx.logger.info(s"Start copying all files from $from") *>
             copy(ctx.logger, from, tos).flatTap(r =>
               if (r.success) ctx.logger.info(s"Copying finished: ${r.counter}")
@@ -122,7 +122,7 @@ object FileCopyTask {
       case None =>
         CopyResult.noSourceImpl.pure[F]
 
-      case Some((src, srcMeta)) =>
+      case Some(src, srcMeta) =>
         to.traverse(FileRepository.getDelegate).map(_.map(_._1)) match {
           case None =>
             CopyResult.noTargetImpl.pure[F]

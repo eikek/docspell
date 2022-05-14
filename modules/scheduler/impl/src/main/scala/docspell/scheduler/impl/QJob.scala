@@ -104,7 +104,7 @@ object QJob {
 
     val stuckTrigger = stuckTriggerValue(JC, initialPause, now)
     val stateCond =
-      JC.state === JobState.waiting || (JC.state === JobState.stuck && stuckTrigger < now.toMillis)
+      JC.state === JobState.waiting || JC.state === JobState.stuck && stuckTrigger < now.toMillis
 
     object AllGroups extends TableDef {
       val tableName = "allgroups"
@@ -169,7 +169,7 @@ object QJob {
         select(JC.all),
         from(JC),
         JC.group === group && (JC.state === waiting ||
-          (JC.state === stuck && stuckTrigger < now.toMillis))
+          JC.state === stuck && stuckTrigger < now.toMillis)
       ).orderBy(JC.state.asc, psort, JC.submitted.asc).limit(1)
 
     sql.build.query[RJob].option

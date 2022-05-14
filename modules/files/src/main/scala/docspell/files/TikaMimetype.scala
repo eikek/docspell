@@ -27,7 +27,7 @@ import org.apache.tika.parser.txt.Icu4jEncodingDetector
 import scodec.bits.ByteVector
 
 object TikaMimetype {
-  private val tika = new TikaConfig().getDetector
+  private val tika = new TikaConfig.getDetector
 
   private def convert(mt: MediaType): MimeType =
     Option(mt) match {
@@ -71,7 +71,7 @@ object TikaMimetype {
   private def charsetFromBytes(bv: Array[Byte], hint: MimeTypeHint): Option[Charset] =
     Either
       .catchNonFatal {
-        val cd = new Icu4jEncodingDetector()
+        val cd = new Icu4jEncodingDetector
         val md = makeMetadata(hint)
         Option(cd.detect(new java.io.ByteArrayInputStream(bv), md))
       }

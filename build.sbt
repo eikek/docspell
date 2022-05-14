@@ -48,9 +48,11 @@ val sharedSettings = Seq(
     packageTools(logger, dir, v)
   },
   Compile / console / scalacOptions :=
-    (scalacOptions.value.filter(o => !o.contains("-Xlint") && !o.contains("-W"))),
+    scalacOptions.value.filter(
+    o => !o.contains("-Xlint") && !o.contains("-W")),
   Test / console / scalacOptions :=
-    (scalacOptions.value.filter(o => !o.contains("-Xlint") && !o.contains("-W"))),
+    scalacOptions.value.filter(
+    o => !o.contains("-Xlint") && !o.contains("-W")),
   libraryDependencySchemes ++= Seq(
     "com.github.eikek" %% "calev-core" % VersionScheme.Always,
     "com.github.eikek" %% "calev-circe" % VersionScheme.Always

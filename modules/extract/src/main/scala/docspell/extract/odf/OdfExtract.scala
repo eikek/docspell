@@ -28,10 +28,10 @@ object OdfExtract {
 
   def get(is: InputStream) =
     Try {
-      val handler = new BodyContentHandler()
-      val pctx = new ParseContext()
-      val meta = new Metadata()
-      val ooparser = new OpenDocumentParser()
+      val handler = new BodyContentHandler
+      val pctx = new ParseContext
+      val meta = new Metadata
+      val ooparser = new OpenDocumentParser
       ooparser.parse(is, handler, meta, pctx)
       Text(Option(handler.toString))
     }.toEither

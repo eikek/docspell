@@ -54,7 +54,7 @@ object EnvConfig {
     makeConfig(file :: files.toList)
 
   def keyToEnv(k: String): String = {
-    val buffer = new StringBuilder()
+    val buffer = new StringBuilder
     val len = k.length
 
     @tailrec

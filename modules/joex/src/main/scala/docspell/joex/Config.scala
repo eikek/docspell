@@ -134,7 +134,7 @@ object Config {
   ) {
 
     def itemCountOrWhenLower(other: Int): Int =
-      if (itemCount <= 0 || (itemCount > other && other > 0)) other
+      if (itemCount <= 0 || itemCount > other && other > 0) other
       else itemCount
   }
 }

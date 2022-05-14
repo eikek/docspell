@@ -142,9 +142,9 @@ object MimeType {
     private def seq[A, B, C](pa: P[A], pb: P[B])(f: (A, B) => C): P[C] =
       in =>
         pa(in) match {
-          case Right((a, resta)) =>
+          case Right(a, resta) =>
             pb(resta) match {
-              case Right((b, restb)) =>
+              case Right(b, restb) =>
                 Right((f(a, b), restb))
               case left =>
                 left.asInstanceOf[Result[C]]
@@ -162,7 +162,7 @@ object MimeType {
     private def check[A](p: P[A], test: A => Boolean, err: => String): P[A] =
       in =>
         p(in) match {
-          case r @ Right((a, _)) =>
+          case r @ Right(a, _) =>
             if (test(a)) r else Left(err)
           case left =>
             left

@@ -24,7 +24,7 @@ object RtfExtract {
 
   def get(is: InputStream): Either[Throwable, Text] =
     Try {
-      val kit = new RTFEditorKit()
+      val kit = new RTFEditorKit
       val doc = kit.createDefaultDocument()
       kit.read(is, doc, 0)
       Text(doc.getText(0, doc.getLength))

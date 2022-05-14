@@ -36,7 +36,7 @@ object EnvConfig {
     loadFrom(System.getenv().asScala.view)
 
   def loadFrom(env: MapView[String, String]): Config = {
-    val cfg = new Properties()
+    val cfg = new Properties
     for (key <- env.keySet if key.startsWith("DOCSPELL_"))
       cfg.setProperty(envToProp(key), env(key))
 
@@ -57,7 +57,7 @@ object EnvConfig {
     */
   private[config] def envToProp(v: String): String = {
     val len = v.length
-    val buffer = new mutable.StringBuilder()
+    val buffer = new mutable.StringBuilder
     val underscoreMapping = Map(3 -> '_', 2 -> '-', 1 -> '.').withDefault(_ => '_')
     @annotation.tailrec
     def go(current: Int, underscores: Int): String =

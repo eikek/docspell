@@ -112,9 +112,9 @@ object ContentDisposition {
           Parser.ignoreCase("US-ASCII").as(StandardCharsets.US_ASCII) ::
           Nil
       )
-    val extValue = (Rfc5234.dquote *> Parser.charsWhile0(
+    val extValue = Rfc5234.dquote *> Parser.charsWhile0(
       CharPredicate.All -- '"'
-    ) <* Rfc5234.dquote) | (charset.? ~ (Parser.string("'") *> language.? <* Parser
+    ) <* Rfc5234.dquote | (charset.? ~ (Parser.string("'") *> language.? <* Parser
       .string(
         "'"
       )) ~ valueChars).map { case ((charset, _), values) =>

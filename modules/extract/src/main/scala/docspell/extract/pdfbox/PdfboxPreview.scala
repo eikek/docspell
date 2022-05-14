@@ -100,7 +100,7 @@ object PdfboxPreview {
   }
 
   private def pngStream[F[_]](img: RenderedImage): Stream[F, Byte] = {
-    val out = new ByteArrayOutputStream()
+    val out = new ByteArrayOutputStream
     ImageIO.write(img, "PNG", out)
     Stream.chunk(Chunk.byteVector(ByteVector.view(out.toByteArray())))
   }

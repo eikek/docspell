@@ -310,7 +310,7 @@ object ItemQueryGenerator {
           val fieldNotNumeric =
             cf.ftype <> CustomFieldType.Numeric && cf.ftype <> CustomFieldType.Money
           baseSelect.where(
-            (fieldIsNumeric && numericCmp) || (fieldNotNumeric && stringCmp)
+            fieldIsNumeric && numericCmp || fieldNotNumeric && stringCmp
           )
         }
         .getOrElse(baseSelect.where(stringCmp))

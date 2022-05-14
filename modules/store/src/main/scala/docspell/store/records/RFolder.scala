@@ -82,7 +82,7 @@ object RFolder {
     val sql = run(
       select(T.id),
       from(T),
-      T.id === folderId || (T.name === name && T.collective === collective)
+      T.id === folderId || T.name === name && T.collective === collective
     )
     sql.query[Ident].option.flatMap {
       case Some(id) => id.pure[ConnectionIO]

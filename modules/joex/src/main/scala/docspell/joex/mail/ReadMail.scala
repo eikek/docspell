@@ -46,14 +46,12 @@ object ReadMail {
         s"E-mail has ${mail.attachments.size} attachments and ${bodyType(mail.body)}"
       )
     ) >>
-      (makeBodyEntry(logger, glob, attachmentsOnly)(mail) ++
-        Stream
-          .eval(TnefExtract.replace(mail))
-          .flatMap(m => Stream.emits(m.attachments.all))
-          .filter(a => a.filename.exists(glob.matches(caseSensitive = false)))
-          .map(a =>
-            Binary(a.filename.getOrElse("noname"), a.mimeType.toLocal, a.content)
-          ))
+      makeBodyEntry(logger, glob, attachmentsOnly)(mail) ++
+      Stream
+        .eval(TnefExtract.replace(mail))
+        .flatMap(m => Stream.emits(m.attachments.all))
+        .filter(a => a.filename.exists(glob.matches(caseSensitive = false)))
+        .map(a => Binary(a.filename.getOrElse("noname"), a.mimeType.toLocal, a.content))
 
   private def makeBodyEntry[F[_]: Async](
       logger: Logger[F],

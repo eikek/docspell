@@ -292,7 +292,7 @@ final class SchedulerImpl[F[_]: Async](
           }
       })
       .mapF(_.attempt.flatMap {
-        case Right((jstate, result)) =>
+        case Right(jstate, result) =>
           onFinish(job, result, jstate)
         case Left(ex) =>
           logger.error(ex)(s"Error happened during post-processing of ${job.info}!")

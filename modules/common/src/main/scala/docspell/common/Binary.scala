@@ -76,7 +76,7 @@ object Binary {
             val outputString = charBuffer.flip().toString
             if (outputString.isEmpty) Pull.done.as(None)
             else Pull.output1(outputString).as(None)
-          case Some((chunk, stream)) =>
+          case Some(chunk, stream) =>
             if (chunk.nonEmpty) {
               val chunkWithoutBom = skipByteOrderMark(chunk)
               val bytes = chunkWithoutBom.toArray

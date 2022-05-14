@@ -39,7 +39,7 @@ object ExprParser {
     }
 
   def parseQuery(input: String): Either[P.Error, ItemQuery] = {
-    val p = BasicParser.ws0 *> exprParser <* (BasicParser.ws0 ~ P.end)
+    val p = BasicParser.ws0 *> exprParser <* BasicParser.ws0 ~ P.end
     p.parseAll(input).map(expr => ItemQuery(expr, Some(input)))
   }
 }

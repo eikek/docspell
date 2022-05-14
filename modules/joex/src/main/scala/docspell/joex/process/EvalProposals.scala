@@ -81,7 +81,7 @@ object EvalProposals {
         val nerFac =
           cand.origin.map(label => nerTagFactor(label.tag, mp.proposalType)).min
         val corrPerFac = corrOrgPersonFactor(rm, mp, personRefs, cand)
-        (1 / words) * (1 / tagCount) * positionWeight(pos, textLen) * nerFac * corrPerFac
+        1 / words * (1 / tagCount) * positionWeight(pos, textLen) * nerFac * corrPerFac
     }
 
   def corrOrgPersonFactor(

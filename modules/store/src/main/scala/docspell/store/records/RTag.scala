@@ -177,7 +177,7 @@ object RTag {
           .sortBy(_._1)
 
         byCat match {
-          case (None, tags) :: rest =>
+          case None, tags :: rest =>
             rest.flatMap(_._2) ++ tags
           case _ =>
             byCat.flatMap(_._2)

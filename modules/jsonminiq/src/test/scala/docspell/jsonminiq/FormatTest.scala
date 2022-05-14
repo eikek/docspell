@@ -36,15 +36,14 @@ class FormatTest extends FunSuite with Fixtures {
 
   test("and / or") {
     assertEquals(
-      format((JQ.at("c") >> JQ.isAll("d")) || (JQ.at("e") >> JQ.isAll("f"))),
+      format(JQ.at("c") >> JQ.isAll("d") || JQ.at("e") >> JQ.isAll("f")),
       "[c=d | e=f]"
     )
 
     assertEquals(
       format(
-        (JQ.at("a").isAll("1")) || (
-          (JQ.at("b").isAll("2")) && (JQ.at("c").isAll("3"))
-        )
+        JQ.at("a").isAll("1") ||
+          JQ.at("b").isAll("2") && JQ.at("c").isAll("3")
       ),
       "[a=1 | [b=2 & c=3]]"
     )

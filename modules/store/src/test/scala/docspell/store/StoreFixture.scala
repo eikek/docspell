@@ -56,21 +56,21 @@ object StoreFixture {
     def jdbcConnPool =
       jdbc.dbmsName match {
         case Some("mariadb") =>
-          val ds = new MariaDbDataSource()
+          val ds = new MariaDbDataSource
           ds.setUrl(jdbc.url.asString)
           ds.setUser(jdbc.user)
           ds.setPassword(jdbc.password)
           JdbcConnectionPool.create(ds)
 
         case Some("postgresql") =>
-          val ds = new PGConnectionPoolDataSource()
+          val ds = new PGConnectionPoolDataSource
           ds.setURL(jdbc.url.asString)
           ds.setUser(jdbc.user)
           ds.setPassword(jdbc.password)
           JdbcConnectionPool.create(ds)
 
         case Some("h2") =>
-          val ds = new JdbcDataSource()
+          val ds = new JdbcDataSource
           ds.setURL(jdbc.url.asString)
           ds.setUser(jdbc.user)
           ds.setPassword(jdbc.password)

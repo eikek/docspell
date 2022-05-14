@@ -45,7 +45,7 @@ object Store {
       fileRepoConfig: FileRepositoryConfig,
       connectEC: ExecutionContext
   ): Resource[F, Store[F]] = {
-    val acquire = Sync[F].delay(new HikariDataSource())
+    val acquire = Sync[F].delay(new HikariDataSource)
     val free: HikariDataSource => F[Unit] = ds => Sync[F].delay(ds.close())
 
     for {

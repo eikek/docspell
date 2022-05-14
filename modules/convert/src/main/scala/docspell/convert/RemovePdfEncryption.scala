@@ -83,7 +83,7 @@ object RemovePdfEncryption {
     }
 
   private def toStream[F[_]](doc: PDDocument): Stream[F, Byte] = {
-    val baos = new ByteArrayOutputStream()
+    val baos = new ByteArrayOutputStream
     doc.save(baos)
     Stream.chunk(Chunk.array(baos.toByteArray))
   }

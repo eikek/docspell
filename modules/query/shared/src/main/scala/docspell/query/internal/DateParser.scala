@@ -102,7 +102,7 @@ object DateParser {
 
   val date: P[Date] =
     (dateLiteral ~ (P.char(';') *> dateCalcDirection ~ period).?).map {
-      case (date, Some((c, p))) =>
+      case (date, Some(c, p)) =>
         Date.Calc(date, c, p)
 
       case (date, None) =>

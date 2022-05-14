@@ -70,7 +70,7 @@ object Markdown {
        |""".stripMargin
 
   private def createParser(): Parser = {
-    val opts = new MutableDataSet()
+    val opts = new MutableDataSet
     opts.set(
       Parser.EXTENSIONS.asInstanceOf[DataKey[util.Collection[_]]],
       util.Arrays.asList(TablesExtension.create(), StrikethroughExtension.create())
@@ -80,7 +80,7 @@ object Markdown {
   }
 
   private def createRenderer(): HtmlRenderer = {
-    val opts = new MutableDataSet()
+    val opts = new MutableDataSet
     HtmlRenderer.builder(opts).build()
   }
 }

@@ -39,7 +39,7 @@ object QCustomField {
       order: RCustomField.Table => Nel[OrderBy] = t => Nel.of(t.name.asc)
   ): Select = {
     val nameFilter = nameQuery.map { q =>
-      f.name.likes(q) || (f.label.isNotNull && f.label.like(q))
+      f.name.likes(q) || f.label.isNotNull && f.label.like(q)
     }
 
     Select(

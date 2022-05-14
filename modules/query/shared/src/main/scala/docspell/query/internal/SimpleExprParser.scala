@@ -31,7 +31,7 @@ object SimpleExprParser {
 
   val stringExpr: P[Expr] =
     (AttrParser.stringAttr ~ inOrOpStr).map {
-      case (attr, Right((op, value))) =>
+      case (attr, Right(op, value)) =>
         Expr.SimpleExpr(op, Property.StringProperty(attr, value))
       case (attr, Left(values)) =>
         Expr.InExpr(attr, values)
@@ -39,7 +39,7 @@ object SimpleExprParser {
 
   val dateExpr: P[Expr] =
     (AttrParser.dateAttr ~ inOrOpDate).map {
-      case (attr, Right((op, value))) =>
+      case (attr, Right(op, value)) =>
         Expr.SimpleExpr(op, Property.DateProperty(attr, value))
       case (attr, Left(values)) =>
         Expr.InDateExpr(attr, values)

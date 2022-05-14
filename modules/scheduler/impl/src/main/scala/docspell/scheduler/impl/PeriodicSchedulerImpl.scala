@@ -163,7 +163,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
   private def logThrow[A](msg: => String)(fa: F[A]): F[A] =
     fa.attempt.flatMap {
       case r @ Right(_) => (r: Either[Throwable, A]).pure[F]
-      case l @ Left(ex) => logger.error(ex)(msg).map(_ => (l: Either[Throwable, A]))
+      case l @ Left(ex) => logger.error(ex)(msg).map(_ => l: Either[Throwable, A])
     }.rethrow
 }
 

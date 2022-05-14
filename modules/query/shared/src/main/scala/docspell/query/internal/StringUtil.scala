@@ -91,8 +91,8 @@ object StringUtil {
 
     def escapedString(q: Char): P[String] = {
       val end: P[Unit] = P.char(q)
-      end *> ((simpleString <* end).backtrack
-        .orElse(undelimitedString(end) <* end))
+      end *> (simpleString <* end).backtrack
+        .orElse(undelimitedString(end) <* end)
     }
 
     def escape(quoteChar: Char, str: String): String = {

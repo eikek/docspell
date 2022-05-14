@@ -63,8 +63,8 @@ object SolrSetup {
         val deleteAll = SolrMigration.deleteData(0, solrUp)
         val indexAll = SolrMigration.indexAll[F](Int.MaxValue, "Index all data")
 
-        deleteAll :: (allMigrations
-          .filter(_.isSchemaChange) ::: List(indexAll, writeVersion))
+        deleteAll :: allMigrations
+          .filter(_.isSchemaChange) ::: List(indexAll, writeVersion)
       }
 
       private def allMigrations: List[SolrMigration[F]] =

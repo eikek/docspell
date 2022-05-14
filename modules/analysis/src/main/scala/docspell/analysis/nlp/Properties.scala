@@ -20,7 +20,7 @@ object Properties {
     apply(m.toSeq: _*)
 
   def apply(ps: (String, String)*): JProps = {
-    val p = new JProps()
+    val p = new JProps
     for ((k, v) <- ps)
       p.setProperty(k, v)
     p

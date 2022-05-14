@@ -52,7 +52,7 @@ object PdfboxExtract {
 
   private def readText(doc: PDDocument): Either[Throwable, Text] =
     Try {
-      val stripper = new PDFTextStripper()
+      val stripper = new PDFTextStripper
       stripper.setAddMoreFormatting(true)
       stripper.setLineSeparator("\n")
       Text(Option(stripper.getText(doc)))

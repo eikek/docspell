@@ -133,7 +133,7 @@ object PsqlFtsClient {
       cfg: PsqlConfig,
       connectEC: ExecutionContext
   ): Resource[F, PsqlFtsClient[F]] = {
-    val acquire = Sync[F].delay(new HikariDataSource())
+    val acquire = Sync[F].delay(new HikariDataSource)
     val free: HikariDataSource => F[Unit] = ds => Sync[F].delay(ds.close())
 
     for {

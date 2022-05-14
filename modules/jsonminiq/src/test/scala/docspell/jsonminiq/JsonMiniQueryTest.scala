@@ -30,7 +30,7 @@ class JsonMiniQueryTest extends FunSuite with Fixtures {
   test("combine values from different levels") {
     val q1 = JQ.at("account")
     val q2 = JQ.at("removed").at("name")
-    val q = JQ.at("content") >> (q1 ++ q2)
+    val q = JQ.at("content") >> q1 ++ q2
 
     assertEquals(q(sampleEvent), values("demo", "Receipt"))
   }

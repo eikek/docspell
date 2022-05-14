@@ -108,8 +108,8 @@ object RItemLink {
     DML.delete(
       T,
       T.cid === cid && (
-        (T.item1 === item && T.item2.in(related)) ||
-          (T.item2 === item && T.item1.in(related))
+        T.item1 === item && T.item2.in(related) ||
+          T.item2 === item && T.item1.in(related)
       )
     )
 

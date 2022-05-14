@@ -41,7 +41,7 @@ object Ident {
 
   def randomId[F[_]: Sync]: F[Ident] =
     Sync[F].delay {
-      val random = new SecureRandom()
+      val random = new SecureRandom
       val buffer = new Array[Byte](32)
       random.nextBytes(buffer)
       unsafe(ByteVector.view(buffer).toBase58.grouped(11).mkString("-"))

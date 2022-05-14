@@ -48,7 +48,7 @@ object NerLabelSpan {
         span.lastOption match {
           case Some(last) =>
             val next = last + el
-            if (next eq last) span :+ (empty + el)
+            if (next eq last) span :+ empty + el
             else span.dropRight(1) :+ next
           case None =>
             Vector(empty + el)

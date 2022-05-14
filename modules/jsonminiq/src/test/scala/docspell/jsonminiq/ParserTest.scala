@@ -41,14 +41,13 @@ class ParserTest extends FunSuite with Fixtures {
   test("and / or") {
     assertEquals(
       parse("[c=d | e=f]"),
-      (JQ.at("c") >> JQ.isAll("d")) || (JQ.at("e") >> JQ.isAll("f"))
+      JQ.at("c") >> JQ.isAll("d") || JQ.at("e") >> JQ.isAll("f")
     )
 
     assertEquals(
       parse("[a=1 | [b=2 & c=3]]"),
-      (JQ.at("a") >> JQ.isAll("1")) || (
-        (JQ.at("b") >> JQ.isAll("2")) && (JQ.at("c") >> JQ.isAll("3"))
-      )
+      JQ.at("a") >> JQ.isAll("1") ||
+        JQ.at("b") >> JQ.isAll("2") && JQ.at("c") >> JQ.isAll("3")
     )
   }
 }

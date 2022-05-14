@@ -57,7 +57,7 @@ object ConfigFile {
         unsafeLogger.warn(
           "No serverSecret specified. Generating a random one. It is recommended to add a server-secret in the config file."
         )
-        val random = new SecureRandom()
+        val random = new SecureRandom
         val buffer = new Array[Byte](32)
         random.nextBytes(buffer)
         val secret = ByteVector.view(buffer)
