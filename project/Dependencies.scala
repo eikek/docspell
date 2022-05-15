@@ -23,7 +23,7 @@ object Dependencies {
   val Http4sVersion = "0.23.11"
   val Icu4jVersion = "71.1"
   val JavaOtpVersion = "0.3.1"
-  val JsoupVersion = "1.14.3"
+  val JsoupVersion = "1.15.1"
   val JwtScalaVersion = "9.0.5"
   val KindProjectorVersion = "0.10.3"
   val KittensVersion = "2.3.2"
