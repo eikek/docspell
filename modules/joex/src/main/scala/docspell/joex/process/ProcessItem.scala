@@ -9,7 +9,9 @@ package docspell.joex.process
 import cats.effect._
 import cats.implicits._
 
+import docspell.addons.AddonTriggerType
 import docspell.analysis.TextAnalyser
+import docspell.backend.joex.AddonOps
 import docspell.backend.ops.OItem
 import docspell.common.ProcessItemArgs
 import docspell.ftsclient.FtsClient
@@ -26,6 +28,7 @@ object ProcessItem {
       fts: FtsClient[F],
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F],
+      addonOps: AddonOps[F],
       store: Store[F]
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     ExtractArchive(store)(item)
@@ -35,6 +38,7 @@ object ProcessItem {
       .flatMap(SetGivenData.onlyNew[F](itemOps))
       .flatMap(Task.setProgress(99))
       .flatMap(RemoveEmptyItem(itemOps))
+      .flatMap(RunAddons(addonOps, store, AddonTriggerType.FinalProcessItem))
 
   def processAttachments[F[_]: Async](
       cfg: Config,

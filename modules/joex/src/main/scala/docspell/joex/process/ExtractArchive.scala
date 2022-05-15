@@ -146,7 +146,7 @@ object ExtractArchive {
     val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
     ctx.logger.debug(s"Filtering zip entries with '${glob.asString}'") *>
       zipData
-        .through(Zip.unzipP[F](8192, glob))
+        .through(Zip.unzip[F](8192, glob))
         .zipWithIndex
         .flatMap(handleEntry(ctx, store, ra, pos, archive, None))
         .foldMonoid

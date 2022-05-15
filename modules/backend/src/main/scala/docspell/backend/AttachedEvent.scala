@@ -20,6 +20,7 @@ trait AttachedEvent[R] {
 
 object AttachedEvent {
 
+  /** Only the result, no events. */
   def only[R](v: R): AttachedEvent[R] =
     new AttachedEvent[R] {
       val value = v

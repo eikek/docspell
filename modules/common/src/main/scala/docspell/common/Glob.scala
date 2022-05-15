@@ -32,7 +32,8 @@ object Glob {
     def single(str: String) =
       PatternGlob(Pattern(split(str, separator).map(makeSegment)))
 
-    if (in == "*") all
+    if (in == all.asString) all
+    else if (in == none.asString) none
     else
       split(in, anyChar) match {
         case NonEmptyList(_, Nil) =>
@@ -51,15 +52,25 @@ object Glob {
     val asString = "*"
   }
 
+  val none = new Glob {
+    def matches(caseSensitive: Boolean)(in: String) = false
+    def matchFilenameOrPath(in: String) = false
+    def asString = "!*"
+  }
+
   def pattern(pattern: Pattern): Glob =
     PatternGlob(pattern)
 
   /** A simple glob supporting `*` and `?`. */
   final private case class PatternGlob(pattern: Pattern) extends Glob {
-    def matches(caseSensitive: Boolean)(in: String): Boolean =
+    def matches(caseSensitive: Boolean)(in: String): Boolean = {
+      val input = Glob.split(in, Glob.separator)
+
+      pattern.parts.size == input.size &&
       pattern.parts
-        .zipWith(Glob.split(in, Glob.separator))(_.matches(caseSensitive)(_))
+        .zipWith(input)(_.matches(caseSensitive)(_))
         .forall(identity)
+    }
 
     def matchFilenameOrPath(in: String): Boolean =
       if (pattern.parts.tail.isEmpty) matches(true)(split(in, separator).last)
@@ -67,6 +78,8 @@ object Glob {
 
     def asString: String =
       pattern.asString
+
+    override def toString = s"PatternGlob($asString)"
   }
 
   final private case class AnyGlob(globs: NonEmptyList[Glob]) extends Glob {
@@ -76,6 +89,8 @@ object Glob {
       globs.exists(_.matchFilenameOrPath(in))
     def asString =
       globs.toList.map(_.asString).mkString(anyChar.toString)
+
+    override def toString = s"AnyGlob($globs)"
   }
 
   case class Pattern(parts: NonEmptyList[Segment]) {

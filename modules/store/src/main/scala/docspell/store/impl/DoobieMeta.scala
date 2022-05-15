@@ -9,6 +9,7 @@ package docspell.store.impl
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDate}
 
+import docspell.addons.AddonTriggerType
 import docspell.common._
 import docspell.common.syntax.all._
 import docspell.jsonminiq.JsonMiniQuery
@@ -31,15 +32,21 @@ trait DoobieMeta extends EmilDoobieMeta {
 
   implicit val sqlLogging: LogHandler = LogHandler {
     case e @ Success(_, _, _, _) =>
-      DoobieMeta.logger.trace("SQL " + e)
+      DoobieMeta.logger.trace(s"SQL: $e")
     case e =>
-      DoobieMeta.logger.error(s"SQL Failure: $e")
+      DoobieMeta.logger.warn(s"SQL Failure: $e")
   }
 
   def jsonMeta[A](implicit d: Decoder[A], e: Encoder[A]): Meta[A] =
     Meta[String].imap(str => str.parseJsonAs[A].fold(ex => throw ex, identity))(a =>
       e.apply(a).noSpaces
     )
+
+  implicit val metaAddonTriggerType: Meta[AddonTriggerType] =
+    Meta[String].timap(AddonTriggerType.unsafeFromString)(_.name)
+
+  implicit val metaAddonTriggerTypeSet: Meta[Set[AddonTriggerType]] =
+    jsonMeta[Set[AddonTriggerType]]
 
   implicit val metaBinaryId: Meta[BinaryId] =
     Meta[String].timap(BinaryId.apply)(_.id)

@@ -10,7 +10,9 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
+import docspell.addons.AddonTriggerType
 import docspell.analysis.TextAnalyser
+import docspell.backend.joex.AddonOps
 import docspell.backend.ops.OItem
 import docspell.common._
 import docspell.ftsclient.FtsClient
@@ -34,13 +36,24 @@ object ReProcessItem {
       itemOps: OItem[F],
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F],
+      addonOps: AddonOps[F],
       store: Store[F]
   ): Task[F, Args, Unit] =
     Task
       .log[F, Args](_.info("===== Start reprocessing ======"))
       .flatMap(_ =>
         loadItem[F](store)
-          .flatMap(safeProcess[F](cfg, fts, itemOps, analyser, regexNer, store))
+          .flatMap(
+            safeProcess[F](
+              cfg,
+              fts,
+              itemOps,
+              analyser,
+              regexNer,
+              addonOps,
+              store
+            )
+          )
           .map(_ => ())
       )
 
@@ -99,6 +112,7 @@ object ReProcessItem {
       itemOps: OItem[F],
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F],
+      addonOps: AddonOps[F],
       store: Store[F],
       data: ItemData
   ): Task[F, Args, ItemData] = {
@@ -129,6 +143,7 @@ object ReProcessItem {
         .processAttachments[F](cfg, fts, analyser, regexNer, store)(data)
         .flatMap(LinkProposal[F](store))
         .flatMap(SetGivenData[F](itemOps))
+        .flatMap(RunAddons[F](addonOps, store, AddonTriggerType.FinalReprocessItem))
         .contramap[Args](convertArgs(lang))
     }
   }
@@ -153,11 +168,21 @@ object ReProcessItem {
       itemOps: OItem[F],
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F],
+      addonOps: AddonOps[F],
       store: Store[F]
   )(data: ItemData): Task[F, Args, ItemData] =
     isLastRetry[F].flatMap {
       case true =>
-        processFiles[F](cfg, fts, itemOps, analyser, regexNer, store, data).attempt
+        processFiles[F](
+          cfg,
+          fts,
+          itemOps,
+          analyser,
+          regexNer,
+          addonOps,
+          store,
+          data
+        ).attempt
           .flatMap {
             case Right(d) =>
               Task.pure(d)
@@ -167,7 +192,16 @@ object ReProcessItem {
               ).andThen(_ => Sync[F].raiseError(ex))
           }
       case false =>
-        processFiles[F](cfg, fts, itemOps, analyser, regexNer, store, data)
+        processFiles[F](
+          cfg,
+          fts,
+          itemOps,
+          analyser,
+          regexNer,
+          addonOps,
+          store,
+          data
+        )
     }
 
   private def logWarn[F[_]](msg: => String): Task[F, Args, Unit] =

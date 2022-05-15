@@ -45,7 +45,14 @@ object CreateIndex {
           chunkSize: Int
       ): F[Unit] = {
         val attachs = store
-          .transact(QAttachment.allAttachmentMetaAndName(collective, itemIds, chunkSize))
+          .transact(
+            QAttachment.allAttachmentMetaAndName(
+              collective,
+              itemIds,
+              ItemState.validStates,
+              chunkSize
+            )
+          )
           .map(caa =>
             TextData
               .attachment(

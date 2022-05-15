@@ -5,15 +5,34 @@
 -}
 
 
-module Data.ServerEvent exposing (ServerEvent(..), decode)
+module Data.ServerEvent exposing (AddonInfo, ServerEvent(..), decode)
 
 import Json.Decode as D
+import Json.Decode.Pipeline as P
 
 
 type ServerEvent
     = JobSubmitted String
     | JobDone String
     | JobsWaiting Int
+    | AddonInstalled AddonInfo
+
+
+type alias AddonInfo =
+    { success : Bool
+    , addonId : Maybe String
+    , addonUrl : Maybe String
+    , message : String
+    }
+
+
+addonInfoDecoder : D.Decoder AddonInfo
+addonInfoDecoder =
+    D.succeed AddonInfo
+        |> P.required "success" D.bool
+        |> P.optional "addonId" (D.maybe D.string) Nothing
+        |> P.optional "addonUrl" (D.maybe D.string) Nothing
+        |> P.required "message" D.string
 
 
 decoder : D.Decoder ServerEvent
@@ -42,6 +61,10 @@ decodeTag tag =
         "jobs-waiting" ->
             D.field "content" D.int
                 |> D.map JobsWaiting
+
+        "addon-installed" ->
+            D.field "content" addonInfoDecoder
+                |> D.map AddonInstalled
 
         _ ->
             D.fail ("Unknown tag: " ++ tag)

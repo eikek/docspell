@@ -59,7 +59,7 @@ object JoexServer {
           Router("pubsub" -> pubSub.receiveRoute)
         },
         "/api/info" -> InfoRoutes(cfg),
-        "/api/v1" -> JoexRoutes(joexApp)
+        "/api/v1" -> JoexRoutes(cfg, joexApp)
       ).orNotFound
 
       // With Middlewares in place

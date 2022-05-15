@@ -152,7 +152,9 @@ final class RestAppImpl[F[_]: Async](
       "clientSettings" -> ClientSettingsRoutes(backend, token),
       "notification" -> NotificationRoutes(config, backend, token),
       "querybookmark" -> BookmarkRoutes(backend, token),
-      "downloadAll" -> DownloadAllRoutes(config.downloadAll, backend, token)
+      "downloadAll" -> DownloadAllRoutes(config.downloadAll, backend, token),
+      "addonrunconfig" -> AddonRunConfigRoutes(backend, token),
+      "addon" -> AddonRoutes(config, wsTopic, backend, token)
     )
 
 }
@@ -181,7 +183,16 @@ object RestAppImpl {
         .withEventSink(notificationMod)
         .build
       backend <- BackendApp
-        .create[F](store, javaEmil, ftsClient, pubSubT, schedulerMod, notificationMod)
+        .create[F](
+          cfg.backend,
+          store,
+          javaEmil,
+          httpClient,
+          ftsClient,
+          pubSubT,
+          schedulerMod,
+          notificationMod
+        )
 
       app = new RestAppImpl[F](
         cfg,

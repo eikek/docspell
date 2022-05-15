@@ -12,6 +12,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.analysis.TextAnalyser
+import docspell.backend.joex.AddonOps
 import docspell.backend.ops.OItem
 import docspell.common.{ItemState, ProcessItemArgs}
 import docspell.ftsclient.FtsClient
@@ -41,7 +42,8 @@ object ItemHandler {
       itemOps: OItem[F],
       fts: FtsClient[F],
       analyser: TextAnalyser[F],
-      regexNer: RegexNerFile[F]
+      regexNer: RegexNerFile[F],
+      addons: AddonOps[F]
   ): Task[F, Args, Option[ItemData]] =
     logBeginning[F].flatMap(_ =>
       DuplicateCheck[F](store)
@@ -52,7 +54,17 @@ object ItemHandler {
               CreateItem[F](store).contramap(_ => args.pure[F])
             create
               .flatMap(itemStateTask(store, ItemState.Processing))
-              .flatMap(safeProcess[F](cfg, store, itemOps, fts, analyser, regexNer))
+              .flatMap(
+                safeProcess[F](
+                  cfg,
+                  store,
+                  itemOps,
+                  fts,
+                  analyser,
+                  regexNer,
+                  addons
+                )
+              )
               .map(_.some)
           }
         )
@@ -76,11 +88,14 @@ object ItemHandler {
       itemOps: OItem[F],
       fts: FtsClient[F],
       analyser: TextAnalyser[F],
-      regexNer: RegexNerFile[F]
+      regexNer: RegexNerFile[F],
+      addons: AddonOps[F]
   )(data: ItemData): Task[F, Args, ItemData] =
     isLastRetry[F].flatMap {
       case true =>
-        ProcessItem[F](cfg, itemOps, fts, analyser, regexNer, store)(data).attempt
+        ProcessItem[F](cfg, itemOps, fts, analyser, regexNer, addons, store)(
+          data
+        ).attempt
           .flatMap {
             case Right(d) =>
               Task.pure(d)
@@ -91,7 +106,9 @@ object ItemHandler {
                 .andThen(_ => Sync[F].raiseError(ex))
           }
       case false =>
-        ProcessItem[F](cfg, itemOps, fts, analyser, regexNer, store)(data)
+        ProcessItem[F](cfg, itemOps, fts, analyser, regexNer, addons, store)(
+          data
+        )
           .flatMap(itemStateTask(store, ItemState.Created))
     }
 

@@ -32,6 +32,7 @@ object FileCategory {
   case object PreviewImage extends FileCategory
   case object Classifier extends FileCategory
   case object DownloadAll extends FileCategory
+  case object Addon extends FileCategory
 
   val all: NonEmptyList[FileCategory] =
     NonEmptyList.of(
@@ -39,7 +40,8 @@ object FileCategory {
       AttachmentConvert,
       PreviewImage,
       Classifier,
-      DownloadAll
+      DownloadAll,
+      Addon
     )
 
   def fromString(str: String): Either[String, FileCategory] =

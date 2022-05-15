@@ -12,6 +12,7 @@ import fs2.io.file.Path
 import docspell.analysis.TextAnalysisConfig
 import docspell.analysis.classifier.TextClassifierConfig
 import docspell.backend.Config.Files
+import docspell.backend.joex.AddonEnvConfig
 import docspell.common._
 import docspell.config.{FtsType, PgFtsConfig}
 import docspell.convert.ConvertConfig
@@ -43,7 +44,8 @@ case class Config(
     files: Files,
     mailDebug: Boolean,
     fullTextSearch: Config.FullTextSearch,
-    updateCheck: UpdateCheckConfig
+    updateCheck: UpdateCheckConfig,
+    addons: AddonEnvConfig
 ) {
 
   def pubSubConfig(headerValue: Ident): PubSubConfig =

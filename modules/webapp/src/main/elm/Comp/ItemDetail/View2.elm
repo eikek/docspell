@@ -22,6 +22,7 @@ import Comp.ItemDetail.Model
         , isShowQrItem
         )
 import Comp.ItemDetail.Notes
+import Comp.ItemDetail.RunAddonForm
 import Comp.ItemDetail.ShowQrCode
 import Comp.ItemDetail.SingleAttachment
 import Comp.ItemLinkForm
@@ -180,6 +181,24 @@ menuBar texts inav env model =
             , MB.CustomElement <|
                 a
                     [ classList
+                        [ ( "bg-gray-200 dark:bg-slate-600", model.showRunAddon )
+                        , ( "hidden", not env.flags.config.addonsEnabled || List.isEmpty model.runConfigs )
+                        , ( "hidden md:block", env.flags.config.addonsEnabled && not (List.isEmpty model.runConfigs) )
+                        ]
+                    , if model.showRunAddon then
+                        title texts.close
+
+                      else
+                        title texts.runAddonTitle
+                    , onClick ToggleShowRunAddon
+                    , class S.secondaryBasicButton
+                    , href "#"
+                    ]
+                    [ Icons.addonIcon ""
+                    ]
+            , MB.CustomElement <|
+                a
+                    [ classList
                         [ ( "bg-gray-200 dark:bg-slate-600", isShowQrItem model.showQrModel )
                         ]
                     , class "hidden md:block"
@@ -246,6 +265,15 @@ menuBar texts inav env model =
                       , attrs =
                             [ href "#"
                             , onClick AddFilesToggle
+                            ]
+                      }
+                    , { icon = Icons.addonIcon ""
+                      , label = texts.runAddonLabel
+                      , disabled = False
+                      , attrs =
+                            [ href "#"
+                            , onClick ToggleShowRunAddon
+                            , classList [ ( "hidden", not env.flags.config.addonsEnabled ) ]
                             ]
                       }
                     , { icon = Icons.showQrIcon ""
@@ -402,6 +430,11 @@ itemActions texts flags settings model classes =
             (S.border ++ " mb-4")
             model
             (Comp.ItemDetail.ShowQrCode.Item model.item.id)
+        , if flags.config.addonsEnabled then
+            Comp.ItemDetail.RunAddonForm.view texts.runAddonForm settings model
+
+          else
+            span [ class "hidden" ] []
         ]
 
 

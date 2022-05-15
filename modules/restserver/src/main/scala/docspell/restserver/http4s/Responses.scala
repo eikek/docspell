@@ -47,4 +47,8 @@ object Responses {
   def notFoundRoute[F[_]: Sync]: HttpRoutes[F] =
     HttpRoutes(_ => OptionT.pure(Response.notFound[F]))
 
+  def notFoundRoute[F[_]: Sync, A](body: A)(implicit
+      entityEncoder: EntityEncoder[F, A]
+  ): HttpRoutes[F] =
+    HttpRoutes(_ => OptionT.pure(Response.notFound[F].withEntity(body)))
 }

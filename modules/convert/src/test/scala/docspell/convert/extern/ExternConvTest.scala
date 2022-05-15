@@ -14,6 +14,7 @@ import cats.effect.unsafe.implicits.global
 import fs2.io.file.Path
 
 import docspell.common._
+import docspell.common.util.File
 import docspell.convert._
 import docspell.files.ExampleFiles
 import docspell.logging.TestLoggingConfig

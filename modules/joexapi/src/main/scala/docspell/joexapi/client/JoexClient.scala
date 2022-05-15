@@ -10,7 +10,7 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.common.{Ident, LenientUri}
-import docspell.joexapi.model.BasicResult
+import docspell.joexapi.model.{AddonSupport, BasicResult}
 
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.circe.CirceEntityDecoder
@@ -25,6 +25,7 @@ trait JoexClient[F[_]] {
 
   def cancelJob(base: LenientUri, job: Ident): F[BasicResult]
 
+  def getAddonSupport(base: LenientUri): F[AddonSupport]
 }
 
 object JoexClient {
@@ -32,6 +33,13 @@ object JoexClient {
   def apply[F[_]: Async](client: Client[F]): JoexClient[F] =
     new JoexClient[F] with CirceEntityDecoder {
       private[this] val logger = docspell.logging.getLogger[F]
+
+      def getAddonSupport(base: LenientUri): F[AddonSupport] = {
+        val getUrl = base / "api" / "v1" / "addon" / "config"
+        val req = Request[F](Method.GET, uri(getUrl))
+        logger.debug(s"Getting addon support") *>
+          client.expect[AddonSupport](req)
+      }
 
       def notifyJoex(base: LenientUri): F[BasicResult] = {
         val notifyUrl = base / "api" / "v1" / "notify"

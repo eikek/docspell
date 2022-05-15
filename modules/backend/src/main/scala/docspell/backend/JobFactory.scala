@@ -16,6 +16,26 @@ import docspell.notification.api.PeriodicQueryArgs
 import docspell.scheduler.Job
 
 object JobFactory extends MailAddressCodec {
+  def existingItemAddon[F[_]: Sync](
+      args: ItemAddonTaskArgs,
+      submitter: AccountId
+  ): F[Job[ItemAddonTaskArgs]] =
+    Job.createNew(
+      ItemAddonTaskArgs.taskName,
+      submitter.collective,
+      args,
+      "Run addons on item",
+      submitter.user,
+      Priority.High,
+      args.addonRunConfigs
+        .map(_.take(23))
+        .toList
+        .sorted
+        .foldLeft(args.itemId)(_ / _)
+        .take(250)
+        .some
+    )
+
   def downloadZip[F[_]: Sync](
       args: DownloadZipArgs,
       summaryId: Ident,

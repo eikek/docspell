@@ -61,6 +61,12 @@ trait OItem[F[_]] {
       collective: Ident
   ): F[AttachedEvent[UpdateResult]]
 
+  def removeTagsOfCategories(
+      item: Ident,
+      collective: Ident,
+      categories: Set[String]
+  ): F[AttachedEvent[UpdateResult]]
+
   def removeTagsMultipleItems(
       items: Nel[Ident],
       tags: List[String],
@@ -80,11 +86,13 @@ trait OItem[F[_]] {
       collective: Ident
   ): F[UpdateResult]
 
-  def setFolder(item: Ident, folder: Option[Ident], collective: Ident): F[UpdateResult]
+  /** Set or remove the folder on an item. Folder can be the id or name. */
+  def setFolder(item: Ident, folder: Option[String], collective: Ident): F[UpdateResult]
 
+  /** Set or remove the folder on multiple items. Folder can be the id or name. */
   def setFolderMultiple(
       items: Nel[Ident],
-      folder: Option[Ident],
+      folder: Option[String],
       collective: Ident
   ): F[UpdateResult]
 
@@ -121,6 +129,13 @@ trait OItem[F[_]] {
   def addConcEquip(item: Ident, equip: REquipment): F[AddResult]
 
   def setNotes(item: Ident, notes: Option[String], collective: Ident): F[UpdateResult]
+
+  def addNotes(
+      item: Ident,
+      notes: String,
+      separator: Option[String],
+      collective: Ident
+  ): F[UpdateResult]
 
   def setName(item: Ident, name: String, collective: Ident): F[UpdateResult]
 
@@ -288,6 +303,28 @@ object OItem {
                 }
           }
 
+        def removeTagsOfCategories(
+            item: Ident,
+            collective: Ident,
+            categories: Set[String]
+        ): F[AttachedEvent[UpdateResult]] =
+          if (categories.isEmpty) {
+            AttachedEvent.only(UpdateResult.success).pure[F]
+          } else {
+            val dbtask =
+              for {
+                tags <- RTag.findByItem(item)
+                removeTags = tags.filter(_.category.exists(categories.contains))
+                _ <- RTagItem.removeAllTags(item, removeTags.map(_.tagId))
+                mkEvent = Event.TagsChanged
+                  .partial(Nel.of(item), Nil, removeTags.map(_.tagId.id).toList)
+              } yield AttachedEvent(UpdateResult.success)(mkEvent)
+
+            OptionT(store.transact(RItem.checkByIdAndCollective(item, collective)))
+              .semiflatMap(_ => store.transact(dbtask))
+              .getOrElse(AttachedEvent.only(UpdateResult.notFound))
+          }
+
         def removeTagsMultipleItems(
             items: Nel[Ident],
             tags: List[String],
@@ -420,21 +457,27 @@ object OItem {
 
         def setFolder(
             item: Ident,
-            folder: Option[Ident],
+            folder: Option[String],
             collective: Ident
         ): F[UpdateResult] =
-          UpdateResult
-            .fromUpdate(
-              store
-                .transact(RItem.updateFolder(item, collective, folder))
+          for {
+            result <- store.transact(RItem.updateFolder(item, collective, folder)).attempt
+            ures = result.fold(
+              UpdateResult.failure,
+              t => UpdateResult.fromUpdateRows(t._1)
             )
-            .flatTap(
-              onSuccessIgnoreError(fts.updateFolder(logger, item, collective, folder))
+            _ <- result.fold(
+              _ => ().pure[F],
+              t =>
+                onSuccessIgnoreError(fts.updateFolder(logger, item, collective, t._2))(
+                  ures
+                )
             )
+          } yield ures
 
         def setFolderMultiple(
             items: Nel[Ident],
-            folder: Option[Ident],
+            folder: Option[String],
             collective: Ident
         ): F[UpdateResult] =
           for {
@@ -614,6 +657,33 @@ object OItem {
                   )
               }
             )
+
+        def addNotes(
+            item: Ident,
+            notes: String,
+            separator: Option[String],
+            collective: Ident
+        ): F[UpdateResult] =
+          store
+            .transact(RItem.appendNotes(item, collective, notes, separator))
+            .flatMap {
+              case Some(newNotes) =>
+                store
+                  .transact(RCollective.findLanguage(collective))
+                  .map(_.getOrElse(Language.English))
+                  .flatMap(lang =>
+                    fts.updateItemNotes(logger, item, collective, lang, newNotes.some)
+                  )
+                  .attempt
+                  .flatMap {
+                    case Right(()) => ().pure[F]
+                    case Left(ex) =>
+                      logger.warn(s"Error updating full-text index: ${ex.getMessage}")
+                  }
+                  .as(UpdateResult.success)
+              case None =>
+                UpdateResult.notFound.pure[F]
+            }
 
         def setName(item: Ident, name: String, collective: Ident): F[UpdateResult] =
           UpdateResult

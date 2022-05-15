@@ -17,6 +17,7 @@ import fs2.io.file.Files
 
 import docspell.analysis.classifier.TextClassifier.Data
 import docspell.common._
+import docspell.common.util.File
 import docspell.logging.TestLoggingConfig
 
 import munit._

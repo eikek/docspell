@@ -18,6 +18,18 @@ final case class Binary[F[_]](name: String, mime: MimeType, data: Stream[F, Byte
 
   def withMime(mime: MimeType): Binary[F] =
     copy(mime = mime)
+
+  /** Return the extension of `name` if available (without the dot) */
+  def extension: Option[String] =
+    name.lastIndexOf('.') match {
+      case n if n > 0 =>
+        Some(name.substring(n + 1))
+      case _ =>
+        None
+    }
+
+  def extensionIn(extensions: Set[String]): Boolean =
+    extension.exists(extensions.contains)
 }
 
 object Binary {

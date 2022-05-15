@@ -8,6 +8,8 @@
 module Data.Icons exposing
     ( addFiles2
     , addFilesIcon2
+    , addonIcon
+    , addonRunConfigIcon
     , concerned
     , concerned2
     , concernedIcon
@@ -76,7 +78,7 @@ module Data.Icons exposing
     )
 
 import Data.CustomFieldType exposing (CustomFieldType)
-import Html exposing (Html, i, img)
+import Html exposing (Html, div, i, img, span)
 import Html.Attributes exposing (class, src)
 import Svg
 import Svg.Attributes as SA
@@ -263,6 +265,24 @@ customFieldIcon classes =
 customFieldIcon2 : String -> Html msg
 customFieldIcon2 classes =
     i [ class (customField2 ++ " " ++ classes) ] []
+
+
+addon : String
+addon =
+    "fa fa-puzzle-piece"
+
+
+addonIcon : String -> Html msg
+addonIcon classes =
+    i [ class (addon ++ " " ++ classes) ] []
+
+
+addonRunConfigIcon : String -> Html msg
+addonRunConfigIcon classes =
+    div [ class (classes ++ " inline-block relative margin-auto leading-8") ]
+        [ i [ class "fa fa-puzzle-piece" ] []
+        , i [ class "fa fa-play font-bold absolute text-xs -right-2 top-0" ] []
+        ]
 
 
 search : String

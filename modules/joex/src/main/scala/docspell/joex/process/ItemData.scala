@@ -26,7 +26,8 @@ import io.circe.{Encoder, Json}
   * @param dateLabels
   *   a separate list of found dates
   * @param originFile
-  *   a mapping from an attachment id to a filemeta-id containng the source or origin file
+  *   a mapping from an attachment id to a filemeta-id containing the source or origin
+  *   file
   * @param givenMeta
   *   meta data to this item that was not "guessed" from an attachment but given and thus
   *   is always correct
@@ -49,7 +50,7 @@ case class ItemData(
 ) {
 
   /** sort by weight; order of equal weights is not important, just choose one others are
-    * then suggestions doc-date is only set when given explicitely, not from "guessing"
+    * then suggestions doc-date is only set when given explicitly, not from "guessing"
     */
   def finalProposals: MetaProposalList =
     MetaProposalList
@@ -98,7 +99,7 @@ object ItemData {
       dates.map(dl => dl.label.copy(label = dl.date.toString))
   }
 
-  // Used to encode the result passed to the job-done event
+  // Used to encode the result passed to the job-done event and to supply to addons
   implicit val jsonEncoder: Encoder[ItemData] =
     Encoder.instance { data =>
       val metaMap = data.metas.groupMap(_.id)(identity)
@@ -108,10 +109,12 @@ object ItemData {
         "collective" -> data.item.cid.asJson,
         "source" -> data.item.source.asJson,
         "attachments" -> data.attachments
+          .sortBy(_.position)
           .map(a =>
             Json.obj(
               "id" -> a.id.asJson,
               "name" -> a.name.asJson,
+              "position" -> a.position.asJson,
               "content" -> metaMap.get(a.id).flatMap(_.head.content).asJson,
               "language" -> metaMap.get(a.id).flatMap(_.head.language).asJson,
               "pages" -> metaMap.get(a.id).flatMap(_.head.pages).asJson
@@ -122,6 +125,18 @@ object ItemData {
         "assumedTags" -> data.classifyTags.asJson,
         "assumedCorrOrg" -> data.finalProposals
           .find(MetaProposalType.CorrOrg)
+          .map(_.values.head.ref)
+          .asJson,
+        "assumedCorrPerson" -> data.finalProposals
+          .find(MetaProposalType.CorrPerson)
+          .map(_.values.head.ref)
+          .asJson,
+        "assumedConcPerson" -> data.finalProposals
+          .find(MetaProposalType.ConcPerson)
+          .map(_.values.head.ref)
+          .asJson,
+        "assumedConcEquip" -> data.finalProposals
+          .find(MetaProposalType.ConcEquip)
           .map(_.values.head.ref)
           .asJson
       )

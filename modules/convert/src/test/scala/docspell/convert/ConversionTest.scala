@@ -15,6 +15,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
+import docspell.common.util.File
 import docspell.convert.ConversionResult.Handler
 import docspell.convert.extern.OcrMyPdfConfig
 import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}

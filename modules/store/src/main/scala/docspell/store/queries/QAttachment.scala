@@ -22,10 +22,37 @@ import doobie._
 
 object QAttachment {
   private val a = RAttachment.as("a")
+  private val as = RAttachmentSource.as("ats")
   private val item = RItem.as("i")
   private val am = RAttachmentMeta.as("am")
   private val c = RCollective.as("c")
   private val im = RItemProposal.as("im")
+  private val fm = RFileMeta.as("fm")
+
+  def attachmentSourceFile(itemId: Ident): ConnectionIO[List[AttachedFile]] =
+    Select(
+      combineNel(
+        select(as.id, as.name, a.position, am.language),
+        select(fm.mimetype, fm.length, fm.checksum)
+      ),
+      from(a)
+        .innerJoin(as, a.id === as.id)
+        .innerJoin(fm, fm.id === as.fileId)
+        .leftJoin(am, am.id === a.id),
+      a.itemId === itemId
+    ).orderBy(a.position).build.query[AttachedFile].to[List]
+
+  def attachmentFile(itemId: Ident): ConnectionIO[List[AttachedFile]] =
+    Select(
+      combineNel(
+        select(a.id, a.name, a.position, am.language),
+        select(fm.mimetype, fm.length, fm.checksum)
+      ),
+      from(a)
+        .innerJoin(fm, fm.id === a.fileId)
+        .leftJoin(am, am.id === a.id),
+      a.itemId === itemId
+    ).orderBy(a.position).build.query[AttachedFile].to[List]
 
   def deletePreview[F[_]: Sync](store: Store[F])(attachId: Ident): F[Int] = {
     val findPreview =
@@ -163,6 +190,17 @@ object QAttachment {
     q.query[RAttachmentMeta].option
   }
 
+  def getAttachmentMetaOfItem(itemId: Ident): ConnectionIO[Vector[RAttachmentMeta]] =
+    Select(
+      select(am.all),
+      from(am)
+        .innerJoin(a, a.id === am.id),
+      a.itemId === itemId
+    ).orderBy(a.position.asc)
+      .build
+      .query[RAttachmentMeta]
+      .to[Vector]
+
   case class ContentAndName(
       id: Ident,
       item: Ident,
@@ -175,6 +213,7 @@ object QAttachment {
   def allAttachmentMetaAndName(
       coll: Option[Ident],
       itemIds: Option[Nel[Ident]],
+      itemStates: Nel[ItemState],
       chunkSize: Int
   ): Stream[ConnectionIO, ContentAndName] =
     Select(
@@ -192,7 +231,7 @@ object QAttachment {
         .innerJoin(item, item.id === a.itemId)
         .innerJoin(c, c.id === item.cid)
     ).where(
-      item.state.in(ItemState.validStates) &&?
+      item.state.in(itemStates) &&?
         itemIds.map(ids => item.id.in(ids)) &&?
         coll.map(cid => item.cid === cid)
     ).build

@@ -44,7 +44,7 @@ object SetGivenData {
       for {
         _ <- ctx.logger.info("Starting setting given data")
         _ <- ctx.logger.debug(s"Set item folder: '${folderId.map(_.id)}'")
-        e <- ops.setFolder(itemId, folderId, collective).attempt
+        e <- ops.setFolder(itemId, folderId.map(_.id), collective).attempt
         _ <- e.fold(
           ex => ctx.logger.warn(s"Error setting folder: ${ex.getMessage}"),
           res =>

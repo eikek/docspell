@@ -17,7 +17,7 @@ import io.circe.generic.semiauto._
   * This task is run for each new file to create a new item from it or to add this file as
   * an attachment to an existing item.
   *
-  * If the `itemId' is set to some value, the item is tried to load to ammend with the
+  * If the `itemId' is set to some value, the item is tried to load to amend with the
   * given files. Otherwise a new item is created.
   *
   * It is also re-used by the 'ReProcessItem' task.

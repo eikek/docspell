@@ -24,6 +24,19 @@ class ContextImpl[F[_]: Functor, A](
     val jobId: Ident
 ) extends Context[F, A] {
 
+  def loadJob(implicit F: Sync[F]): F[Job[String]] =
+    JobStoreImpl(store)
+      .findById(jobId)
+      .flatMap(
+        _.fold(
+          F.raiseError[Job[String]](
+            new IllegalStateException(s"Job not found: ${jobId.id}")
+          )
+        )(
+          F.pure
+        )
+      )
+
   def setProgress(percent: Int): F[Unit] = {
     val pval = math.min(100, math.max(0, percent))
     store.transact(RJob.setProgress(jobId, pval)).map(_ => ())

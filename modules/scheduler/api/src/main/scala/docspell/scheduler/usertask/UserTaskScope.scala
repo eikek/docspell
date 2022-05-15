@@ -50,6 +50,9 @@ object UserTaskScope {
   def apply(collective: Ident): UserTaskScope =
     UserTaskScope.collective(collective)
 
+  def apply(collective: Ident, login: Option[Ident]): UserTaskScope =
+    login.map(AccountId(collective, _)).map(account).getOrElse(apply(collective))
+
   def system: UserTaskScope =
     collective(DocspellSystem.taskGroup)
 }

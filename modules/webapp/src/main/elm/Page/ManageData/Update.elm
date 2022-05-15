@@ -7,6 +7,8 @@
 
 module Page.ManageData.Update exposing (update)
 
+import Comp.AddonArchiveManage
+import Comp.AddonRunConfigManage
 import Comp.BookmarkManage
 import Comp.CustomFieldManage
 import Comp.EquipmentManage
@@ -15,11 +17,12 @@ import Comp.OrgManage
 import Comp.PersonManage
 import Comp.TagManage
 import Data.Flags exposing (Flags)
+import Data.UiSettings exposing (UiSettings)
 import Page.ManageData.Data exposing (..)
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
-update flags msg model =
+update : Flags -> UiSettings -> Msg -> Model -> ( Model, Cmd Msg, Sub Msg )
+update flags uiSettings msg model =
     case msg of
         SetTab t ->
             let
@@ -28,16 +31,16 @@ update flags msg model =
             in
             case t of
                 TagTab ->
-                    update flags (TagManageMsg Comp.TagManage.LoadTags) m
+                    update flags uiSettings (TagManageMsg Comp.TagManage.LoadTags) m
 
                 EquipTab ->
-                    update flags (EquipManageMsg Comp.EquipmentManage.LoadEquipments) m
+                    update flags uiSettings (EquipManageMsg Comp.EquipmentManage.LoadEquipments) m
 
                 OrgTab ->
-                    update flags (OrgManageMsg Comp.OrgManage.LoadOrgs) m
+                    update flags uiSettings (OrgManageMsg Comp.OrgManage.LoadOrgs) m
 
                 PersonTab ->
-                    update flags (PersonManageMsg Comp.PersonManage.LoadPersons) m
+                    update flags uiSettings (PersonManageMsg Comp.PersonManage.LoadPersons) m
 
                 FolderTab ->
                     let
@@ -59,6 +62,20 @@ update flags msg model =
                             Comp.BookmarkManage.init flags
                     in
                     ( { m | bookmarkModel = bm }, Cmd.map BookmarkMsg bc, Sub.none )
+
+                AddonArchiveTab ->
+                    let
+                        ( aam, aac ) =
+                            Comp.AddonArchiveManage.init flags
+                    in
+                    ( { m | addonArchiveModel = aam }, Cmd.map AddonArchiveMsg aac, Sub.none )
+
+                AddonRunConfigTab ->
+                    let
+                        ( arm, arc ) =
+                            Comp.AddonRunConfigManage.init flags
+                    in
+                    ( { m | addonRunConfigModel = arm }, Cmd.map AddonRunConfigMsg arc, Sub.none )
 
         TagManageMsg m ->
             let
@@ -116,4 +133,24 @@ update flags msg model =
             ( { model | bookmarkModel = m2 }
             , Cmd.map BookmarkMsg c2
             , Sub.map BookmarkMsg s2
+            )
+
+        AddonArchiveMsg lm ->
+            let
+                ( aam, aac, aas ) =
+                    Comp.AddonArchiveManage.update flags lm model.addonArchiveModel
+            in
+            ( { model | addonArchiveModel = aam }
+            , Cmd.map AddonArchiveMsg aac
+            , Sub.map AddonArchiveMsg aas
+            )
+
+        AddonRunConfigMsg lm ->
+            let
+                ( arm, arc, ars ) =
+                    Comp.AddonRunConfigManage.update flags uiSettings.timeZone lm model.addonRunConfigModel
+            in
+            ( { model | addonRunConfigModel = arm }
+            , Cmd.map AddonRunConfigMsg arc
+            , Sub.map AddonRunConfigMsg ars
             )

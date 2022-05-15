@@ -20,6 +20,7 @@ import Messages.Comp.ItemDetail.AddFilesForm
 import Messages.Comp.ItemDetail.ConfirmModal
 import Messages.Comp.ItemDetail.ItemInfoHeader
 import Messages.Comp.ItemDetail.Notes
+import Messages.Comp.ItemDetail.RunAddonForm
 import Messages.Comp.ItemDetail.SingleAttachment
 import Messages.Comp.ItemLinkForm
 import Messages.Comp.ItemMail
@@ -38,6 +39,7 @@ type alias Texts =
     , detailEdit : Messages.Comp.DetailEdit.Texts
     , confirmModal : Messages.Comp.ItemDetail.ConfirmModal.Texts
     , itemLinkForm : Messages.Comp.ItemLinkForm.Texts
+    , runAddonForm : Messages.Comp.ItemDetail.RunAddonForm.Texts
     , httpError : Http.Error -> String
     , key : String
     , backToSearchResults : String
@@ -64,6 +66,8 @@ type alias Texts =
     , selectItem : String
     , deselectItem : String
     , relatedItems : String
+    , runAddonLabel : String
+    , runAddonTitle : String
     }
 
 
@@ -78,6 +82,7 @@ gb tz =
     , detailEdit = Messages.Comp.DetailEdit.gb
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.gb
     , itemLinkForm = Messages.Comp.ItemLinkForm.gb tz
+    , runAddonForm = Messages.Comp.ItemDetail.RunAddonForm.gb
     , httpError = Messages.Comp.HttpError.gb
     , key = "Key"
     , backToSearchResults = "Back to search results"
@@ -104,6 +109,8 @@ gb tz =
     , selectItem = "Select this item"
     , deselectItem = "Deselect this item"
     , relatedItems = "Linked items"
+    , runAddonLabel = "Run addon"
+    , runAddonTitle = "Run an addon on this item"
     }
 
 
@@ -118,6 +125,7 @@ de tz =
     , detailEdit = Messages.Comp.DetailEdit.de
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.de
     , itemLinkForm = Messages.Comp.ItemLinkForm.de tz
+    , runAddonForm = Messages.Comp.ItemDetail.RunAddonForm.de
     , httpError = Messages.Comp.HttpError.de
     , key = "Taste"
     , backToSearchResults = "Zurück zur Suche"
@@ -144,6 +152,8 @@ de tz =
     , selectItem = "Zur Auswahl hinzufügen"
     , deselectItem = "Aus Auswahl entfernen"
     , relatedItems = "Verknüpfte Dokumente"
+    , runAddonLabel = "Addon ausführen"
+    , runAddonTitle = "Addons für dieses Dokument ausführen"
     }
 
 
@@ -158,6 +168,7 @@ fr tz =
     , detailEdit = Messages.Comp.DetailEdit.fr
     , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.fr
     , itemLinkForm = Messages.Comp.ItemLinkForm.fr tz
+    , runAddonForm = Messages.Comp.ItemDetail.RunAddonForm.fr
     , httpError = Messages.Comp.HttpError.fr
     , key = "Clé"
     , backToSearchResults = "Retour aux résultat de recherche"
@@ -184,4 +195,10 @@ fr tz =
     , selectItem = "Sélectionner  ce document"
     , deselectItem = "Désélectionner  ce document"
     , relatedItems = "Documents associés"
+    , runAddonLabel = "Run addon"
+    , runAddonTitle = "Run an addon on this item"
     }
+
+
+
+-- TODO translate-fr

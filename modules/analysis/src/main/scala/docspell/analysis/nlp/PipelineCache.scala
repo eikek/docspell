@@ -14,6 +14,7 @@ import cats.implicits._
 
 import docspell.analysis.NlpSettings
 import docspell.common._
+import docspell.common.util.File
 
 /** Creating the StanfordCoreNLP pipeline is quite expensive as it involves IO and
   * initializing large objects.
