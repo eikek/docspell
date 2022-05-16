@@ -966,8 +966,28 @@ val website = project
       )
       IO.append(target, IO.readBytes(changelog))
       Seq(target)
-    }.taskValue
+    }.taskValue,
+    zolaPrepare := {
+      val log = streams.value.log
+      log.info("Generating examples…")
+      val templateOut = baseDirectory.value / "site" / "templates" / "shortcodes"
+      IO.createDirectory(templateOut)
+
+      // sbt crashes when interpolating values into the string in `toTask`
+      // this is the reason for the followingy construct…
+      (Compile / run).toTask(s" addon-output /tmp/addon-output.json").value
+      (Compile / run).toTask(s" item-data /tmp/item-data.json").value
+      (Compile / run).toTask(s" item-args /tmp/item-args.json").value
+      (Compile / run).toTask(s" file-meta /tmp/file-meta.json").value
+
+      val inputs = List("addon-output", "item-data", "item-args", "file-meta")
+
+      inputs.foreach { name =>
+        IO.move(file(s"/tmp/$name.json"), templateOut / name)
+      }
+    }
   )
+  .dependsOn(addonlib, joex)
 
 val root = project
   .in(file("."))

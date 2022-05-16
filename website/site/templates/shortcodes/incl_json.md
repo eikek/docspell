@@ -1,4 +1,4 @@
 {% set data = load_data(path=path) %}
-``` bash
+``` json
 {{ data | safe }}
 ```
