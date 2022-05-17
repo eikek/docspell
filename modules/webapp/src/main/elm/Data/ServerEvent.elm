@@ -5,7 +5,7 @@
 -}
 
 
-module Data.ServerEvent exposing (AddonInfo, ServerEvent(..), decode)
+module Data.ServerEvent exposing (AddonInfo, JobDoneDetails, ServerEvent(..), decode, isAddonExistingItem)
 
 import Json.Decode as D
 import Json.Decode.Pipeline as P
@@ -13,7 +13,7 @@ import Json.Decode.Pipeline as P
 
 type ServerEvent
     = JobSubmitted String
-    | JobDone String
+    | JobDone JobDoneDetails
     | JobsWaiting Int
     | AddonInstalled AddonInfo
 
@@ -24,6 +24,32 @@ type alias AddonInfo =
     , addonUrl : Maybe String
     , message : String
     }
+
+
+type alias JobDoneDetails =
+    { task : String
+    , args : Maybe D.Value
+    , result : Maybe D.Value
+    }
+
+
+{-| Return wether the job done details belong to running an addon of
+that item with the given id.
+-}
+isAddonExistingItem : String -> JobDoneDetails -> Bool
+isAddonExistingItem itemId details =
+    let
+        itemIdDecoder =
+            D.field "itemId" D.string
+
+        -- This decodes the structure from scalas ItemAddonTaskArgs (only itemId)
+        decodedId =
+            Maybe.map (D.decodeValue itemIdDecoder) details.args
+                |> Maybe.andThen Result.toMaybe
+    in
+    details.task
+        == "addon-existing-item"
+        && (itemId /= "" && decodedId == Just itemId)
 
 
 addonInfoDecoder : D.Decoder AddonInfo
@@ -51,8 +77,7 @@ decodeTag : String -> D.Decoder ServerEvent
 decodeTag tag =
     case tag of
         "job-done" ->
-            D.field "content" D.string
-                |> D.map JobDone
+            D.field "content" (D.map JobDone decodeJobDoneDetails)
 
         "job-submitted" ->
             D.field "content" D.string
@@ -68,3 +93,11 @@ decodeTag tag =
 
         _ ->
             D.fail ("Unknown tag: " ++ tag)
+
+
+decodeJobDoneDetails : D.Decoder JobDoneDetails
+decodeJobDoneDetails =
+    D.map3 JobDoneDetails
+        (D.field "task" D.string)
+        (D.field "args" (D.maybe D.value))
+        (D.field "result" (D.maybe D.value))

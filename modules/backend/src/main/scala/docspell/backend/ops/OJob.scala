@@ -83,7 +83,7 @@ object OJob {
               else
                 pubsub.publish1IgnoreErrors(
                   JobDone.topic,
-                  JobDone(job.id, job.group, job.task, job.args, JobState.Cancelled)
+                  JobDone(job.id, job.group, job.task, job.args, JobState.Cancelled, None)
                 )
           } yield JobCancelResult.removed
 

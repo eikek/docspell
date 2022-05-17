@@ -47,6 +47,13 @@ update inav env msg model =
             , selectedItems = env.selectedItems
             }
 
+        ReloadItem withFiles ->
+            let
+                m =
+                    ItemDetailMsg (Comp.ItemDetail.Model.ReloadItem withFiles)
+            in
+            update inav env m model
+
         ItemDetailMsg lmsg ->
             let
                 result =

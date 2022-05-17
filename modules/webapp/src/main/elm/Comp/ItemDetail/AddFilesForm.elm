@@ -76,7 +76,7 @@ view texts model =
             , a
                 [ class S.successMessageLink
                 , href "#"
-                , onClick ReloadItem
+                , onClick (ReloadItem False)
                 ]
                 [ text texts.refreshNow
                 ]

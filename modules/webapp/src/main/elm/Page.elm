@@ -14,6 +14,7 @@ module Page exposing
     , hasSidebar
     , href
     , isDashboardPage
+    , isDetailPage
     , isOpen
     , isSearchPage
     , isSecured
@@ -169,6 +170,16 @@ isDashboardPage : Page -> Bool
 isDashboardPage page =
     case page of
         DashboardPage ->
+            True
+
+        _ ->
+            False
+
+
+isDetailPage : Page -> Bool
+isDetailPage page =
+    case page of
+        ItemDetailPage _ ->
             True
 
         _ ->

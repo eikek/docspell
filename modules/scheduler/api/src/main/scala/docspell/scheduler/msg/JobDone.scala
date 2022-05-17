@@ -10,7 +10,7 @@ import docspell.common._
 import docspell.pubsub.api.{Topic, TypedTopic}
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, Json}
 
 /** Message to notify about finished jobs. They have a final state. */
 final case class JobDone(
@@ -18,7 +18,8 @@ final case class JobDone(
     group: Ident,
     task: Ident,
     args: String,
-    state: JobState
+    state: JobState,
+    result: Option[Json]
 )
 object JobDone {
   implicit val jsonDecoder: Decoder[JobDone] =

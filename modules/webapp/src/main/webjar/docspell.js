@@ -121,6 +121,16 @@ elmApp.ports.printElement.subscribe(function(id) {
     }
 });
 
+elmApp.ports.refreshFileView.subscribe(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+        var tag = el.tagName;
+        if (tag === "EMBED" || tag === "IFRAME") {
+            var url = el.src;
+            el.src = url;
+        }
+    }
+});
 
 var dsWebSocket = null;
 function closeWS() {
@@ -146,6 +156,8 @@ function initWS() {
         }
     });
 }
+
+// Websockets are not used yet for communicating to the server
 // elmApp.ports.sendWsMessage.subscribe(function(msg) {
 //     socket.send(msg);
 // });

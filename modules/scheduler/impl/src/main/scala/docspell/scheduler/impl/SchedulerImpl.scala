@@ -231,7 +231,7 @@ final class SchedulerImpl[F[_]: Async](
       _ <- Sync[F].whenA(JobState.isDone(finishState))(
         pubSub.publish1IgnoreErrors(
           JobDone.topic,
-          JobDone(job.id, job.group, job.task, job.args, finishState)
+          JobDone(job.id, job.group, job.task, job.args, finishState, result.json)
         )
       )
       _ <- Sync[F].whenA(JobState.isDone(finishState))(

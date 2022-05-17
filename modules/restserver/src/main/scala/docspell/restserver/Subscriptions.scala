@@ -14,6 +14,8 @@ import docspell.pubsub.api.PubSubT
 import docspell.restserver.ws.OutputEvent
 import docspell.scheduler.msg.{JobDone, JobSubmitted}
 
+import io.circe.parser
+
 /** Subscribes to those events from docspell that are forwarded to the websocket endpoints
   */
 object Subscriptions {
@@ -27,7 +29,14 @@ object Subscriptions {
   def jobDone[F[_]](pubSub: PubSubT[F]): Stream[F, OutputEvent] =
     pubSub
       .subscribe(JobDone.topic)
-      .map(m => OutputEvent.JobDone(m.body.group, m.body.task))
+      .map(m =>
+        OutputEvent.JobDone(
+          m.body.group,
+          m.body.task,
+          parser.parse(m.body.args).toOption,
+          m.body.result
+        )
+      )
 
   def jobSubmitted[F[_]](pubSub: PubSubT[F]): Stream[F, OutputEvent] =
     pubSub

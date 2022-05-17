@@ -38,6 +38,7 @@ type Msg
     | ItemResp (Result Http.Error ItemDetail)
     | ScrollResult (Result Dom.Error ())
     | UiSettingsUpdated
+    | ReloadItem Bool
 
 
 type alias UpdateResult =

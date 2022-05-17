@@ -314,13 +314,16 @@ updateWithSub msg model =
 
         ReceiveWsMessage data ->
             case data of
-                Ok (JobDone task) ->
+                Ok (JobDone details) ->
                     let
                         isProcessItem =
-                            task == "process-item"
+                            details.task == "process-item"
 
                         isDownloadZip =
-                            task == "download-query-zip"
+                            details.task == "download-query-zip"
+
+                        isAddonExistingItem =
+                            Data.ServerEvent.isAddonExistingItem model.itemDetailModel.detail.item.id details
 
                         newModel =
                             { model
@@ -336,6 +339,9 @@ updateWithSub msg model =
 
                     else if Page.isDashboardPage model.page && isProcessItem then
                         updateDashboard texts Page.Dashboard.Data.reloadDashboardData newModel
+
+                    else if Page.isDetailPage model.page && isAddonExistingItem then
+                        updateItemDetail texts (Page.ItemDetail.Data.ReloadItem True) newModel
 
                     else
                         ( newModel, Cmd.none, Sub.none )
