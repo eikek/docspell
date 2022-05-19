@@ -15,7 +15,8 @@ case class AddonExecutorConfig(
     runTimeout: Duration,
     nspawn: NSpawn,
     nixRunner: NixConfig,
-    dockerRunner: DockerConfig
+    dockerRunner: DockerConfig,
+    failFast: Boolean
 )
 
 object AddonExecutorConfig {
