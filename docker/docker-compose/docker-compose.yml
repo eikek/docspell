@@ -33,6 +33,7 @@ services:
       - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_ENABLED=true
       - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_ENABLED=true
       - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE=integration-password123
+      - DOCSPELL_SERVER_BACKEND_ADDONS_ENABLED=false
     depends_on:
       - solr
 
@@ -53,10 +54,15 @@ services:
       - DOCSPELL_JOEX_JDBC_PASSWORD=dbpass
       - DOCSPELL_JOEX_JDBC_URL=jdbc:postgresql://db:5432/dbname
       - DOCSPELL_JOEX_JDBC_USER=dbuser
+      - DOCSPELL_JOEX_ADDONS_EXECUTOR__CONFIG_RUNNER=docker,trivial
     ports:
       - "7878:7878"
     depends_on:
       - solr
+    ## Uncomment when using the "docker" runner with addons
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock
+    #   - /tmp:/tmp
 
   # The consumedir container watches a directory for files to upload
   # to docspell restserver. This uses the `dsc` tool. For information

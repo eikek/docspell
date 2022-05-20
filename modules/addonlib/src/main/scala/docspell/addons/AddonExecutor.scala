@@ -46,7 +46,12 @@ object AddonExecutor {
               in.cacheDir,
               in.addons
             )
-            rs <- ctx.traverse(c => runAddon(logger.withAddon(c), in.env)(c))
+            rs <-
+              if (cfg.failFast) ctx.foldLeftM(List.empty[AddonResult]) { (res, c) =>
+                if (res.headOption.exists(_.isFailure)) res.pure[F]
+                else runAddon(logger.withAddon(c), in.env)(c).map(r => r :: res)
+              }
+              else ctx.traverse(c => runAddon(logger.withAddon(c), in.env)(c))
             pure = ctx.foldl(true)((b, c) => b && c.meta.isPure)
           } yield AddonExecutionResult(rs, pure)
         }

@@ -19,7 +19,7 @@ out_base="$1"
 work_dir=$(mktemp -dt screenshot2-script.XXXXXX)
 export HOME=$work_dir
 export RATIO="16:9"
-export WAIT_SEC=4
+export WAIT_SEC=${WAIT_SEC:-4}
 #export TOP_CUT=400
 
 dsc write-default-config

@@ -40,12 +40,20 @@ object OutputEvent {
       Msg("job-submitted", task).asJson
   }
 
-  final case class JobDone(group: Ident, task: Ident) extends OutputEvent {
+  final case class JobDone(
+      group: Ident,
+      task: Ident,
+      args: Option[Json],
+      result: Option[Json]
+  ) extends OutputEvent {
     def forCollective(token: AuthToken): Boolean =
       token.account.collective == group
 
     def asJson: Json =
-      Msg("job-done", task).asJson
+      Msg(
+        "job-done",
+        Map("task" -> task.asJson, "args" -> args.asJson, "result" -> result.asJson)
+      ).asJson
   }
 
   final case class JobsWaiting(collective: Ident, count: Int) extends OutputEvent {

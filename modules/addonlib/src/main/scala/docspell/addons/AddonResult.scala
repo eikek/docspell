@@ -25,6 +25,7 @@ sealed trait AddonResult {
 }
 
 object AddonResult {
+  val emptySuccess: AddonResult = success(AddonOutput.empty)
 
   /** The addon was run successful, but decoding its stdout failed. */
   case class DecodingError(message: String) extends AddonResult {

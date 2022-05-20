@@ -281,7 +281,7 @@ initSelectViewModel =
 
 type Msg
     = ToggleMenu
-    | ReloadItem
+    | ReloadItem Bool
     | Init
     | SetItem ItemDetail
     | SetActiveAttachment Int

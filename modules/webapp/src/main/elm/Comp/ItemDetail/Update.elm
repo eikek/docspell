@@ -387,12 +387,22 @@ update inav env msg model =
             resultModel
                 { model | menuOpen = not model.menuOpen }
 
-        ReloadItem ->
+        ReloadItem withFile ->
             if model.item.id == "" then
                 resultModel model
 
             else
-                resultModelCmd ( model, Api.itemDetail env.flags model.item.id GetItemResp )
+                resultModelCmd
+                    ( model
+                    , Cmd.batch
+                        [ Api.itemDetail env.flags model.item.id GetItemResp
+                        , if withFile then
+                            Ports.refreshFileView "ds-pdf-view-iframe"
+
+                          else
+                            Cmd.none
+                        ]
+                    )
 
         FolderDropdownMsg m ->
             let
@@ -1002,7 +1012,7 @@ update inav env msg model =
 
         DeleteAttachResp (Ok res) ->
             if res.success then
-                update inav env ReloadItem model
+                update inav env (ReloadItem False) model
 
             else
                 resultModel model

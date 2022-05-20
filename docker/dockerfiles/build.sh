@@ -16,6 +16,8 @@ if [ -z "$2" ] || [ "$2" == "--push" ]; then
     if [ ! -z "$push" ]; then
         echo "Running with $push !"
     fi
+elif [ "$2" == "--load" ]; then
+    push="$2"
 else
     echo "Don't understand second argument: $2"
     exit 1
@@ -32,7 +34,7 @@ cd "$(dirname "$0")"
 
 trap "{ docker buildx rm docspell-builder; }" EXIT
 
-platforms="linux/amd64,linux/arm64,linux/arm/v7"
+platforms=${PLATFORMS:-"linux/amd64,linux/arm64,linux/arm/v7"}
 docker buildx create --name docspell-builder --use
 
 case $version in

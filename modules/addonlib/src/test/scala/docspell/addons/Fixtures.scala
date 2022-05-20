@@ -13,7 +13,8 @@ import fs2.io.file.{Files, Path, PosixPermissions}
 import docspell.addons.AddonExecutorConfig._
 import docspell.addons.AddonMeta._
 import docspell.addons.AddonTriggerType._
-import docspell.common.{Duration, LenientUri}
+import docspell.common.exec.Env
+import docspell.common.{Duration, Ident, LenientUri}
 import docspell.logging.TestLoggingConfig
 
 import munit.CatsEffectSuite
@@ -21,6 +22,8 @@ import munit.CatsEffectSuite
 trait Fixtures extends TestLoggingConfig { self: CatsEffectSuite =>
 
   val files: Files[IO] = Files[IO]
+
+  def id(str: String): Ident = Ident.unsafe(str)
 
   val dummyAddonUrl =
     LenientUri.fromJava(getClass.getResource("/docspell-dummy-addon-master.zip"))
@@ -59,13 +62,24 @@ trait Fixtures extends TestLoggingConfig { self: CatsEffectSuite =>
       runner: RunnerType,
       runners: RunnerType*
   ): AddonExecutorConfig = {
-    val nspawn = NSpawn(true, "sudo", "systemd-nspawn", Duration.millis(100))
+    val nspawn = NSpawn(false, "sudo", "systemd-nspawn", Duration.millis(100))
     AddonExecutorConfig(
-      runner :: runners.toList,
-      Duration.minutes(2),
-      nspawn,
-      NixConfig("nix", Duration.minutes(2)),
-      DockerConfig("docker", Duration.minutes(2))
+      runner = runner :: runners.toList,
+      runTimeout = Duration.minutes(2),
+      nspawn = nspawn,
+      nixRunner = NixConfig("nix", Duration.minutes(2)),
+      dockerRunner = DockerConfig("docker", Duration.minutes(2)),
+      failFast = true
     )
   }
+
+  def createInputEnv(
+      dir: Path,
+      addon: Resource[IO, AddonArchive],
+      more: Resource[IO, AddonArchive]*
+  ): Resource[IO, InputEnv] =
+    (addon :: more.toList)
+      .traverse(_.map(a => AddonRef(a, "")))
+      .map(addons => InputEnv(addons, dir, dir, dir, Env.empty))
+
 }
