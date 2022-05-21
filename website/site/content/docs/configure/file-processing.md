@@ -14,7 +14,7 @@ configuration is in this config only.
 File processing involves several stages, detailed information can be
 found [here](@/docs/joex/file-processing.md#text-analysis) and in the
 corresponding sections in [joex default
-config](@/docs/configure/main.md#joex).
+config](@/docs/configure/defaults.md#joex).
 
 Configuration allows to define the external tools and set some
 limitations to control memory usage. The sections are:

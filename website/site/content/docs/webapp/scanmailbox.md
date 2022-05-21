@@ -191,7 +191,7 @@ file to look for duplicates, too.
 
 Docspell will go through all folders and download mails in “batches”.
 This size can be set by the admin in the [configuration
-file](@/docs/configure/main.md#joex) and applies to all these
+file](@/docs/configure/defaults.md#joex) and applies to all these
 tasks (same for all users). This batch only contains the mail headers
 and not the complete mail.
 

@@ -49,7 +49,7 @@ subsection:
   }
 ```
 
-The [default configuration](@/docs/configure/main.md#default-config)
+The [default configuration](@/docs/configure/defaults.md)
 contains more information about each setting.
 
 The `solr.url` is the mandatory setting that you need to change to

@@ -195,7 +195,7 @@ boxHeader model =
         [ class "flex flex-row py-1 bg-blue-50 dark:bg-slate-700 rounded-t"
         , classList [ ( "hidden", not model.box.decoration || model.box.name == "" ) ]
         ]
-        [ div [ class "flex text-lg tracking-medium italic px-2" ]
+        [ div [ class "flex text-lg tracking-medium font-semibold px-2" ]
             [ text model.box.name
             ]
         ]

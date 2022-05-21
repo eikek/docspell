@@ -176,22 +176,3 @@ via environment variables. There are these settings:
 The default settings for joex and restserver are the same and
 configure a minimum level of `Warn` and override some loggers with
 `Info`.
-
-# Default Config
-## Rest Server
-
-{{ incl_conf(path="templates/shortcodes/server.conf") }}
-
-
-## Joex
-
-
-{{ incl_conf(path="templates/shortcodes/joex.conf") }}
-
-## Environment Variables
-
-Environment variables can be used when there is no config file
-supplied. The listing below shows all possible variables and their
-default values.
-
-{{ incl_conf(path="templates/shortcodes/config.env.txt") }}
