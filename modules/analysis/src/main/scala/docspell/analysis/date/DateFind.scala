@@ -52,7 +52,7 @@ object DateFind {
       } else text
 
     TextSplitter
-      .splitToken(stext, " -\t.,\n\r/年月日".toSet)
+      .splitToken(stext, " -\t.,\n\r/年月日md".toSet)
       .filter(w => lang != Language.Latvian || w.value != "gada")
       .filter(w => lang != Language.Spanish || w.value != "de")
   }
@@ -105,6 +105,7 @@ object DateFind {
         case Language.Latvian    => dmy.or(lavLong).or(ymd)
         case Language.Japanese   => ymd
         case Language.Hebrew     => dmy
+        case Language.Lithuanian => ymd
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>
