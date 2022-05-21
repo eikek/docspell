@@ -13,9 +13,9 @@ import cats.effect.Async
 import cats.implicits._
 import cats.~>
 
+import docspell.store._
 import docspell.store.file.{FileRepository, FileRepositoryConfig}
 import docspell.store.migrate.FlywayMigrate
-import docspell.store.{AddResult, JdbcConfig, Store}
 
 import doobie._
 import doobie.implicits._
@@ -23,6 +23,7 @@ import doobie.implicits._
 final class StoreImpl[F[_]: Async](
     val fileRepo: FileRepository[F],
     jdbc: JdbcConfig,
+    schemaCfg: SchemaMigrateConfig,
     ds: DataSource,
     val transactor: Transactor[F]
 ) extends Store[F] {
@@ -38,7 +39,7 @@ final class StoreImpl[F[_]: Async](
     FunctionK.lift(transact)
 
   def migrate: F[Int] =
-    FlywayMigrate[F](jdbc, xa).run.map(_.migrationsExecuted)
+    FlywayMigrate[F](jdbc, schemaCfg, xa).run.map(_.migrationsExecuted)
 
   def transact[A](prg: ConnectionIO[A]): F[A] =
     prg.transact(xa)

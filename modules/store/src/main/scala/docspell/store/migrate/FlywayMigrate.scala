@@ -10,15 +10,19 @@ import cats.data.OptionT
 import cats.effect.Sync
 import cats.implicits._
 
-import docspell.store.JdbcConfig
 import docspell.store.migrate.FlywayMigrate.MigrationKind
+import docspell.store.{JdbcConfig, SchemaMigrateConfig}
 
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 
-class FlywayMigrate[F[_]: Sync](jdbc: JdbcConfig, xa: Transactor[F]) {
+class FlywayMigrate[F[_]: Sync](
+    jdbc: JdbcConfig,
+    cfg: SchemaMigrateConfig,
+    xa: Transactor[F]
+) {
   private[this] val logger = docspell.logging.getLogger[F]
 
   private def createLocations(folder: String) =
@@ -49,28 +53,46 @@ class FlywayMigrate[F[_]: Sync](jdbc: JdbcConfig, xa: Transactor[F]) {
   def run: F[MigrateResult] =
     for {
       _ <- runFixups
-      fw <- createFlyway(MigrationKind.Main)
-      _ <- logger.info(s"!!! Running main migrations")
-      result <- Sync[F].blocking(fw.migrate())
+      result <- runMain
     } yield result
+
+  def runMain: F[MigrateResult] =
+    if (!cfg.runMainMigrations)
+      logger
+        .info("Running main migrations is disabled!")
+        .as(new MigrateResult("", "", ""))
+    else
+      for {
+        fw <- createFlyway(MigrationKind.Main)
+        _ <- logger.info(s"!!! Running main migrations (repair=${cfg.repairSchema})")
+        _ <- if (cfg.repairSchema) Sync[F].blocking(fw.repair()).void else ().pure[F]
+        result <- Sync[F].blocking(fw.migrate())
+      } yield result
 
   // A hack to fix already published migrations
   def runFixups: F[Unit] =
-    isSchemaEmpty.flatMap {
-      case true =>
-        ().pure[F]
-      case false =>
-        (for {
-          current <- OptionT(getSchemaVersion)
-          _ <- OptionT
-            .fromOption[F](versionComponents(current))
-            .filter(v => v._1 >= 1 && v._2 >= 32)
-          fw <- OptionT.liftF(createFlyway(MigrationKind.Fixups))
-          _ <- OptionT.liftF(logger.info(s"!!! Running fixup migrations"))
-          _ <- OptionT.liftF(Sync[F].blocking(fw.migrate()))
-        } yield ())
-          .getOrElseF(logger.info(s"Fixup migrations not applied."))
-    }
+    if (!cfg.runFixupMigrations) logger.info(s"Running fixup migrations is disabled!")
+    else
+      isSchemaEmpty.flatMap {
+        case true =>
+          ().pure[F]
+        case false =>
+          (for {
+            current <- OptionT(getSchemaVersion)
+            _ <- OptionT
+              .fromOption[F](versionComponents(current))
+              .filter(v => v._1 >= 1 && v._2 >= 32)
+            fw <- OptionT.liftF(createFlyway(MigrationKind.Fixups))
+            _ <- OptionT.liftF(
+              logger.info(s"!!! Running fixup migrations (repair=${cfg.repairSchema})")
+            )
+            _ <-
+              if (cfg.repairSchema) OptionT.liftF(Sync[F].blocking(fw.repair()).void)
+              else OptionT.pure[F](())
+            _ <- OptionT.liftF(Sync[F].blocking(fw.migrate()))
+          } yield ())
+            .getOrElseF(logger.info(s"Fixup migrations not applied."))
+      }
 
   private def isSchemaEmpty: F[Boolean] =
     sql"select count(1) from flyway_schema_history"
@@ -95,8 +117,12 @@ class FlywayMigrate[F[_]: Sync](jdbc: JdbcConfig, xa: Transactor[F]) {
 }
 
 object FlywayMigrate {
-  def apply[F[_]: Sync](jdbcConfig: JdbcConfig, xa: Transactor[F]): FlywayMigrate[F] =
-    new FlywayMigrate[F](jdbcConfig, xa)
+  def apply[F[_]: Sync](
+      jdbcConfig: JdbcConfig,
+      schemaCfg: SchemaMigrateConfig,
+      xa: Transactor[F]
+  ): FlywayMigrate[F] =
+    new FlywayMigrate[F](jdbcConfig, schemaCfg, xa)
 
   sealed trait MigrationKind {
     def table: String

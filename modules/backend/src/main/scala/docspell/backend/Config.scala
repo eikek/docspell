@@ -11,14 +11,15 @@ import cats.implicits._
 
 import docspell.backend.signup.{Config => SignupConfig}
 import docspell.common._
-import docspell.store.JdbcConfig
 import docspell.store.file.FileRepositoryConfig
+import docspell.store.{JdbcConfig, SchemaMigrateConfig}
 
 import emil.javamail.Settings
 
 case class Config(
     mailDebug: Boolean,
     jdbc: JdbcConfig,
+    databaseSchema: SchemaMigrateConfig,
     signup: SignupConfig,
     files: Config.Files,
     addons: Config.Addons

@@ -10,7 +10,7 @@ import cats.effect.IO
 import cats.effect.unsafe.implicits._
 
 import docspell.logging.TestLoggingConfig
-import docspell.store.StoreFixture
+import docspell.store.{SchemaMigrateConfig, StoreFixture}
 
 import munit.FunSuite
 
@@ -21,7 +21,7 @@ class H2MigrateTest extends FunSuite with TestLoggingConfig {
     val ds = StoreFixture.dataSource(jdbc)
     val result =
       ds.flatMap(StoreFixture.makeXA).use { xa =>
-        FlywayMigrate[IO](jdbc, xa).run
+        FlywayMigrate[IO](jdbc, SchemaMigrateConfig.defaults, xa).run
       }
 
     assert(result.unsafeRunSync().migrationsExecuted > 0)
@@ -40,7 +40,7 @@ class H2MigrateTest extends FunSuite with TestLoggingConfig {
 
     val result =
       ds.flatMap(StoreFixture.makeXA).use { xa =>
-        FlywayMigrate[IO](jdbc, xa).run
+        FlywayMigrate[IO](jdbc, SchemaMigrateConfig.defaults, xa).run
       }
 
     result.unsafeRunSync()
