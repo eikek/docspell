@@ -58,6 +58,8 @@ object MonthName {
         hebrew
       case Language.Lithuanian =>
         lithuanian
+      case Language.Polish =>
+        polish
     }
 
   private val numbers = List(
@@ -357,5 +359,20 @@ object MonthName {
     List("spalis", "spalio", "spal"),
     List("lapkritis", "lapkričio", "lapkr"),
     List("gruodis", "gruodžio", "gruod")
+  )
+
+  private val polish = List(
+    List("stycznia", "sty"),
+    List("lutego", "lut"),
+    List("marca", "mar"),
+    List("kwietnia", "kwi"),
+    List("maja", "maj"),
+    List("czerwca", "cze"),
+    List("lipca", "lip"),
+    List("sierpnia", "sie"),
+    List("września", "wrz"),
+    List("października", "paź"),
+    List("listopada", "lis"),
+    List("grudnia", "gru")
   )
 }

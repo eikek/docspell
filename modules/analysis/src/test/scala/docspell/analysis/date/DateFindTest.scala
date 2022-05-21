@@ -231,4 +231,32 @@ class DateFindTest extends FunSuite {
       )
     )
   }
+
+  test("find polish dates") {
+    assertEquals(
+      DateFind
+        .findDates(
+          "Some text in polish 21 maja 2022 and stuff",
+          Language.Polish
+        )
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 5, 21),
+          NerLabel("21 maja 2022", NerTag.Date, 20, 32)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("19.11.2021", Language.Polish)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2021, 11, 19),
+          NerLabel("19.11.2021", NerTag.Date, 0, 10)
+        )
+      )
+    )
+  }
 }
