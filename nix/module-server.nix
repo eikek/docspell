@@ -29,6 +29,12 @@ let
     logging = {
       minimum-level = "Info";
       format = "Fancy";
+      levels = {
+        "docspell" = "Info";
+        "org.flywaydb" = "Info";
+        "binny" = "Info";
+        "org.http4s" = "Info";
+      };
     };
     integration-endpoint = {
       enabled = false;
@@ -97,7 +103,7 @@ let
         scope = "profile";
         authorize-url = null;
         token-url = null;
-        user-url = "";
+        user-url = null;
         sign-key = "";
         sig-algo = "RS256";
       };
@@ -119,6 +125,12 @@ let
       files = {
         chunk-size = 524288;
         valid-mime-types = [];
+      };
+      addons = {
+        enabled = false;
+        allow-impure = true;
+        allowed-urls = ["*"];
+        denied-urls = [];
       };
     };
   };
@@ -272,6 +284,11 @@ in {
               default = defaults.logging.format;
               description = "The log format. One of: Fancy, Plain, Json or Logfmt";
             };
+            levels = mkOption {
+              type = types.attrs;
+              default = defaults.logging.levels;
+              description = "Set of logger and their levels";
+            };
           };
         });
         default = defaults.logging;
@@ -401,7 +418,7 @@ in {
                     description = "The URL used to retrieve the token.";
                   };
                   user-url = mkOption {
-                    type = types.str;
+                    type = types.nullOr types.str;
                     default = defaults.openid.provider.user-url;
                     description = "The URL to the user-info endpoint.";
                   };
@@ -788,13 +805,39 @@ in {
               default = defaults.backend.files;
               description= "Settings for how files are stored.";
             };
+            addons = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.backend.addons.enabled;
+                    description = "Enable this feature";
+                  };
+                  allow-impure = mkOption {
+                    type = types.bool;
+                    default = defaults.backend.addons.allow-impure;
+                    description = "Allow impure addons";
+                  };
+                  allowed-urls = mkOption {
+                    type = types.listOf types.str;
+                    default = defaults.backend.addons.allowed-urls;
+                    description = "Url patterns of addons to be allowed";
+                  };
+                  denied-urls = mkOption {
+                    type = types.listOf types.str;
+                    default = defaults.backend.addons.denied-urls;
+                    description = "Url patterns to deny to install";
+                  };
+                };
+              });
+              default = defaults.backend.addons;
+              description = "Addon config";
+            };
           };
         });
         default = defaults.backend;
         description = "Configuration for the backend";
       };
-
-
     };
   };
 
