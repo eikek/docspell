@@ -25,7 +25,7 @@ import docspell.joex.updatecheck.UpdateCheckConfig
 import docspell.logging.LogConfig
 import docspell.pubsub.naive.PubSubConfig
 import docspell.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
-import docspell.store.JdbcConfig
+import docspell.store.{JdbcConfig, SchemaMigrateConfig}
 
 case class Config(
     appId: Ident,
@@ -33,6 +33,7 @@ case class Config(
     logging: LogConfig,
     bind: Config.Bind,
     jdbc: JdbcConfig,
+    databaseSchema: SchemaMigrateConfig,
     scheduler: SchedulerConfig,
     periodicScheduler: PeriodicSchedulerConfig,
     userTasks: Config.UserTasks,

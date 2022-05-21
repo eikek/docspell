@@ -22,13 +22,15 @@ import org.mariadb.jdbc.MariaDbDataSource
 import org.postgresql.ds.PGConnectionPoolDataSource
 
 trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
+  def schemaMigrateConfig =
+    StoreFixture.schemaMigrateConfig
 
   val xa = ResourceFixture {
     val cfg = StoreFixture.memoryDB("test")
     for {
       ds <- StoreFixture.dataSource(cfg)
       xa <- StoreFixture.makeXA(ds)
-      _ <- Resource.eval(FlywayMigrate[IO](cfg, xa).run)
+      _ <- Resource.eval(FlywayMigrate[IO](cfg, schemaMigrateConfig, xa).run)
     } yield xa
   }
 
@@ -42,6 +44,7 @@ trait StoreFixture extends CatsEffectFunFixtures { self: CatsEffectSuite =>
 }
 
 object StoreFixture {
+  val schemaMigrateConfig = SchemaMigrateConfig.defaults
 
   def memoryDB(dbname: String): JdbcConfig =
     JdbcConfig(
@@ -94,7 +97,7 @@ object StoreFixture {
       xa <- makeXA(ds)
       cfg = FileRepositoryConfig.Database(64 * 1024)
       fr = FileRepository[IO](xa, ds, cfg, true)
-      store = new StoreImpl[IO](fr, jdbc, ds, xa)
+      store = new StoreImpl[IO](fr, jdbc, schemaMigrateConfig, ds, xa)
       _ <- Resource.eval(store.migrate)
     } yield store
 

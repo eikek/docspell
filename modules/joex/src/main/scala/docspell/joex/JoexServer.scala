@@ -41,6 +41,7 @@ object JoexServer {
 
       store <- Store.create[F](
         cfg.jdbc,
+        cfg.databaseSchema,
         cfg.files.defaultFileRepositoryConfig,
         pools.connectEC
       )

@@ -83,6 +83,7 @@ object RestServer {
       httpClient <- BlazeClientBuilder[F].resource
       store <- Store.create[F](
         cfg.backend.jdbc,
+        cfg.backend.databaseSchema,
         cfg.backend.files.defaultFileRepositoryConfig,
         pools.connectEC
       )

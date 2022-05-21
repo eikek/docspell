@@ -11,7 +11,7 @@ import cats.effect.unsafe.implicits._
 
 import docspell.common.LenientUri
 import docspell.logging.TestLoggingConfig
-import docspell.store.{JdbcConfig, StoreFixture}
+import docspell.store.{JdbcConfig, SchemaMigrateConfig, StoreFixture}
 
 import com.dimafeng.testcontainers.MariaDBContainer
 import com.dimafeng.testcontainers.munit.TestContainerForAll
@@ -32,7 +32,7 @@ class MariaDbMigrateTest
         JdbcConfig(LenientUri.unsafe(cnt.jdbcUrl), cnt.dbUsername, cnt.dbPassword)
       val ds = StoreFixture.dataSource(jdbc)
       val result = ds.flatMap(StoreFixture.makeXA).use { xa =>
-        FlywayMigrate[IO](jdbc, xa).run
+        FlywayMigrate[IO](jdbc, SchemaMigrateConfig.defaults, xa).run
       }
       assert(result.unsafeRunSync().migrationsExecuted > 0)
       // a second time to apply fixup migrations
