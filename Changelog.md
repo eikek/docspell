@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.36.0
+
+*May 22, 2022*
+
+- Extend docspell via addons (experimental feature) (#1550)
+- Adds Lithuanian and Polish to document languages (#1540, #1345)
+- Added a quick guide for adding more languages (#942)
+- Make dashboard boxes headlines bold (#1531)
+- Improve logging config; allow to specify loggers and their level (#1535)
+- Allow for auth tokens to optionally be issued with an validity (#1533, 1534)
+- Allow to repair db migrations, necessary for rare cases like #1517
+
+### Rest API Changes
+
+- new endpoints for managing addons
+- new endpoint for joex to return its addon executor config
+
+### Configuration Changes
+
+- logging config sections allows to specfiy a map of logger names ->
+  level pairs (joex and restserver)
+- addon config section in restserver: allows to enable/disable
+  corresponding endpoints
+- addon config section in joex: allows to configure how to run addons
+
+
 ## v0.35.0
 
 *Apr 14, 2022*
