@@ -191,7 +191,6 @@ class DateFindTest extends FunSuite {
         )
       )
     )
-    println(DateFind.splitWords("2021-11-19", Language.Spanish).toList)
     assertEquals(
       DateFind
         .findDates("2021-11-19", Language.Spanish)
@@ -200,6 +199,62 @@ class DateFindTest extends FunSuite {
         NerDateLabel(
           LocalDate.of(2021, 11, 19),
           NerLabel("2021-11-19", NerTag.Date, 0, 10)
+        )
+      )
+    )
+  }
+
+  test("find lithuanian dates") {
+    assertEquals(
+      DateFind
+        .findDates(
+          "Some text in lithuanian 2022 m. gegužės 21 d. and stuff",
+          Language.Lithuanian
+        )
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 5, 21),
+          NerLabel("2022 m. gegužės 21", NerTag.Date, 24, 42)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("2021-11-19", Language.Lithuanian)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2021, 11, 19),
+          NerLabel("2021-11-19", NerTag.Date, 0, 10)
+        )
+      )
+    )
+  }
+
+  test("find polish dates") {
+    assertEquals(
+      DateFind
+        .findDates(
+          "Some text in polish 21 maja 2022 and stuff",
+          Language.Polish
+        )
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 5, 21),
+          NerLabel("21 maja 2022", NerTag.Date, 20, 32)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("19.11.2021", Language.Polish)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2021, 11, 19),
+          NerLabel("19.11.2021", NerTag.Date, 0, 10)
         )
       )
     )
