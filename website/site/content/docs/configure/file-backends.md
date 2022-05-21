@@ -47,7 +47,7 @@ read and write permissions.
 {% end %}
 
 The file storage backend can be configured inside the `files` section
-(see the [default configs](@/docs/configure/main.md#default-config)):
+(see the [default configs](@/docs/configure/defaults.md)):
 
 ```conf
 files {

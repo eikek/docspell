@@ -23,7 +23,7 @@ not prepare for each addon, it is recommended to install
 and docker on the machine running joex.
 
 Please also look at addon section in the [default
-configuration](@/docs/configure/main.md#joex) for joex.
+configuration](@/docs/configure/defaults.md#joex) for joex.
 
 You need to explicitly enable addons in the restserver config file.
 
@@ -235,4 +235,4 @@ When joex is not inside a container:
 - Allow the user who runs the joex component to use docker and nix. If
   you install nix as multi-user, then this is already done.
 - Check the section on addons in the [default
-  configuration](@/docs/configure/main.md#joex) for joex
+  configuration](@/docs/configure/defaults.md#joex) for joex
