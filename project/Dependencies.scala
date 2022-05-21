@@ -12,7 +12,9 @@ object Dependencies {
   val CatsVersion = "2.7.0"
   val CatsEffectVersion = "3.3.12"
   val CatsParseVersion = "0.3.7"
-  val CirceVersion = "0.14.1"
+  val CirceVersion = "0.14.2"
+  val CirceGenericExtrasVersion = "0.14.1"
+  val CirceYamlVersion = "0.14.1"
   val ClipboardJsVersion = "2.0.6"
   val DoobieVersion = "1.0.0-RC2"
   val EmilVersion = "0.12.0"
@@ -261,21 +263,12 @@ object Dependencies {
     circeCore ++ circeParser ++ Seq(
       "io.circe" %% "circe-generic" % CirceVersion
     )
-  val circeGenericExtra = Seq(
-    "io.circe" %% "circe-generic-extras" % CirceVersion
+  val circeGenericExtra = circeCore ++ Seq(
+    "io.circe" %% "circe-generic-extras" % CirceGenericExtrasVersion
   )
-  val circeYaml = Seq(
-    "io.circe" %% "circe-yaml" % CirceVersion
+  val circeYaml = circeCore ++ Seq(
+    "io.circe" %% "circe-yaml" % CirceYamlVersion
   )
-
-  // // https://github.com/Log4s/log4s;ASL 2.0
-  // val loggingApi = Seq(
-  //   "org.log4s" %% "log4s" % Log4sVersion
-  // )
-
-  // val logging = Seq(
-  //   "ch.qos.logback" % "logback-classic" % LogbackVersion
-  // )
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0

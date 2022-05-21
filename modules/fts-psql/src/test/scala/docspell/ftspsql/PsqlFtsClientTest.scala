@@ -7,7 +7,7 @@
 package docspell.ftspsql
 
 import cats.effect._
-import cats.syntax.all._
+import cats.syntax.option._
 
 import docspell.ftsclient.{FtsQuery, TextData}
 import docspell.logging.{Level, LogConfig, TestLoggingConfig}
@@ -20,6 +20,7 @@ import org.testcontainers.utility.DockerImageName
 
 class PsqlFtsClientTest
     extends CatsEffectSuite
+    with DoobieMeta
     with PgFixtures
     with TestContainerForAll
     with TestLoggingConfig {
