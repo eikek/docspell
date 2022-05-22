@@ -260,7 +260,7 @@ Docpell Update Check
         fail-fast = true;
         run-timeout = "15 minutes";
         nix-runner = {
-          nix-binary = "${pkgs.nix}/bin/nix";
+          nix-binary = "${pkgs.nixFlakes}/bin/nix";
           build-timeout = "15 minutes";
         };
         docker-runner = {
