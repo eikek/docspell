@@ -4,7 +4,7 @@ title = "Addon for audio file support"
 author = "eikek"
 +++
 
-# 1st Addon: Audio file support
+# Audio file support
 
 Since version 0.36.0 Docspell can be extended by
 [addons](@/docs/addons/basics.md) - external programs that are
