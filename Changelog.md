@@ -460,7 +460,7 @@ Complete
 
 - Joex: A new section for configuring the update task has been added.
   See section `update-check` in the default [config
-  file](https://docspell.org/docs/configure/main/#joex).
+  file](https://docspell.org/docs/configure/defaults/#joex).
 
 
 ## v0.25.1
@@ -909,7 +909,7 @@ Please open an issue if want more languages to be included.
   - the config regarding text analysis changed, there are new config
     options, like `nlp.mode` and the `max-due-date-years` has been
     moved inside `text-anlysis`. Please have a look at the new
-    [default config](https://docspell.org/docs/configure/main/#joex)
+    [default config](https://docspell.org/docs/configure/defaults/#joex)
     if you changed something there.
   - The `regex-ner` section has changed: the `enabled` flag has been
     removed, you can now limit the number of entries using
