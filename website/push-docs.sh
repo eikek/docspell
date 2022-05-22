@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Creates the documentation website and pushes it to the branch
-# 'current-docs' in order to be published.
+# 'gh-pages' in order to be published.
 #
 # It is a fallback, when `sbt publish-website` is not working due to
 # too large payloads (as it seems) that prohibit uploading through
