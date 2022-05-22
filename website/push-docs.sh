@@ -34,7 +34,7 @@ trap "{ rm -rf '$temp'; }" EXIT
 
 echo "Cloning docspell into new location $temp"
 git clone git@github.com:eikek/docspell.git "$temp"
-cd "$temp" && git checkout --track origin/gh-pages
+cd "$temp" && git checkout --track origin/gh-pages && rm -rf "$temp"/*
 
 echo "Create new website from current working directory"
 cd $cdir && nix-shell website/shell.nix --run 'sbt make-website'
