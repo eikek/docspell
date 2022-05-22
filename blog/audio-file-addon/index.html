@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Eike Kettner">
+<meta name="description" content="Docspell is a Document Management System (DMS), a system that asists in organizing your piles of documents, resulting from scanners, e-mails and other sources with miminal effort.">
+<meta name="keywords" content="document management system dms organizer ocr open source free scan pdf word doc archive gpl machine learning nlp auto tagging"/>
+<meta name="robots" content="index,follow"/>
+<meta name="image" property="og:image" content="/img/poster.png">
+<meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:image" content="/img/poster.png">
+<meta name="og:title" content="Docspell – Simple Document Organizer">
+<meta name="og:site_name" content="Addon for audio file support - Docspell">
+<meta name="og:url" content="">
+<meta name="og:type" content="website">
+<meta name="og:description" content="Simple Document Organizer">
+<meta name="twitter:title" content="Docspell">
+<meta name="twitter:image" content="/img/poster.png">
+<meta name="twitter:description" content="Simple Document Organizer">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="shortcut icon" href="/favicon-mc.ico" type="image/x-icon">
+<link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
+
+
+        <title>Addon for audio file support - Docspell Blog</title>
+        <link rel="stylesheet" href="/styles.css">
+
+        <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
+<script type="text/javascript" src="https://docspell.org/search_index.en.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/searchhelper.js"></script>
+<script type="text/javascript" src="https://docspell.org/js/bundle.js"></script>
+
+
+        <script type="application/javascript" src="/js/light-switch.js"></script>
+
+        <link id="syntax-css" rel="stylesheet" href="">
+    </head>
+    <body class="h-full dark:bg-stone-900 bg-white text-stone-600 dark:text-stone-300 antialiased">
+
+                <div id="top-bar"
+             class="top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 antialiased border-b dark:border-stone-800"
+        >
+
+            <a class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10 dark:hover:bg-stone-800" href="/">
+                <div class="">
+                    <img src="/icons/logo-only-36.svg">
+                </div>
+                <span class="ml-1 text-xl font-bold font-serif hidden sm:inline">
+                    Docspell
+                </span>
+            </a>
+
+            <div class="flex items-center">
+                <div class="text-xs py-1 px-1 rounded-full border opacity-50">
+                    0.36.0
+                </div>
+            </div>
+
+            <div class="flex-grow place-items-end">
+
+
+            </div>
+            <div id="search"></div>
+            <a href="/docs" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Documentation"
+            >
+                <i class="fa fa-book">
+                </i>
+            </a>
+            <a href="/blog" class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Blog"
+            >
+                <i class="fa fa-blog">
+                </i>
+            </a>
+            <a target="_blank" href="https://github.com/eikek/docspell"
+               class="inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800"
+               title="Github"
+            >
+                <i class="fab fa-github-alt">
+                </i>
+            </a>
+
+            <div class="lights-container relative inline-flex px-4 items-center hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 ">
+                <a href="#"
+                   class="lights-switch h-full w-full inline-flex items-center"
+                   title="Lights on/off" >
+                    <i class="fa fa-adjust">
+                    </i>
+                </a>
+                <div class="lights-menu text-sm flex flex-col shadow bg-white dark:bg-stone-800 border dark:border-stone-800 absolute top-12 right-2 divide-y dark:divide-stone-700 hidden">
+                    <a class="lights-to-dark flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-moon mr-2"></i>
+                        <span>Dark</span>
+                    </a>
+                    <a class="lights-to-light flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-sun font-thin mr-2"></i>
+                        <span>Light</span>
+                    </a>
+                    <a class="lights-to-system flex flex-row items-center py-2 px-4 hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-700 cursor-pointer">
+                        <i class="fa fa-laptop mr-2"></i>
+                        <span>System</span>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="docs-main"
+             class="mt-12 flex md:flex-row flex-col w-full h-screen-12 sm:overflow-y-hidden"
+        >
+
+            
+
+
+            <div id="content"
+                 class=" w-full px-2 overflow-none sm:overflow-y-auto scrollbar-main scrollbar-thin flex flex-col lg:flex-row justify-center"
+            >
+                <div class="content max-w-screen-md flex flex-col">
+                    <div class="flex-grow">
+                        
+<div class="flex flex-row space-x-2 -mb-6 mt-6 text-sm opacity-70 font-medium">
+    
+    
+    
+    
+    <div class="" title="by eikek">
+        by
+        
+        eikek
+        
+    </div>
+    <div class="" title="Created on 2022-05-16">
+        on
+        2022-05-16
+    </div>
+</div>
+
+<h1 id="audio-file-support">Audio file support<a class="zola-anchor" href="#audio-file-support" aria-label="Anchor link for: audio-file-support">🔗</a></h1>
+<p>Since version 0.36.0 Docspell can be extended by
+<a href="https://docspell.org/docs/addons/basics/">addons</a> - external programs that are
+executed at some defined point in Docspell. This is a walk through the
+first addon that was created, mainly as an example: providing support
+for audio files.</p>
+<span id="continue-reading"></span>
+<p>I think it is interesting to provide support for audio files for a
+DMS, although admittedly I don't have much of a use :). But this is
+the kind of use-case that addons are for.</p>
+<h1 id="the-idea">The idea<a class="zola-anchor" href="#the-idea" aria-label="Anchor link for: the-idea">🔗</a></h1>
+<p>The idea is very simple: the real work is done by external programs,
+most notably <a href="https://github.com/coqui-ai/STT">coqui's stt</a> a deep
+learning toolkit originally created at Mozilla. It provides a command
+line tool that accepts a WAV file and spits out text. Perfect!</p>
+<p>With this text, a PDF file can be created and a preview image which is
+already enough for basic support. You can see the pdf in the web-ui
+and search for the text via SOLR or PostgreSQL.</p>
+<p>Because a WAV file is not the most popular format today, <code>ffmpeg</code> can
+be used to transform any other audio to WAV.</p>
+<p>The only thing now is to create a program that checks the uploaded
+files, filters out all audio files and runs them through the mentioned
+programs. So let's do this.</p>
+<h1 id="preparation">Preparation<a class="zola-anchor" href="#preparation" aria-label="Anchor link for: preparation">🔗</a></h1>
+<p>Addons are external programs and can be written in whatever language….
+For me this is a good opportunity to refresh my rusty scheme know-how
+a bit. So this addon is written in Scheme, in particular
+<a href="https://www.gnu.org/software/guile/">guile</a>. Programming in scheme is
+fun and guile provides good integration into the (posix) OS and also
+has a nice JSON module. I had the <a href="https://www.gnu.org/software/guile/docs/docs-2.2/guile-ref/index.html">reference
+docs</a>
+open all the time - look at them for further details on the used
+functions.</p>
+<p>It's usually good to play around with the tools at first. For stt, we
+first need to download a <em>model</em>. This will be used to &quot;detect&quot; the
+text in the audio data. They have a <a href="https://coqui.ai/models">page</a>
+where we can download model files for any supported language. For the
+addon, we will implement English and German.</p>
+<p>When creating a PDF with wkhtmltopdf, we prettify it a little by
+embedding the plain text into some html template. This will also take
+care to specifiy UTF-8 as default encoding directly in the HTML
+template.</p>
+<p>FFMpeg just works as usual. It figures out the input format
+automatically and knows from the extension of the output file what to
+do.</p>
+<p>You can find the full code
+<a href="https://github.com/docspell/audio-files-addon/blob/master/src/addon.scm">here</a>.
+The following shows excerpts from it with some explanation.</p>
+<h1 id="the-script">The script<a class="zola-anchor" href="#the-script" aria-label="Anchor link for: the-script">🔗</a></h1>
+<h2 id="helpers">Helpers<a class="zola-anchor" href="#helpers" aria-label="Anchor link for: helpers">🔗</a></h2>
+<p>After the preamble, there are two helper functions.</p>
+<pre data-lang="lisp" class="language-lisp z-code"><code class="language-lisp" data-lang="lisp"><span class="z-source z-lisp"><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define<span class="z-keyword z-operator z-arithmetic z-lisp">*</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>errln formatstr . args<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">apply</span> <span class="z-support z-function z-lisp">format</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>current<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-support z-function z-lisp">error</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>port<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span> formatstr args<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>newline<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-comment z-line z-semicolon z-lisp"><span class="z-punctuation z-definition z-comment z-lisp">;</span>; Macro for executing system commands and making this program exit in
+</span><span class="z-comment z-line z-semicolon z-lisp"><span class="z-punctuation z-definition z-comment z-lisp">;</span>; case of failure.
+</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>syntax sysexec
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>syntax<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>rules <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>sysexec <span class="z-support z-function z-lisp">exp</span> ...<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+     <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">let</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>rc <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">apply</span> system<span class="z-keyword z-operator z-arithmetic z-lisp">*</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">list</span> <span class="z-support z-function z-lisp">exp</span> ...<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+       <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">unless</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>eqv? rc EXIT_SUCCESS<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>current<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-support z-function z-lisp">error</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>port<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>&gt; &#39;~a …&#39; failed with: ~#*~:*~d~%<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-support z-function z-lisp">exp</span> ... rc<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>exit <span class="z-constant z-numeric z-lisp">1</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+       <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>t</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+</span></code></pre>
+<p>As this addon wants to pass data back to Docspell via stdout, we use
+the stderr for logging and printing general information. The function
+<code>errln</code> (short for &quot;error line&quot; :)) allows to conveniently print to
+stderr and the second wraps the <code>system*</code> procedure such that the
+script fails whenever the external program fails. It is somewhat
+similar to <code>set -e</code> in bash.</p>
+<h2 id="dependencies">Dependencies<a class="zola-anchor" href="#dependencies" aria-label="Anchor link for: dependencies">🔗</a></h2>
+<p>Next is the declaration of external dependencies. At first all
+external programs are listed. This is important for later, when the
+script is packaged via nix. Nix will substitute these commands with
+absolute paths. Then it's good to not have them scattered around.</p>
+<p>It also reads in the expected environment variables (only those we
+need) that are provided by Docspell. Since this addon only makes sense
+to work on an item, it quits early should some env vars are missing.</p>
+<pre data-lang="lisp" class="language-lisp z-code"><code class="language-lisp" data-lang="lisp"><span class="z-source z-lisp"><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>curl<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>curl<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>ffmpeg<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>ffmpeg<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>stt<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>stt<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>wkhtmltopdf<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>wkhtmltopdf<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-comment z-line z-semicolon z-lisp"><span class="z-punctuation z-definition z-comment z-lisp">;</span>; Getting some environment variables
+</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>output-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>getenv <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>OUTPUT_DIR<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>tmp-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>getenv <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>TMP_DIR<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>cache-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>getenv <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>CACHE_DIR<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>item-data-json<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>getenv <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>ITEM_DATA_JSON<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>original-files-json<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>getenv <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>ITEM_ORIGINAL_JSON<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>original-files-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>getenv <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>ITEM_ORIGINAL_DIR<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-comment z-line z-semicolon z-lisp"><span class="z-punctuation z-definition z-comment z-lisp">;</span>; fail early if not in the right context
+</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">when</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-operator z-logical z-lisp">not</span> <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>item-data-json<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>errln <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>No item data json file found.<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>exit <span class="z-constant z-numeric z-lisp">1</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+</span></code></pre>
+<h2 id="input-output">Input/Output<a class="zola-anchor" href="#input-output" aria-label="Anchor link for: input-output">🔗</a></h2>
+<p>The input and output schemas can be defined now. This uses the
+<a href="https://github.com/aconchillo/guile-json">guile-json</a> module. It
+provides very convenient features for reading and writing json.</p>
+<p>It is possible to define a record via <code>define-json-type</code> that
+generates readers and writers to/from JSON. For example, the record
+<code>&lt;itemdata&gt;</code> is defined to be an object with only one field <code>id</code>. The
+function <code>json-&gt;scm</code> reads in json into scheme datastructures and then
+the generated function <code>scm-&gt;itemdata</code> creates the record from it. For
+every record, accessor functions exists. For example: <code>(itemdata-id data)</code> would lookup the field <code>id</code> in the given itemdata record
+<code>data</code>.</p>
+<p>Here we need it to get the item-id and the list of file properties
+belonging to the original uploaded files.</p>
+<p>Another interesting definition is the <code>&lt;output&gt;</code> record. This captures
+(a subset of) the schema of what Docspell receives from this addon as
+a result. A full example of this data is
+<a href="https://docspell.org/docs/addons/writing/#output">here</a>. We don't need <code>commands</code> or
+<code>newItems</code>, so this schema only cares about the <code>files</code> attribute.</p>
+<pre data-lang="lisp" class="language-lisp z-code"><code class="language-lisp" data-lang="lisp"><span class="z-source z-lisp"><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>json<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>type <span class="z-keyword z-operator z-comparison z-lisp">&lt;</span>itemdata<span class="z-keyword z-operator z-comparison z-lisp">&gt;</span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>id<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-comment z-line z-semicolon z-lisp"><span class="z-punctuation z-definition z-comment z-lisp">;</span>; The array of original files
+</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>json<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>type <span class="z-keyword z-operator z-comparison z-lisp">&lt;</span>original<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file<span class="z-keyword z-operator z-comparison z-lisp">&gt;</span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>id<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>name<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">position</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>language<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>mimetype<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">length</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>checksum<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-comment z-line z-semicolon z-lisp"><span class="z-punctuation z-definition z-comment z-lisp">;</span>; The output record, what is returned to docspell
+</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>json<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>type <span class="z-keyword z-operator z-comparison z-lisp">&lt;</span>itemfiles<span class="z-keyword z-operator z-comparison z-lisp">&gt;</span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>itemId<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>textFiles<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>pdfFiles<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>json<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>type <span class="z-keyword z-operator z-comparison z-lisp">&lt;</span>output<span class="z-keyword z-operator z-comparison z-lisp">&gt;</span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>files <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>files<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> #<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-operator z-comparison z-lisp">&lt;</span>itemfiles<span class="z-keyword z-operator z-comparison z-lisp">&gt;</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-comment z-line z-semicolon z-lisp"><span class="z-punctuation z-definition z-comment z-lisp">;</span>; Parses the JSON containing the item information
+</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>itemdata-json<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>scm<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-operator z-comparison z-lisp">&gt;</span>itemdata <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>call<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-control z-lisp">with</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>input<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>item-data-json<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> json<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-operator z-comparison z-lisp">&gt;</span>scm<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-comment z-line z-semicolon z-lisp"><span class="z-punctuation z-definition z-comment z-lisp">;</span>; The JSON file containing meta data for all source files as vector.
+</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>original-meta-json<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">let</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>props <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">vector</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-operator z-comparison z-lisp">&gt;</span><span class="z-support z-function z-lisp">list</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>call<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-control z-lisp">with</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>input<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>original-files-json<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> json<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-operator z-comparison z-lisp">&gt;</span>scm<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">map</span> scm<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-operator z-comparison z-lisp">&gt;</span>original<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file props<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+</span></code></pre>
+<h2 id="finding-the-audio-file">Finding the audio file<a class="zola-anchor" href="#finding-the-audio-file" aria-label="Anchor link for: finding-the-audio-file">🔗</a></h2>
+<p>The previously parsed json array <code>*original-meta-json*</code> can now be
+used to find any audio files within the original uploaded files, as
+done in <code>find-audio-files</code>. It simply goes through the list and keeps
+those files whose mimetype starts with <code>audio/</code>. The mimetype is
+provided by Docspell in the file properties in <code>ITEM_ORIGINAL_JSON</code>.</p>
+<p>Before converting to wav with ffmpeg, it is quickly checked if it's
+not a wav already.</p>
+<pre data-lang="lisp" class="language-lisp z-code"><code class="language-lisp" data-lang="lisp"><span class="z-source z-lisp"><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>is<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>wav? mime<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Test whether the mimetype MIME is denoting a wav file.<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-operator z-logical z-lisp">or</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">string</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>suffix? <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>/wav<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> mime<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+      <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">string</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>suffix? <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>/x-wav<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> mime<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+      <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">string</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>suffix? <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>/vnd.wav<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> mime<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">find</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>audio<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>files<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Find all source files that are audio files.<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>filter! <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">lambda</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>el<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+             <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">string</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>prefix?
+              <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>audio/<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span>
+              <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>original<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>mimetype el<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+           <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>original-meta-json<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>convert<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>wav id mime<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Run ffmpeg to convert to wav.<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">let</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>src<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>f</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a/~a<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>original-files-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> id<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>out<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>f</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a/in.wav<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>tmp-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">if</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>is<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>wav? mime<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        src<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>begin
+          <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>errln <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Running ffmpeg to convert wav file...<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+          <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>sysexec <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>ffmpeg<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>-loglevel<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>error<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>-y<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>-i<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> src<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file out<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+          out<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+</span></code></pre>
+<h2 id="speech-to-text">Speech to text<a class="zola-anchor" href="#speech-to-text" aria-label="Anchor link for: speech-to-text">🔗</a></h2>
+<p>Once we have a wav file, we can run speech-to-text recognition on it.
+As said above, we need to download a model first, which is depending
+on a language. Luckily, Docspell provides the language of the file.
+This is the lanugage either given directly by the user when uploading
+or it's the collective's default language.</p>
+<p>In the following snippet, we get the language as arguments. We will
+get it later from the file properties.</p>
+<p>As seen below, the model file is stored to the <code>CACHE_DIR</code>. This is
+provided by Docspell and will survive the execution of this script.
+All other directories involved will be deleted eventually. The
+<code>CACHE_DIR</code> is the place to store intermediate results you don't want
+to loose between addon runs. But as any cache, it may not exist the
+next time the addon is run. Docspell doesn't clear it automatically,
+though.</p>
+<p>The last function simply executes the <code>stt</code> external command and puts
+stdout into a file.</p>
+<pre data-lang="lisp" class="language-lisp z-code"><code class="language-lisp" data-lang="lisp"><span class="z-source z-lisp"><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">get</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>model language<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">let</span><span class="z-keyword z-operator z-arithmetic z-lisp">*</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>lang <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-operator z-logical z-lisp">or</span> language <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>eng<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>file <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>f</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a/model_~a.pbmm<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>cache-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> lang<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">unless</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>file<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>exists? file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+      <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>download<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>model lang file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>download<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>model lang file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Download model files per language. Nix has currently stt 0.9.3 packaged.<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">let</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>url <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">cond</span>
+              <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">string</span><span class="z-keyword z-operator z-comparison z-lisp">=</span> lang <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>eng<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>https://coqui.gateway.scarf.sh/english/coqui/v0.9.3/model.pbmm<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+              <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">string</span><span class="z-keyword z-operator z-comparison z-lisp">=</span> lang <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>deu<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>https://coqui.gateway.scarf.sh/german/AASHISHAG/v0.9.0/model.pbmm<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+              <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">else</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">error</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Unsupported language: <span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> lang<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>errln <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Downloading model file for language: ~a<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> lang<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>sysexec <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>curl<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>-SsL<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>-o<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> file url<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>extract<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>text model input out<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Runs stt for speech-to-text and writes the text into the file OUT.<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>errln <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Extracting text from audio…<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">with</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>output<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-control z-lisp">to</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file out
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">lambda</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+      <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>sysexec  <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>stt<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>--model<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> model <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>--audio<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> input<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+</span></code></pre>
+<h2 id="create-pdf">Create PDF<a class="zola-anchor" href="#create-pdf" aria-label="Anchor link for: create-pdf">🔗</a></h2>
+<p>Creating the PDF is straight forward. The extracted text is embedded
+into a HTML file which is then passed to <code>wkhtmltopdf</code>. Since we don't
+need this file for anything else, it is stored to the <code>TMP_DIR</code>.</p>
+<pre data-lang="lisp" class="language-lisp z-code"><code class="language-lisp" data-lang="lisp"><span class="z-source z-lisp"><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>create<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>pdf txt<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file out<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line str<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>t</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a<span class="z-constant z-character z-escape z-lisp">\n</span><span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> str<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>errln <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Creating pdf file…<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">let</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>tmphtml <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>f</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a/text.html<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>tmp-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">with</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>output<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-control z-lisp">to</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file tmphtml
+      <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">lambda</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>&lt;!DOCTYPE html&gt;<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>&lt;html&gt;<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>  &lt;head&gt;&lt;meta charset=<span class="z-constant z-character z-escape z-lisp">\&quot;</span>UTF-8<span class="z-constant z-character z-escape z-lisp">\&quot;</span>&gt;&lt;/head&gt;<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>  &lt;body style=<span class="z-constant z-character z-escape z-lisp">\&quot;</span>padding: 2em; font-size: large;<span class="z-constant z-character z-escape z-lisp">\&quot;</span>&gt;<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span> &lt;div style=<span class="z-constant z-character z-escape z-lisp">\&quot;</span>padding: 0.5em; font-size:normal; font-weight: bold; border: 1px solid black;<span class="z-constant z-character z-escape z-lisp">\&quot;</span>&gt;<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>  Extracted from audio using stt on <span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>display <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>strftime <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>%c<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>localtime <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>current<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-support z-function z-lisp">time</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span> &lt;/div&gt;<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span> &lt;p&gt;<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>display <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>call<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-control z-lisp">with</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>input<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file txt<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file <span class="z-support z-function z-lisp">read</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-support z-function z-lisp">string</span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span> &lt;/p&gt;<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+        <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>line <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>&lt;/body&gt;&lt;/html&gt;<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>sysexec <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>wkhtmltopdf<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> tmphtml out<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+</span></code></pre>
+<h2 id="putting-it-together">Putting it together<a class="zola-anchor" href="#putting-it-together" aria-label="Anchor link for: putting-it-together">🔗</a></h2>
+<p>The main function now puts everything together. The <code>process-file</code>
+function is called for every file that is returned from
+<code>(find-audio-files)</code>. It will extract the necessary information (like
+the language) from the json document via record accessors (e.g.
+<code>original-file-lanugage file)</code>) and then calls the functions defined
+above. At last it creates a <code>&lt;itemfile&gt;</code> record with <code>make-itemfiles</code>.</p>
+<p>An <code>&lt;itemfile&gt;</code> record contains now the important information for
+Docspell. It requires the item-id and a mapping from attachment-ids to
+files in <code>OUTPUT_DIR</code>. For each attachment identified by its ID,
+Docspell replaces the extracted text with the contents of the given
+file and replaces the converted PDF file, respectively. In the code
+below, two lists of such mappings are defined - the first for the text
+files, the second for the converted pdf. The files must be specified
+relative to <code>OUTPUT_DIR</code>.</p>
+<p>That means <code>process-all</code> returns a list of <code>&lt;itemfile&gt;</code> records which
+is then used to create the <code>&lt;output&gt;</code> record. And finally, a
+<code>output-&gt;json</code> function will turn the record into proper JSON which is
+send to stdout.</p>
+<pre data-lang="lisp" class="language-lisp z-code"><code class="language-lisp" data-lang="lisp"><span class="z-source z-lisp"><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>process<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file itemid file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>Processing a single audio file.<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">let</span><span class="z-keyword z-operator z-arithmetic z-lisp">*</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>id <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>original<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>id file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>mime <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>original<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>mimetype file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>lang <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>original<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>language file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>txt<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>f</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a/~a.txt<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>output-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> id<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>pdf<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>f</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a/~a.pdf<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>output-dir<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span> id<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>wav <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>convert<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>wav id mime<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>model <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">get</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>model lang<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>extract<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>text model wav txt<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>create<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>pdf txt<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file pdf<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>make<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>itemfiles itemid
+                    `<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>,id . ,<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>f</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a.txt<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> id<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+                    `<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>,id . ,<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>f</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a.pdf<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> id<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>process<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>all<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">let</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>item<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>id <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>itemdata<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>id <span class="z-variable z-other z-global z-lisp"><span class="z-punctuation z-definition z-variable z-begin z-lisp">*</span>itemdata-json<span class="z-punctuation z-definition z-variable z-end z-lisp">*</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">map</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">lambda</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+           <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>process<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>file item<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>id file<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+         <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">find</span><span class="z-keyword z-operator z-arithmetic z-lisp">-</span>audio<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>files<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+
+<span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>define <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>main args<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+  <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-keyword z-control z-lisp">let</span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>out <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>make<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>output <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>process<span class="z-keyword z-operator z-arithmetic z-lisp">-</span>all<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+    <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span><span class="z-support z-function z-lisp">format</span> <span class="z-constant z-character z-lisp"><span class="z-punctuation z-definition z-constant z-lisp">#</span>t</span> <span class="z-string z-quoted z-double z-lisp"><span class="z-punctuation z-definition z-string z-begin z-lisp">&quot;</span>~a<span class="z-punctuation z-definition z-string z-end z-lisp">&quot;</span></span> <span class="z-meta z-group z-lisp"><span class="z-punctuation z-definition z-group z-begin z-lisp">(</span>output<span class="z-keyword z-operator z-arithmetic z-lisp">-</span><span class="z-keyword z-operator z-comparison z-lisp">&gt;</span>json out<span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span><span class="z-punctuation z-definition z-group z-end z-lisp">)</span></span>
+</span></code></pre>
+<p>Example output:</p>
+<pre data-lang="json" class="language-json z-code"><code class="language-json" data-lang="json"><span class="z-source z-json"><span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span>
+  </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>files<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-meta z-sequence z-json"><span class="z-punctuation z-section z-sequence z-begin z-json">[</span>
+    <span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span>
+      </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>itemId<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span></span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>qZDnyGIAJsXr<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+      </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>textFiles<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span> </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>HPFvIDib6eA<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>HPFvIDib6eA.txt<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span> <span class="z-punctuation z-section z-mapping z-end z-json">}</span></span><span class="z-punctuation z-separator z-mapping z-pair z-json">,</span>
+      </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>pdfFiles<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-value z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span>  </span><span class="z-meta z-mapping z-value z-json"><span class="z-meta z-mapping z-json"><span class="z-punctuation z-section z-mapping z-begin z-json">{</span> </span><span class="z-meta z-mapping z-key z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>HPFvIDib6eA<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span></span><span class="z-meta z-mapping z-json"><span class="z-punctuation z-separator z-mapping z-key-value z-json">:</span> </span><span class="z-meta z-mapping z-value z-json"><span class="z-string z-quoted z-double z-json"><span class="z-punctuation z-definition z-string z-begin z-json">&quot;</span>HPFvIDib6eA.pdf<span class="z-punctuation z-definition z-string z-end z-json">&quot;</span></span><span class="z-punctuation z-section z-mapping z-end z-json">}</span></span>
+    <span class="z-punctuation z-section z-mapping z-end z-json">}</span></span>
+  <span class="z-punctuation z-section z-sequence z-end z-json">]</span></span>
+<span class="z-punctuation z-section z-mapping z-end z-json">}</span></span>
+</span></code></pre>
+<h1 id="packaging">Packaging<a class="zola-anchor" href="#packaging" aria-label="Anchor link for: packaging">🔗</a></h1>
+<p>Now with that script some additional plumbing is needed to make it an
+&quot;Addon&quot; for Docspell.</p>
+<p>The external tools - stt, ffmpeg, curl and wkhtmltopdf are required as
+well as guile to compile and interpret the script. Also the guile-json
+module must be installed.</p>
+<p>This can turn into a quite tedious task. Luckily, there is
+<a href="https://nixos.org">nix</a> that has an answer to this. A user who wants
+to use this script only needs to install nix. This package manager
+then takes care of providing the exact dependencies we need (down to
+the correct version and including guile as the language and runtime).</p>
+<h2 id="a-flake">A flake<a class="zola-anchor" href="#a-flake" aria-label="Anchor link for: a-flake">🔗</a></h2>
+<p>Everything is defined in the <code>flake.nix</code> in the source root. It looks
+like this:</p>
+<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+  <span class="z-entity z-other z-attribute-name z-multipart z-nix">description</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>A docspell addon for basic audio file support<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+  <span class="z-entity z-other z-attribute-name z-multipart z-nix">inputs</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+    <span class="z-entity z-other z-attribute-name z-multipart z-nix">utils</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>github:numtide/flake-utils<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+    <span class="z-comment z-line z-number-sign z-nix"># Nixpkgs / NixOS version to use.</span>
+    <span class="z-entity z-other z-attribute-name z-multipart z-nix">nixpkgs</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>nixpkgs/nixos-21.11<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+  <span class="z-entity z-other z-attribute-name z-multipart z-nix">outputs</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-entity z-function z-2 z-nix">{</span> <span class="z-variable z-parameter z-function z-1 z-nix">self</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">nixpkgs</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">utils</span> <span class="z-punctuation z-definition z-entity z-function z-nix">}</span><span class="z-punctuation z-definition z-function z-nix">:</span>
+    <span class="z-variable z-parameter z-name z-nix">utils</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">lib</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">eachSystem</span> <span class="z-punctuation z-definition z-list z-nix">[</span><span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>x86_64-linux<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-definition z-list z-nix">]</span> <span class="z-punctuation z-definition z-expression z-nix">(</span><span class="z-variable z-parameter z-function z-4 z-nix">system</span><span class="z-punctuation z-definition z-function z-nix">:</span>
+      <span class="z-keyword z-other z-nix">let</span>
+        <span class="z-entity z-other z-attribute-name z-multipart z-nix">pkgs</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-support z-function z-nix">import</span> <span class="z-variable z-parameter z-name z-nix">nixpkgs</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+          <span class="z-keyword z-other z-inherit z-nix">inherit</span> <span class="z-entity z-other z-attribute-name z-single z-nix">system</span><span class="z-punctuation z-terminator z-inherit z-nix">;</span>
+          <span class="z-entity z-other z-attribute-name z-multipart z-nix">overlays</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-list z-nix">[</span>
+
+          <span class="z-punctuation z-definition z-list z-nix">]</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+        <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+        <span class="z-entity z-other z-attribute-name z-multipart z-nix">name</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>audio-files-addon<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+      <span class="z-keyword z-other z-nix">in</span> <span class="z-keyword z-other z-nix">rec</span> <span class="z-punctuation z-definition z-attrset z-nix">{</span>
+        <span class="z-entity z-other z-attribute-name z-multipart z-nix">packages</span>.<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">callPackage</span> <span class="z-string z-unquoted z-path z-nix">./nix/addon.nix</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+          <span class="z-keyword z-other z-inherit z-nix">inherit</span> <span class="z-entity z-other z-attribute-name z-single z-nix">name</span><span class="z-punctuation z-terminator z-inherit z-nix">;</span>
+        <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+        <span class="z-entity z-other z-attribute-name z-multipart z-nix">defaultPackage</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">packages</span><span class="z-keyword z-operator z-nix">.</span><span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+        <span class="z-entity z-other z-attribute-name z-multipart z-nix">apps</span>.<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">utils</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">lib</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">mkApp</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+          <span class="z-keyword z-other z-inherit z-nix">inherit</span> <span class="z-entity z-other z-attribute-name z-single z-nix">name</span><span class="z-punctuation z-terminator z-inherit z-nix">;</span>
+          <span class="z-entity z-other z-attribute-name z-multipart z-nix">drv</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">packages</span><span class="z-keyword z-operator z-nix">.</span><span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+        <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+        <span class="z-entity z-other z-attribute-name z-multipart z-nix">defaultApp</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">apps</span><span class="z-keyword z-operator z-nix">.</span><span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+        <span class="z-comment z-line z-number-sign z-nix">## … omitted for brevity</span>
+      <span class="z-punctuation z-definition z-attrset z-nix">}</span>
+    <span class="z-punctuation z-definition z-expression z-nix">)</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+<span class="z-punctuation z-definition z-attrset z-nix">}</span>
+</span></code></pre>
+<p>First sad thing is, that only <code>x86_64</code> systems are supported. This is
+due to <code>stt</code> not being available on other platforms currently (as
+provided by nixpkgs).</p>
+<p>The rest is a bit magic: A package and &quot;defaultPackage&quot; is defined
+with a reference to <code>nix/addon.nix</code>. The important part is the line</p>
+<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix">  <span class="z-variable z-parameter z-name z-nix">inputs</span> <span class="z-invalid z-illegal">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+    <span class="z-comment z-line z-number-sign z-nix"># Nixpkgs / NixOS version to use.</span>
+    <span class="z-entity z-other z-attribute-name z-multipart z-nix">nixpkgs</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>nixpkgs/nixos-21.11<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-invalid z-illegal">;</span>
+</span></code></pre>
+<p>It says that as input for &quot;building&quot; the script, we take all of
+<a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> which is a package
+collection defined for (and in) nix - including thousands of software
+packages. We can pick and choose from these. No surprise, all external
+tools we need are included!</p>
+<p>A flake defines the inputs and outputs of a package. With all of
+nixpkgs as inputs, we can create a definition to elevate this script
+into a <em>package</em>.</p>
+<h2 id="package-definition">Package definition<a class="zola-anchor" href="#package-definition" aria-label="Anchor link for: package-definition">🔗</a></h2>
+<p>The definition for &quot;building&quot; the script is in <code>nix/addon.nix</code>:</p>
+<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-punctuation z-definition z-entity z-function z-2 z-nix">{</span> <span class="z-variable z-parameter z-function z-1 z-nix">stdenv</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">bash</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">cacert</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">curl</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">stt</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">wkhtmltopdf</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">ffmpeg</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">guile</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">guile-json</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">lib</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">name</span> <span class="z-punctuation z-definition z-entity z-function z-nix">}</span><span class="z-punctuation z-definition z-function z-nix">:</span>
+
+<span class="z-variable z-parameter z-name z-nix">stdenv</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">mkDerivation</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+  <span class="z-keyword z-other z-inherit z-nix">inherit</span> <span class="z-entity z-other z-attribute-name z-single z-nix">name</span><span class="z-punctuation z-terminator z-inherit z-nix">;</span>
+  <span class="z-entity z-other z-attribute-name z-multipart z-nix">src</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">lib</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">sources</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">cleanSource</span> <span class="z-string z-unquoted z-path z-nix">../.</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+  <span class="z-entity z-other z-attribute-name z-multipart z-nix">buildInputs</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-list z-nix">[</span> <span class="z-variable z-parameter z-name z-nix">guile</span> <span class="z-variable z-parameter z-name z-nix">guile-json</span> <span class="z-punctuation z-definition z-list z-nix">]</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+  <span class="z-entity z-other z-attribute-name z-multipart z-nix">patchPhase</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-other z-nix"><span class="z-punctuation z-definition z-string z-other z-start z-nix">&#39;&#39;</span>
+    TARGET=src/addon.scm
+    sed -i &#39;s,\*curl\* &quot;curl&quot;,\*curl\* &quot;<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">curl</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/bin/curl&quot;,g&#39; $TARGET
+    sed -i &#39;s,\*ffmpeg\* &quot;ffmpeg&quot;,\*ffmpeg\* &quot;<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">ffmpeg</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/bin/ffmpeg&quot;,g&#39; $TARGET
+    sed -i &#39;s,\*stt\* &quot;stt&quot;,\*stt\* &quot;<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">stt</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/bin/stt&quot;,g&#39; $TARGET
+    sed -i &#39;s,\*wkhtmltopdf\* &quot;wkhtmltopdf&quot;,\*wkhtmltopdf\* &quot;<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">wkhtmltopdf</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/bin/wkhtmltopdf&quot;,g&#39; $TARGET
+  <span class="z-punctuation z-definition z-string z-other z-end z-nix">&#39;&#39;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+  <span class="z-entity z-other z-attribute-name z-multipart z-nix">buildPhase</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-other z-nix"><span class="z-punctuation z-definition z-string z-other z-start z-nix">&#39;&#39;</span>
+    guild compile -o <span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>.go src/addon.scm
+  <span class="z-punctuation z-definition z-string z-other z-end z-nix">&#39;&#39;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+
+  <span class="z-comment z-line z-number-sign z-nix"># module name must be same as &lt;filename&gt;.go</span>
+  <span class="z-entity z-other z-attribute-name z-multipart z-nix">installPhase</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-other z-nix"><span class="z-punctuation z-definition z-string z-other z-start z-nix">&#39;&#39;</span>
+    mkdir -p $out/{bin,lib}
+    cp <span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>.go $out/lib/
+
+    cat &gt; $out/bin/<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span> &lt;&lt;-EOF
+    #!<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">bash</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/bin/bash
+    export SSL_CERT_FILE=&quot;<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">cacert</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/etc/ssl/certs/ca-bundle.crt&quot;
+    exec -a &quot;<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>&quot; <span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">guile</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/bin/guile -C <span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">guile-json</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/share/guile/ccache -C $out/lib -e &#39;(<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>) main&#39; -c &quot;&quot; \$@
+    EOF
+    chmod +x $out/bin/<span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">name</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>
+  <span class="z-punctuation z-definition z-string z-other z-end z-nix">&#39;&#39;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+<span class="z-punctuation z-definition z-attrset z-nix">}</span>
+</span></code></pre>
+<p>With a bit of handwaving - this is a bash script that modifies
+slightly the scheme script and runs a compile on it. We simply declare
+all packages we need in the first line of <code>{ … }</code> - these are
+arguments that are automatically filled by nix by searching the
+corresponding package in nixpkgs.</p>
+<p>First the <code>patchPhase</code> is executed. It will replace the variables
+containing the external tools with an absolute path to the version
+that we currently get from nixpkgs. With this step nix takes care that
+all these packages are available <em>at runtime</em> when executing the
+script. All versions are finally fixed in <code>flake.lock</code> and can be
+upgraded manually.</p>
+<p>The <code>buildPhase</code> runs the guile compiler that produces some
+intermediate code that will be loaded instead of compiling the script
+on-the-fly.</p>
+<p>At last, <code>installPhase</code> creates a wrapper script that runs guile with
+the correct load-path pointing to <code>guile-json</code> and to our pre-compiled
+script. Additionally, trusted root certificates are exported to make
+the curl commands work. This script will be created in <code>$out</code>
+directory that is provided by nix.</p>
+<p>If you now run <code>nix build</code> in the source root, it will execute all
+these phases and produce a symlink pointing to the result. You can
+then <code>cat</code> the resulting file if you are curious.</p>
+<p>This way the script is completely isolated from the system it runs
+on - as long as the nix package manager is available. It includes all
+the external tools, as well as the underlying runtime (guile)! The
+result is a tiny wrapper bash script that can be run &quot;everywhere&quot;
+(modulo all the restrictions, like non-x86_64 platforms, of course
+:)).</p>
+<h2 id="addon-descriptor">Addon Descriptor<a class="zola-anchor" href="#addon-descriptor" aria-label="Anchor link for: addon-descriptor">🔗</a></h2>
+<p>At last, a small yaml file is needed to tell Docspell a little about
+the addon.</p>
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">meta</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">name</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>audio-files-addon<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">version</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>0.1.0<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">description</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-keyword z-control z-flow z-block-scalar z-literal z-yaml">|</span>
+<span class="z-string z-unquoted z-block z-yaml">    This addon adds support for audio files. Audio files are processed
+    by a speech-to-text engine and a pdf is generated.
+
+    It doesn&#39;t expect any user arguments at the moment. It requires
+    internet access to download model files.
+
+</span><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">triggers</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml">final-process-item</span>
+  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml">final-reprocess-item</span>
+  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml">existing-item</span>
+
+<span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">runner</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">nix</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">enable</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-language z-boolean z-yaml">true</span>
+
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">docker</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">enable</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-language z-boolean z-yaml">false</span>
+
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">trivial</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">enable</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-language z-boolean z-yaml">true</span>
+    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">exec</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">src/addon.scm</span>
+
+<span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">options</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">networking</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-language z-boolean z-yaml">true</span>
+  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">collectOutput</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-language z-boolean z-yaml">true</span>
+</span></code></pre>
+<p>This tells Docspell via <code>triggers</code> when this addon may be run. This
+one only makes sense for an item. Thus it can be hooked up to run with
+every file-processing job or a user can manually trigger it on an
+item.</p>
+<p>It also tells via <code>runner:</code> that it can be build and run via nix, but
+not via docker (I gave up after an hour to create a Dockerfile…). It
+could also be run &quot;as-is&quot; but the user then needs to install all these
+tools and guile manually.</p>
+<h1 id="done">Done<a class="zola-anchor" href="#done" aria-label="Anchor link for: done">🔗</a></h1>
+<p>That's it. You can install this addon in Docspell and create a run
+configuration to let it execute when you want.</p>
+
+
+<div class="grid grid-cols-1 sm:grid-cols-2 items-center pt-6 mt-14 border-t dark:border-stone-700">
+
+    <div class="flex items-center flex-col sm:flex-row" title="Previous post">
+        
+        
+        <a class="no-default button1 my-auto" href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;">
+            <i class="fa fa-chevron-left"></i>
+        </a>
+        <div class="italic my-2 ml-2"> Create a new post </div>
+        
+    </div>
+
+    <div class="flex items-center flex-col sm:flex-row justify-end"  title="Next post">
+        
+    </div>
+
+</div>
+
+                    </div>
+
+                    <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
+  <div class="text-center text-sm">
+        <span>
+            Docspell 0.36.0
+        </span>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
+        <span class="ml-1 mr-1">•</span>
+        <a href="https://github.com/eikek/docspell" target="_blank">
+            Source Code
+        </a>
+        <span class="ml-1 mr-1">•</span>
+        <span>
+            Chat on <a href="https://gitter.im/eikek/docspell" >Gitter</a>/<a href="https://app.element.io/#/room/#eikek_docspell:gitter.im" class="link">Matrix</a>
+        </span>
+
+
+    
+    <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/blog&#x2F;2022-05-16_audio_file_addon.md"
+           title="Edit this page on Github"
+           target="_blank"
+        >
+            <i class="fa fa-edit "></i>
+            Edit
+        </a>
+    </div>
+    
+    </div>
+
+    
+</footer>
+
+                </div>
+
+                
+                <div class="hidden pl-2 text-sm font-light mt-2 flex-col w-48 sticky top-4  lg:flex ">
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#audio-file-support" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Audio file support
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#the-idea" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            The idea
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#preparation" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Preparation
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#the-script" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            The script
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#helpers" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Helpers
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#dependencies" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Dependencies
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#input-output" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Input&#x2F;Output
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#finding-the-audio-file" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Finding the audio file
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#speech-to-text" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Speech to text
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#create-pdf" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Create PDF
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#putting-it-together" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Putting it together
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#packaging" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Packaging
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#a-flake" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    A flake
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#package-definition" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Package definition
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#addon-descriptor" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Addon Descriptor
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;audio-file-addon&#x2F;#done" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Done
+                        </a>
+                        
+                    </div>
+
+                    
+                </div>
+                
+            </div>
+        </div>
+        <script>
+ var initSearch = function() {
+     var elmSearch = Elm.Search.init({
+         node: document.getElementById("search"),
+         flags: {}
+     });
+     initElmSearch(elmSearch);
+ }
+ if (document.readyState === "complete" ||
+     (document.readyState !== "loading" && !document.documentElement.doScroll)
+ ) {
+     initSearch();
+ } else {
+     document.addEventListener("DOMContentLoaded", initSearch);
+ }
+</script>
+
+        <!-- Fathom - simple website analytics - https://github.com/usefathom/fathom -->
+<script>
+ (function(f, a, t, h, o, m){
+     a[h]=a[h]||function(){
+         (a[h].q=a[h].q||[]).push(arguments)
+     };
+     o=f.createElement('script'),
+     m=f.getElementsByTagName('script')[0];
+     o.async=1; o.src=t; o.id='fathom-script';
+     m.parentNode.insertBefore(o,m)
+ })(document, window, '//webstats.daheim.site/tracker.js', 'fathom');
+ fathom('set', 'siteId', 'OGJDF');
+ fathom('trackPageview');
+</script>
+<!-- / Fathom -->
+
+    </body>
+
+</html>

@@ -11,6 +11,10 @@
         <lastmod>2022-01-17</lastmod>
     </url>
     <url>
+        <loc>https://docspell.org/blog/audio-file-addon/</loc>
+        <lastmod>2022-05-16</lastmod>
+    </url>
+    <url>
         <loc>https://docspell.org/blog/create-post/</loc>
         <lastmod>2022-01-31</lastmod>
     </url>
@@ -20,6 +24,21 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/addons/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/addons/basics/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/addons/control/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/addons/using/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/addons/writing/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/api/</loc>
@@ -49,6 +68,9 @@
         <loc>https://docspell.org/docs/configure/database/</loc>
     </url>
     <url>
+        <loc>https://docspell.org/docs/configure/defaults/</loc>
+    </url>
+    <url>
         <loc>https://docspell.org/docs/configure/file-backends/</loc>
     </url>
     <url>
@@ -65,6 +87,9 @@
     </url>
     <url>
         <loc>https://docspell.org/docs/dev/</loc>
+    </url>
+    <url>
+        <loc>https://docspell.org/docs/dev/add-language/</loc>
     </url>
     <url>
         <loc>https://docspell.org/docs/dev/adr/</loc>
