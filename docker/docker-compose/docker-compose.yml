@@ -43,6 +43,7 @@ services:
       - DOCSPELL_SERVER_BACKEND_ADDONS_ENABLED=false
     depends_on:
       - solr
+      - db
 
   joex:
     image: docspell/joex:latest
@@ -69,6 +70,7 @@ services:
       - "7878:7878"
     depends_on:
       - solr
+      - db
     ## Uncomment when using the "docker" runner with addons
     # volumes:
     #   - /var/run/docker.sock:/var/run/docker.sock
@@ -131,7 +133,6 @@ services:
       timeout: 10s
       retries: 2
       start_period: 30s
-
 
 volumes:
   docspell-postgres_data:
