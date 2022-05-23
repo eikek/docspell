@@ -25,7 +25,7 @@ object AddonOutput {
   val empty: AddonOutput = AddonOutput()
 
   def combine(a: AddonOutput, b: AddonOutput): AddonOutput =
-    AddonOutput(a.commands ++ b.commands, a.files ++ b.files)
+    AddonOutput(a.commands ++ b.commands, a.files ++ b.files, a.newItems ++ b.newItems)
 
   implicit val addonResultMonoid: Monoid[AddonOutput] =
     Monoid.instance(empty, combine)

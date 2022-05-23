@@ -223,20 +223,23 @@ object OAddons {
             upsert.flatTap { runConfigId =>
               runConfig.schedule match {
                 case Some(timer) =>
-                  userTasks.updateTask(
-                    UserTaskScope.collective(collective),
-                    s"Addon task ${runConfig.name}".some,
-                    UserTask(
-                      runConfigId,
-                      scheduledAddonTaskName,
-                      true,
-                      timer,
-                      s"Running scheduled addon task ${runConfig.name}".some,
-                      ScheduledAddonTaskArgs(collective, runConfigId)
+                  userTasks
+                    .updateTask(
+                      UserTaskScope.collective(collective),
+                      s"Addon task ${runConfig.name}".some,
+                      UserTask(
+                        runConfigId,
+                        scheduledAddonTaskName,
+                        true,
+                        timer,
+                        s"Running scheduled addon task ${runConfig.name}".some,
+                        ScheduledAddonTaskArgs(collective, runConfigId)
+                      )
                     )
-                  )
+                    .flatTap(_ => joex.notifyPeriodicTasks)
                 case None =>
-                  userTasks.deleteTask(UserTaskScope.collective(collective), runConfigId)
+                  userTasks
+                    .deleteTask(UserTaskScope.collective(collective), runConfigId)
               }
             }
           )
