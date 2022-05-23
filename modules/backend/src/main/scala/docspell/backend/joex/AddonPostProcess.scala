@@ -50,10 +50,11 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
       outputDir: Path
   ): F[Unit] =
     for {
-      _ <- logger.info("Applying addon output")
+      _ <- logger.info(s"Applying addon output commands (${output.commands.size})")
       _ <- cmdRunner.runAll(collective, output.commands)
-      _ <- logger.debug("Applying changes from files")
+      _ <- logger.debug(s"Applying changes from files (${output.files.size})")
       _ <- output.files.traverse_(updateOne(logger, collective, outputDir))
+      _ <- logger.debug(s"Applying new items (${output.newItems.size})")
       _ <- output.newItems.traverse_(submitNewItem(logger, collective, outputDir))
     } yield ()
 
@@ -63,7 +64,7 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
       outputDir: Path
   )(newItem: NewItem): F[Unit] =
     for {
-      _ <- logger.info(s"Submit new item with ${newItem.files.size} files")
+      _ <- logger.debug(s"Submit new item with ${newItem.files.size} files")
       files <- newItem.resolveFiles[F](logger, outputDir)
       collLang <- store.transact(RCollective.findLanguage(collective))
       uploaded <- files.traverse(file =>
