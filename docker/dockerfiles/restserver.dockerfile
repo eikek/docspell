@@ -7,7 +7,8 @@ ARG TARGETPLATFORM
 RUN JDKPKG="openjdk11-jre"; \
     if [[ $TARGETPLATFORM = linux/arm* ]]; then JDKPKG="openjdk8-jre"; fi; \
     apk update && \
-    apk add --no-cache $JDKPKG bash tzdata
+    apk add --no-cache $JDKPKG bash tzdata && \
+    apk add 'zlib=1.2.12-r1'
 
 WORKDIR /opt
 RUN wget ${restserver_url:-https://github.com/eikek/docspell/releases/download/v$version/docspell-restserver-$version.zip} && \
