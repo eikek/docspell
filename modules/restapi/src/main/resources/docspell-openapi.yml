@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.35.0-SNAPSHOT
+  version: 0.37.0-SNAPSHOT
   description: |
     This is the remote API to Docspell. Docspell is a free document
     management system focused on small groups or families.
@@ -5790,9 +5790,388 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/addon/archive:
+    get:
+      operationId: "sec-addon-archive-get"
+      tags: [Addons]
+      summary: Get all registered addons
+      description: |
+        Returns a list of all registered addons.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddonList"
+    post:
+      operationId: "sec-addon-post"
+      tags: [ Addons ]
+      summary: Install a new addon
+      description: |
+        Given an URL to an addon (which is a zip file containing a
+        `docspell-meta.yaml` or json descriptor), the addon is
+        downloaded and installed in docspell.
+
+        By default this happens asynchronously and the response only
+        indicates that installing has been submitted. The result will
+        be transfered over the websocket channel. With query parameter
+        `sync` installing happens synchronously and it may take a
+        while to complete (if successful, the addon id is returned).
+      security:
+        - authTokenHeader: []
+      parameters:
+        - in: query
+          name: sync
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddonRegister"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResult"
+  /sec/addon/archive/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    delete:
+      operationId: "sec-addon-archive-delete"
+      tags: [Addons]
+      summary: Deletes the addon and removes it from all addon run configs
+      description: |
+        Deletes the addon from the database and also removes it from
+        all run configurations where it might be referenced.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    put:
+      operationId: "sec-addon-archive-put"
+      tags: [ Addons ]
+      summary: Update an addon from its url
+      description: |
+        Addons are urls to zip files. This call reads the url again
+        and updates the contents in docspell for this addon.
+
+        By default this happens asynchronously and the response only
+        indicates that updating has been submitted. The result will be
+        transfered over the websocket channel. With query parameter
+        `sync` updating happens synchronously and it may take a while
+        to complete.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - in: query
+          name: sync
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: boolean
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/addon/run-config:
+    get:
+      operationId: "sec-addon-run-config-get"
+      tags: [Addons]
+      summary: Get all addon run configs
+      description: |
+        Returns a list of addon run configs.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddonRunConfigList"
+    post:
+      operationId: "sec-addon-run-config-post"
+      tags: [ Addons ]
+      summary: Adds a new addon run config
+      description: |
+        Adds a new set of configured addons, creating a run
+        configuration.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddonRunConfig"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResult"
+
+  /sec/addon/run-config/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    put:
+      operationId: "sec-addon-run-config-id-put"
+      tags: [ Addons ]
+      summary: Updates an addon run config
+      description: |
+        Updates an existing addon run configuration. The id is taken
+        from the URL and any given id in the request body is ignored.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddonRunConfig"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      operationId: "sec-addonrunconfig-delete"
+      tags: [Addons]
+      summary: Deletes the addon run config given its id
+      description: |
+        Deletes the addon run configuration.
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/addon/run/existingitem:
+    post:
+      operationId: "sec-addon-run-existing-item"
+      tags: [Addons]
+      summary: Submits a task running addons for an item
+      description: |
+        Submits a background task that executes the specified (or all)
+        addons configured to use for an existing item.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddonRunExistingItem"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
 
 components:
   schemas:
+    AddonRunExistingItem:
+      description: |
+        Data to run addons for an existing item.
+      required:
+        - itemId
+      properties:
+        itemId:
+          type: string
+          format: ident
+        additionalItems:
+          type: array
+          items:
+            type: string
+            format: ident
+          description: |
+            Additional items to run addons on. There will be one job
+            submitted per item.
+        addonRunConfigIds:
+          type: array
+          items:
+            type: string
+            format: ident
+          description: |
+            If non empty, only select these addon run configs.
+            Otherwise all configured to be run for existing items are
+            executed.
+
+    AddonRef:
+      description: |
+        A reference to an addon (archive) with additional name and
+        version and its arguments. When used for adding addon run
+        configs, name and version are ignored.
+      required:
+        - addonId
+        - name
+        - version
+        - args
+      properties:
+        addonId:
+          type: string
+          format: ident
+        name:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+        args:
+          type: string
+
+    AddonRunConfig:
+      description: |
+        A set of configured addons that are run on certain points
+        defined by the `trigger` property.
+      required:
+        - id
+        - name
+        - enabled
+        - trigger
+        - addons
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        enabled:
+          type: boolean
+        userId:
+          type: string
+          format: ident
+          description: |
+            An addon can be run on behalf of a user. If not given, no
+            authentication token is generated into the environment of
+            the addon. The user can be given as user_id or by its
+            login name.
+        schedule:
+          type: string
+          format: calevent
+          description: |
+            A schedule must be supplied when a trigger type of
+            'scheduled' is defined.
+        trigger:
+          description: |
+            Defines when this task is executed. There must be at least
+            one element. Possible values:
+              
+              * process-item: After an item has been processed
+              * reprocess-item: After an item has been re-processed
+              * scheduled: Executed periodically based on a schedule,
+                which must be defined then
+          type: array
+          items:
+            type: string
+            format: addon-trigger-type
+            enum:
+              - process-item
+              - reprocess-item
+              - scheduled
+        addons:
+          type: array
+          items:
+            $ref: "#/components/schemas/AddonRef"
+
+    AddonRunConfigList:
+      description: |
+        A list of addon run configurations.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AddonRunConfig"
+          
+    AddonRegister:
+      description: |
+        Data to register addons
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+
+    Addon:
+      description: |
+        An registered addon.
+      required:
+        - id
+        - name
+        - version
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+          format: uri
+        created:
+          type: integer
+          format: date-time
+
+    AddonList:
+      description: |
+        A list of addons
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Addon"       
+
     DownloadAllSummary:
       description: |
         Information about a ZIP download.

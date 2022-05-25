@@ -11,16 +11,18 @@ import cats.implicits._
 
 import docspell.backend.signup.{Config => SignupConfig}
 import docspell.common._
-import docspell.store.JdbcConfig
 import docspell.store.file.FileRepositoryConfig
+import docspell.store.{JdbcConfig, SchemaMigrateConfig}
 
 import emil.javamail.Settings
 
 case class Config(
     mailDebug: Boolean,
     jdbc: JdbcConfig,
+    databaseSchema: SchemaMigrateConfig,
     signup: SignupConfig,
-    files: Config.Files
+    files: Config.Files,
+    addons: Config.Addons
 ) {
 
   def mailSettings: Settings =
@@ -65,5 +67,22 @@ object Config {
 
       (storesEmpty |+| defaultStorePresent).map(_ => this)
     }
+  }
+
+  case class Addons(
+      enabled: Boolean,
+      allowImpure: Boolean,
+      allowedUrls: UrlMatcher,
+      deniedUrls: UrlMatcher
+  ) {
+    def isAllowed(url: LenientUri): Boolean =
+      allowedUrls.matches(url) && !deniedUrls.matches(url)
+
+    def isDenied(url: LenientUri): Boolean =
+      !isAllowed(url)
+  }
+  object Addons {
+    val disabled: Addons =
+      Addons(false, false, UrlMatcher.False, UrlMatcher.True)
   }
 }

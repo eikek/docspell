@@ -167,9 +167,8 @@ export QEMU_NET_OPTS "hostfwd=tcp::7880-:7880"
 
 # Release
 
-The CI and making a release is done via [github
-actions](https://docs.github.com/en/actions). The workflow is roughly
-like this:
+The CI and making a release is done via github actions. The workflow
+is roughly like this:
 
 - each PR is only merged if the `sbt ci` task returns successfully.
   This is ensured by the `ci.yml` workflow that triggers on each pull
@@ -207,9 +206,3 @@ publishing the release. However, for the nightly releases, this
 doesn't matter - everything must be automated here obviously. I also
 wanted the docker images to be built from the exact same artifacts
 that have been released at github (in contrast to being built again).
-
-
-# Background Info
-
-There is a list of [ADRs](@/docs/dev/adr/_index.md) containing
-internal/background info for various topics.

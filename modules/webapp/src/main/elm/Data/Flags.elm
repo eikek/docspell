@@ -38,6 +38,7 @@ type alias Config =
     , downloadAllMaxFiles : Int
     , downloadAllMaxSize : Int
     , openIdAuth : List OpenIdAuth
+    , addonsEnabled : Bool
     }
 
 

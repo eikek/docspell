@@ -11,6 +11,8 @@ import cats.implicits._
 
 import docspell.common._
 
+import io.circe.Json
+
 case class LogEvent(
     jobId: Ident,
     taskName: Ident,
@@ -19,7 +21,8 @@ case class LogEvent(
     time: Timestamp,
     level: LogLevel,
     msg: String,
-    ex: Option[Throwable] = None
+    ex: Option[Throwable],
+    data: Map[String, Json]
 ) {
 
   def logLine: String =
@@ -35,10 +38,11 @@ object LogEvent {
       group: Ident,
       jobInfo: String,
       level: LogLevel,
-      msg: String
+      msg: String,
+      data: Map[String, Json]
   ): F[LogEvent] =
     Timestamp
       .current[F]
-      .map(now => LogEvent(jobId, taskName, group, jobInfo, now, level, msg))
+      .map(now => LogEvent(jobId, taskName, group, jobInfo, now, level, msg, None, data))
 
 }

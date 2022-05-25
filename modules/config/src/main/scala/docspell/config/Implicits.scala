@@ -13,6 +13,7 @@ import scala.reflect.ClassTag
 import cats.syntax.all._
 import fs2.io.file.Path
 
+import docspell.addons.RunnerType
 import docspell.common._
 import docspell.ftspsql.{PgQueryParser, RankNormalization}
 import docspell.logging.{Level, LogConfig}
@@ -31,6 +32,17 @@ object Implicits {
         if (name.equalsIgnoreCase("S3")) "s3"
         else super.fieldValue(name)
     }
+
+  implicit val urlMatcherReader: ConfigReader[UrlMatcher] = {
+    val fromList = ConfigReader[List[String]].emap(reason(UrlMatcher.fromStringList))
+    val fromString = ConfigReader[String].emap(
+      reason(str => UrlMatcher.fromStringList(str.split("[\\s,]+").toList))
+    )
+    fromList.orElse(fromString)
+  }
+
+  implicit val runnerSelectReader: ConfigReader[List[RunnerType]] =
+    ConfigReader[String].emap(reason(RunnerType.fromSeparatedString))
 
   implicit val accountIdReader: ConfigReader[AccountId] =
     ConfigReader[String].emap(reason(AccountId.parse))

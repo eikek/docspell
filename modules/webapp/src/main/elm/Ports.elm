@@ -11,6 +11,7 @@ port module Ports exposing
     , printElement
     , receiveCheckQueryResult
     , receiveServerEvent
+    , refreshFileView
     , removeAccount
     , setAccount
     , setUiTheme
@@ -52,6 +53,11 @@ port printElement : String -> Cmd msg
 {-| Receives messages from the websocket.
 -}
 port receiveWsMessage : (D.Value -> msg) -> Sub msg
+
+
+{-| Given an ID of an element that is either EMBED or IFRAME the js will reload its src
+-}
+port refreshFileView : String -> Cmd msg
 
 
 

@@ -12,9 +12,11 @@ import cats.syntax.all._
 import fs2.Stream
 
 import docspell.common.{Ident, LogLevel}
-import docspell.logging
-import docspell.logging.{Level, Logger}
+import docspell.logging.{Level, LogEvent => DsLogEvent, Logger}
 
+/** Background tasks use this logger to emit the log events to a queue. The consumer is
+  * [[LogSink]], which picks up log events in a separate thread.
+  */
 object QueueLogger {
 
   def create[F[_]: Sync](
@@ -26,7 +28,7 @@ object QueueLogger {
   ): Logger[F] =
     new Logger[F] {
 
-      def log(logEvent: logging.LogEvent) =
+      def log(logEvent: => DsLogEvent) =
         LogEvent
           .create[F](
             jobId,
@@ -34,7 +36,8 @@ object QueueLogger {
             group,
             jobInfo,
             level2Level(logEvent.level),
-            logEvent.msg()
+            logEvent.msg(),
+            logEvent.data.toMap
           )
           .flatMap { ev =>
             val event =

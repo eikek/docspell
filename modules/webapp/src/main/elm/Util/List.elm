@@ -14,10 +14,40 @@ module Util.List exposing
     , findNext
     , findPrev
     , get
+    , removeByIndex
+    , replaceByIndex
     , sliding
     )
 
 import Html.Attributes exposing (list)
+
+
+removeByIndex : Int -> List a -> List a
+removeByIndex index list =
+    List.indexedMap
+        (\idx ->
+            \e ->
+                if idx == index then
+                    Nothing
+
+                else
+                    Just e
+        )
+        list
+        |> List.filterMap identity
+
+
+replaceByIndex : Int -> a -> List a -> List a
+replaceByIndex index element list =
+    let
+        repl idx e =
+            if idx == index then
+                element
+
+            else
+                e
+    in
+    List.indexedMap repl list
 
 
 changePosition : Int -> Int -> List a -> List a

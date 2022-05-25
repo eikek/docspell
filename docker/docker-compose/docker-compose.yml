@@ -13,6 +13,11 @@ services:
   # - DOCSPELL_SERVER_AUTH_SERVER__SECRET
   # - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE
   #   (use the same value at the consumedir container!)
+  #
+  # After creating an account, you may want to set signup mode to
+  # "closed" or to "invite". When using invite, you must also set
+  # DOCSPELL_SERVER_BACKEND_SIGNUP_NEW__INVITE__PASSWORD to some
+  # secret.
   restserver:
     image: docspell/restserver:latest
     container_name: docspell-restserver
@@ -33,8 +38,12 @@ services:
       - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_ENABLED=true
       - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_ENABLED=true
       - DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_HEADER__VALUE=integration-password123
+      - DOCSPELL_SERVER_BACKEND_SIGNUP_MODE=open
+      - DOCSPELL_SERVER_BACKEND_SIGNUP_NEW__INVITE__PASSWORD=
+      - DOCSPELL_SERVER_BACKEND_ADDONS_ENABLED=false
     depends_on:
       - solr
+      - db
 
   joex:
     image: docspell/joex:latest
@@ -46,6 +55,9 @@ services:
     restart: unless-stopped
     environment:
       - TZ=Europe/Berlin
+      - DOCSPELL_JOEX_APP__ID=joex1
+      - DOCSPELL_JOEX_PERIODIC__SCHEDULER_NAME=joex1
+      - DOCSPELL_JOEX_SCHEDULER_NAME=joex1
       - DOCSPELL_JOEX_BASE__URL=http://docspell-joex:7878
       - DOCSPELL_JOEX_BIND_ADDRESS=0.0.0.0
       - DOCSPELL_JOEX_FULL__TEXT__SEARCH_ENABLED=true
@@ -53,10 +65,16 @@ services:
       - DOCSPELL_JOEX_JDBC_PASSWORD=dbpass
       - DOCSPELL_JOEX_JDBC_URL=jdbc:postgresql://db:5432/dbname
       - DOCSPELL_JOEX_JDBC_USER=dbuser
+      - DOCSPELL_JOEX_ADDONS_EXECUTOR__CONFIG_RUNNER=docker,trivial
     ports:
       - "7878:7878"
     depends_on:
       - solr
+      - db
+    ## Uncomment when using the "docker" runner with addons
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock
+    #   - /tmp:/tmp
 
   # The consumedir container watches a directory for files to upload
   # to docspell restserver. This uses the `dsc` tool. For information
@@ -90,7 +108,7 @@ services:
       - restserver
 
   db:
-    image: postgres:14.2
+    image: postgres:14.3
     container_name: postgres_db
     restart: unless-stopped
     volumes:
@@ -101,7 +119,7 @@ services:
       - POSTGRES_DB=dbname
 
   solr:
-    image: solr:8
+    image: solr:9
     container_name: docspell-solr
     restart: unless-stopped
     volumes:
@@ -115,7 +133,6 @@ services:
       timeout: 10s
       retries: 2
       start_period: 30s
-
 
 volumes:
   docspell-postgres_data:

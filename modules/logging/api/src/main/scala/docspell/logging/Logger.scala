@@ -13,15 +13,27 @@ import cats.effect.{Ref, Sync}
 import cats.syntax.applicative._
 import cats.syntax.functor._
 import cats.syntax.order._
-import cats.{Applicative, Id}
+import cats.{Applicative, Functor, Id}
 
+import io.circe.{Encoder, Json}
 import sourcecode._
 
 trait Logger[F[_]] extends LoggerExtension[F] {
 
-  def log(ev: LogEvent): F[Unit]
+  def log(ev: => LogEvent): F[Unit]
 
   def asUnsafe: Logger[Id]
+
+  def captureAll(data: LazyMap[String, Json]): Logger[F] =
+    CapturedLogger(this, data)
+
+  def captureAll(data: Map[String, Json]): Logger[F] =
+    CapturedLogger(this, LazyMap.fromMap(data))
+
+  def capture[A: Encoder](key: String, value: => A): Logger[F] = {
+    val enc = Encoder[A]
+    CapturedLogger(this, LazyMap.empty[String, Json].updated(key, enc(value)))
+  }
 
   def trace(msg: => String)(implicit
       pkg: Pkg,
@@ -123,22 +135,22 @@ trait Logger[F[_]] extends LoggerExtension[F] {
 object Logger {
   def off: Logger[Id] =
     new Logger[Id] {
-      def log(ev: LogEvent): Unit = ()
+      def log(ev: => LogEvent): Unit = ()
       def asUnsafe = this
     }
 
   def offF[F[_]: Applicative]: Logger[F] =
     new Logger[F] {
-      def log(ev: LogEvent) = ().pure[F]
+      def log(ev: => LogEvent) = ().pure[F]
       def asUnsafe = off
     }
 
-  def buffer[F[_]: Sync](): F[(Ref[F, Vector[LogEvent]], Logger[F])] =
+  def buffer[F[_]: Ref.Make: Functor](): F[(Ref[F, Vector[LogEvent]], Logger[F])] =
     for {
       buffer <- Ref.of[F, Vector[LogEvent]](Vector.empty[LogEvent])
       logger =
         new Logger[F] {
-          def log(ev: LogEvent) =
+          def log(ev: => LogEvent) =
             buffer.update(_.appended(ev))
           def asUnsafe = off
         }
@@ -147,7 +159,7 @@ object Logger {
   /** Just prints to the given print stream. Useful for testing. */
   def simple(ps: PrintStream, minimumLevel: Level): Logger[Id] =
     new Logger[Id] {
-      def log(ev: LogEvent): Unit =
+      def log(ev: => LogEvent): Unit =
         if (ev.level >= minimumLevel)
           ps.println(s"${Instant.now()} [${Thread.currentThread()}] ${ev.asString}")
         else
@@ -158,7 +170,7 @@ object Logger {
 
   def simpleF[F[_]: Sync](ps: PrintStream, minimumLevel: Level): Logger[F] =
     new Logger[F] {
-      def log(ev: LogEvent) =
+      def log(ev: => LogEvent) =
         Sync[F].delay(asUnsafe.log(ev))
 
       val asUnsafe = simple(ps, minimumLevel)

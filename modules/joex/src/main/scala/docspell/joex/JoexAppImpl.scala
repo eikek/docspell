@@ -145,6 +145,8 @@ object JoexAppImpl extends MailAddressCodec {
         schedulerModule.scheduler,
         schedulerModule.periodicScheduler
       )
+      nodes <- ONode(store)
+      _ <- nodes.withRegistered(cfg.appId, NodeType.Joex, cfg.baseUrl, None)
       appR <- Resource.make(app.init.map(_ => app))(_.initShutdown)
     } yield appR
 

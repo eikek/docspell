@@ -9,6 +9,7 @@ module Util.String exposing
     ( appendIfAbsent
     , crazyEncode
     , ellipsis
+    , firstSentenceOrMax
     , isBlank
     , isNothingOrBlank
     , underscoreToSpace
@@ -16,7 +17,6 @@ module Util.String exposing
     )
 
 import Base64
-import Html exposing (strong)
 
 
 crazyEncode : String -> String
@@ -43,6 +43,26 @@ ellipsis len str =
 
     else
         String.left (len - 1) str ++ "…"
+
+
+firstSentenceOrMax : Int -> String -> Maybe String
+firstSentenceOrMax maxLen str =
+    let
+        idx =
+            String.indexes "." str
+                |> List.head
+                |> Maybe.map ((+) 2)
+                |> Maybe.map (min maxLen)
+                |> Maybe.withDefault maxLen
+
+        len =
+            String.length str
+    in
+    if len <= maxLen then
+        Nothing
+
+    else
+        Just <| String.left (idx - 1) str ++ "…"
 
 
 withDefault : String -> String -> String

@@ -21,6 +21,11 @@ trait Task[F[_], A, B] {
   def andThen[C](f: B => F[C])(implicit F: FlatMap[F]): Task[F, A, C] =
     Task(Task.toKleisli(this).andThen(f))
 
+  def andThenC[C](f: (Context[F, A], B) => F[C])(implicit M: Monad[F]): Task[F, A, C] = {
+    val run = Task.toKleisli(this).run
+    Task(ctx => run(ctx).flatMap(b => f(ctx, b)))
+  }
+
   def mapF[C](f: F[B] => F[C]): Task[F, A, C] =
     Task(Task.toKleisli(this).mapF(f))
 

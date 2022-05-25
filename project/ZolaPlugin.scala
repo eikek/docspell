@@ -23,6 +23,7 @@ object ZolaPlugin extends AutoPlugin {
         "'python -m SimpleHTTPServer 1234' for example."
     )
     val zolaCheck = taskKey[Unit]("Runs zola check to check links")
+    val zolaPrepare = taskKey[Unit]("Some task to run before generating docs")
   }
 
   import autoImport._
@@ -33,10 +34,12 @@ object ZolaPlugin extends AutoPlugin {
       zolaOutputDir := target.value / "zola-site",
       zolaCommand := "zola",
       zolaTestBaseUrl := "http://localhost:1234",
+      zolaPrepare := {},
       zolaBuild := {
         val logger = streams.value.log
         logger.info("Building web site using zola ...")
         (Compile / resources).value
+        zolaPrepare.value
         buildSite(zolaCommand.value, zolaRootDir.value, zolaOutputDir.value, None, logger)
         logger.info("Website built")
       },
@@ -45,6 +48,7 @@ object ZolaPlugin extends AutoPlugin {
         val baseurl = zolaTestBaseUrl.value
         logger.info("Building web site (test) using zola ...")
         (Compile / resources).value
+        zolaPrepare.value
         buildSite(
           zolaCommand.value,
           zolaRootDir.value,

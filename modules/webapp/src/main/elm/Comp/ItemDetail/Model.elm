@@ -28,6 +28,8 @@ module Comp.ItemDetail.Model exposing
     , resultModelCmdSub
     )
 
+import Api.Model.AddonRunConfig exposing (AddonRunConfig)
+import Api.Model.AddonRunConfigList exposing (AddonRunConfigList)
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.CustomField exposing (CustomField)
 import Api.Model.EquipmentList exposing (EquipmentList)
@@ -72,6 +74,7 @@ import Set exposing (Set)
 
 type alias Model =
     { item : ItemDetail
+    , runConfigs : List AddonRunConfig
     , visibleAttach : Int
     , attachMenuOpen : Bool
     , menuOpen : Bool
@@ -123,6 +126,9 @@ type alias Model =
     , viewMode : ViewMode
     , showQrModel : ShowQrModel
     , itemLinkModel : Comp.ItemLinkForm.Model
+    , showRunAddon : Bool
+    , addonRunConfigDropdown : Comp.Dropdown.Model AddonRunConfig
+    , addonRunSubmitted : Bool
     }
 
 
@@ -204,6 +210,7 @@ isEditNotes field =
 emptyModel : Model
 emptyModel =
     { item = Api.Model.ItemDetail.empty
+    , runConfigs = []
     , visibleAttach = 0
     , attachMenuOpen = False
     , menuOpen = False
@@ -259,6 +266,9 @@ emptyModel =
     , viewMode = SimpleView
     , showQrModel = initShowQrModel
     , itemLinkModel = Comp.ItemLinkForm.emptyModel
+    , showRunAddon = False
+    , addonRunConfigDropdown = Comp.Dropdown.makeSingle
+    , addonRunSubmitted = False
     }
 
 
@@ -271,7 +281,7 @@ initSelectViewModel =
 
 type Msg
     = ToggleMenu
-    | ReloadItem
+    | ReloadItem Bool
     | Init
     | SetItem ItemDetail
     | SetActiveAttachment Int
@@ -373,6 +383,12 @@ type Msg
     | SetNameMsg Comp.SimpleTextInput.Msg
     | ToggleSelectItem
     | ItemLinkFormMsg Comp.ItemLinkForm.Msg
+    | ToggleShowRunAddon
+    | LoadRunConfigResp (Result Http.Error AddonRunConfigList)
+    | RunAddonMsg (Comp.Dropdown.Msg AddonRunConfig)
+    | RunSelectedAddon
+    | RunAddonResp (Result Http.Error BasicResult)
+    | SetAddonRunSubmitted Bool
 
 
 type SaveNameState

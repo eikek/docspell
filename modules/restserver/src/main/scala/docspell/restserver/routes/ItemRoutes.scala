@@ -218,7 +218,7 @@ object ItemRoutes {
       case req @ PUT -> Root / Ident(id) / "folder" =>
         for {
           idref <- req.as[OptionalId]
-          res <- backend.item.setFolder(id, idref.id, user.account.collective)
+          res <- backend.item.setFolder(id, idref.id.map(_.id), user.account.collective)
           resp <- Ok(Conversions.basicResult(res, "Folder updated"))
         } yield resp
 

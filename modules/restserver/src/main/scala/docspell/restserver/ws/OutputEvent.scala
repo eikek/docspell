@@ -7,6 +7,7 @@
 package docspell.restserver.ws
 
 import docspell.backend.auth.AuthToken
+import docspell.backend.ops.AddonValidationError
 import docspell.common._
 
 import io.circe._
@@ -39,12 +40,20 @@ object OutputEvent {
       Msg("job-submitted", task).asJson
   }
 
-  final case class JobDone(group: Ident, task: Ident) extends OutputEvent {
+  final case class JobDone(
+      group: Ident,
+      task: Ident,
+      args: Option[Json],
+      result: Option[Json]
+  ) extends OutputEvent {
     def forCollective(token: AuthToken): Boolean =
       token.account.collective == group
 
     def asJson: Json =
-      Msg("job-done", task).asJson
+      Msg(
+        "job-done",
+        Map("task" -> task.asJson, "args" -> args.asJson, "result" -> result.asJson)
+      ).asJson
   }
 
   final case class JobsWaiting(collective: Ident, count: Int) extends OutputEvent {
@@ -53,6 +62,29 @@ object OutputEvent {
 
     def asJson: Json =
       Msg("jobs-waiting", count).asJson
+  }
+
+  final case class AddonInstalled(
+      collective: Ident,
+      message: String,
+      error: Option[AddonValidationError],
+      addonId: Option[Ident],
+      originalUrl: Option[LenientUri]
+  ) extends OutputEvent {
+    def forCollective(token: AuthToken) =
+      token.account.collective == collective
+
+    override def asJson =
+      Msg(
+        "addon-installed",
+        Map(
+          "success" -> error.isEmpty.asJson,
+          "error" -> error.asJson,
+          "addonId" -> addonId.asJson,
+          "addonUrl" -> originalUrl.asJson,
+          "message" -> message.asJson
+        )
+      ).asJson
   }
 
   private case class Msg[A](tag: String, content: A)

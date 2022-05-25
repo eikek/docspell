@@ -143,7 +143,9 @@ object Event {
 
   }
 
-  /** Some generic list of items, chosen by a user. */
+  /** Some generic list of items, chosen by a user. This is use to notify about periodic
+    * search results.
+    */
   final case class ItemSelection(
       account: AccountId,
       items: Nel[Ident],

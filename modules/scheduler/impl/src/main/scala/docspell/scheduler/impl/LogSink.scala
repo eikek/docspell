@@ -11,7 +11,6 @@ import cats.implicits._
 import fs2.Pipe
 
 import docspell.common._
-import docspell.logging
 import docspell.store.Store
 import docspell.store.records.RJobLog
 
@@ -29,26 +28,27 @@ object LogSink {
     }
 
   def logInternal[F[_]: Sync](e: LogEvent): F[Unit] = {
-    val logger = docspell.logging.getLogger[F]
-    val addData: logging.LogEvent => logging.LogEvent =
-      _.data("jobId", e.jobId)
-        .data("task", e.taskName)
-        .data("group", e.group)
-        .data("jobInfo", e.jobInfo)
+    val logger = docspell.logging
+      .getLogger[F]
+      .capture("jobId", e.jobId)
+      .capture("task", e.taskName)
+      .capture("group", e.group)
+      .capture("jobInfo", e.jobInfo)
+      .captureAll(e.data)
 
     e.level match {
       case LogLevel.Info =>
-        logger.infoWith(e.logLine)(addData)
+        logger.info(e.logLine)
       case LogLevel.Debug =>
-        logger.debugWith(e.logLine)(addData)
+        logger.debug(e.logLine)
       case LogLevel.Warn =>
-        logger.warnWith(e.logLine)(addData)
+        logger.warn(e.logLine)
       case LogLevel.Error =>
         e.ex match {
           case Some(exc) =>
-            logger.errorWith(e.logLine)(addData.andThen(_.addError(exc)))
+            logger.error(exc)(e.logLine)
           case None =>
-            logger.errorWith(e.logLine)(addData)
+            logger.error(e.logLine)
         }
     }
   }

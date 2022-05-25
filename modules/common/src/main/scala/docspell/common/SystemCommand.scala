@@ -17,11 +17,23 @@ import cats.implicits._
 import fs2.io.file.Path
 import fs2.{Stream, io, text}
 
+import docspell.common.{exec => newExec}
 import docspell.logging.Logger
 
+// better use `SysCmd` and `SysExec`
 object SystemCommand {
 
-  final case class Config(program: String, args: Seq[String], timeout: Duration) {
+  final case class Config(
+      program: String,
+      args: Seq[String],
+      timeout: Duration,
+      env: Map[String, String] = Map.empty
+  ) {
+
+    def toSysCmd = newExec
+      .SysCmd(program, newExec.Args(args))
+      .withTimeout(timeout)
+      .addEnv(newExec.Env(env))
 
     def mapArgs(f: String => String): Config =
       Config(program, args.map(f), timeout)
@@ -33,11 +45,62 @@ object SystemCommand {
         }
       )
 
+    def withEnv(key: String, value: String): Config =
+      copy(env = env.updated(key, value))
+
+    def addEnv(moreEnv: Map[String, String]): Config =
+      copy(env = env ++ moreEnv)
+
+    def appendArgs(extraArgs: Args): Config =
+      copy(args = args ++ extraArgs.args)
+
+    def appendArgs(extraArgs: Seq[String]): Config =
+      copy(args = args ++ extraArgs)
+
     def toCmd: List[String] =
       program :: args.toList
 
     lazy val cmdString: String =
       toCmd.mkString(" ")
+  }
+
+  final case class Args(args: Vector[String]) extends Iterable[String] {
+    override def iterator = args.iterator
+
+    def prepend(a: String): Args = Args(a +: args)
+
+    def prependWhen(flag: Boolean)(a: String): Args =
+      prependOption(Option.when(flag)(a))
+
+    def prependOption(value: Option[String]): Args =
+      value.map(prepend).getOrElse(this)
+
+    def append(a: String, as: String*): Args =
+      Args(args ++ (a +: as.toVector))
+
+    def appendOption(value: Option[String]): Args =
+      value.map(append(_)).getOrElse(this)
+
+    def appendOptionVal(first: String, second: Option[String]): Args =
+      second.map(b => append(first, b)).getOrElse(this)
+
+    def appendWhen(flag: Boolean)(a: String, as: String*): Args =
+      if (flag) append(a, as: _*) else this
+
+    def appendWhenNot(flag: Boolean)(a: String, as: String*): Args =
+      if (!flag) append(a, as: _*) else this
+
+    def append(p: Path): Args =
+      append(p.toString)
+
+    def append(as: Iterable[String]): Args =
+      Args(args ++ as.toVector)
+  }
+  object Args {
+    val empty: Args = Args()
+
+    def apply(as: String*): Args =
+      Args(as.toVector)
   }
 
   final case class Result(rc: Int, stdout: String, stderr: String)
@@ -104,6 +167,10 @@ object SystemCommand {
           .redirectError(Redirect.PIPE)
           .redirectOutput(Redirect.PIPE)
 
+        val pbEnv = pb.environment()
+        cmd.env.foreach { case (key, value) =>
+          pbEnv.put(key, value)
+        }
         wd.map(_.toNioPath.toFile).foreach(pb.directory)
         pb.start()
       }

@@ -117,7 +117,11 @@ object ItemMultiRoutes extends NonEmptyListSupport with MultiIdSupport {
         for {
           json <- req.as[ItemsAndRef]
           items <- requireNonEmpty(json.items)
-          res <- backend.item.setFolderMultiple(items, json.ref, user.account.collective)
+          res <- backend.item.setFolderMultiple(
+            items,
+            json.ref.map(_.id),
+            user.account.collective
+          )
           resp <- Ok(Conversions.basicResult(res, "Folder updated"))
         } yield resp
 

@@ -109,7 +109,7 @@ object MultiUploadArchiveTask {
   )(file: ProcessItemArgs.File): Stream[F, ProcessItemArgs] =
     store.fileRepo
       .getBytes(file.fileMetaId)
-      .through(Zip.unzipP[F](8192, args.meta.fileFilter.getOrElse(Glob.all)))
+      .through(Zip.unzip[F](8192, args.meta.fileFilter.getOrElse(Glob.all)))
       .flatMap { entry =>
         val hint = MimeTypeHint(entry.name.some, entry.mime.asString.some)
         entry.data

@@ -42,6 +42,7 @@ object Store {
 
   def create[F[_]: Async](
       jdbc: JdbcConfig,
+      schemaCfg: SchemaMigrateConfig,
       fileRepoConfig: FileRepositoryConfig,
       connectEC: ExecutionContext
   ): Resource[F, Store[F]] = {
@@ -58,7 +59,7 @@ object Store {
       }
       xa = HikariTransactor(ds, connectEC)
       fr = FileRepository.apply(xa, ds, fileRepoConfig, true)
-      st = new StoreImpl[F](fr, jdbc, ds, xa)
+      st = new StoreImpl[F](fr, jdbc, schemaCfg, ds, xa)
       _ <- Resource.eval(st.migrate)
     } yield st
   }

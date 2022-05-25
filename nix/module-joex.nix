@@ -19,6 +19,12 @@ let
     logging = {
       minimum-level = "Info";
       format = "Fancy";
+      levels = {
+        "docspell" = "Info";
+        "org.flywaydb" = "Info";
+        "binny" = "Info";
+        "org.http4s" = "Info";
+      };
     };
     mail-debug = false;
     jdbc = {
@@ -61,6 +67,10 @@ let
       cleanup-remember-me = {
         enabled = true;
         older-than = "30 days";
+      };
+      cleanup-downloads = {
+        enabled = true;
+        older-than = "14 days";
       };
       check-nodes = {
         enabled = true;
@@ -236,6 +246,29 @@ Docpell Update Check
         index-all-chunk = 10;
       };
     };
+    addons = {
+      working-dir = "/tmp/docspell-addons-work";
+      cache-dir = "/tmp/docspell-addons-cache";
+      executor-config = {
+        runner = "nix-flake,docker,trivial";
+        nspawn = {
+          enabled = false;
+          sudo-binary = "sudo";
+          nspawn-binary = "systemd-nspawn";
+          container-wait = "100 millis";
+        };
+        fail-fast = true;
+        run-timeout = "15 minutes";
+        nix-runner = {
+          nix-binary = "${pkgs.nixFlakes}/bin/nix";
+          build-timeout = "15 minutes";
+        };
+        docker-runner = {
+          docker-binary = "${pkgs.docker}/bin/docker";
+          build-timeout = "15 minutes";
+        };
+      };
+    };
   };
 in {
 
@@ -315,6 +348,11 @@ in {
               type = types.str;
               default = defaults.logging.format;
               description = "The log format. One of: Fancy, Plain, Json or Logfmt";
+            };
+            levels = mkOption {
+              type = types.attrs;
+              default = defaults.logging.levels;
+              description = "Set of logger and their levels";
             };
           };
         });
@@ -601,6 +639,26 @@ in {
               default = defaults.house-keeping.cleanup-remember-me;
               description = "Settings for cleaning up remember me tokens.";
             };
+
+            cleanup-downloads = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.house-keeping.cleanup-downloads.enabled;
+                    description = "Whether this task is enabled.";
+                  };
+                  older-than = mkOption {
+                    type = types.str;
+                    default = defaults.house-keeping.cleanup-downloads.older-than;
+                    description = "The miminum age of a download file to delete.";
+                  };
+                };
+              });
+              default = defaults.house-keeping.cleanup-downloads;
+              description = "";
+            };
+
             check-nodes = mkOption {
               type = types.submodule({
                 options = {
@@ -1502,6 +1560,111 @@ in {
         });
         default = defaults.full-text-search;
         description = "Configuration for full-text search.";
+      };
+      addons = mkOption {
+        type = types.submodule({
+          options = {
+            working-dir = mkOption {
+              type = types.str;
+              default = defaults.addons.working-dir;
+              description = "Working directory";
+            };
+            cache-dir = mkOption {
+              type = types.str;
+              default = defaults.addons.cache-dir;
+              description = "Cache directory";
+            };
+            executor-config = mkOption {
+              type = types.submodule({
+                options = {
+                  runner = mkOption {
+                    type = types.str;
+                    default = defaults.addons.executor-config.runner;
+                    description = "The supported runners by this joex";
+                  };
+                  fail-fast = mkOption {
+                    type = types.bool;
+                    default = defaults.addons.executor-config.fail-fast;
+                    description = "";
+                  };
+                  run-timeout = mkOption {
+                    type = types.str;
+                    default = defaults.addons.executor-config.run-timeout;
+                    description = "";
+                  };
+                  nspawn = mkOption {
+                    type = types.submodule({
+                      options = {
+                        enabled = mkOption {
+                          type = types.bool;
+                          default = defaults.addons.nspawn.enabled;
+                          description = "Enable to use systemd-nspawn";
+                        };
+                        sudo-binary = mkOption {
+                          type = types.str;
+                          default = defaults.addons.executor-config.nspawn.sudo-binary;
+                          description = "";
+                        };
+                        nspawn-binary = mkOption {
+                          type = types.str;
+                          default = defaults.addons.executor-config.nspawn.nspawn-binary;
+                          description = "";
+                        };
+                        container-wait = mkOption {
+                          type = types.str;
+                          default = defaults.addons.executor-config.nspawn.container-wait;
+                          description = "";
+                        };
+                      };
+                    });
+                    default = defaults.addons.executor-config.nspawn;
+                    description = "";
+                  };
+                  nix-runner = mkOption {
+                    type = types.submodule({
+                      options = {
+                        nix-binary = mkOption {
+                          type = types.str;
+                          default = defaults.addons.executor-config.nix-runner.nix-binary;
+                          description = "";
+                        };
+                        build-timeout = mkOption {
+                          type = types.str;
+                          default = defaults.addons.executor-config.nix-runner.build-timeout;
+                          description = "";
+                        };
+                      };
+                    });
+                    default = defaults.addons.executor-config.nix-runner;
+                    description = "";
+                  };
+                  docker-runner = mkOption {
+                    type = types.submodule({
+                      options = {
+                        docker-binary = mkOption {
+                          type = types.str;
+                          default = defaults.addons.executor-config.docker-runner.docker-binary;
+                          description = "";
+                        };
+                        build-timeout = mkOption {
+                          type = types.str;
+                          default = defaults.addons.executor-config.docker-runner.build-timeout;
+                          description = "";
+                        };
+                      };
+                    });
+                    default = defaults.addons.executor-config.docker-runner;
+                    description = "";
+                  };
+                };
+              });
+              default = defaults.addons.executor-config;
+              description = "";
+            };
+          };
+        });
+        default = defaults.addons;
+        description = "Addon executor config";
       };
     };
   };

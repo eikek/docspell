@@ -13,6 +13,7 @@ import cats.effect.unsafe.implicits.global
 
 import docspell.analysis.Env
 import docspell.common._
+import docspell.common.util.File
 import docspell.files.TestFiles
 import docspell.logging.TestLoggingConfig
 

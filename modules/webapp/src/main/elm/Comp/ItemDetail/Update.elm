@@ -56,6 +56,7 @@ import Comp.PersonForm
 import Comp.SentMails
 import Comp.SimpleTextInput
 import Comp.TagDropdown
+import Data.AddonTrigger
 import Data.CustomFieldChange exposing (CustomFieldChange(..))
 import Data.Direction
 import Data.Environment as Env
@@ -75,7 +76,9 @@ import Html5.DragDrop as DD
 import Http
 import Page exposing (Page(..))
 import Ports
+import Process
 import Set exposing (Set)
+import Task
 import Util.File exposing (makeFileId)
 import Util.List
 import Util.Maybe
@@ -121,8 +124,76 @@ update inav env msg model =
                     , Cmd.map ItemMailMsg ic
                     , Cmd.map CustomFieldMsg cc
                     , Api.getSentMails env.flags model.item.id SentMailsResp
+                    , Api.addonRunConfigGet env.flags LoadRunConfigResp
                     ]
                 )
+
+        LoadRunConfigResp (Ok list) ->
+            let
+                existingItem cfg =
+                    cfg.enabled
+                        && (Data.AddonTrigger.fromList cfg.trigger
+                                |> List.any ((==) Data.AddonTrigger.ExistingItem)
+                           )
+
+                configs =
+                    List.filter existingItem list.items
+
+                dropdown =
+                    Comp.Dropdown.makeSingleList { options = configs, selected = Nothing }
+            in
+            resultModel { model | runConfigs = configs, addonRunConfigDropdown = dropdown }
+
+        RunAddonMsg lm ->
+            let
+                ( dd, dc ) =
+                    Comp.Dropdown.update lm model.addonRunConfigDropdown
+            in
+            resultModelCmd ( { model | addonRunConfigDropdown = dd }, Cmd.map RunAddonMsg dc )
+
+        RunSelectedAddon ->
+            let
+                configs =
+                    Comp.Dropdown.getSelected model.addonRunConfigDropdown
+                        |> List.map .id
+
+                payload =
+                    { itemId = model.item.id
+                    , additionalItems = []
+                    , addonRunConfigIds = configs
+                    }
+
+                ( dd, _ ) =
+                    Comp.Dropdown.update (Comp.Dropdown.SetSelection []) model.addonRunConfigDropdown
+            in
+            case configs of
+                [] ->
+                    resultModel model
+
+                _ ->
+                    resultModelCmd
+                        ( { model | addonRunConfigDropdown = dd }
+                        , Api.addonRunExistingItem env.flags payload RunAddonResp
+                        )
+
+        LoadRunConfigResp (Err _) ->
+            resultModel model
+
+        RunAddonResp (Ok res) ->
+            if res.success then
+                resultModelCmd
+                    ( { model | addonRunSubmitted = True }
+                    , Process.sleep 1200 |> Task.perform (\_ -> SetAddonRunSubmitted False)
+                    )
+
+            else
+                resultModel model
+
+        RunAddonResp (Err _) ->
+            resultModel model
+
+        SetAddonRunSubmitted flag ->
+            resultModel { model | addonRunSubmitted = flag }
 
         SetItem item ->
             let
@@ -316,12 +387,22 @@ update inav env msg model =
             resultModel
                 { model | menuOpen = not model.menuOpen }
 
-        ReloadItem ->
+        ReloadItem withFile ->
             if model.item.id == "" then
                 resultModel model
 
             else
-                resultModelCmd ( model, Api.itemDetail env.flags model.item.id GetItemResp )
+                resultModelCmd
+                    ( model
+                    , Cmd.batch
+                        [ Api.itemDetail env.flags model.item.id GetItemResp
+                        , if withFile then
+                            Ports.refreshFileView "ds-pdf-view-iframe"
+
+                          else
+                            Cmd.none
+                        ]
+                    )
 
         FolderDropdownMsg m ->
             let
@@ -931,7 +1012,7 @@ update inav env msg model =
 
         DeleteAttachResp (Ok res) ->
             if res.success then
-                update inav env ReloadItem model
+                update inav env (ReloadItem False) model
 
             else
                 resultModel model
@@ -1637,6 +1718,9 @@ update inav env msg model =
                 , Cmd.map ItemLinkFormMsg ilc
                 , Sub.map ItemLinkFormMsg ils
                 )
+
+        ToggleShowRunAddon ->
+            resultModel { model | showRunAddon = not model.showRunAddon, mobileItemMenuOpen = False }
 
 
 

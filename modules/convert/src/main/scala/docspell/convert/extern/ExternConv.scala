@@ -12,6 +12,7 @@ import fs2.io.file.{Files, Path}
 import fs2.{Pipe, Stream}
 
 import docspell.common._
+import docspell.common.util.File
 import docspell.convert.ConversionResult
 import docspell.convert.ConversionResult.{Handler, successPdf, successPdfTxt}
 import docspell.logging.Logger

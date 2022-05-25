@@ -41,6 +41,7 @@ object JoexServer {
 
       store <- Store.create[F](
         cfg.jdbc,
+        cfg.databaseSchema,
         cfg.files.defaultFileRepositoryConfig,
         pools.connectEC
       )
@@ -59,7 +60,7 @@ object JoexServer {
           Router("pubsub" -> pubSub.receiveRoute)
         },
         "/api/info" -> InfoRoutes(cfg),
-        "/api/v1" -> JoexRoutes(joexApp)
+        "/api/v1" -> JoexRoutes(cfg, joexApp)
       ).orNotFound
 
       // With Middlewares in place

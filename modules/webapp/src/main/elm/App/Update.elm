@@ -14,6 +14,7 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
+import Comp.AddonArchiveManage
 import Comp.DownloadAll
 import Data.AppEvent exposing (AppEvent(..))
 import Data.Environment as Env
@@ -313,13 +314,16 @@ updateWithSub msg model =
 
         ReceiveWsMessage data ->
             case data of
-                Ok (JobDone task) ->
+                Ok (JobDone details) ->
                     let
                         isProcessItem =
-                            task == "process-item"
+                            details.task == "process-item"
 
                         isDownloadZip =
-                            task == "download-query-zip"
+                            details.task == "download-query-zip"
+
+                        isAddonExistingItem =
+                            Data.ServerEvent.isAddonExistingItem model.itemDetailModel.detail.item.id details
 
                         newModel =
                             { model
@@ -336,6 +340,9 @@ updateWithSub msg model =
                     else if Page.isDashboardPage model.page && isProcessItem then
                         updateDashboard texts Page.Dashboard.Data.reloadDashboardData newModel
 
+                    else if Page.isDetailPage model.page && isAddonExistingItem then
+                        updateItemDetail texts (Page.ItemDetail.Data.ReloadItem True) newModel
+
                     else
                         ( newModel, Cmd.none, Sub.none )
 
@@ -344,6 +351,9 @@ updateWithSub msg model =
 
                 Ok (JobsWaiting n) ->
                     ( { model | jobsWaiting = max 0 n }, Cmd.none, Sub.none )
+
+                Ok (AddonInstalled info) ->
+                    updateManageData (Page.ManageData.Data.AddonArchiveMsg <| Comp.AddonArchiveManage.addonInstallResult info) model
 
                 Err _ ->
                     ( model, Cmd.none, Sub.none )
@@ -640,7 +650,7 @@ updateManageData : Page.ManageData.Data.Msg -> Model -> ( Model, Cmd Msg, Sub Ms
 updateManageData lmsg model =
     let
         ( lm, lc, ls ) =
-            Page.ManageData.Update.update model.flags lmsg model.manageDataModel
+            Page.ManageData.Update.update model.flags model.uiSettings lmsg model.manageDataModel
     in
     ( { model | manageDataModel = lm }
     , Cmd.map ManageDataMsg lc

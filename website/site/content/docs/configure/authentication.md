@@ -46,7 +46,7 @@ an OpenID Provider (OP) somewhere and to configure Docspell
 accordingly to act as the relying party.
 
 You can define multiple OPs to use. For some examples, please see the
-[default configuration](@/docs/configure/main.md#default-config).
+[default configuration](@/docs/configure/defaults.md).
 
 The configuration of a provider highly depends on how it is setup.
 Here is an example for a setup using

@@ -13,12 +13,12 @@ import cats.{Applicative, Id}
 final private[logging] class AndThenLogger[F[_]: Applicative](
     val loggers: NonEmptyList[Logger[F]]
 ) extends Logger[F] {
-  def log(ev: LogEvent): F[Unit] =
+  def log(ev: => LogEvent): F[Unit] =
     loggers.traverse(_.log(ev)).as(())
 
   def asUnsafe: Logger[Id] =
     new Logger[Id] { self =>
-      def log(ev: LogEvent): Unit =
+      def log(ev: => LogEvent): Unit =
         loggers.toList.foreach(_.asUnsafe.log(ev))
       def asUnsafe = self
     }

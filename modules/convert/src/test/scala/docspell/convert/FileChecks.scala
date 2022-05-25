@@ -18,6 +18,7 @@ import fs2.io.file.Path
 import fs2.{Pipe, Stream}
 
 import docspell.common._
+import docspell.common.util.File
 import docspell.convert.ConversionResult.Handler
 import docspell.files.TikaMimetype
 

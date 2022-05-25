@@ -22,6 +22,7 @@ highlight_themes_css = [
 [link_checker]
 skip_prefixes = [
   "http://localhost",
+  "https://docs.github.com", # doesn't allow checking anymore
   "/openapi",
   "https://www.abisource.com" # has bad ssl config
 ]
@@ -32,4 +33,4 @@ skip_anchor_prefixes = [
 
 [extra]
 # Put all your custom variables here
-version = "0.35.0-SNAPSHOT"
+version = "0.37.0-SNAPSHOT"

@@ -82,6 +82,7 @@ template = "docs.html"
     - zip
     - [eml](https://en.wikipedia.org/wiki/Email#Filename_extensions)
       (e-mail files in plain text MIME)
+- Extend Docspell via [addons](@/docs/addons/basics.md)
 - Tooling:
   - [Command Line Interface](@/docs/tools/cli.md) allowing to upload
     files, watch folders and many more!

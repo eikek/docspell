@@ -16,6 +16,7 @@ import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
+import scodec.bits.ByteVector
 
 case class RNode(
     id: Ident,
@@ -23,13 +24,19 @@ case class RNode(
     url: LenientUri,
     updated: Timestamp,
     created: Timestamp,
-    notFound: Int
+    notFound: Int,
+    serverSecret: Option[ByteVector]
 ) {}
 
 object RNode {
 
-  def apply[F[_]: Sync](id: Ident, nodeType: NodeType, uri: LenientUri): F[RNode] =
-    Timestamp.current[F].map(now => RNode(id, nodeType, uri, now, now, 0))
+  def apply[F[_]: Sync](
+      id: Ident,
+      nodeType: NodeType,
+      uri: LenientUri,
+      serverSecret: Option[ByteVector]
+  ): F[RNode] =
+    Timestamp.current[F].map(now => RNode(id, nodeType, uri, now, now, 0, serverSecret))
 
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "node"
@@ -40,7 +47,9 @@ object RNode {
     val updated = Column[Timestamp]("updated", this)
     val created = Column[Timestamp]("created", this)
     val notFound = Column[Int]("not_found", this)
-    val all = NonEmptyList.of[Column[_]](id, nodeType, url, updated, created, notFound)
+    val serverSecret = Column[ByteVector]("server_secret", this)
+    val all = NonEmptyList
+      .of[Column[_]](id, nodeType, url, updated, created, notFound, serverSecret)
   }
 
   def as(alias: String): Table =
@@ -52,7 +61,7 @@ object RNode {
     DML.insert(
       t,
       t.all,
-      fr"${v.id},${v.nodeType},${v.url},${v.updated},${v.created},${v.notFound}"
+      fr"${v.id},${v.nodeType},${v.url},${v.updated},${v.created},${v.notFound},${v.serverSecret}"
     )
   }
 
@@ -65,6 +74,7 @@ object RNode {
         DML.set(
           t.nodeType.setTo(v.nodeType),
           t.url.setTo(v.url),
+          t.serverSecret.setTo(v.serverSecret),
           t.updated.setTo(v.updated)
         )
       )

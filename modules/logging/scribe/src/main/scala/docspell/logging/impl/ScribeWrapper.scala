@@ -18,13 +18,13 @@ private[logging] object ScribeWrapper {
   final class ImplUnsafe(log: scribe.Logger) extends Logger[Id] {
     override def asUnsafe = this
 
-    override def log(ev: LogEvent): Unit =
+    override def log(ev: => LogEvent): Unit =
       log.log(convert(ev))
   }
   final class Impl[F[_]: Sync](log: scribe.Logger) extends Logger[F] {
     override def asUnsafe = new ImplUnsafe(log)
 
-    override def log(ev: LogEvent) =
+    override def log(ev: => LogEvent) =
       Sync[F].delay(log.log(convert(ev)))
   }
 
@@ -40,13 +40,11 @@ private[logging] object ScribeWrapper {
 
   private[this] def convert(ev: LogEvent) = {
     val level = convertLevel(ev.level)
-    val additional: List[LoggableMessage] = ev.additional.map { x =>
-      x() match {
-        case Right(ex) => Message.static(ex)
-        case Left(msg) => Message.static(msg)
-      }
-    }
+    val additional: List[LoggableMessage] = ev.additional.map {
+      case Right(ex) => Message.static(ex)
+      case Left(msg) => Message.static(msg)
+    }.toList
     LoggerSupport(level, ev.msg(), additional, ev.pkg, ev.fileName, ev.name, ev.line)
-      .copy(data = ev.data)
+      .copy(data = ev.data.toDeferred)
   }
 }

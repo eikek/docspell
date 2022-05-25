@@ -1,5 +1,59 @@
 # Changelog
 
+## v0.36.0
+
+*May 22, 2022*
+
+- Extend docspell via addons (experimental feature) (#1550)
+- Adds Lithuanian and Polish to document languages (#1540, #1345)
+- Added a quick guide for adding more languages (#942)
+- Make dashboard boxes headlines bold (#1531)
+- Improve logging config; allow to specify loggers and their level (#1535)
+- Allow for auth tokens to optionally be issued with an validity (#1533, 1534)
+- Allow to repair db migrations, necessary for rare cases like #1517
+
+### Rest API Changes
+
+- new endpoints for managing addons
+- new endpoint for joex to return its addon executor config
+
+### Configuration Changes
+
+- logging config sections allows to specfiy a map of logger names ->
+  level pairs (joex and restserver)
+- addon config section in restserver: allows to enable/disable
+  corresponding endpoints
+- addon config section in joex: allows to configure how to run addons
+
+
+## v0.35.0
+
+*Apr 14, 2022*
+
+- Download multiple documents as zip (#1093). The webui allows to
+  download multiple files as a zip archive. The zip file is created at
+  the server and cached for a while.
+- New project [ds4e](https://github.com/docspell/ds4e) providing some
+  utilises to access Docspell from Emacs.
+- Increase size for password fields in the database (#1508)
+- Hide the delete button in new notifciation channel forms (#1506)
+- Fix logging (#1468), non-errors were logged as errors. 
+- Apply the migration fix from last version only from 0.32.0 onwards
+  (#1469)
+- Fix typos in UI (#1510, @monnypython)
+- Add support for Postgres FTS in nix module (#1512, @LeSuisse)
+
+### Rest API Changes
+
+- adds routes to create and download multiple files
+
+### Configuration Changes
+
+- restserver: add limits for creating zip files from search queries
+- joex: settings for new cleanup task that removes zip files that
+  exceed some configured age
+
+
 ## v0.34.0
 
 *Mar 31, 2022*
@@ -406,7 +460,7 @@ Complete
 
 - Joex: A new section for configuring the update task has been added.
   See section `update-check` in the default [config
-  file](https://docspell.org/docs/configure/main/#joex).
+  file](https://docspell.org/docs/configure/defaults/#joex).
 
 
 ## v0.25.1
@@ -855,7 +909,7 @@ Please open an issue if want more languages to be included.
   - the config regarding text analysis changed, there are new config
     options, like `nlp.mode` and the `max-due-date-years` has been
     moved inside `text-anlysis`. Please have a look at the new
-    [default config](https://docspell.org/docs/configure/main/#joex)
+    [default config](https://docspell.org/docs/configure/defaults/#joex)
     if you changed something there.
   - The `regex-ner` section has changed: the `enabled` flag has been
     removed, you can now limit the number of entries using

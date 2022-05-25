@@ -18,6 +18,14 @@ module Api exposing
     , addShare
     , addTag
     , addTagsMultiple
+    , addonRunConfigDelete
+    , addonRunConfigGet
+    , addonRunConfigSet
+    , addonRunExistingItem
+    , addonsDelete
+    , addonsGetAll
+    , addonsInstall
+    , addonsUpdate
     , attachmentPreviewURL
     , bookmarkNameExists
     , cancelJob
@@ -211,6 +219,11 @@ module Api exposing
     , versionInfo
     )
 
+import Api.Model.AddonList exposing (AddonList)
+import Api.Model.AddonRegister exposing (AddonRegister)
+import Api.Model.AddonRunConfig exposing (AddonRunConfig)
+import Api.Model.AddonRunConfigList exposing (AddonRunConfigList)
+import Api.Model.AddonRunExistingItem exposing (AddonRunExistingItem)
 import Api.Model.AttachmentMeta exposing (AttachmentMeta)
 import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.BasicResult exposing (BasicResult)
@@ -3153,6 +3166,99 @@ shareDownloadAllSubmit flags token req receive =
 shareDownloadAllLink : Flags -> String -> String
 shareDownloadAllLink flags id =
     flags.config.baseUrl ++ "/api/v1/share/downloadAll/file/" ++ id
+
+
+
+--- Addons
+
+
+addonsGetAll : Flags -> (Result Http.Error AddonList -> msg) -> Cmd msg
+addonsGetAll flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/addon/archive"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.AddonList.decoder
+        }
+
+
+addonsDelete : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addonsDelete flags addonId receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/addon/archive/" ++ addonId
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addonsInstall : Flags -> AddonRegister -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addonsInstall flags addon receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/addon/archive"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.AddonRegister.encode addon)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addonsUpdate : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addonsUpdate flags addonId receive =
+    Http2.authPut
+        { url = flags.config.baseUrl ++ "/api/v1/sec/addon/archive/" ++ addonId
+        , account = getAccount flags
+        , body = Http.emptyBody
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addonRunConfigGet : Flags -> (Result Http.Error AddonRunConfigList -> msg) -> Cmd msg
+addonRunConfigGet flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v1/sec/addon/run-config"
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.AddonRunConfigList.decoder
+        }
+
+
+addonRunConfigSet :
+    Flags
+    -> AddonRunConfig
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+addonRunConfigSet flags cfg receive =
+    if cfg.id == "" then
+        Http2.authPost
+            { url = flags.config.baseUrl ++ "/api/v1/sec/addon/run-config"
+            , account = getAccount flags
+            , body = Http.jsonBody (Api.Model.AddonRunConfig.encode cfg)
+            , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+            }
+
+    else
+        Http2.authPut
+            { url = flags.config.baseUrl ++ "/api/v1/sec/addon/run-config/" ++ cfg.id
+            , account = getAccount flags
+            , body = Http.jsonBody (Api.Model.AddonRunConfig.encode cfg)
+            , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+            }
+
+
+addonRunConfigDelete : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addonRunConfigDelete flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v1/sec/addon/run-config/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+addonRunExistingItem : Flags -> AddonRunExistingItem -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+addonRunExistingItem flags input receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/addon/run/existingitem"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.AddonRunExistingItem.encode input)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
 
 
 

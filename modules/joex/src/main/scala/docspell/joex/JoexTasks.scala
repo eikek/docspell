@@ -9,7 +9,9 @@ package docspell.joex
 import cats.effect.{Async, Resource}
 
 import docspell.analysis.TextAnalyser
+import docspell.backend.BackendCommands
 import docspell.backend.fulltext.CreateIndex
+import docspell.backend.joex.AddonOps
 import docspell.backend.ops._
 import docspell.backend.task.DownloadZipArgs
 import docspell.common._
@@ -17,6 +19,7 @@ import docspell.config.FtsType
 import docspell.ftsclient.FtsClient
 import docspell.ftspsql.PsqlFtsClient
 import docspell.ftssolr.SolrFtsClient
+import docspell.joex.addon.{ItemAddonTask, ScheduledAddonTask}
 import docspell.joex.analysis.RegexNerFile
 import docspell.joex.download.DownloadZipTask
 import docspell.joex.emptytrash.EmptyTrashTask
@@ -32,6 +35,7 @@ import docspell.joex.preview.{AllPreviewsTask, MakePreviewTask}
 import docspell.joex.process.{ItemHandler, ReProcessItem}
 import docspell.joex.scanmailbox.ScanMailboxTask
 import docspell.joex.updatecheck.{ThisVersion, UpdateCheck, UpdateCheckTask}
+import docspell.joexapi.client.JoexClient
 import docspell.notification.api.NotificationModule
 import docspell.pubsub.api.PubSubT
 import docspell.scheduler.impl.JobStoreModuleBuilder
@@ -57,7 +61,8 @@ final class JoexTasks[F[_]: Async](
     createIndex: CreateIndex[F],
     joex: OJoex[F],
     jobs: OJob[F],
-    itemSearch: OItemSearch[F]
+    itemSearch: OItemSearch[F],
+    addons: AddonOps[F]
 ) {
   val downloadAll: ODownloadAll[F] =
     ODownloadAll(store, jobs, jobStoreModule.jobs)
@@ -68,7 +73,8 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           ProcessItemArgs.taskName,
-          ItemHandler.newItem[F](cfg, store, itemOps, fts, analyser, regexNer),
+          ItemHandler
+            .newItem[F](cfg, store, itemOps, fts, analyser, regexNer, addons),
           ItemHandler.onCancel[F](store)
         )
       )
@@ -82,7 +88,15 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           ReProcessItemArgs.taskName,
-          ReProcessItem[F](cfg, fts, itemOps, analyser, regexNer, store),
+          ReProcessItem[F](
+            cfg,
+            fts,
+            itemOps,
+            analyser,
+            regexNer,
+            addons,
+            store
+          ),
           ReProcessItem.onCancel[F]
         )
       )
@@ -223,6 +237,20 @@ final class JoexTasks[F[_]: Async](
           DownloadZipTask.onCancel[F]
         )
       )
+      .withTask(
+        JobTask.json(
+          ScheduledAddonTaskArgs.taskName,
+          ScheduledAddonTask[F](addons),
+          ScheduledAddonTask.onCancel[F]
+        )
+      )
+      .withTask(
+        JobTask.json(
+          ItemAddonTaskArgs.taskName,
+          ItemAddonTask[F](addons, store),
+          ItemAddonTask.onCancel[F]
+        )
+      )
 }
 
 object JoexTasks {
@@ -237,8 +265,9 @@ object JoexTasks {
       emailService: Emil[F]
   ): Resource[F, JoexTasks[F]] =
     for {
-      joex <- OJoex(pubSub)
-      store = jobStoreModule.store
+      store <- Resource.pure(jobStoreModule.store)
+      node <- ONode(store)
+      joex <- OJoex(pubSub, node, JoexClient(httpClient))
       upload <- OUpload(store, jobStoreModule.jobs)
       fts <- createFtsClient(cfg, pools, store, httpClient)
       createIndex <- CreateIndex.resource(fts, store)
@@ -250,6 +279,16 @@ object JoexTasks {
       notification <- ONotification(store, notificationModule)
       fileRepo <- OFileRepository(store, jobStoreModule.jobs)
       jobs <- OJob(store, joex, pubSub)
+      fields <- OCustomFields(store)
+      attachmentOps = OAttachment(store, fts, jobStoreModule.jobs)
+      cmdRunner = BackendCommands(itemOps, attachmentOps, fields, notification, None)
+      addons = AddonOps(
+        cfg.addons,
+        store,
+        cmdRunner,
+        attachmentOps,
+        jobStoreModule.jobs
+      )
     } yield new JoexTasks[F](
       cfg,
       store,
@@ -266,7 +305,8 @@ object JoexTasks {
       createIndex,
       joex,
       jobs,
-      itemSearchOps
+      itemSearchOps,
+      addons
     )
 
   private def createFtsClient[F[_]: Async](

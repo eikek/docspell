@@ -4,20 +4,18 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.common
+package docspell.common.util
 
 import java.nio.file.{Path => JPath}
 
-import cats.FlatMap
-import cats.Monad
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
+import cats.{FlatMap, Monad}
 import fs2.Stream
 import fs2.io.file.{Files, Flags, Path}
 
-import docspell.common.syntax.all._
-
 import io.circe.Decoder
+import io.circe.parser
 
 object File {
 
@@ -75,6 +73,5 @@ object File {
       .map(_ => file)
 
   def readJson[F[_]: Async, A](file: Path)(implicit d: Decoder[A]): F[A] =
-    readText[F](file).map(_.parseJsonAs[A]).rethrow
-
+    readText[F](file).map(parser.decode[A]).rethrow
 }

@@ -6,7 +6,8 @@
 
 package docspell.store.records
 
-import cats.data.NonEmptyList
+import cats.data.{NonEmptyList, OptionT}
+import cats.syntax.all._
 
 import docspell.common.{FileKey, _}
 import docspell.store.qb.DSL._
@@ -44,11 +45,28 @@ object RAttachmentPreview {
   def insert(v: RAttachmentPreview): ConnectionIO[Int] =
     DML.insert(T, T.all, fr"${v.id},${v.fileId},${v.name},${v.created}")
 
+  def update(r: RAttachmentPreview): ConnectionIO[Int] =
+    DML.update(
+      T,
+      T.id === r.id,
+      DML.set(
+        T.fileId.setTo(r.fileId),
+        T.name.setTo(r.name)
+      )
+    )
+
   def findById(attachId: Ident): ConnectionIO[Option[RAttachmentPreview]] =
     run(select(T.all), from(T), T.id === attachId).query[RAttachmentPreview].option
 
   def delete(attachId: Ident): ConnectionIO[Int] =
     DML.delete(T, T.id === attachId)
+
+  def upsert(r: RAttachmentPreview): ConnectionIO[Option[FileKey]] =
+    OptionT(findById(r.id))
+      .semiflatMap(existing =>
+        update(existing.copy(fileId = r.fileId, name = r.name)).as(Some(existing.fileId))
+      )
+      .getOrElseF(insert(r).as(None))
 
   def findByIdAndCollective(
       attachId: Ident,

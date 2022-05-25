@@ -6,6 +6,8 @@
 
 package docspell.scheduler
 
+import cats.effect.Sync
+
 import docspell.common._
 import docspell.logging.Logger
 
@@ -25,4 +27,8 @@ trait Context[F[_], A] { self =>
 
   def map[C](f: A => C): Context[F, C]
 
+  def unit: Context[F, Unit] =
+    map(_ => ())
+
+  def loadJob(implicit F: Sync[F]): F[Job[String]]
 }

@@ -70,11 +70,13 @@ class GlobTest extends FunSuite {
 
   test("with splitting") {
     assert(Glob("a/b/*").matches(true)("a/b/hello"))
+    assert(!Glob("a/b/*").matches(true)("a/b/hello/bello"))
     assert(!Glob("a/b/*").matches(true)("/a/b/hello"))
     assert(Glob("/a/b/*").matches(true)("/a/b/hello"))
     assert(!Glob("/a/b/*").matches(true)("a/b/hello"))
     assert(!Glob("*/a/b/*").matches(true)("a/b/hello"))
     assert(Glob("*/a/b/*").matches(true)("test/a/b/hello"))
+    assert(!Glob("/a/b").matches(true)("/a/b/c/d"))
   }
 
   test("asString") {

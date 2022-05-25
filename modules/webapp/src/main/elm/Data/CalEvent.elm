@@ -8,6 +8,7 @@
 module Data.CalEvent exposing
     ( CalEvent
     , everyMonth
+    , everyMonthTz
     , fromEvent
     , makeEvent
     )
@@ -29,7 +30,12 @@ type alias CalEvent =
 
 everyMonth : CalEvent
 everyMonth =
-    CalEvent Nothing "*" "*" "01" "00" "00" Data.TimeZone.utc
+    everyMonthTz Data.TimeZone.utc
+
+
+everyMonthTz : TimeZone -> CalEvent
+everyMonthTz tz =
+    CalEvent Nothing "*" "*" "01" "00" "00" tz
 
 
 makeEvent : CalEvent -> String

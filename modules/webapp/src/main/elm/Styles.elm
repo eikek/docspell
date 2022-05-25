@@ -35,6 +35,11 @@ sidebarLink =
     " mb-2 px-4 py-3 flex flex-row hover:bg-blue-100 dark:hover:bg-slate-600 hover:font-bold rounded rounded-lg items-center "
 
 
+successText : String
+successText =
+    " text-green-600  dark:text-lime-500 "
+
+
 successMessage : String
 successMessage =
     " border border-green-600 bg-green-50 text-green-600 dark:border-lime-800 dark:bg-lime-300 dark:text-lime-800 px-4 py-2 rounded "
@@ -281,7 +286,7 @@ link =
 
 inputErrorBorder : String
 inputErrorBorder =
-    " border-red-600 dark:border-orange-600 "
+    " ring dark:ring-0 ring-red-600 dark:border-orange-600 "
 
 
 inputLabel : String
@@ -395,7 +400,7 @@ editLinkTableCellStyle =
 
 dimmer : String
 dimmer =
-    " absolute top-0 left-0 w-full h-full bg-black bg-opacity-90 dark:bg-slate-900 dark:bg-opacity-90 z-30 flex flex-col items-center justify-center px-4 md:px-8 py-2 "
+    " absolute top-0 left-0 w-full h-full bg-black bg-opacity-90 dark:bg-slate-900 dark:bg-opacity-90 z-50 flex flex-col items-center justify-center px-4 md:px-8 py-2 "
 
 
 dimmerLight : String

@@ -12,6 +12,7 @@ import fs2.io.file.Path
 import docspell.analysis.TextAnalysisConfig
 import docspell.analysis.classifier.TextClassifierConfig
 import docspell.backend.Config.Files
+import docspell.backend.joex.AddonEnvConfig
 import docspell.common._
 import docspell.config.{FtsType, PgFtsConfig}
 import docspell.convert.ConvertConfig
@@ -24,7 +25,7 @@ import docspell.joex.updatecheck.UpdateCheckConfig
 import docspell.logging.LogConfig
 import docspell.pubsub.naive.PubSubConfig
 import docspell.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
-import docspell.store.JdbcConfig
+import docspell.store.{JdbcConfig, SchemaMigrateConfig}
 
 case class Config(
     appId: Ident,
@@ -32,6 +33,7 @@ case class Config(
     logging: LogConfig,
     bind: Config.Bind,
     jdbc: JdbcConfig,
+    databaseSchema: SchemaMigrateConfig,
     scheduler: SchedulerConfig,
     periodicScheduler: PeriodicSchedulerConfig,
     userTasks: Config.UserTasks,
@@ -43,7 +45,8 @@ case class Config(
     files: Files,
     mailDebug: Boolean,
     fullTextSearch: Config.FullTextSearch,
-    updateCheck: UpdateCheckConfig
+    updateCheck: UpdateCheckConfig,
+    addons: AddonEnvConfig
 ) {
 
   def pubSubConfig(headerValue: Ident): PubSubConfig =

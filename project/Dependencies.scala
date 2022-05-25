@@ -10,20 +10,22 @@ object Dependencies {
   val BinnyVersion = "0.4.0"
   val CalevVersion = "0.6.3"
   val CatsVersion = "2.7.0"
-  val CatsEffectVersion = "3.3.11"
+  val CatsEffectVersion = "3.3.12"
   val CatsParseVersion = "0.3.7"
-  val CirceVersion = "0.14.1"
+  val CirceVersion = "0.14.2"
+  val CirceGenericExtrasVersion = "0.14.1"
+  val CirceYamlVersion = "0.14.1"
   val ClipboardJsVersion = "2.0.6"
   val DoobieVersion = "1.0.0-RC2"
   val EmilVersion = "0.12.0"
   val FlexmarkVersion = "0.64.0"
-  val FlywayVersion = "8.5.7"
+  val FlywayVersion = "8.5.11"
   val Fs2Version = "3.2.7"
   val H2Version = "1.4.200"
-  val Http4sVersion = "0.23.11"
+  val Http4sVersion = "0.23.12"
   val Icu4jVersion = "71.1"
   val JavaOtpVersion = "0.3.1"
-  val JsoupVersion = "1.14.3"
+  val JsoupVersion = "1.15.1"
   val JwtScalaVersion = "9.0.5"
   val KindProjectorVersion = "0.10.3"
   val KittensVersion = "2.3.2"
@@ -34,21 +36,21 @@ object Dependencies {
   val MUnitVersion = "0.7.29"
   val MUnitCatsEffectVersion = "1.0.7"
   val OrganizeImportsVersion = "0.6.0"
-  val PdfboxVersion = "2.0.25"
+  val PdfboxVersion = "2.0.26"
   val PdfjsViewerVersion = "2.9.359"
   val PoiVersion = "4.1.2"
-  val PostgresVersion = "42.3.3"
+  val PostgresVersion = "42.3.6"
   val PureConfigVersion = "0.17.1"
   val ScalaJavaTimeVersion = "2.3.0"
-  val ScodecBitsVersion = "1.1.30"
-  val ScribeVersion = "3.8.2"
+  val ScodecBitsVersion = "1.1.31"
+  val ScribeVersion = "3.8.3"
   val Slf4jVersion = "1.7.36"
   val SourcecodeVersion = "0.2.8"
   val StanfordNlpVersion = "4.4.0"
-  val TikaVersion = "2.3.0"
+  val TikaVersion = "2.4.0"
   val YamuscaVersion = "0.9.0"
-  val SwaggerUIVersion = "4.10.3"
-  val TestContainerVersion = "0.40.5"
+  val SwaggerUIVersion = "4.11.1"
+  val TestContainerVersion = "0.40.7"
   val TwelveMonkeysVersion = "3.8.2"
   val JQueryVersion = "3.5.1"
 
@@ -261,18 +263,12 @@ object Dependencies {
     circeCore ++ circeParser ++ Seq(
       "io.circe" %% "circe-generic" % CirceVersion
     )
-  val circeGenericExtra = Seq(
-    "io.circe" %% "circe-generic-extras" % CirceVersion
+  val circeGenericExtra = circeCore ++ Seq(
+    "io.circe" %% "circe-generic-extras" % CirceGenericExtrasVersion
   )
-
-  // // https://github.com/Log4s/log4s;ASL 2.0
-  // val loggingApi = Seq(
-  //   "org.log4s" %% "log4s" % Log4sVersion
-  // )
-
-  // val logging = Seq(
-  //   "ch.qos.logback" % "logback-classic" % LogbackVersion
-  // )
+  val circeYaml = circeCore ++ Seq(
+    "io.circe" %% "circe-yaml" % CirceYamlVersion
+  )
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0

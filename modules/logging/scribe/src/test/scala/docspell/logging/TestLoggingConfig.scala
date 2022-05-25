@@ -11,16 +11,13 @@ import docspell.logging.impl.ScribeConfigure
 import munit.Suite
 
 trait TestLoggingConfig extends Suite {
-  def docspellLogConfig: LogConfig = LogConfig(Level.Warn, LogConfig.Format.Fancy)
+  def docspellLogConfig: LogConfig =
+    LogConfig(rootMinimumLevel, LogConfig.Format.Fancy, Map.empty)
+
   def rootMinimumLevel: Level = Level.Error
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    val docspellLogger = scribe.Logger("docspell")
-    ScribeConfigure.unsafeConfigure(docspellLogger, docspellLogConfig)
-    val rootCfg = docspellLogConfig.copy(minimumLevel = rootMinimumLevel)
-    ScribeConfigure.unsafeConfigure(scribe.Logger.root, rootCfg)
-    ()
+    ScribeConfigure.unsafeConfigure(docspellLogConfig)
   }
-
 }

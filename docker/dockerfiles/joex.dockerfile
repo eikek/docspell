@@ -12,6 +12,7 @@ RUN JDKPKG="openjdk11-jre"; \
     tzdata \
     bash \
     curl \
+    docker \
     ghostscript \
     tesseract-ocr \
     tesseract-ocr-data-deu \
@@ -30,6 +31,8 @@ RUN JDKPKG="openjdk11-jre"; \
     tesseract-ocr-data-lav \
     tesseract-ocr-data-jpn \
     tesseract-ocr-data-heb \
+    tesseract-ocr-data-lit \
+    tesseract-ocr-data-pol \
     unpaper \
     wkhtmltopdf \
     libreoffice \
@@ -54,7 +57,7 @@ RUN JDKPKG="openjdk11-jre"; \
   && pip3 install ocrmypdf \
   && curl -Ls $UNO_URL -o /usr/local/bin/unoconv \
   && chmod +x /usr/local/bin/unoconv \
-  && apk del curl libxml2-dev libxslt-dev zlib-dev g++ python3-dev py3-pip libffi-dev qpdf-dev openssl-dev \
+  && apk del libxml2-dev libxslt-dev zlib-dev g++ python3-dev py3-pip libffi-dev qpdf-dev openssl-dev \
   && ln -s /usr/bin/python3 /usr/bin/python
 
 WORKDIR /opt

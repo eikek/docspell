@@ -12,6 +12,7 @@ import fs2.io.file.Path
 
 import docspell.analysis.split.TextSplitter
 import docspell.common._
+import docspell.common.util.File
 import docspell.store.queries.QCollective
 
 import io.circe.generic.semiauto._

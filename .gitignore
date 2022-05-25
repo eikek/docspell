@@ -15,6 +15,11 @@ _site/
 /website/site/static/syntax-*.css
 /website/site/static/webfonts/
 /website/site/static/files/*.woff*
+/website/site/static/examples/
+/website/site/templates/shortcodes/addon-output
+/website/site/templates/shortcodes/item-data
+/website/site/templates/shortcodes/item-args
+/website/site/templates/shortcodes/file-meta
 /website/site/templates/shortcodes/server.conf
 /website/site/templates/shortcodes/sample-exim.conf
 /website/site/templates/shortcodes/joex.conf

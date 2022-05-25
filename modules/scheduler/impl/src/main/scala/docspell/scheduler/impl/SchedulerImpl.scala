@@ -231,7 +231,7 @@ final class SchedulerImpl[F[_]: Async](
       _ <- Sync[F].whenA(JobState.isDone(finishState))(
         pubSub.publish1IgnoreErrors(
           JobDone.topic,
-          JobDone(job.id, job.group, job.task, job.args, finishState)
+          JobDone(job.id, job.group, job.task, job.args, finishState, result.json)
         )
       )
       _ <- Sync[F].whenA(JobState.isDone(finishState))(
@@ -267,27 +267,36 @@ final class SchedulerImpl[F[_]: Async](
       .mapF(fa => onStart(job) *> logger.debug("Starting task now") *> fa)
       .mapF(_.attempt.flatMap {
         case Right(result) =>
-          logger.info(s"Job execution successful: ${job.info}")
-          ctx.logger.info("Job execution successful") *>
+          logger.info(s"Job execution successful: ${job.info}") *>
+            ctx.logger.info("Job execution successful") *>
             (JobState.Success: JobState, result).pure[F]
+
+        case Left(PermanentError(ex)) =>
+          logger.warn(ex)("Task failed with permanent error") *>
+            ctx.logger
+              .warn(ex)("Task failed with permanent error!")
+              .as(JobState.failed -> JobTaskResult.empty)
+
         case Left(ex) =>
           state.get.map(_.wasCancelled(job)).flatMap {
             case true =>
-              logger.error(ex)(s"Job ${job.info} execution failed (cancel = true)")
-              ctx.logger.error(ex)("Job execution failed (cancel = true)") *>
+              logger.error(ex)(s"Job ${job.info} execution failed (cancel = true)") *>
+                ctx.logger.error(ex)("Job execution failed (cancel = true)") *>
                 (JobState.Cancelled: JobState, JobTaskResult.empty).pure[F]
             case false =>
               QJob.exceedsRetries(job.id, config.retries, store).flatMap {
                 case true =>
-                  logger.error(ex)(s"Job ${job.info} execution failed. Retries exceeded.")
-                  ctx.logger
-                    .error(ex)(s"Job ${job.info} execution failed. Retries exceeded.")
-                    .map(_ => (JobState.Failed: JobState, JobTaskResult.empty))
+                  logger
+                    .error(ex)(s"Job ${job.info} execution failed. Retries exceeded.") *>
+                    ctx.logger
+                      .error(ex)(s"Job ${job.info} execution failed. Retries exceeded.")
+                      .map(_ => (JobState.Failed: JobState, JobTaskResult.empty))
                 case false =>
-                  logger.error(ex)(s"Job ${job.info} execution failed. Retrying later.")
-                  ctx.logger
-                    .error(ex)(s"Job ${job.info} execution failed. Retrying later.")
-                    .map(_ => (JobState.Stuck: JobState, JobTaskResult.empty))
+                  logger
+                    .error(ex)(s"Job ${job.info} execution failed. Retrying later.") *>
+                    ctx.logger
+                      .error(ex)(s"Job ${job.info} execution failed. Retrying later.")
+                      .map(_ => (JobState.Stuck: JobState, JobTaskResult.empty))
               }
           }
       })

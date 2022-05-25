@@ -46,6 +46,9 @@ in
   services.docspell-restserver = {
     enable = true;
     bind.address = "0.0.0.0";
+    backend = {
+      addons.enabled = true;
+    };
     integration-endpoint = {
       enabled = true;
       http-header = {
@@ -60,8 +63,8 @@ in
           provider-id = "local";
           client-id = "cid1";
           client-secret = "csecret-1";
-          authorize-url = "http:auth";
-          token-url = "http:token";
+          authorize-url = "http://auth";
+          token-url = "http://token";
           sign-key = "b64:uiaeuae";
         };
       }

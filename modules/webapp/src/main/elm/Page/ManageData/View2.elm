@@ -7,6 +7,8 @@
 
 module Page.ManageData.View2 exposing (viewContent, viewSidebar)
 
+import Comp.AddonArchiveManage
+import Comp.AddonRunConfigManage
 import Comp.BookmarkManage
 import Comp.CustomFieldManage
 import Comp.EquipmentManage
@@ -27,7 +29,7 @@ import Styles as S
 
 
 viewSidebar : Texts -> Bool -> Flags -> UiSettings -> Model -> Html Msg
-viewSidebar texts visible _ settings model =
+viewSidebar texts visible flags settings model =
     div
         [ id "sidebar"
         , class S.sidebar
@@ -134,6 +136,32 @@ viewSidebar texts visible _ settings model =
                     [ text texts.bookmarks
                     ]
                 ]
+            , a
+                [ href "#"
+                , onClick (SetTab AddonArchiveTab)
+                , menuEntryActive model AddonArchiveTab
+                , class S.sidebarLink
+                , classList [ ( "hidden", not flags.config.addonsEnabled ) ]
+                ]
+                [ Icons.addonIcon ""
+                , span
+                    [ class "ml-3" ]
+                    [ text texts.addonArchives
+                    ]
+                ]
+            , a
+                [ href "#"
+                , onClick (SetTab AddonRunConfigTab)
+                , menuEntryActive model AddonRunConfigTab
+                , class S.sidebarLink
+                , classList [ ( "hidden", not flags.config.addonsEnabled ) ]
+                ]
+                [ Icons.addonRunConfigIcon ""
+                , span
+                    [ class "ml-3" ]
+                    [ text texts.addonRunConfigs
+                    ]
+                ]
             ]
         ]
 
@@ -165,6 +193,20 @@ viewContent texts flags settings model =
 
             Just BookmarkTab ->
                 viewBookmarks texts flags settings model
+
+            Just AddonArchiveTab ->
+                if flags.config.addonsEnabled then
+                    viewAddonArchives texts flags settings model
+
+                else
+                    []
+
+            Just AddonRunConfigTab ->
+                if flags.config.addonsEnabled then
+                    viewAddonRunConfigs texts flags settings model
+
+                else
+                    []
 
             Nothing ->
                 []
@@ -305,4 +347,34 @@ viewBookmarks texts flags settings model =
             ]
         ]
     , Html.map BookmarkMsg (Comp.BookmarkManage.view texts.bookmarkManage settings flags model.bookmarkModel)
+    ]
+
+
+viewAddonArchives : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewAddonArchives texts flags settings model =
+    [ h2
+        [ class S.header1
+        , class "inline-flex items-center"
+        ]
+        [ Icons.addonIcon ""
+        , div [ class "ml-2" ]
+            [ text texts.addonArchives
+            ]
+        ]
+    , Html.map AddonArchiveMsg (Comp.AddonArchiveManage.view texts.addonArchiveManage settings flags model.addonArchiveModel)
+    ]
+
+
+viewAddonRunConfigs : Texts -> Flags -> UiSettings -> Model -> List (Html Msg)
+viewAddonRunConfigs texts flags settings model =
+    [ h2
+        [ class S.header1
+        , class "inline-flex items-center"
+        ]
+        [ Icons.addonRunConfigIcon "mr-4"
+        , div [ class "ml-2" ]
+            [ text texts.addonRunConfigs
+            ]
+        ]
+    , Html.map AddonRunConfigMsg (Comp.AddonRunConfigManage.view texts.addonRunConfigManage settings flags model.addonRunConfigModel)
     ]

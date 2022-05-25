@@ -69,7 +69,7 @@ object AttachmentPreview {
         }
 
       case mt =>
-        ctx.logger.warn(s"Not a pdf file, but ${mt.asString}, cannot get page count.") *>
+        ctx.logger.warn(s"Not a pdf file, but ${mt.asString}, cannot create preview.") *>
           (None: Option[RAttachmentPreview]).pure[F]
     }
 

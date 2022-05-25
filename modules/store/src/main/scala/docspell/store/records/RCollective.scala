@@ -97,11 +97,11 @@ object RCollective {
   def getSettings(coll: Ident): ConnectionIO[Option[Settings]] =
     (for {
       sett <- OptionT(getRawSettings(coll))
-      prev <- OptionT.fromOption[ConnectionIO](sett.classifier)
+      prev <- OptionT.pure[ConnectionIO](sett.classifier)
       cats <- OptionT.liftF(RTag.listCategories(coll))
-      next = prev.copy(categories = prev.categories.intersect(cats))
+      next = prev.map(p => p.copy(categories = p.categories.intersect(cats)))
       pws <- OptionT.liftF(RCollectivePassword.findAll(coll))
-    } yield sett.copy(classifier = Some(next), passwords = pws.map(_.password))).value
+    } yield sett.copy(classifier = next, passwords = pws.map(_.password))).value
 
   private def getRawSettings(coll: Ident): ConnectionIO[Option[Settings]] = {
     import RClassifierSetting.stringListMeta

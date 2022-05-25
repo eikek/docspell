@@ -29,6 +29,12 @@ let
     logging = {
       minimum-level = "Info";
       format = "Fancy";
+      levels = {
+        "docspell" = "Info";
+        "org.flywaydb" = "Info";
+        "binny" = "Info";
+        "org.http4s" = "Info";
+      };
     };
     integration-endpoint = {
       enabled = false;
@@ -55,6 +61,7 @@ let
     };
     full-text-search = {
       enabled = false;
+      backend = "solr";
       solr = {
         url = "http://localhost:8983/solr/docspell";
         commit-within = 1000;
@@ -82,6 +89,10 @@ let
         valid = "30 days";
       };
     };
+    download-all = {
+      max-files = 500;
+      max-size = "1400M";
+    };
     openid = {
       enabled = false;
       display = "";
@@ -92,7 +103,7 @@ let
         scope = "profile";
         authorize-url = null;
         token-url = null;
-        user-url = "";
+        user-url = null;
         sign-key = "";
         sig-algo = "RS256";
       };
@@ -114,6 +125,12 @@ let
       files = {
         chunk-size = 524288;
         valid-mime-types = [];
+      };
+      addons = {
+        enabled = false;
+        allow-impure = true;
+        allowed-urls = ["*"];
+        denied-urls = [];
       };
     };
   };
@@ -267,6 +284,11 @@ in {
               default = defaults.logging.format;
               description = "The log format. One of: Fancy, Plain, Json or Logfmt";
             };
+            levels = mkOption {
+              type = types.attrs;
+              default = defaults.logging.levels;
+              description = "Set of logger and their levels";
+            };
           };
         });
         default = defaults.logging;
@@ -316,6 +338,25 @@ in {
         });
         default = defaults.auth;
         description = "Authentication";
+      };
+
+      download-all = mkOption {
+        type = types.submodule({
+          options = {
+            max-files = mkOption {
+              type = types.int;
+              default = defaults.download-all.max-files;
+              description = "How many files to allow in a zip.";
+            };
+            max-size = mkOption {
+              type = types.str;
+              default = defaults.download-all.max-size;
+              description = "The maximum (uncompressed) size of the zip file contents.";
+            };
+          };
+        });
+        default = defaults.download-all;
+        description = "";
       };
 
       openid = mkOption {
@@ -377,7 +418,7 @@ in {
                     description = "The URL used to retrieve the token.";
                   };
                   user-url = mkOption {
-                    type = types.str;
+                    type = types.nullOr types.str;
                     default = defaults.openid.provider.user-url;
                     description = "The URL to the user-info endpoint.";
                   };
@@ -545,9 +586,12 @@ in {
                 The full-text search feature can be disabled. It requires an
                 additional index server which needs additional memory and disk
                 space. It can be enabled later any time.
-
-                Currently the SOLR search platform is supported.
               '';
+            };
+            backend = mkOption {
+              type = types.str;
+              default = defaults.full-text-search.backend;
+              description = "The backend to use, either solr or postgresql";
             };
             solr = mkOption {
               type = types.submodule({
@@ -761,13 +805,39 @@ in {
               default = defaults.backend.files;
               description= "Settings for how files are stored.";
             };
+            addons = mkOption {
+              type = types.submodule({
+                options = {
+                  enabled = mkOption {
+                    type = types.bool;
+                    default = defaults.backend.addons.enabled;
+                    description = "Enable this feature";
+                  };
+                  allow-impure = mkOption {
+                    type = types.bool;
+                    default = defaults.backend.addons.allow-impure;
+                    description = "Allow impure addons";
+                  };
+                  allowed-urls = mkOption {
+                    type = types.listOf types.str;
+                    default = defaults.backend.addons.allowed-urls;
+                    description = "Url patterns of addons to be allowed";
+                  };
+                  denied-urls = mkOption {
+                    type = types.listOf types.str;
+                    default = defaults.backend.addons.denied-urls;
+                    description = "Url patterns to deny to install";
+                  };
+                };
+              });
+              default = defaults.backend.addons;
+              description = "Addon config";
+            };
           };
         });
         default = defaults.backend;
         description = "Configuration for the backend";
       };
-
-
     };
   };
 

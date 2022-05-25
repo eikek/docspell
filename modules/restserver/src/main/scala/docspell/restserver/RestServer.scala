@@ -14,6 +14,7 @@ import fs2.Stream
 import fs2.concurrent.Topic
 
 import docspell.backend.msg.Topics
+import docspell.backend.ops.ONode
 import docspell.common._
 import docspell.pubsub.naive.NaivePubSub
 import docspell.restserver.http4s.InternalHeader
@@ -41,6 +42,9 @@ object RestServer {
         .awakeEvery[F](30.seconds)
         .map(_ => KeepAlive)
         .through(wsTopic.publish)
+
+      logger = docspell.logging.getLogger[F]
+      _ <- logger.info(s"Starting server with options ${cfg.serverOptions}")
 
       server =
         Stream
@@ -79,6 +83,7 @@ object RestServer {
       httpClient <- BlazeClientBuilder[F].resource
       store <- Store.create[F](
         cfg.backend.jdbc,
+        cfg.backend.databaseSchema,
         cfg.backend.files.defaultFileRepositoryConfig,
         pools.connectEC
       )
@@ -88,6 +93,15 @@ object RestServer {
         store,
         httpClient
       )(Topics.all.map(_.topic))
+
+      nodes <- ONode(store)
+      _ <- nodes.withRegistered(
+        cfg.appId,
+        NodeType.Restserver,
+        cfg.baseUrl,
+        cfg.auth.serverSecret.some
+      )
+
       restApp <- RestAppImpl.create[F](cfg, pools, store, httpClient, pubSub, wsTopic)
     } yield (restApp, pubSub, setting)
 

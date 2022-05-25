@@ -15,8 +15,8 @@ import fs2.io.file.{Files, Path}
 import docspell.analysis.classifier
 import docspell.analysis.classifier.TextClassifier._
 import docspell.analysis.nlp.Properties
-import docspell.common._
 import docspell.common.syntax.FileSyntax._
+import docspell.common.util.File
 import docspell.logging.Logger
 
 import edu.stanford.nlp.classify.ColumnDataClassifier
