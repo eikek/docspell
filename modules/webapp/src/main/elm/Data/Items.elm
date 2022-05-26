@@ -64,10 +64,10 @@ concat l0 l1 =
                     suff =
                         List.drop 1 l1.groups
                 in
-                ItemLightList (prev ++ (ng :: suff))
+                ItemLightList (prev ++ (ng :: suff)) 0 0 False
 
             else
-                ItemLightList (l0.groups ++ l1.groups)
+                ItemLightList (l0.groups ++ l1.groups) 0 0 False
 
 
 first : ItemLightList -> Maybe ItemLight
@@ -121,7 +121,7 @@ replaceIn origin replacements =
                 |> ItemLightGroup g.name
     in
     List.map replaceGroup origin.groups
-        |> ItemLightList
+        |> (\els -> ItemLightList els origin.limit origin.offset origin.limitCapped)
 
 
 

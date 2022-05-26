@@ -51,6 +51,7 @@ object ShareSearchRoutes {
               ).restrictLimitTo(
                 cfg.maxItemPageSize
               )
+              limitCapped = userQuery.limit.exists(_ > cfg.maxItemPageSize)
               itemQuery = ItemQueryString(userQuery.query)
               settings = OSimpleSearch.Settings(
                 batch,
@@ -62,7 +63,12 @@ object ShareSearchRoutes {
               account = share.account
               fixQuery = Query.Fix(account, Some(share.query.expr), None)
               _ <- logger.debug(s"Searching in share ${share.id.id}: ${userQuery.query}")
-              resp <- ItemRoutes.searchItems(backend, dsl)(settings, fixQuery, itemQuery)
+              resp <- ItemRoutes.searchItems(backend, dsl)(
+                settings,
+                fixQuery,
+                itemQuery,
+                limitCapped
+              )
             } yield resp
           }
           .getOrElseF(NotFound())

@@ -8591,11 +8591,33 @@ components:
         A list of item details.
       required:
         - groups
+        - limit
+        - offset
+        - limitCapped
       properties:
         groups:
           type: array
           items:
             $ref: "#/components/schemas/ItemLightGroup"
+        limit:
+          type: integer
+          format: int32
+          description: |
+            Returns the `limit` value as used for this search. This
+            can deviate from the requested limit, if it exceeds the
+            server defined maximum. See `limitCapped`.
+        offset:
+          type: integer
+          format: int32
+          description: |
+            The `offset` value used for this search.
+        limitCapped:
+          type: boolean
+          description: |
+            The server defines a maximum `limit` value. If the
+            requested `limit` exceeds the server defined one, this
+            flag is set to true. The limit used for the query is
+            returned with this response.
     ItemLightGroup:
       description: |
         A group of items.
