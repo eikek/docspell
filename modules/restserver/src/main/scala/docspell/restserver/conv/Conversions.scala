@@ -23,6 +23,7 @@ import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.ContentDisposition
+import docspell.store.qb.Batch
 import docspell.store.queries.{AttachmentLight => QAttachmentLight, IdRefCount}
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
@@ -171,7 +172,11 @@ trait Conversions {
   def mkCustomValue(v: CustomFieldValue): OItemSearch.CustomValue =
     OItemSearch.CustomValue(v.field, v.value)
 
-  def mkItemList(v: Vector[OItemSearch.ListItem]): ItemLightList = {
+  def mkItemList(
+      v: Vector[OItemSearch.ListItem],
+      batch: Batch,
+      capped: Boolean
+  ): ItemLightList = {
     val groups = v.groupBy(item => item.date.toUtcDate.toString.substring(0, 7))
 
     def mkGroup(g: (String, Vector[OItemSearch.ListItem])): ItemLightGroup =
@@ -179,10 +184,14 @@ trait Conversions {
 
     val gs =
       groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
-    ItemLightList(gs)
+    ItemLightList(gs, batch.limit, batch.offset, capped)
   }
 
-  def mkItemListFts(v: Vector[OFulltext.FtsItem]): ItemLightList = {
+  def mkItemListFts(
+      v: Vector[OFulltext.FtsItem],
+      batch: Batch,
+      capped: Boolean
+  ): ItemLightList = {
     val groups = v.groupBy(item => item.item.date.toUtcDate.toString.substring(0, 7))
 
     def mkGroup(g: (String, Vector[OFulltext.FtsItem])): ItemLightGroup =
@@ -190,10 +199,14 @@ trait Conversions {
 
     val gs =
       groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
-    ItemLightList(gs)
+    ItemLightList(gs, batch.limit, batch.offset, capped)
   }
 
-  def mkItemListWithTags(v: Vector[OItemSearch.ListItemWithTags]): ItemLightList = {
+  def mkItemListWithTags(
+      v: Vector[OItemSearch.ListItemWithTags],
+      batch: Batch,
+      capped: Boolean
+  ): ItemLightList = {
     val groups = v.groupBy(ti => ti.item.date.toUtcDate.toString.substring(0, 7))
 
     def mkGroup(g: (String, Vector[OItemSearch.ListItemWithTags])): ItemLightGroup =
@@ -201,10 +214,14 @@ trait Conversions {
 
     val gs =
       groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
-    ItemLightList(gs)
+    ItemLightList(gs, batch.limit, batch.offset, capped)
   }
 
-  def mkItemListWithTagsFts(v: Vector[OFulltext.FtsItemWithTags]): ItemLightList = {
+  def mkItemListWithTagsFts(
+      v: Vector[OFulltext.FtsItemWithTags],
+      batch: Batch,
+      capped: Boolean
+  ): ItemLightList = {
     val groups = v.groupBy(ti => ti.item.item.date.toUtcDate.toString.substring(0, 7))
 
     def mkGroup(g: (String, Vector[OFulltext.FtsItemWithTags])): ItemLightGroup =
@@ -212,16 +229,36 @@ trait Conversions {
 
     val gs =
       groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
-    ItemLightList(gs)
+    ItemLightList(gs, batch.limit, batch.offset, capped)
   }
 
-  def mkItemListWithTagsFtsPlain(v: Vector[OFulltext.FtsItemWithTags]): ItemLightList =
-    if (v.isEmpty) ItemLightList(Nil)
-    else ItemLightList(List(ItemLightGroup("Results", v.map(mkItemLightWithTags).toList)))
+  def mkItemListWithTagsFtsPlain(
+      v: Vector[OFulltext.FtsItemWithTags],
+      batch: Batch,
+      capped: Boolean
+  ): ItemLightList =
+    if (v.isEmpty) ItemLightList(Nil, batch.limit, batch.offset, capped)
+    else
+      ItemLightList(
+        List(ItemLightGroup("Results", v.map(mkItemLightWithTags).toList)),
+        batch.limit,
+        batch.offset,
+        capped
+      )
 
-  def mkItemListFtsPlain(v: Vector[OFulltext.FtsItem]): ItemLightList =
-    if (v.isEmpty) ItemLightList(Nil)
-    else ItemLightList(List(ItemLightGroup("Results", v.map(mkItemLight).toList)))
+  def mkItemListFtsPlain(
+      v: Vector[OFulltext.FtsItem],
+      batch: Batch,
+      capped: Boolean
+  ): ItemLightList =
+    if (v.isEmpty) ItemLightList(Nil, batch.limit, batch.offset, capped)
+    else
+      ItemLightList(
+        List(ItemLightGroup("Results", v.map(mkItemLight).toList)),
+        batch.limit,
+        batch.offset,
+        capped
+      )
 
   def mkItemLight(i: OItemSearch.ListItem): ItemLight =
     ItemLight(

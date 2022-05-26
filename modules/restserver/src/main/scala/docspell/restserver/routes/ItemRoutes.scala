@@ -50,6 +50,7 @@ object ItemRoutes {
           ) :? QP.WithDetails(detailFlag) :? QP.SearchKind(searchMode) =>
         val batch = Batch(offset.getOrElse(0), limit.getOrElse(cfg.maxItemPageSize))
           .restrictLimitTo(cfg.maxItemPageSize)
+        val limitCapped = limit.exists(_ > cfg.maxItemPageSize)
         val itemQuery = ItemQueryString(q)
         val settings = OSimpleSearch.Settings(
           batch,
@@ -59,7 +60,7 @@ object ItemRoutes {
           searchMode.getOrElse(SearchMode.Normal)
         )
         val fixQuery = Query.Fix(user.account, None, None)
-        searchItems(backend, dsl)(settings, fixQuery, itemQuery)
+        searchItems(backend, dsl)(settings, fixQuery, itemQuery, limitCapped)
 
       case GET -> Root / "searchStats" :? QP.Query(q) :? QP.SearchKind(searchMode) =>
         val itemQuery = ItemQueryString(q)
@@ -79,6 +80,7 @@ object ItemRoutes {
           ).restrictLimitTo(
             cfg.maxItemPageSize
           )
+          limitCapped = userQuery.limit.exists(_ > cfg.maxItemPageSize)
           itemQuery = ItemQueryString(userQuery.query)
           settings = OSimpleSearch.Settings(
             batch,
@@ -88,7 +90,7 @@ object ItemRoutes {
             searchMode = userQuery.searchMode.getOrElse(SearchMode.Normal)
           )
           fixQuery = Query.Fix(user.account, None, None)
-          resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery)
+          resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery, limitCapped)
         } yield resp
 
       case req @ POST -> Root / "searchStats" =>
@@ -106,19 +108,20 @@ object ItemRoutes {
       case req @ POST -> Root / "searchIndex" =>
         for {
           mask <- req.as[ItemQuery]
+          limitCapped = mask.limit.exists(_ > cfg.maxItemPageSize)
           resp <- mask.query match {
             case q if q.length > 1 =>
               val ftsIn = OFulltext.FtsInput(q)
+              val batch = Batch(
+                mask.offset.getOrElse(0),
+                mask.limit.getOrElse(cfg.maxItemPageSize)
+              ).restrictLimitTo(cfg.maxItemPageSize)
               for {
-                items <- backend.fulltext.findIndexOnly(cfg.maxNoteLength)(
-                  ftsIn,
-                  user.account,
-                  Batch(
-                    mask.offset.getOrElse(0),
-                    mask.limit.getOrElse(cfg.maxItemPageSize)
-                  ).restrictLimitTo(cfg.maxItemPageSize)
+                items <- backend.fulltext
+                  .findIndexOnly(cfg.maxNoteLength)(ftsIn, user.account, batch)
+                ok <- Ok(
+                  Conversions.mkItemListWithTagsFtsPlain(items, batch, limitCapped)
                 )
-                ok <- Ok(Conversions.mkItemListWithTagsFtsPlain(items))
               } yield ok
 
             case _ =>
@@ -429,17 +432,20 @@ object ItemRoutes {
   )(
       settings: OSimpleSearch.Settings,
       fixQuery: Query.Fix,
-      itemQuery: ItemQueryString
+      itemQuery: ItemQueryString,
+      limitCapped: Boolean
   ): F[Response[F]] = {
     import dsl._
 
     def convertFts(res: OSimpleSearch.Items.FtsItems): ItemLightList =
-      if (res.indexOnly) Conversions.mkItemListFtsPlain(res.items)
-      else Conversions.mkItemListFts(res.items)
+      if (res.indexOnly)
+        Conversions.mkItemListFtsPlain(res.items, settings.batch, limitCapped)
+      else Conversions.mkItemListFts(res.items, settings.batch, limitCapped)
 
     def convertFtsFull(res: OSimpleSearch.Items.FtsItemsFull): ItemLightList =
-      if (res.indexOnly) Conversions.mkItemListWithTagsFtsPlain(res.items)
-      else Conversions.mkItemListWithTagsFts(res.items)
+      if (res.indexOnly)
+        Conversions.mkItemListWithTagsFtsPlain(res.items, settings.batch, limitCapped)
+      else Conversions.mkItemListWithTagsFts(res.items, settings.batch, limitCapped)
 
     backend.simpleSearch
       .searchByString(settings)(fixQuery, itemQuery)
@@ -449,8 +455,8 @@ object ItemRoutes {
             items.fold(
               convertFts,
               convertFtsFull,
-              Conversions.mkItemList,
-              Conversions.mkItemListWithTags
+              els => Conversions.mkItemList(els, settings.batch, limitCapped),
+              els => Conversions.mkItemListWithTags(els, settings.batch, limitCapped)
             )
           )
         case StringSearchResult.FulltextMismatch(TooMany) =>
