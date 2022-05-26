@@ -230,7 +230,7 @@ object OAddons {
                       UserTask(
                         runConfigId,
                         scheduledAddonTaskName,
-                        true,
+                        runConfig.enabled,
                         timer,
                         s"Running scheduled addon task ${runConfig.name}".some,
                         ScheduledAddonTaskArgs(collective, runConfigId)
