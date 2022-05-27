@@ -31,6 +31,54 @@ class AddonArchiveTest extends CatsEffectSuite with TestLoggingConfig with Fixtu
     } yield ()
   }
 
+  test("Read archive from zip") {
+    for {
+      aa <- AddonArchive.read[IO](dummyAddonUrl, UrlReader.defaultReader[IO], None)
+      _ = {
+        assertEquals(aa.name, "dummy-addon")
+        assertEquals(aa.version, "2.9")
+        assertEquals(aa.url, dummyAddonUrl)
+      }
+    } yield ()
+  }
+
+  tempDir.test("Read generated addon from path") { dir =>
+    AddonGenerator.successAddon("mini-addon").use { addon =>
+      for {
+        archive <- IO(AddonArchive(addon.url, "", ""))
+        path <- archive.extractTo[IO](UrlReader.defaultReader[IO], dir)
+
+        read <- AddonArchive.read[IO](addon.url, UrlReader.defaultReader[IO], path.some)
+        _ = assertEquals(addon, read)
+      } yield ()
+    }
+  }
+
+  test("Read generated addon from zip") {
+    AddonGenerator.successAddon("mini-addon").use { addon =>
+      for {
+        read <- AddonArchive.read[IO](addon.url, UrlReader.defaultReader[IO], None)
+        _ = assertEquals(addon, read)
+      } yield ()
+    }
+  }
+
+  tempDir.test("Read minimal addon from path") { dir =>
+    for {
+      archive <- IO(AddonArchive(miniAddonUrl, "", ""))
+      path <- archive.extractTo(UrlReader.defaultReader[IO], dir)
+      aa <- AddonArchive.read(miniAddonUrl, UrlReader.defaultReader[IO], path.some)
+      _ = assertEquals(aa, AddonArchive(miniAddonUrl, "minimal-addon", "0.1.0"))
+    } yield ()
+  }
+
+  test("Read minimal addon from zip") {
+    for {
+      aa <- AddonArchive.read(miniAddonUrl, UrlReader.defaultReader[IO], None)
+      _ = assertEquals(aa, AddonArchive(miniAddonUrl, "minimal-addon", "0.1.0"))
+    } yield ()
+  }
+
   test("Read archive from zip file") {
     for {
       archive <- AddonArchive.read[IO](dummyAddonUrl, UrlReader.defaultReader[IO])

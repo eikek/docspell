@@ -34,7 +34,7 @@ case class AddonMeta(
     s"${meta.name}-${meta.version}"
 
   def parseResult: Boolean =
-    options.exists(_.collectOutput)
+    options.forall(_.collectOutput)
 
   def ignoreResult: Boolean =
     !parseResult
@@ -200,7 +200,7 @@ object AddonMeta {
       )
     )
     zipFile
-      .through(Zip.unzip(8192, Glob("**/docspell-addon.*")))
+      .through(Zip.unzip(8192, Glob("docspell-addon.*|**/docspell-addon.*")))
       .filter(bin => !bin.name.endsWith("/"))
       .flatMap { bin =>
         if (bin.extensionIn(Set("json"))) Stream.eval(AddonMeta.fromJsonBytes(bin.data))
