@@ -265,7 +265,7 @@ options:
   # docspell itself to apply any changes and the addon can run
   # completely isolated.
   #
-  # Default is false.
+  # Default is true.
   collectOutput: true
 ```
 

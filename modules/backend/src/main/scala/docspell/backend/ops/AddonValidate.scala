@@ -72,7 +72,7 @@ final class AddonValidate[F[_]: Async](
         ).cast
       )
       _ <- EitherT.cond(
-        meta.options.exists(_.isUseful),
+        meta.options.forall(_.isUseful),
         (),
         InvalidAddon(
           "Addon defines no output and no networking. It can't do anything useful."
