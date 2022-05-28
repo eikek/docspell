@@ -90,8 +90,10 @@ object StoreFixture {
     } yield xa
 
   def store(jdbc: JdbcConfig): Resource[IO, StoreImpl[IO]] =
+    dataSource(jdbc).flatMap(store(_, jdbc))
+
+  def store(ds: DataSource, jdbc: JdbcConfig): Resource[IO, StoreImpl[IO]] =
     for {
-      ds <- dataSource(jdbc)
       xa <- makeXA(ds)
       cfg = FileRepositoryConfig.Database(64 * 1024)
       fr = FileRepository[IO](xa, ds, cfg, true)
