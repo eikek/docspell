@@ -55,7 +55,7 @@ object Store {
         ds.setJdbcUrl(jdbc.url.asString)
         ds.setUsername(jdbc.user)
         ds.setPassword(jdbc.password)
-        ds.setDriverClassName(jdbc.driverClass)
+        ds.setDriverClassName(jdbc.dbms.driverClass)
       }
       xa = HikariTransactor(ds, connectEC)
       fr = FileRepository.apply(xa, ds, fileRepoConfig, true)

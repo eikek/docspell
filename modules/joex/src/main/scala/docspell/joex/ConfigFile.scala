@@ -11,6 +11,7 @@ import cats.effect.Async
 import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, FtsType, Validation}
 import docspell.scheduler.CountingScheme
+import docspell.store.Db
 
 import emil.MailAddress
 import emil.javamail.syntax._
@@ -59,7 +60,7 @@ object ConfigFile {
           cfg.fullTextSearch.enabled &&
             cfg.fullTextSearch.backend == FtsType.PostgreSQL &&
             cfg.fullTextSearch.postgresql.useDefaultConnection &&
-            !cfg.jdbc.dbmsName.contains("postgresql"),
+            cfg.jdbc.dbms != Db.PostgreSQL,
         s"PostgreSQL defined fulltext search backend with default-connection, which is not a PostgreSQL connection!"
       )
     )

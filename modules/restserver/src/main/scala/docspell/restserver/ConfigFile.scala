@@ -16,6 +16,7 @@ import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, FtsType, Validation}
 import docspell.oidc.{ProviderConfig, SignatureAlgo}
 import docspell.restserver.auth.OpenId
+import docspell.store.Db
 
 import pureconfig._
 import pureconfig.generic.auto._
@@ -113,7 +114,7 @@ object ConfigFile {
         cfg.fullTextSearch.enabled &&
           cfg.fullTextSearch.backend == FtsType.PostgreSQL &&
           cfg.fullTextSearch.postgresql.useDefaultConnection &&
-          !cfg.backend.jdbc.dbmsName.contains("postgresql"),
+          cfg.backend.jdbc.dbms != Db.PostgreSQL,
       s"PostgreSQL defined fulltext search backend with default-connection, which is not a PostgreSQL connection!"
     )
 

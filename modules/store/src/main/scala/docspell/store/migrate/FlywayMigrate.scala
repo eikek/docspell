@@ -26,15 +26,7 @@ class FlywayMigrate[F[_]: Sync](
   private[this] val logger = docspell.logging.getLogger[F]
 
   private def createLocations(folder: String) =
-    jdbc.dbmsName match {
-      case Some(dbtype) =>
-        List(s"classpath:db/$folder/$dbtype", s"classpath:db/$folder/common")
-      case None =>
-        logger.warn(
-          s"Cannot read database name from jdbc url: ${jdbc.url}. Go with H2"
-        )
-        List(s"classpath:db/$folder/h2", s"classpath:db/$folder/common")
-    }
+    List(s"classpath:db/$folder/${jdbc.dbms.name}", s"classpath:db/$folder/common")
 
   def createFlyway(kind: MigrationKind): F[Flyway] =
     for {
