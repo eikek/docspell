@@ -80,4 +80,7 @@ object Ident {
 
   implicit val order: Order[Ident] =
     Order.by(_.id)
+
+  implicit val ordering: Ordering[Ident] =
+    Ordering.by(_.id)
 }

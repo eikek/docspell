@@ -29,6 +29,8 @@ final class StoreImpl[F[_]: Async](
 ) extends Store[F] {
   private[this] val xa = transactor
 
+  val dbms = jdbc.dbms
+
   def createFileRepository(
       cfg: FileRepositoryConfig,
       withAttributeStore: Boolean

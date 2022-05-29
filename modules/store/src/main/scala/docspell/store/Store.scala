@@ -36,6 +36,8 @@ trait Store[F[_]] {
   def add(insert: ConnectionIO[Int], exists: ConnectionIO[Boolean]): F[AddResult]
 
   def transactor: Transactor[F]
+
+  def dbms: Db
 }
 
 object Store {

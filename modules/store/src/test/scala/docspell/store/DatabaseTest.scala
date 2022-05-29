@@ -11,6 +11,7 @@ import docspell.common._
 import docspell.logging.TestLoggingConfig
 import munit.CatsEffectSuite
 import org.testcontainers.utility.DockerImageName
+import doobie._
 
 import java.util.UUID
 
@@ -18,6 +19,8 @@ trait DatabaseTest
     extends CatsEffectSuite
     with TestContainersFixtures
     with TestLoggingConfig {
+
+  val cio: Sync[ConnectionIO] = Sync[ConnectionIO]
 
   lazy val mariadbCnt = ForAllContainerFixture(
     MariaDBContainer.Def(DockerImageName.parse("mariadb:10.5")).createContainer()
@@ -29,12 +32,12 @@ trait DatabaseTest
 
   lazy val pgDataSource = ResourceSuiteLocalFixture(
     "pgDataSource",
-    DatabaseTest.makeDataSourceFixture(postgresCnt())
+    DatabaseTest.makeDataSourceFixture(IO(postgresCnt()))
   )
 
   lazy val mariaDataSource = ResourceSuiteLocalFixture(
     "mariaDataSource",
-    DatabaseTest.makeDataSourceFixture(mariadbCnt())
+    DatabaseTest.makeDataSourceFixture(IO(mariadbCnt()))
   )
 
   lazy val h2DataSource = ResourceSuiteLocalFixture(
@@ -50,34 +53,42 @@ trait DatabaseTest
   } yield (jdbc, ds))
 
   lazy val pgStore = ResourceSuiteLocalFixture(
-    "pgStore", {
-      val (jdbc, ds) = pgDataSource()
-      StoreFixture.store(ds, jdbc)
-    }
+    "pgStore",
+    for {
+      t <- Resource.eval(IO(pgDataSource()))
+      store <- StoreFixture.store(t._2, t._1)
+    } yield store
   )
 
   lazy val mariaStore = ResourceSuiteLocalFixture(
-    "mariaStore", {
-      val (jdbc, ds) = mariaDataSource()
-      StoreFixture.store(ds, jdbc)
-    }
+    "mariaStore",
+    for {
+      t <- Resource.eval(IO(mariaDataSource()))
+      store <- StoreFixture.store(t._2, t._1)
+    } yield store
   )
 
   lazy val h2Store = ResourceSuiteLocalFixture(
-    "h2Store", {
-      val (jdbc, ds) = h2DataSource()
-      StoreFixture.store(ds, jdbc)
-    }
+    "h2Store",
+    for {
+      t <- Resource.eval(IO(h2DataSource()))
+      store <- StoreFixture.store(t._2, t._1)
+    } yield store
   )
+
+  def postgresAll = List(postgresCnt, pgDataSource, pgStore)
+  def mariaDbAll = List(mariadbCnt, mariaDataSource, mariaStore)
+  def h2All = List(h2DataSource, h2Store)
 }
 
 object DatabaseTest {
   private def jdbcConfig(cnt: JdbcDatabaseContainer) =
     JdbcConfig(LenientUri.unsafe(cnt.jdbcUrl), cnt.username, cnt.password)
 
-  private def makeDataSourceFixture(cnt: JdbcDatabaseContainer) =
+  private def makeDataSourceFixture(cnt: IO[JdbcDatabaseContainer]) =
     for {
-      jdbc <- Resource.eval(IO(jdbcConfig(cnt)))
+      c <- Resource.eval(cnt)
+      jdbc <- Resource.pure(jdbcConfig(c))
       ds <- StoreFixture.dataSource(jdbc)
     } yield (jdbc, ds)
 }
