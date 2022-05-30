@@ -122,6 +122,9 @@ trait DSL extends DoobieMeta {
   def concat(expr: SelectExpr, exprs: SelectExpr*): DBFunction =
     DBFunction.Concat(Nel.of(expr, exprs: _*))
 
+  def rawFunction(name: String, expr: SelectExpr, more: SelectExpr*): DBFunction =
+    DBFunction.Raw(name, Nel.of(expr, more: _*))
+
   def const[A](value: A)(implicit P: Put[A]): SelectExpr.SelectConstant[A] =
     SelectExpr.SelectConstant(value, None)
 

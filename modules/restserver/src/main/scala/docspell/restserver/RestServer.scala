@@ -35,7 +35,10 @@ import org.http4s.server.websocket.WebSocketBuilder2
 
 object RestServer {
 
-  def serve[F[_]: Async](cfg: Config, pools: Pools): F[ExitCode] =
+  def serve[F[_]: Async](
+      cfg: Config,
+      pools: Pools
+  ): F[ExitCode] =
     for {
       wsTopic <- Topic[F, OutputEvent]
       keepAlive = Stream
@@ -102,7 +105,8 @@ object RestServer {
         cfg.auth.serverSecret.some
       )
 
-      restApp <- RestAppImpl.create[F](cfg, pools, store, httpClient, pubSub, wsTopic)
+      restApp <- RestAppImpl
+        .create[F](cfg, pools, store, httpClient, pubSub, wsTopic)
     } yield (restApp, pubSub, setting)
 
   def createHttpApp[F[_]: Async](

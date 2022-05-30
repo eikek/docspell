@@ -471,6 +471,17 @@ val addonlib = project
   )
   .dependsOn(common, files, loggingScribe)
 
+val ftsclient = project
+  .in(file("modules/fts-client"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettings
+  .settings(
+    name := "docspell-fts-client",
+    libraryDependencies ++= Seq.empty
+  )
+  .dependsOn(common, loggingScribe)
+
 val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
@@ -500,6 +511,7 @@ val store = project
     files,
     notificationApi,
     jsonminiq,
+    ftsclient,
     loggingScribe
   )
 
@@ -622,17 +634,6 @@ val analysis = project
         Dependencies.stanfordNlpCore
   )
   .dependsOn(common, files % "test->test", loggingScribe)
-
-val ftsclient = project
-  .in(file("modules/fts-client"))
-  .disablePlugins(RevolverPlugin)
-  .settings(sharedSettings)
-  .withTestSettings
-  .settings(
-    name := "docspell-fts-client",
-    libraryDependencies ++= Seq.empty
-  )
-  .dependsOn(common, loggingScribe)
 
 val ftssolr = project
   .in(file("modules/fts-solr"))

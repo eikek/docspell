@@ -44,386 +44,393 @@ object ItemRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    HttpRoutes.of {
-      case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
-            offset
-          ) :? QP.WithDetails(detailFlag) :? QP.SearchKind(searchMode) =>
-        val batch = Batch(offset.getOrElse(0), limit.getOrElse(cfg.maxItemPageSize))
-          .restrictLimitTo(cfg.maxItemPageSize)
-        val limitCapped = limit.exists(_ > cfg.maxItemPageSize)
-        val itemQuery = ItemQueryString(q)
-        val settings = OSimpleSearch.Settings(
-          batch,
-          cfg.fullTextSearch.enabled,
-          detailFlag.getOrElse(false),
-          cfg.maxNoteLength,
-          searchMode.getOrElse(SearchMode.Normal)
-        )
-        val fixQuery = Query.Fix(user.account, None, None)
-        searchItems(backend, dsl)(settings, fixQuery, itemQuery, limitCapped)
-
-      case GET -> Root / "searchStats" :? QP.Query(q) :? QP.SearchKind(searchMode) =>
-        val itemQuery = ItemQueryString(q)
-        val fixQuery = Query.Fix(user.account, None, None)
-        val settings = OSimpleSearch.StatsSettings(
-          useFTS = cfg.fullTextSearch.enabled,
-          searchMode = searchMode.getOrElse(SearchMode.Normal)
-        )
-        searchItemStats(backend, dsl)(settings, fixQuery, itemQuery)
-
-      case req @ POST -> Root / "search" =>
-        for {
-          userQuery <- req.as[ItemQuery]
-          batch = Batch(
-            userQuery.offset.getOrElse(0),
-            userQuery.limit.getOrElse(cfg.maxItemPageSize)
-          ).restrictLimitTo(
-            cfg.maxItemPageSize
-          )
-          limitCapped = userQuery.limit.exists(_ > cfg.maxItemPageSize)
-          itemQuery = ItemQueryString(userQuery.query)
-          settings = OSimpleSearch.Settings(
+    ItemSearchPart(backend, cfg, user) <+>
+      HttpRoutes.of {
+        case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
+              offset
+            ) :? QP.WithDetails(detailFlag) :? QP.SearchKind(searchMode) =>
+          val batch = Batch(offset.getOrElse(0), limit.getOrElse(cfg.maxItemPageSize))
+            .restrictLimitTo(cfg.maxItemPageSize)
+          val limitCapped = limit.exists(_ > cfg.maxItemPageSize)
+          val itemQuery = ItemQueryString(q)
+          val settings = OSimpleSearch.Settings(
             batch,
             cfg.fullTextSearch.enabled,
-            userQuery.withDetails.getOrElse(false),
+            detailFlag.getOrElse(false),
             cfg.maxNoteLength,
-            searchMode = userQuery.searchMode.getOrElse(SearchMode.Normal)
+            searchMode.getOrElse(SearchMode.Normal)
           )
-          fixQuery = Query.Fix(user.account, None, None)
-          resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery, limitCapped)
-        } yield resp
+          val fixQuery = Query.Fix(user.account, None, None)
+          searchItems(backend, dsl)(settings, fixQuery, itemQuery, limitCapped)
 
-      case req @ POST -> Root / "searchStats" =>
-        for {
-          userQuery <- req.as[ItemQuery]
-          itemQuery = ItemQueryString(userQuery.query)
-          fixQuery = Query.Fix(user.account, None, None)
-          settings = OSimpleSearch.StatsSettings(
+        case GET -> Root / "searchStats" :? QP.Query(q) :? QP.SearchKind(searchMode) =>
+          val itemQuery = ItemQueryString(q)
+          val fixQuery = Query.Fix(user.account, None, None)
+          val settings = OSimpleSearch.StatsSettings(
             useFTS = cfg.fullTextSearch.enabled,
-            searchMode = userQuery.searchMode.getOrElse(SearchMode.Normal)
+            searchMode = searchMode.getOrElse(SearchMode.Normal)
           )
-          resp <- searchItemStats(backend, dsl)(settings, fixQuery, itemQuery)
-        } yield resp
+          searchItemStats(backend, dsl)(settings, fixQuery, itemQuery)
 
-      case req @ POST -> Root / "searchIndex" =>
-        for {
-          mask <- req.as[ItemQuery]
-          limitCapped = mask.limit.exists(_ > cfg.maxItemPageSize)
-          resp <- mask.query match {
-            case q if q.length > 1 =>
-              val ftsIn = OFulltext.FtsInput(q)
-              val batch = Batch(
-                mask.offset.getOrElse(0),
-                mask.limit.getOrElse(cfg.maxItemPageSize)
-              ).restrictLimitTo(cfg.maxItemPageSize)
-              for {
-                items <- backend.fulltext
-                  .findIndexOnly(cfg.maxNoteLength)(ftsIn, user.account, batch)
-                ok <- Ok(
-                  Conversions.mkItemListWithTagsFtsPlain(items, batch, limitCapped)
+        case req @ POST -> Root / "search" =>
+          for {
+            userQuery <- req.as[ItemQuery]
+            batch = Batch(
+              userQuery.offset.getOrElse(0),
+              userQuery.limit.getOrElse(cfg.maxItemPageSize)
+            ).restrictLimitTo(
+              cfg.maxItemPageSize
+            )
+            limitCapped = userQuery.limit.exists(_ > cfg.maxItemPageSize)
+            itemQuery = ItemQueryString(userQuery.query)
+            settings = OSimpleSearch.Settings(
+              batch,
+              cfg.fullTextSearch.enabled,
+              userQuery.withDetails.getOrElse(false),
+              cfg.maxNoteLength,
+              searchMode = userQuery.searchMode.getOrElse(SearchMode.Normal)
+            )
+            fixQuery = Query.Fix(user.account, None, None)
+            resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery, limitCapped)
+          } yield resp
+
+        case req @ POST -> Root / "searchStats" =>
+          for {
+            userQuery <- req.as[ItemQuery]
+            itemQuery = ItemQueryString(userQuery.query)
+            fixQuery = Query.Fix(user.account, None, None)
+            settings = OSimpleSearch.StatsSettings(
+              useFTS = cfg.fullTextSearch.enabled,
+              searchMode = userQuery.searchMode.getOrElse(SearchMode.Normal)
+            )
+            resp <- searchItemStats(backend, dsl)(settings, fixQuery, itemQuery)
+          } yield resp
+
+        case req @ POST -> Root / "searchIndex" =>
+          for {
+            mask <- req.as[ItemQuery]
+            limitCapped = mask.limit.exists(_ > cfg.maxItemPageSize)
+            resp <- mask.query match {
+              case q if q.length > 1 =>
+                val ftsIn = OFulltext.FtsInput(q)
+                val batch = Batch(
+                  mask.offset.getOrElse(0),
+                  mask.limit.getOrElse(cfg.maxItemPageSize)
+                ).restrictLimitTo(cfg.maxItemPageSize)
+                for {
+                  items <- backend.fulltext
+                    .findIndexOnly(cfg.maxNoteLength)(ftsIn, user.account, batch)
+                  ok <- Ok(
+                    Conversions.mkItemListWithTagsFtsPlain(items, batch, limitCapped)
+                  )
+                } yield ok
+
+              case _ =>
+                BadRequest(BasicResult(false, "Query string too short"))
+            }
+          } yield resp
+
+        case GET -> Root / Ident(id) =>
+          for {
+            item <- backend.itemSearch.findItem(id, user.account.collective)
+            result = item.map(Conversions.mkItemDetail)
+            resp <-
+              result
+                .map(r => Ok(r))
+                .getOrElse(NotFound(BasicResult(false, "Not found.")))
+          } yield resp
+
+        case POST -> Root / Ident(id) / "confirm" =>
+          for {
+            res <- backend.item.setState(id, ItemState.Confirmed, user.account.collective)
+            resp <- Ok(Conversions.basicResult(res, "Item data confirmed"))
+          } yield resp
+
+        case POST -> Root / Ident(id) / "unconfirm" =>
+          for {
+            res <- backend.item.setState(id, ItemState.Created, user.account.collective)
+            resp <- Ok(Conversions.basicResult(res, "Item back to created."))
+          } yield resp
+
+        case POST -> Root / Ident(id) / "restore" =>
+          for {
+            res <- backend.item.restore(NonEmptyList.of(id), user.account.collective)
+            resp <- Ok(Conversions.basicResult(res, "Item restored."))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "tags" =>
+          for {
+            tags <- req.as[StringList].map(_.items)
+            res <- backend.item.setTags(id, tags, user.account.collective)
+            baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+            _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+            resp <- Ok(Conversions.basicResult(res.value, "Tags updated"))
+          } yield resp
+
+        case req @ POST -> Root / Ident(id) / "tags" =>
+          for {
+            data <- req.as[Tag]
+            rtag <- Conversions.newTag(data, user.account.collective)
+            res <- backend.item.addNewTag(user.account.collective, id, rtag)
+            baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+            _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+            resp <- Ok(Conversions.basicResult(res.value, "Tag added."))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "taglink" =>
+          for {
+            tags <- req.as[StringList]
+            res <- backend.item.linkTags(id, tags.items, user.account.collective)
+            baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+            _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+            resp <- Ok(Conversions.basicResult(res.value, "Tags linked"))
+          } yield resp
+
+        case req @ POST -> Root / Ident(id) / "tagtoggle" =>
+          for {
+            tags <- req.as[StringList]
+            res <- backend.item.toggleTags(id, tags.items, user.account.collective)
+            baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+            _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+            resp <- Ok(Conversions.basicResult(res.value, "Tags linked"))
+          } yield resp
+
+        case req @ POST -> Root / Ident(id) / "tagsremove" =>
+          for {
+            json <- req.as[StringList]
+            res <- backend.item.removeTagsMultipleItems(
+              NonEmptyList.of(id),
+              json.items,
+              user.account.collective
+            )
+            baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+            _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+            resp <- Ok(Conversions.basicResult(res.value, "Tags removed"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "direction" =>
+          for {
+            dir <- req.as[DirectionValue]
+            res <- backend.item.setDirection(
+              NonEmptyList.of(id),
+              dir.direction,
+              user.account.collective
+            )
+            resp <- Ok(Conversions.basicResult(res, "Direction updated"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "folder" =>
+          for {
+            idref <- req.as[OptionalId]
+            res <- backend.item.setFolder(id, idref.id.map(_.id), user.account.collective)
+            resp <- Ok(Conversions.basicResult(res, "Folder updated"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "corrOrg" =>
+          for {
+            idref <- req.as[OptionalId]
+            res <- backend.item.setCorrOrg(
+              NonEmptyList.of(id),
+              idref.id,
+              user.account.collective
+            )
+            resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
+          } yield resp
+
+        case req @ POST -> Root / Ident(id) / "corrOrg" =>
+          for {
+            data <- req.as[Organization]
+            org <- Conversions.newOrg(data, user.account.collective)
+            res <- backend.item.addCorrOrg(id, org)
+            resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "corrPerson" =>
+          for {
+            idref <- req.as[OptionalId]
+            res <- backend.item.setCorrPerson(
+              NonEmptyList.of(id),
+              idref.id,
+              user.account.collective
+            )
+            resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
+          } yield resp
+
+        case req @ POST -> Root / Ident(id) / "corrPerson" =>
+          for {
+            data <- req.as[Person]
+            pers <- Conversions.newPerson(data, user.account.collective)
+            res <- backend.item.addCorrPerson(id, pers)
+            resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "concPerson" =>
+          for {
+            idref <- req.as[OptionalId]
+            res <- backend.item.setConcPerson(
+              NonEmptyList.of(id),
+              idref.id,
+              user.account.collective
+            )
+            resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
+          } yield resp
+
+        case req @ POST -> Root / Ident(id) / "concPerson" =>
+          for {
+            data <- req.as[Person]
+            pers <- Conversions.newPerson(data, user.account.collective)
+            res <- backend.item.addConcPerson(id, pers)
+            resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "concEquipment" =>
+          for {
+            idref <- req.as[OptionalId]
+            res <- backend.item.setConcEquip(
+              NonEmptyList.of(id),
+              idref.id,
+              user.account.collective
+            )
+            resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+          } yield resp
+
+        case req @ POST -> Root / Ident(id) / "concEquipment" =>
+          for {
+            data <- req.as[Equipment]
+            equip <- Conversions.newEquipment(data, user.account.collective)
+            res <- backend.item.addConcEquip(id, equip)
+            resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "notes" =>
+          for {
+            text <- req.as[OptionalText]
+            res <- backend.item.setNotes(id, text.text.notEmpty, user.account.collective)
+            resp <- Ok(Conversions.basicResult(res, "Notes updated"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "name" =>
+          for {
+            text <- req.as[OptionalText]
+            res <- backend.item.setName(
+              id,
+              text.text.notEmpty.getOrElse(""),
+              user.account.collective
+            )
+            resp <- Ok(Conversions.basicResult(res, "Name updated"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "duedate" =>
+          for {
+            date <- req.as[OptionalDate]
+            _ <- logger.debug(s"Setting item due date to ${date.date}")
+            res <- backend.item.setItemDueDate(
+              NonEmptyList.of(id),
+              date.date,
+              user.account.collective
+            )
+            resp <- Ok(Conversions.basicResult(res, "Item due date updated"))
+          } yield resp
+
+        case req @ PUT -> Root / Ident(id) / "date" =>
+          for {
+            date <- req.as[OptionalDate]
+            _ <- logger.debug(s"Setting item date to ${date.date}")
+            res <- backend.item.setItemDate(
+              NonEmptyList.of(id),
+              date.date,
+              user.account.collective
+            )
+            resp <- Ok(Conversions.basicResult(res, "Item date updated"))
+          } yield resp
+
+        case GET -> Root / Ident(id) / "proposals" =>
+          for {
+            ml <- backend.item.getProposals(id, user.account.collective)
+            ip = Conversions.mkItemProposals(ml)
+            resp <- Ok(ip)
+          } yield resp
+
+        case req @ POST -> Root / Ident(id) / "attachment" / "movebefore" =>
+          for {
+            data <- req.as[MoveAttachment]
+            _ <- logger.debug(s"Move item (${id.id}) attachment $data")
+            res <- backend.item.moveAttachmentBefore(id, data.source, data.target)
+            resp <- Ok(Conversions.basicResult(res, "Attachment moved."))
+          } yield resp
+
+        case req @ GET -> Root / Ident(id) / "preview" :? QP.WithFallback(flag) =>
+          def notFound =
+            NotFound(BasicResult(false, "Not found"))
+          for {
+            preview <- backend.itemSearch.findItemPreview(id, user.account.collective)
+            inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
+            matches = BinaryUtil.matchETag(preview.map(_.meta), inm)
+            fallback = flag.getOrElse(false)
+            resp <-
+              preview
+                .map { data =>
+                  if (matches) BinaryUtil.withResponseHeaders(dsl, NotModified())(data)
+                  else BinaryUtil.makeByteResp(dsl)(data).map(Responses.noCache)
+                }
+                .getOrElse(
+                  if (fallback) BinaryUtil.noPreview(req.some).getOrElseF(notFound)
+                  else notFound
                 )
-              } yield ok
+          } yield resp
 
-            case _ =>
-              BadRequest(BasicResult(false, "Query string too short"))
-          }
-        } yield resp
+        case HEAD -> Root / Ident(id) / "preview" =>
+          for {
+            preview <- backend.itemSearch.findItemPreview(id, user.account.collective)
+            resp <-
+              preview
+                .map(data => BinaryUtil.withResponseHeaders(dsl, Ok())(data))
+                .getOrElse(NotFound(BasicResult(false, "Not found")))
+          } yield resp
 
-      case GET -> Root / Ident(id) =>
-        for {
-          item <- backend.itemSearch.findItem(id, user.account.collective)
-          result = item.map(Conversions.mkItemDetail)
-          resp <-
-            result
-              .map(r => Ok(r))
-              .getOrElse(NotFound(BasicResult(false, "Not found.")))
-        } yield resp
+        case req @ POST -> Root / Ident(id) / "reprocess" =>
+          for {
+            data <- req.as[IdList]
+            _ <- logger.debug(s"Re-process item ${id.id}")
+            res <- backend.item.reprocess(id, data.ids, user.account)
+            resp <- Ok(Conversions.basicResult(res, "Re-process task submitted."))
+          } yield resp
 
-      case POST -> Root / Ident(id) / "confirm" =>
-        for {
-          res <- backend.item.setState(id, ItemState.Confirmed, user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Item data confirmed"))
-        } yield resp
+        case req @ PUT -> Root / Ident(id) / "customfield" =>
+          for {
+            data <- req.as[CustomFieldValue]
+            res <- backend.customFields.setValue(
+              id,
+              SetValue(data.field, data.value, user.account.collective)
+            )
+            baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+            _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+            resp <- Ok(Conversions.basicResult(res.value))
+          } yield resp
 
-      case POST -> Root / Ident(id) / "unconfirm" =>
-        for {
-          res <- backend.item.setState(id, ItemState.Created, user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Item back to created."))
-        } yield resp
+        case req @ DELETE -> Root / Ident(id) / "customfield" / Ident(fieldId) =>
+          for {
+            res <- backend.customFields.deleteValue(
+              RemoveValue(fieldId, NonEmptyList.of(id), user.account.collective)
+            )
+            baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
+            _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
+            resp <- Ok(Conversions.basicResult(res.value, "Custom field value removed."))
+          } yield resp
 
-      case POST -> Root / Ident(id) / "restore" =>
-        for {
-          res <- backend.item.restore(NonEmptyList.of(id), user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Item restored."))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "tags" =>
-        for {
-          tags <- req.as[StringList].map(_.items)
-          res <- backend.item.setTags(id, tags, user.account.collective)
-          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
-          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
-          resp <- Ok(Conversions.basicResult(res.value, "Tags updated"))
-        } yield resp
-
-      case req @ POST -> Root / Ident(id) / "tags" =>
-        for {
-          data <- req.as[Tag]
-          rtag <- Conversions.newTag(data, user.account.collective)
-          res <- backend.item.addNewTag(user.account.collective, id, rtag)
-          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
-          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
-          resp <- Ok(Conversions.basicResult(res.value, "Tag added."))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "taglink" =>
-        for {
-          tags <- req.as[StringList]
-          res <- backend.item.linkTags(id, tags.items, user.account.collective)
-          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
-          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
-          resp <- Ok(Conversions.basicResult(res.value, "Tags linked"))
-        } yield resp
-
-      case req @ POST -> Root / Ident(id) / "tagtoggle" =>
-        for {
-          tags <- req.as[StringList]
-          res <- backend.item.toggleTags(id, tags.items, user.account.collective)
-          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
-          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
-          resp <- Ok(Conversions.basicResult(res.value, "Tags linked"))
-        } yield resp
-
-      case req @ POST -> Root / Ident(id) / "tagsremove" =>
-        for {
-          json <- req.as[StringList]
-          res <- backend.item.removeTagsMultipleItems(
-            NonEmptyList.of(id),
-            json.items,
-            user.account.collective
-          )
-          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
-          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
-          resp <- Ok(Conversions.basicResult(res.value, "Tags removed"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "direction" =>
-        for {
-          dir <- req.as[DirectionValue]
-          res <- backend.item.setDirection(
-            NonEmptyList.of(id),
-            dir.direction,
-            user.account.collective
-          )
-          resp <- Ok(Conversions.basicResult(res, "Direction updated"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "folder" =>
-        for {
-          idref <- req.as[OptionalId]
-          res <- backend.item.setFolder(id, idref.id.map(_.id), user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Folder updated"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "corrOrg" =>
-        for {
-          idref <- req.as[OptionalId]
-          res <- backend.item.setCorrOrg(
-            NonEmptyList.of(id),
-            idref.id,
-            user.account.collective
-          )
-          resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
-        } yield resp
-
-      case req @ POST -> Root / Ident(id) / "corrOrg" =>
-        for {
-          data <- req.as[Organization]
-          org <- Conversions.newOrg(data, user.account.collective)
-          res <- backend.item.addCorrOrg(id, org)
-          resp <- Ok(Conversions.basicResult(res, "Correspondent organization updated"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "corrPerson" =>
-        for {
-          idref <- req.as[OptionalId]
-          res <- backend.item.setCorrPerson(
-            NonEmptyList.of(id),
-            idref.id,
-            user.account.collective
-          )
-          resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
-        } yield resp
-
-      case req @ POST -> Root / Ident(id) / "corrPerson" =>
-        for {
-          data <- req.as[Person]
-          pers <- Conversions.newPerson(data, user.account.collective)
-          res <- backend.item.addCorrPerson(id, pers)
-          resp <- Ok(Conversions.basicResult(res, "Correspondent person updated"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "concPerson" =>
-        for {
-          idref <- req.as[OptionalId]
-          res <- backend.item.setConcPerson(
-            NonEmptyList.of(id),
-            idref.id,
-            user.account.collective
-          )
-          resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
-        } yield resp
-
-      case req @ POST -> Root / Ident(id) / "concPerson" =>
-        for {
-          data <- req.as[Person]
-          pers <- Conversions.newPerson(data, user.account.collective)
-          res <- backend.item.addConcPerson(id, pers)
-          resp <- Ok(Conversions.basicResult(res, "Concerned person updated"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "concEquipment" =>
-        for {
-          idref <- req.as[OptionalId]
-          res <- backend.item.setConcEquip(
-            NonEmptyList.of(id),
-            idref.id,
-            user.account.collective
-          )
-          resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
-        } yield resp
-
-      case req @ POST -> Root / Ident(id) / "concEquipment" =>
-        for {
-          data <- req.as[Equipment]
-          equip <- Conversions.newEquipment(data, user.account.collective)
-          res <- backend.item.addConcEquip(id, equip)
-          resp <- Ok(Conversions.basicResult(res, "Concerned equipment updated"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "notes" =>
-        for {
-          text <- req.as[OptionalText]
-          res <- backend.item.setNotes(id, text.text.notEmpty, user.account.collective)
-          resp <- Ok(Conversions.basicResult(res, "Notes updated"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "name" =>
-        for {
-          text <- req.as[OptionalText]
-          res <- backend.item.setName(
-            id,
-            text.text.notEmpty.getOrElse(""),
-            user.account.collective
-          )
-          resp <- Ok(Conversions.basicResult(res, "Name updated"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "duedate" =>
-        for {
-          date <- req.as[OptionalDate]
-          _ <- logger.debug(s"Setting item due date to ${date.date}")
-          res <- backend.item.setItemDueDate(
-            NonEmptyList.of(id),
-            date.date,
-            user.account.collective
-          )
-          resp <- Ok(Conversions.basicResult(res, "Item due date updated"))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "date" =>
-        for {
-          date <- req.as[OptionalDate]
-          _ <- logger.debug(s"Setting item date to ${date.date}")
-          res <- backend.item.setItemDate(
-            NonEmptyList.of(id),
-            date.date,
-            user.account.collective
-          )
-          resp <- Ok(Conversions.basicResult(res, "Item date updated"))
-        } yield resp
-
-      case GET -> Root / Ident(id) / "proposals" =>
-        for {
-          ml <- backend.item.getProposals(id, user.account.collective)
-          ip = Conversions.mkItemProposals(ml)
-          resp <- Ok(ip)
-        } yield resp
-
-      case req @ POST -> Root / Ident(id) / "attachment" / "movebefore" =>
-        for {
-          data <- req.as[MoveAttachment]
-          _ <- logger.debug(s"Move item (${id.id}) attachment $data")
-          res <- backend.item.moveAttachmentBefore(id, data.source, data.target)
-          resp <- Ok(Conversions.basicResult(res, "Attachment moved."))
-        } yield resp
-
-      case req @ GET -> Root / Ident(id) / "preview" :? QP.WithFallback(flag) =>
-        def notFound =
-          NotFound(BasicResult(false, "Not found"))
-        for {
-          preview <- backend.itemSearch.findItemPreview(id, user.account.collective)
-          inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
-          matches = BinaryUtil.matchETag(preview.map(_.meta), inm)
-          fallback = flag.getOrElse(false)
-          resp <-
-            preview
-              .map { data =>
-                if (matches) BinaryUtil.withResponseHeaders(dsl, NotModified())(data)
-                else BinaryUtil.makeByteResp(dsl)(data).map(Responses.noCache)
-              }
-              .getOrElse(
-                if (fallback) BinaryUtil.noPreview(req.some).getOrElseF(notFound)
-                else notFound
-              )
-        } yield resp
-
-      case HEAD -> Root / Ident(id) / "preview" =>
-        for {
-          preview <- backend.itemSearch.findItemPreview(id, user.account.collective)
-          resp <-
-            preview
-              .map(data => BinaryUtil.withResponseHeaders(dsl, Ok())(data))
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
-        } yield resp
-
-      case req @ POST -> Root / Ident(id) / "reprocess" =>
-        for {
-          data <- req.as[IdList]
-          _ <- logger.debug(s"Re-process item ${id.id}")
-          res <- backend.item.reprocess(id, data.ids, user.account)
-          resp <- Ok(Conversions.basicResult(res, "Re-process task submitted."))
-        } yield resp
-
-      case req @ PUT -> Root / Ident(id) / "customfield" =>
-        for {
-          data <- req.as[CustomFieldValue]
-          res <- backend.customFields.setValue(
-            id,
-            SetValue(data.field, data.value, user.account.collective)
-          )
-          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
-          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
-          resp <- Ok(Conversions.basicResult(res.value))
-        } yield resp
-
-      case req @ DELETE -> Root / Ident(id) / "customfield" / Ident(fieldId) =>
-        for {
-          res <- backend.customFields.deleteValue(
-            RemoveValue(fieldId, NonEmptyList.of(id), user.account.collective)
-          )
-          baseUrl = ClientRequestInfo.getBaseUrl(cfg, req)
-          _ <- backend.notification.offerEvents(res.event(user.account, baseUrl.some))
-          resp <- Ok(Conversions.basicResult(res.value, "Custom field value removed."))
-        } yield resp
-
-      case DELETE -> Root / Ident(id) =>
-        for {
-          n <- backend.item.setDeletedState(NonEmptyList.of(id), user.account.collective)
-          res = BasicResult(n > 0, if (n > 0) "Item deleted" else "Item deletion failed.")
-          resp <- Ok(res)
-        } yield resp
-    }
+        case DELETE -> Root / Ident(id) =>
+          for {
+            n <- backend.item.setDeletedState(
+              NonEmptyList.of(id),
+              user.account.collective
+            )
+            res = BasicResult(
+              n > 0,
+              if (n > 0) "Item deleted" else "Item deletion failed."
+            )
+            resp <- Ok(res)
+          } yield resp
+      }
   }
 
   def searchItems[F[_]: Sync](

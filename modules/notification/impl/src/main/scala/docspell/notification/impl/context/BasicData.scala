@@ -79,7 +79,7 @@ object BasicData {
         Query.Fix(
           account,
           Some(ItemQuery.Attr.ItemId.in(itemIds.map(_.id))),
-          Some(_.created)
+          Some(_.byItemColumnAsc(_.created))
         )
       )
       for {

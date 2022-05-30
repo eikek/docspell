@@ -8,7 +8,9 @@ package docspell.store.queries
 
 import docspell.common._
 import docspell.query.ItemQuery
-import docspell.store.qb.Column
+import docspell.store.impl.TempFtsTable
+import docspell.store.qb.DSL._
+import docspell.store.qb.{Column, OrderBy}
 import docspell.store.records.RItem
 
 case class Query(fix: Query.Fix, cond: Query.QueryCond) {
@@ -16,7 +18,7 @@ case class Query(fix: Query.Fix, cond: Query.QueryCond) {
     copy(cond = f(cond))
 
   def withOrder(orderAsc: RItem.Table => Column[_]): Query =
-    withFix(_.copy(orderAsc = Some(orderAsc)))
+    withFix(_.copy(order = Some(_.byItemColumnAsc(orderAsc))))
 
   def withFix(f: Query.Fix => Query.Fix): Query =
     copy(fix = f(fix))
@@ -29,6 +31,19 @@ case class Query(fix: Query.Fix, cond: Query.QueryCond) {
 }
 
 object Query {
+  trait OrderSelect {
+    def item: RItem.Table
+    def fts: Option[TempFtsTable.Table]
+
+    def byDefault: OrderBy =
+      OrderBy.desc(coalesce(item.itemDate.s, item.created.s).s)
+
+    def byItemColumnAsc(f: RItem.Table => Column[_]): OrderBy =
+      OrderBy.asc(coalesce(f(item).s, item.created.s).s)
+
+    def byScore: OrderBy =
+      fts.map(t => OrderBy.desc(t.score.s)).getOrElse(byDefault)
+  }
 
   def apply(fix: Fix): Query =
     Query(fix, QueryExpr(None))
@@ -36,7 +51,7 @@ object Query {
   case class Fix(
       account: AccountId,
       query: Option[ItemQuery.Expr],
-      orderAsc: Option[RItem.Table => Column[_]]
+      order: Option[OrderSelect => OrderBy]
   ) {
 
     def isEmpty: Boolean =

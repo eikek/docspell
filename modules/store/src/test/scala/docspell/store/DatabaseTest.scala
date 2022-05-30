@@ -1,19 +1,27 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package docspell.store
 
+import java.util.UUID
+
 import cats.effect._
+
+import docspell.common._
+import docspell.logging.TestLoggingConfig
+
+import com.dimafeng.testcontainers.munit.fixtures.TestContainersFixtures
 import com.dimafeng.testcontainers.{
   JdbcDatabaseContainer,
   MariaDBContainer,
   PostgreSQLContainer
 }
-import com.dimafeng.testcontainers.munit.fixtures.TestContainersFixtures
-import docspell.common._
-import docspell.logging.TestLoggingConfig
+import doobie._
 import munit.CatsEffectSuite
 import org.testcontainers.utility.DockerImageName
-import doobie._
-
-import java.util.UUID
 
 trait DatabaseTest
     extends CatsEffectSuite

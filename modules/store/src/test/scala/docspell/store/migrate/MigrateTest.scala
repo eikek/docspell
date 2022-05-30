@@ -7,7 +7,9 @@
 package docspell.store.migrate
 
 import cats.effect._
+
 import docspell.store.{DatabaseTest, SchemaMigrateConfig, StoreFixture}
+
 import org.flywaydb.core.api.output.MigrateResult
 
 class MigrateTest extends DatabaseTest {

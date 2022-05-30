@@ -180,7 +180,7 @@ object OItemSearch {
         Timestamp
           .current[F]
           .map(_.toUtcDate)
-          .flatMap(today => store.transact(QItem.searchStats(today)(q)))
+          .flatMap(today => store.transact(QItem.searchStats(today, None)(q)))
 
       def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
         store
