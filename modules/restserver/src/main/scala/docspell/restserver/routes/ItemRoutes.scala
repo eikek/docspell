@@ -13,7 +13,6 @@ import cats.implicits._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OCustomFields.{RemoveValue, SetValue}
-import docspell.backend.ops.OFulltext
 import docspell.backend.ops.OItemSearch.{Batch, Query}
 import docspell.backend.ops.OSimpleSearch
 import docspell.backend.ops.OSimpleSearch.StringSearchResult
@@ -105,30 +104,6 @@ object ItemRoutes {
               searchMode = userQuery.searchMode.getOrElse(SearchMode.Normal)
             )
             resp <- searchItemStats(backend, dsl)(settings, fixQuery, itemQuery)
-          } yield resp
-
-        case req @ POST -> Root / "searchIndex" =>
-          for {
-            mask <- req.as[ItemQuery]
-            limitCapped = mask.limit.exists(_ > cfg.maxItemPageSize)
-            resp <- mask.query match {
-              case q if q.length > 1 =>
-                val ftsIn = OFulltext.FtsInput(q)
-                val batch = Batch(
-                  mask.offset.getOrElse(0),
-                  mask.limit.getOrElse(cfg.maxItemPageSize)
-                ).restrictLimitTo(cfg.maxItemPageSize)
-                for {
-                  items <- backend.fulltext
-                    .findIndexOnly(cfg.maxNoteLength)(ftsIn, user.account, batch)
-                  ok <- Ok(
-                    Conversions.mkItemListWithTagsFtsPlain(items, batch, limitCapped)
-                  )
-                } yield ok
-
-              case _ =>
-                BadRequest(BasicResult(false, "Query string too short"))
-            }
           } yield resp
 
         case GET -> Root / Ident(id) =>

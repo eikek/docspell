@@ -3028,40 +3028,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ItemLightList"
 
-  /sec/item/searchIndex:
-    post:
-      operationId: "sec-item-search-index"
-      tags: [ Item Search ]
-      summary: Search for items using full-text search only.
-      description: |
-        Search for items by only using the full-text search index.
-
-        Unlike the other search routes, this one only asks the
-        full-text search index and returns only one group that
-        contains the results in the same order as given from the
-        index. Most full-text search engines use an ordering that
-        reflect the relevance wrt the search term.
-
-        The other search routes always order the results by some
-        property (the item date) and thus the relevance ordering is
-        destroyed when using the full-text search.
-      security:
-        - authTokenHeader: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ItemQuery"
-      responses:
-        422:
-          description: BadRequest
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ItemLightList"
-
   /sec/item/searchStats:
     post:
       operationId: "sec-item-search-stats-get"
