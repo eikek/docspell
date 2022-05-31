@@ -41,10 +41,11 @@ object ItemRoutes {
       user: AuthToken
   ): HttpRoutes[F] = {
     val logger = docspell.logging.getLogger[F]
+    val searchPart = ItemSearchPart[F](backend, cfg, user)
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    ItemSearchPart(backend, cfg, user) <+>
+    searchPart.routes <+>
       HttpRoutes.of {
         case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
               offset

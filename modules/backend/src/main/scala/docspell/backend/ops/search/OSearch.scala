@@ -10,7 +10,7 @@ import java.time.LocalDate
 
 import cats.effect._
 import cats.syntax.all._
-import cats.~>
+import cats.{Functor, ~>}
 import fs2.Stream
 
 import docspell.backend.ops.OItemSearch.{ListItemWithTags, SearchSummary}
@@ -52,9 +52,23 @@ trait OSearch[F[_]] {
       fulltextQuery: Option[String]
   ): F[Vector[ListItemWithTags]]
 
+  /** Selects either `search` or `searchWithDetails`. For the former the items are filled
+    * with empty details.
+    */
+  final def searchSelect(
+      withDetails: Boolean,
+      maxNoteLen: Int,
+      today: LocalDate,
+      batch: Batch
+  )(
+      q: Query,
+      fulltextQuery: Option[String]
+  )(implicit F: Functor[F]): F[Vector[ListItemWithTags]] =
+    if (withDetails) searchWithDetails(maxNoteLen, today, batch)(q, fulltextQuery)
+    else search(maxNoteLen, today, batch)(q, fulltextQuery).map(_.map(_.toWithTags))
+
   /** Run multiple database calls with the give query to collect a summary. */
   def searchSummary(
-      mode: SearchMode,
       today: LocalDate
   )(q: Query, fulltextQuery: Option[String]): F[SearchSummary]
 
@@ -80,41 +94,49 @@ object OSearch {
           accountId: AccountId,
           mode: SearchMode,
           qs: String
-      ): QueryParseResult =
-        ItemQueryParser.parse(qs) match {
-          case Right(iq) =>
-            val validItemQuery =
-              mode match {
-                case SearchMode.Trashed => ItemQuery.Expr.Trashed
-                case SearchMode.Normal  => ItemQuery.Expr.ValidItemStates
-                case SearchMode.All     => ItemQuery.Expr.ValidItemsOrTrashed
+      ): QueryParseResult = {
+        val validItemQuery =
+          mode match {
+            case SearchMode.Trashed => ItemQuery.Expr.Trashed
+            case SearchMode.Normal  => ItemQuery.Expr.ValidItemStates
+            case SearchMode.All     => ItemQuery.Expr.ValidItemsOrTrashed
+          }
+
+        if (qs.trim.isEmpty) {
+          val qf = Query.Fix(accountId, Some(validItemQuery), None)
+          val qq = Query.QueryExpr(None)
+          val q = Query(qf, qq)
+          QueryParseResult.Success(q, None)
+        } else
+          ItemQueryParser.parse(qs) match {
+            case Right(iq) =>
+              FulltextExtract.findFulltext(iq.expr) match {
+                case FulltextExtract.Result.SuccessNoFulltext(expr) =>
+                  val qf = Query.Fix(accountId, Some(validItemQuery), None)
+                  val qq = Query.QueryExpr(expr)
+                  val q = Query(qf, qq)
+                  QueryParseResult.Success(q, None)
+
+                case FulltextExtract.Result.SuccessNoExpr(fts) =>
+                  val qf = Query.Fix(accountId, Some(validItemQuery), Option(_.byScore))
+                  val qq = Query.QueryExpr(None)
+                  val q = Query(qf, qq)
+                  QueryParseResult.Success(q, Some(fts))
+
+                case FulltextExtract.Result.SuccessBoth(expr, fts) =>
+                  val qf = Query.Fix(accountId, Some(validItemQuery), None)
+                  val qq = Query.QueryExpr(expr)
+                  val q = Query(qf, qq)
+                  QueryParseResult.Success(q, Some(fts))
+
+                case f: FulltextExtract.FailureResult =>
+                  QueryParseResult.FulltextMismatch(f)
               }
-            FulltextExtract.findFulltext(iq.expr) match {
-              case FulltextExtract.Result.SuccessNoFulltext(expr) =>
-                val qf = Query.Fix(accountId, Some(validItemQuery), None)
-                val qq = Query.QueryExpr(expr)
-                val q = Query(qf, qq)
-                QueryParseResult.Success(q, None)
 
-              case FulltextExtract.Result.SuccessNoExpr(fts) =>
-                val qf = Query.Fix(accountId, Some(validItemQuery), Option(_.byScore))
-                val qq = Query.QueryExpr(None)
-                val q = Query(qf, qq)
-                QueryParseResult.Success(q, Some(fts))
-
-              case FulltextExtract.Result.SuccessBoth(expr, fts) =>
-                val qf = Query.Fix(accountId, Some(validItemQuery), None)
-                val qq = Query.QueryExpr(expr)
-                val q = Query(qf, qq)
-                QueryParseResult.Success(q, Some(fts))
-
-              case f: FulltextExtract.FailureResult =>
-                QueryParseResult.FulltextMismatch(f)
-            }
-
-          case Left(err) =>
-            QueryParseResult.ParseFailed(err).cast
-        }
+            case Left(err) =>
+              QueryParseResult.ParseFailed(err).cast
+          }
+      }
 
       def search(maxNoteLen: Int, today: LocalDate, batch: Batch)(
           q: Query,
@@ -167,7 +189,6 @@ object OSearch {
         } yield resolved
 
       def searchSummary(
-          mode: SearchMode,
           today: LocalDate
       )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] =
         fulltextQuery match {
@@ -194,7 +215,7 @@ object OSearch {
         store
           .transact(QFolder.getMemberFolders(account))
           .map(folders =>
-            FtsQuery(ftq, account.collective, batch.limit, batch.offset)
+            FtsQuery(ftq, account.collective, batch.limit, 0)
               .withFolders(folders)
           )
 

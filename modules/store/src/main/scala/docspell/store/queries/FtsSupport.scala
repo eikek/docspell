@@ -23,7 +23,7 @@ trait FtsSupport {
           val tt = cteTable(ftst)
           select
             .appendCte(ftst.distinctCteSimple(tt.tableName))
-            .changeFrom(_.innerJoin(tt, itemTable.id === tt.id))
+            .changeFrom(_.prepend(from(itemTable).innerJoin(tt, itemTable.id === tt.id)))
         case None =>
           select
       }
@@ -37,7 +37,19 @@ trait FtsSupport {
           val tt = cteTable(ftst)
           select
             .appendCte(ftst.distinctCte(tt.tableName))
-            .changeFrom(_.innerJoin(tt, itemTable.id === tt.id))
+            .changeFrom(_.prepend(from(itemTable).innerJoin(tt, itemTable.id === tt.id)))
+        case None =>
+          select
+      }
+
+    def ftsCondition(
+        itemTable: RItem.Table,
+        ftsTable: Option[TempFtsTable.Table]
+    ): Select =
+      ftsTable match {
+        case Some(ftst) =>
+          val ftsIds = Select(ftst.id.s, from(ftst)).distinct
+          select.changeWhere(c => c && itemTable.id.in(ftsIds))
         case None =>
           select
       }

@@ -475,9 +475,9 @@ object QItem extends FtsSupport {
 
     val base =
       findItemsBase(q.fix, today, 0, None).unwrap
-        .joinFtsIdOnly(i, ftsTable)
         .changeFrom(_.prepend(fieldJoin))
         .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+        .ftsCondition(i, ftsTable)
         .groupBy(GroupBy(cf.all))
 
     val basicFields = Nel.of(

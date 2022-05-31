@@ -297,7 +297,7 @@ trait Conversions {
         relatedItems = i.relatedItems
       )
 
-  private def mkAttachmentLight(qa: QAttachmentLight): AttachmentLight =
+  def mkAttachmentLight(qa: QAttachmentLight): AttachmentLight =
     AttachmentLight(qa.id, qa.position, qa.name, qa.pageCount)
 
   def mkItemLightWithTags(i: OFulltext.FtsItemWithTags): ItemLight = {
