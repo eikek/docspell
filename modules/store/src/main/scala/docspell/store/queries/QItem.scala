@@ -18,7 +18,7 @@ import docspell.common.{FileKey, IdRef, _}
 import docspell.query.ItemQuery.Expr.ValidItemStates
 import docspell.query.{ItemQuery, ItemQueryDsl}
 import docspell.store.Store
-import docspell.store.impl.TempFtsTable
+import docspell.store.fts.RFtsResult
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.qb.generator.{ItemQueryGenerator, Tables}
@@ -46,7 +46,7 @@ object QItem extends FtsSupport {
   private val ti = RTagItem.as("ti")
   private val meta = RFileMeta.as("fmeta")
 
-  private def orderSelect(ftsOpt: Option[TempFtsTable.Table]): OrderSelect =
+  private def orderSelect(ftsOpt: Option[RFtsResult.Table]): OrderSelect =
     new OrderSelect {
       val item = i
       val fts = ftsOpt
@@ -59,7 +59,7 @@ object QItem extends FtsSupport {
       today: LocalDate,
       maxNoteLen: Int,
       batch: Batch,
-      ftsTable: Option[TempFtsTable.Table]
+      ftsTable: Option[RFtsResult.Table]
   ) = {
     val cteFts = ftsTable.map(cteTable)
     val sql =
@@ -170,7 +170,7 @@ object QItem extends FtsSupport {
       q: Query.Fix,
       today: LocalDate,
       noteMaxLen: Int,
-      ftsTable: Option[TempFtsTable.Table]
+      ftsTable: Option[RFtsResult.Table]
   ): Select.Ordered = {
     val coll = q.account.collective
 
@@ -322,7 +322,7 @@ object QItem extends FtsSupport {
   ): Stream[ConnectionIO, ListItem] =
     queryItems(q, today, maxNoteLen, batch, None)
 
-  def searchStats(today: LocalDate, ftsTable: Option[TempFtsTable.Table])(
+  def searchStats(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[SearchSummary] =
     for {
@@ -349,7 +349,7 @@ object QItem extends FtsSupport {
 
   def searchTagCategorySummary(
       today: LocalDate,
-      ftsTable: Option[TempFtsTable.Table]
+      ftsTable: Option[RFtsResult.Table]
   )(q: Query): ConnectionIO[List[CategoryCount]] = {
     val tagFrom =
       from(ti)
@@ -374,7 +374,7 @@ object QItem extends FtsSupport {
     } yield existing ++ other.map(n => CategoryCount(n.some, 0))
   }
 
-  def searchTagSummary(today: LocalDate, ftsTable: Option[TempFtsTable.Table])(
+  def searchTagSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[TagCount]] = {
     val tagFrom =
@@ -401,7 +401,7 @@ object QItem extends FtsSupport {
     } yield existing ++ other.map(TagCount(_, 0))
   }
 
-  def searchCountSummary(today: LocalDate, ftsTable: Option[TempFtsTable.Table])(
+  def searchCountSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[Int] =
     findItemsBase(q.fix, today, 0, None).unwrap
@@ -412,22 +412,22 @@ object QItem extends FtsSupport {
       .query[Int]
       .unique
 
-  def searchCorrOrgSummary(today: LocalDate, ftsTable: Option[TempFtsTable.Table])(
+  def searchCorrOrgSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[IdRefCount]] =
     searchIdRefSummary(org.oid, org.name, i.corrOrg, today, ftsTable)(q)
 
-  def searchCorrPersonSummary(today: LocalDate, ftsTable: Option[TempFtsTable.Table])(
+  def searchCorrPersonSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[IdRefCount]] =
     searchIdRefSummary(pers0.pid, pers0.name, i.corrPerson, today, ftsTable)(q)
 
-  def searchConcPersonSummary(today: LocalDate, ftsTable: Option[TempFtsTable.Table])(
+  def searchConcPersonSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[IdRefCount]] =
     searchIdRefSummary(pers1.pid, pers1.name, i.concPerson, today, ftsTable)(q)
 
-  def searchConcEquipSummary(today: LocalDate, ftsTable: Option[TempFtsTable.Table])(
+  def searchConcEquipSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[IdRefCount]] =
     searchIdRefSummary(equip.eid, equip.name, i.concEquipment, today, ftsTable)(q)
@@ -437,7 +437,7 @@ object QItem extends FtsSupport {
       nameCol: Column[String],
       fkCol: Column[Ident],
       today: LocalDate,
-      ftsTable: Option[TempFtsTable.Table]
+      ftsTable: Option[RFtsResult.Table]
   )(q: Query): ConnectionIO[List[IdRefCount]] =
     findItemsBase(q.fix, today, 0, None).unwrap
       .joinFtsIdOnly(i, ftsTable)
@@ -450,7 +450,7 @@ object QItem extends FtsSupport {
       .query[IdRefCount]
       .to[List]
 
-  def searchFolderSummary(today: LocalDate, ftsTable: Option[TempFtsTable.Table])(
+  def searchFolderSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[FolderCount]] = {
     val fu = RUser.as("fu")
@@ -465,7 +465,7 @@ object QItem extends FtsSupport {
       .to[List]
   }
 
-  def searchFieldSummary(today: LocalDate, ftsTable: Option[TempFtsTable.Table])(
+  def searchFieldSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[FieldStats]] = {
     val fieldJoin =

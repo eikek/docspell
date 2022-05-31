@@ -7,7 +7,7 @@
 package docspell.store.queries
 
 import docspell.common._
-import docspell.store.impl.TempFtsTable.ContextEntry
+import docspell.store.fts.ContextEntry
 
 case class ListItem(
     id: Ident,

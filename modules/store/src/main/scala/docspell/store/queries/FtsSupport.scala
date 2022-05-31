@@ -6,7 +6,7 @@
 
 package docspell.store.queries
 
-import docspell.store.impl.TempFtsTable
+import docspell.store.fts.RFtsResult
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.records.RItem
@@ -16,7 +16,7 @@ trait FtsSupport {
   implicit final class SelectOps(select: Select) {
     def joinFtsIdOnly(
         itemTable: RItem.Table,
-        ftsTable: Option[TempFtsTable.Table]
+        ftsTable: Option[RFtsResult.Table]
     ): Select =
       ftsTable match {
         case Some(ftst) =>
@@ -30,7 +30,7 @@ trait FtsSupport {
 
     def joinFtsDetails(
         itemTable: RItem.Table,
-        ftsTable: Option[TempFtsTable.Table]
+        ftsTable: Option[RFtsResult.Table]
     ): Select =
       ftsTable match {
         case Some(ftst) =>
@@ -44,7 +44,7 @@ trait FtsSupport {
 
     def ftsCondition(
         itemTable: RItem.Table,
-        ftsTable: Option[TempFtsTable.Table]
+        ftsTable: Option[RFtsResult.Table]
     ): Select =
       ftsTable match {
         case Some(ftst) =>
@@ -55,7 +55,7 @@ trait FtsSupport {
       }
   }
 
-  def cteTable(ftsTable: TempFtsTable.Table) =
+  def cteTable(ftsTable: RFtsResult.Table) =
     ftsTable.copy(tableName = "cte_fts")
 }
 

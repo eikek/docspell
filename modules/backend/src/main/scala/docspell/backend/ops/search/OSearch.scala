@@ -14,11 +14,11 @@ import cats.{Functor, ~>}
 import fs2.Stream
 
 import docspell.backend.ops.OItemSearch.{ListItemWithTags, SearchSummary}
-import docspell.common.{AccountId, SearchMode}
+import docspell.common.{AccountId, Duration, SearchMode}
 import docspell.ftsclient.{FtsClient, FtsQuery}
 import docspell.query.{FulltextExtract, ItemQuery, ItemQueryParser}
 import docspell.store.Store
-import docspell.store.impl.TempFtsTable
+import docspell.store.fts.RFtsResult
 import docspell.store.qb.Batch
 import docspell.store.queries._
 
@@ -89,6 +89,7 @@ object OSearch {
       ftsClient: FtsClient[F]
   ): OSearch[F] =
     new OSearch[F] {
+      private[this] val logger = docspell.logging.getLogger[F]
 
       def parseQueryString(
           accountId: AccountId,
@@ -145,6 +146,7 @@ object OSearch {
         fulltextQuery match {
           case Some(ftq) =>
             for {
+              timed <- Duration.stopTime[F]
               ftq <- createFtsQuery(q.fix.account, batch, ftq)
 
               results <- WeakAsync.liftK[F, ConnectionIO].use { nat =>
@@ -160,14 +162,21 @@ object OSearch {
                   .compile
                   .toVector
               }
-
+              duration <- timed
+              _ <- logger.debug(s"Simple search with fts in: ${duration.formatExact}")
             } yield results
 
           case None =>
-            store
-              .transact(QItem.queryItems(q, today, maxNoteLen, batch, None))
-              .compile
-              .toVector
+            for {
+              timed <- Duration.stopTime[F]
+              results <- store
+                .transact(QItem.queryItems(q, today, maxNoteLen, batch, None))
+                .compile
+                .toVector
+              duration <- timed
+              _ <- logger.debug(s"Simple search sql in: ${duration.formatExact}")
+            } yield results
+
         }
 
       def searchWithDetails(
@@ -180,12 +189,15 @@ object OSearch {
       ): F[Vector[ListItemWithTags]] =
         for {
           items <- search(maxNoteLen, today, batch)(q, fulltextQuery)
+          timed <- Duration.stopTime[F]
           resolved <- store
             .transact(
               QItem.findItemsWithTags(q.fix.account.collective, Stream.emits(items))
             )
             .compile
             .toVector
+          duration <- timed
+          _ <- logger.debug(s"Search: resolved details in: ${duration.formatExact}")
         } yield resolved
 
       def searchSummary(
@@ -222,11 +234,11 @@ object OSearch {
       def temporaryFtsTable(
           ftq: FtsQuery,
           nat: F ~> ConnectionIO
-      ): ConnectionIO[TempFtsTable.Table] =
+      ): ConnectionIO[RFtsResult.Table] =
         ftsClient
           .searchAll(ftq)
           .translate(nat)
-          .through(TempFtsTable.prepareTable(store.dbms, "fts_result"))
+          .through(RFtsResult.prepareTable(store.dbms, "fts_result"))
           .compile
           .lastOrError
     }

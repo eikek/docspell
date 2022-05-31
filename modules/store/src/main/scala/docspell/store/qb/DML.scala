@@ -41,6 +41,17 @@ object DML extends DoobieMeta {
   ): ConnectionIO[Int] =
     insertFragment(table, cols, values).update.run
 
+  def insertMulti(
+      table: TableDef,
+      cols: Nel[Column[_]],
+      values: Seq[Fragment]
+  ): ConnectionIO[Int] =
+    (fr"INSERT INTO ${FromExprBuilder.buildTable(table)} (" ++
+      cols
+        .map(SelectExprBuilder.columnNoPrefix)
+        .reduceLeft(_ ++ comma ++ _) ++
+      fr") VALUES ${values.reduce(_ ++ comma ++ _)}").update.run
+
   def insertFragment(
       table: TableDef,
       cols: Nel[Column[_]],

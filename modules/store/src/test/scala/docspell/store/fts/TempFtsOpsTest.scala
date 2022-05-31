@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.store.impl
+package docspell.store.fts
 
 import java.time.LocalDate
 
@@ -18,7 +18,7 @@ import docspell.ftsclient.FtsResult
 import docspell.ftsclient.FtsResult.{AttachmentData, ItemMatch}
 import docspell.logging.Level
 import docspell.store._
-import docspell.store.impl.TempFtsTable.Row
+import docspell.store.fts.RFtsResult
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.queries.{QItem, Query}
@@ -26,7 +26,7 @@ import docspell.store.records.{RCollective, RItem}
 
 import doobie._
 
-class TempFtsTableTest extends DatabaseTest {
+class TempFtsOpsTest extends DatabaseTest {
   private[this] val logger = docspell.logging.getLogger[IO]
   override def rootMinimumLevel = Level.Info
 
@@ -53,12 +53,11 @@ class TempFtsTableTest extends DatabaseTest {
       _ <- prepareItems(maria)
       _ <- prepareItems(h2)
       _ <- assertQueryItem(pg, ftsResults(10, 10))
-      _ <- assertQueryItem(pg, ftsResults(3000, 500))
-      _ <- assertQueryItem(pg, ftsResults(3000, 500))
+//      _ <- assertQueryItem(pg, ftsResults(3000, 500))
       _ <- assertQueryItem(maria, ftsResults(10, 10))
-      _ <- assertQueryItem(maria, ftsResults(3000, 500))
+//      _ <- assertQueryItem(maria, ftsResults(3000, 500))
       _ <- assertQueryItem(h2, ftsResults(10, 10))
-      _ <- assertQueryItem(h2, ftsResults(3000, 500))
+//      _ <- assertQueryItem(h2, ftsResults(3000, 500))
     } yield ()
   }
 
@@ -74,19 +73,19 @@ class TempFtsTableTest extends DatabaseTest {
   def assertCreateTempTable(store: Store[IO]) = {
     val insertRows =
       List(
-        Row(id("abc-def"), None, None),
-        Row(id("abc-123"), Some(1.56), None),
-        Row(id("zyx-321"), None, None)
+        RFtsResult(id("abc-def"), None, None),
+        RFtsResult(id("abc-123"), Some(1.56), None),
+        RFtsResult(id("zyx-321"), None, None)
       )
     val create =
       for {
-        table <- TempFtsTable.createTable(store.dbms, "tt")
+        table <- TempFtsOps.createTable(store.dbms, "tt")
         n <- table.insertAll(insertRows)
         _ <- table.createIndex
         rows <- Select(select(table.all), from(table))
           .orderBy(table.id)
           .build
-          .query[Row]
+          .query[RFtsResult]
           .to[List]
       } yield (n, rows)
 
@@ -106,7 +105,7 @@ class TempFtsTableTest extends DatabaseTest {
       today <- IO(LocalDate.now())
       account = DocspellSystem.account
       tempTable = ftsResults
-        .through(TempFtsTable.prepareTable(store.dbms, "fts_result"))
+        .through(TempFtsOps.prepareTable(store.dbms, "fts_result"))
         .compile
         .lastOrError
       q = Query(Query.Fix(account, None, None), Query.QueryExpr(None))

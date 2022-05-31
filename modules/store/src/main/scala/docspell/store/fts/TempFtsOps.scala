@@ -4,96 +4,24 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.store.impl
+package docspell.store.fts
 
 import cats.Foldable
-import cats.data.NonEmptyList
-import cats.effect._
 import cats.syntax.all._
 import fs2.{Pipe, Stream}
 
-import docspell.common.{Duration, Ident}
+import docspell.common.Duration
 import docspell.ftsclient.FtsResult
 import docspell.store.Db
+import docspell.store.fts.RFtsResult.Table
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
 import doobie._
 import doobie.implicits._
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
 
-/** Temporary table used to store item ids fetched from fulltext search */
-object TempFtsTable {
+private[fts] object TempFtsOps {
   private[this] val logger = docspell.logging.getLogger[ConnectionIO]
-
-  case class Row(id: Ident, score: Option[Double], context: Option[ContextEntry])
-  object Row {
-    def from(result: FtsResult)(m: FtsResult.ItemMatch): Row = {
-      val context = m.data match {
-        case FtsResult.AttachmentData(_, attachName) =>
-          result.highlight
-            .get(m.id)
-            .filter(_.nonEmpty)
-            .map(str => ContextEntry(attachName, str))
-
-        case FtsResult.ItemData =>
-          result.highlight
-            .get(m.id)
-            .filter(_.nonEmpty)
-            .map(str => ContextEntry("item", str))
-      }
-      Row(m.itemId, m.score.some, context)
-    }
-  }
-
-  case class ContextEntry(name: String, context: List[String])
-  object ContextEntry {
-    implicit val jsonDecoder: Decoder[ContextEntry] = deriveDecoder
-    implicit val jsonEncoder: Encoder[ContextEntry] = deriveEncoder
-
-    implicit val meta: Meta[ContextEntry] =
-      jsonMeta[ContextEntry]
-  }
-
-  case class Table(tableName: String, alias: Option[String], dbms: Db) extends TableDef {
-    val id: Column[Ident] = Column("id", this)
-    val score: Column[Double] = Column("score", this)
-    val context: Column[ContextEntry] = Column("context", this)
-
-    val all: NonEmptyList[Column[_]] = NonEmptyList.of(id, score, context)
-
-    def as(newAlias: String): Table = copy(alias = Some(newAlias))
-
-    def distinctCte(name: String) =
-      dbms.fold(
-        TempFtsTable.distinctCtePg(this, name),
-        TempFtsTable.distinctCteMaria(this, name),
-        TempFtsTable.distinctCteH2(this, name)
-      )
-
-    def distinctCteSimple(name: String) =
-      CteBind(copy(tableName = name) -> Select(select(id), from(this)).distinct)
-
-    def insertAll[F[_]: Foldable](rows: F[Row]): ConnectionIO[Int] =
-      insertBatch(this, rows)
-
-    def dropTable: ConnectionIO[Int] =
-      TempFtsTable.dropTable(Fragment.const0(tableName)).update.run
-
-    def createIndex: ConnectionIO[Unit] = {
-      val analyze = dbms.fold(
-        TempFtsTable.analyzeTablePg(this),
-        cio.unit,
-        cio.unit
-      )
-
-      TempFtsTable.createIndex(this) *> analyze
-    }
-
-    def insert: Pipe[ConnectionIO, FtsResult, Int] =
-      in => in.evalMap(res => insertAll(res.results.map(Row.from(res))))
-  }
 
   def createTable(db: Db, name: String): ConnectionIO[Table] = {
     val stmt = db.fold(
@@ -119,7 +47,7 @@ object TempFtsTable {
         )
       } yield tt
 
-  private def dropTable(name: Fragment): Fragment =
+  def dropTable(name: Fragment): Fragment =
     sql"""DROP TABLE IF EXISTS $name"""
 
   private def createTableH2(name: Fragment): ConnectionIO[Int] =
@@ -144,7 +72,7 @@ object TempFtsTable {
          |  context text
          |) ON COMMIT DROP;""".stripMargin.update.run
 
-  private def createIndex(table: Table): ConnectionIO[Unit] = {
+  def createIndex(table: Table): ConnectionIO[Unit] = {
     val tableName = Fragment.const0(table.tableName)
 
     val idIdxName = Fragment.const0(s"${table.tableName}_id_idx")
@@ -156,21 +84,67 @@ object TempFtsTable {
       sql"CREATE INDEX IF NOT EXISTS $scoreIdxName ON $tableName($score)".update.run.void
   }
 
-  private def analyzeTablePg(table: Table): ConnectionIO[Unit] = {
+  def analyzeTablePg(table: Table): ConnectionIO[Unit] = {
     val tableName = Fragment.const0(table.tableName)
     sql"ANALYZE $tableName".update.run.void
   }
 
-  private def insertBatch[F[_]: Foldable](table: Table, rows: F[Row]) = {
+//  // slowest (9 runs, 6000 rows each, ~170ms)
+//  def insertBatch2[F[_]: Foldable](table: Table, rows: F[RFtsResult]) = {
+//    val sql =
+//      s"""INSERT INTO ${table.tableName}
+//         |  (${table.id.name}, ${table.score.name}, ${table.context.name})
+//         |  VALUES (?, ?, ?)""".stripMargin
+//
+//    Update[RFtsResult](sql).updateMany(rows)
+//  }
+
+//  // better (~115ms)
+//  def insertBatch3[F[_]: Foldable](
+//                                    table: Table,
+//                                    rows: F[RFtsResult]
+//                                  ): ConnectionIO[Int] = {
+//    val values = rows
+//      .foldl(List.empty[Fragment]) { (res, row) =>
+//        sql"(${row.id},${row.score},${row.context})" :: res
+//      }
+//
+//    DML.insertMulti(table, table.all, values)
+//  }
+
+  // ~96ms
+  def insertBatch[F[_]: Foldable](
+      table: Table,
+      rows: F[RFtsResult]
+  ): ConnectionIO[Int] = {
+    val values = rows
+      .foldl(List.empty[String]) { (res, _) =>
+        "(?,?,?)" :: res
+      }
+      .mkString(",")
     val sql =
       s"""INSERT INTO ${table.tableName}
          |  (${table.id.name}, ${table.score.name}, ${table.context.name})
-         |  VALUES (?, ?, ?)""".stripMargin
+         |  VALUES $values""".stripMargin
 
-    Update[Row](sql).updateMany(rows)
+    val encoder = io.circe.Encoder[ContextEntry]
+    doobie.free.FC.raw { conn =>
+      val pst = conn.prepareStatement(sql)
+      rows.foldl(0) { (index, row) =>
+        pst.setString(index + 1, row.id.id)
+        row.score
+          .map(d => pst.setDouble(index + 2, d))
+          .getOrElse(pst.setNull(index + 2, java.sql.Types.DOUBLE))
+        row.context
+          .map(c => pst.setString(index + 3, encoder(c).noSpaces))
+          .getOrElse(pst.setNull(index + 3, java.sql.Types.VARCHAR))
+        index + 3
+      }
+      pst.executeUpdate()
+    }
   }
 
-  private def distinctCtePg(table: Table, name: String): CteBind =
+  def distinctCtePg(table: Table, name: String): CteBind =
     CteBind(
       table.copy(tableName = name) ->
         Select(
@@ -183,7 +157,7 @@ object TempFtsTable {
         ).groupBy(table.id)
     )
 
-  private def distinctCteMaria(table: Table, name: String): CteBind =
+  def distinctCteMaria(table: Table, name: String): CteBind =
     CteBind(
       table.copy(tableName = name) ->
         Select(
@@ -196,7 +170,7 @@ object TempFtsTable {
         ).groupBy(table.id)
     )
 
-  private def distinctCteH2(table: Table, name: String): CteBind =
+  def distinctCteH2(table: Table, name: String): CteBind =
     CteBind(
       table.copy(tableName = name) ->
         Select(
@@ -208,6 +182,4 @@ object TempFtsTable {
           from(table)
         ).groupBy(table.id)
     )
-
-  private val cio: Sync[ConnectionIO] = Sync[ConnectionIO]
 }

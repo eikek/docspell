@@ -8,7 +8,7 @@ package docspell.store.queries
 
 import docspell.common._
 import docspell.query.ItemQuery
-import docspell.store.impl.TempFtsTable
+import docspell.store.fts.RFtsResult
 import docspell.store.qb.DSL._
 import docspell.store.qb.{Column, OrderBy}
 import docspell.store.records.RItem
@@ -33,7 +33,7 @@ case class Query(fix: Query.Fix, cond: Query.QueryCond) {
 object Query {
   trait OrderSelect {
     def item: RItem.Table
-    def fts: Option[TempFtsTable.Table]
+    def fts: Option[RFtsResult.Table]
 
     def byDefault: OrderBy =
       OrderBy.desc(coalesce(item.itemDate.s, item.created.s).s)
