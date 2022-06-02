@@ -14,8 +14,8 @@ import cats.syntax.all._
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.search.QueryParseResult
-import docspell.common.{SearchMode, Timestamp}
-import docspell.query.FulltextExtract
+import docspell.common.{Duration, SearchMode, Timestamp}
+import docspell.query.FulltextExtract.Result
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
@@ -44,31 +44,36 @@ final class ItemSearchPart[F[_]: Async](
             ) :? QP.WithDetails(detailFlag) :? QP.SearchKind(searchMode) =>
           val userQuery =
             ItemQuery(offset, limit, detailFlag, searchMode, q.getOrElse(""))
-
-          Timestamp
-            .current[F]
-            .map(_.toUtcDate)
-            .flatMap(search(userQuery, _))
+          for {
+            today <- Timestamp.current[F].map(_.toUtcDate)
+            resp <- search(userQuery, today)
+          } yield resp
 
         case req @ POST -> Root / "search" =>
           for {
+            timed <- Duration.stopTime[F]
             userQuery <- req.as[ItemQuery]
-            today <- Timestamp.current[F]
-            resp <- search(userQuery, today.toUtcDate)
+            today <- Timestamp.current[F].map(_.toUtcDate)
+            resp <- search(userQuery, today)
+            dur <- timed
+            _ <- logger.debug(s"Search request: ${dur.formatExact}")
           } yield resp
 
         case GET -> Root / "searchStats" :? QP.Query(q) :? QP.SearchKind(searchMode) =>
           val userQuery = ItemQuery(None, None, None, searchMode, q.getOrElse(""))
-          Timestamp
-            .current[F]
-            .map(_.toUtcDate)
-            .flatMap(searchStats(userQuery, _))
+          for {
+            today <- Timestamp.current[F].map(_.toUtcDate)
+            resp <- searchStats(userQuery, today)
+          } yield resp
 
         case req @ POST -> Root / "searchStats" =>
           for {
+            timed <- Duration.stopTime[F]
             userQuery <- req.as[ItemQuery]
             today <- Timestamp.current[F].map(_.toUtcDate)
             resp <- searchStats(userQuery, today)
+            dur <- timed
+            _ <- logger.debug(s"Search stats request: ${dur.formatExact}")
           } yield resp
       }
 
@@ -105,7 +110,7 @@ final class ItemSearchPart[F[_]: Async](
               )
 
             // order is always by date unless q is empty and ftq is not
-            // TODO this is not obvious from the types and an impl detail.
+            // TODO this should be given explicitly by the result
             ftsOrder = res.q.cond.isEmpty && res.ftq.isDefined
 
             resp <- Ok(convert(items, batch, limitCapped, ftsOrder))
@@ -119,20 +124,18 @@ final class ItemSearchPart[F[_]: Async](
   ): Either[F[Response[F]], QueryParseResult.Success] =
     backend.search.parseQueryString(authToken.account, mode, userQuery.query) match {
       case s: QueryParseResult.Success =>
-        Right(s)
+        Right(s.withFtsEnabled(cfg.fullTextSearch.enabled))
 
       case QueryParseResult.ParseFailed(err) =>
         Left(BadRequest(BasicResult(false, s"Invalid query: $err")))
 
-      case QueryParseResult.FulltextMismatch(FulltextExtract.Result.TooMany) =>
+      case QueryParseResult.FulltextMismatch(Result.TooMany) =>
         Left(
           BadRequest(
             BasicResult(false, "Only one fulltext search expression is allowed.")
           )
         )
-      case QueryParseResult.FulltextMismatch(
-            FulltextExtract.Result.UnsupportedPosition
-          ) =>
+      case QueryParseResult.FulltextMismatch(Result.UnsupportedPosition) =>
         Left(
           BadRequest(
             BasicResult(

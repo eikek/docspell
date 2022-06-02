@@ -6,8 +6,8 @@
 
 package docspell.store.fts
 
-import cats.Foldable
 import cats.syntax.all._
+import cats.{Foldable, Monad}
 import fs2.{Pipe, Stream}
 
 import docspell.common.Duration
@@ -38,10 +38,10 @@ private[fts] object TempFtsOps {
         timed <- Stream.eval(Duration.stopTime[ConnectionIO])
         tt <- Stream.eval(createTable(db, name))
         n <- in.through(tt.insert).foldMonoid
-        _ <- Stream.eval(tt.createIndex)
+        _ <- if (n > 500) Stream.eval(tt.createIndex) else Stream(())
         duration <- Stream.eval(timed)
         _ <- Stream.eval(
-          logger.info(
+          logger.debug(
             s"Creating temporary fts table ($n elements) took: ${duration.formatExact}"
           )
         )
@@ -122,25 +122,30 @@ private[fts] object TempFtsOps {
         "(?,?,?)" :: res
       }
       .mkString(",")
-    val sql =
-      s"""INSERT INTO ${table.tableName}
-         |  (${table.id.name}, ${table.score.name}, ${table.context.name})
-         |  VALUES $values""".stripMargin
+    if (values.isEmpty) Monad[ConnectionIO].pure(0)
+    else {
+      val sql =
+        s"""INSERT INTO ${table.tableName}
+           |  (${table.id.name}, ${table.score.name}, ${table.context.name})
+           |  VALUES $values""".stripMargin
 
-    val encoder = io.circe.Encoder[ContextEntry]
-    doobie.free.FC.raw { conn =>
-      val pst = conn.prepareStatement(sql)
-      rows.foldl(0) { (index, row) =>
-        pst.setString(index + 1, row.id.id)
-        row.score
-          .map(d => pst.setDouble(index + 2, d))
-          .getOrElse(pst.setNull(index + 2, java.sql.Types.DOUBLE))
-        row.context
-          .map(c => pst.setString(index + 3, encoder(c).noSpaces))
-          .getOrElse(pst.setNull(index + 3, java.sql.Types.VARCHAR))
-        index + 3
+      val encoder = io.circe.Encoder[ContextEntry]
+      doobie.free.FC.raw { conn =>
+        val pst = conn.prepareStatement(sql)
+        rows.foldl(0) { (index, row) =>
+          pst.setString(index + 1, row.id.id)
+          row.score
+            .fold(pst.setNull(index + 2, java.sql.Types.DOUBLE))(d =>
+              pst.setDouble(index + 2, d)
+            )
+          row.context
+            .fold(pst.setNull(index + 3, java.sql.Types.VARCHAR))(c =>
+              pst.setString(index + 3, encoder(c).noSpaces)
+            )
+          index + 3
+        }
+        pst.executeUpdate()
       }
-      pst.executeUpdate()
     }
   }
 

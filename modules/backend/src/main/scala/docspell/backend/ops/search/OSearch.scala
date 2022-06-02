@@ -147,7 +147,7 @@ object OSearch {
           case Some(ftq) =>
             for {
               timed <- Duration.stopTime[F]
-              ftq <- createFtsQuery(q.fix.account, batch, ftq)
+              ftq <- createFtsQuery(q.fix.account, ftq)
 
               results <- WeakAsync.liftK[F, ConnectionIO].use { nat =>
                 val tempTable = temporaryFtsTable(ftq, nat)
@@ -206,7 +206,7 @@ object OSearch {
         fulltextQuery match {
           case Some(ftq) =>
             for {
-              ftq <- createFtsQuery(q.fix.account, Batch.limit(500), ftq)
+              ftq <- createFtsQuery(q.fix.account, ftq)
               results <- WeakAsync.liftK[F, ConnectionIO].use { nat =>
                 val tempTable = temporaryFtsTable(ftq, nat)
                 store.transact(
@@ -221,13 +221,12 @@ object OSearch {
 
       private def createFtsQuery(
           account: AccountId,
-          batch: Batch,
           ftq: String
       ): F[FtsQuery] =
         store
           .transact(QFolder.getMemberFolders(account))
           .map(folders =>
-            FtsQuery(ftq, account.collective, batch.limit, 0)
+            FtsQuery(ftq, account.collective, 500, 0)
               .withFolders(folders)
           )
 

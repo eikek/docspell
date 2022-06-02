@@ -74,6 +74,7 @@ object ItemRoutes {
 
         case req @ POST -> Root / "search" =>
           for {
+            timed <- Duration.stopTime[F]
             userQuery <- req.as[ItemQuery]
             batch = Batch(
               userQuery.offset.getOrElse(0),
@@ -92,6 +93,8 @@ object ItemRoutes {
             )
             fixQuery = Query.Fix(user.account, None, None)
             resp <- searchItems(backend, dsl)(settings, fixQuery, itemQuery, limitCapped)
+            dur <- timed
+            _ <- logger.debug(s"Search request: ${dur.formatExact}")
           } yield resp
 
         case req @ POST -> Root / "searchStats" =>

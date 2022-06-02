@@ -20,6 +20,11 @@ sealed trait QueryParseResult {
 object QueryParseResult {
 
   final case class Success(q: Query, ftq: Option[String]) extends QueryParseResult {
+
+    /** Drop the fulltext search query if disabled. */
+    def withFtsEnabled(enabled: Boolean) =
+      if (enabled || ftq.isEmpty) this else copy(ftq = None)
+
     val get = Some(q -> ftq)
   }
 
