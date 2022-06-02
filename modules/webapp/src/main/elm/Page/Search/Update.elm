@@ -209,7 +209,7 @@ update texts bookmarkId lastViewedItemId env msg model =
                     { model
                         | searchInProgress = False
                         , searchOffset = noff
-                        , moreAvailable = list.groups /= []
+                        , moreAvailable = Data.Items.nonEmpty list
                     }
             in
             makeResult env.selectedItems <|
@@ -233,7 +233,7 @@ update texts bookmarkId lastViewedItemId env msg model =
                         | searchInProgress = False
                         , moreInProgress = False
                         , searchOffset = noff
-                        , moreAvailable = list.groups /= []
+                        , moreAvailable = Data.Items.nonEmpty list
                     }
             in
             update texts bookmarkId lastViewedItemId env (ItemCardListMsg (Comp.ItemCardList.AddResults list)) m

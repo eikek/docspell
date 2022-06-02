@@ -10,7 +10,9 @@ module Data.Items exposing
     , first
     , flatten
     , idSet
+    , isEmpty
     , length
+    , nonEmpty
     , replaceIn
     , unwrapGroups
     )
@@ -21,6 +23,16 @@ import Api.Model.ItemLightList exposing (ItemLightList)
 import Dict exposing (Dict)
 import Set exposing (Set)
 import Util.List
+
+
+isEmpty : ItemLightList -> Bool
+isEmpty list =
+    List.all (.items >> List.isEmpty) list.groups
+
+
+nonEmpty : ItemLightList -> Bool
+nonEmpty list =
+    not (isEmpty list)
 
 
 flatten : ItemLightList -> List ItemLight
