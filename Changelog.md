@@ -1,4 +1,21 @@
 # Changelog
+## v0.37.0
+
+*Jun 04, 2022*
+
+- Fix e-mail address input field (#1565)
+- Overhaul of search when fulltext search is applied. Fixes #1363.
+- Return when a search exceeds server configured limit for page size (#1358)
+- Several fixes related to addons (#1566, 1573)
+
+### Rest API Changes
+
+- removed `searchIndex` endpoint, because it is redundant
+
+### Configuration Changes
+
+- None.
+
 
 ## v0.36.0
 
