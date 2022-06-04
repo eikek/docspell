@@ -16,9 +16,7 @@ import fs2.Stream
 import docspell.common._
 import docspell.ftsclient.FtsResult
 import docspell.ftsclient.FtsResult.{AttachmentData, ItemMatch}
-import docspell.logging.Level
 import docspell.store._
-import docspell.store.fts.RFtsResult
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.queries.{QItem, Query}
@@ -28,7 +26,6 @@ import doobie._
 
 class TempFtsOpsTest extends DatabaseTest {
   private[this] val logger = docspell.logging.getLogger[IO]
-  override def rootMinimumLevel = Level.Info
 
   override def munitFixtures = postgresAll ++ mariaDbAll ++ h2All
 
@@ -174,7 +171,7 @@ class TempFtsOpsTest extends DatabaseTest {
   }
 
   def makeCollective(cid: Ident): RCollective =
-    RCollective(cid, CollectiveState.Active, Language.English, true, Timestamp.Epoch)
+    RCollective(cid, CollectiveState.Active, Language.English, true, ts)
 
   def makeItem(n: Int, cid: Ident): RItem =
     RItem(
@@ -191,9 +188,11 @@ class TempFtsOpsTest extends DatabaseTest {
       None,
       None,
       None,
-      Timestamp.Epoch,
-      Timestamp.Epoch,
+      ts,
+      ts,
       None,
       None
     )
+
+  val ts = Timestamp.ofMillis(1654329963743L)
 }

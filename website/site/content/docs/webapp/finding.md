@@ -161,11 +161,17 @@ unless one of the following is true:
 ## The Query
 
 The query string for full text search is very powerful. Docspell
-currently supports [Apache SOLR](https://solr.apache.org/) as
-full text search backend, so you may want to have a look at their
-[documentation on query
+currently supports [Apache SOLR](https://solr.apache.org/) and
+[PostgreSQL](https://www.postgresql.org/docs/14/textsearch.html) as
+full text search backends. You may want to have a look at [SOLRs
+documentation on query
 syntax](https://solr.apache.org/guide/8_4/query-syntax-and-parsing.html#query-syntax-and-parsing)
-for a in depth guide.
+for a in depth guide for how to search with SOLR. PostgreSQL also has
+[documentation](https://www.postgresql.org/docs/14/textsearch-controls.html#TEXTSEARCH-PARSING-QUERIES)
+about parsing queries, Docspell by default uses
+`websearch_to_tsquery`.
+
+Here is a quick overview for SOLR queries:
 
 - Wildcards: `?` matches any single character, `*` matches zero or
   more characters

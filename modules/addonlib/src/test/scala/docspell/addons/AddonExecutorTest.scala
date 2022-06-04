@@ -20,7 +20,7 @@ class AddonExecutorTest extends CatsEffectSuite with Fixtures with TestLoggingCo
   val logger = docspell.logging.getLogger[IO]
 
   override def docspellLogConfig =
-    super.docspellLogConfig.copy(minimumLevel = Level.Trace)
+    super.docspellLogConfig.copy(minimumLevel = Level.Error)
 
   tempDir.test("select docker if Dockerfile exists") { dir =>
     for {
