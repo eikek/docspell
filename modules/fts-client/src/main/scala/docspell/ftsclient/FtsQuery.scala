@@ -37,6 +37,8 @@ final case class FtsQuery(
 }
 
 object FtsQuery {
+  def apply(q: String, collective: Ident, limit: Int, offset: Int): FtsQuery =
+    FtsQuery(q, collective, Set.empty, Set.empty, limit, offset, HighlightSetting.default)
 
   case class HighlightSetting(pre: String, post: String)
 

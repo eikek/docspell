@@ -61,6 +61,11 @@ object DBFunctionBuilder extends CommonBuilder {
 
       case DBFunction.Sum(expr) =>
         sql"SUM(" ++ SelectExprBuilder.build(expr) ++ fr")"
+
+      case DBFunction.Raw(name, exprs) =>
+        val n = Fragment.const0(name)
+        val inner = exprs.map(SelectExprBuilder.build).toList.reduce(_ ++ comma ++ _)
+        sql"$n($inner)"
     }
 
   def buildOperator(op: DBFunction.Operator): Fragment =

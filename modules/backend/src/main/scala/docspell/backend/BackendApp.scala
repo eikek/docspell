@@ -12,6 +12,7 @@ import docspell.backend.BackendCommands.EventContext
 import docspell.backend.auth.Login
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.ops._
+import docspell.backend.ops.search.OSearch
 import docspell.backend.signup.OSignup
 import docspell.common.bc.BackendCommandRunner
 import docspell.ftsclient.FtsClient
@@ -58,6 +59,7 @@ trait BackendApp[F[_]] {
   def itemLink: OItemLink[F]
   def downloadAll: ODownloadAll[F]
   def addons: OAddons[F]
+  def search: OSearch[F]
 
   def commands(eventContext: Option[EventContext]): BackendCommandRunner[F, Unit]
 }
@@ -130,6 +132,7 @@ object BackendApp {
           joexImpl
         )
       )
+      searchImpl <- Resource.pure(OSearch(store, ftsClient))
     } yield new BackendApp[F] {
       val pubSub = pubSubT
       val login = loginImpl
@@ -162,6 +165,7 @@ object BackendApp {
       val downloadAll = downloadAllImpl
       val addons = addonsImpl
       val attachment = attachImpl
+      val search = searchImpl
 
       def commands(eventContext: Option[EventContext]) =
         BackendCommands.fromBackend(this, eventContext)

@@ -18,15 +18,17 @@ import docspell.common.{FileKey, IdRef, _}
 import docspell.query.ItemQuery.Expr.ValidItemStates
 import docspell.query.{ItemQuery, ItemQueryDsl}
 import docspell.store.Store
+import docspell.store.fts.RFtsResult
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.qb.generator.{ItemQueryGenerator, Tables}
+import docspell.store.queries.Query.OrderSelect
 import docspell.store.records._
 
 import doobie.implicits._
 import doobie.{Query => _, _}
 
-object QItem {
+object QItem extends FtsSupport {
   private[this] val logger = docspell.logging.getLogger[ConnectionIO]
 
   private val equip = REquipment.as("e")
@@ -43,6 +45,35 @@ object QItem {
   private val tag = RTag.as("t")
   private val ti = RTagItem.as("ti")
   private val meta = RFileMeta.as("fmeta")
+
+  private def orderSelect(ftsOpt: Option[RFtsResult.Table]): OrderSelect =
+    new OrderSelect {
+      val item = i
+      val fts = ftsOpt
+    }
+
+  private val emptyString: SelectExpr = const("")
+
+  def queryItems(
+      q: Query,
+      today: LocalDate,
+      maxNoteLen: Int,
+      batch: Batch,
+      ftsTable: Option[RFtsResult.Table]
+  ) = {
+    val cteFts = ftsTable.map(cteTable)
+    val sql =
+      findItemsBase(q.fix, today, maxNoteLen, cteFts)
+        .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+        .joinFtsDetails(i, ftsTable)
+        .limit(batch)
+        .build
+
+    logger.stream.debug(s"List $batch items: $sql").drain ++
+      sql.query[ListItem].stream
+  }
+
+  // ----
 
   def countAttachmentsAndItems(items: Nel[Ident]): ConnectionIO[Int] =
     Select(count(a.id).s, from(a), a.itemId.in(items)).build
@@ -115,7 +146,12 @@ object QItem {
             ItemQuery.Expr.and(ValidItemStates, ItemQueryDsl.Q.itemIdsIn(nel.map(_.id)))
           val account = AccountId(collective, Ident.unsafe(""))
 
-          findItemsBase(Query.Fix(account, Some(expr), None), LocalDate.EPOCH, 0).build
+          findItemsBase(
+            Query.Fix(account, Some(expr), None),
+            LocalDate.EPOCH,
+            0,
+            None
+          ).build
             .query[ListItem]
             .to[Vector]
       }
@@ -130,7 +166,12 @@ object QItem {
       cv.itemId === itemId
     ).build.query[ItemFieldValue].to[Vector]
 
-  private def findItemsBase(q: Query.Fix, today: LocalDate, noteMaxLen: Int): Select = {
+  private def findItemsBase(
+      q: Query.Fix,
+      today: LocalDate,
+      noteMaxLen: Int,
+      ftsTable: Option[RFtsResult.Table]
+  ): Select.Ordered = {
     val coll = q.account.collective
 
     Select(
@@ -154,8 +195,9 @@ object QItem {
         f.id.s,
         f.name.s,
         substring(i.notes.s, 1, noteMaxLen).s,
-        q.orderAsc
-          .map(of => coalesce(of(i).s, i.created.s).s)
+        ftsTable.map(_.context.s).getOrElse(emptyString),
+        q.order
+          .map(f => f(orderSelect(ftsTable)).expr)
           .getOrElse(i.created.s)
       ),
       from(i)
@@ -172,8 +214,8 @@ object QItem {
           )
       )
     ).orderBy(
-      q.orderAsc
-        .map(of => OrderBy.asc(coalesce(of(i).s, i.created.s).s))
+      q.order
+        .map(of => of(orderSelect(ftsTable)))
         .getOrElse(OrderBy.desc(coalesce(i.itemDate.s, i.created.s).s))
     )
   }
@@ -184,7 +226,7 @@ object QItem {
       today: LocalDate,
       maxFiles: Int
   ): Select =
-    findItemsBase(q.fix, today, 0)
+    findItemsBase(q.fix, today, 0, None)
       .changeFrom(_.innerJoin(a, a.itemId === i.id).innerJoin(as, a.id === as.id))
       .changeFrom(from =>
         ftype match {
@@ -277,26 +319,22 @@ object QItem {
       today: LocalDate,
       maxNoteLen: Int,
       batch: Batch
-  ): Stream[ConnectionIO, ListItem] = {
-    val sql = findItemsBase(q.fix, today, maxNoteLen)
-      .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
-      .limit(batch)
-      .build
-    logger.stream.trace(s"List $batch items: $sql").drain ++
-      sql.query[ListItem].stream
-  }
+  ): Stream[ConnectionIO, ListItem] =
+    queryItems(q, today, maxNoteLen, batch, None)
 
-  def searchStats(today: LocalDate)(q: Query): ConnectionIO[SearchSummary] =
+  def searchStats(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
+      q: Query
+  ): ConnectionIO[SearchSummary] =
     for {
-      count <- searchCountSummary(today)(q)
-      tags <- searchTagSummary(today)(q)
-      cats <- searchTagCategorySummary(today)(q)
-      fields <- searchFieldSummary(today)(q)
-      folders <- searchFolderSummary(today)(q)
-      orgs <- searchCorrOrgSummary(today)(q)
-      corrPers <- searchCorrPersonSummary(today)(q)
-      concPers <- searchConcPersonSummary(today)(q)
-      concEquip <- searchConcEquipSummary(today)(q)
+      count <- searchCountSummary(today, ftsTable)(q)
+      tags <- searchTagSummary(today, ftsTable)(q)
+      cats <- searchTagCategorySummary(today, ftsTable)(q)
+      fields <- searchFieldSummary(today, ftsTable)(q)
+      folders <- searchFolderSummary(today, ftsTable)(q)
+      orgs <- searchCorrOrgSummary(today, ftsTable)(q)
+      corrPers <- searchCorrPersonSummary(today, ftsTable)(q)
+      concPers <- searchConcPersonSummary(today, ftsTable)(q)
+      concEquip <- searchConcEquipSummary(today, ftsTable)(q)
     } yield SearchSummary(
       count,
       tags,
@@ -310,7 +348,8 @@ object QItem {
     )
 
   def searchTagCategorySummary(
-      today: LocalDate
+      today: LocalDate,
+      ftsTable: Option[RFtsResult.Table]
   )(q: Query): ConnectionIO[List[CategoryCount]] = {
     val tagFrom =
       from(ti)
@@ -318,7 +357,8 @@ object QItem {
         .innerJoin(i, i.id === ti.itemId)
 
     val catCloud =
-      findItemsBase(q.fix, today, 0).unwrap
+      findItemsBase(q.fix, today, 0, None).unwrap
+        .joinFtsIdOnly(i, ftsTable)
         .withSelect(select(tag.category).append(countDistinct(i.id).as("num")))
         .changeFrom(_.prepend(tagFrom))
         .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
@@ -334,14 +374,17 @@ object QItem {
     } yield existing ++ other.map(n => CategoryCount(n.some, 0))
   }
 
-  def searchTagSummary(today: LocalDate)(q: Query): ConnectionIO[List[TagCount]] = {
+  def searchTagSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
+      q: Query
+  ): ConnectionIO[List[TagCount]] = {
     val tagFrom =
       from(ti)
         .innerJoin(tag, tag.tid === ti.tagId)
         .innerJoin(i, i.id === ti.itemId)
 
     val tagCloud =
-      findItemsBase(q.fix, today, 0).unwrap
+      findItemsBase(q.fix, today, 0, None).unwrap
+        .joinFtsIdOnly(i, ftsTable)
         .withSelect(select(tag.all).append(countDistinct(i.id).as("num")))
         .changeFrom(_.prepend(tagFrom))
         .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
@@ -358,39 +401,46 @@ object QItem {
     } yield existing ++ other.map(TagCount(_, 0))
   }
 
-  def searchCountSummary(today: LocalDate)(q: Query): ConnectionIO[Int] =
-    findItemsBase(q.fix, today, 0).unwrap
+  def searchCountSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
+      q: Query
+  ): ConnectionIO[Int] =
+    findItemsBase(q.fix, today, 0, None).unwrap
+      .joinFtsIdOnly(i, ftsTable)
       .withSelect(Nel.of(count(i.id).as("num")))
       .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
       .build
       .query[Int]
       .unique
 
-  def searchCorrOrgSummary(today: LocalDate)(q: Query): ConnectionIO[List[IdRefCount]] =
-    searchIdRefSummary(org.oid, org.name, i.corrOrg, today)(q)
-
-  def searchCorrPersonSummary(today: LocalDate)(
+  def searchCorrOrgSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[IdRefCount]] =
-    searchIdRefSummary(pers0.pid, pers0.name, i.corrPerson, today)(q)
+    searchIdRefSummary(org.oid, org.name, i.corrOrg, today, ftsTable)(q)
 
-  def searchConcPersonSummary(today: LocalDate)(
+  def searchCorrPersonSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[IdRefCount]] =
-    searchIdRefSummary(pers1.pid, pers1.name, i.concPerson, today)(q)
+    searchIdRefSummary(pers0.pid, pers0.name, i.corrPerson, today, ftsTable)(q)
 
-  def searchConcEquipSummary(today: LocalDate)(
+  def searchConcPersonSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[List[IdRefCount]] =
-    searchIdRefSummary(equip.eid, equip.name, i.concEquipment, today)(q)
+    searchIdRefSummary(pers1.pid, pers1.name, i.concPerson, today, ftsTable)(q)
+
+  def searchConcEquipSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
+      q: Query
+  ): ConnectionIO[List[IdRefCount]] =
+    searchIdRefSummary(equip.eid, equip.name, i.concEquipment, today, ftsTable)(q)
 
   private def searchIdRefSummary(
       idCol: Column[Ident],
       nameCol: Column[String],
       fkCol: Column[Ident],
-      today: LocalDate
+      today: LocalDate,
+      ftsTable: Option[RFtsResult.Table]
   )(q: Query): ConnectionIO[List[IdRefCount]] =
-    findItemsBase(q.fix, today, 0).unwrap
+    findItemsBase(q.fix, today, 0, None).unwrap
+      .joinFtsIdOnly(i, ftsTable)
       .withSelect(select(idCol, nameCol).append(count(idCol).as("num")))
       .changeWhere(c =>
         c && fkCol.isNotNull && queryCondition(today, q.fix.account.collective, q.cond)
@@ -400,9 +450,12 @@ object QItem {
       .query[IdRefCount]
       .to[List]
 
-  def searchFolderSummary(today: LocalDate)(q: Query): ConnectionIO[List[FolderCount]] = {
+  def searchFolderSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
+      q: Query
+  ): ConnectionIO[List[FolderCount]] = {
     val fu = RUser.as("fu")
-    findItemsBase(q.fix, today, 0).unwrap
+    findItemsBase(q.fix, today, 0, None).unwrap
+      .joinFtsIdOnly(i, ftsTable)
       .withSelect(select(f.id, f.name, f.owner, fu.login).append(count(i.id).as("num")))
       .changeFrom(_.innerJoin(fu, fu.uid === f.owner))
       .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
@@ -412,16 +465,19 @@ object QItem {
       .to[List]
   }
 
-  def searchFieldSummary(today: LocalDate)(q: Query): ConnectionIO[List[FieldStats]] = {
+  def searchFieldSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
+      q: Query
+  ): ConnectionIO[List[FieldStats]] = {
     val fieldJoin =
       from(cv)
         .innerJoin(cf, cf.id === cv.field)
         .innerJoin(i, i.id === cv.itemId)
 
     val base =
-      findItemsBase(q.fix, today, 0).unwrap
+      findItemsBase(q.fix, today, 0, None).unwrap
         .changeFrom(_.prepend(fieldJoin))
         .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+        .ftsCondition(i, ftsTable)
         .groupBy(GroupBy(cf.all))
 
     val basicFields = Nel.of(
@@ -498,7 +554,7 @@ object QItem {
           )
         )
 
-      val from = findItemsBase(q.fix, today, maxNoteLen)
+      val from = findItemsBase(q.fix, today, maxNoteLen, None)
         .appendCte(cte)
         .appendSelect(Tids.weight.s)
         .changeFrom(_.innerJoin(Tids, Tids.itemId === i.id))

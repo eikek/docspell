@@ -36,6 +36,8 @@ trait Store[F[_]] {
   def add(insert: ConnectionIO[Int], exists: ConnectionIO[Boolean]): F[AddResult]
 
   def transactor: Transactor[F]
+
+  def dbms: Db
 }
 
 object Store {
@@ -55,7 +57,7 @@ object Store {
         ds.setJdbcUrl(jdbc.url.asString)
         ds.setUsername(jdbc.user)
         ds.setPassword(jdbc.password)
-        ds.setDriverClassName(jdbc.driverClass)
+        ds.setDriverClassName(jdbc.dbms.driverClass)
       }
       xa = HikariTransactor(ds, connectEC)
       fr = FileRepository.apply(xa, ds, fileRepoConfig, true)

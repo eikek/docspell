@@ -34,6 +34,7 @@ case class Config(
     integrationEndpoint: Config.IntegrationEndpoint,
     maxItemPageSize: Int,
     maxNoteLength: Int,
+    featureSearch2: Boolean,
     fullTextSearch: Config.FullTextSearch,
     adminEndpoint: Config.AdminEndpoint,
     openid: List[OpenIdConfig],

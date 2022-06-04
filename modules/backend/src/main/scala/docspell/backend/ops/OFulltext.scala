@@ -181,7 +181,7 @@ object OFulltext {
           q = Query
             .all(account)
             .withFix(_.copy(query = itemIdsQuery.some))
-          res <- store.transact(QItem.searchStats(now.toUtcDate)(q))
+          res <- store.transact(QItem.searchStats(now.toUtcDate, None)(q))
         } yield res
       }
 
@@ -242,7 +242,7 @@ object OFulltext {
             .getOrElse(Attr.ItemId.notExists)
           qnext = q.withFix(_.copy(query = itemIdsQuery.some))
           now <- Timestamp.current[F]
-          res <- store.transact(QItem.searchStats(now.toUtcDate)(qnext))
+          res <- store.transact(QItem.searchStats(now.toUtcDate, None)(qnext))
         } yield res
 
       // Helper

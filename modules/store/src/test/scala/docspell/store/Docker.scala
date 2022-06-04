@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.store.migrate
+package docspell.store
+
 import cats.effect._
 import cats.effect.unsafe.implicits._
 

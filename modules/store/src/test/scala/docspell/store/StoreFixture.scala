@@ -57,29 +57,27 @@ object StoreFixture {
 
   def dataSource(jdbc: JdbcConfig): Resource[IO, JdbcConnectionPool] = {
     def jdbcConnPool =
-      jdbc.dbmsName match {
-        case Some("mariadb") =>
+      jdbc.dbms match {
+        case Db.MariaDB =>
           val ds = new MariaDbDataSource()
           ds.setUrl(jdbc.url.asString)
           ds.setUser(jdbc.user)
           ds.setPassword(jdbc.password)
           JdbcConnectionPool.create(ds)
 
-        case Some("postgresql") =>
+        case Db.PostgreSQL =>
           val ds = new PGConnectionPoolDataSource()
           ds.setURL(jdbc.url.asString)
           ds.setUser(jdbc.user)
           ds.setPassword(jdbc.password)
           JdbcConnectionPool.create(ds)
 
-        case Some("h2") =>
+        case Db.H2 =>
           val ds = new JdbcDataSource()
           ds.setURL(jdbc.url.asString)
           ds.setUser(jdbc.user)
           ds.setPassword(jdbc.password)
           JdbcConnectionPool.create(ds)
-
-        case n => sys.error(s"Unknown db name: $n")
       }
 
     Resource.make(IO(jdbcConnPool))(cp => IO(cp.dispose()))
@@ -92,8 +90,10 @@ object StoreFixture {
     } yield xa
 
   def store(jdbc: JdbcConfig): Resource[IO, StoreImpl[IO]] =
+    dataSource(jdbc).flatMap(store(_, jdbc))
+
+  def store(ds: DataSource, jdbc: JdbcConfig): Resource[IO, StoreImpl[IO]] =
     for {
-      ds <- dataSource(jdbc)
       xa <- makeXA(ds)
       cfg = FileRepositoryConfig.Database(64 * 1024)
       fr = FileRepository[IO](xa, ds, cfg, true)

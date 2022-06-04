@@ -43,6 +43,8 @@ object DBFunction {
 
   case class Concat(exprs: NonEmptyList[SelectExpr]) extends DBFunction
 
+  case class Raw(name: String, exprs: NonEmptyList[SelectExpr]) extends DBFunction
+
   sealed trait Operator
   object Operator {
     case object Plus extends Operator
