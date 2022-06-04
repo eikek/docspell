@@ -6,7 +6,7 @@
 
 package docspell.restserver.routes
 
-import cats.data.NonEmptyList
+import cats.data.{EitherT, NonEmptyList}
 import cats.effect._
 import cats.implicits._
 
@@ -64,17 +64,29 @@ object NotificationRoutes extends NonEmptyListSupport {
       case req @ POST -> Root =>
         for {
           input <- req.as[NotificationChannel]
-          ch <- Sync[F].pure(NotificationChannel.convert(input)).rethrow
-          res <- backend.notification.createChannel(ch, user.account)
-          resp <- Ok(Conversions.basicResult(res, "Channel created"))
+          ch <- Sync[F].pure(NotificationChannel.convert(input))
+          resp <- EitherT
+            .fromEither[F](ch)
+            .semiflatMap { c =>
+              backend.notification
+                .createChannel(c, user.account)
+                .map(res => Conversions.basicResult(res, "Channel created"))
+            }
+            .foldF(ex => BadRequest(BasicResult(false, ex.getMessage)), Ok(_))
         } yield resp
 
       case req @ PUT -> Root =>
         for {
           input <- req.as[NotificationChannel]
-          ch <- Sync[F].pure(NotificationChannel.convert(input)).rethrow
-          res <- backend.notification.updateChannel(ch, user.account)
-          resp <- Ok(Conversions.basicResult(res, "Channel created"))
+          ch <- Sync[F].pure(NotificationChannel.convert(input))
+          resp <- EitherT
+            .fromEither[F](ch)
+            .semiflatMap { c =>
+              backend.notification
+                .updateChannel(c, user.account)
+                .map(res => Conversions.basicResult(res, "Channel created"))
+            }
+            .foldF(ex => BadRequest(BasicResult(false, ex.getMessage)), Ok(_))
         } yield resp
     }
   }
