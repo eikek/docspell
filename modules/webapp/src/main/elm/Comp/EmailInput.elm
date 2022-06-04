@@ -185,7 +185,11 @@ view2 cfg values model =
                 , placeholder cfg.placeholder
                 , onKeyUp KeyPress
                 , onInput SetInput
-                , onBlur (KeyPress 13)
+                , if List.isEmpty model.candidates then
+                    onBlur (KeyPress 13)
+
+                  else
+                    class ""
                 , class "inline-flex w-24 border-0 px-0 focus:ring-0 h-6 text-sm"
                 , class "placeholder-gray-400 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-500"
                 ]
