@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.36.0
+  version: 0.37.0
   description: |
     This is the remote API to Docspell. Docspell is a free document
     management system focused on small groups or families.
@@ -3011,40 +3011,6 @@ paths:
         contain an empty list for item tags and attachments. Use
         `withDetails` to also retrieve all tags and a list of
         attachments of an item.
-      security:
-        - authTokenHeader: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ItemQuery"
-      responses:
-        422:
-          description: BadRequest
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ItemLightList"
-
-  /sec/item/searchIndex:
-    post:
-      operationId: "sec-item-search-index"
-      tags: [ Item Search ]
-      summary: Search for items using full-text search only.
-      description: |
-        Search for items by only using the full-text search index.
-
-        Unlike the other search routes, this one only asks the
-        full-text search index and returns only one group that
-        contains the results in the same order as given from the
-        index. Most full-text search engines use an ordering that
-        reflect the relevance wrt the search term.
-
-        The other search routes always order the results by some
-        property (the item date) and thus the relevance ordering is
-        destroyed when using the full-text search.
       security:
         - authTokenHeader: []
       requestBody:
@@ -8591,11 +8557,33 @@ components:
         A list of item details.
       required:
         - groups
+        - limit
+        - offset
+        - limitCapped
       properties:
         groups:
           type: array
           items:
             $ref: "#/components/schemas/ItemLightGroup"
+        limit:
+          type: integer
+          format: int32
+          description: |
+            Returns the `limit` value as used for this search. This
+            can deviate from the requested limit, if it exceeds the
+            server defined maximum. See `limitCapped`.
+        offset:
+          type: integer
+          format: int32
+          description: |
+            The `offset` value used for this search.
+        limitCapped:
+          type: boolean
+          description: |
+            The server defines a maximum `limit` value. If the
+            requested `limit` exceeds the server defined one, this
+            flag is set to true. The limit used for the query is
+            returned with this response.
     ItemLightGroup:
       description: |
         A group of items.
