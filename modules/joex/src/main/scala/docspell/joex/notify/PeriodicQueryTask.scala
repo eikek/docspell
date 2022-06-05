@@ -7,25 +7,21 @@
 package docspell.joex.notify
 
 import cats.data.OptionT
-import cats.data.{NonEmptyList => Nel}
 import cats.effect._
 import cats.implicits._
 
 import docspell.backend.ops.ONotification
+import docspell.backend.ops.search.{OSearch, QueryParseResult}
 import docspell.common._
 import docspell.notification.api.EventContext
 import docspell.notification.api.NotificationChannel
 import docspell.notification.api.PeriodicQueryArgs
-import docspell.query.ItemQuery
-import docspell.query.ItemQuery.Expr
-import docspell.query.ItemQuery.Expr.AndExpr
-import docspell.query.ItemQueryParser
+import docspell.query.{FulltextExtract, ItemQuery, ItemQueryParser}
 import docspell.scheduler.Context
 import docspell.scheduler.Task
 import docspell.store.Store
 import docspell.store.qb.Batch
 import docspell.store.queries.ListItem
-import docspell.store.queries.{QItem, Query}
 import docspell.store.records.RQueryBookmark
 import docspell.store.records.RShare
 
@@ -39,12 +35,13 @@ object PeriodicQueryTask {
 
   def apply[F[_]: Sync](
       store: Store[F],
+      search: OSearch[F],
       notificationOps: ONotification[F]
   ): Task[F, Args, Unit] =
     Task { ctx =>
       val limit = 7
       Timestamp.current[F].flatMap { now =>
-        withItems(ctx, store, limit, now) { items =>
+        withItems(ctx, store, search, limit, now) { items =>
           withEventContext(ctx, items, limit, now) { eventCtx =>
             withChannel(ctx, notificationOps) { channels =>
               notificationOps.sendMessage(ctx.logger, eventCtx, channels)
@@ -62,8 +59,8 @@ object PeriodicQueryTask {
   private def queryString(q: ItemQuery.Expr) =
     ItemQueryParser.asString(q)
 
-  def withQuery[F[_]: Sync](ctx: Context[F, Args], store: Store[F])(
-      cont: Query => F[Unit]
+  def withQuery[F[_]: Sync](ctx: Context[F, Args], store: Store[F], search: OSearch[F])(
+      cont: QueryParseResult.Success => F[Unit]
   ): F[Unit] = {
     def fromBookmark(id: String) =
       store
@@ -84,33 +81,51 @@ object PeriodicQueryTask {
     def fromBookmarkOrShare(id: String) =
       OptionT(fromBookmark(id)).orElse(OptionT(fromShare(id))).value
 
-    def runQuery(bm: Option[ItemQuery], str: String): F[Unit] =
-      ItemQueryParser.parse(str) match {
-        case Right(q) =>
-          val expr = bm.map(b => AndExpr(Nel.of(b.expr, q.expr))).getOrElse(q.expr)
-          val query = Query
-            .all(ctx.args.account)
-            .withFix(_.copy(query = Expr.ValidItemStates.some))
-            .withCond(_ => Query.QueryExpr(expr))
+    def runQuery(bm: Option[ItemQuery], str: Option[String]): F[Unit] = {
+      val bmFtsQuery = bm.map(e => FulltextExtract.findFulltext(e.expr))
+      val queryStrResult =
+        str.map(search.parseQueryString(ctx.args.account, SearchMode.Normal, _))
 
-          ctx.logger.debug(s"Running query: ${queryString(expr)}") *> cont(query)
+      (bmFtsQuery, queryStrResult) match {
+        case (
+              Some(bmr: FulltextExtract.SuccessResult),
+              Some(QueryParseResult.Success(q, ftq))
+            ) =>
+          val nq = bmr.getExprPart.map(q.andCond).getOrElse(q)
+          val nftq =
+            (bmr.getFulltextPart |+| Some(" ") |+| ftq).map(_.trim).filter(_.nonEmpty)
+          val r = QueryParseResult.Success(nq, nftq)
+          ctx.logger.debug(s"Running query: $r") *> cont(r)
 
-        case Left(err) =>
-          ctx.logger.error(
-            s"Item query is invalid, stopping: ${ctx.args.query.map(_.query)} - ${err.render}"
-          )
+        case (None, Some(r: QueryParseResult.Success)) =>
+          ctx.logger.debug(s"Running query: $r") *> cont(r)
+
+        case (Some(bmr: FulltextExtract.SuccessResult), None) =>
+          search.parseQueryString(ctx.args.account, SearchMode.Normal, "") match {
+            case QueryParseResult.Success(q, _) =>
+              val nq = bmr.getExprPart.map(q.andCond).getOrElse(q)
+              ctx.logger.debug(s"Running query: $nq") *>
+                cont(QueryParseResult.Success(nq, bmr.getFulltextPart))
+
+            case err =>
+              ctx.logger.error(s"Internal error: $err")
+          }
+
+        case (failure1, res2) =>
+          ctx.logger.error(s"One or more error reading queries: $failure1 and $res2")
       }
+    }
 
     (ctx.args.bookmark, ctx.args.query) match {
       case (Some(bm), Some(qstr)) =>
         ctx.logger.debug(s"Using bookmark $bm and query $qstr") *>
-          fromBookmarkOrShare(bm).flatMap(bq => runQuery(bq, qstr.query))
+          fromBookmarkOrShare(bm).flatMap(bq => runQuery(bq, qstr.query.some))
 
       case (Some(bm), None) =>
         fromBookmarkOrShare(bm).flatMap {
           case Some(bq) =>
-            val query = Query(Query.Fix(ctx.args.account, Some(bq.expr), None))
-            ctx.logger.debug(s"Using bookmark: ${queryString(bq.expr)}") *> cont(query)
+            ctx.logger.debug(s"Using bookmark: ${queryString(bq.expr)}") *>
+              runQuery(bq.some, None)
 
           case None =>
             ctx.logger.error(
@@ -119,7 +134,7 @@ object PeriodicQueryTask {
         }
 
       case (None, Some(qstr)) =>
-        ctx.logger.debug(s"Using query: ${qstr.query}") *> runQuery(None, qstr.query)
+        ctx.logger.debug(s"Using query: ${qstr.query}") *> runQuery(None, qstr.query.some)
 
       case (None, None) =>
         ctx.logger.error(s"No query provided for task $taskName!")
@@ -129,17 +144,14 @@ object PeriodicQueryTask {
   def withItems[F[_]: Sync](
       ctx: Context[F, Args],
       store: Store[F],
+      search: OSearch[F],
       limit: Int,
       now: Timestamp
   )(
       cont: Vector[ListItem] => F[Unit]
   ): F[Unit] =
-    withQuery(ctx, store) { query =>
-      val items = store
-        .transact(QItem.findItems(query, now.toUtcDate, 0, Batch.limit(limit)))
-        .compile
-        .to(Vector)
-
+    withQuery(ctx, store, search) { qs =>
+      val items = search.search(0, now.toUtcDate.some, Batch.limit(limit))(qs.q, qs.ftq)
       items.flatMap(cont)
     }
 

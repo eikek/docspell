@@ -73,14 +73,6 @@ object QItem extends FtsSupport {
       sql.query[ListItem].stream
   }
 
-  // ----
-
-  def countAttachmentsAndItems(items: Nel[Ident]): ConnectionIO[Int] =
-    Select(count(a.id).s, from(a), a.itemId.in(items)).build
-      .query[Int]
-      .unique
-      .map(_ + items.size)
-
   def findItem(id: Ident, collective: Ident): ConnectionIO[Option[ItemData]] = {
     val ref = RItem.as("ref")
     val cq =
@@ -314,14 +306,6 @@ object QItem extends FtsSupport {
         Condition.unit
     }
 
-  def findItems(
-      q: Query,
-      today: LocalDate,
-      maxNoteLen: Int,
-      batch: Batch
-  ): Stream[ConnectionIO, ListItem] =
-    queryItems(q, today, maxNoteLen, batch, None)
-
   def searchStats(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[SearchSummary] =
@@ -523,47 +507,6 @@ object QItem extends FtsSupport {
           fallback
     }
   }
-
-  def findSelectedItems(
-      q: Query,
-      today: LocalDate,
-      maxNoteLen: Int,
-      items: Set[SelectedItem]
-  ): Stream[ConnectionIO, ListItem] =
-    if (items.isEmpty) Stream.empty
-    else {
-      val i = RItem.as("i")
-
-      object Tids extends TableDef {
-        val tableName = "tids"
-        val alias = Some("tw")
-        val itemId = Column[Ident]("item_id", this)
-        val weight = Column[Double]("weight", this)
-        val all = Vector[Column[_]](itemId, weight)
-      }
-
-      val cte =
-        CteBind(
-          Tids,
-          Tids.all,
-          Select.RawSelect(
-            fr"VALUES" ++
-              items
-                .map(it => fr"(${it.itemId}, ${it.weight})")
-                .reduce((r, e) => r ++ fr"," ++ e)
-          )
-        )
-
-      val from = findItemsBase(q.fix, today, maxNoteLen, None)
-        .appendCte(cte)
-        .appendSelect(Tids.weight.s)
-        .changeFrom(_.innerJoin(Tids, Tids.itemId === i.id))
-        .orderBy(Tids.weight.desc)
-        .build
-
-      logger.stream.trace(s"fts query: $from").drain ++
-        from.query[ListItem].stream
-    }
 
   /** Same as `findItems` but resolves the tags for each item. Note that this is
     * implemented by running an additional query per item.

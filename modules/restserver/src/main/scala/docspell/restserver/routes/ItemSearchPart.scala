@@ -11,26 +11,30 @@ import java.time.LocalDate
 import cats.effect._
 import cats.syntax.all._
 
-import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
-import docspell.backend.ops.search.QueryParseResult
-import docspell.common.{Duration, SearchMode, Timestamp}
+import docspell.backend.ops.OShare
+import docspell.backend.ops.OShare.ShareQuery
+import docspell.backend.ops.search.{OSearch, QueryParseResult}
+import docspell.common._
 import docspell.query.FulltextExtract.Result
 import docspell.restapi.model._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.{QueryParam => QP}
 import docspell.store.qb.Batch
-import docspell.store.queries.ListItemWithTags
+import docspell.store.queries.{ListItemWithTags, SearchSummary}
 
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{HttpRoutes, Response}
 
 final class ItemSearchPart[F[_]: Async](
-    backend: BackendApp[F],
+    searchOps: OSearch[F],
     cfg: Config,
-    authToken: AuthToken
+    parseQuery: (SearchMode, String) => QueryParseResult,
+    changeSummary: SearchSummary => SearchSummary = identity,
+    searchPath: String = "search",
+    searchStatsPath: String = "searchStats"
 ) extends Http4sDsl[F] {
 
   private[this] val logger = docspell.logging.getLogger[F]
@@ -39,9 +43,9 @@ final class ItemSearchPart[F[_]: Async](
     if (!cfg.featureSearch2) HttpRoutes.empty
     else
       HttpRoutes.of {
-        case GET -> Root / "search" :? QP.Query(q) :? QP.Limit(limit) :? QP.Offset(
-              offset
-            ) :? QP.WithDetails(detailFlag) :? QP.SearchKind(searchMode) =>
+        case GET -> Root / `searchPath` :? QP.Query(q) :? QP.Limit(limit) :?
+            QP.Offset(offset) :? QP.WithDetails(detailFlag) :?
+            QP.SearchKind(searchMode) =>
           val userQuery =
             ItemQuery(offset, limit, detailFlag, searchMode, q.getOrElse(""))
           for {
@@ -49,7 +53,7 @@ final class ItemSearchPart[F[_]: Async](
             resp <- search(userQuery, today)
           } yield resp
 
-        case req @ POST -> Root / "search" =>
+        case req @ POST -> Root / `searchPath` =>
           for {
             timed <- Duration.stopTime[F]
             userQuery <- req.as[ItemQuery]
@@ -59,14 +63,15 @@ final class ItemSearchPart[F[_]: Async](
             _ <- logger.debug(s"Search request: ${dur.formatExact}")
           } yield resp
 
-        case GET -> Root / "searchStats" :? QP.Query(q) :? QP.SearchKind(searchMode) =>
+        case GET -> Root / `searchStatsPath` :? QP.Query(q) :?
+            QP.SearchKind(searchMode) =>
           val userQuery = ItemQuery(None, None, None, searchMode, q.getOrElse(""))
           for {
             today <- Timestamp.current[F].map(_.toUtcDate)
             resp <- searchStats(userQuery, today)
           } yield resp
 
-        case req @ POST -> Root / "searchStats" =>
+        case req @ POST -> Root / `searchStatsPath` =>
           for {
             timed <- Duration.stopTime[F]
             userQuery <- req.as[ItemQuery]
@@ -84,8 +89,8 @@ final class ItemSearchPart[F[_]: Async](
         identity,
         res =>
           for {
-            summary <- backend.search.searchSummary(today)(res.q, res.ftq)
-            resp <- Ok(Conversions.mkSearchStats(summary))
+            summary <- searchOps.searchSummary(today.some)(res.q, res.ftq)
+            resp <- Ok(Conversions.mkSearchStats(changeSummary(summary)))
           } yield resp
       )
   }
@@ -103,8 +108,9 @@ final class ItemSearchPart[F[_]: Async](
         identity,
         res =>
           for {
-            items <- backend.search
-              .searchSelect(details, cfg.maxNoteLength, today, batch)(
+            _ <- logger.warn(s"Searching with query: $res")
+            items <- searchOps
+              .searchSelect(details, cfg.maxNoteLength, today.some, batch)(
                 res.q,
                 res.ftq
               )
@@ -122,29 +128,10 @@ final class ItemSearchPart[F[_]: Async](
       userQuery: ItemQuery,
       mode: SearchMode
   ): Either[F[Response[F]], QueryParseResult.Success] =
-    backend.search.parseQueryString(authToken.account, mode, userQuery.query) match {
-      case s: QueryParseResult.Success =>
-        Right(s.withFtsEnabled(cfg.fullTextSearch.enabled))
-
-      case QueryParseResult.ParseFailed(err) =>
-        Left(BadRequest(BasicResult(false, s"Invalid query: $err")))
-
-      case QueryParseResult.FulltextMismatch(Result.TooMany) =>
-        Left(
-          BadRequest(
-            BasicResult(false, "Only one fulltext search expression is allowed.")
-          )
-        )
-      case QueryParseResult.FulltextMismatch(Result.UnsupportedPosition) =>
-        Left(
-          BadRequest(
-            BasicResult(
-              false,
-              "A fulltext search may only appear in the root and expression."
-            )
-          )
-        )
-    }
+    convertParseResult(
+      parseQuery(mode, userQuery.query)
+        .map(_.withFtsEnabled(cfg.fullTextSearch.enabled))
+    )
 
   def convert(
       items: Vector[ListItemWithTags],
@@ -202,13 +189,56 @@ final class ItemSearchPart[F[_]: Async](
           Nil
       }
     )
+
+  def convertParseResult(
+      r: QueryParseResult
+  ): Either[F[Response[F]], QueryParseResult.Success] =
+    r match {
+      case s: QueryParseResult.Success =>
+        Right(s)
+
+      case QueryParseResult.ParseFailed(err) =>
+        BadRequest(BasicResult(false, s"Invalid query: $err")).asLeft
+
+      case QueryParseResult.FulltextMismatch(Result.TooMany) =>
+        BadRequest(
+          BasicResult(false, "Only one fulltext search expression is allowed.")
+        ).asLeft
+
+      case QueryParseResult.FulltextMismatch(Result.UnsupportedPosition) =>
+        BadRequest(
+          BasicResult(
+            false,
+            "A fulltext search may only appear in the root and expression."
+          )
+        ).asLeft
+    }
 }
 
 object ItemSearchPart {
   def apply[F[_]: Async](
-      backend: BackendApp[F],
+      search: OSearch[F],
       cfg: Config,
       token: AuthToken
   ): ItemSearchPart[F] =
-    new ItemSearchPart[F](backend, cfg, token)
+    new ItemSearchPart[F](
+      search,
+      cfg,
+      (m, s) => search.parseQueryString(token.account, m, s)
+    )
+
+  def apply[F[_]: Async](
+      search: OSearch[F],
+      share: OShare[F],
+      cfg: Config,
+      shareQuery: ShareQuery
+  ): ItemSearchPart[F] =
+    new ItemSearchPart[F](
+      search,
+      cfg,
+      (_, s) => share.parseQuery(shareQuery, s),
+      changeSummary = _.onlyExisting,
+      searchPath = "query",
+      searchStatsPath = "stats"
+    )
 }

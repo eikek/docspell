@@ -14,13 +14,12 @@ import docspell.backend.PasswordCrypt
 import docspell.backend.auth.ShareToken
 import docspell.backend.ops.OItemSearch._
 import docspell.backend.ops.OShare._
-import docspell.backend.ops.OSimpleSearch.StringSearchResult
+import docspell.backend.ops.search.{OSearch, QueryParseResult}
 import docspell.common._
 import docspell.query.ItemQuery.Expr
 import docspell.query.ItemQuery.Expr.AttachId
 import docspell.query.{FulltextExtract, ItemQuery}
 import docspell.store.Store
-import docspell.store.queries.SearchSummary
 import docspell.store.records._
 
 import emil._
@@ -67,9 +66,10 @@ trait OShare[F[_]] {
 
   def findItem(itemId: Ident, shareId: Ident): OptionT[F, ItemData]
 
-  def searchSummary(
-      settings: OSimpleSearch.StatsSettings
-  )(shareId: Ident, q: ItemQueryString): OptionT[F, StringSearchResult[SearchSummary]]
+  /** Parses a query and amends the result with the stored query of the share. The result
+    * can be used with [[OSearch]] to search for items.
+    */
+  def parseQuery(share: ShareQuery, qs: String): QueryParseResult
 
   def sendMail(account: AccountId, connection: Ident, mail: ShareMail): F[SendResult]
 }
@@ -148,7 +148,7 @@ object OShare {
   def apply[F[_]: Async](
       store: Store[F],
       itemSearch: OItemSearch[F],
-      simpleSearch: OSimpleSearch[F],
+      search: OSearch[F],
       emil: Emil[F]
   ): OShare[F] =
     new OShare[F] {
@@ -325,8 +325,8 @@ object OShare {
           Query.QueryExpr(idExpr)
         )
         OptionT(
-          itemSearch
-            .findItems(0)(checkQuery, Batch.limit(1))
+          search
+            .search(0, None, Batch.limit(1))(checkQuery, None)
             .map(_.headOption.map(_ => ()))
         ).flatTapNone(
           logger.info(
@@ -335,22 +335,11 @@ object OShare {
         )
       }
 
-      def searchSummary(
-          settings: OSimpleSearch.StatsSettings
-      )(
-          shareId: Ident,
-          q: ItemQueryString
-      ): OptionT[F, StringSearchResult[SearchSummary]] =
-        findShareQuery(shareId)
-          .semiflatMap { share =>
-            val fix = Query.Fix(share.account, Some(share.query.expr), None)
-            simpleSearch
-              .searchSummaryByString(settings)(fix, q)
-              .map {
-                case StringSearchResult.Success(summary) =>
-                  StringSearchResult.Success(summary.onlyExisting)
-                case other => other
-              }
+      def parseQuery(share: ShareQuery, qs: String): QueryParseResult =
+        search
+          .parseQueryString(share.account, SearchMode.Normal, qs)
+          .map { case QueryParseResult.Success(q, ftq) =>
+            QueryParseResult.Success(q.withFix(_.andQuery(share.query.expr)), ftq)
           }
 
       def sendMail(
