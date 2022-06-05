@@ -25,15 +25,6 @@ trait OItemSearch[F[_]] {
 
   def findDeleted(collective: Ident, maxUpdate: Timestamp, limit: Int): F[Vector[RItem]]
 
-  def findItems(maxNoteLen: Int)(q: Query, batch: Batch): F[Vector[ListItem]]
-
-  /** Same as `findItems` but does more queries per item to find all tags. */
-  def findItemsWithTags(
-      maxNoteLen: Int
-  )(q: Query, batch: Batch): F[Vector[ListItemWithTags]]
-
-  def findItemsSummary(q: Query): F[SearchSummary]
-
   def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
 
   def findAttachmentSource(
@@ -63,9 +54,6 @@ trait OItemSearch[F[_]] {
 
 object OItemSearch {
 
-  type SearchSummary = queries.SearchSummary
-  val SearchSummary = queries.SearchSummary
-
   type CustomValue = queries.CustomValue
   val CustomValue = queries.CustomValue
 
@@ -74,12 +62,6 @@ object OItemSearch {
 
   type Batch = qb.Batch
   val Batch = docspell.store.qb.Batch
-
-  type ListItem = queries.ListItem
-  val ListItem = queries.ListItem
-
-  type ListItemWithTags = queries.ListItemWithTags
-  val ListItemWithTags = queries.ListItemWithTags
 
   type ItemFieldValue = queries.ItemFieldValue
   val ItemFieldValue = queries.ItemFieldValue
@@ -136,19 +118,6 @@ object OItemSearch {
         store
           .transact(QItem.findItem(id, collective))
 
-      def findItems(maxNoteLen: Int)(q: Query, batch: Batch): F[Vector[ListItem]] =
-        Timestamp
-          .current[F]
-          .map(_.toUtcDate)
-          .flatMap { today =>
-            store
-              .transact(
-                QItem.findItems(q, today, maxNoteLen, batch).take(batch.limit.toLong)
-              )
-              .compile
-              .toVector
-          }
-
       def findDeleted(
           collective: Ident,
           maxUpdate: Timestamp,
@@ -159,28 +128,6 @@ object OItemSearch {
           .take(limit.toLong)
           .compile
           .toVector
-
-      def findItemsWithTags(
-          maxNoteLen: Int
-      )(q: Query, batch: Batch): F[Vector[ListItemWithTags]] =
-        for {
-          now <- Timestamp.current[F]
-          search = QItem.findItems(q, now.toUtcDate, maxNoteLen: Int, batch)
-          res <- store
-            .transact(
-              QItem
-                .findItemsWithTags(q.fix.account.collective, search)
-                .take(batch.limit.toLong)
-            )
-            .compile
-            .toVector
-        } yield res
-
-      def findItemsSummary(q: Query): F[SearchSummary] =
-        Timestamp
-          .current[F]
-          .map(_.toUtcDate)
-          .flatMap(today => store.transact(QItem.searchStats(today, None)(q)))
 
       def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
         store
@@ -298,6 +245,5 @@ object OItemSearch {
           coll <- OptionT(RSource.findCollective(sourceId))
           items <- OptionT.liftF(QItem.findByChecksum(checksum, coll, Set.empty))
         } yield items).value)
-
     })
 }

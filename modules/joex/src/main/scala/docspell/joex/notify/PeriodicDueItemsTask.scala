@@ -89,7 +89,7 @@ object PeriodicDueItemsTask {
         store
           .transact(
             QItem
-              .findItems(q, now.toUtcDate, 0, Batch.limit(limit))
+              .queryItems(q, now.toUtcDate, 0, Batch.limit(limit), None)
               .take(limit.toLong)
           )
           .compile

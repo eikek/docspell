@@ -11,11 +11,12 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.ops.OItemLink.LinkResult
+import docspell.backend.ops.search.OSearch
 import docspell.common.{AccountId, Ident}
 import docspell.query.ItemQuery
 import docspell.query.ItemQueryDsl._
 import docspell.store.qb.Batch
-import docspell.store.queries.Query
+import docspell.store.queries.{ListItemWithTags, Query}
 import docspell.store.records.RItemLink
 import docspell.store.{AddResult, Store}
 
@@ -29,7 +30,7 @@ trait OItemLink[F[_]] {
       account: AccountId,
       item: Ident,
       batch: Batch
-  ): F[Vector[OItemSearch.ListItemWithTags]]
+  ): F[Vector[ListItemWithTags]]
 }
 
 object OItemLink {
@@ -44,13 +45,13 @@ object OItemLink {
     def linkTargetItemError: LinkResult = LinkTargetItemError
   }
 
-  def apply[F[_]: Sync](store: Store[F], search: OItemSearch[F]): OItemLink[F] =
+  def apply[F[_]: Sync](store: Store[F], search: OSearch[F]): OItemLink[F] =
     new OItemLink[F] {
       def getRelated(
           accountId: AccountId,
           item: Ident,
           batch: Batch
-      ): F[Vector[OItemSearch.ListItemWithTags]] =
+      ): F[Vector[ListItemWithTags]] =
         store
           .transact(RItemLink.findLinked(accountId.collective, item))
           .map(ids => NonEmptyList.fromList(ids.toList))
@@ -62,10 +63,10 @@ object OItemLink {
                   .Fix(accountId, Some(ItemQuery.Expr.ValidItemStates), None),
                 Query.QueryExpr(expr)
               )
-              search.findItemsWithTags(0)(query, batch)
+              search.searchWithDetails(0, None, batch)(query, None)
 
             case None =>
-              Vector.empty[OItemSearch.ListItemWithTags].pure[F]
+              Vector.empty[ListItemWithTags].pure[F]
           }
 
       def addAll(cid: Ident, target: Ident, related: NonEmptyList[Ident]): F[LinkResult] =

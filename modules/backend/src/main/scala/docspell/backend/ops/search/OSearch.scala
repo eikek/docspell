@@ -8,13 +8,13 @@ package docspell.backend.ops.search
 
 import java.time.LocalDate
 
+import cats.data.OptionT
 import cats.effect._
 import cats.syntax.all._
 import cats.{Functor, ~>}
 import fs2.Stream
 
-import docspell.backend.ops.OItemSearch.{ListItemWithTags, SearchSummary}
-import docspell.common.{AccountId, Duration, SearchMode}
+import docspell.common._
 import docspell.ftsclient.{FtsClient, FtsQuery}
 import docspell.query.{FulltextExtract, ItemQuery, ItemQueryParser}
 import docspell.store.Store
@@ -35,7 +35,7 @@ trait OSearch[F[_]] {
     * from fulltext search. Any "fulltext search" query node is discarded. It is assumed
     * that the fulltext search node has been extracted into the argument.
     */
-  def search(maxNoteLen: Int, today: LocalDate, batch: Batch)(
+  def search(maxNoteLen: Int, today: Option[LocalDate], batch: Batch)(
       q: Query,
       fulltextQuery: Option[String]
   ): F[Vector[ListItem]]
@@ -45,7 +45,7 @@ trait OSearch[F[_]] {
     */
   def searchWithDetails(
       maxNoteLen: Int,
-      today: LocalDate,
+      today: Option[LocalDate],
       batch: Batch
   )(
       q: Query,
@@ -58,7 +58,7 @@ trait OSearch[F[_]] {
   final def searchSelect(
       withDetails: Boolean,
       maxNoteLen: Int,
-      today: LocalDate,
+      today: Option[LocalDate],
       batch: Batch
   )(
       q: Query,
@@ -69,12 +69,14 @@ trait OSearch[F[_]] {
 
   /** Run multiple database calls with the give query to collect a summary. */
   def searchSummary(
-      today: LocalDate
+      today: Option[LocalDate]
   )(q: Query, fulltextQuery: Option[String]): F[SearchSummary]
 
   /** Parses a query string and creates a `Query` object, to be used with the other
-    * methods. The query object contains the parsed query amended with more conditions to
-    * restrict to valid items only (as specified with `mode`).
+    * methods. The query object contains the parsed query amended with more conditions,
+    * for example to restrict to valid items only (as specified with `mode`). An empty
+    * query string is allowed and returns a query containing only the restrictions in the
+    * `q.fix` part.
     */
   def parseQueryString(
       accountId: AccountId,
@@ -139,7 +141,7 @@ object OSearch {
           }
       }
 
-      def search(maxNoteLen: Int, today: LocalDate, batch: Batch)(
+      def search(maxNoteLen: Int, today: Option[LocalDate], batch: Batch)(
           q: Query,
           fulltextQuery: Option[String]
       ): F[Vector[ListItem]] =
@@ -148,6 +150,9 @@ object OSearch {
             for {
               timed <- Duration.stopTime[F]
               ftq <- createFtsQuery(q.fix.account, ftq)
+              date <- OptionT
+                .fromOption(today)
+                .getOrElseF(Timestamp.current[F].map(_.toUtcDate))
 
               results <- WeakAsync.liftK[F, ConnectionIO].use { nat =>
                 val tempTable = temporaryFtsTable(ftq, nat)
@@ -156,7 +161,7 @@ object OSearch {
                     Stream
                       .eval(tempTable)
                       .flatMap(tt =>
-                        QItem.queryItems(q, today, maxNoteLen, batch, tt.some)
+                        QItem.queryItems(q, date, maxNoteLen, batch, tt.some)
                       )
                   )
                   .compile
@@ -169,19 +174,21 @@ object OSearch {
           case None =>
             for {
               timed <- Duration.stopTime[F]
+              date <- OptionT
+                .fromOption(today)
+                .getOrElseF(Timestamp.current[F].map(_.toUtcDate))
               results <- store
-                .transact(QItem.queryItems(q, today, maxNoteLen, batch, None))
+                .transact(QItem.queryItems(q, date, maxNoteLen, batch, None))
                 .compile
                 .toVector
               duration <- timed
               _ <- logger.debug(s"Simple search sql in: ${duration.formatExact}")
             } yield results
-
         }
 
       def searchWithDetails(
           maxNoteLen: Int,
-          today: LocalDate,
+          today: Option[LocalDate],
           batch: Batch
       )(
           q: Query,
@@ -201,22 +208,28 @@ object OSearch {
         } yield resolved
 
       def searchSummary(
-          today: LocalDate
+          today: Option[LocalDate]
       )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] =
         fulltextQuery match {
           case Some(ftq) =>
             for {
               ftq <- createFtsQuery(q.fix.account, ftq)
+              date <- OptionT
+                .fromOption(today)
+                .getOrElseF(Timestamp.current[F].map(_.toUtcDate))
               results <- WeakAsync.liftK[F, ConnectionIO].use { nat =>
                 val tempTable = temporaryFtsTable(ftq, nat)
                 store.transact(
-                  tempTable.flatMap(tt => QItem.searchStats(today, tt.some)(q))
+                  tempTable.flatMap(tt => QItem.searchStats(date, tt.some)(q))
                 )
               }
             } yield results
 
           case None =>
-            store.transact(QItem.searchStats(today, None)(q))
+            OptionT
+              .fromOption(today)
+              .getOrElseF(Timestamp.current[F].map(_.toUtcDate))
+              .flatMap(date => store.transact(QItem.searchStats(date, None)(q)))
         }
 
       private def createFtsQuery(

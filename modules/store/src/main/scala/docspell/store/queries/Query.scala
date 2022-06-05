@@ -17,6 +17,15 @@ case class Query(fix: Query.Fix, cond: Query.QueryCond) {
   def withCond(f: Query.QueryCond => Query.QueryCond): Query =
     copy(cond = f(cond))
 
+  def andCond(c: ItemQuery.Expr): Query =
+    withCond {
+      case Query.QueryExpr(Some(q)) =>
+        Query.QueryExpr(ItemQuery.Expr.and(q, c))
+
+      case Query.QueryExpr(None) =>
+        Query.QueryExpr(c)
+    }
+
   def withOrder(orderAsc: RItem.Table => Column[_]): Query =
     withFix(_.copy(order = Some(_.byItemColumnAsc(orderAsc))))
 

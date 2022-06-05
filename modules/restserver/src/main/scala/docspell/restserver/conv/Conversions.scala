@@ -19,12 +19,16 @@ import docspell.backend.ops.OUpload.{UploadData, UploadMeta, UploadResult}
 import docspell.backend.ops._
 import docspell.common._
 import docspell.common.syntax.all._
-import docspell.ftsclient.FtsResult
 import docspell.restapi.model._
-import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.ContentDisposition
 import docspell.store.qb.Batch
-import docspell.store.queries.{AttachmentLight => QAttachmentLight, IdRefCount}
+import docspell.store.queries.{
+  AttachmentLight => QAttachmentLight,
+  FieldStats => QFieldStats,
+  ItemFieldValue => QItemFieldValue,
+  TagCount => QTagCount,
+  _
+}
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
 
@@ -34,7 +38,7 @@ import org.log4s.Logger
 
 trait Conversions {
 
-  def mkSearchStats(sum: OItemSearch.SearchSummary): SearchStats =
+  def mkSearchStats(sum: SearchSummary): SearchStats =
     SearchStats(
       sum.count,
       mkTagCloud(sum.tags),
@@ -53,7 +57,7 @@ trait Conversions {
   def mkFolderStats(fs: docspell.store.queries.FolderCount): FolderStats =
     FolderStats(fs.id, fs.name, mkIdName(fs.owner), fs.count)
 
-  def mkFieldStats(fs: docspell.store.queries.FieldStats): FieldStats =
+  def mkFieldStats(fs: QFieldStats): FieldStats =
     FieldStats(
       fs.field.id,
       fs.field.name,
@@ -76,7 +80,7 @@ trait Conversions {
       mkTagCloud(d.tags)
     )
 
-  def mkTagCloud(tags: List[OCollective.TagCount]) =
+  def mkTagCloud(tags: List[QTagCount]) =
     TagCloud(tags.map(tc => TagCount(mkTag(tc.tag), tc.count)))
 
   def mkTagCategoryCloud(tags: List[OCollective.CategoryCount]) =
@@ -144,7 +148,7 @@ trait Conversions {
       data.relatedItems.map(mkItemLight).toList
     )
 
-  def mkItemFieldValue(v: OItemSearch.ItemFieldValue): ItemFieldValue =
+  def mkItemFieldValue(v: QItemFieldValue): ItemFieldValue =
     ItemFieldValue(v.fieldId, v.fieldName, v.fieldLabel, v.fieldType, v.value)
 
   def mkAttachment(
@@ -173,28 +177,13 @@ trait Conversions {
     OItemSearch.CustomValue(v.field, v.value)
 
   def mkItemList(
-      v: Vector[OItemSearch.ListItem],
+      v: Vector[ListItem],
       batch: Batch,
       capped: Boolean
   ): ItemLightList = {
     val groups = v.groupBy(item => item.date.toUtcDate.toString.substring(0, 7))
 
-    def mkGroup(g: (String, Vector[OItemSearch.ListItem])): ItemLightGroup =
-      ItemLightGroup(g._1, g._2.map(mkItemLight).toList)
-
-    val gs =
-      groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
-    ItemLightList(gs, batch.limit, batch.offset, capped)
-  }
-
-  def mkItemListFts(
-      v: Vector[OFulltext.FtsItem],
-      batch: Batch,
-      capped: Boolean
-  ): ItemLightList = {
-    val groups = v.groupBy(item => item.item.date.toUtcDate.toString.substring(0, 7))
-
-    def mkGroup(g: (String, Vector[OFulltext.FtsItem])): ItemLightGroup =
+    def mkGroup(g: (String, Vector[ListItem])): ItemLightGroup =
       ItemLightGroup(g._1, g._2.map(mkItemLight).toList)
 
     val gs =
@@ -203,13 +192,13 @@ trait Conversions {
   }
 
   def mkItemListWithTags(
-      v: Vector[OItemSearch.ListItemWithTags],
+      v: Vector[ListItemWithTags],
       batch: Batch,
       capped: Boolean
   ): ItemLightList = {
     val groups = v.groupBy(ti => ti.item.date.toUtcDate.toString.substring(0, 7))
 
-    def mkGroup(g: (String, Vector[OItemSearch.ListItemWithTags])): ItemLightGroup =
+    def mkGroup(g: (String, Vector[ListItemWithTags])): ItemLightGroup =
       ItemLightGroup(g._1, g._2.map(mkItemLightWithTags).toList)
 
     val gs =
@@ -217,50 +206,7 @@ trait Conversions {
     ItemLightList(gs, batch.limit, batch.offset, capped)
   }
 
-  def mkItemListWithTagsFts(
-      v: Vector[OFulltext.FtsItemWithTags],
-      batch: Batch,
-      capped: Boolean
-  ): ItemLightList = {
-    val groups = v.groupBy(ti => ti.item.item.date.toUtcDate.toString.substring(0, 7))
-
-    def mkGroup(g: (String, Vector[OFulltext.FtsItemWithTags])): ItemLightGroup =
-      ItemLightGroup(g._1, g._2.map(mkItemLightWithTags).toList)
-
-    val gs =
-      groups.map(mkGroup).toList.sortWith((g1, g2) => g1.name.compareTo(g2.name) >= 0)
-    ItemLightList(gs, batch.limit, batch.offset, capped)
-  }
-
-  def mkItemListWithTagsFtsPlain(
-      v: Vector[OFulltext.FtsItemWithTags],
-      batch: Batch,
-      capped: Boolean
-  ): ItemLightList =
-    if (v.isEmpty) ItemLightList(Nil, batch.limit, batch.offset, capped)
-    else
-      ItemLightList(
-        List(ItemLightGroup("Results", v.map(mkItemLightWithTags).toList)),
-        batch.limit,
-        batch.offset,
-        capped
-      )
-
-  def mkItemListFtsPlain(
-      v: Vector[OFulltext.FtsItem],
-      batch: Batch,
-      capped: Boolean
-  ): ItemLightList =
-    if (v.isEmpty) ItemLightList(Nil, batch.limit, batch.offset, capped)
-    else
-      ItemLightList(
-        List(ItemLightGroup("Results", v.map(mkItemLight).toList)),
-        batch.limit,
-        batch.offset,
-        capped
-      )
-
-  def mkItemLight(i: OItemSearch.ListItem): ItemLight =
+  def mkItemLight(i: ListItem): ItemLight =
     ItemLight(
       i.id,
       i.name,
@@ -282,13 +228,7 @@ trait Conversions {
       Nil // highlight
     )
 
-  def mkItemLight(i: OFulltext.FtsItem): ItemLight = {
-    val il = mkItemLight(i.item)
-    val highlight = mkHighlight(i.ftsData)
-    il.copy(highlighting = highlight)
-  }
-
-  def mkItemLightWithTags(i: OItemSearch.ListItemWithTags): ItemLight =
+  def mkItemLightWithTags(i: ListItemWithTags): ItemLight =
     mkItemLight(i.item)
       .copy(
         tags = i.tags.map(mkTag),
@@ -299,22 +239,6 @@ trait Conversions {
 
   def mkAttachmentLight(qa: QAttachmentLight): AttachmentLight =
     AttachmentLight(qa.id, qa.position, qa.name, qa.pageCount)
-
-  def mkItemLightWithTags(i: OFulltext.FtsItemWithTags): ItemLight = {
-    val il = mkItemLightWithTags(i.item)
-    val highlight = mkHighlight(i.ftsData)
-    il.copy(highlighting = highlight)
-  }
-
-  private def mkHighlight(ftsData: OFulltext.FtsData): List[HighlightEntry] =
-    ftsData.items.filter(_.context.nonEmpty).sortBy(-_.score).map { fdi =>
-      fdi.matchData match {
-        case FtsResult.AttachmentData(_, aName) =>
-          HighlightEntry(aName, fdi.context)
-        case FtsResult.ItemData =>
-          HighlightEntry("Item", fdi.context)
-      }
-    }
 
   // job
   def mkJobQueueState(state: OJob.CollectiveQueueState): JobQueueState = {
@@ -571,7 +495,7 @@ trait Conversions {
       oid: Option[Ident],
       pid: Option[Ident]
   ): F[RContact] =
-    timeId.map { case (id, now) =>
+    Conversions.timeId.map { case (id, now) =>
       RContact(id, c.value.trim, c.kind, pid, oid, now)
     }
 
@@ -590,7 +514,7 @@ trait Conversions {
     )
 
   def newUser[F[_]: Sync](u: User, cid: Ident): F[RUser] =
-    timeId.map { case (id, now) =>
+    Conversions.timeId.map { case (id, now) =>
       RUser(
         id,
         u.login,
@@ -625,7 +549,7 @@ trait Conversions {
     Tag(rt.tagId, rt.name, rt.category, rt.created)
 
   def newTag[F[_]: Sync](t: Tag, cid: Ident): F[RTag] =
-    timeId.map { case (id, now) =>
+    Conversions.timeId.map { case (id, now) =>
       RTag(id, cid, t.name.trim, t.category.map(_.trim), now)
     }
 
@@ -653,7 +577,7 @@ trait Conversions {
     )
 
   def newSource[F[_]: Sync](s: Source, cid: Ident): F[RSource] =
-    timeId.map { case (id, now) =>
+    Conversions.timeId.map { case (id, now) =>
       RSource(
         id,
         cid,
@@ -691,7 +615,7 @@ trait Conversions {
     Equipment(re.eid, re.name, re.created, re.notes, re.use)
 
   def newEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
-    timeId.map { case (id, now) =>
+    Conversions.timeId.map { case (id, now) =>
       REquipment(id, cid, e.name.trim, now, now, e.notes, e.use)
     }
 
@@ -785,7 +709,7 @@ trait Conversions {
       header.mediaType.mainType,
       header.mediaType.subType,
       None
-    ).withCharsetName(header.mediaType.extensions.get("charset").getOrElse("unknown"))
+    ).withCharsetName(header.mediaType.extensions.getOrElse("charset", "unknown"))
 }
 
 object Conversions extends Conversions {

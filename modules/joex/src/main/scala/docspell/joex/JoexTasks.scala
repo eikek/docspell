@@ -13,6 +13,7 @@ import docspell.backend.BackendCommands
 import docspell.backend.fulltext.CreateIndex
 import docspell.backend.joex.AddonOps
 import docspell.backend.ops._
+import docspell.backend.ops.search.OSearch
 import docspell.backend.task.DownloadZipArgs
 import docspell.common._
 import docspell.config.FtsType
@@ -62,6 +63,7 @@ final class JoexTasks[F[_]: Async](
     joex: OJoex[F],
     jobs: OJob[F],
     itemSearch: OItemSearch[F],
+    search: OSearch[F],
     addons: AddonOps[F]
 ) {
   val downloadAll: ODownloadAll[F] =
@@ -201,7 +203,7 @@ final class JoexTasks[F[_]: Async](
       .withTask(
         JobTask.json(
           PeriodicQueryTask.taskName,
-          PeriodicQueryTask[F](store, notification),
+          PeriodicQueryTask[F](store, search, notification),
           PeriodicQueryTask.onCancel[F]
         )
       )
@@ -273,6 +275,7 @@ object JoexTasks {
       createIndex <- CreateIndex.resource(fts, store)
       itemOps <- OItem(store, fts, createIndex, jobStoreModule.jobs)
       itemSearchOps <- OItemSearch(store)
+      searchOps <- Resource.pure(OSearch(store, fts))
       analyser <- TextAnalyser.create[F](cfg.textAnalysis.textAnalysisConfig)
       regexNer <- RegexNerFile(cfg.textAnalysis.regexNerFileConfig, store)
       updateCheck <- UpdateCheck.resource(httpClient)
@@ -306,6 +309,7 @@ object JoexTasks {
       joex,
       jobs,
       itemSearchOps,
+      searchOps,
       addons
     )
 

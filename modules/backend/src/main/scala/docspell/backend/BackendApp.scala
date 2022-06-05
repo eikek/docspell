@@ -47,7 +47,6 @@ trait BackendApp[F[_]] {
   def userTask: OUserTask[F]
   def folder: OFolder[F]
   def customFields: OCustomFields[F]
-  def simpleSearch: OSimpleSearch[F]
   def clientSettings: OClientSettings[F]
   def totp: OTotp[F]
   def share: OShare[F]
@@ -99,8 +98,6 @@ object BackendApp {
       itemImpl <- OItem(store, ftsClient, createIndex, schedulerModule.jobs)
       itemSearchImpl <- OItemSearch(store)
       fulltextImpl <- OFulltext(
-        itemSearchImpl,
-        ftsClient,
         store,
         schedulerModule.jobs
       )
@@ -112,15 +109,15 @@ object BackendApp {
       )
       folderImpl <- OFolder(store)
       customFieldsImpl <- OCustomFields(store)
-      simpleSearchImpl = OSimpleSearch(fulltextImpl, itemSearchImpl)
       clientSettingsImpl <- OClientSettings(store)
+      searchImpl <- Resource.pure(OSearch(store, ftsClient))
       shareImpl <- Resource.pure(
-        OShare(store, itemSearchImpl, simpleSearchImpl, javaEmil)
+        OShare(store, itemSearchImpl, searchImpl, javaEmil)
       )
       notifyImpl <- ONotification(store, notificationMod)
       bookmarksImpl <- OQueryBookmarks(store)
       fileRepoImpl <- OFileRepository(store, schedulerModule.jobs)
-      itemLinkImpl <- Resource.pure(OItemLink(store, itemSearchImpl))
+      itemLinkImpl <- Resource.pure(OItemLink(store, searchImpl))
       downloadAllImpl <- Resource.pure(ODownloadAll(store, jobImpl, schedulerModule.jobs))
       attachImpl <- Resource.pure(OAttachment(store, ftsClient, schedulerModule.jobs))
       addonsImpl <- Resource.pure(
@@ -132,7 +129,6 @@ object BackendApp {
           joexImpl
         )
       )
-      searchImpl <- Resource.pure(OSearch(store, ftsClient))
     } yield new BackendApp[F] {
       val pubSub = pubSubT
       val login = loginImpl
@@ -153,7 +149,6 @@ object BackendApp {
       val userTask = userTaskImpl
       val folder = folderImpl
       val customFields = customFieldsImpl
-      val simpleSearch = simpleSearchImpl
       val clientSettings = clientSettingsImpl
       val totp = totpImpl
       val share = shareImpl

@@ -84,7 +84,7 @@ object BasicData {
       )
       for {
         items <- QItem
-          .findItems(q, now.toUtcDate, 25, Batch.limit(itemIds.size))
+          .queryItems(q, now.toUtcDate, 25, Batch.limit(itemIds.size), None)
           .compile
           .to(Vector)
       } yield items.map(apply(now))
