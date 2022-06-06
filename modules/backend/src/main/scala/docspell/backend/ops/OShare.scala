@@ -67,7 +67,7 @@ trait OShare[F[_]] {
   def findItem(itemId: Ident, shareId: Ident): OptionT[F, ItemData]
 
   /** Parses a query and amends the result with the stored query of the share. The result
-    * can be used with [[OSearch]] to search for items.
+    * can be used with `OSearch` to search for items.
     */
   def parseQuery(share: ShareQuery, qs: String): QueryParseResult
 
