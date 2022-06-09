@@ -200,7 +200,7 @@ renderLabel2 label =
                     "fa fa-at"
 
                 "website" ->
-                    "fa fa-external-alt"
+                    "fa fa-external-link-alt"
 
                 _ ->
                     "fa fa-tag"
