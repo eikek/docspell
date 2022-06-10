@@ -23,7 +23,6 @@ import Page.Share.Data exposing (..)
 import Process
 import Set
 import Task
-import Time
 import Util.Html
 import Util.Maybe
 import Util.Update
@@ -49,7 +48,7 @@ update flags settings shareId msg model =
                         , searchInProgress = True
                       }
                     , Cmd.batch
-                        [ makeSearchCmd flags True model
+                        [ makeSearchCmd flags True False model
                         , Api.clientSettingsShare flags res.token UiSettingsResp
                         ]
                     )
@@ -80,6 +79,16 @@ update flags settings shareId msg model =
                 { model | searchInProgress = False, pageError = PageErrorNone }
 
         SearchResp (Err err) ->
+            noSub ( { model | pageError = PageErrorHttp err, searchInProgress = False }, Cmd.none )
+
+        AddSearchResp (Ok list) ->
+            update flags
+                settings
+                shareId
+                (ItemListMsg (Comp.ItemCardList.AddResults list))
+                { model | searchInProgress = False, pageError = PageErrorNone }
+
+        AddSearchResp (Err err) ->
             noSub ( { model | pageError = PageErrorHttp err, searchInProgress = False }, Cmd.none )
 
         StatsResp doInit (Ok stats) ->
@@ -121,18 +130,27 @@ update flags settings shareId msg model =
                 res =
                     Comp.SearchMenu.update flags settings lm model.searchMenuModel
 
-                nextModel =
+                vm =
+                    model.viewMode
+
+                nextVm =
+                    { vm | offset = 0 }
+
+                nextModel1 =
                     { model | searchMenuModel = res.model }
 
-                ( initSearch, searchCmd ) =
+                nextModelSearch =
+                    { nextModel1 | viewMode = nextVm }
+
+                ( initSearch, searchCmd, model_ ) =
                     if res.stateChange && not model.searchInProgress then
-                        ( True, makeSearchCmd flags False nextModel )
+                        ( True, makeSearchCmd flags False False nextModelSearch, nextModelSearch )
 
                     else
-                        ( False, Cmd.none )
+                        ( False, Cmd.none, nextModel1 )
             in
             noSub
-                ( { nextModel | searchInProgress = initSearch }
+                ( { model_ | searchInProgress = initSearch }
                 , Cmd.batch [ Cmd.map SearchMenuMsg res.cmd, searchCmd ]
                 )
 
@@ -141,8 +159,14 @@ update flags settings shareId msg model =
                 res =
                     Comp.PowerSearchInput.update lm model.powerSearchInput
 
+                vm =
+                    model.viewMode
+
+                nextVm =
+                    { vm | offset = 0 }
+
                 nextModel =
-                    { model | powerSearchInput = res.model }
+                    { model | powerSearchInput = res.model, viewMode = nextVm }
 
                 ( initSearch, searchCmd ) =
                     case res.action of
@@ -150,7 +174,7 @@ update flags settings shareId msg model =
                             ( False, Cmd.none )
 
                         Comp.PowerSearchInput.SubmitSearch ->
-                            ( True, makeSearchCmd flags False nextModel )
+                            ( True, makeSearchCmd flags False False nextModel )
             in
             { model = { nextModel | searchInProgress = initSearch }
             , cmd = Cmd.batch [ Cmd.map PowerSearchMsg res.cmd, searchCmd ]
@@ -159,11 +183,18 @@ update flags settings shareId msg model =
 
         ResetSearch ->
             let
+                vm =
+                    model.viewMode
+
+                nextVm =
+                    { vm | offset = 0 }
+
                 nm =
                     { model
                         | powerSearchInput = Comp.PowerSearchInput.init
                         , contentSearch = Nothing
                         , pageError = PageErrorNone
+                        , viewMode = nextVm
                     }
             in
             update flags settings shareId (SearchMenuMsg Comp.SearchMenu.ResetForm) nm
@@ -215,7 +246,14 @@ update flags settings shareId msg model =
             noSub ( { model | contentSearch = Util.Maybe.fromString q }, Cmd.none )
 
         ContentSearchKey (Just Util.Html.Enter) ->
-            noSub ( model, makeSearchCmd flags False model )
+            let
+                vm =
+                    model.viewMode
+
+                nextVm =
+                    { vm | offset = 0 }
+            in
+            noSub ( { model | viewMode = nextVm, searchInProgress = True }, makeSearchCmd flags False False model )
 
         ContentSearchKey _ ->
             noSub ( model, Cmd.none )
@@ -237,6 +275,16 @@ update flags settings shareId msg model =
 
                 next =
                     { vm | menuOpen = not vm.menuOpen }
+            in
+            noSub ( { model | viewMode = next }, Cmd.none )
+
+        TogglePageSizeMenu ->
+            let
+                vm =
+                    model.viewMode
+
+                next =
+                    { vm | pageSizeMenuOpen = not vm.pageSizeMenuOpen }
             in
             noSub ( { model | viewMode = next }, Cmd.none )
 
@@ -318,6 +366,29 @@ update flags settings shareId msg model =
                 TopContentDownload _ ->
                     noSub ( { model | topContent = TopContentHidden, viewMode = nextVm }, Cmd.none )
 
+        SetPageSize n ->
+            let
+                vm =
+                    model.viewMode
+
+                next =
+                    { vm | pageSize = n, pageSizeMenuOpen = False }
+            in
+            noSub ( { model | viewMode = next }, Cmd.none )
+
+        LoadNextPage ->
+            let
+                vm =
+                    model.viewMode
+
+                nextVm =
+                    { vm | offset = vm.offset + vm.pageSize }
+
+                nextModel =
+                    { model | viewMode = nextVm, searchInProgress = True }
+            in
+            noSub ( nextModel, makeSearchCmd flags False True nextModel )
+
 
 noSub : ( Model, Cmd Msg ) -> UpdateResult
 noSub ( m, c ) =
@@ -342,22 +413,30 @@ createQuery flags model =
         ]
 
 
-makeSearchCmd : Flags -> Bool -> Model -> Cmd Msg
-makeSearchCmd flags doInit model =
+makeSearchCmd : Flags -> Bool -> Bool -> Model -> Cmd Msg
+makeSearchCmd flags doInit addResults model =
     let
         xq =
             createQuery flags model
 
         request mq =
-            { offset = Nothing
-            , limit = Nothing
+            { offset = Just model.viewMode.offset
+            , limit = Just model.viewMode.pageSize
             , withDetails = Just True
             , query = Q.renderMaybe mq
             , searchMode = Just (Data.SearchMode.asString Data.SearchMode.Normal)
             }
 
         searchCmd =
-            Api.searchShare flags model.verifyResult.token (request xq) SearchResp
+            Api.searchShare flags
+                model.verifyResult.token
+                (request xq)
+                (if addResults then
+                    AddSearchResp
+
+                 else
+                    SearchResp
+                )
 
         statsCmd =
             Api.searchShareStats flags model.verifyResult.token (request xq) (StatsResp doInit)

@@ -50,7 +50,7 @@ trait DatabaseTest
 
   lazy val h2DataSource = ResourceSuiteLocalFixture(
     "h2DataSource", {
-      val jdbc = StoreFixture.memoryDB("test")
+      val jdbc = StoreFixture.memoryDB(UUID.randomUUID().toString)
       StoreFixture.dataSource(jdbc).map(ds => (jdbc, ds))
     }
   )

@@ -16,6 +16,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.Page.Share exposing (Texts)
 import Page.Share.Data exposing (..)
+import Page.Share.LoadMore as LoadMore
 import Page.Share.Menubar as Menubar
 import Page.Share.Results as Results
 import Page.Share.Sidebar as Sidebar
@@ -83,6 +84,7 @@ mainContent texts flags shareId model =
         , errorMessage texts model
         , TopContent.view texts flags model
         , Results.view texts model.uiSettings flags shareId model
+        , LoadMore.view texts model
         ]
 
 
