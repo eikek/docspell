@@ -16,7 +16,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Messages.Page.Share exposing (Texts)
-import Page.Share.Data exposing (Model, Msg(..), SearchBarMode(..))
+import Page.Share.Data exposing (Model, Msg(..), SearchBarMode(..), pageSizes)
 import Styles as S
 import Util.Html
 
@@ -95,7 +95,29 @@ view texts flags model =
                     }
             ]
         , end =
-            [ MB.CustomElement <|
+            [ MB.Dropdown
+                { linkIcon = "fa fa-caret-down"
+                , label = String.fromInt model.viewMode.pageSize
+                , linkClass =
+                    [ ( S.secondaryBasicButton, True )
+                    ]
+                , toggleMenu = TogglePageSizeMenu
+                , menuOpen = model.viewMode.pageSizeMenuOpen
+                , items =
+                    List.map
+                        (\n ->
+                            { icon = i [] []
+                            , label = String.fromInt n
+                            , disabled = False
+                            , attrs =
+                                [ href "#"
+                                , onClick (SetPageSize n)
+                                ]
+                            }
+                        )
+                        (pageSizes flags)
+                }
+            , MB.CustomElement <|
                 B.secondaryBasicButton
                     { label = ""
                     , icon =

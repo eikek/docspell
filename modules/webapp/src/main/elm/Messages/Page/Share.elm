@@ -33,6 +33,8 @@ type alias Texts =
     , listView : String
     , tileView : String
     , downloadAllLabel : String
+    , loadMore : String
+    , thatsAll : String
     }
 
 
@@ -53,6 +55,8 @@ gb tz =
     , listView = "List view"
     , tileView = "Tile view"
     , downloadAllLabel = "Download all"
+    , loadMore = "Load more…"
+    , thatsAll = "That's all"
     }
 
 
@@ -73,6 +77,8 @@ de tz =
     , listView = "Listenansicht"
     , tileView = "Kachelansicht"
     , downloadAllLabel = "Alles herunterladen"
+    , loadMore = "Mehr laden…"
+    , thatsAll = "Mehr gibt es nicht"
     }
 
 
@@ -93,4 +99,6 @@ fr tz =
     , listView = "Affichage liste"
     , tileView = "Affichage tuile"
     , downloadAllLabel = "Télécharger tout"
+    , loadMore = "Charger plus..."
+    , thatsAll = "C'est tout !"
     }

@@ -12,6 +12,7 @@ module Comp.ItemCardList exposing
     , init
     , nextItem
     , prevItem
+    , size
     , update
     , updateDrag
     , view
@@ -69,6 +70,11 @@ prevItem : Model -> String -> Maybe ItemLight
 prevItem model id =
     List.concatMap .items model.results.groups
         |> Util.List.findPrev (\i -> i.id == id)
+
+
+size : Model -> Int
+size model =
+    Data.Items.length model.results
 
 
 

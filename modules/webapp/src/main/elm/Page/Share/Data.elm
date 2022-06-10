@@ -14,6 +14,7 @@ module Page.Share.Data exposing
     , TopContentModel(..)
     , init
     , initCmd
+    , pageSizes
     )
 
 import Api
@@ -75,6 +76,9 @@ type alias Model =
         , showGroups : Bool
         , arrange : ItemArrange
         , rowsOpen : Set String
+        , pageSizeMenuOpen : Bool
+        , pageSize : Int
+        , offset : Int
         }
     , topContent : TopContentModel
     }
@@ -99,6 +103,9 @@ emptyModel flags =
         , showGroups = True
         , arrange = Data.ItemArrange.Cards
         , rowsOpen = Set.empty
+        , pageSizeMenuOpen = False
+        , pageSize = pageSizes flags |> List.head |> Maybe.withDefault 20
+        , offset = 0
         }
     , topContent = TopContentHidden
     }
@@ -126,6 +133,7 @@ initCmd shareId flags =
 type Msg
     = VerifyResp (Result Http.Error ShareVerifyResult)
     | SearchResp (Result Http.Error ItemLightList)
+    | AddSearchResp (Result Http.Error ItemLightList)
     | StatsResp Bool (Result Http.Error SearchStats)
     | UiSettingsResp (Result Http.Error UiSettings)
     | PasswordMsg Comp.SharePasswordForm.Msg
@@ -141,3 +149,32 @@ type Msg
     | ToggleShowGroups
     | DownloadAllMsg Comp.DownloadAll.Msg
     | ToggleDownloadAll
+    | TogglePageSizeMenu
+    | SetPageSize Int
+    | LoadNextPage
+
+
+pageSizes : Flags -> List Int
+pageSizes flags =
+    let
+        maxSize =
+            flags.config.maxPageSize
+
+        high =
+            min maxSize 60 // 10 * 10
+
+        low =
+            20
+
+        gen n res =
+            if n > high then
+                res
+
+            else
+                gen (n + low) (n :: res)
+    in
+    if maxSize <= low then
+        [ maxSize ]
+
+    else
+        List.reverse (gen low [])
