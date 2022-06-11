@@ -108,7 +108,7 @@ final class ItemSearchPart[F[_]: Async](
         identity,
         res =>
           for {
-            _ <- logger.warn(s"Searching with query: $res")
+            _ <- logger.debug(s"Searching with query: $res")
             items <- searchOps
               .searchSelect(details, cfg.maxNoteLength, today.some, batch)(
                 res.q,

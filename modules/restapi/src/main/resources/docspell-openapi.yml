@@ -7841,8 +7841,6 @@ components:
           $ref: "#/components/schemas/IdName"
         concEquipment:
           $ref: "#/components/schemas/IdName"
-        inReplyTo:
-          $ref: "#/components/schemas/IdName"
         folder:
           $ref: "#/components/schemas/IdName"
         dueDate:

@@ -30,7 +30,6 @@ case class RItem(
     corrPerson: Option[Ident],
     concPerson: Option[Ident],
     concEquipment: Option[Ident],
-    inReplyTo: Option[Ident],
     dueDate: Option[Timestamp],
     created: Timestamp,
     updated: Timestamp,
@@ -63,7 +62,6 @@ object RItem {
       None,
       None,
       None,
-      None,
       now,
       now,
       None,
@@ -85,7 +83,6 @@ object RItem {
     val corrPerson = Column[Ident]("corrperson", this)
     val concPerson = Column[Ident]("concperson", this)
     val concEquipment = Column[Ident]("concequipment", this)
-    val inReplyTo = Column[Ident]("inreplyto", this)
     val dueDate = Column[Timestamp]("duedate", this)
     val created = Column[Timestamp]("created", this)
     val updated = Column[Timestamp]("updated", this)
@@ -103,7 +100,6 @@ object RItem {
       corrPerson,
       concPerson,
       concEquipment,
-      inReplyTo,
       dueDate,
       created,
       updated,
@@ -123,7 +119,7 @@ object RItem {
       T,
       T.all,
       fr"${v.id},${v.cid},${v.name},${v.itemDate},${v.source},${v.direction},${v.state}," ++
-        fr"${v.corrOrg},${v.corrPerson},${v.concPerson},${v.concEquipment},${v.inReplyTo},${v.dueDate}," ++
+        fr"${v.corrOrg},${v.corrPerson},${v.concPerson},${v.concEquipment},${v.dueDate}," ++
         fr"${v.created},${v.updated},${v.notes},${v.folderId}"
     )
 
@@ -145,7 +141,6 @@ object RItem {
           T.corrPerson.setTo(item.corrPerson),
           T.concPerson.setTo(item.concPerson),
           T.concEquipment.setTo(item.concEquipment),
-          T.inReplyTo.setTo(item.inReplyTo),
           T.dueDate.setTo(item.dueDate),
           T.notes.setTo(item.notes),
           T.folder.setTo(item.folderId),
