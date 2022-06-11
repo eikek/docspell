@@ -187,7 +187,6 @@ class TempFtsOpsTest extends DatabaseTest {
       None,
       None,
       None,
-      None,
       ts,
       ts,
       None,

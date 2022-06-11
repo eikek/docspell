@@ -136,7 +136,6 @@ trait Conversions {
       data.corrPerson.map(p => IdName(p.pid, p.name)),
       data.concPerson.map(p => IdName(p.pid, p.name)),
       data.concEquip.map(e => IdName(e.eid, e.name)),
-      data.inReplyTo.map(mkIdName),
       data.folder.map(mkIdName),
       data.item.dueDate,
       data.item.notes,

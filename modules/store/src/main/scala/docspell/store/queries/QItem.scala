@@ -74,12 +74,9 @@ object QItem extends FtsSupport {
   }
 
   def findItem(id: Ident, collective: Ident): ConnectionIO[Option[ItemData]] = {
-    val ref = RItem.as("ref")
     val cq =
       Select(
         select(i.all, org.all, pers0.all, pers1.all, equip.all)
-          .append(ref.id.s)
-          .append(ref.name.s)
           .append(f.id.s)
           .append(f.name.s),
         from(i)
@@ -87,7 +84,6 @@ object QItem extends FtsSupport {
           .leftJoin(pers0, pers0.pid === i.corrPerson)
           .leftJoin(pers1, pers1.pid === i.concPerson)
           .leftJoin(equip, equip.eid === i.concEquipment)
-          .leftJoin(ref, ref.id === i.inReplyTo)
           .leftJoin(f, f.id === i.folder),
         i.id === id
       ).build
@@ -100,7 +96,6 @@ object QItem extends FtsSupport {
             Option[RPerson],
             Option[RPerson],
             Option[REquipment],
-            Option[IdRef],
             Option[IdRef]
         )
       ]
@@ -122,7 +117,7 @@ object QItem extends FtsSupport {
       cfs <- customfields
       rel <- related
     } yield data.map(d =>
-      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, d._7, ts, att, srcs, arch, cfs, rel)
+      ItemData(d._1, d._2, d._3, d._4, d._5, d._6, ts, att, srcs, arch, cfs, rel)
     )
   }
 

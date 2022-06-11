@@ -15,7 +15,6 @@ case class ItemData(
     corrPerson: Option[RPerson],
     concPerson: Option[RPerson],
     concEquip: Option[REquipment],
-    inReplyTo: Option[IdRef],
     folder: Option[IdRef],
     tags: Vector[RTag],
     attachments: Vector[(RAttachment, RFileMeta)],
