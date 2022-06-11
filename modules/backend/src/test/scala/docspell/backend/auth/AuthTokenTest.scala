@@ -34,4 +34,17 @@ class AuthTokenTest extends CatsEffectSuite {
       !token2.copy(valid = Duration.minutes(10).some).validate(secret, Duration.millis(0))
     )
   }
+
+  test("signature") {
+    val token1 = AuthToken.user[IO](user, false, secret, None).unsafeRunSync()
+    val token2 =
+      AuthToken.user[IO](user, false, secret, Duration.seconds(10).some).unsafeRunSync()
+
+    assert(token1.sigValid(secret))
+    assert(token1.sigInvalid(otherSecret))
+    assert(token1.copy(valid = Duration.seconds(100).some).sigInvalid(secret))
+
+    assert(token2.sigValid(secret))
+    assert(token2.sigInvalid(otherSecret))
+  }
 }
