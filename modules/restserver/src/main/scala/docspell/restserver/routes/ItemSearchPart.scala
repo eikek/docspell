@@ -40,47 +40,45 @@ final class ItemSearchPart[F[_]: Async](
   private[this] val logger = docspell.logging.getLogger[F]
 
   def routes: HttpRoutes[F] =
-    if (!cfg.featureSearch2) HttpRoutes.empty
-    else
-      HttpRoutes.of {
-        case GET -> Root / `searchPath` :? QP.Query(q) :? QP.Limit(limit) :?
-            QP.Offset(offset) :? QP.WithDetails(detailFlag) :?
-            QP.SearchKind(searchMode) =>
-          val userQuery =
-            ItemQuery(offset, limit, detailFlag, searchMode, q.getOrElse(""))
-          for {
-            today <- Timestamp.current[F].map(_.toUtcDate)
-            resp <- search(userQuery, today)
-          } yield resp
+    HttpRoutes.of {
+      case GET -> Root / `searchPath` :? QP.Query(q) :? QP.Limit(limit) :?
+          QP.Offset(offset) :? QP.WithDetails(detailFlag) :?
+          QP.SearchKind(searchMode) =>
+        val userQuery =
+          ItemQuery(offset, limit, detailFlag, searchMode, q.getOrElse(""))
+        for {
+          today <- Timestamp.current[F].map(_.toUtcDate)
+          resp <- search(userQuery, today)
+        } yield resp
 
-        case req @ POST -> Root / `searchPath` =>
-          for {
-            timed <- Duration.stopTime[F]
-            userQuery <- req.as[ItemQuery]
-            today <- Timestamp.current[F].map(_.toUtcDate)
-            resp <- search(userQuery, today)
-            dur <- timed
-            _ <- logger.debug(s"Search request: ${dur.formatExact}")
-          } yield resp
+      case req @ POST -> Root / `searchPath` =>
+        for {
+          timed <- Duration.stopTime[F]
+          userQuery <- req.as[ItemQuery]
+          today <- Timestamp.current[F].map(_.toUtcDate)
+          resp <- search(userQuery, today)
+          dur <- timed
+          _ <- logger.debug(s"Search request: ${dur.formatExact}")
+        } yield resp
 
-        case GET -> Root / `searchStatsPath` :? QP.Query(q) :?
-            QP.SearchKind(searchMode) =>
-          val userQuery = ItemQuery(None, None, None, searchMode, q.getOrElse(""))
-          for {
-            today <- Timestamp.current[F].map(_.toUtcDate)
-            resp <- searchStats(userQuery, today)
-          } yield resp
+      case GET -> Root / `searchStatsPath` :? QP.Query(q) :?
+          QP.SearchKind(searchMode) =>
+        val userQuery = ItemQuery(None, None, None, searchMode, q.getOrElse(""))
+        for {
+          today <- Timestamp.current[F].map(_.toUtcDate)
+          resp <- searchStats(userQuery, today)
+        } yield resp
 
-        case req @ POST -> Root / `searchStatsPath` =>
-          for {
-            timed <- Duration.stopTime[F]
-            userQuery <- req.as[ItemQuery]
-            today <- Timestamp.current[F].map(_.toUtcDate)
-            resp <- searchStats(userQuery, today)
-            dur <- timed
-            _ <- logger.debug(s"Search stats request: ${dur.formatExact}")
-          } yield resp
-      }
+      case req @ POST -> Root / `searchStatsPath` =>
+        for {
+          timed <- Duration.stopTime[F]
+          userQuery <- req.as[ItemQuery]
+          today <- Timestamp.current[F].map(_.toUtcDate)
+          resp <- searchStats(userQuery, today)
+          dur <- timed
+          _ <- logger.debug(s"Search stats request: ${dur.formatExact}")
+        } yield resp
+    }
 
   def searchStats(userQuery: ItemQuery, today: LocalDate): F[Response[F]] = {
     val mode = userQuery.searchMode.getOrElse(SearchMode.Normal)
