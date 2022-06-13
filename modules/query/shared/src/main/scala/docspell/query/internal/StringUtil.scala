@@ -123,7 +123,7 @@ object StringUtil {
             catch { case _: NumberFormatException => ~idx }
           sb.append(asInt.toChar)
           end
-        } else ~(str.length)
+        } else ~str.length
       }
       @annotation.tailrec
       def loop(idx: Int): Int =
