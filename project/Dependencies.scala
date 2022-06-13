@@ -32,7 +32,7 @@ object Dependencies {
   val LevigoJbig2Version = "2.0"
   val Log4sVersion = "1.10.0"
   val LogbackVersion = "1.2.10"
-  val MariaDbVersion = "3.0.4"
+  val MariaDbVersion = "3.0.5"
   val MUnitVersion = "0.7.29"
   val MUnitCatsEffectVersion = "1.0.7"
   val OrganizeImportsVersion = "0.6.0"
