@@ -23,13 +23,19 @@ import scodec.bits.ByteVector
 private[joex] class AddonPrepare[F[_]: Sync](store: Store[F]) extends LoggerExtension {
 
   def logResult(logger: Logger[F], ref: AddonRunConfigRef): Middleware[F] =
-    Middleware(_.mapF(_.attempt.flatTap {
-      case Right(_) => ().pure[F]
-      case Left(ex) =>
-        logger
-          .withRunConfig(ref)
-          .warn(ex)(s"Addon task '${ref.id.id}' has failed")
-    }.rethrow))
+    Middleware(
+      _.mapF(
+        _.attempt
+          .flatTap {
+            case Right(_) => ().pure[F]
+            case Left(ex) =>
+              logger
+                .withRunConfig(ref)
+                .warn(ex)(s"Addon task '${ref.id.id}' has failed")
+          }
+          .rethrow
+      )
+    )
 
   /** Creates environment variables for dsc to connect to the docspell server for the
     * given run config.
