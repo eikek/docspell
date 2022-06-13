@@ -34,7 +34,6 @@ object ItemDataExample extends Helper {
       corrPerson = None,
       concPerson = None,
       concEquipment = None,
-      inReplyTo = None,
       dueDate = None,
       created = date20220514,
       updated = date20220514,
