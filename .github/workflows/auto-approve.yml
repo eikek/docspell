@@ -8,6 +8,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: hmarr/auto-approve-action@v2.2.1
-        if: github.actor == 'scala-steward'
+        if: github.actor == 'eikek-scala-steward'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
