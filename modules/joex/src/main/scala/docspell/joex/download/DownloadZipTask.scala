@@ -16,7 +16,7 @@ import docspell.backend.ops.ODownloadAll
 import docspell.backend.ops.ODownloadAll.model.DownloadSummary
 import docspell.backend.task.DownloadZipArgs
 import docspell.common._
-import docspell.files.Zip
+import docspell.common.util.Zip
 import docspell.scheduler.Task
 import docspell.store.Store
 import docspell.store.queries.{ItemFileMeta, QItem}
@@ -50,7 +50,7 @@ object DownloadZipTask {
 
       val storeZipFile =
         allFiles
-          .through(Zip.zip(ctx.logger, chunkSize))
+          .through(Zip[F](ctx.logger.some).zip(chunkSize))
           .through(
             store.fileRepo.save(
               ctx.args.accountId.collective,

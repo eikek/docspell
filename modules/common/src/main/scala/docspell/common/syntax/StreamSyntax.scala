@@ -12,6 +12,7 @@ import fs2.Stream
 
 import io.circe._
 import io.circe.parser._
+import scodec.bits.ByteVector
 
 trait StreamSyntax {
   implicit class StringStreamOps[F[_]](s: Stream[F, String]) {
@@ -24,4 +25,14 @@ trait StreamSyntax {
           } yield value
         )
   }
+
+  implicit final class ByteStreamSyntax[F[_]](self: Stream[F, Byte]) {
+    def sha256Hex(implicit F: Sync[F]): F[String] =
+      self
+        .through(fs2.hash.sha256)
+        .compile
+        .foldChunks(ByteVector.empty)(_ ++ _.toByteVector)
+        .map(_.toHex)
+  }
 }
+object StreamSyntax extends StreamSyntax

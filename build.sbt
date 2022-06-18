@@ -321,25 +321,6 @@ val loggingApi = project
         Dependencies.sourcecode
   )
 
-// Base module, everything depends on this – including restapi and
-// joexapi modules. This should aim to have least possible
-// dependencies
-val common = project
-  .in(file("modules/common"))
-  .disablePlugins(RevolverPlugin)
-  .settings(sharedSettings)
-  .withTestSettings
-  .settings(
-    name := "docspell-common",
-    libraryDependencies ++=
-      Dependencies.fs2 ++
-        Dependencies.circe ++
-        Dependencies.circeGenericExtra ++
-        Dependencies.calevCore ++
-        Dependencies.calevCirce
-  )
-  .dependsOn(loggingApi)
-
 val loggingScribe = project
   .in(file("modules/logging/scribe"))
   .disablePlugins(RevolverPlugin)
@@ -352,6 +333,25 @@ val loggingScribe = project
         Dependencies.catsEffect ++
         Dependencies.circeCore ++
         Dependencies.fs2Core
+  )
+  .dependsOn(loggingApi)
+
+// Base module, everything depends on this – including restapi and
+// joexapi modules. This should aim to have least possible
+// dependencies
+val common = project
+  .in(file("modules/common"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettingsDependsOn(loggingScribe)
+  .settings(
+    name := "docspell-common",
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+        Dependencies.circe ++
+        Dependencies.circeGenericExtra ++
+        Dependencies.calevCore ++
+        Dependencies.calevCirce
   )
   .dependsOn(loggingApi)
 
@@ -393,7 +393,7 @@ ${lines.map(_._1).mkString(",\n")}
       Seq(target)
     }.taskValue
   )
-  .dependsOn(common)
+  .dependsOn(common, loggingScribe)
 
 val query =
   crossProject(JSPlatform, JVMPlatform)
