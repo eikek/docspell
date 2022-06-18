@@ -14,6 +14,7 @@ import fs2.io.file._
 
 import docspell.common.UrlReader
 import docspell.common.exec.Env
+import docspell.common.util.Directory
 import docspell.logging.Logger
 
 trait AddonExecutor[F[_]] {

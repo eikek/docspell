@@ -17,7 +17,7 @@ import docspell.backend.JobFactory
 import docspell.backend.ops.OAttachment
 import docspell.common._
 import docspell.common.bc.BackendCommandRunner
-import docspell.files.FileSupport
+import docspell.common.syntax.file._
 import docspell.logging.Logger
 import docspell.scheduler.JobStore
 import docspell.store.Store
@@ -28,7 +28,7 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
     store: Store[F],
     attachOps: OAttachment[F],
     jobStore: JobStore[F]
-) extends FileSupport {
+) {
 
   def onResult(
       logger: Logger[F],
@@ -105,7 +105,7 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
         .getOrElse(Vector.empty)
       _ <- textFiles.traverse_ { case (key, file) =>
         withAttach(logger, key, attachs) { ra =>
-          setText(collective, ra, file.readText)
+          setText(collective, ra, file.readString)
         }
       }
       _ <- pdfFiles.traverse_ { case (key, file) =>

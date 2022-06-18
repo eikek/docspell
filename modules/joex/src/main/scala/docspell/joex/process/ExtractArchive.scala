@@ -16,7 +16,7 @@ import cats.kernel.Order
 import fs2.Stream
 
 import docspell.common._
-import docspell.files.Zip
+import docspell.common.util.Zip
 import docspell.joex.mail._
 import docspell.scheduler._
 import docspell.store.Store
@@ -146,7 +146,8 @@ object ExtractArchive {
     val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
     ctx.logger.debug(s"Filtering zip entries with '${glob.asString}'") *>
       zipData
-        .through(Zip.unzip[F](8192, glob))
+        .through(Zip[F](ctx.logger.some).unzip(glob = glob))
+        .through(Binary.toBinary[F])
         .zipWithIndex
         .flatMap(handleEntry(ctx, store, ra, pos, archive, None))
         .foldMonoid

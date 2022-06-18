@@ -10,6 +10,7 @@ import cats.effect.Resource
 import fs2.io.file.{Files, Path}
 
 import docspell.common.exec.Env
+import docspell.common.util.Directory
 
 case class InputEnv(
     addons: List[AddonRef],

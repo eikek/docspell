@@ -4,13 +4,17 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.addons
+package docspell.common.util
 
 import cats.effect._
 import cats.syntax.all._
 import cats.{Applicative, Monad}
+import fs2.Stream
 import fs2.io.file.{Files, Path, PosixPermissions}
 
+import docspell.logging.Logger
+
+/** Utility functions for directories. */
 object Directory {
 
   def create[F[_]: Files: Applicative](dir: Path): F[Path] =
@@ -36,17 +40,6 @@ object Directory {
       d <- mkTemp(parent, prefix)
     } yield d
 
-  def temp2[F[_]: Files](
-      parent: Path,
-      prefix1: String,
-      prefix2: String
-  ): Resource[F, (Path, Path)] =
-    for {
-      _ <- Resource.eval(Files[F].createDirectories(parent))
-      a <- mkTemp(parent, prefix1)
-      b <- mkTemp(parent, prefix2)
-    } yield (a, b)
-
   def createTemp[F[_]: Files: Monad](
       parent: Path,
       prefix: String
@@ -71,4 +64,46 @@ object Directory {
         prefix,
         PosixPermissions.fromOctal("777")
       )
+
+  /** If `dir` contains only a single non-empty directory, then its contents are moved out
+    * of it and the directory is deleted. This is applied repeatedly until the condition
+    * doesn't apply anymore (there are multiple entries in the directory or none).
+    */
+  def unwrapSingle[F[_]: Sync: Files](logger: Logger[F], dir: Path): F[Boolean] =
+    Stream
+      .repeatEval(unwrapSingle1(logger, dir))
+      .takeWhile(identity)
+      .compile
+      .fold(false)(_ || _)
+
+  def unwrapSingle1[F[_]: Sync: Files](
+      logger: Logger[F],
+      dir: Path
+  ): F[Boolean] =
+    Files[F]
+      .list(dir)
+      .take(2)
+      .compile
+      .toList
+      .flatMap {
+        case subdir :: Nil =>
+          nonEmpty(subdir)
+            .flatMap {
+              case false => false.pure[F]
+              case true =>
+                for {
+                  _ <- Files[F]
+                    .list(subdir)
+                    .filter(p => p != dir)
+                    .evalTap(c => logger.trace(s"Move $c -> ${dir / c.fileName}"))
+                    .evalMap(child => Files[F].move(child, dir / child.fileName))
+                    .compile
+                    .drain
+                  _ <- Files[F].delete(subdir)
+                } yield true
+            }
+
+        case _ =>
+          false.pure[F]
+      }
 }
