@@ -22,7 +22,7 @@ object Dependencies {
   val FlywayVersion = "8.5.13"
   val Fs2Version = "3.2.8"
   val H2Version = "1.4.200"
-  val Http4sVersion = "0.23.12"
+  val Http4sVersion = "0.23.13"
   val Icu4jVersion = "71.1"
   val JavaOtpVersion = "0.3.1"
   val JsoupVersion = "1.15.1"
@@ -238,7 +238,7 @@ object Dependencies {
   val fs2 = fs2Core ++ fs2Io
 
   val http4sClient = Seq(
-    "org.http4s" %% "http4s-blaze-client" % Http4sVersion
+    "org.http4s" %% "http4s-blaze-client" % "0.23.12"
   )
 
   val http4sCirce = Seq(
@@ -250,7 +250,7 @@ object Dependencies {
   )
 
   val http4sServer = Seq(
-    "org.http4s" %% "http4s-blaze-server" % Http4sVersion
+    "org.http4s" %% "http4s-blaze-server" % "0.23.12"
   )
 
   val circeCore = Seq(
