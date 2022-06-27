@@ -267,7 +267,9 @@ object Login {
           config: Config
       ): F[RememberToken] =
         for {
-          rme <- RRememberMe.generate[F](acc)
+          uid <- OptionT(store.transact(RUser.findIdByAccount(acc)))
+            .getOrRaise(new IllegalStateException(s"No user_id found for account: $acc"))
+          rme <- RRememberMe.generate[F](uid)
           _ <- store.transact(RRememberMe.insert(rme))
           token <- RememberToken.user(rme.id, config.serverSecret)
         } yield token

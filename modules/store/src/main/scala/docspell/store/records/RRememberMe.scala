@@ -17,39 +17,38 @@ import docspell.store.qb._
 import doobie._
 import doobie.implicits._
 
-case class RRememberMe(id: Ident, accountId: AccountId, created: Timestamp, uses: Int) {}
+case class RRememberMe(id: Ident, userId: Ident, created: Timestamp, uses: Int) {}
 
 object RRememberMe {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "rememberme"
 
     val id = Column[Ident]("id", this)
-    val cid = Column[Ident]("cid", this)
-    val username = Column[Ident]("login", this)
+    val userId = Column[Ident]("user_id", this)
     val created = Column[Timestamp]("created", this)
     val uses = Column[Int]("uses", this)
-    val all = NonEmptyList.of[Column[_]](id, cid, username, created, uses)
+    val all = NonEmptyList.of[Column[_]](id, userId, created, uses)
   }
 
   val T = Table(None)
   def as(alias: String): Table =
     Table(Some(alias))
 
-  def generate[F[_]: Sync](account: AccountId): F[RRememberMe] =
+  def generate[F[_]: Sync](userId: Ident): F[RRememberMe] =
     for {
       c <- Timestamp.current[F]
       i <- Ident.randomId[F]
-    } yield RRememberMe(i, account, c, 0)
+    } yield RRememberMe(i, userId, c, 0)
 
   def insert(v: RRememberMe): ConnectionIO[Int] =
     DML.insert(
       T,
       T.all,
-      fr"${v.id},${v.accountId.collective},${v.accountId.user},${v.created},${v.uses}"
+      fr"${v.id},${v.userId},${v.created},${v.uses}"
     )
 
-  def insertNew(acc: AccountId): ConnectionIO[RRememberMe] =
-    generate[ConnectionIO](acc).flatMap(v => insert(v).map(_ => v))
+  def insertNew(userId: Ident): ConnectionIO[RRememberMe] =
+    generate[ConnectionIO](userId).flatMap(v => insert(v).map(_ => v))
 
   def findById(rid: Ident): ConnectionIO[Option[RRememberMe]] =
     run(select(T.all), from(T), T.id === rid).query[RRememberMe].option
