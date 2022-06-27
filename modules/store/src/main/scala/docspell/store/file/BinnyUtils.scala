@@ -16,7 +16,7 @@ import docspell.files.TikaMimetype
 import docspell.logging.Logger
 
 import binny._
-import binny.fs.{FsBinaryStore, FsStoreConfig, PathMapping}
+import binny.fs._
 import binny.jdbc.{GenericJdbcStore, JdbcStoreConfig}
 import binny.minio.{MinioBinaryStore, MinioConfig, S3KeyMapping}
 import scodec.bits.ByteVector
@@ -95,7 +95,6 @@ object BinnyUtils {
 
   def binaryStore[F[_]: Async](
       cfg: FileRepositoryConfig,
-      attrStore: AttributeStore[F],
       ds: DataSource,
       logger: Logger[F]
   ): BinaryStore[F] =
@@ -103,7 +102,7 @@ object BinnyUtils {
       case FileRepositoryConfig.Database(chunkSize) =>
         val jdbcConfig =
           JdbcStoreConfig("filechunk", chunkSize, BinnyUtils.TikaContentTypeDetect)
-        GenericJdbcStore[F](ds, LoggerAdapter(logger), jdbcConfig, attrStore)
+        GenericJdbcStore[F](ds, LoggerAdapter(logger), jdbcConfig)
 
       case FileRepositoryConfig.S3(endpoint, accessKey, secretKey, bucket, chunkSize) =>
         val keyMapping = S3KeyMapping.constant(bucket)
@@ -111,16 +110,16 @@ object BinnyUtils {
           .default(endpoint, accessKey, secretKey, keyMapping)
           .copy(chunkSize = chunkSize, detect = BinnyUtils.TikaContentTypeDetect)
 
-        MinioBinaryStore[F](minioCfg, attrStore, LoggerAdapter(logger))
+        MinioBinaryStore[F](minioCfg, LoggerAdapter(logger))
 
       case FileRepositoryConfig.Directory(path, chunkSize) =>
         val fsConfig = FsStoreConfig(
           path,
           BinnyUtils.TikaContentTypeDetect,
-          FsStoreConfig.OverwriteMode.Fail,
+          OverwriteMode.Fail,
           BinnyUtils.pathMapping,
           chunkSize
         )
-        FsBinaryStore[F](fsConfig, LoggerAdapter(logger), attrStore)
+        FsBinaryStore[F](fsConfig, LoggerAdapter(logger))
     }
 }
