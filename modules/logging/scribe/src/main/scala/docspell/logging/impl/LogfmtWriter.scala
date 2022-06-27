@@ -14,8 +14,8 @@ import scribe.writer._
 
 // https://brandur.org/logfmt
 final case class LogfmtWriter(writer: Writer) extends Writer {
-  override def write[M](
-      record: LogRecord[M],
+  override def write(
+      record: LogRecord,
       output: LogOutput,
       outputFormat: OutputFormat
   ): Unit = {
