@@ -30,14 +30,14 @@ final class FileRepositoryImpl[F[_]: Sync](
 
   def findMeta(key: FileKey): F[Option[FileMetadata]] =
     attrStore
-      .findMeta(keyFun(key))
+      .findMeta(key)
       .map(rfm =>
         FileMetadata(rfm.id, rfm.created, rfm.mimetype, rfm.length, rfm.checksum)
       )
       .value
 
   def delete(key: FileKey): F[Unit] =
-    bs.delete(keyFun(key))
+    bs.delete(keyFun(key)) *> attrStore.deleteAttr(key).void
 
   def save(
       collective: Ident,
@@ -48,9 +48,15 @@ final class FileRepositoryImpl[F[_]: Sync](
     in =>
       Stream
         .eval(randomKey(collective, category))
-        .flatMap(fkey =>
-          in.through(bs.insertWith(keyFun(fkey), fhint)) ++ Stream.emit(fkey)
-        )
+        .flatMap(fkey => in.through(bs.insertWith(keyFun(fkey))) ++ Stream.emit(fkey))
+        .evalTap { key =>
+          val bid = keyFun(key)
+          bs.computeAttr(bid, fhint)
+            .run(AttributeName.all)
+            .semiflatMap(attr => attrStore.saveAttr(key, attr))
+            .value
+            .void
+        }
   }
 
   def randomKey(

@@ -38,18 +38,23 @@ private[impl] case class Record(
 
 private[impl] object Record {
 
-  def fromLogRecord[M](record: LogRecord[M]): Record = {
+  def fromLogRecord(record: LogRecord): Record = {
     val l = record.timeStamp
-    val traces = record.additionalMessages.collect {
+    val traces = record.messages.collect {
       case message: Message[_] if message.value.isInstanceOf[Throwable] =>
         throwable2Trace(message.value.asInstanceOf[Throwable])
     }
-    val additionalMessages = record.additionalMessages.map(_.logOutput.plainText)
+    val (firstMessage, additionalMessages) = record.messages match {
+      case h :: rest =>
+        (h.logOutput.plainText, rest.map(_.logOutput.plainText))
+      case Nil =>
+        ("", Nil)
+    }
 
     Record(
       level = record.level.name,
       levelValue = record.levelValue,
-      message = record.logOutput.plainText,
+      message = firstMessage,
       additionalMessages = additionalMessages,
       fileName = record.fileName,
       className = record.className,

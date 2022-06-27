@@ -60,7 +60,7 @@ object Store {
         ds.setDriverClassName(jdbc.dbms.driverClass)
       }
       xa = HikariTransactor(ds, connectEC)
-      fr = FileRepository.apply(xa, ds, fileRepoConfig, true)
+      fr = FileRepository(xa, ds, fileRepoConfig, true)
       st = new StoreImpl[F](fr, jdbc, schemaCfg, ds, xa)
       _ <- Resource.eval(st.migrate)
     } yield st

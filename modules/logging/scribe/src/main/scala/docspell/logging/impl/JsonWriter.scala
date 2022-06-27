@@ -13,8 +13,8 @@ import scribe.output.format.OutputFormat
 import scribe.writer._
 
 final case class JsonWriter(writer: Writer, compact: Boolean = true) extends Writer {
-  override def write[M](
-      record: LogRecord[M],
+  override def write(
+      record: LogRecord,
       output: LogOutput,
       outputFormat: OutputFormat
   ): Unit = {
