@@ -14,7 +14,7 @@ import fs2.Stream
 
 import docspell.backend.JobFactory
 import docspell.common._
-import docspell.files.Zip
+import docspell.common.util.Zip
 import docspell.logging.Logger
 import docspell.scheduler._
 import docspell.store.Store
@@ -44,7 +44,7 @@ object MultiUploadArchiveTask {
                 extractZip(store, ctx.args)(file)
                   .evalTap(entry =>
                     ctx.logger.debug(
-                      s"Create job for entry: ${entry.files.flatMap(_.name)}"
+                      s"Create job for entry: ${entry.files.flatMap(_.name).mkString(", ")}"
                     )
                   )
                   .evalMap(makeJob[F](ctx, jobStore))
@@ -109,7 +109,8 @@ object MultiUploadArchiveTask {
   )(file: ProcessItemArgs.File): Stream[F, ProcessItemArgs] =
     store.fileRepo
       .getBytes(file.fileMetaId)
-      .through(Zip.unzip[F](8192, args.meta.fileFilter.getOrElse(Glob.all)))
+      .through(Zip[F]().unzip(glob = args.meta.fileFilter.getOrElse(Glob.all)))
+      .through(Binary.toBinary[F])
       .flatMap { entry =>
         val hint = MimeTypeHint(entry.name.some, entry.mime.asString.some)
         entry.data

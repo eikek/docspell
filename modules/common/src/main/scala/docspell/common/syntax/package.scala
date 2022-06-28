@@ -8,6 +8,11 @@ package docspell.common
 
 package object syntax {
 
+  val either = EitherSyntax
+  val stream = StreamSyntax
+  val string = StringSyntax
+  val file = FileSyntax
+
   object all extends EitherSyntax with StreamSyntax with StringSyntax with FileSyntax
 
 }

@@ -13,7 +13,7 @@ import fs2.io.file.{Files, Path, PosixPermissions}
 
 import docspell.addons.out.AddonOutput
 import docspell.common.LenientUri
-import docspell.files.Zip
+import docspell.common.util.Zip
 
 import io.circe.syntax._
 
@@ -59,9 +59,9 @@ object AddonGenerator {
   private def createZip(dir: Path, files: List[Path]) =
     Stream
       .emits(files)
-      .map(f => (f.fileName.toString, Files[IO].readAll(f)))
+      .map(f => (f.fileName.toString, f))
       .covary[IO]
-      .through(Zip.zip[IO](logger, 8192))
+      .through(Zip[IO](logger.some).zipFiles())
       .through(Files[IO].writeAll(dir / "addon.zip"))
       .compile
       .drain

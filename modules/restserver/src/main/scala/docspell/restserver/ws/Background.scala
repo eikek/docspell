@@ -24,20 +24,15 @@ object Background {
   )(run: F[A])(implicit enc: OutputEventEncoder[A]): F[Unit] = {
     val log = logger.getOrElse(docspell.logging.getLogger[F])
     Async[F]
-      .background(run)
-      .use(
-        _.flatMap(
-          _.fold(
-            log.warn("The background operation has been cancelled!"),
-            ex => log.error(ex)("Error running background operation!"),
-            event =>
-              event
-                .map(enc.encode)
-                .flatTap(ev => log.info(s"Sending response from async operation: $ev"))
-                .flatMap(wsTopic.publish1)
-                .void
-          )
-        )
-      )
+      .start {
+        run.map(enc.encode).attempt.flatMap {
+          case Right(ev) =>
+            log.info(s"Sending response from async operation: $ev") *>
+              wsTopic.publish1(ev).void
+          case Left(ex) =>
+            log.warn(ex)(s"Background operation failed!")
+        }
+      }
+      .as(())
   }
 }

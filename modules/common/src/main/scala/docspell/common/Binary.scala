@@ -9,8 +9,13 @@ package docspell.common
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
+import cats.data.OptionT
 import cats.effect._
+import cats.syntax.all._
+import fs2.io.file.{Files, Path}
 import fs2.{Chunk, Pipe, Stream}
+
+import docspell.logging.Logger
 
 import scodec.bits.ByteVector
 
@@ -33,6 +38,9 @@ final case class Binary[F[_]](name: String, mime: MimeType, data: Stream[F, Byte
 }
 
 object Binary {
+
+  def apply[F[_]: Async](file: Path): Binary[F] =
+    Binary(file.fileName.toString, Files[F].readAll(file))
 
   def apply[F[_]](name: String, data: Stream[F, Byte]): Binary[F] =
     Binary[F](name, MimeType.octetStream, data)
@@ -64,6 +72,38 @@ object Binary {
 
   def loadAllBytes[F[_]: Sync](data: Stream[F, Byte]): F[ByteVector] =
     data.chunks.map(_.toByteVector).compile.fold(ByteVector.empty)((r, e) => r ++ e)
+
+  /** Convert paths into `Binary`s */
+  def toBinary[F[_]: Async]: Pipe[F, Path, Binary[F]] =
+    _.map(Binary[F](_))
+
+  /** Save one or more binaries to a target directory. */
+  def saveTo[F[_]: Async](
+      logger: Logger[F],
+      targetDir: Path
+  ): Pipe[F, Binary[F], Path] =
+    binaries =>
+      binaries
+        .filter(e => !e.name.endsWith("/"))
+        .evalMap { entry =>
+          val out = targetDir / entry.name
+          val createParent =
+            OptionT
+              .fromOption[F](out.parent)
+              .flatMapF(parent =>
+                Files[F]
+                  .exists(parent)
+                  .map(flag => Option.when(!flag)(parent))
+              )
+              .semiflatMap(p => Files[F].createDirectories(p))
+              .getOrElse(())
+
+          logger.trace(s"Copy ${entry.name} -> $out") *>
+            createParent *>
+            entry.data.through(Files[F].writeAll(out)).compile.drain
+        }
+        .drain
+        .as(targetDir)
 
   // This is a copy from org.http4s.util
   // Http4s is licensed under the Apache License 2.0

@@ -12,7 +12,8 @@ import fs2.Stream
 import fs2.io.file.{Files, Path}
 
 import docspell.common._
-import docspell.files.Zip
+import docspell.common.syntax.file._
+import docspell.common.util.{Directory, Zip}
 
 final case class AddonArchive(url: LenientUri, name: String, version: String) {
   def nameAndVersion: String =
@@ -36,8 +37,8 @@ final case class AddonArchive(url: LenientUri, name: String, version: String) {
         case false =>
           Files[F].createDirectories(target) *>
             reader(url)
-              .through(Zip.unzip(8192, glob))
-              .through(Zip.saveTo(logger, target, moveUp = true))
+              .through(Zip[F](logger.some).unzip(glob = glob, targetDir = target.some))
+              .evalTap(_ => Directory.unwrapSingle[F](logger, target))
               .compile
               .drain
               .as(target)
@@ -72,12 +73,13 @@ object AddonArchive {
       archive: Either[Path, Stream[F, Byte]]
   ): F[(Boolean, Boolean)] = {
     val files = Files[F]
+    val logger = docspell.logging.getLogger[F]
     def forPath(path: Path): F[(Boolean, Boolean)] =
       (files.exists(path / "Dockerfile"), files.exists(path / "flake.nix")).tupled
 
     def forZip(data: Stream[F, Byte]): F[(Boolean, Boolean)] =
       data
-        .through(Zip.unzip(8192, Glob("Dockerfile|flake.nix")))
+        .through(Zip[F](logger.some).unzip(glob = Glob("Dockerfile|flake.nix")))
         .collect {
           case bin if bin.name == "Dockerfile" => (true, false)
           case bin if bin.name == "flake.nix"  => (false, true)

@@ -65,7 +65,7 @@ object FileCopyTask {
         if (result.success)
           s"Successfully copied $allGood files to ${result.counter.size} stores."
         else
-          s"Copying files failed for ${failed} files! ${allGood} were copied successfully."
+          s"Copying files failed for ${failed} files! $allGood were copied successfully."
       }
   }
 
@@ -122,8 +122,8 @@ object FileCopyTask {
       case None =>
         CopyResult.noSourceImpl.pure[F]
 
-      case Some((src, srcMeta)) =>
-        to.traverse(FileRepository.getDelegate).map(_.map(_._1)) match {
+      case Some(src) =>
+        to.traverse(FileRepository.getDelegate) match {
           case None =>
             CopyResult.noTargetImpl.pure[F]
 
@@ -135,7 +135,7 @@ object FileCopyTask {
             }
 
             def copyTo(to: BinaryStore[F]) =
-              CopyTool.copyAll[F](log, src, srcMeta, to, 50, maxConcurrent)
+              CopyTool.copyAll[F](log, src, to, 50, maxConcurrent)
 
             logger.info(s"Start copying ${from.config} -> ${to.map(_.config)}") *>
               targets.traverse(copyTo).map(CopyResult.success)

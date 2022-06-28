@@ -15,7 +15,8 @@ import fs2.Stream
 import fs2.io.file.{Files, Path}
 
 import docspell.common.Glob
-import docspell.files.Zip
+import docspell.common.syntax.file._
+import docspell.common.util.Zip
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.yaml.{parser => YamlParser}
@@ -153,6 +154,12 @@ object AddonMeta {
       .map(fromJsonString)
       .rethrow
 
+  def fromJsonFile[F[_]: Sync](file: Path): F[AddonMeta] =
+    Sync[F]
+      .blocking(java.nio.file.Files.readString(file.toNioPath))
+      .map(fromJsonString)
+      .rethrow
+
   def fromYamlString(str: String): Either[Throwable, AddonMeta] =
     YamlParser.parse(str).flatMap(_.as[AddonMeta])
 
@@ -162,6 +169,13 @@ object AddonMeta {
       .compile
       .string
       .map(fromYamlString)
+      .rethrow
+
+  def fromYamlFile[F[_]: Sync](file: Path): F[AddonMeta] =
+    Sync[F]
+      .blocking(YamlParser.parse(java.nio.file.Files.newBufferedReader(file.toNioPath)))
+      .rethrow
+      .map(_.as[AddonMeta])
       .rethrow
 
   def findInDirectory[F[_]: Sync: Files](dir: Path): F[AddonMeta] = {
@@ -194,18 +208,22 @@ object AddonMeta {
   }
 
   def findInZip[F[_]: Async](zipFile: Stream[F, Byte]): F[AddonMeta] = {
+    val logger = docspell.logging.getLogger[F]
     val fail: F[AddonMeta] = Async[F].raiseError(
       new FileNotFoundException(
         s"No docspell-addon.{yaml|json} file found in zip!"
       )
     )
     zipFile
-      .through(Zip.unzip(8192, Glob("docspell-addon.*|**/docspell-addon.*")))
-      .filter(bin => !bin.name.endsWith("/"))
+      .through(
+        Zip[F](logger.some).unzip(glob = Glob("docspell-addon.*|**/docspell-addon.*"))
+      )
+      .filter(file => !file.name.endsWith("/"))
       .flatMap { bin =>
-        if (bin.extensionIn(Set("json"))) Stream.eval(AddonMeta.fromJsonBytes(bin.data))
-        else if (bin.extensionIn(Set("yaml", "yml")))
-          Stream.eval(AddonMeta.fromYamlBytes(bin.data))
+        val ext = bin.extension
+        if (ext.equalsIgnoreCase("json")) Stream.eval(AddonMeta.fromJsonFile(bin))
+        else if (Set("yaml", "yml").contains(ext.toLowerCase))
+          Stream.eval(AddonMeta.fromYamlFile(bin))
         else Stream.empty
       }
       .take(1)

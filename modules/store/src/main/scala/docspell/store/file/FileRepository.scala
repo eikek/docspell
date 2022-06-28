@@ -13,7 +13,7 @@ import fs2._
 
 import docspell.common._
 
-import binny.{BinaryAttributeStore, BinaryId, BinaryStore}
+import binny.{BinaryId, BinaryStore}
 import doobie.Transactor
 
 trait FileRepository[F[_]] {
@@ -45,17 +45,16 @@ object FileRepository {
       else AttributeStore.empty[F]
     val log = docspell.logging.getLogger[F]
     val keyFun: FileKey => BinaryId = BinnyUtils.fileKeyToBinaryId
-    val binStore: BinaryStore[F] = BinnyUtils.binaryStore(cfg, attrStore, ds, log)
-
+    val binStore: BinaryStore[F] = BinnyUtils.binaryStore(cfg, ds, log)
     new FileRepositoryImpl[F](cfg, binStore, attrStore, keyFun)
   }
 
   def getDelegate[F[_]](
       repo: FileRepository[F]
-  ): Option[(BinaryStore[F], BinaryAttributeStore[F])] =
+  ): Option[BinaryStore[F]] =
     repo match {
       case n: FileRepositoryImpl[F] =>
-        Some((n.bs, n.attrStore))
+        Some(n.bs)
 
       case _ =>
         None

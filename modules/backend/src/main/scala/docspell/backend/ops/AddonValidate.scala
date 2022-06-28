@@ -95,7 +95,13 @@ final class AddonValidate[F[_]: Async](
           )
         else rightUnitT
 
-      joexSupport <- EitherT.liftF(joexOps.getAddonSupport)
+      joexSupport <- EitherT(joexOps.getAddonSupport.attempt).leftMap { ex =>
+        logger.asUnsafe.warn(ex)(s"Joex validation failed!")
+        AddonUnsupported(
+          s"Joex validation failed due to an error: ${ex.getMessage}",
+          Nil
+        )
+      }
       addonRunners <- EitherT.liftF(meta.enabledTypes(addonData))
       _ <- EitherT.liftF(
         logger.info(

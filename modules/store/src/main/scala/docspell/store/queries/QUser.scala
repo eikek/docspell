@@ -64,7 +64,7 @@ object QUser {
       n2 <- deleteUserSentMails(uid)
       _ <- logger.info(s"Removed $n2 sent mails")
 
-      n3 <- deleteRememberMe(accountId)
+      n3 <- deleteRememberMe(uid)
       _ <- logger.info(s"Removed $n3 remember me tokens")
 
       n4 <- deleteTotp(uid)
@@ -111,11 +111,8 @@ object QUser {
     } yield n1.sum + n2.sum
   }
 
-  def deleteRememberMe(id: AccountId): ConnectionIO[Int] =
-    DML.delete(
-      RRememberMe.T,
-      RRememberMe.T.cid === id.collective && RRememberMe.T.username === id.user
-    )
+  def deleteRememberMe(userId: Ident): ConnectionIO[Int] =
+    DML.delete(RRememberMe.T, RRememberMe.T.userId === userId)
 
   def deleteTotp(uid: Ident): ConnectionIO[Int] =
     DML.delete(RTotp.T, RTotp.T.userId === uid)
@@ -130,10 +127,6 @@ object QUser {
   }
 
   private def loadUserId(id: AccountId): ConnectionIO[Option[Ident]] =
-    run(
-      select(RUser.T.uid),
-      from(RUser.T),
-      RUser.T.cid === id.collective && RUser.T.login === id.user
-    ).query[Ident].option
+    RUser.findIdByAccount(id)
 
 }

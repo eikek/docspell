@@ -15,14 +15,14 @@ import docspell.addons.{AddonTriggerType, InputEnv, Middleware}
 import docspell.backend.joex.AddonOps.ExecResult
 import docspell.backend.joex.{AddonOps, LoggerExtension}
 import docspell.common._
-import docspell.files.FileSupport
+import docspell.common.syntax.file._
 import docspell.joex.process.ItemData
 import docspell.logging.Logger
 import docspell.scheduler.Task
 import docspell.store.Store
 import docspell.store.queries.QAttachment
 
-object GenericItemAddonTask extends LoggerExtension with FileSupport {
+object GenericItemAddonTask extends LoggerExtension {
 
   private val itemSubdir = "item"
   private val itemDataJson = s"$itemSubdir/item-data.json"

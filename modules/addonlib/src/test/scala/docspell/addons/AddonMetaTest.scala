@@ -7,9 +7,10 @@
 package docspell.addons
 
 import cats.effect._
+import cats.syntax.all._
 
 import docspell.common.Glob
-import docspell.files.Zip
+import docspell.common.util.{Directory, Zip}
 import docspell.logging.TestLoggingConfig
 
 import munit._
@@ -26,8 +27,8 @@ class AddonMetaTest extends CatsEffectSuite with TestLoggingConfig with Fixtures
     for {
       _ <- dummyAddonUrl
         .readURL[IO](8192)
-        .through(Zip.unzip(8192, Glob.all))
-        .through(Zip.saveTo(logger, dir, moveUp = true))
+        .through(Zip[IO]().unzip(8192, Glob.all, dir.some))
+        .evalTap(_ => Directory.unwrapSingle(logger, dir))
         .compile
         .drain
       meta <- AddonMeta.findInDirectory[IO](dir)

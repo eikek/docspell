@@ -7,7 +7,7 @@ object Dependencies {
 
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BinnyVersion = "0.4.0"
+  val BinnyVersion = "0.6.0"
   val CalevVersion = "0.6.3"
   val CatsVersion = "2.7.0"
   val CatsEffectVersion = "3.3.12"
@@ -19,10 +19,10 @@ object Dependencies {
   val DoobieVersion = "1.0.0-RC2"
   val EmilVersion = "0.12.0"
   val FlexmarkVersion = "0.64.0"
-  val FlywayVersion = "8.5.12"
+  val FlywayVersion = "8.5.13"
   val Fs2Version = "3.2.8"
-  val H2Version = "2.1.214"
-  val Http4sVersion = "0.23.12"
+  val H2Version = "1.4.200"
+  val Http4sVersion = "0.23.13"
   val Icu4jVersion = "71.1"
   val JavaOtpVersion = "0.3.1"
   val JsoupVersion = "1.15.1"
@@ -43,11 +43,11 @@ object Dependencies {
   val PureConfigVersion = "0.17.1"
   val ScalaJavaTimeVersion = "2.4.0"
   val ScodecBitsVersion = "1.1.31"
-  val ScribeVersion = "3.8.3"
+  val ScribeVersion = "3.9.0"
   val Slf4jVersion = "1.7.36"
   val SourcecodeVersion = "0.2.8"
   val StanfordNlpVersion = "4.4.0"
-  val TikaVersion = "2.4.0"
+  val TikaVersion = "2.4.1"
   val YamuscaVersion = "0.9.0"
   val SwaggerUIVersion = "4.11.1"
   val TestContainerVersion = "0.40.8"
@@ -238,7 +238,7 @@ object Dependencies {
   val fs2 = fs2Core ++ fs2Io
 
   val http4sClient = Seq(
-    "org.http4s" %% "http4s-blaze-client" % Http4sVersion
+    "org.http4s" %% "http4s-blaze-client" % "0.23.12"
   )
 
   val http4sCirce = Seq(
@@ -250,7 +250,7 @@ object Dependencies {
   )
 
   val http4sServer = Seq(
-    "org.http4s" %% "http4s-blaze-server" % Http4sVersion
+    "org.http4s" %% "http4s-blaze-server" % "0.23.12"
   )
 
   val circeCore = Seq(

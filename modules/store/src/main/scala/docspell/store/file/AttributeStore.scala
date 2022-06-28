@@ -18,71 +18,52 @@ import binny._
 import doobie._
 import doobie.implicits._
 
-private[file] trait AttributeStore[F[_]] extends BinaryAttributeStore[F] {
-  def findMeta(id: BinaryId): OptionT[F, RFileMeta]
+trait AttributeStore[F[_]] {
+  def saveAttr(key: FileKey, attrs: BinaryAttributes): F[Unit]
+
+  def deleteAttr(key: FileKey): F[Boolean]
+
+  def findMeta(key: FileKey): OptionT[F, RFileMeta]
 }
 
 private[file] object AttributeStore {
   def empty[F[_]: Applicative]: AttributeStore[F] =
     new AttributeStore[F] {
-      val delegate = BinaryAttributeStore.empty[F]
+      override def saveAttr(key: FileKey, attrs: BinaryAttributes) = ().pure[F]
 
-      def findMeta(id: BinaryId) =
-        OptionT.none
+      override def deleteAttr(key: FileKey) = false.pure[F]
 
-      def saveAttr(id: BinaryId, attrs: F[BinaryAttributes]) =
-        delegate.saveAttr(id, attrs)
-
-      def deleteAttr(id: BinaryId) =
-        delegate.deleteAttr(id)
-
-      def findAttr(id: BinaryId) =
-        delegate.findAttr(id)
+      override def findMeta(key: FileKey) = OptionT.none[F, RFileMeta]
     }
 
   def apply[F[_]: Sync](xa: Transactor[F]): AttributeStore[F] =
     new Impl[F](xa)
 
   final private class Impl[F[_]: Sync](xa: Transactor[F]) extends AttributeStore[F] {
-    def saveAttr(id: BinaryId, attrs: F[BinaryAttributes]): F[Unit] =
+    def saveAttr(key: FileKey, attrs: BinaryAttributes): F[Unit] =
       for {
         now <- Timestamp.current[F]
-        a <- attrs
-        fileKey <- makeFileKey(id)
         fm = RFileMeta(
-          fileKey,
+          key,
           now,
-          MimeType.parse(a.contentType.contentType).getOrElse(MimeType.octetStream),
-          ByteSize(a.length),
-          a.sha256
+          MimeType.parse(attrs.contentType.contentType).getOrElse(MimeType.octetStream),
+          ByteSize(attrs.length),
+          attrs.sha256
         )
         _ <- RFileMeta.insert(fm).transact(xa)
       } yield ()
 
-    def deleteAttr(id: BinaryId): F[Boolean] =
-      makeFileKey(id).flatMap(fileKey =>
-        RFileMeta.delete(fileKey).transact(xa).map(_ > 0)
-      )
+    def deleteAttr(key: FileKey): F[Boolean] =
+      RFileMeta.delete(key).transact(xa).map(_ > 0)
 
-    def findAttr(id: BinaryId): OptionT[F, BinaryAttributes] =
-      findMeta(id).map(fm =>
-        BinaryAttributes(
-          fm.checksum,
-          SimpleContentType(fm.mimetype.asString),
-          fm.length.bytes
-        )
-      )
+    def findMeta(key: FileKey): OptionT[F, RFileMeta] =
+      OptionT(RFileMeta.findById(key).transact(xa))
 
-    def findMeta(id: BinaryId): OptionT[F, RFileMeta] =
-      OptionT(
-        makeFileKey(id).flatMap(fileKey => RFileMeta.findById(fileKey).transact(xa))
-      )
-
-    private def makeFileKey(binaryId: BinaryId): F[FileKey] =
-      Sync[F]
-        .pure(
-          BinnyUtils.binaryIdToFileKey(binaryId).left.map(new IllegalStateException(_))
-        )
-        .rethrow
+//    private def makeFileKey(binaryId: BinaryId): F[FileKey] =
+//      Sync[F]
+//        .pure(
+//          BinnyUtils.binaryIdToFileKey(binaryId).left.map(new IllegalStateException(_))
+//        )
+//        .rethrow
   }
 }

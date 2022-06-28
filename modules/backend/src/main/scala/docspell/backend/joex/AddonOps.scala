@@ -16,6 +16,7 @@ import docspell.backend.ops.OAttachment
 import docspell.common._
 import docspell.common.bc.BackendCommandRunner
 import docspell.common.exec.Env
+import docspell.common.util.Directory
 import docspell.logging.Logger
 import docspell.scheduler.JobStore
 import docspell.store.Store
