@@ -37,7 +37,7 @@ object Dependencies {
   val MUnitCatsEffectVersion = "1.0.7"
   val OrganizeImportsVersion = "0.6.0"
   val PdfboxVersion = "2.0.26"
-  val PdfjsViewerVersion = "2.9.359"
+  val PdfjsViewerVersion = "2.12.313"
   val PoiVersion = "4.1.2"
   val PostgresVersion = "42.4.0"
   val PureConfigVersion = "0.17.1"
