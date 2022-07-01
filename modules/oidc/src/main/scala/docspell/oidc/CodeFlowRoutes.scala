@@ -49,6 +49,7 @@ object CodeFlowRoutes {
                 CodeFlowConfig.resumeUri(req, cfg, config).asString
               )
               .withQuery("response_type", "code")
+              .withQuery("state", id)
             logger.debug(
               s"Redirecting to OAuth/OIDC provider ${cfg.providerId.id}: ${uri.asString}"
             ) *>
