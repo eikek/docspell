@@ -21,7 +21,7 @@ object QLogin {
   private[this] val logger = docspell.logging.getLogger[ConnectionIO]
 
   case class Data(
-      account: AccountId,
+      account: AccountInfo,
       password: Password,
       collectiveState: CollectiveState,
       userState: UserState,
@@ -35,7 +35,16 @@ object QLogin {
     val coll = RCollective.as("c")
     val sql =
       Select(
-        select(user.cid, user.login, user.password, coll.state, user.state, user.source),
+        select(
+          coll.id,
+          coll.name,
+          user.uid,
+          user.login,
+          user.password,
+          coll.state,
+          user.state,
+          user.source
+        ),
         from(user).innerJoin(coll, user.cid === coll.id),
         where(user, coll)
       ).build
@@ -44,7 +53,7 @@ object QLogin {
   }
 
   def findUser(acc: AccountId): ConnectionIO[Option[Data]] =
-    findUser0((user, _) => user.login === acc.user && user.cid === acc.collective)
+    findUser0((user, coll) => user.login === acc.user && coll.name === acc.collective)
 
   def findUser(userId: Ident): ConnectionIO[Option[Data]] =
     findUser0((user, _) => user.uid === userId)

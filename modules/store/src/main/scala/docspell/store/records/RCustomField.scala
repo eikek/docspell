@@ -20,7 +20,7 @@ case class RCustomField(
     id: Ident,
     name: Ident,
     label: Option[String],
-    cid: Ident,
+    cid: CollectiveId,
     ftype: CustomFieldType,
     created: Timestamp
 )
@@ -32,7 +32,7 @@ object RCustomField {
     val id = Column[Ident]("id", this)
     val name = Column[Ident]("name", this)
     val label = Column[String]("label", this)
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val ftype = Column[CustomFieldType]("ftype", this)
     val created = Column[Timestamp]("created", this)
 
@@ -50,26 +50,29 @@ object RCustomField {
       fr"${value.id},${value.name},${value.label},${value.cid},${value.ftype},${value.created}"
     )
 
-  def exists(fname: Ident, coll: Ident): ConnectionIO[Boolean] =
+  def exists(fname: Ident, coll: CollectiveId): ConnectionIO[Boolean] =
     run(select(count(T.id)), from(T), T.name === fname && T.cid === coll)
       .query[Int]
       .unique
       .map(_ > 0)
 
-  def findById(fid: Ident, coll: Ident): ConnectionIO[Option[RCustomField]] =
+  def findById(fid: Ident, coll: CollectiveId): ConnectionIO[Option[RCustomField]] =
     run(select(T.all), from(T), T.id === fid && T.cid === coll).query[RCustomField].option
 
-  def findByIdOrName(idOrName: Ident, coll: Ident): ConnectionIO[Option[RCustomField]] =
+  def findByIdOrName(
+      idOrName: Ident,
+      coll: CollectiveId
+  ): ConnectionIO[Option[RCustomField]] =
     Select(
       select(T.all),
       from(T),
       T.cid === coll && (T.id === idOrName || T.name === idOrName)
     ).build.query[RCustomField].option
 
-  def deleteById(fid: Ident, coll: Ident): ConnectionIO[Int] =
+  def deleteById(fid: Ident, coll: CollectiveId): ConnectionIO[Int] =
     DML.delete(T, T.id === fid && T.cid === coll)
 
-  def findAll(coll: Ident): ConnectionIO[Vector[RCustomField]] =
+  def findAll(coll: CollectiveId): ConnectionIO[Vector[RCustomField]] =
     run(select(T.all), from(T), T.cid === coll).query[RCustomField].to[Vector]
 
   def update(value: RCustomField): ConnectionIO[Int] =
@@ -97,5 +100,4 @@ object RCustomField {
             )
         else 0.pure[ConnectionIO]
     } yield n + k
-
 }

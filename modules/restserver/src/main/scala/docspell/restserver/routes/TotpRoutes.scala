@@ -72,7 +72,7 @@ object TotpRoutes {
         for {
           data <- req.as[OtpConfirm]
           result <- backend.totp.disable(
-            user.account,
+            user.account.asAccountId,
             OnetimePassword(data.otp.pass).some
           )
           resp <- Ok(Conversions.basicResult(result, "TOTP setup disabled."))

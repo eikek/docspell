@@ -18,12 +18,13 @@ import scodec.bits.ByteVector
 
 case class AuthToken(
     nowMillis: Long,
-    account: AccountId,
+    account: AccountInfo,
     requireSecondFactor: Boolean,
     valid: Option[Duration],
     salt: String,
     sig: String
 ) {
+
   def asString =
     valid match {
       case Some(v) =>
@@ -63,7 +64,7 @@ object AuthToken {
         for {
           millis <- TokenUtil.asInt(ms).toRight("Cannot read authenticator data")
           acc <- TokenUtil.b64dec(as).toRight("Cannot read authenticator data")
-          accId <- AccountId.parse(acc)
+          accId <- AccountInfo.parse(acc)
           twofac <- Right[String, Boolean](java.lang.Boolean.parseBoolean(fa))
           valid <- TokenUtil
             .asInt(vs)
@@ -75,7 +76,7 @@ object AuthToken {
         for {
           millis <- TokenUtil.asInt(ms).toRight("Cannot read authenticator data")
           acc <- TokenUtil.b64dec(as).toRight("Cannot read authenticator data")
-          accId <- AccountId.parse(acc)
+          accId <- AccountInfo.parse(acc)
           twofac <- Right[String, Boolean](java.lang.Boolean.parseBoolean(fa))
         } yield AuthToken(millis, accId, twofac, None, salt, sig)
 
@@ -84,7 +85,7 @@ object AuthToken {
     }
 
   def user[F[_]: Sync](
-      accountId: AccountId,
+      accountId: AccountInfo,
       requireSecondFactor: Boolean,
       key: ByteVector,
       valid: Option[Duration]

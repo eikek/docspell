@@ -42,6 +42,9 @@ trait DoobieMeta extends EmilDoobieMeta {
       e.apply(a).noSpaces
     )
 
+  implicit val metaCollectiveId: Meta[CollectiveId] =
+    Meta[Long].timap(CollectiveId.apply)(_.value)
+
   implicit val metaAddonTriggerType: Meta[AddonTriggerType] =
     Meta[String].timap(AddonTriggerType.unsafeFromString)(_.name)
 

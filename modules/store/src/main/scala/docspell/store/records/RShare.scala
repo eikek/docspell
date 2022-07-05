@@ -32,7 +32,7 @@ final case class RShare(
 object RShare {
 
   final case class Table(alias: Option[String]) extends TableDef {
-    val tableName = "item_share";
+    val tableName = "item_share"
 
     val id = Column[Ident]("id", this)
     val userId = Column[Ident]("user_id", this)
@@ -94,7 +94,7 @@ object RShare {
             else Nil)
     )
 
-  def findOne(id: Ident, cid: Ident): OptionT[ConnectionIO, (RShare, RUser)] = {
+  def findOne(id: Ident, cid: CollectiveId): OptionT[ConnectionIO, (RShare, RUser)] = {
     val s = RShare.as("s")
     val u = RUser.as("u")
 
@@ -139,7 +139,7 @@ object RShare {
     })
 
   def findOneByCollective(
-      cid: Ident,
+      cid: CollectiveId,
       enabled: Option[Boolean],
       nameOrId: String
   ): ConnectionIO[Option[RShare]] = {
@@ -156,7 +156,7 @@ object RShare {
   }
 
   def findAllByCollective(
-      cid: Ident,
+      cid: CollectiveId,
       ownerLogin: Option[Ident],
       q: Option[String]
   ): ConnectionIO[List[(RShare, RUser)]] = {
@@ -177,7 +177,7 @@ object RShare {
       .to[List]
   }
 
-  def deleteByIdAndCid(id: Ident, cid: Ident): ConnectionIO[Int] = {
+  def deleteByIdAndCid(id: Ident, cid: CollectiveId): ConnectionIO[Int] = {
     val u = RUser.T
     DML.delete(T, T.id === id && T.userId.in(Select(u.uid.s, from(u), u.cid === cid)))
   }

@@ -13,6 +13,7 @@ import cats.implicits._
 import docspell.common._
 import docspell.common.syntax.StringSyntax._
 import docspell.notification.api._
+import docspell.store.queries.QLogin
 import docspell.store.records._
 
 import db.migration.data._
@@ -122,7 +123,8 @@ trait MigrationTasks {
   private def saveChannel(ch: Channel, account: AccountId): ConnectionIO[ChannelRef] =
     (for {
       newId <- OptionT.liftF(Ident.randomId[ConnectionIO])
-      userId <- OptionT(RUser.findIdByAccount(account))
+      userData <- OptionT(QLogin.findUser(account))
+      userId = userData.account.userId
       r <- RNotificationChannel.fromChannel(ch, newId, userId)
       _ <- OptionT.liftF(RNotificationChannel.insert(r))
       _ <- OptionT.liftF(
@@ -172,7 +174,8 @@ trait MigrationTasks {
       }
 
     for {
-      userId <- OptionT(RUser.findIdByAccount(old.account))
+      userData <- OptionT(QLogin.findUser(old.account))
+      userId = userData.account.userId
       id <- OptionT.liftF(Ident.randomId[ConnectionIO])
       now <- OptionT.liftF(Timestamp.current[ConnectionIO])
       chName = Some("migrate notify items")
@@ -198,8 +201,7 @@ trait MigrationTasks {
   }
 
   def mkTransactor(ctx: Context): Transactor[IO] = {
-    val xa = Transactor.fromConnection[IO](ctx.getConnection())
+    val xa = Transactor.fromConnection[IO](ctx.getConnection)
     Transactor.strategy.set(xa, Strategy.void) // transactions are handled by flyway
   }
-
 }

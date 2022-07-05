@@ -23,17 +23,20 @@ object QCustomField {
   final case class CustomFieldData(field: RCustomField, usageCount: Int)
 
   def findAllLike(
-      coll: Ident,
+      coll: CollectiveId,
       nameQuery: Option[String],
       order: RCustomField.Table => Nel[OrderBy]
   ): ConnectionIO[Vector[CustomFieldData]] =
     findFragment(coll, nameQuery, None, order).build.query[CustomFieldData].to[Vector]
 
-  def findById(field: Ident, collective: Ident): ConnectionIO[Option[CustomFieldData]] =
+  def findById(
+      field: Ident,
+      collective: CollectiveId
+  ): ConnectionIO[Option[CustomFieldData]] =
     findFragment(collective, None, field.some).build.query[CustomFieldData].option
 
   private def findFragment(
-      coll: Ident,
+      coll: CollectiveId,
       nameQuery: Option[String],
       fieldId: Option[Ident],
       order: RCustomField.Table => Nel[OrderBy] = t => Nel.of(t.name.asc)
@@ -69,5 +72,4 @@ object QCustomField {
       .query[FieldValue]
       .to[List]
   }
-
 }

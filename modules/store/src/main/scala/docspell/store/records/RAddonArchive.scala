@@ -21,7 +21,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class RAddonArchive(
     id: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     fileId: FileKey,
     originalUrl: Option[LenientUri],
     name: String,
@@ -32,7 +32,7 @@ final case class RAddonArchive(
 ) {
 
   def nameAndVersion: String =
-    s"${name}-${version}"
+    s"$name-$version"
 
   def isUnchanged(meta: AddonMeta): Boolean =
     name == meta.meta.name &&
@@ -60,7 +60,7 @@ object RAddonArchive {
     val tableName = "addon_archive"
 
     val id = Column[Ident]("id", this)
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val fileId = Column[FileKey]("file_id", this)
     val originalUrl = Column[LenientUri]("original_url", this)
     val name = Column[String]("name", this)
@@ -85,7 +85,7 @@ object RAddonArchive {
 
   def apply(
       id: Ident,
-      cid: Ident,
+      cid: CollectiveId,
       fileId: FileKey,
       originalUrl: Option[LenientUri],
       meta: AddonMeta,
@@ -116,14 +116,14 @@ object RAddonArchive {
     else DML.insert(T, T.all, values)
   }
 
-  def existsByUrl(cid: Ident, url: LenientUri): ConnectionIO[Boolean] =
+  def existsByUrl(cid: CollectiveId, url: LenientUri): ConnectionIO[Boolean] =
     Select(
       select(count(T.id)),
       from(T),
       T.cid === cid && T.originalUrl === url
     ).build.query[Int].unique.map(_ > 0)
 
-  def findByUrl(cid: Ident, url: LenientUri): ConnectionIO[Option[RAddonArchive]] =
+  def findByUrl(cid: CollectiveId, url: LenientUri): ConnectionIO[Option[RAddonArchive]] =
     Select(
       select(T.all),
       from(T),
@@ -131,7 +131,7 @@ object RAddonArchive {
     ).build.query[RAddonArchive].option
 
   def findByNameAndVersion(
-      cid: Ident,
+      cid: CollectiveId,
       name: String,
       version: String
   ): ConnectionIO[Option[RAddonArchive]] =
@@ -141,14 +141,17 @@ object RAddonArchive {
       T.cid === cid && T.name === name && T.version === version
     ).build.query[RAddonArchive].option
 
-  def findById(cid: Ident, id: Ident): ConnectionIO[Option[RAddonArchive]] =
+  def findById(cid: CollectiveId, id: Ident): ConnectionIO[Option[RAddonArchive]] =
     Select(
       select(T.all),
       from(T),
       T.cid === cid && T.id === id
     ).build.query[RAddonArchive].option
 
-  def findByIds(cid: Ident, ids: NonEmptyList[Ident]): ConnectionIO[List[RAddonArchive]] =
+  def findByIds(
+      cid: CollectiveId,
+      ids: NonEmptyList[Ident]
+  ): ConnectionIO[List[RAddonArchive]] =
     Select(
       select(T.all),
       from(T),
@@ -169,14 +172,14 @@ object RAddonArchive {
       )
     )
 
-  def listAll(cid: Ident): ConnectionIO[List[RAddonArchive]] =
+  def listAll(cid: CollectiveId): ConnectionIO[List[RAddonArchive]] =
     Select(
       select(T.all),
       from(T),
       T.cid === cid
     ).orderBy(T.name.asc).build.query[RAddonArchive].to[List]
 
-  def deleteById(cid: Ident, id: Ident): ConnectionIO[Int] =
+  def deleteById(cid: CollectiveId, id: Ident): ConnectionIO[Int] =
     DML.delete(T, T.cid === cid && T.id === id)
 
   implicit val jsonDecoder: Decoder[RAddonArchive] = deriveDecoder

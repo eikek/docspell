@@ -53,7 +53,7 @@ object RTagItem {
   def deleteItemTags(item: Ident): ConnectionIO[Int] =
     DML.delete(T, T.itemId === item)
 
-  def deleteItemTags(items: NonEmptyList[Ident], cid: Ident): ConnectionIO[Int] =
+  def deleteItemTags(items: NonEmptyList[Ident], cid: CollectiveId): ConnectionIO[Int] =
     DML.delete(T, T.itemId.in(RItem.filterItemsFragment(items, cid)))
 
   def deleteTag(tid: Ident): ConnectionIO[Int] =

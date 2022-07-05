@@ -30,7 +30,7 @@ object QCollective {
     val empty = Names(Vector.empty, Vector.empty, Vector.empty)
   }
 
-  def allNames(collective: Ident, maxEntries: Int): ConnectionIO[Names] = {
+  def allNames(collective: CollectiveId, maxEntries: Int): ConnectionIO[Names] = {
     val created = Column[Timestamp]("created", TableDef(""))
     union(
       Select(
@@ -70,7 +70,7 @@ object QCollective {
       tags: List[TagCount]
   )
 
-  def getInsights(coll: Ident): ConnectionIO[InsightData] = {
+  def getInsights(coll: CollectiveId): ConnectionIO[InsightData] = {
     val q0 = Select(
       count(i.id).s,
       from(i),
@@ -120,7 +120,7 @@ object QCollective {
     } yield InsightData(incoming, outgoing, deleted, size.getOrElse(0L), tags)
   }
 
-  def tagCloud(coll: Ident): ConnectionIO[List[TagCount]] = {
+  def tagCloud(coll: CollectiveId): ConnectionIO[List[TagCount]] = {
     val sql =
       Select(
         select(t.all).append(count(ti.itemId).s),
@@ -132,7 +132,7 @@ object QCollective {
   }
 
   def getContacts(
-      coll: Ident,
+      coll: CollectiveId,
       query: Option[String],
       kind: Option[ContactKind]
   ): Stream[ConnectionIO, RContact] = {

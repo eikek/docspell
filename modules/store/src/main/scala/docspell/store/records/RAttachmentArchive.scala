@@ -64,7 +64,7 @@ object RAttachmentArchive {
 
   def findByIdAndCollective(
       attachId: Ident,
-      collective: Ident
+      collective: CollectiveId
   ): ConnectionIO[Option[RAttachmentArchive]] = {
     val b = RAttachment.as("b")
     val a = RAttachmentArchive.as("a")
@@ -81,7 +81,7 @@ object RAttachmentArchive {
 
   def findByMessageIdAndCollective(
       messageIds: NonEmptyList[String],
-      collective: Ident
+      collective: CollectiveId
   ): ConnectionIO[Vector[RAttachmentArchive]] = {
     val b = RAttachment.as("b")
     val a = RAttachmentArchive.as("a")

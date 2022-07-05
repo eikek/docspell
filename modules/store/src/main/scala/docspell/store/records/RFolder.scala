@@ -20,25 +20,29 @@ import doobie.implicits._
 case class RFolder(
     id: Ident,
     name: String,
-    collectiveId: Ident,
+    collectiveId: CollectiveId,
     owner: Ident,
     created: Timestamp
 )
 
 object RFolder {
 
-  def newFolder[F[_]: Sync](name: String, account: AccountId): F[RFolder] =
+  def newFolder[F[_]: Sync](
+      name: String,
+      collective: CollectiveId,
+      user: Ident
+  ): F[RFolder] =
     for {
       nId <- Ident.randomId[F]
       now <- Timestamp.current[F]
-    } yield RFolder(nId, name, account.collective, account.user, now)
+    } yield RFolder(nId, name, collective, user, now)
 
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "folder"
 
     val id = Column[Ident]("id", this)
     val name = Column[String]("name", this)
-    val collective = Column[Ident]("cid", this)
+    val collective = Column[CollectiveId]("coll_id", this)
     val owner = Column[Ident]("owner", this)
     val created = Column[Timestamp]("created", this)
 
@@ -63,7 +67,7 @@ object RFolder {
       DML.set(T.name.setTo(v.name))
     )
 
-  def existsByName(coll: Ident, folderName: String): ConnectionIO[Boolean] =
+  def existsByName(coll: CollectiveId, folderName: String): ConnectionIO[Boolean] =
     run(select(count(T.id)), from(T), T.collective === coll && T.name === folderName)
       .query[Int]
       .unique
@@ -77,7 +81,7 @@ object RFolder {
   def requireIdByIdOrName(
       folderId: Ident,
       name: String,
-      collective: Ident
+      collective: CollectiveId
   ): ConnectionIO[Ident] = {
     val sql = run(
       select(T.id),
@@ -94,7 +98,7 @@ object RFolder {
   }
 
   def findAll(
-      coll: Ident,
+      coll: CollectiveId,
       nameQ: Option[String],
       order: Table => Column[_]
   ): ConnectionIO[Vector[RFolder]] = {

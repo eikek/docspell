@@ -6,22 +6,19 @@
 
 package docspell.store.fts
 
-import java.time.LocalDate
-
+import java.time.{Instant, LocalDate}
 import cats.effect.IO
 import cats.syntax.option._
 import cats.syntax.traverse._
 import fs2.Stream
-
 import docspell.common._
 import docspell.ftsclient.FtsResult
 import docspell.ftsclient.FtsResult.{AttachmentData, ItemMatch}
 import docspell.store._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
-import docspell.store.queries.{QItem, Query}
-import docspell.store.records.{RCollective, RItem}
-
+import docspell.store.queries.{QItem, QLogin, Query}
+import docspell.store.records.{RCollective, RItem, RUser}
 import doobie._
 
 class TempFtsOpsTest extends DatabaseTest {
@@ -60,9 +57,10 @@ class TempFtsOpsTest extends DatabaseTest {
 
   def prepareItems(store: Store[IO]) =
     for {
-      _ <- store.transact(RCollective.insert(makeCollective(DocspellSystem.user)))
+      _ <- store.transact(RCollective.insert(makeCollective(CollectiveId(2))))
+      _ <- store.transact(RUser.insert(makeUser(CollectiveId(2))))
       items = (0 until 200)
-        .map(makeItem(_, DocspellSystem.user))
+        .map(makeItem(_, CollectiveId(2)))
         .toList
       _ <- items.traverse(i => store.transact(RItem.insert(i)))
     } yield ()
@@ -100,7 +98,9 @@ class TempFtsOpsTest extends DatabaseTest {
   def assertQueryItem(store: Store[IO], ftsResults: Stream[ConnectionIO, FtsResult]) =
     for {
       today <- IO(LocalDate.now())
-      account = DocspellSystem.account
+      account <- store
+        .transact(QLogin.findUser(DocspellSystem.account))
+        .map(_.get.account)
       tempTable = ftsResults
         .through(TempFtsOps.prepareTable(store.dbms, "fts_result"))
         .compile
@@ -170,10 +170,31 @@ class TempFtsOpsTest extends DatabaseTest {
     }
   }
 
-  def makeCollective(cid: Ident): RCollective =
-    RCollective(cid, CollectiveState.Active, Language.English, true, ts)
+  def makeUser(cid: CollectiveId): RUser =
+    RUser(
+      Ident.unsafe("uid1"),
+      DocspellSystem.account.user,
+      cid,
+      Password("test"),
+      UserState.Active,
+      AccountSource.Local,
+      None,
+      0,
+      None,
+      Timestamp(Instant.now)
+    )
 
-  def makeItem(n: Int, cid: Ident): RItem =
+  def makeCollective(cid: CollectiveId): RCollective =
+    RCollective(
+      cid,
+      DocspellSystem.account.collective,
+      CollectiveState.Active,
+      Language.English,
+      true,
+      ts
+    )
+
+  def makeItem(n: Int, cid: CollectiveId): RItem =
     RItem(
       id(s"item-$n"),
       cid,

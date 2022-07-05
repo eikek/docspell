@@ -7,8 +7,6 @@
 package docspell.store.records
 
 import cats.data.NonEmptyList
-import cats.data.OptionT
-import cats.effect.Sync
 
 import docspell.common._
 import docspell.store.qb.DSL._
@@ -20,7 +18,7 @@ import doobie.implicits._
 case class RUser(
     uid: Ident,
     login: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     password: Password,
     state: UserState,
     source: AccountSource,
@@ -29,8 +27,6 @@ case class RUser(
     lastLogin: Option[Timestamp],
     created: Timestamp
 ) {
-  def accountId: AccountId =
-    AccountId(cid, login)
 
   def idRef: IdRef =
     IdRef(uid, login.id)
@@ -41,7 +37,7 @@ object RUser {
   def makeDefault(
       id: Ident,
       login: Ident,
-      collName: Ident,
+      collId: CollectiveId,
       password: Password,
       source: AccountSource,
       created: Timestamp
@@ -49,7 +45,7 @@ object RUser {
     RUser(
       id,
       login,
-      collName,
+      collId,
       password,
       UserState.Active,
       source,
@@ -64,7 +60,7 @@ object RUser {
 
     val uid = Column[Ident]("uid", this)
     val login = Column[Ident]("login", this)
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val password = Column[Password]("password", this)
     val state = Column[UserState]("state", this)
     val source = Column[AccountSource]("account_source", this)
@@ -72,9 +68,6 @@ object RUser {
     val loginCount = Column[Int]("logincount", this)
     val lastLogin = Column[Timestamp]("lastlogin", this)
     val created = Column[Timestamp]("created", this)
-
-    def isAccount(aid: AccountId) =
-      cid === aid.collective && login === aid.user
 
     val all =
       NonEmptyList.of[Column[_]](
@@ -125,9 +118,14 @@ object RUser {
   }
 
   def findByAccount(aid: AccountId): ConnectionIO[Option[RUser]] = {
-    val t = Table(None)
+    val t = RUser.as("u")
+    val c = RCollective.as("c")
     val sql =
-      run(select(t.all), from(t), t.cid === aid.collective && t.login === aid.user)
+      run(
+        select(t.all),
+        from(t).innerJoin(c, c.id === t.cid),
+        c.name === aid.collective && t.login === aid.user
+      )
     sql.query[RUser].option
   }
 
@@ -137,20 +135,26 @@ object RUser {
     sql.query[RUser].option
   }
 
-  def findAll(coll: Ident, order: Table => Column[_]): ConnectionIO[Vector[RUser]] = {
+  def findAll(
+      coll: CollectiveId,
+      order: Table => Column[_]
+  ): ConnectionIO[Vector[RUser]] = {
     val t = Table(None)
     val sql = Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).build
     sql.query[RUser].to[Vector]
   }
 
-  def findIdByAccount(accountId: AccountId): ConnectionIO[Option[Ident]] =
+  def findIdByAccountId(accountId: AccountId): ConnectionIO[Option[Ident]] = {
+    val u = RUser.as("u")
+    val c = RCollective.as("c")
     run(
-      select(T.uid),
-      from(T),
-      T.login === accountId.user && T.cid === accountId.collective
+      select(u.uid),
+      from(u).innerJoin(c, c.id === u.cid),
+      u.login === accountId.user && c.name === accountId.collective
     )
       .query[Ident]
       .option
+  }
 
   case class IdAndLogin(uid: Ident, login: Ident)
   def getIdByIdOrLogin(idOrLogin: Ident): ConnectionIO[Option[IdAndLogin]] =
@@ -160,19 +164,19 @@ object RUser {
       T.uid === idOrLogin || T.login === idOrLogin
     ).build.query[IdAndLogin].option
 
-  def getIdByAccount(account: AccountId): ConnectionIO[Ident] =
-    OptionT(findIdByAccount(account)).getOrElseF(
-      Sync[ConnectionIO].raiseError(
-        new Exception(s"No user found for: ${account.asString}")
-      )
-    )
+//  def getIdByAccount(account: AccountId): ConnectionIO[Ident] =
+//    OptionT(findIdByAccount(account)).getOrElseF(
+//      Sync[ConnectionIO].raiseError(
+//        new Exception(s"No user found for: ${account.asString}")
+//      )
+//    )
 
-  def updateLogin(accountId: AccountId): ConnectionIO[Int] = {
+  def updateLogin(accountId: AccountInfo): ConnectionIO[Int] = {
     val t = Table(None)
     def stmt(now: Timestamp) =
       DML.update(
         t,
-        t.cid === accountId.collective && t.login === accountId.user,
+        t.cid === accountId.collectiveId && t.login === accountId.login,
         DML.set(
           t.loginCount.increment(1),
           t.lastLogin.setTo(now)
@@ -181,16 +185,20 @@ object RUser {
     Timestamp.current[ConnectionIO].flatMap(stmt)
   }
 
-  def updatePassword(accountId: AccountId, hashedPass: Password): ConnectionIO[Int] = {
+  def updatePassword(
+      collId: CollectiveId,
+      userId: Ident,
+      hashedPass: Password
+  ): ConnectionIO[Int] = {
     val t = Table(None)
     DML.update(
       t,
-      t.cid === accountId.collective && t.login === accountId.user && t.source === AccountSource.Local,
+      t.cid === collId && t.uid === userId && t.source === AccountSource.Local,
       DML.set(t.password.setTo(hashedPass))
     )
   }
 
-  def delete(user: Ident, coll: Ident): ConnectionIO[Int] = {
+  def delete(user: Ident, coll: CollectiveId): ConnectionIO[Int] = {
     val t = Table(None)
     DML.delete(t, t.cid === coll && t.login === user)
   }

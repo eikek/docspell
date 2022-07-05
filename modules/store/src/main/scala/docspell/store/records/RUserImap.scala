@@ -171,12 +171,11 @@ object RUserImap {
   }
 
   private def findByAccount0(
-      accId: AccountId,
+      userId: Ident,
       nameQ: Option[String],
       exact: Boolean
   ): Query0[RUserImap] = {
     val m = RUserImap.as("m")
-    val u = RUser.as("u")
 
     val nameFilter =
       nameQ.map { str =>
@@ -186,36 +185,36 @@ object RUserImap {
 
     val sql = Select(
       select(m.all),
-      from(m).innerJoin(u, m.uid === u.uid),
-      u.cid === accId.collective && u.login === accId.user &&? nameFilter
+      from(m),
+      m.uid === userId &&? nameFilter
     ).orderBy(m.name).build
 
     sql.query[RUserImap]
   }
 
   def findByAccount(
-      accId: AccountId,
+      userId: Ident,
       nameQ: Option[String]
   ): ConnectionIO[Vector[RUserImap]] =
-    findByAccount0(accId, nameQ, false).to[Vector]
+    findByAccount0(userId, nameQ, false).to[Vector]
 
-  def getByName(accId: AccountId, name: Ident): ConnectionIO[Option[RUserImap]] =
-    findByAccount0(accId, Some(name.id), true).option
+  def getByName(
+      userId: Ident,
+      name: Ident
+  ): ConnectionIO[Option[RUserImap]] =
+    findByAccount0(userId, Some(name.id), true).option
 
-  def delete(accId: AccountId, connName: Ident): ConnectionIO[Int] = {
+  def delete(
+      userId: Ident,
+      connName: Ident
+  ): ConnectionIO[Int] = {
     val t = Table(None)
-    val u = RUser.as("u")
-    val subsel =
-      Select(select(u.uid), from(u), u.cid === accId.collective && u.login === accId.user)
 
     DML.delete(
       t,
-      t.uid.in(subsel) && t.name === connName
+      t.uid === userId && t.name === connName
     )
   }
-
-  def exists(accId: AccountId, name: Ident): ConnectionIO[Boolean] =
-    getByName(accId, name).map(_.isDefined)
 
   def exists(userId: Ident, connName: Ident): ConnectionIO[Boolean] = {
     val t = Table(None)

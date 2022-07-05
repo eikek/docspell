@@ -20,14 +20,14 @@ import doobie.implicits._
 
 final case class RItemLink(
     id: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     item1: Ident,
     item2: Ident,
     created: Timestamp
 )
 
 object RItemLink {
-  def create[F[_]: Sync](cid: Ident, item1: Ident, item2: Ident): F[RItemLink] =
+  def create[F[_]: Sync](cid: CollectiveId, item1: Ident, item2: Ident): F[RItemLink] =
     for {
       id <- Ident.randomId[F]
       now <- Timestamp.current[F]
@@ -37,7 +37,7 @@ object RItemLink {
     val tableName = "item_link"
 
     val id: Column[Ident] = Column("id", this)
-    val cid: Column[Ident] = Column("cid", this)
+    val cid: Column[CollectiveId] = Column("coll_id", this)
     val item1: Column[Ident] = Column("item1", this)
     val item2: Column[Ident] = Column("item2", this)
     val created: Column[Timestamp] = Column("created", this)
@@ -62,7 +62,7 @@ object RItemLink {
     DML.insertSilent(T, T.all, sql"${r.id},${r.cid},$i1,$i2,${r.created}")
   }
 
-  def insertNew(cid: Ident, item1: Ident, item2: Ident): ConnectionIO[Int] =
+  def insertNew(cid: CollectiveId, item1: Ident, item2: Ident): ConnectionIO[Int] =
     create[ConnectionIO](cid, item1, item2).flatMap(insert)
 
   def update(r: RItemLink): ConnectionIO[Int] = {
@@ -77,7 +77,7 @@ object RItemLink {
     )
   }
 
-  def exists(cid: Ident, item1: Ident, item2: Ident): ConnectionIO[Boolean] = {
+  def exists(cid: CollectiveId, item1: Ident, item2: Ident): ConnectionIO[Boolean] = {
     val (i1, i2) = orderIds(item1, item2)
     Select(
       select(count(T.id)),
@@ -86,7 +86,7 @@ object RItemLink {
     ).build.query[Int].unique.map(_ > 0)
   }
 
-  def findLinked(cid: Ident, item: Ident): ConnectionIO[Vector[Ident]] =
+  def findLinked(cid: CollectiveId, item: Ident): ConnectionIO[Vector[Ident]] =
     union(
       Select(
         select(T.item1),
@@ -101,7 +101,7 @@ object RItemLink {
     ).build.query[Ident].to[Vector]
 
   def deleteAll(
-      cid: Ident,
+      cid: CollectiveId,
       item: Ident,
       related: NonEmptyList[Ident]
   ): ConnectionIO[Int] =
@@ -113,7 +113,7 @@ object RItemLink {
       )
     )
 
-  def delete(cid: Ident, item1: Ident, item2: Ident): ConnectionIO[Int] = {
+  def delete(cid: CollectiveId, item1: Ident, item2: Ident): ConnectionIO[Int] = {
     val (i1, i2) = orderIds(item1, item2)
     DML.delete(T, T.cid === cid && T.item1 === i1 && T.item2 === i2)
   }

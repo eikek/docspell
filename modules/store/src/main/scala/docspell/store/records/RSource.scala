@@ -17,7 +17,7 @@ import doobie.implicits._
 
 case class RSource(
     sid: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     abbrev: String,
     description: Option[String],
     counter: Int,
@@ -40,7 +40,7 @@ object RSource {
     val tableName = "source"
 
     val sid = Column[Ident]("sid", this)
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val abbrev = Column[String]("abbrev", this)
     val description = Column[String]("description", this)
     val counter = Column[Int]("counter", this)
@@ -98,7 +98,7 @@ object RSource {
       )
     )
 
-  def incrementCounter(source: String, coll: Ident): ConnectionIO[Int] =
+  def incrementCounter(source: String, coll: CollectiveId): ConnectionIO[Int] =
     DML.update(
       table,
       where(table.abbrev === source, table.cid === coll),
@@ -110,7 +110,7 @@ object RSource {
     sql.query[Int].unique.map(_ > 0)
   }
 
-  def existsByAbbrev(coll: Ident, abb: String): ConnectionIO[Boolean] = {
+  def existsByAbbrev(coll: CollectiveId, abb: String): ConnectionIO[Boolean] = {
     val sql = run(
       select(count(table.sid)),
       from(table),
@@ -129,20 +129,20 @@ object RSource {
     run(select(table.cid), from(table), table.sid === sourceId).query[Ident].option
 
   def findAll(
-      coll: Ident,
+      coll: CollectiveId,
       order: Table => Column[_]
   ): ConnectionIO[Vector[RSource]] =
     findAllSql(coll, order).query[RSource].to[Vector]
 
   private[records] def findAllSql(
-      coll: Ident,
+      coll: CollectiveId,
       order: Table => Column[_]
   ): Fragment = {
     val t = RSource.as("s")
     Select(select(t.all), from(t), t.cid === coll).orderBy(order(t)).build
   }
 
-  def delete(sourceId: Ident, coll: Ident): ConnectionIO[Int] =
+  def delete(sourceId: Ident, coll: CollectiveId): ConnectionIO[Int] =
     DML.delete(table, where(table.sid === sourceId, table.cid === coll))
 
   def removeFolder(folderId: Ident): ConnectionIO[Int] = {
