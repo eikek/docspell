@@ -9,6 +9,7 @@ package docspell.oidc
 import docspell.common._
 
 import org.http4s.Request
+import scodec.bits.ByteVector
 
 trait CodeFlowConfig[F[_]] {
 
@@ -22,17 +23,20 @@ trait CodeFlowConfig[F[_]] {
     */
   def findProvider(id: Ident): Option[ProviderConfig]
 
+  def serverSecret: ByteVector
 }
 
 object CodeFlowConfig {
 
   def apply[F[_]](
       url: Request[F] => LenientUri,
-      provider: Ident => Option[ProviderConfig]
+      provider: Ident => Option[ProviderConfig],
+      secret: ByteVector
   ): CodeFlowConfig[F] =
     new CodeFlowConfig[F] {
       def getEndpointUrl(req: Request[F]): LenientUri = url(req)
       def findProvider(id: Ident): Option[ProviderConfig] = provider(id)
+      val serverSecret = secret
     }
 
   private[oidc] def resumeUri[F[_]](
@@ -41,5 +45,4 @@ object CodeFlowConfig {
       cfg: CodeFlowConfig[F]
   ): LenientUri =
     cfg.getEndpointUrl(req) / prov.providerId.id / "resume"
-
 }

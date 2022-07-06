@@ -31,7 +31,8 @@ object OpenId {
         ClientRequestInfo
           .getBaseUrl(config, req) / "api" / "v1" / "open" / "auth" / "openid",
       id =>
-        config.openid.filter(_.enabled).find(_.provider.providerId == id).map(_.provider)
+        config.openid.filter(_.enabled).find(_.provider.providerId == id).map(_.provider),
+      config.auth.serverSecret
     )
 
   def handle[F[_]: Async](backend: BackendApp[F], config: Config): OnUserInfo[F] =

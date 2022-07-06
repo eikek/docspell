@@ -6,10 +6,9 @@
 
 package docspell.backend.auth
 
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
-
 import cats.implicits._
+
+import docspell.common.util.SignUtil
 
 import scodec.bits._
 
@@ -34,11 +33,8 @@ private[auth] object TokenUtil {
     signRaw(raw, key)
   }
 
-  private def signRaw(data: String, key: ByteVector): String = {
-    val mac = Mac.getInstance("HmacSHA1")
-    mac.init(new SecretKeySpec(key.toArray, "HmacSHA1"))
-    ByteVector.view(mac.doFinal(data.getBytes(utf8))).toBase64
-  }
+  private def signRaw(data: String, key: ByteVector): String =
+    SignUtil.signString(data, key).toBase64
 
   def b64enc(s: String): String =
     ByteVector.view(s.getBytes(utf8)).toBase64
@@ -52,5 +48,4 @@ private[auth] object TokenUtil {
   def constTimeEq(s1: String, s2: String): Boolean =
     s1.zip(s2)
       .foldLeft(true) { case (r, (c1, c2)) => r & c1 == c2 } & s1.length == s2.length
-
 }
