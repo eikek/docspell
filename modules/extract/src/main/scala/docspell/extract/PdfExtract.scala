@@ -48,15 +48,21 @@ object PdfExtract {
     // maybe better: inspect the pdf and decide whether ocr or not
     for {
       pdfboxRes <-
-        logger.debug("Trying to strip text from pdf using pdfbox.") *>
-          PdfboxExtract.getTextAndMetaData[F](in)
+        if (stripMinLen > 0)
+          logger.debug("Trying to strip text from pdf using pdfbox.") *>
+            PdfboxExtract.getTextAndMetaData[F](in)
+        else
+          logger
+            .debug(s"Not stripping text from pdf, min-length=$stripMinLen")
+            .as(Right(Text("") -> None))
       res <- pdfboxRes.fold(
         ex =>
           logger.info(
             s"Stripping text from PDF resulted in an error: ${ex.getMessage}. Trying with OCR. "
           ) >> runOcr.map(txt => Result(txt, None)).attempt,
         pair =>
-          if (pair._1.length >= stripMinLen) Result(pair).pure[F].attempt
+          if (pair._1.length >= stripMinLen && stripMinLen > 0)
+            Result(pair).pure[F].attempt
           else
             logger
               .info(
