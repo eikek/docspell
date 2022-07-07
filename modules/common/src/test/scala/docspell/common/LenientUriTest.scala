@@ -29,4 +29,11 @@ class LenientUriTest extends FunSuite {
     )
     assertEquals(LenientUri.percentDecode("a%25b%5Cc%7Cd%23e"), "a%b\\c|d#e".some)
   }
+
+  test("parse with trailing slash") {
+    assertEquals(LenientUri.unsafe("http://a.com/").asString, "http://a.com/")
+    assertEquals(LenientUri.unsafe("http://a.com").asString, "http://a.com")
+    assertEquals(LenientUri.unsafe("http://a.com/path").asString, "http://a.com/path")
+    assertEquals(LenientUri.unsafe("http://a.com/path/").asString, "http://a.com/path/")
+  }
 }
