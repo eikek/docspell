@@ -50,7 +50,7 @@ object Contact {
       p match {
         case LenientUri.RootPath  => false
         case LenientUri.EmptyPath => false
-        case LenientUri.NonEmptyPath(segs) =>
+        case LenientUri.NonEmptyPath(segs, _) =>
           Ident.fromString(segs.last).isRight &&
           segs.init.takeRight(3) == List("open", "upload", "item")
       }
