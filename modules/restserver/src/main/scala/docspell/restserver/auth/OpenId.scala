@@ -105,9 +105,7 @@ object OpenId {
     import dsl._
 
     for {
-      setup <- backend.signup.setupExternal(cfg.backend.signup)(
-        ExternalAccount(accountId)
-      )
+      setup <- backend.signup.setupExternal(ExternalAccount(accountId))
       res <- setup match {
         case SignupResult.Failure(ex) =>
           logger.error(ex)(s"Error when creating external account!") *>
