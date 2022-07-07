@@ -111,15 +111,19 @@ object CodeFlow {
           token <- r.attemptAs[AccessToken].value
           _ <- token match {
             case Right(t) =>
-              logger.trace(s"Got token response: $t")
+              logger.trace(s"Got token response (status=${r.status.code}): $t")
             case Left(err) =>
-              logger.error(err)(s"Error decoding access token: ${err.getMessage}")
+              logger.error(err)(
+                s"Error decoding access token (status=${r.status.code}): ${err.getMessage}"
+              )
           }
         } yield token.toOption
       case r =>
-        logger
-          .error(s"Error obtaining access token '${r.status.code}' / ${r.as[String]}")
-          .map(_ => None)
+        for {
+          body <- r.bodyText.compile.string
+          _ <- logger
+            .error(s"Error obtaining access token status=${r.status.code}, body=$body")
+        } yield None
     })
   }
 
@@ -177,5 +181,4 @@ object CodeFlow {
       logAction = Some((msg: String) => logger.trace(msg))
     )(c)
   }
-
 }
