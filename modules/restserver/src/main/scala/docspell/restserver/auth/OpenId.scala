@@ -31,7 +31,8 @@ object OpenId {
         ClientRequestInfo
           .getBaseUrl(config, req) / "api" / "v1" / "open" / "auth" / "openid",
       id =>
-        config.openid.filter(_.enabled).find(_.provider.providerId == id).map(_.provider)
+        config.openid.filter(_.enabled).find(_.provider.providerId == id).map(_.provider),
+      config.auth.serverSecret
     )
 
   def handle[F[_]: Async](backend: BackendApp[F], config: Config): OnUserInfo[F] =
@@ -104,9 +105,7 @@ object OpenId {
     import dsl._
 
     for {
-      setup <- backend.signup.setupExternal(cfg.backend.signup)(
-        ExternalAccount(accountId)
-      )
+      setup <- backend.signup.setupExternal(ExternalAccount(accountId))
       res <- setup match {
         case SignupResult.Failure(ex) =>
           logger.error(ex)(s"Error when creating external account!") *>

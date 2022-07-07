@@ -121,7 +121,7 @@ object LenientUri {
     val isRoot = true
     val isEmpty = false
     def /(seg: String): Path =
-      NonEmptyPath(NonEmptyList.of(seg))
+      NonEmptyPath(NonEmptyList.of(seg), false)
     def asString = "/"
   }
   case object EmptyPath extends Path {
@@ -129,20 +129,22 @@ object LenientUri {
     val isRoot = false
     val isEmpty = true
     def /(seg: String): Path =
-      NonEmptyPath(NonEmptyList.of(seg))
+      NonEmptyPath(NonEmptyList.of(seg), false)
     def asString = ""
   }
-  case class NonEmptyPath(segs: NonEmptyList[String]) extends Path {
+  case class NonEmptyPath(segs: NonEmptyList[String], trailingSlash: Boolean)
+      extends Path {
     def segments = segs.toList
     val isEmpty = false
     val isRoot = false
+    private val slashSuffix = if (trailingSlash) "/" else ""
     def /(seg: String): Path =
       copy(segs = segs.append(seg))
     def asString =
       segs.head match {
-        case "."  => segments.map(percentEncode).mkString("/")
-        case ".." => segments.map(percentEncode).mkString("/")
-        case _    => "/" + segments.map(percentEncode).mkString("/")
+        case "."  => segments.map(percentEncode).mkString("/") + slashSuffix
+        case ".." => segments.map(percentEncode).mkString("/") + slashSuffix
+        case _    => "/" + segments.map(percentEncode).mkString("/") + slashSuffix
       }
   }
 
@@ -157,14 +159,14 @@ object LenientUri {
       str.trim match {
         case "/" => Right(RootPath)
         case ""  => Right(EmptyPath)
-        case _ =>
+        case uriStr =>
           Either.fromOption(
-            stripLeading(str, '/')
+            stripLeading(uriStr, '/')
               .split('/')
               .toList
               .traverse(percentDecode)
               .flatMap(NonEmptyList.fromList)
-              .map(NonEmptyPath.apply),
+              .map(NonEmptyPath(_, uriStr.endsWith("/"))),
             s"Invalid path: $str"
           )
       }
