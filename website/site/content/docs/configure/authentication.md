@@ -62,6 +62,7 @@ provider = {
   token-url = "http://localhost:8080/auth/realms/home/protocol/openid-connect/token",
   #User URL is not used when signature key is set.
   #user-url = "http://localhost:8080/auth/realms/home/protocol/openid-connect/userinfo",
+  #logout-url = "http://localhost:8080/auth/realms/home/protocol/openid-connect/logout?redirect_uri=…"
   sign-key = "b64:MII…ZYL09vAwLn8EAcSkCAwEAAQ==",
   sig-algo = "RS512"
 }
@@ -77,6 +78,13 @@ required, if the access token is already containing the necessary
 data. If not, then docspell performs another request to the
 `user-url`, which must be the user-info endpoint, to obtain the
 required user data.
+
+The `logout-url` is optional. If specified the browser will be
+redirected to this url when a user logsout from Docspell. It should
+then logout the user from the authentication provider as well. If not
+given, the user is logged out from Docspell, but may still hold a SSO
+session. In this case a warning is rendered on the login screen.
+*Note that this currently only applies if `oidc-auto-redirect=true`.*
 
 If the data is taken from the token directly and not via a request to
 the user-info endpoint, then the token must be validated using the
@@ -122,3 +130,18 @@ example it would be `lookup:preferred_username`.
 
 If you find that these methods do not suffice for your case, please
 open an issue.
+
+### Auto-redirect to the OIDC provider
+
+If there is only one single configured openid provider and this
+setting:
+
+```
+oidc-auto-redirect = true
+```
+
+Then the webui will redirect immediately to the login page of the oidc
+provider, skipping the login page for Docspell.
+
+For logging out, you can specify a `logout-url` for the provider which
+is used to redirect the browser after logging out from Docspell.

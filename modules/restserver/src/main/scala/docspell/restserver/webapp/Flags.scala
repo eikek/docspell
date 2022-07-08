@@ -30,7 +30,8 @@ case class Flags(
     downloadAllMaxSize: ByteSize,
     uiVersion: Int,
     openIdAuth: List[Flags.OpenIdAuth],
-    addonsEnabled: Boolean
+    addonsEnabled: Boolean,
+    oidcAutoRedirect: Boolean
 )
 
 object Flags {
@@ -48,11 +49,18 @@ object Flags {
       cfg.downloadAll.maxFiles,
       cfg.downloadAll.maxSize,
       uiVersion,
-      cfg.openid.filter(_.enabled).map(c => OpenIdAuth(c.provider.providerId, c.display)),
-      cfg.backend.addons.enabled
+      cfg.openid
+        .filter(_.enabled)
+        .map(c => OpenIdAuth(c.provider.providerId, c.display, c.provider.logoutUrl)),
+      cfg.backend.addons.enabled,
+      cfg.oidcAutoRedirect && cfg.openIdSingleEnabled
     )
 
-  final case class OpenIdAuth(provider: Ident, name: String)
+  final case class OpenIdAuth(
+      provider: Ident,
+      name: String,
+      logoutUrl: Option[LenientUri]
+  )
 
   object OpenIdAuth {
     implicit val jsonDecoder: Decoder[OpenIdAuth] =

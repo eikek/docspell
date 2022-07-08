@@ -291,13 +291,13 @@ pageToString page =
         LoginPage data ->
             case data.referrer of
                 Just (LoginPage _) ->
-                    "/app/login"
+                    "/app/login?openid=" ++ String.fromInt data.openid
 
                 Just p ->
-                    "/app/login?r=" ++ pageToString p
+                    "/app/login?r=" ++ pageToString p ++ "&openid=" ++ String.fromInt data.openid
 
                 Nothing ->
-                    "/app/login"
+                    "/app/login?openid=" ++ String.fromInt data.openid
 
         ManageDataPage ->
             "/app/managedata"

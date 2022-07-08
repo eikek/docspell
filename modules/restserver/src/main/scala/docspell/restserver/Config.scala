@@ -37,10 +37,14 @@ case class Config(
     fullTextSearch: Config.FullTextSearch,
     adminEndpoint: Config.AdminEndpoint,
     openid: List[OpenIdConfig],
-    downloadAll: DownloadAllCfg
+    downloadAll: DownloadAllCfg,
+    oidcAutoRedirect: Boolean
 ) {
   def openIdEnabled: Boolean =
     openid.exists(_.enabled)
+
+  def openIdSingleEnabled: Boolean =
+    openid.count(_.enabled) == 1
 
   def pubSubConfig(headerValue: Ident): PubSubConfig =
     PubSubConfig(
