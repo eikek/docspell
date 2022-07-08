@@ -85,11 +85,21 @@ update loginData flags msg model =
                 session =
                     Maybe.withDefault "" loginData.session
             in
-            -- A value of 2 indicates that TOTP is required
             if loginData.openid == 2 then
+                -- A value of 2 indicates that TOTP is required
                 ( { model | formState = FormInitial, authStep = StepOtp session, password = "" }
                 , Cmd.none
                 , Nothing
+                )
+
+            else if loginData.openid == 3 then
+                -- A valuo of 3 indicates a logout when a single
+                -- openid provider is configured with
+                -- oidcAutoredirect=true that doesn't have a logout
+                -- url configured
+                ( { model | password = "", formState = OidcLogoutPending }
+                , Ports.removeAccount ()
+                , Just empty
                 )
 
             else

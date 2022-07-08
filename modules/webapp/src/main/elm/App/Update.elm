@@ -183,8 +183,30 @@ updateWithSub msg model =
             )
 
         LogoutResp _ ->
+            let
+                emptyLoginData =
+                    Page.emptyLoginData
+
+                -- if oidcAutoredirect=true, then on logout either
+                -- goto the configured logout url or set openid=3 so
+                -- that the login page doesn't again redirect to the
+                -- oidc provider which will result in being logged in
+                -- again.
+                redirect =
+                    case Data.Flags.oidcAutoRedirect model.flags of
+                        Just provider ->
+                            case provider.logoutUrl of
+                                Just url ->
+                                    Nav.load url
+
+                                Nothing ->
+                                    Page.goto (LoginPage { emptyLoginData | openid = 3 })
+
+                        Nothing ->
+                            Page.goto (LoginPage emptyLoginData)
+            in
             ( { model | loginModel = Page.Login.Data.emptyModel }
-            , Page.goto (LoginPage Page.emptyLoginData)
+            , redirect
             , Sub.none
             )
 
@@ -677,8 +699,17 @@ initPage model_ page =
                 ]
                 model
 
-        LoginPage _ ->
-            noop
+        LoginPage data ->
+            if data.openid == 0 && model.flags.account == Nothing then
+                case Data.Flags.oidcAutoRedirect model.flags of
+                    Just first ->
+                        ( model, Nav.load (Api.openIdAuthLink model.flags first.provider), Sub.none )
+
+                    _ ->
+                        noop
+
+            else
+                noop
 
         ManageDataPage ->
             noop

@@ -36,6 +36,7 @@ type FormState
     | AuthFailed AuthResult
     | HttpError Http.Error
     | FormInitial
+    | OidcLogoutPending
 
 
 type AuthStep

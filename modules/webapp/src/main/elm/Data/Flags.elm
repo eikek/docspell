@@ -12,6 +12,7 @@ module Data.Flags exposing
     , getAccount
     , getToken
     , isAuthenticated
+    , oidcAutoRedirect
     , withAccount
     , withoutAccount
     )
@@ -22,6 +23,7 @@ import Api.Model.AuthResult exposing (AuthResult)
 type alias OpenIdAuth =
     { provider : String
     , name : String
+    , logoutUrl : Maybe String
     }
 
 
@@ -39,6 +41,7 @@ type alias Config =
     , downloadAllMaxSize : Int
     , openIdAuth : List OpenIdAuth
     , addonsEnabled : Bool
+    , oidcAutoRedirect : Bool
     }
 
 
@@ -48,6 +51,20 @@ type alias Flags =
     , innerWidth : Int
     , config : Config
     }
+
+
+oidcAutoRedirect : Flags -> Maybe OpenIdAuth
+oidcAutoRedirect flags =
+    if flags.config.oidcAutoRedirect then
+        case flags.config.openIdAuth of
+            first :: [] ->
+                Just first
+
+            _ ->
+                Nothing
+
+    else
+        Nothing
 
 
 isAuthenticated : Flags -> Bool
