@@ -45,7 +45,7 @@ object Dependencies {
   val ScodecBitsVersion = "1.1.34"
   val ScribeVersion = "3.10.1"
   val Slf4jVersion = "1.7.36"
-  val SourcecodeVersion = "0.2.8"
+  val SourcecodeVersion = "0.3.0"
   val StanfordNlpVersion = "4.4.0"
   val TikaVersion = "2.4.1"
   val YamuscaVersion = "0.9.0"
