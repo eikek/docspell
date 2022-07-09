@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.37.0
+                    0.38.0
                 </div>
             </div>
 
@@ -823,8 +823,8 @@ next 6 properties are needed to insert jobs into the <code>job</code> table. The
 <code>worker</code> field (and <code>marked</code>) are used to mark a periodic job as
 &quot;being worked on by a job executor&quot;.</p>
 <p>The <code>timer</code> is the schedule, which is a
-<a href="https://man.cx/systemd.time#heading7">systemd-like</a> calendar event
-string. This is parsed by <a href="https://github.com/eikek/calev">this
+<a href="https://man7.org/linux/man-pages/man7/systemd.time.7.html#CALENDAR_EVENTS">systemd-like</a>
+calendar event string. This is parsed by <a href="https://github.com/eikek/calev">this
 library</a>. The <code>nextrun</code> field will
 store the timestamp of the next time the task would need to be
 executed. This is needed to query this table for the newest task.</p>
@@ -874,7 +874,7 @@ schedule triggers</li>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.37.0
+            Docspell 0.38.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
