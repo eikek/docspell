@@ -58,6 +58,28 @@ server and web application.
 If you have examples for more http servers (e.g. apache), please let
 me know or add it to this site.
 
+# Headers
+
+If `base-url` is left to its default, then Docspell tries to find the
+external URL from the http request. When using a reverse proxy, you
+then need to pass some information from the original request so
+Docspell can construct the correct url. These headers are evaluated:
+
+```
+X-Forwarded-Host
+X-Forwarded-Proto
+X-Forwarded-Port
+X-Forwarded-For
+```
+
+Example for nginx:
+
+```
+proxy_set_header X-Forwarded-Host   $host;
+proxy_set_header X-Forwarded-Port   443;
+proxy_set_header X-Forwarded-Proto  https;
+```
+
 # Nginx
 
 This defines two servers: one listens for http traffic and redirects
@@ -97,6 +119,9 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
+        proxy_set_header X-Forwarded-Host   $host;
+        proxy_set_header X-Forwarded-Port   443;
+        proxy_set_header X-Forwarded-Proto  https;
 
         //client_max_body_size 40M; //to allow larger uploads
     }
