@@ -814,6 +814,21 @@ the same machine. This page is only related for exposing the REST
 server and web application.</p>
 <p>If you have examples for more http servers (e.g. apache), please let
 me know or add it to this site.</p>
+<h1 id="headers">Headers<a class="zola-anchor" href="#headers" aria-label="Anchor link for: headers">🔗</a></h1>
+<p>If <code>base-url</code> is left to its default, then Docspell tries to find the
+external URL from the http request. When using a reverse proxy, you
+then need to pass some information from the original request so
+Docspell can construct the correct url. These headers are evaluated:</p>
+<pre class="z-code"><code><span class="z-text z-plain">X-Forwarded-Host
+X-Forwarded-Proto
+X-Forwarded-Port
+X-Forwarded-For
+</span></code></pre>
+<p>Example for nginx:</p>
+<pre class="z-code"><code><span class="z-text z-plain">proxy_set_header X-Forwarded-Host   $host;
+proxy_set_header X-Forwarded-Port   443;
+proxy_set_header X-Forwarded-Proto  https;
+</span></code></pre>
 <h1 id="nginx">Nginx<a class="zola-anchor" href="#nginx" aria-label="Anchor link for: nginx">🔗</a></h1>
 <p>This defines two servers: one listens for http traffic and redirects
 to the https variant. Additionally it defines the let's encrypt
@@ -849,6 +864,9 @@ certificates and acts as a proxy for the application at
         proxy_http_version 1.1;
         proxy_set_header Upgrade <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">http_upgrade</span></span>;
         proxy_set_header Connection <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">connection_upgrade</span></span>;
+        proxy_set_header X-Forwarded-Host   <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">host</span></span>;
+        proxy_set_header X-Forwarded-Port   443;
+        proxy_set_header X-Forwarded-Proto  https;
 
         //client_max_body_size 40M; //to allow larger uploads
     <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
@@ -936,6 +954,15 @@ certificates and acts as a proxy for the application at
                         <i class="fa fa-hashtag mr-1"></i>
                         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#configuring-docspell" class="hover:text-stone-900 dark:hover:text-stone-100">
                             Configuring Docspell
+                        </a>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;reverseproxy&#x2F;#headers" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Headers
                         </a>
                         
                     </div>
