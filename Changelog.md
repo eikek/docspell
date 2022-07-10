@@ -1,4 +1,32 @@
 # Changelog
+
+## v0.38.0
+
+*Jul 09, 2022*
+
+- Allow to skip login page if a single OIDC provider is configured (#1640)
+- Add config to force OCR on a PDF even if text would be available (#1628)
+- Improvements for OIDC integration (#1619, #1545)
+- Improve unzipping/zipping files (#1603)
+- Fix starting a background task to install addon (#1601)
+- Add more database indexes to improve search (#1584)
+- Add paging to the share view (#1582)
+- Remove unused code (#1581)
+
+### Rest API Changes
+
+- remove `inReplyTo` from item metadata, it has never been used
+
+### Configuration Changes
+
+Restserver:
+- Add (optional) `logout-url` to a open-id provider config block
+- Add `oidc-auto-redirect`
+
+Joex:
+- Allow values <= 0 for `pdf.min-text-len` to force OCR on a pdf
+
+
 ## v0.37.0
 
 *Jun 04, 2022*

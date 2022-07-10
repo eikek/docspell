@@ -41,18 +41,23 @@ object CodeFlowRoutes {
       case req @ GET -> Root / Ident(id) =>
         config.findProvider(id) match {
           case Some(cfg) =>
-            val uri = cfg.authorizeUrl
-              .withQuery("client_id", cfg.clientId)
-              .withQuery("scope", cfg.scope)
-              .withQuery(
-                "redirect_uri",
-                CodeFlowConfig.resumeUri(req, cfg, config).asString
+            for {
+              state <- StateParam.generate[F](config.serverSecret)
+              uri = cfg.authorizeUrl
+                .withQuery("client_id", cfg.clientId)
+                .withQuery("scope", cfg.scope)
+                .withQuery(
+                  "redirect_uri",
+                  CodeFlowConfig.resumeUri(req, cfg, config).asString
+                )
+                .withQuery("response_type", "code")
+                .withQuery("state", state.asString)
+              _ <- logger.debug(
+                s"Redirecting to OAuth/OIDC provider ${cfg.providerId.id}: ${uri.asString}"
               )
-              .withQuery("response_type", "code")
-            logger.debug(
-              s"Redirecting to OAuth/OIDC provider ${cfg.providerId.id}: ${uri.asString}"
-            ) *>
-              Found(Location(Uri.unsafeFromString(uri.asString)))
+              resp <- Found(Location(Uri.unsafeFromString(uri.asString)))
+            } yield resp
+
           case None =>
             logger.debug(s"No OAuth/OIDC provider found with id '$id'") *>
               NotFound()
@@ -65,9 +70,20 @@ object CodeFlowRoutes {
               NotFound()
           case Some(provider) =>
             val codeFromReq = OptionT.fromOption[F](req.params.get("code"))
+            val stateParamValid = req.params
+              .get("state")
+              .exists(state => StateParam.isValidStateParam(state, config.serverSecret))
 
             val userInfo = for {
               _ <- OptionT.liftF(logger.info(s"Resume OAuth/OIDC flow for ${id.id}"))
+              _ <-
+                if (stateParamValid) OptionT.pure[F](())
+                else
+                  OptionT(
+                    logger
+                      .warn(s"Invalid state parameter returned from Idp!")
+                      .as(Option.empty[Unit])
+                  )
               code <- codeFromReq
               _ <- OptionT.liftF(
                 logger.trace(
@@ -90,7 +106,7 @@ object CodeFlowRoutes {
                     s"$err$descr"
                   }
                   .map(err => s": $err")
-                  .getOrElse("")
+                  .getOrElse(": <no reason>")
 
                 logger.warn(s"Error resuming code flow from '${id.id}'$reason") *>
                   onUserInfo.handle(req, provider, None)

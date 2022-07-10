@@ -33,6 +33,6 @@ If you are unsure, leave it at its default.
 ### Examples
 
 ```
-docspell.server.baseurl = "https://docspell.example.com"
-docspell.joex.baseurl = "http://192.168.101.10"
+docspell.server.base-url = "https://docspell.example.com"
+docspell.joex.base-url = "http://192.168.101.10"
 ```

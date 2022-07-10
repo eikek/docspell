@@ -31,6 +31,7 @@ type alias Texts =
     , signupLink : String
     , otpCode : String
     , or : String
+    , oidcLogoutPending : String
     }
 
 
@@ -50,6 +51,7 @@ gb =
     , signupLink = "Sign up!"
     , otpCode = "Authentication code"
     , or = "Or"
+    , oidcLogoutPending = "You have been logged out from Docspell, but you may still be logged in at your authentication provider! Make sure to logout there as well, or login again by clicking the link below."
     }
 
 
@@ -69,7 +71,12 @@ de =
     , signupLink = "Hier registrieren!"
     , otpCode = "Authentifizierungscode"
     , or = "Oder"
+    , oidcLogoutPending = "Du wurdest von Docspell abgemeldet, aber evtl. bist du immernoch bei deinem Authentifizierungs-Provider angemeldet! Melde dich auch dort ab, oder logge dich wieder zu Docspell ein indem du den Link unten klickst."
     }
+
+
+
+--- TODO french translation
 
 
 fr : Texts
@@ -88,4 +95,5 @@ fr =
     , signupLink = "S'incrire!"
     , otpCode = "Code d'authentification"
     , or = "Ou"
+    , oidcLogoutPending = "You have been logged out from Docspell, but you may still be logged in at your authentication provider! Make sure to logout there as well, or login again by clicking the link below."
     }

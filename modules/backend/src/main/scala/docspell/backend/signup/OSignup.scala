@@ -20,8 +20,10 @@ trait OSignup[F[_]] {
 
   def register(cfg: Config)(data: RegisterData): F[SignupResult]
 
-  /** Creates the given account if it doesn't exist. */
-  def setupExternal(cfg: Config)(data: ExternalAccount): F[SignupResult]
+  /** Creates the given account if it doesn't exist. This is independent from signup
+    * configuration.
+    */
+  def setupExternal(data: ExternalAccount): F[SignupResult]
 
   def newInvite(cfg: Config)(password: Password): F[NewInviteResult]
 }
@@ -77,36 +79,31 @@ object OSignup {
             }
         }
 
-      def setupExternal(cfg: Config)(data: ExternalAccount): F[SignupResult] =
-        cfg.mode match {
-          case Config.Mode.Closed =>
-            SignupResult.signupClosed.pure[F]
-          case _ =>
-            if (data.source == AccountSource.Local)
-              SignupResult
-                .failure(new Exception("Account source must not be LOCAL!"))
-                .pure[F]
-            else
-              for {
-                recs <- makeRecords(data.collName, data.login, Password(""), data.source)
-                cres <- store.add(
-                  RCollective.insert(recs._1),
-                  RCollective.existsById(data.collName)
-                )
-                ures <- store.add(RUser.insert(recs._2), RUser.exists(data.login))
-                res = cres match {
+      def setupExternal(data: ExternalAccount): F[SignupResult] =
+        if (data.source == AccountSource.Local)
+          SignupResult
+            .failure(new Exception("Account source must not be LOCAL!"))
+            .pure[F]
+        else
+          for {
+            recs <- makeRecords(data.collName, data.login, Password(""), data.source)
+            cres <- store.add(
+              RCollective.insert(recs._1),
+              RCollective.existsById(data.collName)
+            )
+            ures <- store.add(RUser.insert(recs._2), RUser.exists(data.login))
+            res = cres match {
+              case AddResult.Failure(ex) =>
+                SignupResult.failure(ex)
+              case _ =>
+                ures match {
                   case AddResult.Failure(ex) =>
                     SignupResult.failure(ex)
                   case _ =>
-                    ures match {
-                      case AddResult.Failure(ex) =>
-                        SignupResult.failure(ex)
-                      case _ =>
-                        SignupResult.success
-                    }
+                    SignupResult.success
                 }
-              } yield res
-        }
+            }
+          } yield res
 
       private def retryInvite(res: SignupResult): Boolean =
         res match {

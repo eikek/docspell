@@ -73,8 +73,8 @@ next 6 properties are needed to insert jobs into the `job` table. The
 "being worked on by a job executor".
 
 The `timer` is the schedule, which is a
-[systemd-like](https://man.cx/systemd.time#heading7) calendar event
-string. This is parsed by [this
+[systemd-like](https://man7.org/linux/man-pages/man7/systemd.time.7.html#CALENDAR_EVENTS)
+calendar event string. This is parsed by [this
 library](https://github.com/eikek/calev). The `nextrun` field will
 store the timestamp of the next time the task would need to be
 executed. This is needed to query this table for the newest task.

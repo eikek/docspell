@@ -18,6 +18,7 @@ final case class ProviderConfig(
     authorizeUrl: LenientUri,
     tokenUrl: LenientUri,
     userUrl: Option[LenientUri],
+    logoutUrl: Option[LenientUri],
     signKey: ByteVector,
     sigAlgo: SignatureAlgo
 )
@@ -33,6 +34,7 @@ object ProviderConfig {
       LenientUri.unsafe("https://github.com/login/oauth/authorize"),
       LenientUri.unsafe("https://github.com/login/oauth/access_token"),
       Some(LenientUri.unsafe("https://api.github.com/user")),
+      None,
       ByteVector.empty,
       SignatureAlgo.RS256
     )
