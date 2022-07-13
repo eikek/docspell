@@ -46,7 +46,7 @@ object DeleteFieldValueCtx {
       for {
         now <- OptionT.liftF(Timestamp.current[ConnectionIO])
         items <- OptionT.liftF(Item.find(ev.items, ev.account, now))
-        field <- OptionT(RCustomField.findById(ev.field, ev.account.collective))
+        field <- OptionT(RCustomField.findById(ev.field, ev.account.collectiveId))
         msg = DeleteFieldValueCtx(
           ev,
           Data(
@@ -71,7 +71,7 @@ object DeleteFieldValueCtx {
     )
 
   final case class Data(
-      account: AccountId,
+      account: AccountInfo,
       items: List[Item],
       field: Field,
       itemUrl: Option[String]

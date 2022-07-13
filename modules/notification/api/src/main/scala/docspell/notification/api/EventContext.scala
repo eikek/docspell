@@ -26,7 +26,7 @@ trait EventContext {
       "account" -> Json.obj(
         "collective" -> event.account.collective.asJson,
         "user" -> event.account.login.asJson,
-        "login" -> event.account.asJson
+        "login" -> event.account.asAccountId.asJson
       ),
       "content" -> content
     )

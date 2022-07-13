@@ -6,9 +6,9 @@
 
 package docspell.scheduler.impl
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-
 import docspell.common.{Ident, JobState}
 import docspell.notification.api.{Event, EventSink}
 import docspell.pubsub.api.PubSubT
@@ -19,26 +19,31 @@ import docspell.store.Store
 final class JobStorePublish[F[_]: Sync](
     delegate: JobStore[F],
     pubsub: PubSubT[F],
-    eventSink: EventSink[F]
+    eventSink: EventSink[F],
+    findJobOwner: FindJobOwner[F]
 ) extends JobStore[F] {
 
   private def msg(job: Job[String]): JobSubmitted =
     JobSubmitted(job.id, job.group, job.task, job.args)
 
-  private def event(job: Job[String]): Event.JobSubmitted =
-    Event.JobSubmitted(
-      job.id,
-      job.group,
-      job.task,
-      job.args,
-      JobState.waiting,
-      job.subject,
-      job.submitter
-    )
+  private def event(job: Job[String]): OptionT[F, Event.JobSubmitted] =
+    OptionT(findJobOwner(job))
+      .map(
+        Event.JobSubmitted(
+          _,
+          job.id,
+          job.group,
+          job.task,
+          job.args,
+          JobState.waiting,
+          job.subject,
+          job.submitter
+        )
+      )
 
   private def publish(job: Job[String]): F[Unit] =
     pubsub.publish1(JobSubmitted.topic, msg(job)).as(()) *>
-      eventSink.offer(event(job))
+      event(job).semiflatMap(eventSink.offer).value.void
 
   private def notifyJoex: F[Unit] =
     pubsub.publish1IgnoreErrors(JobsNotify(), ()).void
@@ -82,7 +87,8 @@ object JobStorePublish {
   def apply[F[_]: Async](
       store: Store[F],
       pubSub: PubSubT[F],
-      eventSink: EventSink[F]
+      eventSink: EventSink[F],
+      findJobOwner: FindJobOwner[F]
   ): JobStore[F] =
-    new JobStorePublish[F](JobStoreImpl(store), pubSub, eventSink)
+    new JobStorePublish[F](JobStoreImpl(store), pubSub, eventSink, findJobOwner)
 }
