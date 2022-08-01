@@ -24,7 +24,7 @@ object Dependencies {
   val H2Version = "1.4.200"
   val Http4sVersion = "0.23.14"
   val Icu4jVersion = "71.1"
-  val JavaOtpVersion = "0.3.1"
+  val JavaOtpVersion = "0.4.0"
   val JsoupVersion = "1.15.2"
   val JwtScalaVersion = "9.0.6"
   val KindProjectorVersion = "0.10.3"
