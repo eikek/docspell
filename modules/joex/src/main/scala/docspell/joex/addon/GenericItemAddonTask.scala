@@ -49,7 +49,7 @@ object GenericItemAddonTask extends LoggerExtension {
       trigger: AddonTriggerType,
       addonTaskIds: Set[Ident]
   )(
-      collective: Ident,
+      collective: CollectiveId,
       data: ItemData,
       maybeMeta: Option[ProcessItemArgs.ProcessMeta]
   ): Task[F, Unit, ItemData] =
@@ -63,7 +63,7 @@ object GenericItemAddonTask extends LoggerExtension {
       trigger: AddonTriggerType,
       addonTaskIds: Set[Ident]
   )(
-      collective: Ident,
+      collective: CollectiveId,
       data: ItemData,
       maybeMeta: Option[ProcessItemArgs.ProcessMeta]
   ): Task[F, Unit, ExecResult] =

@@ -20,7 +20,7 @@ object SelectItems {
   val pageSep = LearnClassifierTask.pageSep
   val noClass = LearnClassifierTask.noClass
 
-  def forCategory[F[_]](store: Store[F], collective: Ident)(
+  def forCategory[F[_]](store: Store[F], collective: CollectiveId)(
       maxItems: Int,
       category: String,
       maxTextLen: Int
@@ -36,7 +36,7 @@ object SelectItems {
 
   def forCorrOrg[F[_]](
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Stream[F, Data] = {
@@ -51,7 +51,7 @@ object SelectItems {
 
   def forCorrPerson[F[_]](
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Stream[F, Data] = {
@@ -66,7 +66,7 @@ object SelectItems {
 
   def forConcPerson[F[_]](
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Stream[F, Data] = {
@@ -81,7 +81,7 @@ object SelectItems {
 
   def forConcEquip[F[_]](
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Stream[F, Data] = {
@@ -94,7 +94,10 @@ object SelectItems {
     store.transact(connStream)
   }
 
-  private def allItems(collective: Ident, max: Int): Stream[ConnectionIO, Ident] = {
+  private def allItems(
+      collective: CollectiveId,
+      max: Int
+  ): Stream[ConnectionIO, Ident] = {
     val limit = if (max <= 0) Batch.all else Batch.limit(max)
     QItem.findAllNewesFirst(collective, 10, limit)
   }

@@ -21,7 +21,7 @@ object LearnItemEntities {
   def learnAll[F[_]: Async, A](
       analyser: TextAnalyser[F],
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Task[F, A, Unit] =
@@ -35,7 +35,7 @@ object LearnItemEntities {
   def learnCorrOrg[F[_]: Async, A](
       analyser: TextAnalyser[F],
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Task[F, A, Unit] =
@@ -47,7 +47,7 @@ object LearnItemEntities {
   def learnCorrPerson[F[_]: Async, A](
       analyser: TextAnalyser[F],
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Task[F, A, Unit] =
@@ -59,7 +59,7 @@ object LearnItemEntities {
   def learnConcPerson[F[_]: Async, A](
       analyser: TextAnalyser[F],
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Task[F, A, Unit] =
@@ -71,7 +71,7 @@ object LearnItemEntities {
   def learnConcEquip[F[_]: Async, A](
       analyser: TextAnalyser[F],
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Task[F, A, Unit] =
@@ -83,7 +83,7 @@ object LearnItemEntities {
   private def learn[F[_]: Async, A](
       store: Store[F],
       analyser: TextAnalyser[F],
-      collective: Ident
+      collective: CollectiveId
   )(cname: ClassifierName, data: Context[F, _] => Stream[F, Data]): Task[F, A, Unit] =
     Task { ctx =>
       ctx.logger.info(s"Learn classifier ${cname.name}") *>

@@ -202,7 +202,7 @@ object RNotificationChannel {
                   s"Looking up user smtp for ${userId.id} and ${conn.id}"
                 )
               )
-              mailConn <- OptionT(RUserEmail.getByUser(userId, conn))
+              mailConn <- OptionT(RUserEmail.getByName(userId, conn))
               rec = RNotificationChannelMail(
                 id,
                 userId,

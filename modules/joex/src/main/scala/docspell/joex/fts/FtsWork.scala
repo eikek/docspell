@@ -74,10 +74,10 @@ object FtsWork {
   def log[F[_]](f: Logger[F] => F[Unit]): FtsWork[F] =
     FtsWork(ctx => f(ctx.logger))
 
-  def clearIndex[F[_]: FlatMap](coll: Option[Ident]): FtsWork[F] =
+  def clearIndex[F[_]: FlatMap](coll: Option[CollectiveId]): FtsWork[F] =
     coll match {
       case Some(cid) =>
-        log[F](_.debug(s"Clearing index data for collective '${cid.id}'")) ++ FtsWork(
+        log[F](_.debug(s"Clearing index data for collective '${cid.value}'")) ++ FtsWork(
           ctx => ctx.fts.clear(ctx.logger, cid)
         )
       case None =>
@@ -86,7 +86,7 @@ object FtsWork {
         )
     }
 
-  def insertAll[F[_]: FlatMap](coll: Option[Ident]): FtsWork[F] =
+  def insertAll[F[_]: FlatMap](coll: Option[CollectiveId]): FtsWork[F] =
     log[F](_.info("Inserting all data to index")) ++ FtsWork
       .all(
         FtsWork(ctx =>

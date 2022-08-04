@@ -68,7 +68,7 @@ object EmptyTrashTask {
       .foldMonoid
 
   private def deleteChunk[F[_]: Async](
-      collective: Ident,
+      collective: CollectiveId,
       itemOps: OItem[F],
       ctx: Context[F, _]
   )(chunk: Vector[RItem]): F[Int] =

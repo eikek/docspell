@@ -9,10 +9,10 @@ package docspell.joex.pagecount
 import cats.effect._
 import cats.implicits._
 import fs2.{Chunk, Stream}
-
 import docspell.backend.JobFactory
 import docspell.common._
 import docspell.scheduler._
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.Store
 import docspell.store.records.RAttachment
 
@@ -51,12 +51,12 @@ object AllPageCountTask {
       .compile
       .foldMonoid
 
-  private def findAttachments[F[_]] =
+  private def findAttachments =
     RAttachment.findAllWithoutPageCount(50)
 
   private def createJobs[F[_]: Sync](ras: Chunk[RAttachment]): Stream[F, Job[String]] = {
     def mkJob(ra: RAttachment): F[Job[MakePageCountArgs]] =
-      JobFactory.makePageCount(MakePageCountArgs(ra.id), None)
+      JobFactory.makePageCount(MakePageCountArgs(ra.id), UserTaskScope.system)
 
     val jobs = ras.traverse(mkJob)
     Stream.evalUnChunk(jobs).map(_.encode)
@@ -66,10 +66,9 @@ object AllPageCountTask {
     Job
       .createNew(
         AllPageCountTask.taskName,
-        DocspellSystem.taskGroup,
+        UserTaskScope.system,
         (),
         "Create all page-counts",
-        DocspellSystem.taskGroup,
         Priority.Low,
         Some(DocspellSystem.allPageCountTaskTracker)
       )

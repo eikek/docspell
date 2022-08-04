@@ -57,10 +57,10 @@ class TempFtsOpsTest extends DatabaseTest {
 
   def prepareItems(store: Store[IO]) =
     for {
-      _ <- store.transact(RCollective.insert(makeCollective(CollectiveId(2))))
-      _ <- store.transact(RUser.insert(makeUser(CollectiveId(2))))
+      cid <- store.transact(RCollective.insert(makeCollective))
+      _ <- store.transact(RUser.insert(makeUser(cid)))
       items = (0 until 200)
-        .map(makeItem(_, CollectiveId(2)))
+        .map(makeItem(_, cid))
         .toList
       _ <- items.traverse(i => store.transact(RItem.insert(i)))
     } yield ()
@@ -184,9 +184,9 @@ class TempFtsOpsTest extends DatabaseTest {
       Timestamp(Instant.now)
     )
 
-  def makeCollective(cid: CollectiveId): RCollective =
+  def makeCollective: RCollective =
     RCollective(
-      cid,
+      CollectiveId.unknown,
       DocspellSystem.account.collective,
       CollectiveState.Active,
       Language.English,

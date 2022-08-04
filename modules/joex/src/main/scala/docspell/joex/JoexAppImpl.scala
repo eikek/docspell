@@ -84,7 +84,7 @@ final class JoexAppImpl[F[_]: Async](
       .evalMap { es =>
         val args = EmptyTrashArgs(es.cid, es.minAge)
         uts.updateOneTask(
-          UserTaskScope(args.collective),
+          UserTaskScope.collective(args.collective),
           args.makeSubject.some,
           EmptyTrashTask.userTask(args, es.schedule)
         )

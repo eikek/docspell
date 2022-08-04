@@ -86,7 +86,7 @@ object ODownloadAll {
       ): F[DownloadSummary] = for {
         _ <- logger.info(s"Download all request: $req")
         summary <- getSummary(account, req)
-        args = DownloadZipArgs(account.asAccountId, req)
+        args = DownloadZipArgs(account, req)
         _ <- OptionT
           .whenF(summary.state == DownloadState.NotPresent) {
             JobFactory

@@ -21,7 +21,7 @@ object LearnTags {
   def learnTagCategory[F[_]: Async, A](
       analyser: TextAnalyser[F],
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   )(
@@ -44,7 +44,7 @@ object LearnTags {
     }
 
   def learnAllTagCategories[F[_]: Async, A](analyser: TextAnalyser[F], store: Store[F])(
-      collective: Ident,
+      collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int
   ): Task[F, A, Unit] =
