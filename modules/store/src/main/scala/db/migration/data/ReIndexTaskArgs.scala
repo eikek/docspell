@@ -4,12 +4,16 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.common
+package db.migration.data
 
+import docspell.common._
 import io.circe._
 import io.circe.generic.semiauto._
 
-final case class ReIndexTaskArgs(collective: Option[CollectiveId])
+/** @deprecated
+  *   This structure has been replaced with one using a `CollectiveId`
+  */
+final case class ReIndexTaskArgs(collective: Option[Ident])
 
 object ReIndexTaskArgs {
   val taskName = Ident.unsafe("full-text-reindex")
@@ -17,7 +21,7 @@ object ReIndexTaskArgs {
   def tracker(args: ReIndexTaskArgs): Ident =
     args.collective match {
       case Some(cid) =>
-        cid.valueAsIdent / DocspellSystem.migrationTaskTracker
+        cid / DocspellSystem.migrationTaskTracker
       case None =>
         DocspellSystem.migrationTaskTracker
     }

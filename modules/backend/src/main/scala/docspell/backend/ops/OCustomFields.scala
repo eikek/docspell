@@ -36,13 +36,13 @@ trait OCustomFields[F[_]] {
 
   /** Find all fields using an optional query on the name and label */
   def findAll(
-      coll: Ident,
+      coll: CollectiveId,
       nameQuery: Option[String],
       order: CustomFieldOrder
   ): F[Vector[CustomFieldData]]
 
   /** Find one field by its id */
-  def findById(coll: Ident, fieldId: Ident): F[Option[CustomFieldData]]
+  def findById(coll: CollectiveId, fieldId: Ident): F[Option[CustomFieldData]]
 
   /** Create a new non-existing field. */
   def create(field: NewCustomField): F[AddResult]
@@ -51,7 +51,7 @@ trait OCustomFields[F[_]] {
   def change(field: RCustomField): F[UpdateResult]
 
   /** Deletes the field by name or id. */
-  def delete(coll: Ident, fieldIdOrName: Ident): F[UpdateResult]
+  def delete(coll: CollectiveId, fieldIdOrName: Ident): F[UpdateResult]
 
   /** Sets a value given a field an an item. Existing values are overwritten. */
   def setValue(item: Ident, value: SetValue): F[AttachedEvent[SetValueResult]]
@@ -80,13 +80,13 @@ object OCustomFields {
       name: Ident,
       label: Option[String],
       ftype: CustomFieldType,
-      cid: Ident
+      cid: CollectiveId
   )
 
   case class SetValue(
       field: Ident,
       value: String,
-      collective: Ident
+      collective: CollectiveId
   )
 
   sealed trait SetValueResult
@@ -106,7 +106,7 @@ object OCustomFields {
   case class RemoveValue(
       field: Ident,
       item: Nel[Ident],
-      collective: Ident
+      collective: CollectiveId
   )
 
   sealed trait CustomFieldOrder
@@ -158,7 +158,7 @@ object OCustomFields {
         store.transact(QCustomField.findAllValues(itemIds))
 
       def findAll(
-          coll: Ident,
+          coll: CollectiveId,
           nameQuery: Option[String],
           order: CustomFieldOrder
       ): F[Vector[CustomFieldData]] =
@@ -170,7 +170,7 @@ object OCustomFields {
           )
         )
 
-      def findById(coll: Ident, field: Ident): F[Option[CustomFieldData]] =
+      def findById(coll: CollectiveId, field: Ident): F[Option[CustomFieldData]] =
         store.transact(QCustomField.findById(field, coll))
 
       def create(field: NewCustomField): F[AddResult] = {
@@ -188,7 +188,7 @@ object OCustomFields {
       def change(field: RCustomField): F[UpdateResult] =
         UpdateResult.fromUpdate(store.transact(RCustomField.update(field)))
 
-      def delete(coll: Ident, fieldIdOrName: Ident): F[UpdateResult] = {
+      def delete(coll: CollectiveId, fieldIdOrName: Ident): F[UpdateResult] = {
         val update =
           for {
             field <- OptionT(RCustomField.findByIdOrName(fieldIdOrName, coll))

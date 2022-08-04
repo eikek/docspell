@@ -129,9 +129,20 @@ object RUser {
     sql.query[RUser].option
   }
 
-  def findById(userId: Ident): ConnectionIO[Option[RUser]] = {
+  def findById(userId: Ident, cid: Option[CollectiveId]): ConnectionIO[Option[RUser]] = {
     val t = Table(None)
-    val sql = run(select(t.all), from(t), t.uid === userId)
+    val sql =
+      run(select(t.all), from(t), t.uid === userId &&? cid.map(id => t.cid === id))
+    sql.query[RUser].option
+  }
+
+  def findByLogin(
+      login: Ident,
+      cid: Option[CollectiveId]
+  ): ConnectionIO[Option[RUser]] = {
+    val t = Table(None)
+    val sql =
+      run(select(t.all), from(t), t.login === login &&? cid.map(id => t.cid === id))
     sql.query[RUser].option
   }
 

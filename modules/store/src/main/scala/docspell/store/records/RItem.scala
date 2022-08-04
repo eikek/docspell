@@ -123,8 +123,8 @@ object RItem {
         fr"${v.created},${v.updated},${v.notes},${v.folderId}"
     )
 
-  def getCollective(itemId: Ident): ConnectionIO[Option[Ident]] =
-    Select(T.cid.s, from(T), T.id === itemId).build.query[Ident].option
+  def getCollective(itemId: Ident): ConnectionIO[Option[CollectiveId]] =
+    Select(T.cid.s, from(T), T.id === itemId).build.query[CollectiveId].option
 
   def updateAll(item: RItem): ConnectionIO[Int] =
     for {

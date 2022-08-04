@@ -21,7 +21,7 @@ import docspell.common._
   */
 final case class FtsQuery(
     q: String,
-    collective: Ident,
+    collective: CollectiveId,
     items: Set[Ident],
     folders: Set[Ident],
     limit: Int,
@@ -37,7 +37,7 @@ final case class FtsQuery(
 }
 
 object FtsQuery {
-  def apply(q: String, collective: Ident, limit: Int, offset: Int): FtsQuery =
+  def apply(q: String, collective: CollectiveId, limit: Int, offset: Int): FtsQuery =
     FtsQuery(q, collective, Set.empty, Set.empty, limit, offset, HighlightSetting.default)
 
   case class HighlightSetting(pre: String, post: String)

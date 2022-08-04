@@ -21,32 +21,39 @@ import docspell.store.records._
 import doobie.implicits._
 
 trait OItemSearch[F[_]] {
-  def findItem(id: Ident, collective: Ident): F[Option[ItemData]]
+  def findItem(id: Ident, collective: CollectiveId): F[Option[ItemData]]
 
-  def findDeleted(collective: Ident, maxUpdate: Timestamp, limit: Int): F[Vector[RItem]]
+  def findDeleted(
+      collective: CollectiveId,
+      maxUpdate: Timestamp,
+      limit: Int
+  ): F[Vector[RItem]]
 
-  def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]]
+  def findAttachment(id: Ident, collective: CollectiveId): F[Option[AttachmentData[F]]]
 
   def findAttachmentSource(
       id: Ident,
-      collective: Ident
+      collective: CollectiveId
   ): F[Option[AttachmentSourceData[F]]]
 
   def findAttachmentArchive(
       id: Ident,
-      collective: Ident
+      collective: CollectiveId
   ): F[Option[AttachmentArchiveData[F]]]
 
   def findAttachmentPreview(
       id: Ident,
-      collective: Ident
+      collective: CollectiveId
   ): F[Option[AttachmentPreviewData[F]]]
 
-  def findItemPreview(item: Ident, collective: Ident): F[Option[AttachmentPreviewData[F]]]
+  def findItemPreview(
+      item: Ident,
+      collective: CollectiveId
+  ): F[Option[AttachmentPreviewData[F]]]
 
-  def findAttachmentMeta(id: Ident, collective: Ident): F[Option[RAttachmentMeta]]
+  def findAttachmentMeta(id: Ident, collective: CollectiveId): F[Option[RAttachmentMeta]]
 
-  def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]]
+  def findByFileCollective(checksum: String, collective: CollectiveId): F[Vector[RItem]]
 
   def findByFileSource(checksum: String, sourceId: Ident): F[Option[Vector[RItem]]]
 
@@ -114,12 +121,12 @@ object OItemSearch {
   def apply[F[_]: Async](store: Store[F]): Resource[F, OItemSearch[F]] =
     Resource.pure[F, OItemSearch[F]](new OItemSearch[F] {
 
-      def findItem(id: Ident, collective: Ident): F[Option[ItemData]] =
+      def findItem(id: Ident, collective: CollectiveId): F[Option[ItemData]] =
         store
           .transact(QItem.findItem(id, collective))
 
       def findDeleted(
-          collective: Ident,
+          collective: CollectiveId,
           maxUpdate: Timestamp,
           limit: Int
       ): F[Vector[RItem]] =
@@ -129,7 +136,10 @@ object OItemSearch {
           .compile
           .toVector
 
-      def findAttachment(id: Ident, collective: Ident): F[Option[AttachmentData[F]]] =
+      def findAttachment(
+          id: Ident,
+          collective: CollectiveId
+      ): F[Option[AttachmentData[F]]] =
         store
           .transact(RAttachment.findByIdAndCollective(id, collective))
           .flatMap {
@@ -148,7 +158,7 @@ object OItemSearch {
 
       def findAttachmentSource(
           id: Ident,
-          collective: Ident
+          collective: CollectiveId
       ): F[Option[AttachmentSourceData[F]]] =
         store
           .transact(RAttachmentSource.findByIdAndCollective(id, collective))
@@ -168,7 +178,7 @@ object OItemSearch {
 
       def findAttachmentPreview(
           id: Ident,
-          collective: Ident
+          collective: CollectiveId
       ): F[Option[AttachmentPreviewData[F]]] =
         store
           .transact(RAttachmentPreview.findByIdAndCollective(id, collective))
@@ -188,7 +198,7 @@ object OItemSearch {
 
       def findItemPreview(
           item: Ident,
-          collective: Ident
+          collective: CollectiveId
       ): F[Option[AttachmentPreviewData[F]]] =
         store
           .transact(RAttachmentPreview.findByItemAndCollective(item, collective))
@@ -208,7 +218,7 @@ object OItemSearch {
 
       def findAttachmentArchive(
           id: Ident,
-          collective: Ident
+          collective: CollectiveId
       ): F[Option[AttachmentArchiveData[F]]] =
         store
           .transact(RAttachmentArchive.findByIdAndCollective(id, collective))
@@ -234,15 +244,21 @@ object OItemSearch {
           .map(fm => f(fm))
           .value
 
-      def findAttachmentMeta(id: Ident, collective: Ident): F[Option[RAttachmentMeta]] =
+      def findAttachmentMeta(
+          id: Ident,
+          collective: CollectiveId
+      ): F[Option[RAttachmentMeta]] =
         store.transact(QAttachment.getAttachmentMeta(id, collective))
 
-      def findByFileCollective(checksum: String, collective: Ident): F[Vector[RItem]] =
+      def findByFileCollective(
+          checksum: String,
+          collective: CollectiveId
+      ): F[Vector[RItem]] =
         store.transact(QItem.findByChecksum(checksum, collective, Set.empty))
 
       def findByFileSource(checksum: String, sourceId: Ident): F[Option[Vector[RItem]]] =
         store.transact((for {
-          coll <- OptionT(RSource.findCollective(sourceId))
+          coll <- OptionT(RSource.findCollectiveId(sourceId))
           items <- OptionT.liftF(QItem.findByChecksum(checksum, coll, Set.empty))
         } yield items).value)
     })

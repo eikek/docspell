@@ -14,7 +14,7 @@ sealed trait TextData {
 
   def item: Ident
 
-  def collective: Ident
+  def collective: CollectiveId
 
   def folder: Option[Ident]
 
@@ -32,7 +32,7 @@ object TextData {
   final case class Attachment(
       item: Ident,
       attachId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident],
       language: Language,
       name: Option[String],
@@ -46,7 +46,7 @@ object TextData {
   def attachment(
       item: Ident,
       attachId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident],
       lang: Language,
       name: Option[String],
@@ -56,7 +56,7 @@ object TextData {
 
   final case class Item(
       item: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident],
       name: Option[String],
       notes: Option[String],
@@ -69,7 +69,7 @@ object TextData {
 
   def item(
       item: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident],
       name: Option[String],
       notes: Option[String],

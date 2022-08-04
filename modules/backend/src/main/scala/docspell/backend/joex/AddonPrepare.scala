@@ -9,15 +9,14 @@ package docspell.backend.joex
 import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.syntax.all._
-
 import docspell.addons.Middleware
 import docspell.backend.auth.AuthToken
 import docspell.backend.joex.AddonOps.AddonRunConfigRef
 import docspell.common._
 import docspell.logging.Logger
 import docspell.store.Store
-import docspell.store.records.{RNode, RUser}
-
+import docspell.store.queries.QLogin
+import docspell.store.records.RNode
 import scodec.bits.ByteVector
 
 private[joex] class AddonPrepare[F[_]: Sync](store: Store[F]) extends LoggerExtension {
@@ -46,8 +45,7 @@ private[joex] class AddonPrepare[F[_]: Sync](store: Store[F]) extends LoggerExte
   ): F[Middleware[F]] =
     (for {
       userId <- OptionT.fromOption[F](runConfigRef.userId)
-      user <- OptionT(store.transact(RUser.getIdByIdOrLogin(userId)))
-      account = AccountId(runConfigRef.collective, user.login)
+      account <- OptionT(store.transact(QLogin.findUser(userId))).map(_.account)
       env =
         Middleware.prepare[F](
           Kleisli(input => makeDscEnv(account, tokenValidity).map(input.addEnv))
@@ -58,7 +56,7 @@ private[joex] class AddonPrepare[F[_]: Sync](store: Store[F]) extends LoggerExte
     * Additionally a random rest-server is looked up from the database to set its url.
     */
   def makeDscEnv(
-      accountId: AccountId,
+      account: AccountInfo,
       tokenValidity: Duration
   ): F[Map[String, String]] =
     for {
@@ -71,7 +69,7 @@ private[joex] class AddonPrepare[F[_]: Sync](store: Store[F]) extends LoggerExte
       secret = serverNode.flatMap(_.serverSecret)
 
       token <- AuthToken.user(
-        accountId,
+        account,
         false,
         secret.getOrElse(ByteVector.empty),
         tokenValidity.some

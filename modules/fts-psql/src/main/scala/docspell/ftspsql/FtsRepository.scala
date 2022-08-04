@@ -18,6 +18,12 @@ import doobie.implicits._
 object FtsRepository extends DoobieMeta {
   val table = fr"ftspsql_search"
 
+  def containsData: ConnectionIO[Boolean] =
+    sql"select id from $table limit 1".query[String].option.map(_.isDefined)
+
+  def containsNoData: ConnectionIO[Boolean] =
+    containsData.map(!_)
+
   def searchSummary(pq: PgQueryParser, rn: RankNormalization)(
       q: FtsQuery
   ): ConnectionIO[SearchSummary] = {
@@ -139,7 +145,7 @@ object FtsRepository extends DoobieMeta {
 
   def updateFolder(
       itemId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident]
   ): ConnectionIO[Int] =
     (sql"UPDATE $table" ++
@@ -155,7 +161,7 @@ object FtsRepository extends DoobieMeta {
   def deleteAll: ConnectionIO[Int] =
     sql"DELETE FROM $table".update.run
 
-  def delete(collective: Ident): ConnectionIO[Int] =
+  def delete(collective: CollectiveId): ConnectionIO[Int] =
     sql"DELETE FROM $table WHERE collective = $collective".update.run
 
   def resetAll: ConnectionIO[Int] = {

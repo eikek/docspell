@@ -58,6 +58,18 @@ object QLogin {
   def findUser(userId: Ident): ConnectionIO[Option[Data]] =
     findUser0((user, _) => user.uid === userId)
 
+  /** Finds the account given a combination of login/user-id and coll-id/coll-name pair.
+    */
+  def findAccount(acc: AccountId): ConnectionIO[Option[AccountInfo]] = {
+    val collIdOpt = acc.collective.id.toLongOption.map(CollectiveId(_))
+    findUser0((ut, ct) =>
+      (ut.login === acc.user || ut.uid === acc.user) && collIdOpt
+        .map(id => ct.id === id)
+        .getOrElse(ct.name === acc.collective)
+    )
+      .map(_.map(_.account))
+  }
+
   def findByRememberMe(
       rememberId: Ident,
       minCreated: Timestamp

@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.common
+package db.migration.data
 
+import docspell.common._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
@@ -13,9 +14,12 @@ import io.circe.{Decoder, Encoder}
   *
   * If `addonTaskIds` is non empty, only these addon tasks are run. Otherwise all addon
   * tasks that are configured for 'existing-item' are run.
+  *
+  * @deprecated
+  *   replaced with version using a `CollectiveId`
   */
 final case class ItemAddonTaskArgs(
-    collective: CollectiveId,
+    collective: Ident,
     itemId: Ident,
     addonRunConfigs: Set[Ident]
 )

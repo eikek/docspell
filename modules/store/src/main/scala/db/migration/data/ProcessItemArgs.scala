@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.common
+package db.migration.data
 
-import docspell.common.ProcessItemArgs._
+import ProcessItemArgs._
+import docspell.common._
 import docspell.common.syntax.all._
 
 import io.circe._
@@ -21,6 +22,11 @@ import io.circe.generic.semiauto._
   * given files. Otherwise a new item is created.
   *
   * It is also re-used by the 'ReProcessItem' task.
+  *
+  * @deprecated
+  *   This is an old structure where the collective id was an `Ident` which is now the
+  *   collective name. It is used to migrate database records to the new structure (same
+  *   name in commons package)
   */
 case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) {
 
@@ -43,7 +49,7 @@ object ProcessItemArgs {
   val multiUploadTaskName = Ident.unsafe("multi-upload-process")
 
   case class ProcessMeta(
-      collective: CollectiveId,
+      collective: Ident,
       itemId: Option[Ident],
       language: Language,
       direction: Option[Direction],

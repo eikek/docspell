@@ -7,8 +7,8 @@
 package docspell.backend.ops
 
 import cats.data.{NonEmptyList => Nel}
+import cats.syntax.option._
 import cats.effect._
-
 import docspell.common._
 import docspell.store.queries.QFolder
 import docspell.store.records.{RFolder, RUser}
@@ -17,38 +17,43 @@ import docspell.store.{AddResult, Store}
 trait OFolder[F[_]] {
 
   def findAll(
-      account: AccountId,
+      collectiveId: CollectiveId,
+      userId: Ident,
       ownerLogin: Option[Ident],
       query: Option[String],
       order: OFolder.FolderOrder
   ): F[Vector[OFolder.FolderItem]]
 
-  def findById(id: Ident, account: AccountId): F[Option[OFolder.FolderDetail]]
+  def findById(
+      id: Ident,
+      collectiveId: CollectiveId,
+      userId: Ident
+  ): F[Option[OFolder.FolderDetail]]
 
   /** Adds a new folder. If `login` is non-empty, the `folder.user` property is ignored
     * and the user-id is determined by the given login name.
     */
-  def add(folder: RFolder, login: Option[Ident]): F[AddResult]
+  def add(folder: RFolder, userId: Option[Ident]): F[AddResult]
 
   def changeName(
       folder: Ident,
-      account: AccountId,
+      userId: Ident,
       name: String
   ): F[OFolder.FolderChangeResult]
 
   def addMember(
       folder: Ident,
-      account: AccountId,
+      userId: Ident,
       member: Ident
   ): F[OFolder.FolderChangeResult]
 
   def removeMember(
       folder: Ident,
-      account: AccountId,
+      userId: Ident,
       member: Ident
   ): F[OFolder.FolderChangeResult]
 
-  def delete(id: Ident, account: AccountId): F[OFolder.FolderChangeResult]
+  def delete(id: Ident, userId: Ident): F[OFolder.FolderChangeResult]
 }
 
 object OFolder {
@@ -94,23 +99,35 @@ object OFolder {
   def apply[F[_]](store: Store[F]): Resource[F, OFolder[F]] =
     Resource.pure[F, OFolder[F]](new OFolder[F] {
       def findAll(
-          account: AccountId,
+          collectiveId: CollectiveId,
+          userId: Ident,
           ownerLogin: Option[Ident],
           query: Option[String],
           order: FolderOrder
       ): F[Vector[FolderItem]] =
         store.transact(
-          QFolder.findAll(account, None, ownerLogin, query, FolderOrder(order))
+          QFolder.findAll(
+            collectiveId,
+            userId,
+            None,
+            ownerLogin,
+            query,
+            FolderOrder(order)
+          )
         )
 
-      def findById(id: Ident, account: AccountId): F[Option[FolderDetail]] =
-        store.transact(QFolder.findById(id, account))
+      def findById(
+          id: Ident,
+          collectiveId: CollectiveId,
+          userId: Ident
+      ): F[Option[FolderDetail]] =
+        store.transact(QFolder.findById(id, collectiveId, userId))
 
-      def add(folder: RFolder, login: Option[Ident]): F[AddResult] = {
-        val insert = login match {
-          case Some(n) =>
+      def add(folder: RFolder, userId: Option[Ident]): F[AddResult] = {
+        val insert = userId match {
+          case Some(uid) =>
             for {
-              user <- RUser.findByAccount(AccountId(folder.collectiveId, n))
+              user <- RUser.findById(uid, folder.collectiveId.some)
               s = user.map(u => folder.copy(owner = u.uid)).getOrElse(folder)
               n <- RFolder.insert(s)
             } yield n
@@ -124,26 +141,26 @@ object OFolder {
 
       def changeName(
           folder: Ident,
-          account: AccountId,
+          userId: Ident,
           name: String
       ): F[FolderChangeResult] =
-        store.transact(QFolder.changeName(folder, account, name))
+        store.transact(QFolder.changeName(folder, userId, name))
 
       def addMember(
           folder: Ident,
-          account: AccountId,
+          userId: Ident,
           member: Ident
       ): F[FolderChangeResult] =
-        store.transact(QFolder.addMember(folder, account, member))
+        store.transact(QFolder.addMember(folder, userId, member))
 
       def removeMember(
           folder: Ident,
-          account: AccountId,
+          userId: Ident,
           member: Ident
       ): F[FolderChangeResult] =
-        store.transact(QFolder.removeMember(folder, account, member))
+        store.transact(QFolder.removeMember(folder, userId, member))
 
-      def delete(id: Ident, account: AccountId): F[FolderChangeResult] =
-        store.transact(QFolder.delete(id, account))
+      def delete(id: Ident, userId: Ident): F[FolderChangeResult] =
+        store.transact(QFolder.delete(id, userId))
     })
 }

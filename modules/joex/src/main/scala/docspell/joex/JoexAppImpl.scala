@@ -9,8 +9,8 @@ package docspell.joex
 import cats.effect._
 import cats.implicits._
 import fs2.concurrent.SignallingRef
-
 import docspell.backend.MailAddressCodec
+import docspell.backend.joex.FindJobOwnerAccount
 import docspell.backend.ops._
 import docspell.common._
 import docspell.joex.emptytrash._
@@ -27,7 +27,6 @@ import docspell.scheduler.impl.{JobStoreModuleBuilder, SchedulerModuleBuilder}
 import docspell.scheduler.usertask.{UserTaskScope, UserTaskStore}
 import docspell.store.Store
 import docspell.store.records.{REmptyTrashSetting, RJobLog}
-
 import emil.javamail._
 import org.http4s.client.Client
 
@@ -117,6 +116,7 @@ object JoexAppImpl extends MailAddressCodec {
       jobStoreModule = JobStoreModuleBuilder(store)
         .withPubsub(pubSubT)
         .withEventSink(notificationMod)
+        .withFindJobOwner(FindJobOwnerAccount(store))
         .build
 
       tasks <- JoexTasks.resource(

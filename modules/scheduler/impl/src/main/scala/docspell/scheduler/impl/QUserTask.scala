@@ -39,14 +39,14 @@ object QUserTask {
     ): F[RPeriodicTask] =
       QUserTask
         .create[F](
-          ut.enabled,
-          scope,
-          ut.name,
-          ut.args,
-          subject.getOrElse(s"${scope.fold(_.user.id, _.id)}: ${ut.name.id}"),
-          Priority.Low,
-          ut.timer,
-          ut.summary
+          enabled = ut.enabled,
+          scope = scope,
+          task = ut.name,
+          args = ut.args,
+          subject = subject.getOrElse(s"${scope.toAccountId.asString}: ${ut.name.id}"),
+          priority = Priority.Low,
+          timer = ut.timer,
+          summary = ut.summary
         )
         .map(r => r.copy(id = ut.id))
   }
@@ -151,24 +151,24 @@ object QUserTask {
           .current[F]
           .map { now =>
             RPeriodicTask(
-              id,
-              enabled,
-              task,
-              scope.collective,
-              args,
-              subject,
-              scope.fold(_.user, identity),
-              priority,
-              None,
-              None,
-              timer,
-              timer
+              id = id,
+              enabled = enabled,
+              task = task,
+              group = scope.toAccountId.collective,
+              args = args,
+              subject = subject,
+              submitter = scope.toAccountId.user,
+              priority = priority,
+              worker = None,
+              marked = None,
+              timer = timer,
+              nextrun = timer
                 .nextElapse(now.atZone(Timestamp.UTC))
                 .map(_.toInstant)
                 .map(Timestamp.apply)
                 .getOrElse(Timestamp.Epoch),
-              now,
-              summary
+              created = now,
+              summary = summary
             )
           }
       )

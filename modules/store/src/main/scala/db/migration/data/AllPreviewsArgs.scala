@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.common
+package db.migration.data
 
+import docspell.common._
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 
@@ -14,9 +15,12 @@ import io.circe.{Decoder, Encoder}
   *
   * It can replace the current preview image or only generate one, if it is missing. If no
   * collective is specified, it considers all attachments.
+  *
+  * @deprecated
+  *   This structure has been replaced to use a `CollectiveId`
   */
 case class AllPreviewsArgs(
-    collective: Option[CollectiveId],
+    collective: Option[Ident],
     storeMode: MakePreviewArgs.StoreMode
 )
 

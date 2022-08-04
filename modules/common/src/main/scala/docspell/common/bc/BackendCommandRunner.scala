@@ -6,12 +6,12 @@
 
 package docspell.common.bc
 
-import docspell.common.Ident
+import docspell.common.CollectiveId
 
 trait BackendCommandRunner[F[_], A] {
 
-  def run(collective: Ident, cmd: BackendCommand): F[A]
+  def run(collective: CollectiveId, cmd: BackendCommand): F[A]
 
-  def runAll(collective: Ident, cmds: List[BackendCommand]): F[A]
+  def runAll(collective: CollectiveId, cmds: List[BackendCommand]): F[A]
 
 }

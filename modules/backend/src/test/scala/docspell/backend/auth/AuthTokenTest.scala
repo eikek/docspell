@@ -16,8 +16,18 @@ import scodec.bits.ByteVector
 
 class AuthTokenTest extends CatsEffectSuite {
 
-  val user = AccountId(Ident.unsafe("demo"), Ident.unsafe("demo"))
-  val john = AccountId(Ident.unsafe("demo"), Ident.unsafe("john"))
+  val user = AccountInfo(
+    CollectiveId(1),
+    Ident.unsafe("demo"),
+    Ident.unsafe("abc-def"),
+    Ident.unsafe("demo")
+  )
+  val john = AccountInfo(
+    CollectiveId(1),
+    Ident.unsafe("demo"),
+    Ident.unsafe("abc-hij"),
+    Ident.unsafe("john")
+  )
   val secret = ByteVector.fromValidHex("caffee")
   val otherSecret = ByteVector.fromValidHex("16bad")
 

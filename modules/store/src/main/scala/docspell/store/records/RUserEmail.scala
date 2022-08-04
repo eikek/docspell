@@ -77,8 +77,8 @@ object RUserEmail {
       now
     )
 
-  def fromAccount(
-      accId: AccountId,
+  def fromUser(
+      userId: Ident,
       name: Ident,
       smtpHost: String,
       smtpPort: Option[Int],
@@ -92,10 +92,9 @@ object RUserEmail {
     for {
       now <- OptionT.liftF(Timestamp.current[ConnectionIO])
       id <- OptionT.liftF(Ident.randomId[ConnectionIO])
-      user <- OptionT(RUser.findByAccount(accId))
     } yield RUserEmail(
       id,
-      user.uid,
+      userId,
       name,
       smtpHost,
       smtpPort,

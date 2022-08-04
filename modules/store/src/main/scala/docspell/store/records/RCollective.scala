@@ -37,6 +37,7 @@ object RCollective {
     val created = Column[Timestamp]("created", this)
 
     val all = NonEmptyList.of[Column[_]](id, name, state, language, integration, created)
+    val allNoId = NonEmptyList.fromListUnsafe(all.tail)
   }
 
   def makeDefault(collName: Ident, created: Timestamp): RCollective =
@@ -53,12 +54,17 @@ object RCollective {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  def insert(value: RCollective): ConnectionIO[Int] =
-    DML.insert(
-      T,
-      T.all,
-      fr"${value.id},${value.name},${value.state},${value.language},${value.integrationEnabled},${value.created}"
-    )
+  def insert(value: RCollective): ConnectionIO[CollectiveId] =
+    DML
+      .insertFragment(
+        T,
+        T.allNoId,
+        List(
+          fr"${value.name},${value.state},${value.language},${value.integrationEnabled},${value.created}"
+        )
+      )
+      .update
+      .withUniqueGeneratedKeys[CollectiveId](T.id.name)
 
   def update(value: RCollective): ConnectionIO[Int] =
     DML.update(
@@ -139,6 +145,11 @@ object RCollective {
     sql.query[RCollective].option
   }
 
+  def findByName(cname: Ident): ConnectionIO[Option[RCollective]] = {
+    val sql = run(select(T.all), from(T), T.name === cname)
+    sql.query[RCollective].option
+  }
+
   def findByItem(itemId: Ident): ConnectionIO[Option[RCollective]] = {
     val i = RItem.as("i")
     val c = RCollective.as("c")
@@ -151,6 +162,11 @@ object RCollective {
 
   def existsById(cid: CollectiveId): ConnectionIO[Boolean] = {
     val sql = Select(count(T.id).s, from(T), T.id === cid).build
+    sql.query[Int].unique.map(_ > 0)
+  }
+
+  def existsByName(name: Ident): ConnectionIO[Boolean] = {
+    val sql = Select(count(T.id).s, from(T), T.name === name).build
     sql.query[Int].unique.map(_ > 0)
   }
 

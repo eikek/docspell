@@ -28,16 +28,16 @@ import scodec.bits.ByteVector
 trait OShare[F[_]] {
 
   def findAll(
-      collective: Ident,
+      collective: CollectiveId,
       ownerLogin: Option[Ident],
       query: Option[String]
   ): F[List[ShareData]]
 
-  def delete(id: Ident, collective: Ident): F[Boolean]
+  def delete(id: Ident, collective: CollectiveId): F[Boolean]
 
   def addNew(share: OShare.NewShare): F[OShare.ChangeResult]
 
-  def findOne(id: Ident, collective: Ident): OptionT[F, ShareData]
+  def findOne(id: Ident, collective: CollectiveId): OptionT[F, ShareData]
 
   def update(
       id: Ident,
@@ -71,7 +71,12 @@ trait OShare[F[_]] {
     */
   def parseQuery(share: ShareQuery, qs: String): QueryParseResult
 
-  def sendMail(account: AccountId, connection: Ident, mail: ShareMail): F[SendResult]
+  def sendMail(
+      collectiveId: CollectiveId,
+      userId: Ident,
+      connection: Ident,
+      mail: ShareMail
+  ): F[SendResult]
 }
 
 object OShare {
@@ -97,7 +102,7 @@ object OShare {
     case object NotFound extends SendResult
   }
 
-  final case class ShareQuery(id: Ident, account: AccountId, query: ItemQuery)
+  final case class ShareQuery(id: Ident, account: AccountInfo, query: ItemQuery)
 
   sealed trait VerifyResult {
     def toEither: Either[String, ShareToken] =
@@ -143,7 +148,7 @@ object OShare {
     def queryWithFulltext: ChangeResult = QueryWithFulltext
   }
 
-  final case class ShareData(share: RShare, user: RUser)
+  final case class ShareData(share: RShare, account: AccountInfo)
 
   def apply[F[_]: Async](
       store: Store[F],
@@ -155,7 +160,7 @@ object OShare {
       private[this] val logger = docspell.logging.getLogger[F]
 
       def findAll(
-          collective: Ident,
+          collective: CollectiveId,
           ownerLogin: Option[Ident],
           query: Option[String]
       ): F[List[ShareData]] =
@@ -163,7 +168,7 @@ object OShare {
           .transact(RShare.findAllByCollective(collective, ownerLogin, query))
           .map(_.map(ShareData.tupled))
 
-      def delete(id: Ident, collective: Ident): F[Boolean] =
+      def delete(id: Ident, collective: CollectiveId): F[Boolean] =
         store.transact(RShare.deleteByIdAndCid(id, collective)).map(_ > 0)
 
       def addNew(share: NewShare): F[ChangeResult] =
@@ -225,7 +230,7 @@ object OShare {
           case _                                           => true
         }
 
-      def findOne(id: Ident, collective: Ident): OptionT[F, ShareData] =
+      def findOne(id: Ident, collective: CollectiveId): OptionT[F, ShareData] =
         RShare
           .findOne(id, collective)
           .mapK(store.transform)
@@ -286,8 +291,8 @@ object OShare {
         RShare
           .findCurrentActive(id)
           .mapK(store.transform)
-          .map { case (share, user) =>
-            ShareQuery(share.id, user.accountId, share.query)
+          .map { case (share, accInfo) =>
+            ShareQuery(share.id, accInfo, share.query)
           }
 
       def findAttachmentPreview(
@@ -298,7 +303,7 @@ object OShare {
           sq <- findShareQuery(shareId)
           _ <- checkAttachment(sq, AttachId(attachId.id))
           res <- OptionT(
-            itemSearch.findAttachmentPreview(attachId, sq.account.collective)
+            itemSearch.findAttachmentPreview(attachId, sq.account.collectiveId)
           )
         } yield res
 
@@ -306,14 +311,14 @@ object OShare {
         for {
           sq <- findShareQuery(shareId)
           _ <- checkAttachment(sq, AttachId(attachId.id))
-          res <- OptionT(itemSearch.findAttachment(attachId, sq.account.collective))
+          res <- OptionT(itemSearch.findAttachment(attachId, sq.account.collectiveId))
         } yield res
 
       def findItem(itemId: Ident, shareId: Ident): OptionT[F, ItemData] =
         for {
           sq <- findShareQuery(shareId)
           _ <- checkAttachment(sq, Expr.itemIdEq(itemId.id))
-          res <- OptionT(itemSearch.findItem(itemId, sq.account.collective))
+          res <- OptionT(itemSearch.findItem(itemId, sq.account.collectiveId))
         } yield res
 
       /** Check whether the attachment with the given id is in the results of the given
@@ -343,12 +348,13 @@ object OShare {
           }
 
       def sendMail(
-          account: AccountId,
+          collectiveId: CollectiveId,
+          userId: Ident,
           connection: Ident,
           mail: ShareMail
       ): F[SendResult] = {
         val getSmtpSettings: OptionT[F, RUserEmail] =
-          OptionT(store.transact(RUserEmail.getByName(account, connection)))
+          OptionT(store.transact(RUserEmail.getByName(userId, connection)))
 
         def createMail(sett: RUserEmail): OptionT[F, Mail[F]] = {
           import _root_.emil.builder._
@@ -366,20 +372,19 @@ object OShare {
           )
         }
 
-        def sendMail(cfg: MailConfig, mail: Mail[F]): F[Either[SendResult, String]] =
+        def doSendMail(cfg: MailConfig, mail: Mail[F]): F[Either[SendResult, String]] =
           emil(cfg).send(mail).map(_.head).attempt.map(_.left.map(SendResult.SendFailure))
 
         (for {
           _ <- RShare
             .findCurrentActive(mail.shareId)
-            .filter(_._2.cid == account.collective)
+            .filter(_._2.collectiveId == collectiveId)
             .mapK(store.transform)
           mailCfg <- getSmtpSettings
           mail <- createMail(mailCfg)
-          mid <- OptionT.liftF(sendMail(mailCfg.toMailConfig, mail))
+          mid <- OptionT.liftF(doSendMail(mailCfg.toMailConfig, mail))
           conv = mid.fold(identity, id => SendResult.Success(id))
         } yield conv).getOrElse(SendResult.NotFound)
       }
-
     }
 }

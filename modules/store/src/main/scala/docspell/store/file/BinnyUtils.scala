@@ -24,7 +24,7 @@ import scodec.bits.ByteVector
 object BinnyUtils {
 
   def fileKeyToBinaryId(fk: FileKey): BinaryId =
-    BinaryId(s"${fk.collective.id}/${fk.category.id.id}/${fk.id.id}")
+    BinaryId(s"${fk.collective.valueAsString}/${fk.category.id.id}/${fk.id.id}")
 
   def fileKeyPartToPrefix(fkp: FileKeyPart): Option[String] =
     fkp match {
@@ -38,7 +38,7 @@ object BinnyUtils {
     bid.id.split('/').toList match {
       case cId :: catId :: fId :: Nil =>
         for {
-          coll <- Ident.fromString(cId)
+          coll <- CollectiveId.fromString(cId)
           cat <- FileCategory.fromString(catId)
           file <- Ident.fromString(fId)
         } yield FileKey(coll, cat, file)
@@ -78,7 +78,7 @@ object BinnyUtils {
 
     def toPath(base: Path, binaryId: BinaryId): Path = {
       val fkey = unsafeBinaryIdToFileKey(binaryId)
-      base / fkey.collective.id / fkey.category.id.id / fkey.id.id / "file"
+      base / s"${fkey.collective.value}" / fkey.category.id.id / fkey.id.id / "file"
     }
 
     def toId(file: Path): Option[BinaryId] =
@@ -87,7 +87,11 @@ object BinnyUtils {
         cat <- id.parent
         fcat <- FileCategory.fromString(cat.asId.id).toOption
         coll <- cat.parent
-        fkey = FileKey(Ident.unsafe(coll.asId.id), fcat, Ident.unsafe(id.asId.id))
+        fkey = FileKey(
+          CollectiveId.unsafeFromString(coll.asId.id),
+          fcat,
+          Ident.unsafe(id.asId.id)
+        )
       } yield fileKeyToBinaryId(fkey)
 
     PathMapping(toPath)(toId)

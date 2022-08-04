@@ -26,6 +26,8 @@ trait DoobieMeta {
   implicit val metaLanguage: Meta[Language] =
     Meta[String].timap(Language.unsafe)(_.iso3)
 
+  implicit val metaCollectiveId: Meta[CollectiveId] =
+    Meta[Long].timap(CollectiveId(_))(_.value)
 }
 
 object DoobieMeta {

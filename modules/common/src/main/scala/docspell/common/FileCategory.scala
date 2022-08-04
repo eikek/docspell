@@ -20,7 +20,7 @@ sealed trait FileCategory { self: Product =>
   final def id: Ident =
     Ident.unsafe(self.productPrefix.toLowerCase)
 
-  def toFileKey(collective: Ident, fileId: Ident): FileKey =
+  def toFileKey(collective: CollectiveId, fileId: Ident): FileKey =
     common.FileKey(collective, this, fileId)
 }
 

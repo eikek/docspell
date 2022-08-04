@@ -10,13 +10,13 @@ import cats.data.{NonEmptyList => Nel, OptionT}
 import cats.effect._
 import cats.syntax.all._
 import fs2.Stream
-
 import docspell.backend.JobFactory
 import docspell.common.MakePreviewArgs.StoreMode
 import docspell.common._
 import docspell.files.TikaMimetype
 import docspell.ftsclient.{FtsClient, TextData}
 import docspell.scheduler.JobStore
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.Store
 import docspell.store.queries.QAttachment
 import docspell.store.records._
@@ -24,21 +24,22 @@ import docspell.store.records._
 trait OAttachment[F[_]] {
 
   def setExtractedText(
-      collective: Ident,
+      collective: CollectiveId,
       itemId: Ident,
       attachId: Ident,
       newText: F[String]
   ): F[Unit]
 
   def addOrReplacePdf(
-      collective: Ident,
+      collective: CollectiveId,
       attachId: Ident,
       pdfData: Stream[F, Byte],
-      regeneratePreview: Boolean
+      regeneratePreview: Boolean,
+      submitter: UserTaskScope
   ): F[Unit]
 
   def addOrReplacePreview(
-      collective: Ident,
+      collective: CollectiveId,
       attachId: Ident,
       imageData: Stream[F, Byte]
   ): F[Unit]
@@ -55,7 +56,7 @@ object OAttachment {
       private[this] val logger = docspell.logging.getLogger[F]
 
       def setExtractedText(
-          collective: Ident,
+          collective: CollectiveId,
           itemId: Ident,
           attachId: Ident,
           newText: F[String]
@@ -104,24 +105,22 @@ object OAttachment {
         } yield ()
 
       def addOrReplacePdf(
-          collective: Ident,
+          collective: CollectiveId,
           attachId: Ident,
           pdfData: Stream[F, Byte],
-          regeneratePreview: Boolean
+          regeneratePreview: Boolean,
+          submitter: UserTaskScope
       ): F[Unit] = {
         def generatePreview(ra: RAttachment): F[Unit] =
           JobFactory
-            .makePreview(MakePreviewArgs(ra.id, StoreMode.Replace), None)
+            .makePreview(MakePreviewArgs(ra.id, StoreMode.Replace), submitter)
             .map(_.encode)
             .flatMap(jobStore.insert) *>
             logger.info(s"Job submitted to re-generate preview from new pdf")
 
         def generatePageCount(ra: RAttachment): F[Unit] =
           JobFactory
-            .makePageCount(
-              MakePageCountArgs(ra.id),
-              AccountId(collective, DocspellSystem.user).some
-            )
+            .makePageCount(MakePageCountArgs(ra.id), submitter)
             .map(_.encode)
             .flatMap(jobStore.insert) *>
             logger.info(s"Job submitted to find page count from new pdf")
@@ -168,7 +167,7 @@ object OAttachment {
       }
 
       def addOrReplacePreview(
-          collective: Ident,
+          collective: CollectiveId,
           attachId: Ident,
           imageData: Stream[F, Byte]
       ): F[Unit] = {

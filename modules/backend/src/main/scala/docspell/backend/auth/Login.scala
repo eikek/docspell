@@ -167,7 +167,7 @@ object Login {
         (for {
           _ <- validateToken
           key <- EitherT.fromOptionF(
-            store.transact(RTotp.findEnabledByLogin(sf.token.account.userId, true)),
+            store.transact(RTotp.findEnabledByUserId(sf.token.account.userId, true)),
             Result.invalidAuth
           )
           now <- EitherT.right[Result](Timestamp.current[F])

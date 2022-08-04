@@ -10,7 +10,6 @@ import cats.data.OptionT
 import cats.effect.kernel.Sync
 import cats.syntax.all._
 import fs2.io.file.{Files, Path}
-
 import docspell.addons._
 import docspell.addons.out.{AddonOutput, ItemFile, NewItem}
 import docspell.backend.JobFactory
@@ -20,6 +19,7 @@ import docspell.common.bc.BackendCommandRunner
 import docspell.common.syntax.file._
 import docspell.logging.Logger
 import docspell.scheduler.JobStore
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.Store
 import docspell.store.records._
 
@@ -32,7 +32,7 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
 
   def onResult(
       logger: Logger[F],
-      collective: Ident,
+      collective: CollectiveId,
       result: AddonExecutionResult,
       outputDir: Path
   ): F[Unit] =
@@ -45,7 +45,7 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
 
   def onSuccess(
       logger: Logger[F],
-      collective: Ident,
+      collective: CollectiveId,
       output: AddonOutput,
       outputDir: Path
   ): F[Unit] =
@@ -60,7 +60,7 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
 
   def submitNewItem(
       logger: Logger[F],
-      collective: Ident,
+      collective: CollectiveId,
       outputDir: Path
   )(newItem: NewItem): F[Unit] =
     for {
@@ -85,13 +85,17 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
         newItem.toProcessMeta(collective, collLang, "addon"),
         uploaded.map(f => ProcessItemArgs.File(f._1.some, f._2))
       )
-      account = AccountId(collective, DocspellSystem.user)
-      job <- JobFactory.processItem(args, account, Priority.High, None)
+      job <- JobFactory.processItem(
+        args,
+        UserTaskScope.collective(collective),
+        Priority.High,
+        None
+      )
       _ <- jobStore.insert(job.encode)
       _ <- logger.debug(s"Submitted job for processing: ${job.id}")
     } yield ()
 
-  def updateOne(logger: Logger[F], collective: Ident, outputDir: Path)(
+  def updateOne(logger: Logger[F], collective: CollectiveId, outputDir: Path)(
       itemFile: ItemFile
   ): F[Unit] =
     for {
@@ -123,7 +127,7 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
 
   def submitNewFiles(
       logger: Logger[F],
-      collective: Ident,
+      collective: CollectiveId,
       outputDir: Path
   )(itemFile: ItemFile): F[Unit] =
     for {
@@ -131,7 +135,7 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
       collLang <- store.transact(RCollective.findLanguage(collective))
       newFiles <- itemFile.resolveNewFiles(logger, outputDir)
       byMeta = newFiles.groupBy(_._1.metadata).view.mapValues(_.map(_._2))
-      account = AccountId(collective, DocspellSystem.user)
+      submitter = UserTaskScope.collective(collective)
       _ <- byMeta.toList.traverse_ { case (meta, files) =>
         for {
           uploaded <- files.traverse(file =>
@@ -151,7 +155,7 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
             meta.toProcessMeta(collective, itemFile.itemId, collLang, "addon"),
             uploaded.map(f => ProcessItemArgs.File(f._1.some, f._2))
           )
-          job <- JobFactory.processItem(args, account, Priority.High, None)
+          job <- JobFactory.processItem(args, submitter, Priority.High, None)
           _ <- jobStore.insert(job.encode)
           _ <- logger.debug(s"Submitted job for processing: ${job.id}")
         } yield ()
@@ -168,19 +172,29 @@ final private[joex] class AddonPostProcess[F[_]: Sync: Files](
       .semiflatMap(run)
       .getOrElseF(logger.warn(s"Cannot find attachment for $key to update text!"))
 
-  private def setText(collective: Ident, ra: RAttachment, readText: F[String]): F[Unit] =
+  private def setText(
+      collective: CollectiveId,
+      ra: RAttachment,
+      readText: F[String]
+  ): F[Unit] =
     attachOps.setExtractedText(collective, ra.itemId, ra.id, readText)
 
   private def replacePdf(
-      collective: Ident,
+      collective: CollectiveId,
       ra: RAttachment,
       file: Path,
       generatePreview: Boolean
   ): F[Unit] =
-    attachOps.addOrReplacePdf(collective, ra.id, file.readAll, generatePreview)
+    attachOps.addOrReplacePdf(
+      collective,
+      ra.id,
+      file.readAll,
+      generatePreview,
+      UserTaskScope.collective(collective)
+    )
 
   private def replacePreview(
-      collective: Ident,
+      collective: CollectiveId,
       attachId: Ident,
       imageData: Path
   ): F[Unit] =

@@ -24,7 +24,7 @@ object FileUrlReader {
       scheme = Nel.of(scheme),
       authority = Some(""),
       path = LenientUri.NonEmptyPath(
-        Nel.of(key.collective.id, key.category.id.id, key.id.id),
+        Nel.of(key.collective.valueAsString, key.category.id.id, key.id.id),
         false
       ),
       query = None,

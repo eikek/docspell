@@ -26,7 +26,7 @@ trait FileRepository[F[_]] {
   def delete(key: FileKey): F[Unit]
 
   def save(
-      collective: Ident,
+      collective: CollectiveId,
       category: FileCategory,
       hint: MimeTypeHint
   ): Pipe[F, Byte, FileKey]

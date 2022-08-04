@@ -99,8 +99,8 @@ class TempFtsOpsTest extends DatabaseTest {
     for {
       today <- IO(LocalDate.now())
       account <- store
-        .transact(QLogin.findUser(DocspellSystem.account))
-        .map(_.get.account)
+        .transact(QLogin.findAccount(DocspellSystem.account))
+        .map(_.get)
       tempTable = ftsResults
         .through(TempFtsOps.prepareTable(store.dbms, "fts_result"))
         .compile

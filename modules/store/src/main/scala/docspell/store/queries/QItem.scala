@@ -666,7 +666,7 @@ object QItem extends FtsSupport {
 
   final case class NameAndNotes(
       id: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident],
       name: String,
       notes: Option[String],

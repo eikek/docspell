@@ -123,8 +123,8 @@ trait MigrationTasks {
   private def saveChannel(ch: Channel, account: AccountId): ConnectionIO[ChannelRef] =
     (for {
       newId <- OptionT.liftF(Ident.randomId[ConnectionIO])
-      userData <- OptionT(QLogin.findUser(account))
-      userId = userData.account.userId
+      userData <- OptionT(QLogin.findAccount(account))
+      userId = userData.userId
       r <- RNotificationChannel.fromChannel(ch, newId, userId)
       _ <- OptionT.liftF(RNotificationChannel.insert(r))
       _ <- OptionT.liftF(
@@ -174,8 +174,8 @@ trait MigrationTasks {
       }
 
     for {
-      userData <- OptionT(QLogin.findUser(old.account))
-      userId = userData.account.userId
+      userData <- OptionT(QLogin.findAccount(old.account))
+      userId = userData.userId
       id <- OptionT.liftF(Ident.randomId[ConnectionIO])
       now <- OptionT.liftF(Timestamp.current[ConnectionIO])
       chName = Some("migrate notify items")

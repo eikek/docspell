@@ -125,8 +125,8 @@ object RSource {
   private[records] def findEnabledSql(id: Ident): Fragment =
     run(select(table.all), from(table), where(table.sid === id, table.enabled === true))
 
-  def findCollective(sourceId: Ident): ConnectionIO[Option[Ident]] =
-    run(select(table.cid), from(table), table.sid === sourceId).query[Ident].option
+  def findCollectiveId(sourceId: Ident): ConnectionIO[Option[CollectiveId]] =
+    run(select(table.cid), from(table), table.sid === sourceId).query[CollectiveId].option
 
   def findAll(
       coll: CollectiveId,
