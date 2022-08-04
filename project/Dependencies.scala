@@ -39,7 +39,7 @@ object Dependencies {
   val PdfboxVersion = "2.0.26"
   val PdfjsViewerVersion = "2.12.313"
   val PoiVersion = "4.1.2"
-  val PostgresVersion = "42.4.0"
+  val PostgresVersion = "42.4.1"
   val PureConfigVersion = "0.17.1"
   val ScalaJavaTimeVersion = "2.4.0"
   val ScodecBitsVersion = "1.1.34"
