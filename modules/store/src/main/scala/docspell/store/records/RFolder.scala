@@ -30,12 +30,12 @@ object RFolder {
   def newFolder[F[_]: Sync](
       name: String,
       collective: CollectiveId,
-      user: Ident
+      ownerUserId: Ident
   ): F[RFolder] =
     for {
       nId <- Ident.randomId[F]
       now <- Timestamp.current[F]
-    } yield RFolder(nId, name, collective, user, now)
+    } yield RFolder(nId, name, collective, ownerUserId, now)
 
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "folder"

@@ -28,7 +28,6 @@ trait OCollective[F[_]] {
 
   def updateSettings(
       collective: CollectiveId,
-      collectiveName: Ident,
       settings: OCollective.Settings
   ): F[AddResult]
 
@@ -147,7 +146,6 @@ object OCollective {
 
       def updateSettings(
           collectiveId: CollectiveId,
-          collectiveName: Ident,
           sett: Settings
       ): F[AddResult] =
         store

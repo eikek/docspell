@@ -38,7 +38,7 @@ object CustomFieldRoutes {
         val order = sort.getOrElse(CustomFieldOrder.NameAsc)
         for {
           fs <- backend.customFields.findAll(
-            user.account.collective,
+            user.account.collectiveId,
             param.map(_.q),
             order
           )
@@ -54,7 +54,7 @@ object CustomFieldRoutes {
 
       case GET -> Root / Ident(id) =>
         (for {
-          field <- OptionT(backend.customFields.findById(user.account.collective, id))
+          field <- OptionT(backend.customFields.findById(user.account.collectiveId, id))
           res <- OptionT.liftF(Ok(convertField(field)))
         } yield res).getOrElseF(NotFound(BasicResult(false, "Not found")))
 
@@ -67,7 +67,7 @@ object CustomFieldRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          res <- backend.customFields.delete(user.account.collective, id)
+          res <- backend.customFields.delete(user.account.collectiveId, id)
           resp <- Ok(convertResult(res))
         } yield resp
     }
@@ -88,7 +88,7 @@ object CustomFieldRoutes {
       id,
       in.name,
       in.label,
-      user.account.collective,
+      user.account.collectiveId,
       in.ftype,
       Timestamp.Epoch
     )
@@ -101,7 +101,7 @@ object CustomFieldRoutes {
       in.name,
       in.label,
       in.ftype,
-      user.account.collective
+      user.account.collectiveId
     )
 
   private def convertField(f: CustomFieldData): CustomField =

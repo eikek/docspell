@@ -16,7 +16,11 @@ import docspell.notification.api._
 import docspell.store.queries.QLogin
 import docspell.store.records._
 
-import db.migration.data._
+import db.migration.data.{
+  PeriodicDueItemsArgs => PeriodicDueItemsArgsLegacy,
+  PeriodicQueryArgs => PeriodicQueryArgsLegacy,
+  _
+}
 import doobie._
 import doobie.implicits._
 import doobie.util.transactor.Strategy
@@ -75,8 +79,8 @@ trait MigrationTasks {
         ref.flatMap(channelRef =>
           RPeriodicTask.updateTask(
             old.id,
-            PeriodicQueryArgs.taskName,
-            PeriodicQueryArgs(
+            PeriodicQueryArgsLegacy.taskName,
+            PeriodicQueryArgsLegacy(
               oldArgs.account,
               NonEmptyList.of(channelRef),
               oldArgs.query,
@@ -105,8 +109,8 @@ trait MigrationTasks {
         ref.flatMap(channelRef =>
           RPeriodicTask.updateTask(
             old.id,
-            PeriodicDueItemsArgs.taskName,
-            PeriodicDueItemsArgs(
+            PeriodicDueItemsArgsLegacy.taskName,
+            PeriodicDueItemsArgsLegacy(
               oldArgs.account,
               NonEmptyList.of(channelRef),
               oldArgs.remindDays,
@@ -147,7 +151,7 @@ trait MigrationTasks {
             RPeriodicTask
               .updateTask(
                 old.id,
-                PeriodicDueItemsArgs.taskName,
+                PeriodicDueItemsArgsLegacy.taskName,
                 a.asJson.noSpaces
               )
           )
@@ -163,7 +167,7 @@ trait MigrationTasks {
 
   private def convertArgs(
       old: NotifyDueItemsArgs
-  ): OptionT[ConnectionIO, PeriodicDueItemsArgs] = {
+  ): OptionT[ConnectionIO, PeriodicDueItemsArgsLegacy] = {
     val recs = old.recipients
       .map(MailAddress.parse)
       .flatMap {
@@ -188,7 +192,7 @@ trait MigrationTasks {
         now
       )
       _ <- OptionT.liftF(RNotificationChannelMail.insert(ch))
-      args = PeriodicDueItemsArgs(
+      args = PeriodicDueItemsArgsLegacy(
         old.account,
         NonEmptyList.of(ChannelRef(ch.id, ChannelType.Mail, chName)),
         old.remindDays,

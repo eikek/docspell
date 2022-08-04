@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-package docspell.common
+package db.migration.data
 
+import docspell.common._
 import docspell.common.syntax.all._
 
 import io.circe._
@@ -17,10 +18,13 @@ import io.circe.generic.semiauto._
   *
   * If the structure changes, there must be some database migration to update or remove
   * the json data of the corresponding task.
+  *
+  * @deprecated
+  *   replaced with a version using `AccountInfo`
   */
 case class ScanMailboxArgs(
     // the docspell user account
-    account: AccountInfo,
+    account: AccountId,
     // the configured imap connection
     imapConnection: Ident,
     // scan folders recursively

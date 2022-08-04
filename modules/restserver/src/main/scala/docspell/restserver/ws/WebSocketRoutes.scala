@@ -10,10 +10,9 @@ import cats.effect.Async
 import cats.implicits._
 import fs2.concurrent.Topic
 import fs2.{Pipe, Stream}
-
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
-
+import docspell.scheduler.usertask.UserTaskScope
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.websocket.WebSocketBuilder2
@@ -34,7 +33,7 @@ object WebSocketRoutes {
     HttpRoutes.of { case GET -> Root =>
       val init =
         for {
-          jc <- backend.job.getUnfinishedJobCount(user.account.collective)
+          jc <- backend.job.getUnfinishedJobCount(UserTaskScope(user.account))
           msg = OutputEvent.JobsWaiting(user.account.collective, jc)
         } yield Text(msg.encode)
 

@@ -9,11 +9,11 @@ package docspell.backend.ops
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-
 import docspell.backend.ops.OJob.{CollectiveQueueState, JobCancelResult}
 import docspell.common._
 import docspell.pubsub.api.PubSubT
 import docspell.scheduler.msg.JobDone
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.Store
 import docspell.store.UpdateResult
 import docspell.store.queries.QJobQueue
@@ -21,13 +21,13 @@ import docspell.store.records.{RJob, RJobLog}
 
 trait OJob[F[_]] {
 
-  def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState]
+  def queueState(collective: UserTaskScope, maxResults: Int): F[CollectiveQueueState]
 
-  def cancelJob(id: Ident, collective: Ident): F[JobCancelResult]
+  def cancelJob(id: Ident, collective: UserTaskScope): F[JobCancelResult]
 
-  def setPriority(id: Ident, collective: Ident, prio: Priority): F[UpdateResult]
+  def setPriority(id: Ident, collective: UserTaskScope, prio: Priority): F[UpdateResult]
 
-  def getUnfinishedJobCount(collective: Ident): F[Int]
+  def getUnfinishedJobCount(collective: UserTaskScope): F[Int]
 }
 
 object OJob {
@@ -61,20 +61,34 @@ object OJob {
     Resource.pure[F, OJob[F]](new OJob[F] {
       private[this] val logger = docspell.logging.getLogger[F]
 
-      def queueState(collective: Ident, maxResults: Int): F[CollectiveQueueState] =
+      private def scopeToGroup(s: UserTaskScope) =
+        s.collectiveId
+          .map(_.valueAsIdent)
+          .getOrElse(DocspellSystem.taskGroup)
+
+      def queueState(
+          collective: UserTaskScope,
+          maxResults: Int
+      ): F[CollectiveQueueState] =
         store
           .transact(
-            QJobQueue.queueStateSnapshot(collective, maxResults.toLong)
+            QJobQueue.queueStateSnapshot(scopeToGroup(collective), maxResults.toLong)
           )
           .map(t => JobDetail(t._1, t._2))
           .compile
           .toVector
           .map(CollectiveQueueState)
 
-      def setPriority(id: Ident, collective: Ident, prio: Priority): F[UpdateResult] =
-        UpdateResult.fromUpdate(store.transact(RJob.setPriority(id, collective, prio)))
+      def setPriority(
+          id: Ident,
+          collective: UserTaskScope,
+          prio: Priority
+      ): F[UpdateResult] =
+        UpdateResult.fromUpdate(
+          store.transact(RJob.setPriority(id, scopeToGroup(collective), prio))
+        )
 
-      def cancelJob(id: Ident, collective: Ident): F[JobCancelResult] = {
+      def cancelJob(id: Ident, collective: UserTaskScope): F[JobCancelResult] = {
         def remove(job: RJob): F[JobCancelResult] =
           for {
             n <- store.transact(RJob.delete(job.id))
@@ -99,7 +113,9 @@ object OJob {
           }
 
         (for {
-          job <- OptionT(store.transact(RJob.findByIdAndGroup(id, collective)))
+          job <- OptionT(
+            store.transact(RJob.findByIdAndGroup(id, scopeToGroup(collective)))
+          )
           result <- OptionT.liftF(
             if (job.isInProgress) tryCancel(job)
             else remove(job)
@@ -108,7 +124,7 @@ object OJob {
           .getOrElse(JobCancelResult.jobNotFound)
       }
 
-      def getUnfinishedJobCount(collective: Ident): F[Int] =
-        store.transact(RJob.getUnfinishedCount(collective))
+      def getUnfinishedJobCount(collective: UserTaskScope): F[Int] =
+        store.transact(RJob.getUnfinishedCount(scopeToGroup(collective)))
     })
 }

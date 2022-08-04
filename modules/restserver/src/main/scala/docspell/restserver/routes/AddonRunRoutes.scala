@@ -9,12 +9,11 @@ package docspell.restserver.routes
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.syntax.all._
-
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.restapi.model._
 import docspell.restserver.http4s.ThrowableResponseMapper
-
+import docspell.scheduler.usertask.UserTaskScope
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl
@@ -29,9 +28,10 @@ object AddonRunRoutes {
       for {
         input <- req.as[AddonRunExistingItem]
         _ <- backend.addons.runAddonForItem(
-          token.account,
+          token.account.collectiveId,
           NonEmptyList(input.itemId, input.additionalItems),
-          input.addonRunConfigIds.toSet
+          input.addonRunConfigIds.toSet,
+          UserTaskScope(token.account)
         )
         resp <- Ok(BasicResult(true, "Job for running addons submitted."))
       } yield resp

@@ -33,7 +33,13 @@ object UploadRoutes {
     val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
     import dsl._
 
-    val submitting = submitFiles[F](backend, cfg, Right(user.account)) _
+    val submitting =
+      submitFiles[F](
+        backend,
+        cfg,
+        Right(user.account.collectiveId),
+        user.account.userId.some
+      ) _
 
     HttpRoutes.of {
       case req @ POST -> Root / "item" =>
@@ -53,7 +59,7 @@ object UploadRoutes {
         (for {
           _ <- OptionT(backend.collective.findEnabledSource(srcId))
           res <- OptionT.liftF(
-            submitFiles(backend, cfg, Left(srcId))(req, None, Priority.Low, dsl)
+            submitFiles(backend, cfg, Left(srcId), None)(req, None, Priority.Low, dsl)
           )
         } yield res).getOrElseF(NotFound())
 
@@ -61,7 +67,12 @@ object UploadRoutes {
         (for {
           _ <- OptionT(backend.collective.findEnabledSource(srcId))
           res <- OptionT.liftF(
-            submitFiles(backend, cfg, Left(srcId))(req, Some(itemId), Priority.Low, dsl)
+            submitFiles(backend, cfg, Left(srcId), None)(
+              req,
+              Some(itemId),
+              Priority.Low,
+              dsl
+            )
           )
         } yield res).getOrElseF(NotFound())
     }
@@ -70,7 +81,8 @@ object UploadRoutes {
   private def submitFiles[F[_]: Async](
       backend: BackendApp[F],
       cfg: Config,
-      accOrSrc: Either[Ident, AccountId]
+      accOrSrc: Either[Ident, CollectiveId],
+      userId: Option[Ident]
   )(
       req: Request[F],
       itemId: Option[Ident],
@@ -96,7 +108,7 @@ object UploadRoutes {
           prio,
           cfg.backend.files.validMimeTypes
         )
-        result <- backend.upload.submitEither(updata, accOrSrc, itemId)
+        result <- backend.upload.submitEither(updata, accOrSrc, userId, itemId)
         res <- Ok(basicResult(result))
       } yield res
     }

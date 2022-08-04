@@ -35,9 +35,9 @@ object ShareRoutes {
 
     HttpRoutes.of {
       case GET -> Root :? QP.Query(q) :? QP.OwningFlag(owning) =>
-        val login = if (owning) Some(user.account.user) else None
+        val login = if (owning) Some(user.account.login) else None
         for {
-          all <- backend.share.findAll(user.account.collective, login, q)
+          all <- backend.share.findAll(user.account.collectiveId, login, q)
           now <- Timestamp.current[F]
           res <- Ok(ShareList(all.map(mkShareDetail(now))))
         } yield res
@@ -52,7 +52,7 @@ object ShareRoutes {
 
       case GET -> Root / Ident(id) =>
         (for {
-          share <- backend.share.findOne(id, user.account.collective)
+          share <- backend.share.findOne(id, user.account.collectiveId)
           now <- OptionT.liftF(Timestamp.current[F])
           resp <- OptionT.liftF(Ok(mkShareDetail(now)(share)))
         } yield resp).getOrElseF(NotFound())
@@ -67,7 +67,7 @@ object ShareRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          del <- backend.share.delete(id, user.account.collective)
+          del <- backend.share.delete(id, user.account.collectiveId)
           resp <- Ok(BasicResult(del, if (del) "Share deleted." else "Deleting failed."))
         } yield resp
 
@@ -75,7 +75,10 @@ object ShareRoutes {
         for {
           in <- req.as[SimpleShareMail]
           mail = convertIn(in)
-          res <- mail.traverse(m => backend.share.sendMail(user.account, name, m))
+          res <- mail.traverse(m =>
+            backend.share
+              .sendMail(user.account.collectiveId, user.account.userId, name, m)
+          )
           resp <- res.fold(
             err => Ok(BasicResult(false, s"Invalid mail data: $err")),
             res => Ok(convertOut(res))
@@ -111,7 +114,7 @@ object ShareRoutes {
 
   def mkNewShare(data: ShareData, user: AuthToken): OShare.NewShare =
     OShare.NewShare(
-      user.account,
+      user.account.asAccountId,
       data.name,
       data.query,
       data.enabled,
@@ -159,7 +162,7 @@ object ShareRoutes {
     ShareDetail(
       r.share.id,
       r.share.query,
-      IdName(r.user.uid, r.user.login.id),
+      IdName(r.account.userId, r.account.login.id),
       r.share.name,
       r.share.enabled,
       r.share.publishAt,

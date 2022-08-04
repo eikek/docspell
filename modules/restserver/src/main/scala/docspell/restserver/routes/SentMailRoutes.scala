@@ -30,19 +30,19 @@ object SentMailRoutes {
     HttpRoutes.of {
       case GET -> Root / "item" / Ident(id) =>
         for {
-          all <- backend.mail.getSentMailsForItem(user.account, id)
+          all <- backend.mail.getSentMailsForItem(user.account.collectiveId, id)
           resp <- Ok(SentMails(all.map(convert).toList))
         } yield resp
 
       case GET -> Root / "mail" / Ident(mailId) =>
         (for {
-          mail <- backend.mail.getSentMail(user.account, mailId)
+          mail <- backend.mail.getSentMail(user.account.collectiveId, mailId)
           resp <- OptionT.liftF(Ok(convert(mail)))
         } yield resp).getOrElseF(NotFound())
 
       case DELETE -> Root / "mail" / Ident(mailId) =>
         for {
-          n <- backend.mail.deleteSentMail(user.account, mailId)
+          n <- backend.mail.deleteSentMail(user.account.collectiveId, mailId)
           resp <- Ok(BasicResult(n > 0, s"Mails deleted: $n"))
         } yield resp
     }

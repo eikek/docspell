@@ -36,7 +36,7 @@ object OrganizationRoutes {
         if (full.getOrElse(false))
           for {
             data <- backend.organization.findAllOrg(
-              user.account,
+              user.account.collectiveId,
               q.map(_.q),
               order
             )
@@ -44,14 +44,18 @@ object OrganizationRoutes {
           } yield resp
         else
           for {
-            data <- backend.organization.findAllOrgRefs(user.account, q.map(_.q), order)
+            data <- backend.organization.findAllOrgRefs(
+              user.account.collectiveId,
+              q.map(_.q),
+              order
+            )
             resp <- Ok(ReferenceList(data.map(mkIdName).toList))
           } yield resp
 
       case req @ POST -> Root =>
         for {
           data <- req.as[Organization]
-          newOrg <- newOrg(data, user.account.collective)
+          newOrg <- newOrg(data, user.account.collectiveId)
           added <- backend.organization.addOrg(newOrg)
           resp <- Ok(basicResult(added, "New organization saved."))
         } yield resp
@@ -59,23 +63,22 @@ object OrganizationRoutes {
       case req @ PUT -> Root =>
         for {
           data <- req.as[Organization]
-          upOrg <- changeOrg(data, user.account.collective)
+          upOrg <- changeOrg(data, user.account.collectiveId)
           update <- backend.organization.updateOrg(upOrg)
           resp <- Ok(basicResult(update, "Organization updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          delOrg <- backend.organization.deleteOrg(id, user.account.collective)
+          delOrg <- backend.organization.deleteOrg(id, user.account.collectiveId)
           resp <- Ok(basicResult(delOrg, "Organization deleted."))
         } yield resp
 
       case GET -> Root / Ident(id) =>
         (for {
-          org <- OptionT(backend.organization.findOrg(user.account, id))
+          org <- OptionT(backend.organization.findOrg(user.account.collectiveId, id))
           resp <- OptionT.liftF(Ok(mkOrg(org)))
         } yield resp).getOrElseF(NotFound())
     }
   }
-
 }

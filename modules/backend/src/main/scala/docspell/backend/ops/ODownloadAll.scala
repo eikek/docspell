@@ -40,10 +40,10 @@ trait ODownloadAll[F[_]] {
   def submit(accountId: AccountInfo, req: DownloadRequest): F[DownloadSummary]
 
   /** Given the id from the summary, cancels a running job. */
-  def cancelDownload(accountId: AccountId, id: Ident): F[OJob.JobCancelResult]
+  def cancelDownload(cid: CollectiveId, id: Ident): F[OJob.JobCancelResult]
 
   /** Returns the file if it is present, given a summary id. */
-  def getFile(collective: Ident, id: Ident): F[Option[DownloadAllFile[F]]]
+  def getFile(collective: CollectiveId, id: Ident): F[Option[DownloadAllFile[F]]]
 
   /** Deletes a download archive given it's id. */
   def deleteFile(id: Ident): F[Unit]
@@ -122,7 +122,7 @@ object ODownloadAll {
             else DownloadState.NotPresent
         } yield state
 
-      def getFile(collective: Ident, id: Ident) =
+      def getFile(collective: CollectiveId, id: Ident) =
         OptionT(store.transact(RDownloadQuery.findById(id)))
           .map(_._2)
           .map(md =>
@@ -156,10 +156,10 @@ object ODownloadAll {
           _ <- store.fileRepo.delete(fkey)
         } yield ()
 
-      def cancelDownload(accountId: AccountId, id: Ident) =
+      def cancelDownload(cid: CollectiveId, id: Ident) =
         OptionT(store.transact(RDownloadQuery.findById(id)))
           .flatMap(t => OptionT(store.transact(RJob.findNonFinalByTracker(t._1.id))))
-          .semiflatMap(job => jobs.cancelJob(job.id, accountId.collective))
+          .semiflatMap(job => jobs.cancelJob(job.id, UserTaskScope.collective(cid)))
           .getOrElse(JobCancelResult.jobNotFound)
     }
 

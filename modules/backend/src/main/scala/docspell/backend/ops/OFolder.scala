@@ -30,10 +30,10 @@ trait OFolder[F[_]] {
       userId: Ident
   ): F[Option[OFolder.FolderDetail]]
 
-  /** Adds a new folder. If `login` is non-empty, the `folder.user` property is ignored
-    * and the user-id is determined by the given login name.
+  /** Adds a new folder. If `login` is non-empty, the `folder.owner` property is ignored
+    * and its value is determined by the given login name.
     */
-  def add(folder: RFolder, userId: Option[Ident]): F[AddResult]
+  def add(folder: RFolder, login: Option[Ident]): F[AddResult]
 
   def changeName(
       folder: Ident,
@@ -123,11 +123,11 @@ object OFolder {
       ): F[Option[FolderDetail]] =
         store.transact(QFolder.findById(id, collectiveId, userId))
 
-      def add(folder: RFolder, userId: Option[Ident]): F[AddResult] = {
-        val insert = userId match {
-          case Some(uid) =>
+      def add(folder: RFolder, login: Option[Ident]): F[AddResult] = {
+        val insert = login match {
+          case Some(userLogin) =>
             for {
-              user <- RUser.findById(uid, folder.collectiveId.some)
+              user <- RUser.findByLogin(userLogin, folder.collectiveId.some)
               s = user.map(u => folder.copy(owner = u.uid)).getOrElse(folder)
               n <- RFolder.insert(s)
             } yield n

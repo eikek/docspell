@@ -33,7 +33,7 @@ object AttachmentMultiRoutes extends NonEmptyListSupport {
       for {
         json <- req.as[IdList]
         attachments <- requireNonEmpty(json.ids)
-        n <- backend.item.deleteAttachmentMultiple(attachments, user.account.collective)
+        n <- backend.item.deleteAttachmentMultiple(attachments, user.account.collectiveId)
         res = BasicResult(
           n > 0,
           if (n > 0) "Attachment(s) deleted" else "Attachment deletion failed."

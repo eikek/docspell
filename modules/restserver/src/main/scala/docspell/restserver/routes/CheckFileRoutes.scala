@@ -29,7 +29,7 @@ object CheckFileRoutes {
     HttpRoutes.of { case GET -> Root / checksum =>
       for {
         items <-
-          backend.itemSearch.findByFileCollective(checksum, user.account.collective)
+          backend.itemSearch.findByFileCollective(checksum, user.account.collectiveId)
         resp <- Ok(convert(items))
       } yield resp
 
