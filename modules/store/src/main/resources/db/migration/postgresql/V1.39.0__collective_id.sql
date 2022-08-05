@@ -29,7 +29,8 @@ create index "user__coll_id_idx" on "user_"("coll_id");
 create unique index "user__coll_id_login_idx" on "user_"("coll_id", "login");
 alter table "user_" add constraint "user__coll_id_login_key" unique using index "user__coll_id_login_idx";
 alter table "user_" add constraint "user__coll_id_fkey" foreign key ("coll_id") references "collective"("id");
-alter table "user_" drop constraint "user__cid_fkey";
+alter table "user_" drop constraint if exists "user__cid_fkey";
+alter table "user_" drop constraint if exists "user_cid_fkey";
 alter table "user_" drop column "cid";
 alter table "user_" alter column "coll_id" drop default;
 
