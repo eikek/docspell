@@ -9,7 +9,7 @@ package docspell.common
 import io.circe._
 import io.circe.generic.semiauto._
 
-final case class ReIndexTaskArgs(collective: Option[CollectiveId])
+final case class ReIndexTaskArgs(collective: Option[CollectiveId]) extends TaskArguments
 
 object ReIndexTaskArgs {
   val taskName = Ident.unsafe("full-text-reindex")

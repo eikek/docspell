@@ -12,6 +12,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class DownloadZipArgs(account: AccountInfo, req: DownloadRequest)
+    extends TaskArguments
 
 object DownloadZipArgs {
   val taskName: Ident = Ident.unsafe("download-query-zip")

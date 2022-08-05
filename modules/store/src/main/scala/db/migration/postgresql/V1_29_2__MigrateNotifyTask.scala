@@ -7,17 +7,13 @@
 package db.migration.postgresql
 
 import cats.effect.unsafe.implicits._
-
-import db.migration.MigrationTasks
-import doobie.implicits._
+import db.migration.common.MigrateNotifyTasks
 import org.flywaydb.core.api.migration.BaseJavaMigration
 import org.flywaydb.core.api.migration.Context
 
-class V1_29_2__MigrateNotifyTask extends BaseJavaMigration with MigrationTasks {
+class V1_29_2__MigrateNotifyTask extends BaseJavaMigration {
   val logger = org.log4s.getLogger
 
-  override def migrate(ctx: Context): Unit = {
-    val xa = mkTransactor(ctx)
-    migrateDueItemTasks.transact(xa).unsafeRunSync()
-  }
+  override def migrate(ctx: Context): Unit =
+    MigrateNotifyTasks.run(ctx).unsafeRunSync()
 }

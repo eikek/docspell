@@ -7,16 +7,12 @@
 package db.migration.h2
 
 import cats.effect.unsafe.implicits._
-
-import db.migration.MigrationTasks
-import doobie.implicits._
+import db.migration.common.MigrateDueItemTasks
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
 
-class V1_32_2__MigrateChannels extends BaseJavaMigration with MigrationTasks {
+class V1_32_2__MigrateChannels extends BaseJavaMigration {
   val logger = org.log4s.getLogger
 
-  override def migrate(ctx: Context): Unit = {
-    val xa = mkTransactor(ctx)
-    migratePeriodicItemTasks.transact(xa).unsafeRunSync()
-  }
+  override def migrate(ctx: Context): Unit =
+    MigrateDueItemTasks.run(ctx).unsafeRunSync()
 }

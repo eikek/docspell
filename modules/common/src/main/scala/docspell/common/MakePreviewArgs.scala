@@ -16,7 +16,7 @@ import io.circe.{Decoder, Encoder}
 case class MakePreviewArgs(
     attachment: Ident,
     store: MakePreviewArgs.StoreMode
-)
+) extends TaskArguments
 
 object MakePreviewArgs {
 

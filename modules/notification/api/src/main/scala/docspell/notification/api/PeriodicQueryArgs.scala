@@ -20,7 +20,7 @@ final case class PeriodicQueryArgs(
     bookmark: Option[String],
     baseUrl: Option[LenientUri],
     contentStart: Option[String]
-)
+) extends TaskArguments
 
 object PeriodicQueryArgs {
   val taskName = Ident.unsafe("periodic-query-notify2")

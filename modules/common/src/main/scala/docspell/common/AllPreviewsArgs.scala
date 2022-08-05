@@ -18,7 +18,7 @@ import io.circe.{Decoder, Encoder}
 case class AllPreviewsArgs(
     collective: Option[CollectiveId],
     storeMode: MakePreviewArgs.StoreMode
-)
+) extends TaskArguments
 
 object AllPreviewsArgs {
 

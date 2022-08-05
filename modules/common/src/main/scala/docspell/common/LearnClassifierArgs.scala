@@ -19,11 +19,10 @@ import io.circe.generic.semiauto._
   */
 case class LearnClassifierArgs(
     collectiveId: CollectiveId
-) {
+) extends TaskArguments {
 
   def makeSubject: String =
     "Learn tags"
-
 }
 
 object LearnClassifierArgs {

@@ -22,6 +22,7 @@ import io.circe.{Decoder, Encoder}
   * selecting "all", it means all enabled stores.
   */
 final case class FileCopyTaskArgs(from: Option[Ident], to: Selection)
+    extends TaskArguments
 
 object FileCopyTaskArgs {
   val taskName = Ident.unsafe("copy-file-repositories")

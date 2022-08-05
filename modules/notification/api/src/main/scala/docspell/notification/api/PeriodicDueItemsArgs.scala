@@ -28,7 +28,7 @@ final case class PeriodicDueItemsArgs(
     tagsInclude: List[Ident],
     tagsExclude: List[Ident],
     baseUrl: Option[LenientUri]
-)
+) extends TaskArguments
 
 object PeriodicDueItemsArgs {
   val taskName = Ident.unsafe("periodic-due-items-notify2")

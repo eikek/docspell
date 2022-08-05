@@ -16,7 +16,7 @@ import io.circe.generic.semiauto._
   * submitted by this task run in the realm of the collective (and only their files are
   * considered). If it is empty, it is a system task and all files are considered.
   */
-case class ConvertAllPdfArgs(collective: Option[CollectiveId])
+case class ConvertAllPdfArgs(collective: Option[CollectiveId]) extends TaskArguments
 
 object ConvertAllPdfArgs {
 

@@ -20,7 +20,7 @@ import io.circe.generic.semiauto._
 case class EmptyTrashArgs(
     collective: CollectiveId,
     minAge: Duration
-) {
+) extends TaskArguments {
 
   def makeSubject: String =
     s"Empty Trash: Remove older than ${minAge.toJava}"

@@ -49,7 +49,7 @@ case class ScanMailboxArgs(
     postHandleAll: Option[Boolean],
     // Exclude the mail body when importing
     attachmentsOnly: Option[Boolean]
-)
+) extends TaskArguments
 
 object ScanMailboxArgs {
 

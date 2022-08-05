@@ -18,7 +18,7 @@ final case class ItemAddonTaskArgs(
     collective: CollectiveId,
     itemId: Ident,
     addonRunConfigs: Set[Ident]
-)
+) extends TaskArguments
 
 object ItemAddonTaskArgs {
   val taskName: Ident = Ident.unsafe("addon-existing-item")

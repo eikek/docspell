@@ -22,7 +22,7 @@ import io.circe.generic.semiauto._
   *
   * It is also re-used by the 'ReProcessItem' task.
   */
-case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) {
+case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) extends TaskArguments {
 
   def makeSubject: String =
     files.flatMap(_.name) match {
