@@ -125,7 +125,7 @@ trait JsonCodec {
         for {
           itemId <- c.get[Ident](Field.itemId.name)
           id <- c.get[Ident](Field.id.name)
-          coll <- c.get[Ident](Field.collectiveId.name)
+          coll <- c.get[CollectiveId](Field.collectiveId.name)
           score <- c.get[Double]("score")
           md <- decodeMatchData(c)
         } yield FtsResult.ItemMatch(id, itemId, coll, score, md)

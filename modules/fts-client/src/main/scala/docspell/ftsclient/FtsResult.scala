@@ -29,7 +29,7 @@ object FtsResult {
   case class ItemMatch(
       id: Ident,
       itemId: Ident,
-      collectiveId: Ident,
+      collectiveId: CollectiveId,
       score: Double,
       data: MatchData
   )

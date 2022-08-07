@@ -26,6 +26,8 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
   val engine = Ident.unsafe("postgres")
 
   val config = cfg
+  private[this] val logger = docspell.logging.getLogger[F]
+
   private[ftspsql] val transactor = xa
 
   private[this] val searchSummary =
@@ -83,6 +85,7 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
       summary <- searchSummary(q).transact(xa)
       results <- search(q, true).transact(xa)
       endNanos <- Sync[F].delay(System.nanoTime())
+      _ <- logger.debug(s"PSQL fulltext search hits: ${results.size}")
       duration = Duration.nanos(endNanos - startNanos)
       res = SearchResult
         .toFtsResult(summary, results)

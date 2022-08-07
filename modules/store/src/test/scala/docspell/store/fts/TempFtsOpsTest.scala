@@ -130,14 +130,14 @@ class TempFtsOpsTest extends DatabaseTest {
         ItemMatch(
           id(s"m$n"),
           id(s"item-$n"),
-          DocspellSystem.user,
+          CollectiveId(1),
           math.random(),
           FtsResult.ItemData
         ),
         ItemMatch(
           id(s"m$n-1"),
           id(s"item-$n"),
-          DocspellSystem.user,
+          CollectiveId(1),
           math.random(),
           AttachmentData(id(s"item-$n-attach-1"), "attachment.pdf")
         )
