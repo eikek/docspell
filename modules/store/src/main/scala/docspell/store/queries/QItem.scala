@@ -64,7 +64,7 @@ object QItem extends FtsSupport {
     val cteFts = ftsTable.map(cteTable)
     val sql =
       findItemsBase(q.fix, today, maxNoteLen, cteFts)
-        .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+        .changeWhere(c => c && queryCondition(today, q.fix.account.collectiveId, q.cond))
         .joinFtsDetails(i, ftsTable)
         .limit(batch)
         .build
@@ -73,7 +73,7 @@ object QItem extends FtsSupport {
       sql.query[ListItem].stream
   }
 
-  def findItem(id: Ident, collective: Ident): ConnectionIO[Option[ItemData]] = {
+  def findItem(id: Ident, collective: CollectiveId): ConnectionIO[Option[ItemData]] = {
     val cq =
       Select(
         select(i.all, org.all, pers0.all, pers1.all, equip.all)
@@ -121,7 +121,10 @@ object QItem extends FtsSupport {
     )
   }
 
-  def findRelatedItems(id: Ident, collective: Ident): ConnectionIO[Vector[ListItem]] =
+  def findRelatedItems(
+      id: Ident,
+      collective: CollectiveId
+  ): ConnectionIO[Vector[ListItem]] =
     RItemLink
       .findLinked(collective, id)
       .map(v => Nel.fromList(v.toList))
@@ -131,7 +134,8 @@ object QItem extends FtsSupport {
         case Some(nel) =>
           val expr =
             ItemQuery.Expr.and(ValidItemStates, ItemQueryDsl.Q.itemIdsIn(nel.map(_.id)))
-          val account = AccountId(collective, Ident.unsafe(""))
+          val account =
+            AccountInfo(collective, Ident.unsafe(""), Ident.unsafe(""), Ident.unsafe(""))
 
           findItemsBase(
             Query.Fix(account, Some(expr), None),
@@ -159,7 +163,7 @@ object QItem extends FtsSupport {
       noteMaxLen: Int,
       ftsTable: Option[RFtsResult.Table]
   ): Select.Ordered = {
-    val coll = q.account.collective
+    val coll = q.account.collectiveId
 
     Select(
       select(
@@ -197,7 +201,9 @@ object QItem extends FtsSupport {
         i.cid === coll &&? q.query.map(qs => queryCondFromExpr(today, coll, qs))
           && or(
             i.folder.isNull,
-            i.folder.in(QFolder.findMemberFolderIds(q.account))
+            i.folder.in(
+              QFolder.findMemberFolderIds(q.account.collectiveId, q.account.userId)
+            )
           )
       )
     ).orderBy(
@@ -223,7 +229,7 @@ object QItem extends FtsSupport {
             from.innerJoin(meta, meta.id === as.fileId)
         }
       )
-      .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+      .changeWhere(c => c && queryCondition(today, q.fix.account.collectiveId, q.cond))
       .limit(maxFiles)
 
   def findFiles(
@@ -288,12 +294,20 @@ object QItem extends FtsSupport {
       .streamWithChunkSize(chunkSize)
   }
 
-  def queryCondFromExpr(today: LocalDate, coll: Ident, q: ItemQuery.Expr): Condition = {
+  def queryCondFromExpr(
+      today: LocalDate,
+      coll: CollectiveId,
+      q: ItemQuery.Expr
+  ): Condition = {
     val tables = Tables(i, org, pers0, pers1, equip, f, a, m, AttachCountTable("cta"))
     ItemQueryGenerator.fromExpr(today, tables, coll)(q)
   }
 
-  def queryCondition(today: LocalDate, coll: Ident, cond: Query.QueryCond): Condition =
+  def queryCondition(
+      today: LocalDate,
+      coll: CollectiveId,
+      cond: Query.QueryCond
+  ): Condition =
     cond match {
       case Query.QueryExpr(Some(expr)) =>
         queryCondFromExpr(today, coll, expr)
@@ -340,7 +354,7 @@ object QItem extends FtsSupport {
         .joinFtsIdOnly(i, ftsTable)
         .withSelect(select(tag.category).append(countDistinct(i.id).as("num")))
         .changeFrom(_.prepend(tagFrom))
-        .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+        .changeWhere(c => c && queryCondition(today, q.fix.account.collectiveId, q.cond))
         .groupBy(tag.category)
         .build
         .query[CategoryCount]
@@ -348,7 +362,7 @@ object QItem extends FtsSupport {
 
     for {
       existing <- catCloud
-      allCats <- RTag.listCategories(q.fix.account.collective)
+      allCats <- RTag.listCategories(q.fix.account.collectiveId)
       other = allCats.diff(existing.flatMap(_.category))
     } yield existing ++ other.map(n => CategoryCount(n.some, 0))
   }
@@ -366,7 +380,7 @@ object QItem extends FtsSupport {
         .joinFtsIdOnly(i, ftsTable)
         .withSelect(select(tag.all).append(countDistinct(i.id).as("num")))
         .changeFrom(_.prepend(tagFrom))
-        .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+        .changeWhere(c => c && queryCondition(today, q.fix.account.collectiveId, q.cond))
         .groupBy(tag.tid)
         .build
         .query[TagCount]
@@ -376,7 +390,7 @@ object QItem extends FtsSupport {
     // are not included they are fetched separately
     for {
       existing <- tagCloud
-      other <- RTag.findOthers(q.fix.account.collective, existing.map(_.tag.tagId))
+      other <- RTag.findOthers(q.fix.account.collectiveId, existing.map(_.tag.tagId))
     } yield existing ++ other.map(TagCount(_, 0))
   }
 
@@ -386,7 +400,7 @@ object QItem extends FtsSupport {
     findItemsBase(q.fix, today, 0, None).unwrap
       .joinFtsIdOnly(i, ftsTable)
       .withSelect(Nel.of(count(i.id).as("num")))
-      .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+      .changeWhere(c => c && queryCondition(today, q.fix.account.collectiveId, q.cond))
       .build
       .query[Int]
       .unique
@@ -422,7 +436,7 @@ object QItem extends FtsSupport {
       .joinFtsIdOnly(i, ftsTable)
       .withSelect(select(idCol, nameCol).append(count(idCol).as("num")))
       .changeWhere(c =>
-        c && fkCol.isNotNull && queryCondition(today, q.fix.account.collective, q.cond)
+        c && fkCol.isNotNull && queryCondition(today, q.fix.account.collectiveId, q.cond)
       )
       .groupBy(idCol, nameCol)
       .build
@@ -437,7 +451,7 @@ object QItem extends FtsSupport {
       .joinFtsIdOnly(i, ftsTable)
       .withSelect(select(f.id, f.name, f.owner, fu.login).append(count(i.id).as("num")))
       .changeFrom(_.innerJoin(fu, fu.uid === f.owner))
-      .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+      .changeWhere(c => c && queryCondition(today, q.fix.account.collectiveId, q.cond))
       .groupBy(f.id, f.name, f.owner, fu.login)
       .build
       .query[FolderCount]
@@ -455,7 +469,7 @@ object QItem extends FtsSupport {
     val base =
       findItemsBase(q.fix, today, 0, None).unwrap
         .changeFrom(_.prepend(fieldJoin))
-        .changeWhere(c => c && queryCondition(today, q.fix.account.collective, q.cond))
+        .changeWhere(c => c && queryCondition(today, q.fix.account.collectiveId, q.cond))
         .ftsCondition(i, ftsTable)
         .groupBy(GroupBy(cf.all))
 
@@ -507,7 +521,7 @@ object QItem extends FtsSupport {
     * implemented by running an additional query per item.
     */
   def findItemsWithTags(
-      collective: Ident,
+      collective: CollectiveId,
       search: Stream[ConnectionIO, ListItem]
   ): Stream[ConnectionIO, ListItemWithTags] = {
     def findTag(
@@ -555,7 +569,9 @@ object QItem extends FtsSupport {
       a.itemId === item
     ).build.query[AttachmentLight].to[List]
 
-  def delete[F[_]: Sync](store: Store[F])(itemId: Ident, collective: Ident): F[Int] =
+  def delete[F[_]: Sync](
+      store: Store[F]
+  )(itemId: Ident, collective: CollectiveId): F[Int] =
     for {
       rn <- QAttachment.deleteItemAttachments(store)(itemId, collective)
       tn <- store.transact(RTagItem.deleteItemTags(itemId))
@@ -607,7 +623,7 @@ object QItem extends FtsSupport {
 
   def findByChecksum(
       checksum: String,
-      collective: Ident,
+      collective: CollectiveId,
       excludeFileMeta: Set[FileKey]
   ): ConnectionIO[Vector[RItem]] = {
     val qq = findByChecksumQuery(checksum, collective, excludeFileMeta).build
@@ -617,7 +633,7 @@ object QItem extends FtsSupport {
 
   def findByChecksumQuery(
       checksum: String,
-      collective: Ident,
+      collective: CollectiveId,
       excludeFileMeta: Set[FileKey]
   ): Select = {
     val m1 = RFileMeta.as("m1")
@@ -650,14 +666,14 @@ object QItem extends FtsSupport {
 
   final case class NameAndNotes(
       id: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident],
       name: String,
       notes: Option[String],
       language: Language
   )
   def allNameAndNotes(
-      coll: Option[Ident],
+      coll: Option[CollectiveId],
       itemIds: Option[Nel[Ident]],
       chunkSize: Int
   ): Stream[ConnectionIO, NameAndNotes] = {
@@ -677,7 +693,7 @@ object QItem extends FtsSupport {
   }
 
   def findAllNewesFirst(
-      collective: Ident,
+      collective: CollectiveId,
       chunkSize: Int,
       limit: Batch
   ): Stream[ConnectionIO, Ident] = {
@@ -691,7 +707,7 @@ object QItem extends FtsSupport {
   }
 
   def resolveTextAndTag(
-      collective: Ident,
+      collective: CollectiveId,
       itemId: Ident,
       tagCategory: String,
       maxLen: Int,
@@ -724,7 +740,7 @@ object QItem extends FtsSupport {
   }
 
   def resolveTextAndCorrOrg(
-      collective: Ident,
+      collective: CollectiveId,
       itemId: Ident,
       maxLen: Int,
       pageSep: String
@@ -741,7 +757,7 @@ object QItem extends FtsSupport {
     }
 
   def resolveTextAndCorrPerson(
-      collective: Ident,
+      collective: CollectiveId,
       itemId: Ident,
       maxLen: Int,
       pageSep: String
@@ -758,7 +774,7 @@ object QItem extends FtsSupport {
     }
 
   def resolveTextAndConcPerson(
-      collective: Ident,
+      collective: CollectiveId,
       itemId: Ident,
       maxLen: Int,
       pageSep: String
@@ -775,7 +791,7 @@ object QItem extends FtsSupport {
     }
 
   def resolveTextAndConcEquip(
-      collective: Ident,
+      collective: CollectiveId,
       itemId: Ident,
       maxLen: Int,
       pageSep: String
@@ -797,12 +813,12 @@ object QItem extends FtsSupport {
       m.content.s
     } else substring(m.content.s, 0, maxLen).s
 
-  private def readTextAndTag(collective: Ident, itemId: Ident, pageSep: String)(
+  private def readTextAndTag(collective: CollectiveId, itemId: Ident, pageSep: String)(
       q: Select
   ): ConnectionIO[TextAndTag] =
     for {
       _ <- logger.trace(
-        s"query: $q  (${itemId.id}, ${collective.id})"
+        s"query: $q  (${itemId.id}, ${collective.value})"
       )
       texts <- q.build.query[(String, Option[TextAndTag.TagName])].to[List]
       _ <- logger.trace(

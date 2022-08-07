@@ -35,7 +35,7 @@ object DownloadZipTask {
   ): Task[F, Args, Result] =
     Task { ctx =>
       val req = ctx.args.req
-      val query = req.toQuery(ctx.args.accountId)
+      val query = req.toQuery(ctx.args.account)
 
       val allFiles =
         Stream
@@ -53,7 +53,7 @@ object DownloadZipTask {
           .through(Zip[F](ctx.logger.some).zip(chunkSize))
           .through(
             store.fileRepo.save(
-              ctx.args.accountId.collective,
+              ctx.args.account.collectiveId,
               FileCategory.DownloadAll,
               MimeTypeHint.advertised("application/zip")
             )
@@ -61,10 +61,10 @@ object DownloadZipTask {
 
       for {
         _ <- ctx.logger.info(s"Start zipping ${req.itemQueryString}")
-        summary <- downloadOps.getSummary(ctx.args.accountId, req)
+        summary <- downloadOps.getSummary(ctx.args.account, req)
         _ <- ctx.logger.debug(s"Summary: $summary")
         file <- storeZipFile.compile.lastOrError
-        row <- createRow(summary, ctx.args.accountId.collective, file)
+        row <- createRow(summary, ctx.args.account.collectiveId, file)
         _ <- ctx.logger.debug(s"Inserting zip file: $row")
         _ <- store.transact(RDownloadQuery.insert(row))
       } yield Result(summary.fileCount)
@@ -92,7 +92,7 @@ object DownloadZipTask {
 
   def createRow[F[_]: Sync](
       summary: DownloadSummary,
-      cid: Ident,
+      cid: CollectiveId,
       file: FileKey
   ): F[RDownloadQuery] =
     Timestamp.current[F].map { now =>

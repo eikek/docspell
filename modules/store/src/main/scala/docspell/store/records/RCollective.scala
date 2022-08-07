@@ -17,7 +17,8 @@ import doobie._
 import doobie.implicits._
 
 case class RCollective(
-    id: Ident,
+    id: CollectiveId,
+    name: Ident,
     state: CollectiveState,
     language: Language,
     integrationEnabled: Boolean,
@@ -28,45 +29,57 @@ object RCollective {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "collective"
 
-    val id = Column[Ident]("cid", this)
+    val id = Column[CollectiveId]("id", this)
+    val name = Column[Ident]("name", this)
     val state = Column[CollectiveState]("state", this)
     val language = Column[Language]("doclang", this)
     val integration = Column[Boolean]("integration_enabled", this)
     val created = Column[Timestamp]("created", this)
 
-    val all = NonEmptyList.of[Column[_]](id, state, language, integration, created)
+    val all = NonEmptyList.of[Column[_]](id, name, state, language, integration, created)
+    val allNoId = NonEmptyList.fromListUnsafe(all.tail)
   }
 
   def makeDefault(collName: Ident, created: Timestamp): RCollective =
-    RCollective(collName, CollectiveState.Active, Language.German, true, created)
+    RCollective(
+      CollectiveId.unknown,
+      collName,
+      CollectiveState.Active,
+      Language.German,
+      true,
+      created
+    )
 
   val T = Table(None)
   def as(alias: String): Table =
     Table(Some(alias))
 
-  def insert(value: RCollective): ConnectionIO[Int] =
-    DML.insert(
-      T,
-      T.all,
-      fr"${value.id},${value.state},${value.language},${value.integrationEnabled},${value.created}"
-    )
+  def insert(value: RCollective): ConnectionIO[CollectiveId] =
+    DML
+      .insertFragment(
+        T,
+        T.allNoId,
+        List(
+          fr"${value.name},${value.state},${value.language},${value.integrationEnabled},${value.created}"
+        )
+      )
+      .update
+      .withUniqueGeneratedKeys[CollectiveId](T.id.name)
 
   def update(value: RCollective): ConnectionIO[Int] =
     DML.update(
       T,
       T.id === value.id,
-      DML.set(
-        T.state.setTo(value.state)
-      )
+      DML.set(T.state.setTo(value.state))
     )
 
-  def findLanguage(cid: Ident): ConnectionIO[Option[Language]] =
+  def findLanguage(cid: CollectiveId): ConnectionIO[Option[Language]] =
     Select(T.language.s, from(T), T.id === cid).build.query[Option[Language]].unique
 
-  def updateLanguage(cid: Ident, lang: Language): ConnectionIO[Int] =
+  def updateLanguage(cid: CollectiveId, lang: Language): ConnectionIO[Int] =
     DML.update(T, T.id === cid, DML.set(T.language.setTo(lang)))
 
-  def updateSettings(cid: Ident, settings: Settings): ConnectionIO[Int] =
+  def updateSettings(cid: CollectiveId, settings: Settings): ConnectionIO[Int] =
     for {
       n1 <- DML.update(
         T,
@@ -94,7 +107,7 @@ object RCollective {
 
   // this hides categories that have been deleted in the meantime
   // they are finally removed from the json array once the learn classifier task is run
-  def getSettings(coll: Ident): ConnectionIO[Option[Settings]] =
+  def getSettings(coll: CollectiveId): ConnectionIO[Option[Settings]] =
     (for {
       sett <- OptionT(getRawSettings(coll))
       prev <- OptionT.pure[ConnectionIO](sett.classifier)
@@ -103,7 +116,7 @@ object RCollective {
       pws <- OptionT.liftF(RCollectivePassword.findAll(coll))
     } yield sett.copy(classifier = next, passwords = pws.map(_.password))).value
 
-  private def getRawSettings(coll: Ident): ConnectionIO[Option[Settings]] = {
+  private def getRawSettings(coll: CollectiveId): ConnectionIO[Option[Settings]] = {
     import RClassifierSetting.stringListMeta
 
     val c = RCollective.as("c")
@@ -127,8 +140,13 @@ object RCollective {
     ).build.query[Settings].option
   }
 
-  def findById(cid: Ident): ConnectionIO[Option[RCollective]] = {
+  def findById(cid: CollectiveId): ConnectionIO[Option[RCollective]] = {
     val sql = run(select(T.all), from(T), T.id === cid)
+    sql.query[RCollective].option
+  }
+
+  def findByName(cname: Ident): ConnectionIO[Option[RCollective]] = {
+    val sql = run(select(T.all), from(T), T.name === cname)
     sql.query[RCollective].option
   }
 
@@ -142,8 +160,13 @@ object RCollective {
     ).build.query[RCollective].option
   }
 
-  def existsById(cid: Ident): ConnectionIO[Boolean] = {
+  def existsById(cid: CollectiveId): ConnectionIO[Boolean] = {
     val sql = Select(count(T.id).s, from(T), T.id === cid).build
+    sql.query[Int].unique.map(_ > 0)
+  }
+
+  def existsByName(name: Ident): ConnectionIO[Boolean] = {
+    val sql = Select(count(T.id).s, from(T), T.name === name).build
     sql.query[Int].unique.map(_ > 0)
   }
 

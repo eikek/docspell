@@ -79,7 +79,7 @@ trait OSearch[F[_]] {
     * `q.fix` part.
     */
   def parseQueryString(
-      accountId: AccountId,
+      accountId: AccountInfo,
       mode: SearchMode,
       qs: String
   ): QueryParseResult
@@ -94,7 +94,7 @@ object OSearch {
       private[this] val logger = docspell.logging.getLogger[F]
 
       def parseQueryString(
-          accountId: AccountId,
+          accountId: AccountInfo,
           mode: SearchMode,
           qs: String
       ): QueryParseResult = {
@@ -199,7 +199,7 @@ object OSearch {
           timed <- Duration.stopTime[F]
           resolved <- store
             .transact(
-              QItem.findItemsWithTags(q.fix.account.collective, Stream.emits(items))
+              QItem.findItemsWithTags(q.fix.account.collectiveId, Stream.emits(items))
             )
             .compile
             .toVector
@@ -233,13 +233,13 @@ object OSearch {
         }
 
       private def createFtsQuery(
-          account: AccountId,
+          account: AccountInfo,
           ftq: String
       ): F[FtsQuery] =
         store
-          .transact(QFolder.getMemberFolders(account))
+          .transact(QFolder.getMemberFolders(account.collectiveId, account.userId))
           .map(folders =>
-            FtsQuery(ftq, account.collective, 500, 0)
+            FtsQuery(ftq, account.collectiveId, 500, 0)
               .withFolders(folders)
           )
 

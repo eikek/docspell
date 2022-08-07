@@ -23,7 +23,8 @@ case class SchedulerBuilder[F[_]: Async](
     queue: JobQueue[F],
     logSink: LogSink[F],
     pubSub: PubSubT[F],
-    eventSink: EventSink[F]
+    eventSink: EventSink[F],
+    findJobOwner: FindJobOwner[F]
 ) {
 
   def withConfig(cfg: SchedulerConfig): SchedulerBuilder[F] =
@@ -32,7 +33,7 @@ case class SchedulerBuilder[F[_]: Async](
   def withTaskRegistry(reg: JobTaskRegistry[F]): SchedulerBuilder[F] =
     copy(tasks = reg)
 
-  def withTask[A](task: JobTask[F]): SchedulerBuilder[F] =
+  def withTask(task: JobTask[F]): SchedulerBuilder[F] =
     withTaskRegistry(tasks.withTask(task))
 
   def withLogSink(sink: LogSink[F]): SchedulerBuilder[F] =
@@ -47,6 +48,9 @@ case class SchedulerBuilder[F[_]: Async](
   def withEventSink(sink: EventSink[F]): SchedulerBuilder[F] =
     copy(eventSink = sink)
 
+  def withFindJobOwner(f: FindJobOwner[F]): SchedulerBuilder[F] =
+    copy(findJobOwner = f)
+
   def serve: Resource[F, Scheduler[F]] =
     resource.evalMap(sch => Async[F].start(sch.start.compile.drain).map(_ => sch))
 
@@ -60,6 +64,7 @@ case class SchedulerBuilder[F[_]: Async](
       queue,
       pubSub,
       eventSink,
+      findJobOwner,
       tasks,
       store,
       logSink,
@@ -86,6 +91,7 @@ object SchedulerBuilder {
       JobQueue(store),
       LogSink.db[F](store),
       PubSubT.noop[F],
-      EventSink.silent[F]
+      EventSink.silent[F],
+      FindJobOwner.none[F]
     )
 }

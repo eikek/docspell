@@ -54,7 +54,7 @@ object QFolder {
     def exists: FolderChangeResult = Exists
   }
 
-  def delete(id: Ident, account: AccountId): ConnectionIO[FolderChangeResult] = {
+  def delete(id: Ident, userId: Ident): ConnectionIO[FolderChangeResult] = {
     def tryDelete =
       for {
         _ <- RItem.removeFolder(id)
@@ -64,10 +64,9 @@ object QFolder {
       } yield FolderChangeResult.success
 
     (for {
-      uid <- OptionT(findUserId(account))
       folder <- OptionT(RFolder.findById(id))
       res <- OptionT.liftF(
-        if (folder.owner == uid) tryDelete
+        if (folder.owner == userId) tryDelete
         else FolderChangeResult.forbidden.pure[ConnectionIO]
       )
     } yield res).getOrElse(FolderChangeResult.notFound)
@@ -75,7 +74,7 @@ object QFolder {
 
   def changeName(
       folder: Ident,
-      account: AccountId,
+      userId: Ident,
       name: String
   ): ConnectionIO[FolderChangeResult] = {
     def tryUpdate(ns: RFolder): ConnectionIO[FolderChangeResult] =
@@ -87,10 +86,9 @@ object QFolder {
       } yield res
 
     (for {
-      uid <- OptionT(findUserId(account))
       folder <- OptionT(RFolder.findById(folder))
       res <- OptionT.liftF(
-        if (folder.owner == uid) tryUpdate(folder.copy(name = name))
+        if (folder.owner == userId) tryUpdate(folder.copy(name = name))
         else FolderChangeResult.forbidden.pure[ConnectionIO]
       )
     } yield res).getOrElse(FolderChangeResult.notFound)
@@ -98,7 +96,7 @@ object QFolder {
 
   def removeMember(
       folder: Ident,
-      account: AccountId,
+      userId: Ident,
       member: Ident
   ): ConnectionIO[FolderChangeResult] = {
     def tryRemove: ConnectionIO[FolderChangeResult] =
@@ -110,10 +108,9 @@ object QFolder {
       } yield res
 
     (for {
-      uid <- OptionT(findUserId(account))
       folder <- OptionT(RFolder.findById(folder))
       res <- OptionT.liftF(
-        if (folder.owner == uid) tryRemove
+        if (folder.owner == userId) tryRemove
         else FolderChangeResult.forbidden.pure[ConnectionIO]
       )
     } yield res).getOrElse(FolderChangeResult.notFound)
@@ -121,7 +118,7 @@ object QFolder {
 
   def addMember(
       folder: Ident,
-      account: AccountId,
+      userId: Ident,
       member: Ident
   ): ConnectionIO[FolderChangeResult] = {
     def tryAdd: ConnectionIO[FolderChangeResult] =
@@ -134,16 +131,19 @@ object QFolder {
       } yield res
 
     (for {
-      uid <- OptionT(findUserId(account))
       folder <- OptionT(RFolder.findById(folder))
       res <- OptionT.liftF(
-        if (folder.owner == uid) tryAdd
+        if (folder.owner == userId) tryAdd
         else FolderChangeResult.forbidden.pure[ConnectionIO]
       )
     } yield res).getOrElse(FolderChangeResult.notFound)
   }
 
-  def findById(id: Ident, account: AccountId): ConnectionIO[Option[FolderDetail]] = {
+  def findById(
+      id: Ident,
+      collectiveId: CollectiveId,
+      userId: Ident
+  ): ConnectionIO[Option[FolderDetail]] = {
     val user = RUser.as("u")
     val member = RFolderMember.as("m")
     val folder = RFolder.as("s")
@@ -153,12 +153,19 @@ object QFolder {
       from(member)
         .innerJoin(user, member.user === user.uid)
         .innerJoin(folder, member.folder === folder.id),
-      member.folder === id && folder.collective === account.collective
+      member.folder === id && folder.collective === collectiveId
     ).query[IdRef].to[Vector]
 
     (for {
       folder <- OptionT(
-        findAll(account, Some(id), None, None, (ft, _) => Nel.of(ft.name.asc))
+        findAll(
+          collectiveId,
+          userId,
+          Some(id),
+          None,
+          None,
+          (ft, _) => Nel.of(ft.name.asc)
+        )
           .map(_.headOption)
       )
       memb <- OptionT.liftF(memberQ)
@@ -166,7 +173,8 @@ object QFolder {
   }
 
   def findAll(
-      account: AccountId,
+      collectiveId: CollectiveId,
+      userId: Ident,
       idQ: Option[Ident],
       ownerLogin: Option[Ident],
       nameQ: Option[String],
@@ -199,22 +207,20 @@ object QFolder {
     val folder = RFolder.as("s")
     val memlogin = TableDef("memberlogin")
     val mlFolder = Column[Ident]("folder", memlogin)
-    val mlLogin = Column[Ident]("login", memlogin)
+    val mlUser = Column[Ident]("user_id", memlogin)
 
     withCte(
       memlogin -> union(
         Select(
-          select(member.folder.as(mlFolder), user.login.as(mlLogin)),
+          select(member.folder.as(mlFolder), member.user.as(mlUser)),
           from(member)
-            .innerJoin(user, user.uid === member.user)
             .innerJoin(folder, folder.id === member.folder),
-          folder.collective === account.collective
+          folder.collective === collectiveId
         ),
         Select(
-          select(folder.id.as(mlFolder), user.login.as(mlLogin)),
-          from(folder)
-            .innerJoin(user, user.uid === folder.owner),
-          folder.collective === account.collective
+          select(folder.id.as(mlFolder), folder.owner.as(mlUser)),
+          from(folder),
+          folder.collective === collectiveId
         )
       )
     )(
@@ -228,7 +234,7 @@ object QFolder {
           Select(
             select(countAll > 0),
             from(memlogin),
-            mlFolder === folder.id && mlLogin === account.user
+            mlFolder === folder.id && mlUser === userId
           ).as("member"),
           Select(
             select(countAll - 1),
@@ -239,7 +245,7 @@ object QFolder {
         from(folder)
           .innerJoin(user, user.uid === folder.owner),
         where(
-          folder.collective === account.collective &&?
+          folder.collective === collectiveId &&?
             idQ.map(id => folder.id === id) &&?
             nameQ.map(q => folder.name.like(s"%${q.toLowerCase}%")) &&?
             ownerLogin.map(login => user.login === login)
@@ -249,7 +255,7 @@ object QFolder {
   }
 
   /** Select all folder_id where the given account is member or owner. */
-  def findMemberFolderIds(account: AccountId): Select = {
+  def findMemberFolderIds(cid: CollectiveId, userId: Ident): Select = {
     val user = RUser.as("u")
     val f = RFolder.as("f")
     val m = RFolderMember.as("m")
@@ -257,21 +263,21 @@ object QFolder {
       Select(
         select(f.id),
         from(f).innerJoin(user, f.owner === user.uid),
-        f.collective === account.collective && user.login === account.user
+        f.collective === cid && user.uid === userId
       ),
       Select(
         select(m.folder),
         from(m)
           .innerJoin(f, f.id === m.folder)
           .innerJoin(user, user.uid === m.user),
-        f.collective === account.collective && user.login === account.user
+        f.collective === cid && user.uid === userId
       )
     )
   }
 
-  def getMemberFolders(account: AccountId): ConnectionIO[Set[Ident]] =
-    findMemberFolderIds(account).build.query[Ident].to[Set]
-
-  private def findUserId(account: AccountId): ConnectionIO[Option[Ident]] =
-    RUser.findByAccount(account).map(_.map(_.uid))
+  def getMemberFolders(
+      collectiveId: CollectiveId,
+      userId: Ident
+  ): ConnectionIO[Set[Ident]] =
+    findMemberFolderIds(collectiveId, userId).build.query[Ident].to[Set]
 }

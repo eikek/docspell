@@ -76,7 +76,7 @@ object DML extends DoobieMeta {
       setter: Nel[Setter[_]]
   ): Fragment = {
     val condFrag = cond.map(SelectBuilder.cond).getOrElse(Fragment.empty)
-    fr"UPDATE" ++ FromExprBuilder.buildTable(table) ++ fr"SET" ++
+    fr"UPDATE" ++ FromExprBuilder.buildTable(table) ++ fr" SET" ++
       setter
         .map(s => buildSetter(s))
         .reduceLeft(_ ++ comma ++ _) ++

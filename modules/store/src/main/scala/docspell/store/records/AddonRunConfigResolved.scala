@@ -46,7 +46,7 @@ object AddonRunConfigResolved {
 
   def findById(
       configId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       enabled: Option[Boolean]
   ): ConnectionIO[Option[AddonRunConfigResolved]] =
     (for {
@@ -56,7 +56,7 @@ object AddonRunConfigResolved {
     } yield AddonRunConfigResolved(cfg, refs, tri)).value
 
   def findAllForCollective(
-      cid: Ident,
+      cid: CollectiveId,
       enabled: Option[Boolean],
       trigger: Set[AddonTriggerType],
       configIds: Set[Ident]

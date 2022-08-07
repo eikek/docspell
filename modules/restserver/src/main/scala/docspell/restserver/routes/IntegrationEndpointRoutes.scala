@@ -15,7 +15,7 @@ import docspell.common._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.Responses
-import docspell.store.records.RItem
+import docspell.store.records.{RCollective, RItem}
 
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
@@ -36,15 +36,15 @@ object IntegrationEndpointRoutes {
       for {
         _ <- authRequest(req, cfg.integrationEndpoint)
         _ <- checkEnabled(cfg.integrationEndpoint)
-        _ <- lookupCollective(collective, backend)
-      } yield ()
+        c <- lookupCollective(collective, backend)
+      } yield c
 
     HttpRoutes.of {
       case req @ POST -> Root / "item" / Ident(collective) =>
         (for {
-          _ <- validate(req, collective)
+          coll <- validate(req, collective)
           res <- EitherT.liftF[F, Response[F], Response[F]](
-            uploadFile(collective, backend, cfg, dsl)(req)
+            uploadFile(coll.id, backend, cfg, dsl)(req)
           )
         } yield res).fold(identity, identity)
 
@@ -56,9 +56,9 @@ object IntegrationEndpointRoutes {
 
       case req @ GET -> Root / "checkfile" / Ident(collective) / checksum =>
         (for {
-          _ <- validate(req, collective)
+          coll <- validate(req, collective)
           items <- EitherT.liftF[F, Response[F], Vector[RItem]](
-            backend.itemSearch.findByFileCollective(checksum, collective)
+            backend.itemSearch.findByFileCollective(checksum, coll.id)
           )
           resp <-
             EitherT.liftF[F, Response[F], Response[F]](Ok(CheckFileRoutes.convert(items)))
@@ -86,14 +86,13 @@ object IntegrationEndpointRoutes {
   def lookupCollective[F[_]: Async](
       coll: Ident,
       backend: BackendApp[F]
-  ): EitherT[F, Response[F], Unit] =
-    for {
-      opt <- EitherT.liftF(backend.collective.find(coll))
-      res <- EitherT.cond[F](opt.exists(_.integrationEnabled), (), Response.notFound[F])
-    } yield res
+  ): EitherT[F, Response[F], RCollective] =
+    OptionT(backend.collective.find(coll))
+      .filter(_.integrationEnabled)
+      .toRight(Response.notFound[F])
 
   def uploadFile[F[_]: Async](
-      coll: Ident,
+      cid: CollectiveId,
       backend: BackendApp[F],
       cfg: Config,
       dsl: Http4sDsl[F]
@@ -110,8 +109,7 @@ object IntegrationEndpointRoutes {
         cfg.integrationEndpoint.priority,
         cfg.backend.files.validMimeTypes
       )
-      account = AccountId(coll, DocspellSystem.user)
-      result <- backend.upload.submit(updata, account, None)
+      result <- backend.upload.submit(updata, cid, None, None)
       res <- Ok(basicResult(result))
     } yield res
   }

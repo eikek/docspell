@@ -71,7 +71,7 @@ object RAttachmentSource {
 
   def findByIdAndCollective(
       attachId: Ident,
-      collective: Ident
+      collective: CollectiveId
   ): ConnectionIO[Option[RAttachmentSource]] = {
     val b = RAttachment.as("b")
     val a = RAttachmentSource.as("a")

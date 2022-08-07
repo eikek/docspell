@@ -20,7 +20,7 @@ import doobie.implicits._
 
 case class RPerson(
     pid: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     name: String,
     street: String,
     zip: String,
@@ -41,7 +41,7 @@ object RPerson {
     val tableName = "person"
 
     val pid = Column[Ident]("pid", this)
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val name = Column[String]("name", this)
     val street = Column[String]("street", this)
     val zip = Column[String]("zip", this)
@@ -103,24 +103,24 @@ object RPerson {
     } yield n
   }
 
-  def existsByName(coll: Ident, pname: String): ConnectionIO[Boolean] =
+  def existsByName(coll: CollectiveId, pname: String): ConnectionIO[Boolean] =
     run(select(count(T.pid)), from(T), T.cid === coll && T.name === pname)
       .query[Int]
       .unique
       .map(_ > 0)
 
   def findById(id: Ident): ConnectionIO[Option[RPerson]] = {
-    val sql = run(select(T.all), from(T), T.cid === id)
+    val sql = run(select(T.all), from(T), T.pid === id)
     sql.query[RPerson].option
   }
 
-  def find(coll: Ident, personName: String): ConnectionIO[Option[RPerson]] = {
+  def find(coll: CollectiveId, personName: String): ConnectionIO[Option[RPerson]] = {
     val sql = run(select(T.all), from(T), T.cid === coll && T.name === personName)
     sql.query[RPerson].option
   }
 
   def findLike(
-      coll: Ident,
+      coll: CollectiveId,
       personName: String,
       use: Nel[PersonUse]
   ): ConnectionIO[Vector[IdRef]] =
@@ -131,7 +131,7 @@ object RPerson {
     ).query[IdRef].to[Vector]
 
   def findLike(
-      coll: Ident,
+      coll: CollectiveId,
       contactKind: ContactKind,
       value: String,
       use: Nel[PersonUse]
@@ -152,7 +152,7 @@ object RPerson {
   }
 
   def findAll(
-      coll: Ident,
+      coll: CollectiveId,
       order: Table => Column[_]
   ): Stream[ConnectionIO, RPerson] = {
     val sql = Select(select(T.all), from(T), T.cid === coll).orderBy(order(T))
@@ -160,7 +160,7 @@ object RPerson {
   }
 
   def findAllRef(
-      coll: Ident,
+      coll: CollectiveId,
       nameQ: Option[String],
       order: Table => Nel[OrderBy]
   ): ConnectionIO[Vector[IdRef]] = {
@@ -172,7 +172,7 @@ object RPerson {
     sql.build.query[IdRef].to[Vector]
   }
 
-  def delete(personId: Ident, coll: Ident): ConnectionIO[Int] =
+  def delete(personId: Ident, coll: CollectiveId): ConnectionIO[Int] =
     DML.delete(T, T.pid === personId && T.cid === coll)
 
   def findOrganization(ids: Set[Ident]): ConnectionIO[Vector[PersonRef]] =

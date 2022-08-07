@@ -21,6 +21,7 @@ import docspell.common._
 import docspell.query.ItemQuery.Expr.ValidItemStates
 import docspell.query.{ItemQuery, ItemQueryParser}
 import docspell.scheduler.JobStore
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.Store
 import docspell.store.file.FileMetadata
 import docspell.store.queries.{QItem, Query}
@@ -34,18 +35,18 @@ trait ODownloadAll[F[_]] {
 
   /** Calculates what kind of zip file would be created and checks the server thresholds.
     */
-  def getSummary(account: AccountId, req: DownloadRequest): F[DownloadSummary]
+  def getSummary(account: AccountInfo, req: DownloadRequest): F[DownloadSummary]
 
   /** Same as `getSummary` but also submits the job to really create the zip file if
     * allowed and necessary.
     */
-  def submit(accountId: AccountId, req: DownloadRequest): F[DownloadSummary]
+  def submit(accountId: AccountInfo, req: DownloadRequest): F[DownloadSummary]
 
   /** Given the id from the summary, cancels a running job. */
-  def cancelDownload(accountId: AccountId, id: Ident): F[OJob.JobCancelResult]
+  def cancelDownload(cid: CollectiveId, id: Ident): F[OJob.JobCancelResult]
 
   /** Returns the file if it is present, given a summary id. */
-  def getFile(collective: Ident, id: Ident): F[Option[DownloadAllFile[F]]]
+  def getFile(collective: CollectiveId, id: Ident): F[Option[DownloadAllFile[F]]]
 
   /** Deletes a download archive given it's id. */
   def deleteFile(id: Ident): F[Unit]
@@ -65,7 +66,7 @@ object ODownloadAll {
       private[this] val logger = docspell.logging.getLogger[F]
 
       def getSummary(
-          account: AccountId,
+          account: AccountInfo,
           req: DownloadRequest
       ): F[DownloadSummary] = {
         val query = req.toQuery(account)
@@ -83,16 +84,16 @@ object ODownloadAll {
       }
 
       def submit(
-          accountId: AccountId,
+          account: AccountInfo,
           req: DownloadRequest
       ): F[DownloadSummary] = for {
         _ <- logger.info(s"Download all request: $req")
-        summary <- getSummary(accountId, req)
-        args = DownloadZipArgs(accountId, req)
+        summary <- getSummary(account, req)
+        args = DownloadZipArgs(account, req)
         _ <- OptionT
           .whenF(summary.state == DownloadState.NotPresent) {
             JobFactory
-              .downloadZip(args, summary.id, accountId)
+              .downloadZip(args, summary.id, UserTaskScope(account))
               .flatMap(job =>
                 logger.info(s"Submitting download all job: $job") *> jobStore
                   .insertIfNew(job.encode)
@@ -124,7 +125,7 @@ object ODownloadAll {
             else DownloadState.NotPresent
         } yield state
 
-      def getFile(collective: Ident, id: Ident) =
+      def getFile(collective: CollectiveId, id: Ident) =
         OptionT(store.transact(RDownloadQuery.findById(id)))
           .map(_._2)
           .map(md =>
@@ -158,10 +159,10 @@ object ODownloadAll {
           _ <- store.fileRepo.delete(fkey)
         } yield ()
 
-      def cancelDownload(accountId: AccountId, id: Ident) =
+      def cancelDownload(cid: CollectiveId, id: Ident) =
         OptionT(store.transact(RDownloadQuery.findById(id)))
           .flatMap(t => OptionT(store.transact(RJob.findNonFinalByTracker(t._1.id))))
-          .semiflatMap(job => jobs.cancelJob(job.id, accountId.collective))
+          .semiflatMap(job => jobs.cancelJob(job.id, UserTaskScope.collective(cid)))
           .getOrElse(JobCancelResult.jobNotFound)
     }
 
@@ -173,9 +174,9 @@ object ODownloadAll {
         maxFiles: Int,
         maxSize: ByteSize
     ) {
-      def toQuery(accountId: AccountId): Query =
+      def toQuery(account: AccountInfo): Query =
         Query
-          .all(accountId)
+          .all(account)
           .withFix(_.andQuery(ValidItemStates))
           .withCond(_ => Query.QueryExpr(query.expr))
 

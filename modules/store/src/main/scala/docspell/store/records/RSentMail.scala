@@ -60,7 +60,7 @@ object RSentMail {
 
   def forItem(
       itemId: Ident,
-      accId: AccountId,
+      userId: Ident,
       messageId: String,
       sender: MailAddress,
       connName: Ident,
@@ -69,10 +69,9 @@ object RSentMail {
       body: String
   ): OptionT[ConnectionIO, (RSentMail, RSentMailItem)] =
     for {
-      user <- OptionT(RUser.findByAccount(accId))
       sm <- OptionT.liftF(
         RSentMail[ConnectionIO](
-          user.uid,
+          userId,
           messageId,
           sender,
           connName,

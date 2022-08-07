@@ -155,7 +155,8 @@ object SolrSetup {
             "Add polish",
             addContentField(Language.Polish)
           ),
-          SolrMigration.reIndexAll(26, "Re-Index after adding polish content field")
+          SolrMigration.reIndexAll(26, "Re-Index after adding polish content field"),
+          SolrMigration.reIndexAll(27, "Re-Index after collective-id change")
         )
 
       def addFolderField: F[Unit] =

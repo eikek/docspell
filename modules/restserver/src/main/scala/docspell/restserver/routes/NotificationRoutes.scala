@@ -50,14 +50,14 @@ object NotificationRoutes extends NonEmptyListSupport {
     HttpRoutes.of {
       case GET -> Root =>
         for {
-          list <- backend.notification.listChannels(user.account)
+          list <- backend.notification.listChannels(user.account.userId)
           data = list.map(NotificationChannel.convert)
           resp <- Ok(data)
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          res <- backend.notification.deleteChannel(id, user.account)
+          res <- backend.notification.deleteChannel(id, user.account.userId)
           resp <- Ok(Conversions.basicResult(res, "Channel deleted"))
         } yield resp
 
@@ -69,7 +69,7 @@ object NotificationRoutes extends NonEmptyListSupport {
             .fromEither[F](ch)
             .semiflatMap { c =>
               backend.notification
-                .createChannel(c, user.account)
+                .createChannel(c, user.account.userId)
                 .map(res => Conversions.basicResult(res, "Channel created"))
             }
             .foldF(ex => BadRequest(BasicResult(false, ex.getMessage)), Ok(_))
@@ -83,7 +83,7 @@ object NotificationRoutes extends NonEmptyListSupport {
             .fromEither[F](ch)
             .semiflatMap { c =>
               backend.notification
-                .updateChannel(c, user.account)
+                .updateChannel(c, user.account.userId)
                 .map(res => Conversions.basicResult(res, "Channel created"))
             }
             .foldF(ex => BadRequest(BasicResult(false, ex.getMessage)), Ok(_))
@@ -102,14 +102,14 @@ object NotificationRoutes extends NonEmptyListSupport {
     HttpRoutes.of {
       case GET -> Root =>
         for {
-          list <- backend.notification.listHooks(user.account)
+          list <- backend.notification.listHooks(user.account.userId)
           data = list.map(Converters.convertHook)
           resp <- Ok(data)
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          res <- backend.notification.deleteHook(id, user.account)
+          res <- backend.notification.deleteHook(id, user.account.userId)
           resp <- Ok(Conversions.basicResult(res, "Hook deleted."))
         } yield resp
 
@@ -117,7 +117,7 @@ object NotificationRoutes extends NonEmptyListSupport {
         for {
           input <- req.as[NotificationHook]
           hook <- Sync[F].pure(Converters.convertHook(input)).rethrow
-          res <- backend.notification.createHook(hook, user.account)
+          res <- backend.notification.createHook(hook, user.account.userId)
           resp <- Ok(Conversions.basicResult(res, "Hook created"))
         } yield resp
 
@@ -125,7 +125,7 @@ object NotificationRoutes extends NonEmptyListSupport {
         for {
           input <- req.as[NotificationHook]
           hook <- Sync[F].pure(Converters.convertHook(input)).rethrow
-          res <- backend.notification.updateHook(hook, user.account)
+          res <- backend.notification.updateHook(hook, user.account.userId)
           resp <- Ok(Conversions.basicResult(res, "Hook updated"))
         } yield resp
 
@@ -187,7 +187,7 @@ object NotificationRoutes extends NonEmptyListSupport {
       NotificationHook(
         h.id,
         h.enabled,
-        h.channels.map(c => NotificationChannelRef(c.id, c.channelType, c.name)).toList,
+        h.channels.map(c => NotificationChannelRef(c.id, c.channelType, c.name)),
         h.allEvents,
         h.eventFilter,
         h.events

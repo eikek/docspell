@@ -44,7 +44,7 @@ object SetFieldValueCtx {
       for {
         now <- OptionT.liftF(Timestamp.current[ConnectionIO])
         items <- OptionT.liftF(Item.find(ev.items, ev.account, now))
-        field <- OptionT(RCustomField.findById(ev.field, ev.account.collective))
+        field <- OptionT(RCustomField.findById(ev.field, ev.account.collectiveId))
         msg = SetFieldValueCtx(
           ev,
           Data(
@@ -70,7 +70,7 @@ object SetFieldValueCtx {
     )
 
   final case class Data(
-      account: AccountId,
+      account: AccountInfo,
       items: List[Item],
       field: Field,
       value: String,

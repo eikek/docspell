@@ -11,6 +11,7 @@ import cats.implicits._
 import fs2.concurrent.SignallingRef
 
 import docspell.backend.MailAddressCodec
+import docspell.backend.joex.FindJobOwnerAccount
 import docspell.backend.ops._
 import docspell.common._
 import docspell.joex.emptytrash._
@@ -85,7 +86,7 @@ final class JoexAppImpl[F[_]: Async](
       .evalMap { es =>
         val args = EmptyTrashArgs(es.cid, es.minAge)
         uts.updateOneTask(
-          UserTaskScope(args.collective),
+          UserTaskScope.collective(args.collective),
           args.makeSubject.some,
           EmptyTrashTask.userTask(args, es.schedule)
         )
@@ -117,6 +118,7 @@ object JoexAppImpl extends MailAddressCodec {
       jobStoreModule = JobStoreModuleBuilder(store)
         .withPubsub(pubSubT)
         .withEventSink(notificationMod)
+        .withFindJobOwner(FindJobOwnerAccount(store))
         .build
 
       tasks <- JoexTasks.resource(

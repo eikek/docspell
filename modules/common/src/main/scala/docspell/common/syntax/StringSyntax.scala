@@ -15,9 +15,7 @@ trait StringSyntax {
       Option(s).filter(_.trim.nonEmpty)
 
     def parseJsonAs[A](implicit d: Decoder[A]): Either[Throwable, A] =
-      for {
-        json <- parser.decode[A](s)
-      } yield json
+      parser.decode[A](s)
   }
 }
 

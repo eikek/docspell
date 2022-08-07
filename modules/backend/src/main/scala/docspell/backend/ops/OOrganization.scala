@@ -18,14 +18,15 @@ import docspell.store.records._
 
 trait OOrganization[F[_]] {
   def findAllOrg(
-      account: AccountId,
+      collectiveId: CollectiveId,
       query: Option[String],
       order: OrganizationOrder
   ): F[Vector[OrgAndContacts]]
-  def findOrg(account: AccountId, orgId: Ident): F[Option[OrgAndContacts]]
+
+  def findOrg(collectiveId: CollectiveId, orgId: Ident): F[Option[OrgAndContacts]]
 
   def findAllOrgRefs(
-      account: AccountId,
+      collectiveId: CollectiveId,
       nameQuery: Option[String],
       order: OrganizationOrder
   ): F[Vector[IdRef]]
@@ -35,15 +36,15 @@ trait OOrganization[F[_]] {
   def updateOrg(s: OrgAndContacts): F[AddResult]
 
   def findAllPerson(
-      account: AccountId,
+      collectiveId: CollectiveId,
       query: Option[String],
       order: PersonOrder
   ): F[Vector[PersonAndContacts]]
 
-  def findPerson(account: AccountId, persId: Ident): F[Option[PersonAndContacts]]
+  def findPerson(collectiveId: CollectiveId, persId: Ident): F[Option[PersonAndContacts]]
 
   def findAllPersonRefs(
-      account: AccountId,
+      collectiveId: CollectiveId,
       nameQuery: Option[String],
       order: PersonOrder
   ): F[Vector[IdRef]]
@@ -54,9 +55,9 @@ trait OOrganization[F[_]] {
   /** Update a person with their contacts. The additional organization is ignored. */
   def updatePerson(s: PersonAndContacts): F[AddResult]
 
-  def deleteOrg(orgId: Ident, collective: Ident): F[AddResult]
+  def deleteOrg(orgId: Ident, collective: CollectiveId): F[AddResult]
 
-  def deletePerson(personId: Ident, collective: Ident): F[AddResult]
+  def deletePerson(personId: Ident, collective: CollectiveId): F[AddResult]
 }
 
 object OOrganization {
@@ -134,32 +135,32 @@ object OOrganization {
     Resource.pure[F, OOrganization[F]](new OOrganization[F] {
 
       def findAllOrg(
-          account: AccountId,
+          collectiveId: CollectiveId,
           query: Option[String],
           order: OrganizationOrder
       ): F[Vector[OrgAndContacts]] =
         store
           .transact(
             QOrganization
-              .findOrgAndContact(account.collective, query, OrganizationOrder(order))
+              .findOrgAndContact(collectiveId, query, OrganizationOrder(order))
           )
           .map { case (org, cont) => OrgAndContacts(org, cont) }
           .compile
           .toVector
 
-      def findOrg(account: AccountId, orgId: Ident): F[Option[OrgAndContacts]] =
+      def findOrg(collectiveId: CollectiveId, orgId: Ident): F[Option[OrgAndContacts]] =
         store
-          .transact(QOrganization.getOrgAndContact(account.collective, orgId))
+          .transact(QOrganization.getOrgAndContact(collectiveId, orgId))
           .map(_.map { case (org, cont) => OrgAndContacts(org, cont) })
 
       def findAllOrgRefs(
-          account: AccountId,
+          collectiveId: CollectiveId,
           nameQuery: Option[String],
           order: OrganizationOrder
       ): F[Vector[IdRef]] =
         store.transact(
           ROrganization.findAllRef(
-            account.collective,
+            collectiveId,
             nameQuery,
             OrganizationOrder(order)
           )
@@ -172,31 +173,34 @@ object OOrganization {
         QOrganization.updateOrg(s.org, s.contacts, s.org.cid)(store)
 
       def findAllPerson(
-          account: AccountId,
+          collectiveId: CollectiveId,
           query: Option[String],
           order: PersonOrder
       ): F[Vector[PersonAndContacts]] =
         store
           .transact(
             QOrganization
-              .findPersonAndContact(account.collective, query, PersonOrder(order))
+              .findPersonAndContact(collectiveId, query, PersonOrder(order))
           )
           .map { case (person, org, cont) => PersonAndContacts(person, org, cont) }
           .compile
           .toVector
 
-      def findPerson(account: AccountId, persId: Ident): F[Option[PersonAndContacts]] =
+      def findPerson(
+          collectiveId: CollectiveId,
+          persId: Ident
+      ): F[Option[PersonAndContacts]] =
         store
-          .transact(QOrganization.getPersonAndContact(account.collective, persId))
+          .transact(QOrganization.getPersonAndContact(collectiveId, persId))
           .map(_.map { case (pers, org, cont) => PersonAndContacts(pers, org, cont) })
 
       def findAllPersonRefs(
-          account: AccountId,
+          collectiveId: CollectiveId,
           nameQuery: Option[String],
           order: PersonOrder
       ): F[Vector[IdRef]] =
         store.transact(
-          RPerson.findAllRef(account.collective, nameQuery, PersonOrder.nameOnly(order))
+          RPerson.findAllRef(collectiveId, nameQuery, PersonOrder.nameOnly(order))
         )
 
       def addPerson(s: PersonAndContacts): F[AddResult] =
@@ -205,13 +209,13 @@ object OOrganization {
       def updatePerson(s: PersonAndContacts): F[AddResult] =
         QOrganization.updatePerson(s.person, s.contacts, s.person.cid)(store)
 
-      def deleteOrg(orgId: Ident, collective: Ident): F[AddResult] =
+      def deleteOrg(orgId: Ident, collective: CollectiveId): F[AddResult] =
         store
           .transact(QOrganization.deleteOrg(orgId, collective))
           .attempt
           .map(AddResult.fromUpdate)
 
-      def deletePerson(personId: Ident, collective: Ident): F[AddResult] =
+      def deletePerson(personId: Ident, collective: CollectiveId): F[AddResult] =
         store
           .transact(QOrganization.deletePerson(personId, collective))
           .attempt

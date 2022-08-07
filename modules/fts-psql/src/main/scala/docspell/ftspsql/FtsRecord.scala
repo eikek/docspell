@@ -8,13 +8,13 @@ package docspell.ftspsql
 
 import cats.syntax.all._
 
-import docspell.common.{Ident, Language}
+import docspell.common.{CollectiveId, Ident, Language}
 import docspell.ftsclient.TextData
 
 final case class FtsRecord(
     id: Ident,
     itemId: Ident,
-    collective: Ident,
+    collective: CollectiveId,
     language: Language,
     attachId: Option[Ident],
     folderId: Option[Ident],

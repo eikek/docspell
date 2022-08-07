@@ -26,7 +26,7 @@ object Classify {
       workingDir: Path,
       store: Store[F],
       classifier: TextClassifier[F],
-      coll: Ident,
+      coll: CollectiveId,
       text: String
   )(cname: ClassifierName): F[Option[String]] =
     (for {

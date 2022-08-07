@@ -371,7 +371,10 @@ trait Conversions {
     )
   }
 
-  def newOrg[F[_]: Sync](v: Organization, cid: Ident): F[OOrganization.OrgAndContacts] = {
+  def newOrg[F[_]: Sync](
+      v: Organization,
+      cid: CollectiveId
+  ): F[OOrganization.OrgAndContacts] = {
     def contacts(oid: Ident) =
       v.contacts.traverse(c => newContact(c, oid.some, None))
     for {
@@ -397,7 +400,7 @@ trait Conversions {
 
   def changeOrg[F[_]: Sync](
       v: Organization,
-      cid: Ident
+      cid: CollectiveId
   ): F[OOrganization.OrgAndContacts] = {
     def contacts(oid: Ident) =
       v.contacts.traverse(c => newContact(c, oid.some, None))
@@ -435,7 +438,10 @@ trait Conversions {
     )
   }
 
-  def newPerson[F[_]: Sync](v: Person, cid: Ident): F[OOrganization.PersonAndContacts] = {
+  def newPerson[F[_]: Sync](
+      v: Person,
+      cid: CollectiveId
+  ): F[OOrganization.PersonAndContacts] = {
     def contacts(pid: Ident) =
       v.contacts.traverse(c => newContact(c, None, pid.some))
     for {
@@ -461,7 +467,7 @@ trait Conversions {
 
   def changePerson[F[_]: Sync](
       v: Person,
-      cid: Ident
+      cid: CollectiveId
   ): F[OOrganization.PersonAndContacts] = {
     def contacts(pid: Ident) =
       v.contacts.traverse(c => newContact(c, None, pid.some))
@@ -512,7 +518,7 @@ trait Conversions {
       ru.created
     )
 
-  def newUser[F[_]: Sync](u: User, cid: Ident): F[RUser] =
+  def newUser[F[_]: Sync](u: User, cid: CollectiveId): F[RUser] =
     Conversions.timeId.map { case (id, now) =>
       RUser(
         id,
@@ -528,7 +534,7 @@ trait Conversions {
       )
     }
 
-  def changeUser(u: User, cid: Ident): RUser =
+  def changeUser(u: User, cid: CollectiveId): RUser =
     RUser(
       u.id,
       u.login,
@@ -547,12 +553,12 @@ trait Conversions {
   def mkTag(rt: RTag): Tag =
     Tag(rt.tagId, rt.name, rt.category, rt.created)
 
-  def newTag[F[_]: Sync](t: Tag, cid: Ident): F[RTag] =
+  def newTag[F[_]: Sync](t: Tag, cid: CollectiveId): F[RTag] =
     Conversions.timeId.map { case (id, now) =>
       RTag(id, cid, t.name.trim, t.category.map(_.trim), now)
     }
 
-  def changeTag(t: Tag, cid: Ident): RTag =
+  def changeTag(t: Tag, cid: CollectiveId): RTag =
     RTag(t.id, cid, t.name.trim, t.category.map(_.trim), t.created)
 
   // sources
@@ -575,7 +581,7 @@ trait Conversions {
       TagList(s.tags.length, s.tags.map(mkTag).toList)
     )
 
-  def newSource[F[_]: Sync](s: Source, cid: Ident): F[RSource] =
+  def newSource[F[_]: Sync](s: Source, cid: CollectiveId): F[RSource] =
     Conversions.timeId.map { case (id, now) =>
       RSource(
         id,
@@ -593,10 +599,10 @@ trait Conversions {
       )
     }
 
-  def changeSource[F[_]](s: Source, coll: Ident): RSource =
+  def changeSource(s: Source, cid: CollectiveId): RSource =
     RSource(
       s.id,
-      coll,
+      cid,
       s.abbrev.trim,
       s.description,
       s.counter,
@@ -613,12 +619,12 @@ trait Conversions {
   def mkEquipment(re: REquipment): Equipment =
     Equipment(re.eid, re.name, re.created, re.notes, re.use)
 
-  def newEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
+  def newEquipment[F[_]: Sync](e: Equipment, cid: CollectiveId): F[REquipment] =
     Conversions.timeId.map { case (id, now) =>
       REquipment(id, cid, e.name.trim, now, now, e.notes, e.use)
     }
 
-  def changeEquipment[F[_]: Sync](e: Equipment, cid: Ident): F[REquipment] =
+  def changeEquipment[F[_]: Sync](e: Equipment, cid: CollectiveId): F[REquipment] =
     Timestamp
       .current[F]
       .map(now => REquipment(e.id, cid, e.name.trim, e.created, now, e.notes, e.use))
@@ -681,6 +687,8 @@ trait Conversions {
       case UploadResult.NoFiles  => BasicResult(false, "There were no files to submit.")
       case UploadResult.NoSource => BasicResult(false, "The source id is not valid.")
       case UploadResult.NoItem   => BasicResult(false, "The item could not be found.")
+      case UploadResult.NoCollective =>
+        BasicResult(false, "The collective could not be found.")
     }
 
   def basicResult(cr: PassChangeResult): BasicResult =

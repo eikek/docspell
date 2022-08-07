@@ -9,7 +9,7 @@ package docspell.joex.learn
 import cats.data.NonEmptyList
 import cats.implicits._
 
-import docspell.common.Ident
+import docspell.common.CollectiveId
 import docspell.store.records.{RClassifierModel, RClassifierSetting}
 
 import doobie._
@@ -37,12 +37,12 @@ object ClassifierName {
   val correspondentPerson: ClassifierName =
     apply("correspondentperson")
 
-  def findTagClassifiers[F[_]](coll: Ident): ConnectionIO[List[ClassifierName]] =
+  def findTagClassifiers(coll: CollectiveId): ConnectionIO[List[ClassifierName]] =
     for {
       categories <- RClassifierSetting.getActiveCategories(coll)
     } yield categories.map(tagCategory)
 
-  def findTagModels[F[_]](coll: Ident): ConnectionIO[List[RClassifierModel]] =
+  def findTagModels(coll: CollectiveId): ConnectionIO[List[RClassifierModel]] =
     for {
       categories <- RClassifierSetting.getActiveCategories(coll)
       models <- NonEmptyList.fromList(categories) match {
@@ -53,7 +53,9 @@ object ClassifierName {
       }
     } yield models
 
-  def findOrphanTagModels[F[_]](coll: Ident): ConnectionIO[List[RClassifierModel]] =
+  def findOrphanTagModels(
+      coll: CollectiveId
+  ): ConnectionIO[List[RClassifierModel]] =
     for {
       cats <- RClassifierSetting.getActiveCategories(coll)
       allModels = RClassifierModel.findAllByQuery(coll, s"$categoryPrefix%")

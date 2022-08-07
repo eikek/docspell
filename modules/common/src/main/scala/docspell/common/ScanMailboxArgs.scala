@@ -20,7 +20,7 @@ import io.circe.generic.semiauto._
   */
 case class ScanMailboxArgs(
     // the docspell user account
-    account: AccountId,
+    account: AccountInfo,
     // the configured imap connection
     imapConnection: Ident,
     // scan folders recursively
@@ -49,7 +49,7 @@ case class ScanMailboxArgs(
     postHandleAll: Option[Boolean],
     // Exclude the mail body when importing
     attachmentsOnly: Option[Boolean]
-)
+) extends TaskArguments
 
 object ScanMailboxArgs {
 

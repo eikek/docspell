@@ -23,7 +23,7 @@ trait OFulltext[F[_]] {
   /** Clears the full-text index for the given collective and starts a task indexing all
     * their data.
     */
-  def reindexCollective(account: AccountId): F[Unit]
+  def reindexCollective(cid: CollectiveId, submitterUserId: Option[Ident]): F[Unit]
 }
 
 object OFulltext {
@@ -40,13 +40,13 @@ object OFulltext {
           _ <- jobStore.insertIfNew(job.encode)
         } yield ()
 
-      def reindexCollective(account: AccountId): F[Unit] =
+      def reindexCollective(cid: CollectiveId, submitterUserId: Option[Ident]): F[Unit] =
         for {
-          _ <- logger.debug(s"Re-index collective: $account")
+          _ <- logger.debug(s"Re-index collective: $cid")
           exist <- store.transact(
             RJob.findNonFinalByTracker(DocspellSystem.migrationTaskTracker)
           )
-          job <- JobFactory.reIndex(account)
+          job <- JobFactory.reIndex(cid, submitterUserId)
           _ <-
             if (exist.isDefined) ().pure[F]
             else jobStore.insertIfNew(job.encode)

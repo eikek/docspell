@@ -21,14 +21,14 @@ import io.circe.{Decoder, Encoder}
   * the json data of the corresponding task.
   */
 final case class PeriodicDueItemsArgs(
-    account: AccountId,
+    account: AccountInfo,
     channels: NonEmptyList[ChannelRef],
     remindDays: Int,
     daysBack: Option[Int],
     tagsInclude: List[Ident],
     tagsExclude: List[Ident],
     baseUrl: Option[LenientUri]
-)
+) extends TaskArguments
 
 object PeriodicDueItemsArgs {
   val taskName = Ident.unsafe("periodic-due-items-notify2")

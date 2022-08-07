@@ -17,7 +17,7 @@ import doobie.implicits._
 
 case class REquipment(
     eid: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     name: String,
     created: Timestamp,
     updated: Timestamp,
@@ -30,7 +30,7 @@ object REquipment {
     val tableName = "equipment"
 
     val eid = Column[Ident]("eid", this)
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val name = Column[String]("name", this)
     val created = Column[Timestamp]("created", this)
     val updated = Column[Timestamp]("updated", this)
@@ -72,7 +72,7 @@ object REquipment {
     } yield n
   }
 
-  def existsByName(coll: Ident, ename: String): ConnectionIO[Boolean] = {
+  def existsByName(coll: CollectiveId, ename: String): ConnectionIO[Boolean] = {
     val t = Table(None)
     val sql = run(select(count(t.eid)), from(t), where(t.cid === coll, t.name === ename))
     sql.query[Int].unique.map(_ > 0)
@@ -85,7 +85,7 @@ object REquipment {
   }
 
   def findAll(
-      coll: Ident,
+      coll: CollectiveId,
       nameQ: Option[String],
       order: Table => NonEmptyList[OrderBy]
   ): ConnectionIO[Vector[REquipment]] = {
@@ -100,7 +100,7 @@ object REquipment {
   }
 
   def findLike(
-      coll: Ident,
+      coll: CollectiveId,
       equipName: String,
       use: NonEmptyList[EquipmentUse]
   ): ConnectionIO[Vector[IdRef]] = {
@@ -114,7 +114,7 @@ object REquipment {
       .to[Vector]
   }
 
-  def delete(id: Ident, coll: Ident): ConnectionIO[Int] = {
+  def delete(id: Ident, coll: CollectiveId): ConnectionIO[Int] = {
     val t = Table(None)
     DML.delete(t, t.eid === id && t.cid === coll)
   }

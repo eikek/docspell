@@ -61,7 +61,7 @@ object ItemSelectionCtx {
             items.toList,
             ev.itemUrl,
             ev.more,
-            ev.account.user.id
+            ev.account.login.id
           )
         )
       } yield msg
@@ -73,12 +73,12 @@ object ItemSelectionCtx {
         items <- ev.items.traverse(Item.sample[F])
       } yield ItemSelectionCtx(
         ev,
-        Data(ev.account, items.toList, ev.itemUrl, ev.more, ev.account.user.id)
+        Data(ev.account, items.toList, ev.itemUrl, ev.more, ev.account.login.id)
       )
     )
 
   final case class Data(
-      account: AccountId,
+      account: AccountInfo,
       items: List[Item],
       itemUrl: Option[String],
       more: Boolean,
@@ -89,7 +89,7 @@ object ItemSelectionCtx {
       io.circe.generic.semiauto.deriveEncoder
 
     def create(
-        account: AccountId,
+        account: AccountInfo,
         items: Vector[ListItem],
         baseUrl: Option[LenientUri],
         more: Boolean,
@@ -100,7 +100,7 @@ object ItemSelectionCtx {
         items.map(Item(now)).toList,
         baseUrl.map(_.asString),
         more,
-        account.user.id
+        account.login.id
       )
   }
 

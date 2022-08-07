@@ -39,6 +39,7 @@ case class SchedulerModuleBuilder[F[_]: Async] private (
       schedulerR <- schedulerBuilder
         .withPubSub(jobStoreModule.pubSubT)
         .withEventSink(jobStoreModule.eventSink)
+        .withFindJobOwner(jobStoreModule.findJobOwner)
         .withQueue(queue)
         .resource
 

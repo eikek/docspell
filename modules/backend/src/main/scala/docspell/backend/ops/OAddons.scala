@@ -30,45 +30,46 @@ trait OAddons[F[_]] {
     * exists.
     */
   def registerAddon(
-      collective: Ident,
+      collective: CollectiveId,
       url: LenientUri,
       logger: Option[Logger[F]]
   ): F[AddonValidationResult[(RAddonArchive, AddonMeta)]]
 
   /** Refreshes an existing addon by downloading it again and updating metadata. */
   def refreshAddon(
-      collective: Ident,
+      collective: CollectiveId,
       addonId: Ident
   ): F[AddonValidationResult[(RAddonArchive, AddonMeta)]]
 
   /** Look into the addon at the given url and return its metadata. */
   def inspectAddon(
-      collective: Ident,
+      collective: CollectiveId,
       url: LenientUri
   ): F[AddonValidationResult[AddonMeta]]
 
   /** Deletes the addon if it exists. */
-  def deleteAddon(collective: Ident, addonId: Ident): F[Boolean]
+  def deleteAddon(collective: CollectiveId, addonId: Ident): F[Boolean]
 
-  def getAllAddons(collective: Ident): F[List[RAddonArchive]]
+  def getAllAddons(collective: CollectiveId): F[List[RAddonArchive]]
 
   /** Inserts or updates the addon run configuration. If it already exists (and the given
     * id is non empty), it will be completely replaced with the given one.
     */
   def upsertAddonRunConfig(
-      collective: Ident,
+      collective: CollectiveId,
       runConfig: AddonRunInsert
   ): F[AddonRunConfigResult[Ident]]
 
   /** Deletes this task from the database. */
-  def deleteAddonRunConfig(collective: Ident, runConfigId: Ident): F[Boolean]
+  def deleteAddonRunConfig(collective: CollectiveId, runConfigId: Ident): F[Boolean]
 
-  def getAllAddonRunConfigs(collective: Ident): F[List[AddonRunInfo]]
+  def getAllAddonRunConfigs(collective: CollectiveId): F[List[AddonRunInfo]]
 
   def runAddonForItem(
-      account: AccountId,
+      cid: CollectiveId,
       itemIds: NonEmptyList[Ident],
-      addonRunConfigIds: Set[Ident]
+      addonRunConfigIds: Set[Ident],
+      submitter: UserTaskScope
   ): F[Unit]
 }
 
@@ -141,7 +142,7 @@ object OAddons {
       private val zip = MimeType.zip.asString
       private val addonValidate = new AddonValidate[F](cfg, store, joex)
 
-      def getAllAddonRunConfigs(collective: Ident): F[List[AddonRunInfo]] =
+      def getAllAddonRunConfigs(collective: CollectiveId): F[List[AddonRunInfo]] =
         for {
           all <- store.transact(AddonRunConfigData.findAll(collective))
           runConfigIDs = all.map(_.runConfig.id).toSet
@@ -168,7 +169,7 @@ object OAddons {
         } yield result
 
       def upsertAddonRunConfig(
-          collective: Ident,
+          collective: CollectiveId,
           runConfig: AddonRunInsert
       ): F[AddonRunConfigResult[Ident]] = {
         val insertDataRaw = AddonRunConfigData(
@@ -246,7 +247,10 @@ object OAddons {
           .value
       }
 
-      def deleteAddonRunConfig(collective: Ident, runConfigId: Ident): F[Boolean] = {
+      def deleteAddonRunConfig(
+          collective: CollectiveId,
+          runConfigId: Ident
+      ): F[Boolean] = {
         val deleteRunConfig =
           (for {
             e <- OptionT(RAddonRunConfig.findById(collective, runConfigId))
@@ -264,20 +268,20 @@ object OAddons {
         } yield deleted
       }
 
-      def getAllAddons(collective: Ident): F[List[RAddonArchive]] =
+      def getAllAddons(collective: CollectiveId): F[List[RAddonArchive]] =
         store.transact(RAddonArchive.listAll(collective))
 
-      def deleteAddon(collective: Ident, addonId: Ident): F[Boolean] =
+      def deleteAddon(collective: CollectiveId, addonId: Ident): F[Boolean] =
         store.transact(RAddonArchive.deleteById(collective, addonId)).map(_ > 0)
 
       def inspectAddon(
-          collective: Ident,
+          collective: CollectiveId,
           url: LenientUri
       ): F[AddonValidationResult[AddonMeta]] =
         addonValidate.fromUrl(collective, url, urlReader, checkExisting = false)
 
       def registerAddon(
-          collective: Ident,
+          collective: CollectiveId,
           url: LenientUri,
           logger: Option[Logger[F]]
       ): F[AddonValidationResult[(RAddonArchive, AddonMeta)]] = {
@@ -294,7 +298,9 @@ object OAddons {
                 .as(AddonValidationResult.failure[(RAddonArchive, AddonMeta)](error))
           }
 
-        log.info(s"Store addon file from '${url.asString} for ${collective.id}") *>
+        log.info(
+          s"Store addon file from '${url.asString} for collective ${collective.value}"
+        ) *>
           storeAddonFromUrl(collective, url).flatMapF { file =>
             val localUrl = FileUrlReader.url(file)
             for {
@@ -306,7 +312,7 @@ object OAddons {
       }
 
       def refreshAddon(
-          collective: Ident,
+          collective: CollectiveId,
           addonId: Ident
       ): F[AddonValidationResult[(RAddonArchive, AddonMeta)]] = {
         val findAddon = store
@@ -371,7 +377,7 @@ object OAddons {
           }
 
       private def insertAddon(
-          collective: Ident,
+          collective: CollectiveId,
           url: LenientUri,
           meta: AddonMeta,
           file: FileKey
@@ -392,7 +398,7 @@ object OAddons {
             .onError(_ => store.fileRepo.delete(file))
         } yield record
 
-      private def storeAddonFromUrl(collective: Ident, url: LenientUri) =
+      private def storeAddonFromUrl(collective: CollectiveId, url: LenientUri) =
         for {
           urlFile <- EitherT.pure(url.path.segments.lastOption)
           file <- EitherT(
@@ -412,15 +418,16 @@ object OAddons {
         } yield file
 
       def runAddonForItem(
-          account: AccountId,
+          cid: CollectiveId,
           itemIds: NonEmptyList[Ident],
-          addonRunConfigIds: Set[Ident]
+          addonRunConfigIds: Set[Ident],
+          submitter: UserTaskScope
       ): F[Unit] =
         for {
           jobs <- itemIds.traverse(id =>
             JobFactory.existingItemAddon(
-              ItemAddonTaskArgs(account.collective, id, addonRunConfigIds),
-              account
+              ItemAddonTaskArgs(cid, id, addonRunConfigIds),
+              submitter
             )
           )
           _ <- jobStore.insertAllIfNew(jobs.map(_.encode).toList)

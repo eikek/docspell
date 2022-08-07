@@ -24,6 +24,6 @@ case class ItemData(
     relatedItems: Vector[ListItem]
 ) {
 
-  def filterCollective(coll: Ident): Option[ItemData] =
+  def filterCollective(coll: CollectiveId): Option[ItemData] =
     if (item.cid == coll) Some(this) else None
 }

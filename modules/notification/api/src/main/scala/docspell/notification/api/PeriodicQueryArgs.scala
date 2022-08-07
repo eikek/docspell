@@ -14,13 +14,13 @@ import io.circe.generic.semiauto
 import io.circe.{Decoder, Encoder}
 
 final case class PeriodicQueryArgs(
-    account: AccountId,
+    account: AccountInfo,
     channels: NonEmptyList[ChannelRef],
     query: Option[ItemQueryString],
     bookmark: Option[String],
     baseUrl: Option[LenientUri],
     contentStart: Option[String]
-)
+) extends TaskArguments
 
 object PeriodicQueryArgs {
   val taskName = Ident.unsafe("periodic-query-notify2")

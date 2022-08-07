@@ -54,7 +54,12 @@ object PeriodicQueryTask {
   def withChannel[F[_]: Sync](ctx: Context[F, Args], ops: ONotification[F])(
       cont: Vector[NotificationChannel] => F[Unit]
   ): F[Unit] =
-    TaskOperations.withChannel(ctx.logger, ctx.args.channels, ctx.args.account, ops)(cont)
+    TaskOperations.withChannel(
+      ctx.logger,
+      ctx.args.channels,
+      ctx.args.account.userId,
+      ops
+    )(cont)
 
   private def queryString(q: ItemQuery.Expr) =
     ItemQueryParser.asString(q)
@@ -64,7 +69,10 @@ object PeriodicQueryTask {
   ): F[Unit] = {
     def fromBookmark(id: String) =
       store
-        .transact(RQueryBookmark.findByNameOrId(ctx.args.account, id))
+        .transact(
+          RQueryBookmark
+            .findByNameOrId(ctx.args.account.collectiveId, ctx.args.account.userId, id)
+        )
         .map(_.map(_.query))
         .flatTap(q =>
           ctx.logger.debug(s"Loaded bookmark '$id': ${q.map(_.expr).map(queryString)}")
@@ -72,7 +80,9 @@ object PeriodicQueryTask {
 
     def fromShare(id: String) =
       store
-        .transact(RShare.findOneByCollective(ctx.args.account.collective, Some(true), id))
+        .transact(
+          RShare.findOneByCollective(ctx.args.account.collectiveId, Some(true), id)
+        )
         .map(_.map(_.query))
         .flatTap(q =>
           ctx.logger.debug(s"Loaded share '$id': ${q.map(_.expr).map(queryString)}")

@@ -17,6 +17,7 @@ import docspell.common._
 import docspell.common.util.Zip
 import docspell.logging.Logger
 import docspell.scheduler._
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.Store
 
 /** Task to submit multiple files at once. By default, one file in an upload results in
@@ -90,7 +91,7 @@ object MultiUploadArchiveTask {
       submitter = currentJob.map(_.submitter).getOrElse(DocspellSystem.user)
       job <- JobFactory.processItem(
         args,
-        AccountId(ctx.args.meta.collective, submitter),
+        UserTaskScope(ctx.args.meta.collective, submitter.some),
         prio,
         None
       )

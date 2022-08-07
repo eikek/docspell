@@ -22,7 +22,7 @@ import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl
 
-class ItemLinkRoutes[F[_]: Async](account: AccountId, backend: OItemLink[F])
+class ItemLinkRoutes[F[_]: Async](account: AccountInfo, backend: OItemLink[F])
     extends Http4sDsl[F] {
   def get: HttpRoutes[F] =
     HttpRoutes.of {
@@ -36,7 +36,7 @@ class ItemLinkRoutes[F[_]: Async](account: AccountId, backend: OItemLink[F])
 
       case DELETE -> Root / Ident(target) / Ident(id) =>
         for {
-          _ <- backend.removeAll(account.collective, target, NonEmptyList.of(id))
+          _ <- backend.removeAll(account.collectiveId, target, NonEmptyList.of(id))
           resp <- Ok(BasicResult(true, "Related items removed"))
         } yield resp
 
@@ -46,7 +46,7 @@ class ItemLinkRoutes[F[_]: Async](account: AccountId, backend: OItemLink[F])
           related = NonEmptyList.fromList(input.related)
           res <- OptionT
             .fromOption[F](related)
-            .semiflatMap(backend.addAll(account.collective, input.item, _))
+            .semiflatMap(backend.addAll(account.collectiveId, input.item, _))
             .value
           resp <- Ok(convertResult(res))
         } yield resp
@@ -56,7 +56,7 @@ class ItemLinkRoutes[F[_]: Async](account: AccountId, backend: OItemLink[F])
           input <- req.as[ItemLinkData]
           related = NonEmptyList.fromList(input.related)
           _ <- related
-            .map(backend.removeAll(account.collective, input.item, _))
+            .map(backend.removeAll(account.collectiveId, input.item, _))
             .getOrElse(
               BadRequest(BasicResult(false, "List of related items must not be empty"))
             )
@@ -77,6 +77,6 @@ class ItemLinkRoutes[F[_]: Async](account: AccountId, backend: OItemLink[F])
 
 object ItemLinkRoutes {
 
-  def apply[F[_]: Async](account: AccountId, itemLink: OItemLink[F]): HttpRoutes[F] =
+  def apply[F[_]: Async](account: AccountInfo, itemLink: OItemLink[F]): HttpRoutes[F] =
     new ItemLinkRoutes[F](account, itemLink).get
 }

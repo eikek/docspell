@@ -37,7 +37,7 @@ object PersonRoutes {
         if (full.getOrElse(false))
           for {
             data <- backend.organization.findAllPerson(
-              user.account,
+              user.account.collectiveId,
               q.map(_.q),
               order
             )
@@ -46,7 +46,7 @@ object PersonRoutes {
         else
           for {
             data <- backend.organization.findAllPersonRefs(
-              user.account,
+              user.account.collectiveId,
               q.map(_.q),
               order
             )
@@ -56,7 +56,7 @@ object PersonRoutes {
       case req @ POST -> Root =>
         for {
           data <- req.as[Person]
-          newPer <- newPerson(data, user.account.collective)
+          newPer <- newPerson(data, user.account.collectiveId)
           added <- backend.organization.addPerson(newPer)
           resp <- Ok(basicResult(added, "New person saved."))
         } yield resp
@@ -64,7 +64,7 @@ object PersonRoutes {
       case req @ PUT -> Root =>
         for {
           data <- req.as[Person]
-          upPer <- changePerson(data, user.account.collective)
+          upPer <- changePerson(data, user.account.collectiveId)
           update <- backend.organization.updatePerson(upPer)
           resp <- Ok(basicResult(update, "Person updated."))
         } yield resp
@@ -72,16 +72,15 @@ object PersonRoutes {
       case DELETE -> Root / Ident(id) =>
         for {
           _ <- logger.debug(s"Deleting person ${id.id}")
-          delOrg <- backend.organization.deletePerson(id, user.account.collective)
+          delOrg <- backend.organization.deletePerson(id, user.account.collectiveId)
           resp <- Ok(basicResult(delOrg, "Person deleted."))
         } yield resp
 
       case GET -> Root / Ident(id) =>
         (for {
-          org <- OptionT(backend.organization.findPerson(user.account, id))
+          org <- OptionT(backend.organization.findPerson(user.account.collectiveId, id))
           resp <- OptionT.liftF(Ok(mkPerson(org)))
         } yield resp).getOrElseF(NotFound())
     }
   }
-
 }

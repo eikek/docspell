@@ -19,7 +19,7 @@ import doobie.implicits._
 
 final case class RCollectivePassword(
     id: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     password: Password,
     created: Timestamp
 ) {}
@@ -29,7 +29,7 @@ object RCollectivePassword {
     val tableName: String = "collective_password"
 
     val id = Column[Ident]("id", this)
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val password = Column[Password]("pass", this)
     val created = Column[Timestamp]("created", this)
 
@@ -41,7 +41,7 @@ object RCollectivePassword {
   def as(alias: String): Table =
     Table(Some(alias))
 
-  def createNew[F[_]: Sync](cid: Ident, pw: Password): F[RCollectivePassword] =
+  def createNew[F[_]: Sync](cid: CollectiveId, pw: Password): F[RCollectivePassword] =
     for {
       id <- Ident.randomId[F]
       time <- Timestamp.current[F]
@@ -63,15 +63,15 @@ object RCollectivePassword {
   def deleteById(id: Ident): ConnectionIO[Int] =
     DML.delete(T, T.id === id)
 
-  def deleteByPassword(cid: Ident, pw: Password): ConnectionIO[Int] =
+  def deleteByPassword(cid: CollectiveId, pw: Password): ConnectionIO[Int] =
     DML.delete(T, T.password === pw && T.cid === cid)
 
-  def findAll(cid: Ident): ConnectionIO[List[RCollectivePassword]] =
+  def findAll(cid: CollectiveId): ConnectionIO[List[RCollectivePassword]] =
     Select(select(T.all), from(T), T.cid === cid).build
       .query[RCollectivePassword]
       .to[List]
 
-  def replaceAll(cid: Ident, pws: List[Password]): ConnectionIO[Int] =
+  def replaceAll(cid: CollectiveId, pws: List[Password]): ConnectionIO[Int] =
     for {
       k <- DML.delete(T, T.cid === cid)
       pw <- pws.traverse(p => createNew[ConnectionIO](cid, p))

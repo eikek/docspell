@@ -35,7 +35,7 @@ object ScanMailboxRoutes {
     HttpRoutes.of {
       case GET -> Root =>
         ut.getScanMailbox(UserTaskScope(user.account))
-          .evalMap(task => taskToSettings(user.account, backend, task))
+          .evalMap(task => taskToSettings(user.account.userId, backend, task))
           .compile
           .toVector
           .map(v => ScanMailboxSettingsList(v.toList))
@@ -44,7 +44,7 @@ object ScanMailboxRoutes {
       case GET -> Root / Ident(id) =>
         (for {
           task <- ut.findScanMailbox(id, UserTaskScope(user.account))
-          res <- OptionT.liftF(taskToSettings(user.account, backend, task))
+          res <- OptionT.liftF(taskToSettings(user.account.userId, backend, task))
           resp <- OptionT.liftF(Ok(res))
         } yield resp).getOrElseF(NotFound())
 
@@ -102,7 +102,7 @@ object ScanMailboxRoutes {
 
   def makeTask[F[_]: Sync](
       id: Ident,
-      user: AccountId,
+      user: AccountInfo,
       settings: ScanMailboxSettings
   ): F[UserTask[ScanMailboxArgs]] =
     Sync[F].pure(
@@ -133,14 +133,14 @@ object ScanMailboxRoutes {
     )
 
   def taskToSettings[F[_]: Sync](
-      account: AccountId,
+      userId: Ident,
       backend: BackendApp[F],
       task: UserTask[ScanMailboxArgs]
   ): F[ScanMailboxSettings] =
     for {
       conn <-
         backend.mail
-          .getImapSettings(account, None)
+          .getImapSettings(userId, None)
           .map(
             _.find(_.name == task.args.imapConnection)
               .map(_.name)

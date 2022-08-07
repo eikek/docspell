@@ -19,7 +19,7 @@ import doobie._
 import doobie.implicits._
 
 final case class REmptyTrashSetting(
-    cid: Ident,
+    cid: CollectiveId,
     schedule: CalEvent,
     minAge: Duration,
     created: Timestamp
@@ -30,7 +30,7 @@ object REmptyTrashSetting {
   final case class Table(alias: Option[String]) extends TableDef {
     val tableName = "empty_trash_setting"
 
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val schedule = Column[CalEvent]("schedule", this)
     val minAge = Column[Duration]("min_age", this)
     val created = Column[Timestamp]("created", this)
@@ -61,7 +61,7 @@ object REmptyTrashSetting {
       n2 <- if (n1 <= 0) insert(v) else 0.pure[ConnectionIO]
     } yield n1 + n2
 
-  def findById(id: Ident): ConnectionIO[Option[REmptyTrashSetting]] = {
+  def findById(id: CollectiveId): ConnectionIO[Option[REmptyTrashSetting]] = {
     val sql = run(select(T.all), from(T), T.cid === id)
     sql.query[REmptyTrashSetting].option
   }
@@ -84,11 +84,11 @@ object REmptyTrashSetting {
     sql.query[REmptyTrashSetting].streamWithChunkSize(chunkSize)
   }
 
-  def delete(coll: Ident): ConnectionIO[Int] =
+  def delete(coll: CollectiveId): ConnectionIO[Int] =
     DML.delete(T, T.cid === coll)
 
   final case class EmptyTrash(schedule: CalEvent, minAge: Duration) {
-    def toRecord(coll: Ident, created: Timestamp): REmptyTrashSetting =
+    def toRecord(coll: CollectiveId, created: Timestamp): REmptyTrashSetting =
       REmptyTrashSetting(coll, schedule, minAge, created)
   }
   object EmptyTrash {

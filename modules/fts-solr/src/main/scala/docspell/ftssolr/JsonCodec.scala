@@ -17,7 +17,8 @@ import io.circe.syntax._
 trait JsonCodec {
 
   implicit def attachmentEncoder(implicit
-      enc: Encoder[Ident]
+      enc: Encoder[Ident],
+      encCid: Encoder[CollectiveId]
   ): Encoder[TextData.Attachment] =
     new Encoder[TextData.Attachment] {
       final def apply(td: TextData.Attachment): Json = {
@@ -28,7 +29,7 @@ trait JsonCodec {
           cnt :: List(
             (Field.id.name, enc(td.id)),
             (Field.itemId.name, enc(td.item)),
-            (Field.collectiveId.name, enc(td.collective)),
+            (Field.collectiveId.name, encCid(td.collective)),
             (Field.folderId.name, td.folder.getOrElse(Ident.unsafe("")).asJson),
             (Field.attachmentId.name, enc(td.attachId)),
             (Field.attachmentName.name, Json.fromString(td.name.getOrElse(""))),
@@ -39,13 +40,16 @@ trait JsonCodec {
       }
     }
 
-  implicit def itemEncoder(implicit enc: Encoder[Ident]): Encoder[TextData.Item] =
+  implicit def itemEncoder(implicit
+      enc: Encoder[Ident],
+      encCid: Encoder[CollectiveId]
+  ): Encoder[TextData.Item] =
     new Encoder[TextData.Item] {
       final def apply(td: TextData.Item): Json =
         Json.obj(
           (Field.id.name, enc(td.id)),
           (Field.itemId.name, enc(td.item)),
-          (Field.collectiveId.name, enc(td.collective)),
+          (Field.collectiveId.name, encCid(td.collective)),
           (Field.folderId.name, td.folder.getOrElse(Ident.unsafe("")).asJson),
           (Field.itemName.name, Json.fromString(td.name.getOrElse(""))),
           (Field.itemNotes.name, Json.fromString(td.notes.getOrElse(""))),
@@ -121,7 +125,7 @@ trait JsonCodec {
         for {
           itemId <- c.get[Ident](Field.itemId.name)
           id <- c.get[Ident](Field.id.name)
-          coll <- c.get[Ident](Field.collectiveId.name)
+          coll <- c.get[CollectiveId](Field.collectiveId.name)
           score <- c.get[Double]("score")
           md <- decodeMatchData(c)
         } yield FtsResult.ItemMatch(id, itemId, coll, score, md)

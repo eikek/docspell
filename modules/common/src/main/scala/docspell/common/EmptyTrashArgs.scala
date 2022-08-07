@@ -18,9 +18,9 @@ import io.circe.generic.semiauto._
   * with state `ItemState.Deleted`.
   */
 case class EmptyTrashArgs(
-    collective: Ident,
+    collective: CollectiveId,
     minAge: Duration
-) {
+) extends TaskArguments {
 
   def makeSubject: String =
     s"Empty Trash: Remove older than ${minAge.toJava}"
@@ -35,8 +35,8 @@ object EmptyTrashArgs {
 
   val defaultSchedule = CalEvent.unsafe("*-*-1/7 03:00:00 UTC")
 
-  def periodicTaskId(coll: Ident): Ident =
-    Ident.unsafe(s"docspell") / taskName / coll
+  def periodicTaskId(coll: CollectiveId): Ident =
+    Ident.unsafe(s"docspell") / taskName / coll.value
 
   implicit val jsonEncoder: Encoder[EmptyTrashArgs] =
     deriveEncoder[EmptyTrashArgs]
@@ -45,5 +45,4 @@ object EmptyTrashArgs {
 
   def parse(str: String): Either[Throwable, EmptyTrashArgs] =
     str.parseJsonAs[EmptyTrashArgs]
-
 }

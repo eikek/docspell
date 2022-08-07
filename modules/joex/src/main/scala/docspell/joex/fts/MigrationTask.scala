@@ -13,6 +13,7 @@ import docspell.backend.fulltext.CreateIndex
 import docspell.common._
 import docspell.ftsclient._
 import docspell.joex.Config
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.scheduler.{Job, Task}
 import docspell.store.Store
 
@@ -43,10 +44,9 @@ object MigrationTask {
     Job
       .createNew(
         taskName,
-        DocspellSystem.taskGroup,
+        UserTaskScope.system,
         (),
         "Create full-text index",
-        DocspellSystem.taskGroup,
         Priority.Low,
         Some(DocspellSystem.migrationTaskTracker)
       )

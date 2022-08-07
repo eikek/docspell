@@ -11,7 +11,7 @@ import cats.syntax.all._
 import fs2.Stream
 
 import docspell.addons.AddonTriggerType
-import docspell.common.{Ident, Timestamp}
+import docspell.common.{CollectiveId, Ident, Timestamp}
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 
@@ -26,7 +26,7 @@ case class AddonRunConfigData(
 object AddonRunConfigData {
 
   def findAll(
-      cid: Ident,
+      cid: CollectiveId,
       enabled: Option[Boolean] = None,
       trigger: Set[AddonTriggerType] = Set.empty,
       configIds: Set[Ident] = Set.empty
@@ -88,7 +88,7 @@ object AddonRunConfigData {
     } yield n1 + tts.sum + tas.sum
 
   def findEnabledRef(
-      cid: Ident,
+      cid: CollectiveId,
       taskId: Ident
   ): ConnectionIO[List[(RAddonArchive, RAddonRunConfigAddon)]] = {
     val run = RAddonRunConfig.as("run")
@@ -108,7 +108,7 @@ object AddonRunConfigData {
   }
 
   def findEnabledRefs(
-      cid: Ident,
+      cid: CollectiveId,
       trigger: AddonTriggerType,
       addonTaskIds: Set[Ident]
   ): Stream[ConnectionIO, (RAddonRunConfig, List[(RAddonArchive, String)])] = {

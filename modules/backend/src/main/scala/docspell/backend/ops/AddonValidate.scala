@@ -16,7 +16,7 @@ import docspell.addons.{AddonMeta, RunnerType}
 import docspell.backend.Config
 import docspell.backend.ops.AddonValidationError._
 import docspell.backend.ops.OAddons.AddonValidationResult
-import docspell.common.{Ident, LenientUri, UrlReader}
+import docspell.common.{CollectiveId, LenientUri, UrlReader}
 import docspell.joexapi.model.AddonSupport
 import docspell.store.Store
 import docspell.store.records.RAddonArchive
@@ -29,7 +29,7 @@ final class AddonValidate[F[_]: Async](
   private[this] val logger = docspell.logging.getLogger[F]
 
   def fromUrl(
-      collective: Ident,
+      collective: CollectiveId,
       url: LenientUri,
       reader: UrlReader[F],
       localUrl: Option[LenientUri] = None,
@@ -47,7 +47,7 @@ final class AddonValidate[F[_]: Async](
     else archive(collective, reader(localUrl.getOrElse(url)).asRight, checkExisting)
 
   def archive(
-      collective: Ident,
+      collective: CollectiveId,
       addonData: Either[Path, Stream[F, Byte]],
       checkExisting: Boolean = true
   ): F[AddonValidationResult[AddonMeta]] =

@@ -25,24 +25,24 @@ trait TaskOperations {
   def withChannel[F[_]: Sync](
       logger: Logger[F],
       channelsIn: NonEmptyList[ChannelRef],
-      accountId: AccountId,
+      userId: Ident,
       ops: ONotification[F]
   )(
       cont: Vector[NotificationChannel] => F[Unit]
   ): F[Unit] = {
     val channels =
-      channelsIn.toList.toVector.flatTraverse(ops.findNotificationChannel(_, accountId))
+      channelsIn.toList.toVector.flatTraverse(ops.findNotificationChannel(_, userId))
 
     channels.flatMap { ch =>
       if (ch.isEmpty)
-        logger.error(s"No channels found for the given data: ${channelsIn}")
+        logger.error(s"No channels found for the given data: $channelsIn")
       else cont(ch)
     }
   }
 
   def withEventContext[F[_]](
       logger: Logger[F],
-      account: AccountId,
+      account: AccountInfo,
       baseUrl: Option[LenientUri],
       items: Vector[ListItem],
       contentStart: Option[String],

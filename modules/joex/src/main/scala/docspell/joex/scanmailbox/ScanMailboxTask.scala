@@ -42,15 +42,15 @@ object ScanMailboxTask {
     Task { ctx =>
       for {
         _ <- ctx.logger.info(
-          s"=== Start importing mails for user ${ctx.args.account.user.id}"
+          s"=== Start importing mails for user ${ctx.args.account.login.id}"
         )
         _ <- ctx.logger.debug(s"Settings: ${ctx.args.asJson.noSpaces}")
         mailCfg <- getMailSettings(ctx, store)
         folders = ctx.args.folders.mkString(", ")
-        userId = ctx.args.account.user
+        login = ctx.args.account.login
         imapConn = ctx.args.imapConnection
         _ <- ctx.logger.info(
-          s"Reading mails for user ${userId.id} from ${imapConn.id}/$folders"
+          s"Reading mails for user ${login.id} from ${imapConn.id}/$folders"
         )
         _ <- importMails(cfg, mailCfg, emil, upload, joex, ctx, store)
       } yield ()
@@ -61,7 +61,7 @@ object ScanMailboxTask {
 
   def getMailSettings[F[_]: Sync](ctx: Context[F, Args], store: Store[F]): F[RUserImap] =
     store
-      .transact(RUserImap.getByName(ctx.args.account, ctx.args.imapConnection))
+      .transact(RUserImap.getByName(ctx.args.account.userId, ctx.args.imapConnection))
       .flatMap {
         case Some(c) => c.pure[F]
         case None =>
@@ -234,13 +234,13 @@ object ScanMailboxTask {
           ctx.logger.debug("Not matching on subjects. No filter given") *> headers.pure[F]
       }
 
-    def filterMessageIds[C](headers: Vector[MailHeaderItem]): F[Vector[MailHeaderItem]] =
+    def filterMessageIds(headers: Vector[MailHeaderItem]): F[Vector[MailHeaderItem]] =
       NonEmptyList.fromFoldable(headers.flatMap(_.mh.messageId)) match {
         case Some(nl) =>
           for {
             archives <- store.transact(
               RAttachmentArchive
-                .findByMessageIdAndCollective(nl, ctx.args.account.collective)
+                .findByMessageIdAndCollective(nl, ctx.args.account.collectiveId)
             )
             existing = archives.flatMap(_.messageId).toSet
             mails <- headers
@@ -265,7 +265,7 @@ object ScanMailboxTask {
             store.transact(
               QOrganization
                 .findPersonByContact(
-                  ctx.args.account.collective,
+                  ctx.args.account.collectiveId,
                   from.address,
                   Some(ContactKind.Email),
                   Some(NonEmptyList.of(PersonUse.concerning))
@@ -320,7 +320,7 @@ object ScanMailboxTask {
         dir <- getDirection(mail.header)
         meta = OUpload.UploadMeta(
           Some(dir),
-          s"mailbox-${ctx.args.account.user.id}",
+          s"mailbox-${ctx.args.account.login.id}",
           args.itemFolder,
           Seq.empty,
           true,
@@ -337,7 +337,12 @@ object ScanMailboxTask {
           priority = Priority.Low,
           tracker = None
         )
-        res <- upload.submit(data, ctx.args.account, None)
+        res <- upload.submit(
+          data,
+          ctx.args.account.collectiveId,
+          ctx.args.account.userId.some,
+          None
+        )
       } yield res
     }
 

@@ -58,13 +58,11 @@ object RNotificationHook {
       sql"${r.id},${r.uid},${r.enabled},${r.allEvents},${r.eventFilter},${r.created}"
     )
 
-  def deleteByAccount(id: Ident, account: AccountId): ConnectionIO[Int] = {
-    val u = RUser.as("u")
+  def deleteByAccount(id: Ident, userId: Ident): ConnectionIO[Int] =
     DML.delete(
       T,
-      T.id === id && T.uid.in(Select(select(u.uid), from(u), u.isAccount(account)))
+      T.id === id && T.uid === userId
     )
-  }
 
   def update(r: RNotificationHook): ConnectionIO[Int] =
     DML.update(
@@ -77,11 +75,11 @@ object RNotificationHook {
       )
     )
 
-  def findByAccount(account: AccountId): ConnectionIO[Vector[RNotificationHook]] =
+  def findByAccount(userId: Ident): ConnectionIO[Vector[RNotificationHook]] =
     Select(
       select(T.all),
       from(T),
-      T.uid.in(Select(select(RUser.T.uid), from(RUser.T), RUser.T.isAccount(account)))
+      T.uid === userId
     ).build.query[RNotificationHook].to[Vector]
 
   def getById(id: Ident, userId: Ident): ConnectionIO[Option[RNotificationHook]] =
@@ -92,17 +90,15 @@ object RNotificationHook {
     ).build.query[RNotificationHook].option
 
   def findAllByAccount(
-      account: AccountId
+      userId: Ident
   ): ConnectionIO[Vector[(RNotificationHook, List[EventType])]] = {
     val h = RNotificationHook.as("h")
     val e = RNotificationHookEvent.as("e")
-    val userSelect =
-      Select(select(RUser.T.uid), from(RUser.T), RUser.T.isAccount(account))
 
     val withEvents = Select(
       select(h.all :+ e.eventType),
       from(h).innerJoin(e, e.hookId === h.id),
-      h.uid.in(userSelect)
+      h.uid === userId
     ).orderBy(h.id)
       .build
       .query[(RNotificationHook, EventType)]
@@ -113,7 +109,7 @@ object RNotificationHook {
       Select(
         select(h.all),
         from(h),
-        h.id.notIn(Select(select(e.hookId), from(e))) && h.uid.in(userSelect)
+        h.id.notIn(Select(select(e.hookId), from(e))) && h.uid === userId
       ).build
         .query[RNotificationHook]
         .to[Vector]

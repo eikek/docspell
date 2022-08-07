@@ -27,6 +27,9 @@ case class Ident(id: String) {
   def /(next: Ident): Ident =
     new Ident(id + Ident.concatChar + next.id)
 
+  def /(next: Number): Ident =
+    new Ident(id + Ident.concatChar + next)
+
   def take(n: Int): Ident =
     new Ident(id.take(n))
 }

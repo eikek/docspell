@@ -20,7 +20,7 @@ import io.circe.{Decoder, Encoder}
 case class NewItem(metadata: Option[Meta], files: List[String]) {
 
   def toProcessMeta(
-      cid: Ident,
+      cid: CollectiveId,
       collLang: Option[Language],
       sourceAbbrev: String
   ): ProcessItemArgs.ProcessMeta =
@@ -62,7 +62,7 @@ object NewItem {
   ) {
 
     def toProcessArgs(
-        cid: Ident,
+        cid: CollectiveId,
         collLang: Option[Language],
         sourceAbbrev: String
     ): ProcessItemArgs.ProcessMeta =

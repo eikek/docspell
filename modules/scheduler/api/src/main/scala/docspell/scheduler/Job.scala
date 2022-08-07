@@ -10,6 +10,7 @@ import cats.effect.Sync
 import cats.syntax.functor._
 
 import docspell.common._
+import docspell.scheduler.usertask.UserTaskScope
 
 import io.circe.Encoder
 
@@ -31,14 +32,14 @@ final case class Job[A](
 object Job {
   def createNew[F[_]: Sync, A](
       task: Ident,
-      group: Ident,
+      submitter: UserTaskScope,
       args: A,
       subject: String,
-      submitter: Ident,
       priority: Priority,
       tracker: Option[Ident]
   ): F[Job[A]] =
     Ident.randomId[F].map { id =>
-      Job(id, task, group, args, subject, submitter, priority, tracker)
+      val accId = submitter.toAccountId
+      Job(id, task, accId.collective, args, subject, accId.user, priority, tracker)
     }
 }

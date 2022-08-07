@@ -13,7 +13,7 @@ trait AttachedEvent[R] {
 
   def value: R
 
-  def event(account: AccountId, baseUrl: Option[LenientUri]): Iterable[Event]
+  def event(account: AccountInfo, baseUrl: Option[LenientUri]): Iterable[Event]
 
   def map[U](f: R => U): AttachedEvent[U]
 }
@@ -24,7 +24,7 @@ object AttachedEvent {
   def only[R](v: R): AttachedEvent[R] =
     new AttachedEvent[R] {
       val value = v
-      def event(account: AccountId, baseUrl: Option[LenientUri]): Iterable[Event] =
+      def event(account: AccountInfo, baseUrl: Option[LenientUri]): Iterable[Event] =
         Iterable.empty[Event]
 
       def map[U](f: R => U): AttachedEvent[U] =
@@ -33,10 +33,10 @@ object AttachedEvent {
 
   def apply[R](
       v: R
-  )(mkEvent: (AccountId, Option[LenientUri]) => Event): AttachedEvent[R] =
+  )(mkEvent: (AccountInfo, Option[LenientUri]) => Event): AttachedEvent[R] =
     new AttachedEvent[R] {
       val value = v
-      def event(account: AccountId, baseUrl: Option[LenientUri]): Iterable[Event] =
+      def event(account: AccountInfo, baseUrl: Option[LenientUri]): Iterable[Event] =
         Some(mkEvent(account, baseUrl))
 
       def map[U](f: R => U): AttachedEvent[U] =

@@ -39,8 +39,8 @@ object TagsChangedCtx {
   def apply: Factory =
     EventContext.factory(ev =>
       for {
-        tagsAdded <- RTag.findAllByNameOrId(ev.added, ev.account.collective)
-        tagsRemov <- RTag.findAllByNameOrId(ev.removed, ev.account.collective)
+        tagsAdded <- RTag.findAllByNameOrId(ev.added, ev.account.collectiveId)
+        tagsRemov <- RTag.findAllByNameOrId(ev.removed, ev.account.collectiveId)
         now <- Timestamp.current[ConnectionIO]
         items <- Item.find(ev.items, ev.account, now)
         msg = TagsChangedCtx(
@@ -69,7 +69,7 @@ object TagsChangedCtx {
     )
 
   final case class Data(
-      account: AccountId,
+      account: AccountInfo,
       items: List[Item],
       added: List[Tag],
       removed: List[Tag],

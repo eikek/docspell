@@ -14,6 +14,7 @@ import docspell.backend.JobFactory
 import docspell.common.MakePreviewArgs.StoreMode
 import docspell.common._
 import docspell.scheduler._
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.Store
 import docspell.store.records.RAttachment
 
@@ -64,15 +65,12 @@ object AllPreviewsTask {
   private def createJobs[F[_]: Sync](
       ctx: Context[F, Args]
   )(ras: Chunk[RAttachment]): Stream[F, Job[MakePreviewArgs]] = {
-    val collectiveOrSystem = {
-      val cid = ctx.args.collective.getOrElse(DocspellSystem.taskGroup)
-      AccountId(cid, DocspellSystem.user)
-    }
-
     def mkJob(ra: RAttachment): F[Job[MakePreviewArgs]] =
       JobFactory.makePreview(
         MakePreviewArgs(ra.id, ctx.args.storeMode),
-        collectiveOrSystem.some
+        ctx.args.collective
+          .map(UserTaskScope.collective)
+          .getOrElse(UserTaskScope.system)
       )
 
     val jobs = ras.traverse(mkJob)
@@ -81,8 +79,9 @@ object AllPreviewsTask {
 
   def job[F[_]: Sync](
       storeMode: MakePreviewArgs.StoreMode,
-      cid: Option[Ident]
+      cid: Option[CollectiveId]
   ): F[Job[String]] =
-    JobFactory.allPreviews(AllPreviewsArgs(cid, storeMode), None).map(_.encode)
-
+    JobFactory
+      .allPreviews(AllPreviewsArgs(cid, storeMode), UserTaskScope.system)
+      .map(_.encode)
 }

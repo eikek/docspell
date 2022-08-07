@@ -50,7 +50,7 @@ object TextExtraction {
           None,
           ctx.args.meta.language
         )
-        _ <- fts.indexData(ctx.logger, (idxItem +: txt.map(_.td)): _*)
+        _ <- fts.indexData(ctx.logger, idxItem +: txt.map(_.td): _*)
         dur <- start
         extractedTags = txt.flatMap(_.tags).distinct.toList
         _ <- ctx.logger.info(s"Text extraction finished in ${dur.formatExact}.")
@@ -71,7 +71,7 @@ object TextExtraction {
       store: Store[F],
       cfg: ExtractConfig,
       lang: Language,
-      collective: Ident,
+      collective: CollectiveId,
       item: ItemData
   )(ra: RAttachment): F[Result] = {
     def makeTextData(pair: (RAttachmentMeta, List[String])): Result =

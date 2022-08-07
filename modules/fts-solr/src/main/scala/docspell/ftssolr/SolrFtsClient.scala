@@ -41,11 +41,11 @@ final class SolrFtsClient[F[_]: Async](
   def updateFolder(
       logger: Logger[F],
       itemId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident]
   ): F[Unit] =
     logger.debug(
-      s"Update folder in solr index for coll/item ${collective.id}/${itemId.id}"
+      s"Update folder in solr index for coll/item ${collective.value}/${itemId.id}"
     ) *>
       solrUpdate.updateFolder(itemId, collective, folder)
 
@@ -75,9 +75,9 @@ final class SolrFtsClient[F[_]: Async](
     logger.info("Deleting complete full-text index!") *>
       solrUpdate.delete("*:*", Option(0))
 
-  def clear(logger: Logger[F], collective: Ident): F[Unit] =
-    logger.info(s"Deleting full-text index for collective ${collective.id}") *>
-      solrUpdate.delete(s"${Field.collectiveId.name}:${collective.id}", Option(0))
+  def clear(logger: Logger[F], collective: CollectiveId): F[Unit] =
+    logger.info(s"Deleting full-text index for collective ${collective.value}") *>
+      solrUpdate.delete(s"${Field.collectiveId.name}:${collective.value}", Option(0))
 }
 
 object SolrFtsClient {

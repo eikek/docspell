@@ -70,7 +70,7 @@ object BasicData {
 
     def find(
         itemIds: NonEmptyList[Ident],
-        account: AccountId,
+        account: AccountInfo,
         now: Timestamp
     ): ConnectionIO[Vector[Item]] = {
       import ItemQueryDsl._

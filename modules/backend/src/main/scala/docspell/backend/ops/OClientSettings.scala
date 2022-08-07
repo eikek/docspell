@@ -11,29 +11,31 @@ import cats.data.OptionT
 import cats.effect.{Async, Resource}
 import cats.implicits._
 
-import docspell.common.AccountId
 import docspell.common._
 import docspell.store.Store
 import docspell.store.records.RClientSettingsCollective
 import docspell.store.records.RClientSettingsUser
-import docspell.store.records.RUser
 
 import io.circe.Json
 
 trait OClientSettings[F[_]] {
 
-  def deleteUser(clientId: Ident, account: AccountId): F[Boolean]
-  def saveUser(clientId: Ident, account: AccountId, data: Json): F[Unit]
-  def loadUser(clientId: Ident, account: AccountId): F[Option[RClientSettingsUser]]
+  def deleteUser(clientId: Ident, userId: Ident): F[Boolean]
+  def saveUser(clientId: Ident, userId: Ident, data: Json): F[Unit]
+  def loadUser(clientId: Ident, userId: Ident): F[Option[RClientSettingsUser]]
 
-  def deleteCollective(clientId: Ident, account: AccountId): F[Boolean]
-  def saveCollective(clientId: Ident, account: AccountId, data: Json): F[Unit]
+  def deleteCollective(clientId: Ident, collectiveId: CollectiveId): F[Boolean]
+  def saveCollective(clientId: Ident, collectiveId: CollectiveId, data: Json): F[Unit]
   def loadCollective(
       clientId: Ident,
-      account: AccountId
+      collectiveId: CollectiveId
   ): F[Option[RClientSettingsCollective]]
 
-  def loadMerged(clientId: Ident, account: AccountId): F[Option[Json]]
+  def loadMerged(
+      clientId: Ident,
+      collectiveId: CollectiveId,
+      userId: Ident
+  ): F[Option[Json]]
 }
 
 object OClientSettings {
@@ -41,22 +43,18 @@ object OClientSettings {
     Resource.pure[F, OClientSettings[F]](new OClientSettings[F] {
       val log = docspell.logging.getLogger[F]
 
-      private def getUserId(account: AccountId): OptionT[F, Ident] =
-        OptionT(store.transact(RUser.findByAccount(account))).map(_.uid)
-
-      def deleteCollective(clientId: Ident, account: AccountId): F[Boolean] =
+      def deleteCollective(clientId: Ident, collectiveId: CollectiveId): F[Boolean] =
         store
-          .transact(RClientSettingsCollective.delete(clientId, account.collective))
+          .transact(RClientSettingsCollective.delete(clientId, collectiveId))
           .map(_ > 0)
 
-      def deleteUser(clientId: Ident, account: AccountId): F[Boolean] =
+      def deleteUser(clientId: Ident, userId: Ident): F[Boolean] =
         (for {
           _ <- OptionT.liftF(
             log.debug(
-              s"Deleting client settings for client ${clientId.id} and account $account"
+              s"Deleting client settings for client ${clientId.id} and user ${userId.id}"
             )
           )
-          userId <- getUserId(account)
           n <- OptionT.liftF(
             store.transact(
               RClientSettingsUser.delete(clientId, userId)
@@ -64,24 +62,27 @@ object OClientSettings {
           )
         } yield n > 0).getOrElse(false)
 
-      def saveCollective(clientId: Ident, account: AccountId, data: Json): F[Unit] =
+      def saveCollective(
+          clientId: Ident,
+          collectiveId: CollectiveId,
+          data: Json
+      ): F[Unit] =
         for {
           n <- store.transact(
-            RClientSettingsCollective.upsert(clientId, account.collective, data)
+            RClientSettingsCollective.upsert(clientId, collectiveId, data)
           )
           _ <-
             if (n <= 0) Async[F].raiseError(new IllegalStateException("No rows updated!"))
             else ().pure[F]
         } yield ()
 
-      def saveUser(clientId: Ident, account: AccountId, data: Json): F[Unit] =
+      def saveUser(clientId: Ident, userId: Ident, data: Json): F[Unit] =
         (for {
           _ <- OptionT.liftF(
             log.debug(
-              s"Storing client settings for client ${clientId.id} and account $account"
+              s"Storing client settings for client ${clientId.id} and user ${userId.id}"
             )
           )
-          userId <- getUserId(account)
           n <- OptionT.liftF(
             store.transact(RClientSettingsUser.upsert(clientId, userId, data))
           )
@@ -93,25 +94,24 @@ object OClientSettings {
 
       def loadCollective(
           clientId: Ident,
-          account: AccountId
+          collectiveId: CollectiveId
       ): F[Option[RClientSettingsCollective]] =
-        store.transact(RClientSettingsCollective.find(clientId, account.collective))
+        store.transact(RClientSettingsCollective.find(clientId, collectiveId))
 
-      def loadUser(clientId: Ident, account: AccountId): F[Option[RClientSettingsUser]] =
+      def loadUser(clientId: Ident, userId: Ident): F[Option[RClientSettingsUser]] =
         (for {
           _ <- OptionT.liftF(
             log.debug(
-              s"Loading client settings for client ${clientId.id} and account $account"
+              s"Loading client settings for client ${clientId.id} and user ${userId.id}"
             )
           )
-          userId <- getUserId(account)
           data <- OptionT(store.transact(RClientSettingsUser.find(clientId, userId)))
         } yield data).value
 
-      def loadMerged(clientId: Ident, account: AccountId) =
+      def loadMerged(clientId: Ident, collectiveId: CollectiveId, userId: Ident) =
         for {
-          collData <- loadCollective(clientId, account)
-          userData <- loadUser(clientId, account)
+          collData <- loadCollective(clientId, collectiveId)
+          userData <- loadUser(clientId, userId)
           mergedData = collData.map(_.settingsData) |+| userData.map(_.settingsData)
         } yield mergedData
 

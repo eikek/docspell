@@ -36,7 +36,7 @@ object ClientSettingsRoutes {
         _ <- OptionT.liftF(logger.debug(s"Get client settings for share ${token.id}"))
         share <- backend.share.findActiveById(token.id)
         sett <- OptionT(
-          backend.clientSettings.loadCollective(clientId, share.user.accountId)
+          backend.clientSettings.loadCollective(clientId, share.account.collectiveId)
         )
         res <- OptionT.liftF(Ok(sett.settingsData))
       } yield res)
@@ -51,7 +51,11 @@ object ClientSettingsRoutes {
     HttpRoutes.of {
       case GET -> Root / Ident(clientId) =>
         for {
-          mergedData <- backend.clientSettings.loadMerged(clientId, user.account)
+          mergedData <- backend.clientSettings.loadMerged(
+            clientId,
+            user.account.collectiveId,
+            user.account.userId
+          )
           res <- mergedData match {
             case Some(j) => Ok(j)
             case None    => Ok(Map.empty[String, String])
@@ -61,13 +65,13 @@ object ClientSettingsRoutes {
       case req @ PUT -> Root / "user" / Ident(clientId) =>
         for {
           data <- req.as[Json]
-          _ <- backend.clientSettings.saveUser(clientId, user.account, data)
+          _ <- backend.clientSettings.saveUser(clientId, user.account.userId, data)
           res <- Ok(BasicResult(true, "Settings stored"))
         } yield res
 
       case GET -> Root / "user" / Ident(clientId) =>
         for {
-          data <- backend.clientSettings.loadUser(clientId, user.account)
+          data <- backend.clientSettings.loadUser(clientId, user.account.userId)
           res <- data match {
             case Some(d) => Ok(d.settingsData)
             case None    => Ok(Map.empty[String, String])
@@ -76,7 +80,7 @@ object ClientSettingsRoutes {
 
       case DELETE -> Root / "user" / Ident(clientId) =>
         for {
-          flag <- backend.clientSettings.deleteUser(clientId, user.account)
+          flag <- backend.clientSettings.deleteUser(clientId, user.account.userId)
           res <- Ok(
             BasicResult(
               flag,
@@ -88,13 +92,20 @@ object ClientSettingsRoutes {
       case req @ PUT -> Root / "collective" / Ident(clientId) =>
         for {
           data <- req.as[Json]
-          _ <- backend.clientSettings.saveCollective(clientId, user.account, data)
+          _ <- backend.clientSettings.saveCollective(
+            clientId,
+            user.account.collectiveId,
+            data
+          )
           res <- Ok(BasicResult(true, "Settings stored"))
         } yield res
 
       case GET -> Root / "collective" / Ident(clientId) =>
         for {
-          data <- backend.clientSettings.loadCollective(clientId, user.account)
+          data <- backend.clientSettings.loadCollective(
+            clientId,
+            user.account.collectiveId
+          )
           res <- data match {
             case Some(d) => Ok(d.settingsData)
             case None    => Ok(Map.empty[String, String])
@@ -103,7 +114,10 @@ object ClientSettingsRoutes {
 
       case DELETE -> Root / "collective" / Ident(clientId) =>
         for {
-          flag <- backend.clientSettings.deleteCollective(clientId, user.account)
+          flag <- backend.clientSettings.deleteCollective(
+            clientId,
+            user.account.collectiveId
+          )
           res <- Ok(
             BasicResult(
               flag,

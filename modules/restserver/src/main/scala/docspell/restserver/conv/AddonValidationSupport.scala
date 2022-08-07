@@ -11,7 +11,7 @@ import cats.syntax.all._
 import docspell.addons.AddonMeta
 import docspell.backend.ops.AddonValidationError
 import docspell.backend.ops.OAddons.AddonValidationResult
-import docspell.common.Ident
+import docspell.common.CollectiveId
 import docspell.restserver.ws.{OutputEvent, OutputEventEncoder}
 import docspell.store.records.RAddonArchive
 
@@ -51,7 +51,7 @@ trait AddonValidationSupport {
     }
 
   def addonResultOutputEventEncoder(
-      collective: Ident
+      collective: CollectiveId
   ): OutputEventEncoder[AddonValidationResult[(RAddonArchive, AddonMeta)]] =
     OutputEventEncoder.instance {
       case Right((archive, _)) =>

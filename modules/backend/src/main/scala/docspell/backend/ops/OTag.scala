@@ -10,7 +10,7 @@ import cats.data.NonEmptyList
 import cats.effect.{Async, Resource}
 import cats.implicits._
 
-import docspell.common.{AccountId, Ident}
+import docspell.common._
 import docspell.store.records.RTagSource
 import docspell.store.records.{RTag, RTagItem}
 import docspell.store.{AddResult, Store}
@@ -18,7 +18,7 @@ import docspell.store.{AddResult, Store}
 trait OTag[F[_]] {
 
   def findAll(
-      account: AccountId,
+      collectiveId: CollectiveId,
       query: Option[String],
       order: OTag.TagOrder
   ): F[Vector[RTag]]
@@ -27,7 +27,7 @@ trait OTag[F[_]] {
 
   def update(s: RTag): F[AddResult]
 
-  def delete(id: Ident, collective: Ident): F[AddResult]
+  def delete(id: Ident, collective: CollectiveId): F[AddResult]
 
   /** Load all tags given their ids. Ids that are not available are ignored. */
   def loadAll(ids: List[Ident]): F[Vector[RTag]]
@@ -66,11 +66,11 @@ object OTag {
   def apply[F[_]: Async](store: Store[F]): Resource[F, OTag[F]] =
     Resource.pure[F, OTag[F]](new OTag[F] {
       def findAll(
-          account: AccountId,
+          collectiveId: CollectiveId,
           query: Option[String],
           order: TagOrder
       ): F[Vector[RTag]] =
-        store.transact(RTag.findAll(account.collective, query, TagOrder(order)))
+        store.transact(RTag.findAll(collectiveId, query, TagOrder(order)))
 
       def add(t: RTag): F[AddResult] = {
         def insert = RTag.insert(t)
@@ -88,7 +88,7 @@ object OTag {
         store.add(insert, exists).map(_.fold(identity, _.withMsg(msg), identity))
       }
 
-      def delete(id: Ident, collective: Ident): F[AddResult] = {
+      def delete(id: Ident, collective: CollectiveId): F[AddResult] = {
         val io = for {
           optTag <- RTag.findByIdAndCollective(id, collective)
           n0 <- optTag.traverse(t => RTagItem.deleteTag(t.tagId))
@@ -99,7 +99,7 @@ object OTag {
       }
 
       def loadAll(ids: List[Ident]): F[Vector[RTag]] =
-        if (ids.isEmpty) Vector.empty.pure[F]
+        if (ids.isEmpty) Vector.empty[RTag].pure[F]
         else store.transact(RTag.findAllById(ids))
     })
 }

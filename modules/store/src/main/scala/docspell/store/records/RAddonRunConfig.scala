@@ -18,7 +18,7 @@ import doobie.implicits._
 
 final case class RAddonRunConfig(
     id: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     userId: Option[Ident],
     name: String,
     enabled: Boolean,
@@ -30,7 +30,7 @@ object RAddonRunConfig {
     val tableName = "addon_run_config"
 
     val id = Column[Ident]("id", this)
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val userId = Column[Ident]("user_id", this)
     val name = Column[String]("name", this)
     val enabled = Column[Boolean]("enabled", this)
@@ -61,13 +61,13 @@ object RAddonRunConfig {
       )
     )
 
-  def findById(cid: Ident, id: Ident): ConnectionIO[Option[RAddonRunConfig]] =
+  def findById(cid: CollectiveId, id: Ident): ConnectionIO[Option[RAddonRunConfig]] =
     Select(select(T.all), from(T), T.cid === cid && T.id === id).build
       .query[RAddonRunConfig]
       .option
 
   def findByCollective(
-      cid: Ident,
+      cid: CollectiveId,
       enabled: Option[Boolean],
       trigger: Set[AddonTriggerType],
       configIds: Set[Ident]
@@ -94,6 +94,6 @@ object RAddonRunConfig {
     selectConfigs.build.query[RAddonRunConfig].to[List]
   }
 
-  def deleteById(cid: Ident, id: Ident): ConnectionIO[Int] =
+  def deleteById(cid: CollectiveId, id: Ident): ConnectionIO[Int] =
     DML.delete(T, T.cid === cid && T.id === id)
 }

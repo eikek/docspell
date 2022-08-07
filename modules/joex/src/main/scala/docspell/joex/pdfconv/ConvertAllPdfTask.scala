@@ -12,6 +12,7 @@ import fs2.{Chunk, Stream}
 
 import docspell.common._
 import docspell.scheduler._
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.Store
 import docspell.store.records.RAttachment
 
@@ -55,7 +56,10 @@ object ConvertAllPdfTask {
   private def createJobs[F[_]: Sync](
       ctx: Context[F, Args]
   )(ras: Chunk[RAttachment]): Stream[F, Job[String]] = {
-    val collectiveOrSystem = ctx.args.collective.getOrElse(DocspellSystem.taskGroup)
+    val collectiveOrSystem =
+      ctx.args.collective
+        .map(UserTaskScope.collective)
+        .getOrElse(UserTaskScope.system)
 
     def mkJob(ra: RAttachment): F[Job[PdfConvTask.Args]] =
       Job.createNew(
@@ -63,7 +67,6 @@ object ConvertAllPdfTask {
         collectiveOrSystem,
         PdfConvTask.Args(ra.id),
         s"Convert pdf ${ra.id.id}/${ra.name.getOrElse("-")}",
-        collectiveOrSystem,
         Priority.Low,
         Some(PdfConvTask.taskName / ra.id)
       )

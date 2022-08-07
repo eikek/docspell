@@ -7,14 +7,13 @@
 package docspell.restserver.auth
 
 import docspell.backend.auth._
-import docspell.common.AccountId
-import docspell.common.LenientUri
+import docspell.common.{AccountInfo, LenientUri}
 
 import org.http4s._
 import org.typelevel.ci.CIString
 
 case class CookieData(auth: AuthToken) {
-  def accountId: AccountId = auth.account
+  def accountInfo: AccountInfo = auth.account
   def asString: String = auth.asString
 
   def asCookie(baseUrl: LenientUri): ResponseCookie = {

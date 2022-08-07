@@ -58,7 +58,7 @@ object Query {
     Query(fix, QueryExpr(None))
 
   case class Fix(
-      account: AccountId,
+      account: AccountInfo,
       query: Option[ItemQuery.Expr],
       order: Option[OrderSelect => OrderBy]
   ) {
@@ -87,7 +87,7 @@ object Query {
       QueryExpr(Some(q))
   }
 
-  def all(account: AccountId): Query =
+  def all(account: AccountInfo): Query =
     Query(Fix(account, None, None), QueryExpr(None))
 
 }

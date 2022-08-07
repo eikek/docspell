@@ -26,7 +26,7 @@ object QNotification {
 
   def findChannelsForEvent(event: Event): ConnectionIO[Vector[HookChannel]] =
     for {
-      hooks <- listHooks(event.account.collective, event.eventType)
+      hooks <- listHooks(event.account.collectiveId, event.eventType)
       chs <- hooks.traverse(h =>
         listChannels(h.id)
           .flatMap(_.flatTraverse(hc => readHookChannel(h.uid, hc)))
@@ -42,7 +42,7 @@ object QNotification {
   )
 
   def listHooks(
-      collective: Ident,
+      collective: CollectiveId,
       eventType: EventType
   ): ConnectionIO[Vector[RNotificationHook]] =
     run(

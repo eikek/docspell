@@ -75,7 +75,7 @@ object QAttachment {
     */
   def deleteSingleAttachment[F[_]: Sync](
       store: Store[F]
-  )(attachId: Ident, coll: Ident): F[Int] = {
+  )(attachId: Ident, coll: CollectiveId): F[Int] = {
     val loadFiles = for {
       ra <- RAttachment.findByIdAndCollective(attachId, coll).map(_.map(_.fileId))
       rs <- RAttachmentSource.findByIdAndCollective(attachId, coll).map(_.map(_.fileId))
@@ -138,7 +138,7 @@ object QAttachment {
 
   def deleteItemAttachments[F[_]: Sync](
       store: Store[F]
-  )(itemId: Ident, coll: Ident): F[Int] = {
+  )(itemId: Ident, coll: CollectiveId): F[Int] = {
     val logger = docspell.logging.getLogger[F]
     for {
       ras <- store.transact(RAttachment.findByItemAndCollective(itemId, coll))
@@ -151,7 +151,10 @@ object QAttachment {
     } yield ns.sum
   }
 
-  def getMetaProposals(itemId: Ident, coll: Ident): ConnectionIO[MetaProposalList] = {
+  def getMetaProposals(
+      itemId: Ident,
+      coll: CollectiveId
+  ): ConnectionIO[MetaProposalList] = {
     val qa = Select(
       select(am.proposals),
       from(am)
@@ -177,7 +180,7 @@ object QAttachment {
 
   def getAttachmentMeta(
       attachId: Ident,
-      collective: Ident
+      collective: CollectiveId
   ): ConnectionIO[Option[RAttachmentMeta]] = {
     val q = Select(
       select(am.all),
@@ -204,14 +207,14 @@ object QAttachment {
   case class ContentAndName(
       id: Ident,
       item: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident],
       lang: Language,
       name: Option[String],
       content: Option[String]
   )
   def allAttachmentMetaAndName(
-      coll: Option[Ident],
+      coll: Option[CollectiveId],
       itemIds: Option[Nel[Ident]],
       itemStates: Nel[ItemState],
       chunkSize: Int
@@ -237,5 +240,4 @@ object QAttachment {
     ).build
       .query[ContentAndName]
       .streamWithChunkSize(chunkSize)
-
 }

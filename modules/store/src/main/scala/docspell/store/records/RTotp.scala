@@ -59,24 +59,15 @@ object RTotp {
       )
     )
 
-  def setEnabled(account: AccountId, enabled: Boolean): ConnectionIO[Int] =
-    for {
-      userId <- RUser.findIdByAccount(account)
-      n <- userId match {
-        case Some(id) =>
-          DML.update(T, T.userId === id, DML.set(T.enabled.setTo(enabled)))
-        case None =>
-          0.pure[ConnectionIO]
-      }
-    } yield n
+  def setEnabled(userId: Ident, enabled: Boolean): ConnectionIO[Int] =
+    DML.update(T, T.userId === userId, DML.set(T.enabled.setTo(enabled)))
 
-  def isEnabled(accountId: AccountId): ConnectionIO[Boolean] = {
+  def isEnabled(userId: Ident): ConnectionIO[Boolean] = {
     val t = RTotp.as("t")
-    val u = RUser.as("u")
     Select(
       select(count(t.userId)),
-      from(t).innerJoin(u, t.userId === u.uid),
-      u.login === accountId.user && u.cid === accountId.collective && t.enabled === true
+      from(t),
+      t.userId === userId && t.enabled === true
     ).build.query[Int].unique.map(_ > 0)
   }
 
@@ -86,24 +77,45 @@ object RTotp {
   ): ConnectionIO[Option[RTotp]] = {
     val t = RTotp.as("t")
     val u = RUser.as("u")
+    val c = RCollective.as("c")
     Select(
       select(t.all),
-      from(t).innerJoin(u, t.userId === u.uid),
-      u.login === accountId.user && u.cid === accountId.collective && t.enabled === enabled
+      from(t).innerJoin(u, t.userId === u.uid).innerJoin(c, c.id === u.cid),
+      u.login === accountId.user && c.name === accountId.collective && t.enabled === enabled
+    ).build.query[RTotp].option
+  }
+
+  def findEnabledByUserId(
+      userId: Ident,
+      enabled: Boolean
+  ): ConnectionIO[Option[RTotp]] = {
+    val t = RTotp.as("t")
+    Select(
+      select(t.all),
+      from(t),
+      t.userId === userId && t.enabled === enabled
     ).build.query[RTotp].option
   }
 
   def existsByLogin(accountId: AccountId): ConnectionIO[Boolean] = {
     val t = RTotp.as("t")
     val u = RUser.as("u")
+    val c = RCollective.as("c")
     Select(
       select(count(t.userId)),
-      from(t).innerJoin(u, t.userId === u.uid),
-      u.login === accountId.user && u.cid === accountId.collective
+      from(t).innerJoin(u, t.userId === u.uid).innerJoin(c, c.id === u.cid),
+      u.login === accountId.user && c.name === accountId.collective
     ).build
       .query[Int]
       .unique
       .map(_ > 0)
   }
 
+  def existsByUserId(userId: Ident): ConnectionIO[Boolean] = {
+    val t = RTotp.as("t")
+    Select(select(count(t.userId)), from(t), t.userId === userId).build
+      .query[Int]
+      .unique
+      .map(_ > 0)
+  }
 }

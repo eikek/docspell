@@ -19,7 +19,7 @@ import doobie.implicits._
 
 case class ROrganization(
     oid: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     name: String,
     street: String,
     zip: String,
@@ -40,7 +40,7 @@ object ROrganization {
     val tableName = "organization"
 
     val oid = Column[Ident]("oid", this)
-    val cid = Column[Ident]("cid", this)
+    val cid = Column[CollectiveId]("coll_id", this)
     val name = Column[String]("name", this)
     val street = Column[String]("street", this)
     val zip = Column[String]("zip", this)
@@ -103,24 +103,24 @@ object ROrganization {
     } yield n
   }
 
-  def existsByName(coll: Ident, oname: String): ConnectionIO[Boolean] =
+  def existsByName(coll: CollectiveId, oname: String): ConnectionIO[Boolean] =
     run(select(count(T.oid)), from(T), T.cid === coll && T.name === oname)
       .query[Int]
       .unique
       .map(_ > 0)
 
   def findById(id: Ident): ConnectionIO[Option[ROrganization]] = {
-    val sql = run(select(T.all), from(T), T.cid === id)
+    val sql = run(select(T.all), from(T), T.oid === id)
     sql.query[ROrganization].option
   }
 
-  def find(coll: Ident, orgName: String): ConnectionIO[Option[ROrganization]] = {
+  def find(coll: CollectiveId, orgName: String): ConnectionIO[Option[ROrganization]] = {
     val sql = run(select(T.all), from(T), T.cid === coll && T.name === orgName)
     sql.query[ROrganization].option
   }
 
   def findLike(
-      coll: Ident,
+      coll: CollectiveId,
       orgName: String,
       use: Nel[OrgUse]
   ): ConnectionIO[Vector[IdRef]] =
@@ -135,7 +135,7 @@ object ROrganization {
       .to[Vector]
 
   def findLike(
-      coll: Ident,
+      coll: CollectiveId,
       contactKind: ContactKind,
       value: String
   ): ConnectionIO[Vector[IdRef]] = {
@@ -153,7 +153,7 @@ object ROrganization {
   }
 
   def findAll(
-      coll: Ident,
+      coll: CollectiveId,
       order: Table => Column[_]
   ): Stream[ConnectionIO, ROrganization] = {
     val sql = Select(select(T.all), from(T), T.cid === coll).orderBy(order(T))
@@ -161,7 +161,7 @@ object ROrganization {
   }
 
   def findAllRef(
-      coll: Ident,
+      coll: CollectiveId,
       nameQ: Option[String],
       order: Table => Nel[OrderBy]
   ): ConnectionIO[Vector[IdRef]] = {
@@ -173,6 +173,6 @@ object ROrganization {
     sql.build.query[IdRef].to[Vector]
   }
 
-  def delete(id: Ident, coll: Ident): ConnectionIO[Int] =
+  def delete(id: Ident, coll: CollectiveId): ConnectionIO[Int] =
     DML.delete(T, T.oid === id && T.cid === coll)
 }

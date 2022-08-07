@@ -48,7 +48,7 @@ object LearnClassifierTask {
           .learnAll(
             analyser,
             store,
-            ctx.args.collective,
+            ctx.args.collectiveId,
             cfg.classification.itemCount,
             cfg.maxLength
           )
@@ -69,7 +69,7 @@ object LearnClassifierTask {
           _ <- OptionT.liftF(
             LearnTags
               .learnAllTagCategories(analyser, store)(
-                ctx.args.collective,
+                ctx.args.collectiveId,
                 maxItems,
                 cfg.maxLength
               )
@@ -82,7 +82,7 @@ object LearnClassifierTask {
         clearObsoleteTagModels(ctx, store) *>
         // when tags are deleted, categories may get removed. fix the json array
         store
-          .transact(RClassifierSetting.fixCategoryList(ctx.args.collective))
+          .transact(RClassifierSetting.fixCategoryList(ctx.args.collectiveId))
           .map(_ => ())
     }
 
@@ -92,7 +92,7 @@ object LearnClassifierTask {
   ): F[Unit] =
     for {
       list <- store.transact(
-        ClassifierName.findOrphanTagModels(ctx.args.collective)
+        ClassifierName.findOrphanTagModels(ctx.args.collectiveId)
       )
       _ <- ctx.logger.info(
         s"Found ${list.size} obsolete model files that are deleted now."
@@ -110,7 +110,7 @@ object LearnClassifierTask {
       cfg: Config.TextAnalysis
   ): OptionT[F, OCollective.Classifier] =
     if (cfg.classification.enabled)
-      OptionT(store.transact(RClassifierSetting.findById(ctx.args.collective)))
+      OptionT(store.transact(RClassifierSetting.findById(ctx.args.collectiveId)))
         .filter(_.autoTagEnabled)
         .map(OCollective.Classifier.fromRecord)
     else
