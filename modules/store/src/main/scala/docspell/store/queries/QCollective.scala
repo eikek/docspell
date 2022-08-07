@@ -97,7 +97,7 @@ object QCollective {
             (select a.attachid as aid, a.filemetaid as fid
              from attachment a
              inner join item i on a.itemid = i.itemid
-             where i.cid = $coll)
+             where i.coll_id = $coll)
          select a.fid,m.length from attachs a
          inner join filemeta m on m.file_id = a.fid
          union distinct
