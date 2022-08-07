@@ -1,11 +1,20 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package db.migration.common
 
-import cats.syntax.all._
 import cats.effect._
+import cats.syntax.all._
+
 import docspell.common._
-import docspell.store.records.{RCollective, RJob, RPeriodicTask, RUser}
-import doobie._
-import doobie.implicits._
+import docspell.notification.api.{PeriodicDueItemsArgs, PeriodicQueryArgs}
+import docspell.store.qb.DSL._
+import docspell.store.qb._
+import docspell.store.records._
+
 import db.migration.data.{
   AllPreviewsArgs => AllPreviewArgsLegacy,
   ConvertAllPdfArgs => ConvertAllPdfArgsLegacy,
@@ -21,9 +30,8 @@ import db.migration.data.{
   ScanMailboxArgs => ScanMailboxArgsLegacy,
   ScheduledAddonTaskArgs => ScheduledAddonTaskArgsLegacy
 }
-import docspell.notification.api.{PeriodicDueItemsArgs, PeriodicQueryArgs}
-import docspell.store.qb._
-import docspell.store.qb.DSL._
+import doobie._
+import doobie.implicits._
 import io.circe.{Decoder, Encoder, parser}
 import org.flywaydb.core.api.migration.Context
 

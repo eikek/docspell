@@ -8,6 +8,7 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops._
@@ -18,6 +19,7 @@ import docspell.restserver.conv.Conversions
 import docspell.restserver.http4s.BinaryUtil
 import docspell.restserver.webapp.Webjars
 import docspell.scheduler.usertask.UserTaskScope
+
 import org.http4s._
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._

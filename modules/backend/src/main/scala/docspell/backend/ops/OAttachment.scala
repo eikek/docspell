@@ -10,6 +10,7 @@ import cats.data.{NonEmptyList => Nel, OptionT}
 import cats.effect._
 import cats.syntax.all._
 import fs2.Stream
+
 import docspell.backend.JobFactory
 import docspell.common.MakePreviewArgs.StoreMode
 import docspell.common._

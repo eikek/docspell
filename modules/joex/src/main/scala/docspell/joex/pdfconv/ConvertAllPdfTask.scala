@@ -9,6 +9,7 @@ package docspell.joex.pdfconv
 import cats.effect._
 import cats.implicits._
 import fs2.{Chunk, Stream}
+
 import docspell.common._
 import docspell.scheduler._
 import docspell.scheduler.usertask.UserTaskScope

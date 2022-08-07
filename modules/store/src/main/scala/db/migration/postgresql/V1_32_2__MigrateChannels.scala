@@ -7,6 +7,7 @@
 package db.migration.postgresql
 
 import cats.effect.unsafe.implicits._
+
 import db.migration.common.MigrateDueItemTasks
 import org.flywaydb.core.api.migration.{BaseJavaMigration, Context}
 

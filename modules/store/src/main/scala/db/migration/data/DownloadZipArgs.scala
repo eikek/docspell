@@ -6,11 +6,12 @@
 
 package db.migration.data
 
-import db.migration.data.DownloadZipArgs.DownloadRequest
 import docspell.common._
 import docspell.query.ItemQuery.Expr.ValidItemStates
 import docspell.query.{ItemQuery, ItemQueryParser}
 import docspell.store.queries.Query
+
+import db.migration.data.DownloadZipArgs.DownloadRequest
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 

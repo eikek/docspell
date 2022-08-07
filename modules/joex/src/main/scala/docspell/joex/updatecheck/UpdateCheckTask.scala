@@ -9,11 +9,13 @@ package docspell.joex.updatecheck
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.common._
 import docspell.scheduler.Task
 import docspell.scheduler.usertask.UserTask
 import docspell.store.Store
 import docspell.store.records.{RUser, RUserEmail}
+
 import emil._
 
 object UpdateCheckTask {

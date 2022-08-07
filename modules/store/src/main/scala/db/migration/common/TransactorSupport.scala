@@ -1,7 +1,15 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package db.migration.common
 
 import cats.effect.IO
+
 import docspell.logging.Logger
+
 import doobie.util.transactor.{Strategy, Transactor}
 import org.flywaydb.core.api.migration.Context
 

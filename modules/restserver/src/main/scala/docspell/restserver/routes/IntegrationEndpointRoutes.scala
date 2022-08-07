@@ -9,12 +9,14 @@ package docspell.restserver.routes
 import cats.data.{EitherT, OptionT}
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.common._
 import docspell.restserver.Config
 import docspell.restserver.conv.Conversions._
 import docspell.restserver.http4s.Responses
 import docspell.store.records.{RCollective, RItem}
+
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl

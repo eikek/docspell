@@ -11,6 +11,7 @@ import cats.effect._
 import cats.syntax.all._
 import fs2.Stream
 import fs2.io.file.Path
+
 import docspell.addons.{AddonMeta, RunnerType}
 import docspell.backend.Config
 import docspell.backend.ops.AddonValidationError._

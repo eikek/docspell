@@ -7,8 +7,10 @@
 package db.migration.data
 
 import cats.data.NonEmptyList
+
 import docspell.common._
 import docspell.notification.api.ChannelRef
+
 import io.circe.generic.semiauto
 import io.circe.{Decoder, Encoder}
 

@@ -9,6 +9,7 @@ package docspell.backend.ops
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.syntax.all._
+
 import docspell.backend.ops.AddonRunConfigError._
 import docspell.backend.ops.OAddons.{AddonRunConfigResult, AddonRunInsert}
 import docspell.common.CollectiveId

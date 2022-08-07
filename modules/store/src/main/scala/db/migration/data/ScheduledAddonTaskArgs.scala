@@ -7,6 +7,7 @@
 package db.migration.data
 
 import docspell.common._
+
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 

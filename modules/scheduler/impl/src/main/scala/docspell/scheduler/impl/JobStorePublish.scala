@@ -9,6 +9,7 @@ package docspell.scheduler.impl
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.common.{Ident, JobState}
 import docspell.notification.api.{Event, EventSink}
 import docspell.pubsub.api.PubSubT

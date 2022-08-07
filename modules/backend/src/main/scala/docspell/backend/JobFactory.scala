@@ -8,6 +8,7 @@ package docspell.backend
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.MailAddressCodec
 import docspell.backend.task.DownloadZipArgs
 import docspell.common._

@@ -7,10 +7,12 @@
 package docspell.backend.ops
 
 import java.security.MessageDigest
+
 import cats.data.OptionT
 import cats.effect._
 import cats.syntax.all._
 import fs2.{Pipe, Stream}
+
 import docspell.backend.JobFactory
 import docspell.backend.ops.ODownloadAll.model._
 import docspell.backend.ops.OJob.JobCancelResult
@@ -24,6 +26,7 @@ import docspell.store.Store
 import docspell.store.file.FileMetadata
 import docspell.store.queries.{QItem, Query}
 import docspell.store.records.{RDownloadQuery, RFileMeta, RJob}
+
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 import scodec.bits.ByteVector

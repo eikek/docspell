@@ -9,6 +9,7 @@ package docspell.joex.pagecount
 import cats.effect._
 import cats.implicits._
 import fs2.{Chunk, Stream}
+
 import docspell.backend.JobFactory
 import docspell.common._
 import docspell.scheduler._

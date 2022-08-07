@@ -9,11 +9,13 @@ package docspell.restserver.routes
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.syntax.all._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.restapi.model._
 import docspell.restserver.http4s.ThrowableResponseMapper
 import docspell.scheduler.usertask.UserTaskScope
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl

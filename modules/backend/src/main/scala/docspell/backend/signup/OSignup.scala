@@ -9,10 +9,12 @@ package docspell.backend.signup
 import cats.data.OptionT
 import cats.effect.{Async, Resource}
 import cats.implicits._
+
 import docspell.backend.PasswordCrypt
 import docspell.common._
 import docspell.store.records.{RCollective, RInvitation, RUser}
 import docspell.store.{AddResult, Store}
+
 import doobie.free.connection.ConnectionIO
 
 trait OSignup[F[_]] {

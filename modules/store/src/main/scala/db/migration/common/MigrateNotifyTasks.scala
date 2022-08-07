@@ -1,15 +1,23 @@
+/*
+ * Copyright 2020 Eike K. & Contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 package db.migration.common
 
 import cats.data.{NonEmptyList, OptionT}
 import cats.effect.{IO, Sync}
 import cats.implicits._
+
 import docspell.common._
 import docspell.common.syntax.StringSyntax._
 import docspell.notification.api._
-import docspell.store.records.{RNotificationChannelMail, RPeriodicTask}
-import docspell.store.qb.DSL._
-import db.migration.data.{PeriodicDueItemsArgs => PeriodicDueItemsArgsLegacy, _}
 import docspell.store.qb.DML
+import docspell.store.qb.DSL._
+import docspell.store.records.{RNotificationChannelMail, RPeriodicTask}
+
+import db.migration.data.{PeriodicDueItemsArgs => PeriodicDueItemsArgsLegacy, _}
 import doobie._
 import doobie.implicits._
 import emil.MailAddress

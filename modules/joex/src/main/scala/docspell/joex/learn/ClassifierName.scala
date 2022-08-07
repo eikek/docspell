@@ -8,8 +8,10 @@ package docspell.joex.learn
 
 import cats.data.NonEmptyList
 import cats.implicits._
+
 import docspell.common.CollectiveId
 import docspell.store.records.{RClassifierModel, RClassifierSetting}
+
 import doobie._
 
 final class ClassifierName(val name: String) extends AnyVal

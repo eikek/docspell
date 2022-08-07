@@ -9,6 +9,7 @@ package docspell.backend.ops
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.ops.OTotp.{ConfirmResult, InitResult, OtpState}
 import docspell.common._
 import docspell.store.records.RTotp

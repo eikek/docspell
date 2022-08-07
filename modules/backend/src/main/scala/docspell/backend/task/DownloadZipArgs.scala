@@ -8,6 +8,7 @@ package docspell.backend.task
 
 import docspell.backend.ops.ODownloadAll.model.DownloadRequest
 import docspell.common._
+
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 

@@ -7,6 +7,7 @@
 package docspell.ftspsql
 
 import cats.syntax.all._
+
 import docspell.common.{CollectiveId, Ident, Language}
 import docspell.ftsclient.TextData
 

@@ -9,6 +9,7 @@ package docspell.backend.ops
 import cats.data.NonEmptyList
 import cats.effect.{Async, Resource}
 import cats.implicits._
+
 import docspell.common._
 import docspell.store.records.{REquipment, RItem}
 import docspell.store.{AddResult, Store}

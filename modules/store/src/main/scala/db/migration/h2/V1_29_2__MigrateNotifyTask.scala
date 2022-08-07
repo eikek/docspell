@@ -7,6 +7,7 @@
 package db.migration.h2
 
 import cats.effect.unsafe.implicits._
+
 import db.migration.common.MigrateNotifyTasks
 import org.flywaydb.core.api.migration.BaseJavaMigration
 import org.flywaydb.core.api.migration.Context

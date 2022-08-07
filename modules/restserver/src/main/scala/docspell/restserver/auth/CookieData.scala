@@ -8,6 +8,7 @@ package docspell.restserver.auth
 
 import docspell.backend.auth._
 import docspell.common.{AccountInfo, LenientUri}
+
 import org.http4s._
 import org.typelevel.ci.CIString
 

@@ -7,10 +7,12 @@
 package docspell.store.fts
 
 import java.time.{Instant, LocalDate}
+
 import cats.effect.IO
 import cats.syntax.option._
 import cats.syntax.traverse._
 import fs2.Stream
+
 import docspell.common._
 import docspell.ftsclient.FtsResult
 import docspell.ftsclient.FtsResult.{AttachmentData, ItemMatch}
@@ -19,6 +21,7 @@ import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.queries.{QItem, QLogin, Query}
 import docspell.store.records.{RCollective, RItem, RUser}
+
 import doobie._
 
 class TempFtsOpsTest extends DatabaseTest {

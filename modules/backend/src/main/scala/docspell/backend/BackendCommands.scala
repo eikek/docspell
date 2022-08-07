@@ -9,11 +9,12 @@ package docspell.backend
 import cats.data.{NonEmptyList => Nel}
 import cats.effect.Sync
 import cats.syntax.all._
+
 import docspell.backend.BackendCommands.EventContext
 import docspell.backend.ops.OCustomFields.SetValue
 import docspell.backend.ops._
-import docspell.common.bc._
 import docspell.common._
+import docspell.common.bc._
 
 private[backend] class BackendCommands[F[_]: Sync](
     itemOps: OItem[F],

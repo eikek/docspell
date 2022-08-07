@@ -9,6 +9,7 @@ package docspell.backend.ops
 import cats.data.{NonEmptyList => Nel, OptionT}
 import cats.effect.{Async, Resource}
 import cats.implicits._
+
 import docspell.backend.AttachedEvent
 import docspell.backend.JobFactory
 import docspell.backend.fulltext.CreateIndex
@@ -22,6 +23,7 @@ import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.queries.{QAttachment, QItem, QMoveAttachment}
 import docspell.store.records._
 import docspell.store.{AddResult, Store, UpdateResult}
+
 import doobie.implicits._
 
 trait OItem[F[_]] {

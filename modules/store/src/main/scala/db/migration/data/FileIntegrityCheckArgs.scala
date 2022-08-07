@@ -7,12 +7,14 @@
 package db.migration.data
 
 import cats.implicits._
-import db.migration.data.FileIntegrityCheckArgs.FileKeyPart
+
 import docspell.common.{FileCategory, Ident}
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
-import io.circe.syntax._
+
+import db.migration.data.FileIntegrityCheckArgs.FileKeyPart
 import io.circe.DecodingFailure
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.syntax._
+import io.circe.{Decoder, Encoder}
 
 /** @deprecated `FileKey` and `FileKeyPart` was replaced to use a `CollectiveId` */
 final case class FileIntegrityCheckArgs(pattern: FileKeyPart)

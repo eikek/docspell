@@ -9,6 +9,7 @@ package docspell.backend.ops
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.ops.OItemLink.LinkResult
 import docspell.backend.ops.search.OSearch
 import docspell.common._

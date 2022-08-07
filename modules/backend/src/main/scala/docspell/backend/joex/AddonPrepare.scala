@@ -9,6 +9,7 @@ package docspell.backend.joex
 import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.syntax.all._
+
 import docspell.addons.Middleware
 import docspell.backend.auth.AuthToken
 import docspell.backend.joex.AddonOps.AddonRunConfigRef
@@ -17,6 +18,7 @@ import docspell.logging.Logger
 import docspell.store.Store
 import docspell.store.queries.QLogin
 import docspell.store.records.RNode
+
 import scodec.bits.ByteVector
 
 private[joex] class AddonPrepare[F[_]: Sync](store: Store[F]) extends LoggerExtension {

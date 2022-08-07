@@ -8,8 +8,10 @@ package docspell.scheduler
 
 import cats.effect.Sync
 import cats.syntax.functor._
+
 import docspell.common._
 import docspell.scheduler.usertask.UserTaskScope
+
 import io.circe.Encoder
 
 final case class Job[A](

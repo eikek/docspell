@@ -6,10 +6,10 @@
 
 package db.migration.data
 
-import ProcessItemArgs._
-import docspell.common.{FileIntegrityCheckArgs => _, _}
 import docspell.common.syntax.all._
+import docspell.common.{FileIntegrityCheckArgs => _, _}
 
+import db.migration.data.ProcessItemArgs._
 import io.circe._
 import io.circe.generic.semiauto._
 

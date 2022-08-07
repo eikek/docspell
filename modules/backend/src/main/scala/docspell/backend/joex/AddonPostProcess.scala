@@ -10,6 +10,7 @@ import cats.data.OptionT
 import cats.effect.kernel.Sync
 import cats.syntax.all._
 import fs2.io.file.{Files, Path}
+
 import docspell.addons._
 import docspell.addons.out.{AddonOutput, ItemFile, NewItem}
 import docspell.backend.JobFactory

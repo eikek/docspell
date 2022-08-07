@@ -8,12 +8,14 @@ package docspell.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.common.Ident
 import docspell.restapi.model.JobPriority
 import docspell.restserver.conv.Conversions
 import docspell.scheduler.usertask.UserTaskScope
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._

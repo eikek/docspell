@@ -7,6 +7,7 @@
 package docspell.restserver.conv
 
 import cats.syntax.all._
+
 import docspell.addons.AddonMeta
 import docspell.backend.ops.AddonValidationError
 import docspell.backend.ops.OAddons.AddonValidationResult

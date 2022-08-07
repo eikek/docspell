@@ -7,8 +7,9 @@
 package docspell.backend.ops
 
 import cats.data.{NonEmptyList => Nel}
-import cats.syntax.option._
 import cats.effect._
+import cats.syntax.option._
+
 import docspell.common._
 import docspell.store.queries.QFolder
 import docspell.store.records.{RFolder, RUser}
