@@ -34,7 +34,7 @@ object AddonArchiveRoutes extends AddonValidationSupport {
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
-    implicit val wsOutputEnc = addonResultOutputEventEncoder(token.account.collective)
+    implicit val wsOutputEnc = addonResultOutputEventEncoder(token.account.collectiveId)
 
     HttpRoutes.of {
       case GET -> Root =>

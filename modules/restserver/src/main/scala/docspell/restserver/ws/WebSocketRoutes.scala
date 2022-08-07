@@ -34,7 +34,7 @@ object WebSocketRoutes {
       val init =
         for {
           jc <- backend.job.getUnfinishedJobCount(UserTaskScope(user.account))
-          msg = OutputEvent.JobsWaiting(user.account.collective, jc)
+          msg = OutputEvent.JobsWaiting(user.account.collectiveId, jc)
         } yield Text(msg.encode)
 
       val toClient: Stream[F, WebSocketFrame.Text] =
