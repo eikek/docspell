@@ -7,7 +7,7 @@
 package db.migration.data
 
 import ProcessItemArgs._
-import docspell.common._
+import docspell.common.{FileIntegrityCheckArgs => _, _}
 import docspell.common.syntax.all._
 
 import io.circe._
@@ -68,7 +68,7 @@ object ProcessItemArgs {
     implicit val jsonDecoder: Decoder[ProcessMeta] = deriveDecoder[ProcessMeta]
   }
 
-  case class File(name: Option[String], fileMetaId: FileKey)
+  case class File(name: Option[String], fileMetaId: FileIntegrityCheckArgs.FileKey)
   object File {
     implicit val jsonEncoder: Encoder[File] = deriveEncoder[File]
     implicit val jsonDecoder: Decoder[File] = deriveDecoder[File]

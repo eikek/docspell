@@ -9,14 +9,13 @@ package docspell.store.records
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.implicits._
-
 import docspell.common._
 import docspell.store.qb.DSL._
 import docspell.store.qb._
-
 import com.github.eikek.calev.CalEvent
 import doobie._
 import doobie.implicits._
+import io.circe.Encoder
 
 /** A periodic task is a special job description, that shares a few properties of a
   * `RJob`. It must provide all information to create a `RJob` value eventually.
@@ -37,6 +36,9 @@ case class RPeriodicTask(
     created: Timestamp,
     summary: Option[String]
 ) {
+
+  def withArgs[A: Encoder](args: A): RPeriodicTask =
+    copy(args = Encoder[A].apply(args).noSpaces)
 
   def toJob[F[_]: Sync]: F[RJob] =
     for {
@@ -111,6 +113,9 @@ object RPeriodicTask {
 
   def updateTask(id: Ident, taskName: Ident, args: String): ConnectionIO[Int] =
     DML.update(T, T.id === id, DML.set(T.task.setTo(taskName), T.args.setTo(args)))
+
+  def setArgs(taskId: Ident, args: String): ConnectionIO[Int] =
+    DML.update(T, T.id === taskId, DML.set(T.args.setTo(args)))
 
   def setEnabledByTask(taskName: Ident, enabled: Boolean): ConnectionIO[Int] =
     DML.update(T, T.task === taskName, DML.set(T.enabled.setTo(enabled)))

@@ -29,8 +29,8 @@ object BinnyUtils {
   def fileKeyPartToPrefix(fkp: FileKeyPart): Option[String] =
     fkp match {
       case FileKeyPart.Empty              => None
-      case FileKeyPart.Collective(cid)    => Some(s"${cid.id}/%")
-      case FileKeyPart.Category(cid, cat) => Some(s"${cid.id}/${cat.id.id}/%")
+      case FileKeyPart.Collective(cid)    => Some(s"${cid.value}/%")
+      case FileKeyPart.Category(cid, cat) => Some(s"${cid.value}/${cat.id.id}/%")
       case FileKeyPart.Key(key)           => Some(fileKeyToBinaryId(key).id)
     }
 

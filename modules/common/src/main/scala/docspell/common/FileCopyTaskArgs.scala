@@ -14,7 +14,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
 
-/** This is the input to the `FileCopyTask`. The task copies all files from on
+/** This is the input to the `FileCopyTask`. The task copies all files from one
   * FileRepository to one ore more target repositories.
   *
   * If no `from` is given, the default file repository is used. For targets, a list of ids

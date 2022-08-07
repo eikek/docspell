@@ -12,9 +12,6 @@ import io.circe.{Decoder, Encoder}
 
 /** @deprecated
   *   This has been replaced with a version using a `CollectiveId`
-  *
-  * @param collective
-  * @param addonTaskId
   */
 final case class ScheduledAddonTaskArgs(collective: Ident, addonTaskId: Ident)
 

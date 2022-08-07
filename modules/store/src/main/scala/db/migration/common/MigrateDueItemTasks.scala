@@ -6,8 +6,8 @@ import cats.implicits._
 import docspell.common._
 import docspell.common.syntax.StringSyntax._
 import docspell.notification.api._
-import docspell.store.queries.QLogin
 import docspell.store.records._
+import docspell.store.qb.DSL._
 import db.migration.data.{
   PeriodicDueItemsArgs => PeriodicDueItemsArgsLegacy,
   PeriodicQueryArgs => PeriodicQueryArgsLegacy,
@@ -103,8 +103,7 @@ object MigrateDueItemTasks extends TransactorSupport with JsonCodecs {
   private def saveChannel(ch: Channel, account: AccountId): ConnectionIO[ChannelRef] =
     (for {
       newId <- OptionT.liftF(Ident.randomId[ConnectionIO])
-      userData <- OptionT(QLogin.findAccount(account))
-      userId = userData.userId
+      userId <- OptionT(findIdByAccountId(account))
       r <- RNotificationChannel.fromChannel(ch, newId, userId)
       _ <- OptionT.liftF(RNotificationChannel.insert(r))
       _ <- OptionT.liftF(
@@ -113,4 +112,9 @@ object MigrateDueItemTasks extends TransactorSupport with JsonCodecs {
       ref = r.asRef
     } yield ref)
       .getOrElseF(Sync[ConnectionIO].raiseError(new Exception("User not found!")))
+
+  def findIdByAccountId(accountId: AccountId): ConnectionIO[Option[Ident]] =
+    sql"select u.uid from user_ u where u.cid = ${accountId.collective} and u.login = ${accountId.user}"
+      .query[Ident]
+      .option
 }

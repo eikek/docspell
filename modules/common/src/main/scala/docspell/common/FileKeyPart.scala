@@ -17,9 +17,10 @@ object FileKeyPart {
 
   case object Empty extends FileKeyPart
 
-  final case class Collective(collective: Ident) extends FileKeyPart
+  final case class Collective(collective: CollectiveId) extends FileKeyPart
 
-  final case class Category(collective: Ident, category: FileCategory) extends FileKeyPart
+  final case class Category(collective: CollectiveId, category: FileCategory)
+      extends FileKeyPart
 
   final case class Key(key: FileKey) extends FileKeyPart
 
@@ -37,7 +38,7 @@ object FileKeyPart {
   implicit val jsonDecoder: Decoder[FileKeyPart] =
     Decoder.instance { cursor =>
       for {
-        cid <- cursor.getOrElse[Option[Ident]]("collective")(None)
+        cid <- cursor.getOrElse[Option[CollectiveId]]("collective")(None)
         cat <- cursor.getOrElse[Option[FileCategory]]("category")(None)
         emptyObj = cursor.keys.exists(_.isEmpty)
 
