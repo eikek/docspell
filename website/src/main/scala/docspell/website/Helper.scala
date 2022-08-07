@@ -1,6 +1,6 @@
 package docspell.website
 
-import docspell.common.{IdRef, Ident, Timestamp}
+import docspell.common.{CollectiveId, IdRef, Ident, Timestamp}
 import scodec.bits.ByteVector
 
 import java.time.LocalDate
@@ -12,7 +12,7 @@ trait Helper {
 
   val date20220514 = Timestamp.atUtc(LocalDate.of(2022, 5, 14).atTime(11, 22, 12))
 
-  val cid = id("collective")
+  val cid = CollectiveId(1)
 
   implicit final class StringExt(self: String) {
     def id: Ident = Ident.unsafe(self)
