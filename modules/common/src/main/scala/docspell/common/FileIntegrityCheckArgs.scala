@@ -9,7 +9,7 @@ package docspell.common
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-final case class FileIntegrityCheckArgs(pattern: FileKeyPart) {}
+final case class FileIntegrityCheckArgs(pattern: FileKeyPart) extends TaskArguments
 
 object FileIntegrityCheckArgs {
   val taskName: Ident = Ident.unsafe("all-file-integrity-check")

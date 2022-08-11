@@ -34,12 +34,12 @@ object AddonArchiveRoutes extends AddonValidationSupport {
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
-    implicit val wsOutputEnc = addonResultOutputEventEncoder(token.account.collective)
+    implicit val wsOutputEnc = addonResultOutputEventEncoder(token.account.collectiveId)
 
     HttpRoutes.of {
       case GET -> Root =>
         for {
-          all <- backend.addons.getAllAddons(token.account.collective)
+          all <- backend.addons.getAllAddons(token.account.collectiveId)
           resp <- Ok(
             AddonList(
               all.map(r =>
@@ -62,7 +62,7 @@ object AddonArchiveRoutes extends AddonValidationSupport {
         for {
           input <- req.as[AddonRegister]
           install = backend.addons.registerAddon(
-            token.account.collective,
+            token.account.collectiveId,
             input.url,
             None
           )
@@ -82,7 +82,7 @@ object AddonArchiveRoutes extends AddonValidationSupport {
               s"Addon updated: ${m.nameAndVersion}"
             )
           )
-        val update = backend.addons.refreshAddon(token.account.collective, id)
+        val update = backend.addons.refreshAddon(token.account.collectiveId, id)
         for {
           resp <-
             if (sync)
@@ -97,7 +97,7 @@ object AddonArchiveRoutes extends AddonValidationSupport {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          flag <- backend.addons.deleteAddon(token.account.collective, id)
+          flag <- backend.addons.deleteAddon(token.account.collectiveId, id)
           resp <-
             if (flag) Ok(BasicResult(true, "Addon deleted"))
             else NotFound(BasicResult(false, "Addon not found"))

@@ -125,7 +125,7 @@ object RAttachment {
 
   def updateName(
       attachId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       aname: Option[String]
   ): ConnectionIO[Int] = {
     val update = DML.update(T, T.id === attachId, DML.set(T.name.setTo(aname)))
@@ -137,7 +137,7 @@ object RAttachment {
 
   def findByIdAndCollective(
       attachId: Ident,
-      collective: Ident
+      collective: CollectiveId
   ): ConnectionIO[Option[RAttachment]] = {
     val a = RAttachment.as("a")
     val i = RItem.as("i")
@@ -153,7 +153,7 @@ object RAttachment {
 
   def existsByIdAndCollective(
       attachId: Ident,
-      collective: Ident
+      collective: CollectiveId
   ): ConnectionIO[Boolean] = {
     val a = RAttachment.as("a")
     val i = RItem.as("i")
@@ -167,7 +167,7 @@ object RAttachment {
 
   def findByItemAndCollective(
       id: Ident,
-      coll: Ident
+      coll: CollectiveId
   ): ConnectionIO[Vector[RAttachment]] = {
     val a = RAttachment.as("a")
     val i = RItem.as("i")
@@ -181,7 +181,7 @@ object RAttachment {
 
   def findByItemCollectiveSource(
       id: Ident,
-      coll: Ident,
+      coll: CollectiveId,
       fileIds: NonEmptyList[FileKey]
   ): ConnectionIO[Vector[RAttachment]] = {
     val i = RItem.as("i")
@@ -202,7 +202,7 @@ object RAttachment {
 
   def findByItemAndCollectiveWithMeta(
       id: Ident,
-      coll: Ident
+      coll: CollectiveId
   ): ConnectionIO[Vector[(RAttachment, RFileMeta)]] = {
     val a = RAttachment.as("a")
     val m = RFileMeta.as("m")
@@ -250,7 +250,7 @@ object RAttachment {
   }
 
   def findAll(
-      coll: Option[Ident],
+      coll: Option[CollectiveId],
       chunkSize: Int
   ): Stream[ConnectionIO, RAttachment] = {
     val a = RAttachment.as("a")
@@ -283,7 +283,7 @@ object RAttachment {
   }
 
   def findWithoutPreview(
-      coll: Option[Ident],
+      coll: Option[CollectiveId],
       chunkSize: Int
   ): Stream[ConnectionIO, RAttachment] = {
     val a = RAttachment.as("a")
@@ -299,7 +299,7 @@ object RAttachment {
   }
 
   def findNonConvertedPdf(
-      coll: Option[Ident],
+      coll: Option[CollectiveId],
       chunkSize: Int
   ): Stream[ConnectionIO, RAttachment] = {
     val pdfType = "application/pdf%"
@@ -322,7 +322,7 @@ object RAttachment {
 
   def filterAttachments(
       attachments: NonEmptyList[Ident],
-      coll: Ident
+      coll: CollectiveId
   ): ConnectionIO[Vector[Ident]] = {
     val a = RAttachment.as("a")
     val i = RItem.as("i")

@@ -17,7 +17,8 @@ import docspell.store.Store
 case class JobStoreModuleBuilder[F[_]: Async](
     store: Store[F],
     pubsub: PubSubT[F],
-    eventSink: EventSink[F]
+    eventSink: EventSink[F],
+    findJobOwner: FindJobOwner[F]
 ) {
   def withPubsub(ps: PubSubT[F]): JobStoreModuleBuilder[F] =
     copy(pubsub = ps)
@@ -25,8 +26,11 @@ case class JobStoreModuleBuilder[F[_]: Async](
   def withEventSink(es: EventSink[F]): JobStoreModuleBuilder[F] =
     copy(eventSink = es)
 
+  def withFindJobOwner(f: FindJobOwner[F]): JobStoreModuleBuilder[F] =
+    copy(findJobOwner = f)
+
   def build: JobStoreModuleBuilder.Module[F] = {
-    val jobStore = JobStorePublish(store, pubsub, eventSink)
+    val jobStore = JobStorePublish(store, pubsub, eventSink, findJobOwner)
     val periodicTaskStore = PeriodicTaskStore(store, jobStore)
     val userTaskStore = UserTaskStoreImpl(store, periodicTaskStore)
     new JobStoreModuleBuilder.Module(
@@ -35,7 +39,8 @@ case class JobStoreModuleBuilder[F[_]: Async](
       jobStore,
       store,
       eventSink,
-      pubsub
+      pubsub,
+      findJobOwner
     )
   }
 }
@@ -43,7 +48,12 @@ case class JobStoreModuleBuilder[F[_]: Async](
 object JobStoreModuleBuilder {
 
   def apply[F[_]: Async](store: Store[F]): JobStoreModuleBuilder[F] =
-    JobStoreModuleBuilder(store, PubSubT.noop[F], EventSink.silent[F])
+    JobStoreModuleBuilder(
+      store,
+      PubSubT.noop[F],
+      EventSink.silent[F],
+      FindJobOwner.none[F]
+    )
 
   final class Module[F[_]](
       val userTasks: UserTaskStore[F],
@@ -51,6 +61,7 @@ object JobStoreModuleBuilder {
       val jobs: JobStore[F],
       val store: Store[F],
       val eventSink: EventSink[F],
-      val pubSubT: PubSubT[F]
+      val pubSubT: PubSubT[F],
+      val findJobOwner: FindJobOwner[F]
   ) extends JobStoreModule[F] {}
 }

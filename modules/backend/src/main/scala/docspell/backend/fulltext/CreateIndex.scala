@@ -24,7 +24,7 @@ trait CreateIndex[F[_]] {
     */
   def reIndexData(
       logger: Logger[F],
-      collective: Option[Ident],
+      collective: Option[CollectiveId],
       itemIds: Option[NonEmptyList[Ident]],
       chunkSize: Int
   ): F[Unit]
@@ -40,7 +40,7 @@ object CreateIndex {
     new CreateIndex[F] {
       def reIndexData(
           logger: Logger[F],
-          collective: Option[Ident],
+          collective: Option[CollectiveId],
           itemIds: Option[NonEmptyList[Ident]],
           chunkSize: Int
       ): F[Unit] = {

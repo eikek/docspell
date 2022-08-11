@@ -14,18 +14,18 @@ import docspell.backend.task.DownloadZipArgs
 import docspell.common._
 import docspell.notification.api.PeriodicQueryArgs
 import docspell.scheduler.Job
+import docspell.scheduler.usertask.UserTaskScope
 
 object JobFactory extends MailAddressCodec {
   def existingItemAddon[F[_]: Sync](
       args: ItemAddonTaskArgs,
-      submitter: AccountId
+      submitter: UserTaskScope
   ): F[Job[ItemAddonTaskArgs]] =
     Job.createNew(
       ItemAddonTaskArgs.taskName,
-      submitter.collective,
+      submitter,
       args,
       "Run addons on item",
-      submitter.user,
       Priority.High,
       args.addonRunConfigs
         .map(_.take(23))
@@ -39,179 +39,167 @@ object JobFactory extends MailAddressCodec {
   def downloadZip[F[_]: Sync](
       args: DownloadZipArgs,
       summaryId: Ident,
-      submitter: AccountId
+      submitter: UserTaskScope
   ): F[Job[DownloadZipArgs]] =
     Job.createNew(
       DownloadZipArgs.taskName,
-      submitter.collective,
+      submitter,
       args,
       s"Prepare zip file for query",
-      submitter.user,
       Priority.High,
       Some(summaryId)
     )
 
   def integrityCheck[F[_]: Sync](
       args: FileIntegrityCheckArgs,
-      submitter: AccountId = DocspellSystem.account
+      submitter: UserTaskScope = UserTaskScope.system
   ): F[Job[FileIntegrityCheckArgs]] =
     Job.createNew(
       FileIntegrityCheckArgs.taskName,
-      submitter.collective,
+      submitter,
       args,
       s"Check integrity of files",
-      submitter.user,
       Priority.Low,
       Some(FileIntegrityCheckArgs.taskName)
     )
 
   def fileCopy[F[_]: Sync](
       args: FileCopyTaskArgs,
-      submitter: AccountId = DocspellSystem.account
+      submitter: UserTaskScope = UserTaskScope.system
   ): F[Job[FileCopyTaskArgs]] =
     Job.createNew(
       FileCopyTaskArgs.taskName,
-      submitter.collective,
+      submitter,
       args,
       "Copying all files",
-      submitter.user,
       Priority.High,
       Some(FileCopyTaskArgs.taskName)
     )
 
   def periodicQuery[F[_]: Sync](
       args: PeriodicQueryArgs,
-      submitter: AccountId
+      submitter: UserTaskScope
   ): F[Job[PeriodicQueryArgs]] =
     Job.createNew(
       PeriodicQueryArgs.taskName,
-      submitter.collective,
+      submitter,
       args,
       s"Running periodic query, notify via ${args.channels.map(_.channelType)}",
-      submitter.user,
       Priority.Low,
       None
     )
 
   def makePageCount[F[_]: Sync](
       args: MakePageCountArgs,
-      account: Option[AccountId]
+      submitter: UserTaskScope
   ): F[Job[MakePageCountArgs]] =
     Job.createNew(
       MakePageCountArgs.taskName,
-      account.map(_.collective).getOrElse(DocspellSystem.taskGroup),
+      submitter,
       args,
       s"Find page-count metadata for ${args.attachment.id}",
-      account.map(_.user).getOrElse(DocspellSystem.user),
       Priority.Low,
       Some(MakePageCountArgs.taskName / args.attachment)
     )
 
   def makePreview[F[_]: Sync](
       args: MakePreviewArgs,
-      account: Option[AccountId]
+      submitter: UserTaskScope
   ): F[Job[MakePreviewArgs]] =
     Job.createNew(
       MakePreviewArgs.taskName,
-      account.map(_.collective).getOrElse(DocspellSystem.taskGroup),
+      submitter,
       args,
       s"Generate preview image",
-      account.map(_.user).getOrElse(DocspellSystem.user),
       Priority.Low,
       Some(MakePreviewArgs.taskName / args.attachment)
     )
 
   def allPreviews[F[_]: Sync](
       args: AllPreviewsArgs,
-      submitter: Option[Ident]
+      submitter: UserTaskScope
   ): F[Job[AllPreviewsArgs]] =
     Job.createNew(
       AllPreviewsArgs.taskName,
-      args.collective.getOrElse(DocspellSystem.taskGroup),
+      submitter,
       args,
       "Create preview images",
-      submitter.getOrElse(DocspellSystem.user),
       Priority.Low,
       Some(DocspellSystem.allPreviewTaskTracker)
     )
 
   def convertAllPdfs[F[_]: Sync](
-      collective: Option[Ident],
-      submitter: Option[Ident],
+      args: ConvertAllPdfArgs,
+      submitter: UserTaskScope,
       prio: Priority
   ): F[Job[ConvertAllPdfArgs]] =
     Job.createNew(
       ConvertAllPdfArgs.taskName,
-      collective.getOrElse(DocspellSystem.taskGroup),
-      ConvertAllPdfArgs(collective),
+      submitter,
+      args,
       s"Convert all pdfs not yet converted",
-      submitter.getOrElse(DocspellSystem.user),
       prio,
-      collective
-        .map(c => c / ConvertAllPdfArgs.taskName)
+      args.collective
+        .map(c => c.valueAsIdent / ConvertAllPdfArgs.taskName)
         .orElse(ConvertAllPdfArgs.taskName.some)
     )
 
   def reprocessItem[F[_]: Sync](
       args: ReProcessItemArgs,
-      account: AccountId,
+      submitter: UserTaskScope,
       prio: Priority
   ): F[Job[ReProcessItemArgs]] =
     Job.createNew(
       ReProcessItemArgs.taskName,
-      account.collective,
+      submitter,
       args,
       s"Re-process files of item ${args.itemId.id}",
-      account.user,
       prio,
       Some(ReProcessItemArgs.taskName / args.itemId)
     )
 
   def multiUpload[F[_]: Sync](
       args: ProcessItemArgs,
-      account: AccountId,
+      submitter: UserTaskScope,
       prio: Priority,
       tracker: Option[Ident]
   ): F[Job[ProcessItemArgs]] =
     Job.createNew(
       ProcessItemArgs.multiUploadTaskName,
-      account.collective,
+      submitter,
       args,
       args.makeSubject,
-      account.user,
       prio,
       tracker
     )
 
   def processItem[F[_]: Sync](
       args: ProcessItemArgs,
-      account: AccountId,
+      submitter: UserTaskScope,
       prio: Priority,
       tracker: Option[Ident]
   ): F[Job[ProcessItemArgs]] =
     Job.createNew(
       ProcessItemArgs.taskName,
-      account.collective,
+      submitter,
       args,
       args.makeSubject,
-      account.user,
       prio,
       tracker
     )
 
   def processItems[F[_]: Sync](
       args: List[ProcessItemArgs],
-      account: AccountId,
+      submitter: UserTaskScope,
       prio: Priority,
       tracker: Option[Ident]
   ): F[List[Job[ProcessItemArgs]]] = {
     def create(arg: ProcessItemArgs): F[Job[ProcessItemArgs]] =
       Job.createNew(
         ProcessItemArgs.taskName,
-        account.collective,
+        submitter,
         arg,
         arg.makeSubject,
-        account.user,
         prio,
         tracker
       )
@@ -222,22 +210,23 @@ object JobFactory extends MailAddressCodec {
   def reIndexAll[F[_]: Sync]: F[Job[ReIndexTaskArgs]] =
     Job.createNew(
       ReIndexTaskArgs.taskName,
-      DocspellSystem.taskGroup,
+      UserTaskScope.system,
       ReIndexTaskArgs(None),
       "Recreate full-text index",
-      DocspellSystem.taskGroup,
       Priority.Low,
       Some(DocspellSystem.migrationTaskTracker)
     )
 
-  def reIndex[F[_]: Sync](account: AccountId): F[Job[ReIndexTaskArgs]] = {
-    val args = ReIndexTaskArgs(Some(account.collective))
+  def reIndex[F[_]: Sync](
+      cid: CollectiveId,
+      submitterUserId: Option[Ident]
+  ): F[Job[ReIndexTaskArgs]] = {
+    val args = ReIndexTaskArgs(Some(cid))
     Job.createNew(
       ReIndexTaskArgs.taskName,
-      account.collective,
+      UserTaskScope(cid, submitterUserId),
       args,
       "Recreate full-text index",
-      account.user,
       Priority.Low,
       Some(ReIndexTaskArgs.tracker(args))
     )

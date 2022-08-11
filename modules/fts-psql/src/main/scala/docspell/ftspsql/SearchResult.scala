@@ -13,7 +13,7 @@ import docspell.ftsclient.FtsResult.{ItemMatch, MatchData}
 final case class SearchResult(
     id: Ident,
     itemId: Ident,
-    collective: Ident,
+    collective: CollectiveId,
     language: Language,
     attachId: Option[Ident],
     folderId: Option[Ident],

@@ -12,13 +12,13 @@ import cats.syntax.all._
 
 import docspell.backend.ops.AddonRunConfigError._
 import docspell.backend.ops.OAddons.{AddonRunConfigResult, AddonRunInsert}
-import docspell.common.Ident
+import docspell.common.CollectiveId
 import docspell.store.Store
 import docspell.store.records.RAddonArchive
 
 object AddonRunConfigValidate {
 
-  def apply[F[_]: Sync](store: Store[F], cid: Ident)(
+  def apply[F[_]: Sync](store: Store[F], cid: CollectiveId)(
       cfg: AddonRunInsert
   ): F[AddonRunConfigResult[AddonRunInsert]] = {
     val init: AddonRunConfigResult[Unit] = ().asRight
@@ -31,7 +31,7 @@ object AddonRunConfigValidate {
       .map(_.as(cfg))
   }
 
-  def checkTriggers[F[_]: Sync](store: Store[F], cid: Ident)(
+  def checkTriggers[F[_]: Sync](store: Store[F], cid: CollectiveId)(
       cfg: AddonRunInsert
   ): F[AddonRunConfigResult[Unit]] =
     for {

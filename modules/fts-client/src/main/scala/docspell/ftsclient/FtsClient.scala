@@ -67,7 +67,7 @@ trait FtsClient[F[_]] {
   def updateItemName(
       logger: Logger[F],
       itemId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       language: Language,
       name: String
   ): F[Unit] =
@@ -79,7 +79,7 @@ trait FtsClient[F[_]] {
   def updateItemNotes(
       logger: Logger[F],
       itemId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       language: Language,
       notes: Option[String]
   ): F[Unit] =
@@ -92,7 +92,7 @@ trait FtsClient[F[_]] {
       logger: Logger[F],
       itemId: Ident,
       attachId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       language: Language,
       name: Option[String]
   ): F[Unit] =
@@ -112,7 +112,7 @@ trait FtsClient[F[_]] {
   def updateFolder(
       logger: Logger[F],
       itemId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident]
   ): F[Unit]
 
@@ -124,7 +124,7 @@ trait FtsClient[F[_]] {
   def clearAll(logger: Logger[F]): F[Unit]
 
   /** Clears the index from all data belonging to the given collective. */
-  def clear(logger: Logger[F], collective: Ident): F[Unit]
+  def clear(logger: Logger[F], collective: CollectiveId): F[Unit]
 
 }
 
@@ -149,7 +149,7 @@ object FtsClient {
       def updateFolder(
           logger: Logger[F],
           itemId: Ident,
-          collective: Ident,
+          collective: CollectiveId,
           folder: Option[Ident]
       ): F[Unit] =
         logger.warn("Full-text search is disabled!")
@@ -166,7 +166,7 @@ object FtsClient {
       def clearAll(logger: Logger[F]): F[Unit] =
         logger.warn("Full-text search is disabled!")
 
-      def clear(logger: Logger[F], collective: Ident): F[Unit] =
+      def clear(logger: Logger[F], collective: CollectiveId): F[Unit] =
         logger.warn("Full-text search is disabled!")
     }
 }

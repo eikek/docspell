@@ -96,7 +96,7 @@ object LoginRoutes {
           resp <- Ok(
             AuthResult(
               token.account.collective.id,
-              token.account.user.id,
+              token.account.login.id,
               true,
               "Login successful",
               Some(cd.asString),

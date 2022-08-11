@@ -21,7 +21,7 @@ import docspell.store.queries.QCustomField.FieldValue
 import docspell.store.records._
 
 trait Merge[F[_]] {
-  def merge(items: NonEmptyList[Ident], collective: Ident): F[Merge.Result[RItem]]
+  def merge(items: NonEmptyList[Ident], collective: CollectiveId): F[Merge.Result[RItem]]
 }
 
 object Merge {
@@ -41,7 +41,10 @@ object Merge {
       createIndex: CreateIndex[F]
   ): Merge[F] =
     new Merge[F] {
-      def merge(givenIds: NonEmptyList[Ident], collective: Ident): F[Result[RItem]] =
+      def merge(
+          givenIds: NonEmptyList[Ident],
+          collective: CollectiveId
+      ): F[Result[RItem]] =
         (for {
           items <- loadItems(givenIds, collective)
           ids = items.map(_.id)
@@ -65,7 +68,7 @@ object Merge {
 
       def loadItems(
           items: NonEmptyList[Ident],
-          collective: Ident
+          collective: CollectiveId
       ): EitherT[F, Error, NonEmptyList[RItem]] = {
         val loaded =
           store

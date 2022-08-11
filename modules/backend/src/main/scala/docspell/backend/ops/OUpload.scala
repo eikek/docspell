@@ -14,6 +14,7 @@ import fs2.Stream
 
 import docspell.backend.JobFactory
 import docspell.common._
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.scheduler.{Job, JobStore}
 import docspell.store.Store
 import docspell.store.records._
@@ -22,7 +23,8 @@ trait OUpload[F[_]] {
 
   def submit(
       data: OUpload.UploadData[F],
-      account: AccountId,
+      collectiveId: CollectiveId,
+      userId: Option[Ident],
       itemId: Option[Ident]
   ): F[OUpload.UploadResult]
 
@@ -38,12 +40,13 @@ trait OUpload[F[_]] {
 
   final def submitEither(
       data: OUpload.UploadData[F],
-      accOrSrc: Either[Ident, AccountId],
+      accOrSrc: Either[Ident, CollectiveId],
+      userId: Option[Ident],
       itemId: Option[Ident]
   ): F[OUpload.UploadResult] =
     accOrSrc match {
       case Right(acc) =>
-        submit(data, acc, itemId)
+        submit(data, acc, userId, itemId)
       case Left(srcId) =>
         submit(data, srcId, itemId)
     }
@@ -90,7 +93,7 @@ object OUpload {
 
     def noFiles: UploadResult = NoFiles
 
-    /** A source (`RSource') could not be found for a given source-id. */
+    /** A source (`RSource`) could not be found for a given source-id. */
     case object NoSource extends UploadResult
 
     def noSource: UploadResult = NoSource
@@ -99,6 +102,11 @@ object OUpload {
     case object NoItem extends UploadResult
 
     def noItem: UploadResult = NoItem
+
+    /** A collective with the given id was not found */
+    case object NoCollective extends UploadResult
+
+    def noCollective: UploadResult = NoCollective
   }
 
   private def right[F[_]: Functor, A](a: F[A]): EitherT[F, UploadResult, A] =
@@ -110,26 +118,30 @@ object OUpload {
   ): Resource[F, OUpload[F]] =
     Resource.pure[F, OUpload[F]](new OUpload[F] {
       private[this] val logger = docspell.logging.getLogger[F]
+
       def submit(
           data: OUpload.UploadData[F],
-          account: AccountId,
+          collectiveId: CollectiveId,
+          userId: Option[Ident],
           itemId: Option[Ident]
       ): F[OUpload.UploadResult] =
         (for {
-          _ <- checkExistingItem(itemId, account.collective)
-          files <- right(data.files.traverse(saveFile(account)).map(_.flatten))
+          _ <- checkExistingItem(itemId, collectiveId)
+          coll <- OptionT(store.transact(RCollective.findById(collectiveId)))
+            .toRight(UploadResult.noCollective)
+          files <- right(data.files.traverse(saveFile(coll.id)).map(_.flatten))
           _ <- checkFileList(files)
           lang <- data.meta.language match {
             case Some(lang) => right(lang.pure[F])
             case None =>
               right(
                 store
-                  .transact(RCollective.findLanguage(account.collective))
+                  .transact(RCollective.findLanguage(collectiveId))
                   .map(_.getOrElse(Language.German))
               )
           }
           meta = ProcessItemArgs.ProcessMeta(
-            account.collective,
+            collectiveId,
             itemId,
             lang,
             data.meta.direction,
@@ -143,12 +155,18 @@ object OUpload {
             data.meta.attachmentsOnly
           )
           args = ProcessItemArgs(meta, files.toList)
-          jobs <- right(makeJobs(data, args, account))
+          jobs <- right(
+            makeJobs(
+              data,
+              args,
+              UserTaskScope(collectiveId, userId)
+            )
+          )
           _ <- right(logger.debug(s"Storing jobs: $jobs"))
           res <- right(submitJobs(jobs.map(_.encode)))
           _ <- right(
             store.transact(
-              RSource.incrementCounter(data.meta.sourceAbbrev, account.collective)
+              RSource.incrementCounter(data.meta.sourceAbbrev, collectiveId)
             )
           )
         } yield res).fold(identity, identity)
@@ -174,8 +192,7 @@ object OUpload {
             ),
             priority = src.source.priority
           )
-          accId = AccountId(src.source.cid, src.source.sid)
-          result <- OptionT.liftF(submit(updata, accId, itemId))
+          result <- OptionT.liftF(submit(updata, src.source.cid, None, itemId))
         } yield result).getOrElse(UploadResult.noSource)
 
       private def submitJobs(jobs: List[Job[String]]): F[OUpload.UploadResult] =
@@ -186,13 +203,13 @@ object OUpload {
 
       /** Saves the file into the database. */
       private def saveFile(
-          accountId: AccountId
+          collectiveId: CollectiveId
       )(file: File[F]): F[Option[ProcessItemArgs.File]] =
         logger.info(s"Receiving file $file") *>
           file.data
             .through(
               store.fileRepo.save(
-                accountId.collective,
+                collectiveId,
                 FileCategory.AttachmentSource,
                 MimeTypeHint(file.name, None)
               )
@@ -212,7 +229,7 @@ object OUpload {
 
       private def checkExistingItem(
           itemId: Option[Ident],
-          coll: Ident
+          coll: CollectiveId
       ): EitherT[F, UploadResult, Unit] =
         itemId match {
           case None =>
@@ -232,22 +249,22 @@ object OUpload {
       private def makeJobs(
           data: UploadData[F],
           args: ProcessItemArgs,
-          account: AccountId
+          submitter: UserTaskScope
       ): F[List[Job[ProcessItemArgs]]] =
         if (data.meta.flattenArchives.getOrElse(false))
           JobFactory
-            .multiUpload(args, account, data.priority, data.tracker)
+            .multiUpload(args, submitter, data.priority, data.tracker)
             .map(List(_))
         else if (data.multiple)
           JobFactory.processItems(
             args.files.map(f => args.copy(files = List(f))),
-            account,
+            submitter,
             data.priority,
             data.tracker
           )
         else
           JobFactory
-            .processItem[F](args, account, data.priority, data.tracker)
+            .processItem[F](args, submitter, data.priority, data.tracker)
             .map(List(_))
     })
 }

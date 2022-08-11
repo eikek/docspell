@@ -33,19 +33,19 @@ object CollectiveRoutes {
       case GET -> Root =>
         for {
           collDb <- backend.collective.find(user.account.collective)
-          coll = collDb.map(c => Collective(c.id, c.state, c.created))
+          coll = collDb.map(c => Collective(c.name, c.state, c.created))
           resp <- coll.toResponse()
         } yield resp
 
       case GET -> Root / "insights" =>
         for {
-          ins <- backend.collective.insights(user.account.collective)
+          ins <- backend.collective.insights(user.account.collectiveId)
           resp <- Ok(Conversions.mkItemInsights(ins))
         } yield resp
 
       case GET -> Root / "tagcloud" =>
         for {
-          cloud <- backend.collective.tagCloud(user.account.collective)
+          cloud <- backend.collective.tagCloud(user.account.collectiveId)
           resp <- Ok(Conversions.mkTagCloud(cloud))
         } yield resp
 
@@ -73,13 +73,13 @@ object CollectiveRoutes {
           )
           res <-
             backend.collective
-              .updateSettings(user.account.collective, sett)
+              .updateSettings(user.account.collectiveId, sett)
           resp <- Ok(Conversions.basicResult(res, "Settings updated."))
         } yield resp
 
       case GET -> Root / "settings" =>
         for {
-          settDb <- backend.collective.findSettings(user.account.collective)
+          settDb <- backend.collective.findSettings(user.account.collectiveId)
           trash = settDb.flatMap(_.emptyTrash).getOrElse(OCollective.EmptyTrash.default)
           sett = settDb.map(c =>
             CollectiveSettings(
@@ -108,8 +108,8 @@ object CollectiveRoutes {
         for {
           res <-
             backend.collective
-              .getContacts(user.account.collective, q.map(_.q), kind)
-              .take(50)
+              .getContacts(user.account.collectiveId, q.map(_.q), kind)
+              .take(100)
               .compile
               .toList
           resp <- Ok(ContactList(res.map(Conversions.mkContact)))
@@ -117,7 +117,7 @@ object CollectiveRoutes {
 
       case POST -> Root / "classifier" / "startonce" =>
         for {
-          _ <- backend.collective.startLearnClassifier(user.account.collective)
+          _ <- backend.collective.startLearnClassifier(user.account.collectiveId)
           resp <- Ok(BasicResult(true, "Task submitted"))
         } yield resp
 
@@ -125,11 +125,10 @@ object CollectiveRoutes {
         for {
           data <- req.as[EmptyTrashSetting]
           _ <- backend.collective.startEmptyTrash(
-            EmptyTrashArgs(user.account.collective, data.minAge)
+            EmptyTrashArgs(user.account.collectiveId, data.minAge)
           )
           resp <- Ok(BasicResult(true, "Task submitted"))
         } yield resp
     }
   }
-
 }

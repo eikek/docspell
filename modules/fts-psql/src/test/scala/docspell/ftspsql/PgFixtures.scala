@@ -51,8 +51,8 @@ trait PgFixtures {
       self.transact(client.transactor)
   }
 
-  val collective1 = ident("coll1")
-  val collective2 = ident("coll2")
+  val collective1 = CollectiveId(1)
+  val collective2 = CollectiveId(2)
 
   val itemData: TextData.Item =
     TextData.Item(

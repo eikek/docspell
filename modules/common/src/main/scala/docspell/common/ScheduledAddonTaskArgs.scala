@@ -9,7 +9,8 @@ package docspell.common
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-final case class ScheduledAddonTaskArgs(collective: Ident, addonTaskId: Ident)
+final case class ScheduledAddonTaskArgs(collective: CollectiveId, addonTaskId: Ident)
+    extends TaskArguments
 
 object ScheduledAddonTaskArgs {
   val taskName: Ident = Ident.unsafe("addon-scheduled-task")

@@ -17,7 +17,7 @@ import doobie.implicits._
 
 final case class RDownloadQuery(
     id: Ident,
-    cid: Ident,
+    cid: CollectiveId,
     fileId: FileKey,
     fileCount: Int,
     created: Timestamp,
@@ -31,7 +31,7 @@ object RDownloadQuery {
     val tableName = "download_query"
 
     val id: Column[Ident] = Column("id", this)
-    val cid: Column[Ident] = Column("cid", this)
+    val cid: Column[CollectiveId] = Column("coll_id", this)
     val fileId: Column[FileKey] = Column("file_id", this)
     val fileCount: Column[Int] = Column("file_count", this)
     val created: Column[Timestamp] = Column("created", this)

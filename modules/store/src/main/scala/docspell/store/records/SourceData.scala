@@ -26,7 +26,7 @@ object SourceData {
     SourceData(s, Vector.empty)
 
   def findAll(
-      coll: Ident,
+      coll: CollectiveId,
       order: RSource.Table => Column[_]
   ): Stream[ConnectionIO, SourceData] =
     findAllWithTags(RSource.findAllSql(coll, order).query[RSource].stream)
@@ -83,7 +83,7 @@ object SourceData {
       )
     } yield n0 + n1.sum
 
-  def delete(source: Ident, coll: Ident): ConnectionIO[Int] =
+  def delete(source: Ident, coll: CollectiveId): ConnectionIO[Int] =
     for {
       n0 <- RTagSource.deleteSourceTags(source)
       n1 <- RSource.delete(source, coll)

@@ -9,9 +9,9 @@ package docspell.common
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-final case class FileKey(collective: Ident, category: FileCategory, id: Ident) {
+final case class FileKey(collective: CollectiveId, category: FileCategory, id: Ident) {
   override def toString =
-    s"${collective.id}/${category.id.id}/${id.id}"
+    s"${collective.value}/${category.id.id}/${id.id}"
 }
 
 object FileKey {

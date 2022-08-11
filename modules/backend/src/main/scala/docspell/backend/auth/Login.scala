@@ -96,10 +96,12 @@ object Login {
         for {
           data <- store.transact(QLogin.findUser(accountId))
           _ <- logF.trace(s"Account lookup: $data")
-          res <-
-            if (data.exists(checkNoPassword(_, Set(AccountSource.OpenId))))
-              doLogin(config, accountId, false)
-            else Result.invalidAuth.pure[F]
+          res <- data match {
+            case Some(d) if checkNoPassword(d, Set(AccountSource.OpenId)) =>
+              doLogin(config, d.account, false)
+            case _ =>
+              Result.invalidAuth.pure[F]
+          }
         } yield res
 
       def loginSession(config: Config)(sessionKey: String): F[Result] =
@@ -122,9 +124,12 @@ object Login {
             for {
               data <- store.transact(QLogin.findUser(acc))
               _ <- logF.trace(s"Account lookup: $data")
-              res <-
-                if (data.exists(check(up.pass))) doLogin(config, acc, up.rememberMe)
-                else Result.invalidAuth.pure[F]
+              res <- data match {
+                case Some(d) if check(up.pass)(d) =>
+                  doLogin(config, d.account, up.rememberMe)
+                case _ =>
+                  Result.invalidAuth.pure[F]
+              }
             } yield res
           case Left(_) =>
             logF.info(s"User authentication failed for: ${up.hidePass}") *>
@@ -162,7 +167,7 @@ object Login {
         (for {
           _ <- validateToken
           key <- EitherT.fromOptionF(
-            store.transact(RTotp.findEnabledByLogin(sf.token.account, true)),
+            store.transact(RTotp.findEnabledByUserId(sf.token.account.userId, true)),
             Result.invalidAuth
           )
           now <- EitherT.right[Result](Timestamp.current[F])
@@ -175,13 +180,13 @@ object Login {
       }
 
       def loginRememberMe(config: Config)(token: String): F[Result] = {
-        def okResult(acc: AccountId) =
+        def okResult(acc: AccountInfo) =
           for {
             _ <- store.transact(RUser.updateLogin(acc))
             token <- AuthToken.user(acc, false, config.serverSecret, None)
           } yield Result.ok(token, None)
 
-        def doLogin(rid: Ident) =
+        def rememberedLogin(rid: Ident) =
           (for {
             now <- OptionT.liftF(Timestamp.current[F])
             minTime = now - config.rememberMe.valid
@@ -214,7 +219,7 @@ object Login {
               else if (rt.isExpired(config.rememberMe.valid))
                 logF.info(s"RememberMe cookie expired ($rt).") *> Result.invalidTime
                   .pure[F]
-              else doLogin(rt.rememberId)
+              else rememberedLogin(rt.rememberId)
             case Left(err) =>
               logF.info(s"RememberMe cookie was invalid: $err") *> Result.invalidAuth
                 .pure[F]
@@ -245,11 +250,11 @@ object Login {
 
       private def doLogin(
           config: Config,
-          acc: AccountId,
+          acc: AccountInfo,
           rememberMe: Boolean
       ): F[Result] =
         for {
-          require2FA <- store.transact(RTotp.isEnabled(acc))
+          require2FA <- store.transact(RTotp.isEnabled(acc.userId))
           _ <-
             if (require2FA) ().pure[F]
             else store.transact(RUser.updateLogin(acc))
@@ -263,13 +268,11 @@ object Login {
 
       private def insertRememberToken(
           store: Store[F],
-          acc: AccountId,
+          acc: AccountInfo,
           config: Config
       ): F[RememberToken] =
         for {
-          uid <- OptionT(store.transact(RUser.findIdByAccount(acc)))
-            .getOrRaise(new IllegalStateException(s"No user_id found for account: $acc"))
-          rme <- RRememberMe.generate[F](uid)
+          rme <- RRememberMe.generate[F](acc.userId)
           _ <- store.transact(RRememberMe.insert(rme))
           token <- RememberToken.user(rme.id, config.serverSecret)
         } yield token

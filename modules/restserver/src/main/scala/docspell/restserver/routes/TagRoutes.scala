@@ -32,7 +32,7 @@ object TagRoutes {
       case GET -> Root :? QueryParam.QueryOpt(q) :? QueryParam.TagSort(sort) =>
         for {
           all <- backend.tag.findAll(
-            user.account,
+            user.account.collectiveId,
             q.map(_.q),
             sort.getOrElse(TagOrder.NameAsc)
           )
@@ -42,7 +42,7 @@ object TagRoutes {
       case req @ POST -> Root =>
         for {
           data <- req.as[Tag]
-          tag <- newTag(data, user.account.collective)
+          tag <- newTag(data, user.account.collectiveId)
           res <- backend.tag.add(tag)
           resp <- Ok(basicResult(res, "Tag successfully created."))
         } yield resp
@@ -50,14 +50,14 @@ object TagRoutes {
       case req @ PUT -> Root =>
         for {
           data <- req.as[Tag]
-          tag = changeTag(data, user.account.collective)
+          tag = changeTag(data, user.account.collectiveId)
           res <- backend.tag.update(tag)
           resp <- Ok(basicResult(res, "Tag successfully updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          del <- backend.tag.delete(id, user.account.collective)
+          del <- backend.tag.delete(id, user.account.collectiveId)
           resp <- Ok(basicResult(del, "Tag successfully deleted."))
         } yield resp
     }

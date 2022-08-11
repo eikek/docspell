@@ -29,7 +29,7 @@ object AddonRunConfigRoutes {
     HttpRoutes.of {
       case GET -> Root =>
         for {
-          all <- backend.addons.getAllAddonRunConfigs(token.account.collective)
+          all <- backend.addons.getAllAddonRunConfigs(token.account.collectiveId)
           resp <- Ok(AddonRunConfigList(all.map(convertInfoTask)))
         } yield resp
 
@@ -39,7 +39,7 @@ object AddonRunConfigRoutes {
           data = convertInsertTask(Ident.unsafe(""), input)
           res <- data.flatTraverse(in =>
             backend.addons
-              .upsertAddonRunConfig(token.account.collective, in)
+              .upsertAddonRunConfig(token.account.collectiveId, in)
               .map(_.leftMap(_.message))
           )
           resp <- res.fold(
@@ -54,7 +54,7 @@ object AddonRunConfigRoutes {
           data = convertInsertTask(id, input)
           res <- data.flatTraverse(in =>
             backend.addons
-              .upsertAddonRunConfig(token.account.collective, in)
+              .upsertAddonRunConfig(token.account.collectiveId, in)
               .map(_.leftMap(_.message))
           )
           resp <- res.fold(
@@ -65,7 +65,7 @@ object AddonRunConfigRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          flag <- backend.addons.deleteAddonRunConfig(token.account.collective, id)
+          flag <- backend.addons.deleteAddonRunConfig(token.account.collectiveId, id)
           resp <-
             if (flag) Ok(BasicResult(true, "Addon task deleted"))
             else NotFound(BasicResult(false, "Addon task not found"))

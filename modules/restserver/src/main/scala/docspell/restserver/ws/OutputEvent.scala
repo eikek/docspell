@@ -34,7 +34,7 @@ object OutputEvent {
 
   final case class JobSubmitted(group: Ident, task: Ident) extends OutputEvent {
     def forCollective(token: AuthToken): Boolean =
-      token.account.collective == group
+      token.account.collectiveId.valueAsIdent == group
 
     def asJson: Json =
       Msg("job-submitted", task).asJson
@@ -47,7 +47,7 @@ object OutputEvent {
       result: Option[Json]
   ) extends OutputEvent {
     def forCollective(token: AuthToken): Boolean =
-      token.account.collective == group
+      token.account.collectiveId.valueAsIdent == group
 
     def asJson: Json =
       Msg(
@@ -56,23 +56,23 @@ object OutputEvent {
       ).asJson
   }
 
-  final case class JobsWaiting(collective: Ident, count: Int) extends OutputEvent {
+  final case class JobsWaiting(collective: CollectiveId, count: Int) extends OutputEvent {
     def forCollective(token: AuthToken): Boolean =
-      token.account.collective == collective
+      token.account.collectiveId == collective
 
     def asJson: Json =
       Msg("jobs-waiting", count).asJson
   }
 
   final case class AddonInstalled(
-      collective: Ident,
+      collective: CollectiveId,
       message: String,
       error: Option[AddonValidationError],
       addonId: Option[Ident],
       originalUrl: Option[LenientUri]
   ) extends OutputEvent {
     def forCollective(token: AuthToken) =
-      token.account.collective == collective
+      token.account.collectiveId == collective
 
     override def asJson =
       Msg(

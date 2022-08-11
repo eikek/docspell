@@ -24,40 +24,35 @@ object QUser {
       shares: Int
   )
 
-  def getUserData(accountId: AccountId): ConnectionIO[UserData] = {
+  def getUserData(cid: CollectiveId, uid: Ident): ConnectionIO[UserData] = {
     val folder = RFolder.as("f")
     val mail = RSentMail.as("m")
     val mitem = RSentMailItem.as("mi")
-    val user = RUser.as("u")
     val share = RShare.as("s")
 
     for {
-      uid <- loadUserId(accountId).map(_.getOrElse(Ident.unsafe("")))
       folders <- run(
         select(folder.name),
         from(folder),
-        folder.owner === uid && folder.collective === accountId.collective
+        folder.owner === uid && folder.collective === cid
       ).query[Ident].to[List]
       mails <- run(
         select(count(mail.id)),
         from(mail)
-          .innerJoin(mitem, mail.id === mitem.sentMailId)
-          .innerJoin(user, user.uid === mail.uid),
-        user.login === accountId.user && user.cid === accountId.collective
+          .innerJoin(mitem, mail.id === mitem.sentMailId),
+        mail.uid === uid
       ).query[Int].unique
       shares <- run(
         select(count(share.id)),
-        from(share)
-          .innerJoin(user, user.uid === share.userId),
-        user.login === accountId.user && user.cid === accountId.collective
+        from(share),
+        share.userId === uid
       ).query[Int].unique
     } yield UserData(folders, mails, shares)
   }
 
-  def deleteUserAndData(accountId: AccountId): ConnectionIO[Int] =
+  def deleteUserAndData(uid: Ident): ConnectionIO[Int] =
     for {
-      uid <- loadUserId(accountId).map(_.getOrElse(Ident.unsafe("")))
-      _ <- logger.info(s"Remove user ${accountId.asString} (uid=${uid.id})")
+      _ <- logger.info(s"Remove user ${uid.id}")
 
       n1 <- deleteUserFolders(uid)
 
@@ -125,8 +120,4 @@ object QUser {
       n2 <- DML.delete(imap, imap.uid === uid)
     } yield n1 + n2
   }
-
-  private def loadUserId(id: AccountId): ConnectionIO[Option[Ident]] =
-    RUser.findIdByAccount(id)
-
 }

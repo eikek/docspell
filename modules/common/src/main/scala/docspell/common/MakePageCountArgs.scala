@@ -14,7 +14,7 @@ import io.circe.{Decoder, Encoder}
   */
 case class MakePageCountArgs(
     attachment: Ident
-)
+) extends TaskArguments
 
 object MakePageCountArgs {
 

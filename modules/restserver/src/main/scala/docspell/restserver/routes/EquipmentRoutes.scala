@@ -33,7 +33,7 @@ object EquipmentRoutes {
       case GET -> Root :? QueryParam.QueryOpt(q) :? QueryParam.EquipSort(sort) =>
         for {
           data <- backend.equipment.findAll(
-            user.account,
+            user.account.collectiveId,
             q.map(_.q),
             sort.getOrElse(OEquipment.EquipmentOrder.NameAsc)
           )
@@ -43,7 +43,7 @@ object EquipmentRoutes {
       case req @ POST -> Root =>
         for {
           data <- req.as[Equipment]
-          equip <- newEquipment(data, user.account.collective)
+          equip <- newEquipment(data, user.account.collectiveId)
           res <- backend.equipment.add(equip)
           resp <- Ok(basicResult(res, "Equipment created"))
         } yield resp
@@ -51,20 +51,20 @@ object EquipmentRoutes {
       case req @ PUT -> Root =>
         for {
           data <- req.as[Equipment]
-          equip <- changeEquipment(data, user.account.collective)
+          equip <- changeEquipment(data, user.account.collectiveId)
           res <- backend.equipment.update(equip)
           resp <- Ok(basicResult(res, "Equipment updated."))
         } yield resp
 
       case DELETE -> Root / Ident(id) =>
         for {
-          del <- backend.equipment.delete(id, user.account.collective)
+          del <- backend.equipment.delete(id, user.account.collectiveId)
           resp <- Ok(basicResult(del, "Equipment deleted."))
         } yield resp
 
       case GET -> Root / Ident(id) =>
         (for {
-          equip <- OptionT(backend.equipment.find(user.account, id))
+          equip <- OptionT(backend.equipment.find(user.account.collectiveId, id))
           resp <- OptionT.liftF(Ok(mkEquipment(equip)))
         } yield resp).getOrElseF(NotFound())
     }

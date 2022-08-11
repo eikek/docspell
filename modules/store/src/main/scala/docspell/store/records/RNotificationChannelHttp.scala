@@ -61,26 +61,23 @@ object RNotificationChannelHttp {
       DML.set(T.url.setTo(r.url), T.name.setTo(r.name))
     )
 
-  def getByAccount(account: AccountId): ConnectionIO[Vector[RNotificationChannelHttp]] = {
-    val user = RUser.as("u")
+  def getByAccount(userId: Ident): ConnectionIO[Vector[RNotificationChannelHttp]] = {
     val http = as("c")
     Select(
       select(http.all),
-      from(http).innerJoin(user, user.uid === http.uid),
-      user.cid === account.collective && user.login === account.user
+      from(http),
+      http.uid === userId
     ).build.query[RNotificationChannelHttp].to[Vector]
   }
 
   def deleteById(id: Ident): ConnectionIO[Int] =
     DML.delete(T, T.id === id)
 
-  def deleteByAccount(id: Ident, account: AccountId): ConnectionIO[Int] = {
-    val u = RUser.as("u")
+  def deleteByAccount(id: Ident, userId: Ident): ConnectionIO[Int] =
     DML.delete(
       T,
-      T.id === id && T.uid.in(Select(select(u.uid), from(u), u.isAccount(account)))
+      T.id === id && T.uid === userId
     )
-  }
 
   def findRefs(ids: NonEmptyList[Ident]): Select =
     Select(

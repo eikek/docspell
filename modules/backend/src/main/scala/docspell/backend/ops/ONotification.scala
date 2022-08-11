@@ -39,35 +39,35 @@ trait ONotification[F[_]] {
 
   def findNotificationChannel(
       ref: ChannelRef,
-      account: AccountId
+      userId: Ident
   ): F[Vector[NotificationChannel]]
 
-  def listChannels(account: AccountId): F[Vector[Channel]]
+  def listChannels(userId: Ident): F[Vector[Channel]]
 
-  def deleteChannel(id: Ident, account: AccountId): F[UpdateResult]
+  def deleteChannel(id: Ident, userId: Ident): F[UpdateResult]
 
-  def createChannel(channel: Channel, account: AccountId): F[AddResult]
+  def createChannel(channel: Channel, userId: Ident): F[AddResult]
 
-  def updateChannel(channel: Channel, account: AccountId): F[UpdateResult]
+  def updateChannel(channel: Channel, userId: Ident): F[UpdateResult]
 
-  def listHooks(account: AccountId): F[Vector[Hook]]
+  def listHooks(userId: Ident): F[Vector[Hook]]
 
-  def deleteHook(id: Ident, account: AccountId): F[UpdateResult]
+  def deleteHook(id: Ident, userId: Ident): F[UpdateResult]
 
-  def createHook(hook: Hook, account: AccountId): F[AddResult]
+  def createHook(hook: Hook, userId: Ident): F[AddResult]
 
-  def updateHook(hook: Hook, account: AccountId): F[UpdateResult]
+  def updateHook(hook: Hook, userId: Ident): F[UpdateResult]
 
   def sampleEvent(
       evt: EventType,
-      account: AccountId,
+      account: AccountInfo,
       baseUrl: Option[LenientUri]
   ): F[EventContext]
 
   def sendSampleEvent(
       evt: EventType,
       channel: Nel[ChannelRef],
-      account: AccountId,
+      account: AccountInfo,
       baseUrl: Option[LenientUri]
   ): F[ONotification.SendTestResult]
 }
@@ -81,13 +81,6 @@ object ONotification {
     Resource.pure[F, ONotification[F]](new ONotification[F] {
       val log = docspell.logging.getLogger[F]
 
-      def withUserId[A](
-          account: AccountId
-      )(f: Ident => F[UpdateResult]): F[UpdateResult] =
-        OptionT(store.transact(RUser.findIdByAccount(account)))
-          .semiflatMap(f)
-          .getOrElse(UpdateResult.notFound)
-
       def offerEvents(ev: Iterable[Event]): F[Unit] =
         ev.toList.traverse(notMod.offer).as(())
 
@@ -100,7 +93,7 @@ object ONotification {
 
       def sampleEvent(
           evt: EventType,
-          account: AccountId,
+          account: AccountInfo,
           baseUrl: Option[LenientUri]
       ): F[EventContext] =
         Event
@@ -110,14 +103,14 @@ object ONotification {
       def sendSampleEvent(
           evt: EventType,
           channels: Nel[ChannelRef],
-          account: AccountId,
+          account: AccountInfo,
           baseUrl: Option[LenientUri]
       ): F[SendTestResult] =
         (for {
           ev <- sampleEvent(evt, account, baseUrl)
           logbuf <- Logger.buffer()
           ch <- channels.toList.toVector.flatTraverse(
-            findNotificationChannel(_, account)
+            findNotificationChannel(_, account.userId)
           )
           _ <- notMod.send(logbuf._2.andThen(log), ev, ch)
           logs <- logbuf._1.get
@@ -131,54 +124,51 @@ object ONotification {
               SendTestResult(false, Vector(ev))
           }
 
-      def listChannels(account: AccountId): F[Vector[Channel]] =
+      def listChannels(userId: Ident): F[Vector[Channel]] =
         store
-          .transact(RNotificationChannel.getByAccount(account))
+          .transact(RNotificationChannel.getByAccount(userId))
           .map(_.map(ChannelConv.makeChannel))
 
-      def deleteChannel(id: Ident, account: AccountId): F[UpdateResult] =
+      def deleteChannel(id: Ident, userId: Ident): F[UpdateResult] =
         UpdateResult
           .fromUpdate(
-            store.transact(RNotificationChannel.deleteByAccount(id, account))
+            store.transact(RNotificationChannel.deleteByAccount(id, userId))
           )
-          .flatTap(_ => log.info(s"Deleted channel ${id.id} for ${account.asString}"))
+          .flatTap(_ => log.info(s"Deleted channel ${id.id} for ${userId.id}"))
 
-      def createChannel(channel: Channel, account: AccountId): F[AddResult] =
+      def createChannel(channel: Channel, userId: Ident): F[AddResult] =
         (for {
           newId <- OptionT.liftF(Ident.randomId[F])
-          userId <- OptionT(store.transact(RUser.findIdByAccount(account)))
           r <- ChannelConv.makeRecord[F](store, channel, newId, userId)
           _ <- OptionT.liftF(store.transact(RNotificationChannel.insert(r)))
-          _ <- OptionT.liftF(log.debug(s"Created channel $r for $account"))
+          _ <- OptionT.liftF(log.debug(s"Created channel $r for ${userId.id}"))
         } yield AddResult.Success)
           .getOrElse(AddResult.failure(new Exception("User not found!")))
 
-      def updateChannel(channel: Channel, account: AccountId): F[UpdateResult] =
+      def updateChannel(channel: Channel, userId: Ident): F[UpdateResult] =
         (for {
-          userId <- OptionT(store.transact(RUser.findIdByAccount(account)))
           r <- ChannelConv.makeRecord[F](store, channel, channel.id, userId)
           n <- OptionT.liftF(store.transact(RNotificationChannel.update(r)))
         } yield UpdateResult.fromUpdateRows(n)).getOrElse(UpdateResult.notFound)
 
-      def listHooks(account: AccountId): F[Vector[Hook]] =
+      def listHooks(userId: Ident): F[Vector[Hook]] =
         store.transact(for {
-          list <- RNotificationHook.findAllByAccount(account)
+          list <- RNotificationHook.findAllByAccount(userId)
           res <- list.traverse((Hook.fromRecord _).tupled)
         } yield res)
 
-      def deleteHook(id: Ident, account: AccountId): F[UpdateResult] =
+      def deleteHook(id: Ident, userId: Ident): F[UpdateResult] =
         UpdateResult
-          .fromUpdate(store.transact(RNotificationHook.deleteByAccount(id, account)))
+          .fromUpdate(store.transact(RNotificationHook.deleteByAccount(id, userId)))
 
-      def createHook(hook: Hook, account: AccountId): F[AddResult] =
+      def createHook(hook: Hook, userId: Ident): F[AddResult] =
         (for {
           _ <- OptionT.liftF(log.debug(s"Creating new notification hook: $hook"))
-          userId <- OptionT(store.transact(RUser.findIdByAccount(account)))
           hr <- OptionT.liftF(Hook.makeRecord(userId, hook))
           _ <- OptionT.liftF(
             store.transact(
               RNotificationHook.insert(hr) *> RNotificationHookChannel
-                .updateAll(hr.id, hook.channels.toList)
+                .updateAll(hr.id, hook.channels)
             )
           )
           _ <- OptionT.liftF(
@@ -187,13 +177,11 @@ object ONotification {
         } yield AddResult.Success)
           .getOrElse(AddResult.failure(new Exception("User or channel not found!")))
 
-      def updateHook(hook: Hook, account: AccountId): F[UpdateResult] = {
+      def updateHook(hook: Hook, userId: Ident): F[UpdateResult] = {
         def withHook(f: RNotificationHook => F[UpdateResult]): F[UpdateResult] =
-          withUserId(account)(userId =>
-            OptionT(store.transact(RNotificationHook.getById(hook.id, userId)))
-              .semiflatMap(f)
-              .getOrElse(UpdateResult.notFound)
-          )
+          OptionT(store.transact(RNotificationHook.getById(hook.id, userId)))
+            .semiflatMap(f)
+            .getOrElse(UpdateResult.notFound)
 
         def doUpdate(r: RNotificationHook): F[UpdateResult] =
           UpdateResult.fromUpdate(store.transact(for {
@@ -201,10 +189,7 @@ object ONotification {
               r.id,
               if (hook.allEvents) Nil else hook.events
             )
-            nc <- RNotificationHookChannel.updateAll(
-              r.id,
-              hook.channels.toList
-            )
+            nc <- RNotificationHookChannel.updateAll(r.id, hook.channels)
             nr <- RNotificationHook.update(
               r.copy(
                 enabled = hook.enabled,
@@ -230,10 +215,9 @@ object ONotification {
 
       def findNotificationChannel(
           ref: ChannelRef,
-          accountId: AccountId
+          userId: Ident
       ): F[Vector[NotificationChannel]] =
         (for {
-          userId <- OptionT(store.transact(RUser.findIdByAccount(accountId)))
           rec <- OptionT(store.transact(RNotificationChannel.getByRef(ref, userId)))
           ch <- OptionT.liftF(store.transact(QNotification.readChannel(rec)))
         } yield ch).getOrElse(Vector.empty)

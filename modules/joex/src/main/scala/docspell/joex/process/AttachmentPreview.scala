@@ -75,7 +75,7 @@ object AttachmentPreview {
 
   private def createRecord[F[_]: Sync](
       store: Store[F],
-      collective: Ident,
+      collective: CollectiveId,
       png: Stream[F, Byte],
       ra: RAttachment
   ): F[RAttachmentPreview] = {

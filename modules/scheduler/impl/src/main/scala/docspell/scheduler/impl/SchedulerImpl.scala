@@ -30,6 +30,7 @@ final class SchedulerImpl[F[_]: Async](
     queue: JobQueue[F],
     pubSub: PubSubT[F],
     eventSink: EventSink[F],
+    findJobOwner: FindJobOwner[F],
     tasks: JobTaskRegistry[F],
     store: Store[F],
     logSink: LogSink[F],
@@ -68,20 +69,19 @@ final class SchedulerImpl[F[_]: Async](
   def getRunning: F[Vector[Job[String]]] =
     state.get
       .flatMap(s => QJob.findAll(s.getRunning, store))
-      .map(
-        _.map(rj =>
-          Job(
-            rj.id,
-            rj.task,
-            rj.group,
-            rj.args,
-            rj.subject,
-            rj.submitter,
-            rj.priority,
-            rj.tracker
-          )
-        )
-      )
+      .map(_.map(convertJob))
+
+  private def convertJob(rj: RJob): Job[String] =
+    Job(
+      rj.id,
+      rj.task,
+      rj.group,
+      rj.args,
+      rj.subject,
+      rj.submitter,
+      rj.priority,
+      rj.tracker
+    )
 
   def requestCancel(jobId: Ident): F[Boolean] =
     logger.info(s"Scheduler requested to cancel job: ${jobId.id}") *>
@@ -235,21 +235,28 @@ final class SchedulerImpl[F[_]: Async](
         )
       )
       _ <- Sync[F].whenA(JobState.isDone(finishState))(
-        eventSink.offer(
-          Event.JobDone(
-            job.id,
-            job.group,
-            job.task,
-            job.args,
-            job.state,
-            job.subject,
-            job.submitter,
-            result.json.getOrElse(Json.Null),
-            result.message
-          )
-        )
+        makeJobDoneEvent(job, result)
+          .semiflatMap(eventSink.offer)
+          .value
       )
     } yield ()
+
+  private def makeJobDoneEvent(job: RJob, result: JobTaskResult) =
+    for {
+      acc <- OptionT(findJobOwner(convertJob(job)))
+      ev = Event.JobDone(
+        acc,
+        job.id,
+        job.group,
+        job.task,
+        job.args,
+        job.state,
+        job.subject,
+        job.submitter,
+        result.json.getOrElse(Json.Null),
+        result.message
+      )
+    } yield ev
 
   def onStart(job: RJob): F[Unit] =
     QJob.setRunning(

@@ -112,7 +112,7 @@ object PeriodicQueryRoutes extends MailAddressCodec with NonEmptyListSupport {
   def makeTask[F[_]: Sync](
       id: Ident,
       baseUrl: LenientUri,
-      user: AccountId,
+      user: AccountInfo,
       settings: PeriodicQuerySettings
   ): F[UserTask[PeriodicQueryArgs]] =
     Sync[F]

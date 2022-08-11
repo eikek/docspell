@@ -10,25 +10,25 @@ import cats.data.NonEmptyList
 import cats.effect.{Async, Resource}
 import cats.implicits._
 
-import docspell.common.{AccountId, Ident}
+import docspell.common._
 import docspell.store.records.{REquipment, RItem}
 import docspell.store.{AddResult, Store}
 
 trait OEquipment[F[_]] {
 
   def findAll(
-      account: AccountId,
+      collectiveId: CollectiveId,
       nameQuery: Option[String],
       order: OEquipment.EquipmentOrder
   ): F[Vector[REquipment]]
 
-  def find(account: AccountId, id: Ident): F[Option[REquipment]]
+  def find(collectiveId: CollectiveId, id: Ident): F[Option[REquipment]]
 
   def add(s: REquipment): F[AddResult]
 
   def update(s: REquipment): F[AddResult]
 
-  def delete(id: Ident, collective: Ident): F[AddResult]
+  def delete(id: Ident, collective: CollectiveId): F[AddResult]
 }
 
 object OEquipment {
@@ -58,16 +58,16 @@ object OEquipment {
   def apply[F[_]: Async](store: Store[F]): Resource[F, OEquipment[F]] =
     Resource.pure[F, OEquipment[F]](new OEquipment[F] {
       def findAll(
-          account: AccountId,
+          collective: CollectiveId,
           nameQuery: Option[String],
           order: EquipmentOrder
       ): F[Vector[REquipment]] =
         store.transact(
-          REquipment.findAll(account.collective, nameQuery, EquipmentOrder(order))
+          REquipment.findAll(collective, nameQuery, EquipmentOrder(order))
         )
 
-      def find(account: AccountId, id: Ident): F[Option[REquipment]] =
-        store.transact(REquipment.findById(id)).map(_.filter(_.cid == account.collective))
+      def find(cid: CollectiveId, id: Ident): F[Option[REquipment]] =
+        store.transact(REquipment.findById(id)).map(_.filter(_.cid == cid))
 
       def add(e: REquipment): F[AddResult] = {
         def insert = REquipment.insert(e)
@@ -85,7 +85,7 @@ object OEquipment {
         store.add(insert, exists).map(_.fold(identity, _.withMsg(msg), identity))
       }
 
-      def delete(id: Ident, collective: Ident): F[AddResult] = {
+      def delete(id: Ident, collective: CollectiveId): F[AddResult] = {
         val io = for {
           n0 <- RItem.removeConcEquip(collective, id)
           n1 <- REquipment.delete(id, collective)

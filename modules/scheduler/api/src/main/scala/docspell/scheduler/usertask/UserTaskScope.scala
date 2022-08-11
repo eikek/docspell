@@ -7,52 +7,69 @@
 package docspell.scheduler.usertask
 
 import docspell.common._
+import docspell.scheduler.usertask.UserTaskScope._
 
 sealed trait UserTaskScope { self: Product =>
 
   def name: String =
     productPrefix.toLowerCase
 
-  def collective: Ident
+  def collectiveId: Option[CollectiveId]
 
-  def fold[A](fa: AccountId => A, fb: Ident => A): A
+  def fold[A](fa: Account => A, fb: CollectiveId => A, fc: => A): A
 
   /** Maps to the account or uses the collective for both parts if the scope is collective
     * wide.
     */
-  private[scheduler] def toAccountId: AccountId =
-    AccountId(collective, fold(_.user, identity))
+  protected[scheduler] def toAccountId: AccountId
 }
 
 object UserTaskScope {
 
-  final case class Account(account: AccountId) extends UserTaskScope {
-    val collective = account.collective
+  final case class Account(collective: CollectiveId, userId: Ident)
+      extends UserTaskScope {
+    val collectiveId = Some(collective)
 
-    def fold[A](fa: AccountId => A, fb: Ident => A): A =
-      fa(account)
+    def fold[A](fa: Account => A, fb: CollectiveId => A, fc: => A): A =
+      fa(this)
+
+    protected[scheduler] val toAccountId: AccountId =
+      AccountId(collective.valueAsIdent, userId)
   }
 
-  final case class Collective(collective: Ident) extends UserTaskScope {
-    def fold[A](fa: AccountId => A, fb: Ident => A): A =
+  final case class Collective(collective: CollectiveId) extends UserTaskScope {
+    val collectiveId = Some(collective)
+    def fold[A](fa: Account => A, fb: CollectiveId => A, fc: => A): A =
       fb(collective)
+
+    protected[scheduler] val toAccountId: AccountId = {
+      val c = collective.valueAsIdent
+      AccountId(c, c)
+    }
   }
 
-  def collective(id: Ident): UserTaskScope =
+  case object System extends UserTaskScope {
+    val collectiveId = None
+
+    def fold[A](fa: Account => A, fb: CollectiveId => A, fc: => A): A =
+      fc
+
+    protected[scheduler] val toAccountId: AccountId =
+      DocspellSystem.account
+  }
+
+  def collective(id: CollectiveId): UserTaskScope =
     Collective(id)
 
-  def account(accountId: AccountId): UserTaskScope =
-    Account(accountId)
+  def account(collectiveId: CollectiveId, userId: Ident): UserTaskScope =
+    Account(collectiveId, userId)
 
-  def apply(accountId: AccountId): UserTaskScope =
-    UserTaskScope.account(accountId)
+  def apply(collectiveId: CollectiveId, userId: Option[Ident]): UserTaskScope =
+    userId.map(Account(collectiveId, _)).getOrElse(collective(collectiveId))
 
-  def apply(collective: Ident): UserTaskScope =
-    UserTaskScope.collective(collective)
-
-  def apply(collective: Ident, login: Option[Ident]): UserTaskScope =
-    login.map(AccountId(collective, _)).map(account).getOrElse(apply(collective))
+  def apply(info: AccountInfo): UserTaskScope =
+    account(info.collectiveId, info.userId)
 
   def system: UserTaskScope =
-    collective(DocspellSystem.taskGroup)
+    UserTaskScope.System
 }

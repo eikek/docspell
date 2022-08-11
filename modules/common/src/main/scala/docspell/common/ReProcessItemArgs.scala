@@ -16,6 +16,7 @@ import io.circe.{Decoder, Encoder}
   * list is empty, then all attachments are re-processed.
   */
 case class ReProcessItemArgs(itemId: Ident, attachments: List[Ident])
+    extends TaskArguments
 
 object ReProcessItemArgs {
 

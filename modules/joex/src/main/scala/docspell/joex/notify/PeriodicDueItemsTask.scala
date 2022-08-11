@@ -53,7 +53,12 @@ object PeriodicDueItemsTask {
   def withChannel[F[_]: Sync](ctx: Context[F, Args], ops: ONotification[F])(
       cont: Vector[NotificationChannel] => F[Unit]
   ): F[Unit] =
-    TaskOperations.withChannel(ctx.logger, ctx.args.channels, ctx.args.account, ops)(cont)
+    TaskOperations.withChannel(
+      ctx.logger,
+      ctx.args.channels,
+      ctx.args.account.userId,
+      ops
+    )(cont)
 
   def withItems[F[_]: Sync](
       ctx: Context[F, Args],

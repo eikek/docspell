@@ -21,7 +21,7 @@ sealed trait Event {
   def eventType: EventType
 
   /** The user who caused it. */
-  def account: AccountId
+  def account: AccountInfo
 
   /** The base url for generating links. This is dynamic. */
   def baseUrl: Option[LenientUri]
@@ -62,7 +62,7 @@ object Event {
 
   /** Event triggered when tags of one or more items have changed */
   final case class TagsChanged(
-      account: AccountId,
+      account: AccountInfo,
       items: Nel[Ident],
       added: List[String],
       removed: List[String],
@@ -75,11 +75,11 @@ object Event {
         items: Nel[Ident],
         added: List[String],
         removed: List[String]
-    ): (AccountId, Option[LenientUri]) => TagsChanged =
+    ): (AccountInfo, Option[LenientUri]) => TagsChanged =
       (acc, url) => TagsChanged(acc, items, added, removed, url)
 
     def sample[F[_]: Sync](
-        account: AccountId,
+        account: AccountInfo,
         baseUrl: Option[LenientUri]
     ): F[TagsChanged] =
       for {
@@ -91,7 +91,7 @@ object Event {
 
   /** Event triggered when a custom field on an item changes. */
   final case class SetFieldValue(
-      account: AccountId,
+      account: AccountInfo,
       items: Nel[Ident],
       field: Ident,
       value: String,
@@ -104,11 +104,11 @@ object Event {
         items: Nel[Ident],
         field: Ident,
         value: String
-    ): (AccountId, Option[LenientUri]) => SetFieldValue =
+    ): (AccountInfo, Option[LenientUri]) => SetFieldValue =
       (acc, url) => SetFieldValue(acc, items, field, value, url)
 
     def sample[F[_]: Sync](
-        account: AccountId,
+        account: AccountInfo,
         baseUrl: Option[LenientUri]
     ): F[SetFieldValue] =
       for {
@@ -118,7 +118,7 @@ object Event {
   }
 
   final case class DeleteFieldValue(
-      account: AccountId,
+      account: AccountInfo,
       items: Nel[Ident],
       field: Ident,
       baseUrl: Option[LenientUri]
@@ -129,11 +129,11 @@ object Event {
     def partial(
         items: Nel[Ident],
         field: Ident
-    ): (AccountId, Option[LenientUri]) => DeleteFieldValue =
+    ): (AccountInfo, Option[LenientUri]) => DeleteFieldValue =
       (acc, url) => DeleteFieldValue(acc, items, field, url)
 
     def sample[F[_]: Sync](
-        account: AccountId,
+        account: AccountInfo,
         baseUrl: Option[LenientUri]
     ): F[DeleteFieldValue] =
       for {
@@ -147,7 +147,7 @@ object Event {
     * search results.
     */
   final case class ItemSelection(
-      account: AccountId,
+      account: AccountInfo,
       items: Nel[Ident],
       more: Boolean,
       baseUrl: Option[LenientUri],
@@ -158,7 +158,7 @@ object Event {
 
   case object ItemSelection extends EventType {
     def sample[F[_]: Sync](
-        account: AccountId,
+        account: AccountInfo,
         baseUrl: Option[LenientUri]
     ): F[ItemSelection] =
       for {
@@ -169,6 +169,7 @@ object Event {
 
   /** Event when a new job is added to the queue */
   final case class JobSubmitted(
+      account: AccountInfo,
       jobId: Ident,
       group: Ident,
       task: Ident,
@@ -179,26 +180,27 @@ object Event {
   ) extends Event {
     val eventType = JobSubmitted
     val baseUrl = None
-    def account: AccountId = AccountId(group, submitter)
   }
   case object JobSubmitted extends EventType {
-    def sample[F[_]: Sync](account: AccountId): F[JobSubmitted] =
+    def sample[F[_]: Sync](account: AccountInfo): F[JobSubmitted] =
       for {
         id <- Ident.randomId[F]
         ev = JobSubmitted(
+          account,
           id,
           account.collective,
           Ident.unsafe("process-something-task"),
           "",
           JobState.running,
           "Process 3 files",
-          account.user
+          account.login
         )
       } yield ev
   }
 
   /** Event when a job is finished (in final state). */
   final case class JobDone(
+      account: AccountInfo,
       jobId: Ident,
       group: Ident,
       task: Ident,
@@ -211,20 +213,20 @@ object Event {
   ) extends Event {
     val eventType = JobDone
     val baseUrl = None
-    def account: AccountId = AccountId(group, submitter)
   }
   case object JobDone extends EventType {
-    def sample[F[_]: Sync](account: AccountId): F[JobDone] =
+    def sample[F[_]: Sync](account: AccountInfo): F[JobDone] =
       for {
         id <- Ident.randomId[F]
         ev = JobDone(
+          account,
           id,
           account.collective,
           Ident.unsafe("process-something-task"),
           "",
           JobState.running,
           "Process 3 files",
-          account.user,
+          account.login,
           Json.Null,
           None
         )
@@ -233,7 +235,7 @@ object Event {
 
   def sample[F[_]: Sync](
       evt: EventType,
-      account: AccountId,
+      account: AccountInfo,
       baseUrl: Option[LenientUri]
   ): F[Event] =
     evt match {

@@ -26,6 +26,8 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
   val engine = Ident.unsafe("postgres")
 
   val config = cfg
+  private[this] val logger = docspell.logging.getLogger[F]
+
   private[ftspsql] val transactor = xa
 
   private[this] val searchSummary =
@@ -46,6 +48,16 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
           engine,
           "initialize",
           DbMigration[F](cfg).run.as(FtsMigration.Result.WorkDone)
+        ),
+        FtsMigration(
+          1,
+          engine,
+          "Re-Index if empty",
+          FtsRepository.containsNoData
+            .transact(xa)
+            .map(empty =>
+              if (empty) FtsMigration.Result.IndexAll else FtsMigration.Result.WorkDone
+            )
         )
       )
     )
@@ -73,6 +85,7 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
       summary <- searchSummary(q).transact(xa)
       results <- search(q, true).transact(xa)
       endNanos <- Sync[F].delay(System.nanoTime())
+      _ <- logger.debug(s"PSQL fulltext search hits: ${results.size}")
       duration = Duration.nanos(endNanos - startNanos)
       res = SearchResult
         .toFtsResult(summary, results)
@@ -104,11 +117,11 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
   def updateFolder(
       logger: Logger[F],
       itemId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident]
   ): F[Unit] =
     logger.debug(s"Update folder '${folder
-        .map(_.id)}' in fts for collective ${collective.id} and item ${itemId.id}") *>
+        .map(_.id)}' in fts for collective ${collective.value} and item ${itemId.id}") *>
       FtsRepository.updateFolder(itemId, collective, folder).transact(xa).void
 
   def removeItem(logger: Logger[F], itemId: Ident): F[Unit] =
@@ -123,8 +136,8 @@ final class PsqlFtsClient[F[_]: Sync](cfg: PsqlConfig, xa: Transactor[F])
     logger.info(s"Deleting complete FTS index") *>
       FtsRepository.deleteAll.transact(xa).void
 
-  def clear(logger: Logger[F], collective: Ident): F[Unit] =
-    logger.info(s"Deleting index for collective ${collective.id}") *>
+  def clear(logger: Logger[F], collective: CollectiveId): F[Unit] =
+    logger.info(s"Deleting index for collective ${collective.value}") *>
       FtsRepository.delete(collective).transact(xa).void
 }
 

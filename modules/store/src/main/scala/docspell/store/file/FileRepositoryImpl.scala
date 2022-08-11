@@ -40,7 +40,7 @@ final class FileRepositoryImpl[F[_]: Sync](
     bs.delete(keyFun(key)) *> attrStore.deleteAttr(key).void
 
   def save(
-      collective: Ident,
+      collective: CollectiveId,
       category: FileCategory,
       hint: MimeTypeHint
   ): Pipe[F, Byte, FileKey] = {
@@ -60,7 +60,7 @@ final class FileRepositoryImpl[F[_]: Sync](
   }
 
   def randomKey(
-      collective: Ident,
+      collective: CollectiveId,
       category: FileCategory
   ): F[FileKey] =
     BinaryId.random[F].map(bid => FileKey(collective, category, Ident.unsafe(bid.id)))

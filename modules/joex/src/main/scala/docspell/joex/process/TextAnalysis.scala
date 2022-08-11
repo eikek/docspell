@@ -81,7 +81,7 @@ object TextAnalysis {
       labels <- analyser.annotate(
         ctx.logger,
         sett,
-        ctx.args.meta.collective,
+        ctx.args.meta.collective.valueAsIdent,
         rm.content.getOrElse("")
       )
     } yield (rm.copy(nerlabels = labels.all.toList), AttachmentDates(rm, labels.dates))

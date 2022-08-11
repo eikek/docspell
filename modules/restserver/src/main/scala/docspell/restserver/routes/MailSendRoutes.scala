@@ -32,7 +32,9 @@ object MailSendRoutes {
       for {
         in <- req.as[SimpleMail]
         mail = convertIn(id, in)
-        res <- mail.traverse(m => backend.mail.sendMail(user.account, name, m))
+        res <- mail.traverse(m =>
+          backend.mail.sendMail(user.account.userId, user.account.collectiveId, name, m)
+        )
         resp <- res.fold(
           err => Ok(BasicResult(false, s"Invalid mail data: $err")),
           res => Ok(convertOut(res))

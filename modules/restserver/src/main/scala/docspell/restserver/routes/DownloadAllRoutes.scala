@@ -75,7 +75,7 @@ object DownloadAllRoutes {
 
         case req @ GET -> Root / "file" / Ident(id) =>
           for {
-            data <- backend.downloadAll.getFile(share.account.collective, id)
+            data <- backend.downloadAll.getFile(share.account.collectiveId, id)
             resp <- BinaryUtil.respond(dsl, req)(data)
           } yield resp
       }
@@ -113,13 +113,13 @@ object DownloadAllRoutes {
 
       case req @ GET -> Root / "file" / Ident(id) =>
         for {
-          data <- backend.downloadAll.getFile(token.account.collective, id)
+          data <- backend.downloadAll.getFile(token.account.collectiveId, id)
           resp <- BinaryUtil.respond(dsl, req)(data)
         } yield resp
 
       case HEAD -> Root / "file" / Ident(id) =>
         for {
-          data <- backend.downloadAll.getFile(token.account.collective, id)
+          data <- backend.downloadAll.getFile(token.account.collectiveId, id)
           resp <- BinaryUtil.respondHead(dsl)(data)
         } yield resp
 
@@ -131,7 +131,7 @@ object DownloadAllRoutes {
 
       case PUT -> Root / "cancel" / Ident(id) =>
         for {
-          res <- backend.downloadAll.cancelDownload(token.account, id)
+          res <- backend.downloadAll.cancelDownload(token.account.collectiveId, id)
           resp <- Ok(Conversions.basicResult(res))
         } yield resp
     }

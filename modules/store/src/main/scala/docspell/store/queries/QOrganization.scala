@@ -25,7 +25,7 @@ object QOrganization {
   private val org = ROrganization.as("o")
 
   def findOrgAndContact(
-      coll: Ident,
+      coll: CollectiveId,
       query: Option[String],
       order: ROrganization.Table => Nel[OrderBy]
   ): Stream[ConnectionIO, (ROrganization, Vector[RContact])] = {
@@ -50,7 +50,7 @@ object QOrganization {
   }
 
   def getOrgAndContact(
-      coll: Ident,
+      coll: CollectiveId,
       orgId: Ident
   ): ConnectionIO[Option[(ROrganization, Vector[RContact])]] = {
     val sql = run(
@@ -72,7 +72,7 @@ object QOrganization {
   }
 
   def findPersonAndContact(
-      coll: Ident,
+      coll: CollectiveId,
       query: Option[String],
       order: (RPerson.Table, ROrganization.Table) => Nel[OrderBy]
   ): Stream[ConnectionIO, (RPerson, Option[ROrganization], Vector[RContact])] = {
@@ -99,7 +99,7 @@ object QOrganization {
   }
 
   def getPersonAndContact(
-      coll: Ident,
+      coll: CollectiveId,
       persId: Ident
   ): ConnectionIO[Option[(RPerson, Option[ROrganization], Vector[RContact])]] = {
     val sql =
@@ -125,7 +125,7 @@ object QOrganization {
   }
 
   def findPersonByContact(
-      coll: Ident,
+      coll: CollectiveId,
       value: String,
       ck: Option[ContactKind],
       use: Option[Nel[PersonUse]]
@@ -141,7 +141,7 @@ object QOrganization {
   def addOrg[F[_]](
       org: ROrganization,
       contacts: Seq[RContact],
-      cid: Ident
+      cid: CollectiveId
   ): Store[F] => F[AddResult] = {
     val insert = for {
       n <- ROrganization.insert(org)
@@ -156,7 +156,7 @@ object QOrganization {
   def addPerson[F[_]](
       person: RPerson,
       contacts: Seq[RContact],
-      cid: Ident
+      cid: CollectiveId
   ): Store[F] => F[AddResult] = {
     val insert = for {
       n <- RPerson.insert(person)
@@ -171,7 +171,7 @@ object QOrganization {
   def updateOrg[F[_]](
       org: ROrganization,
       contacts: Seq[RContact],
-      cid: Ident
+      cid: CollectiveId
   ): Store[F] => F[AddResult] = {
     val insert = for {
       n <- ROrganization.update(org)
@@ -187,7 +187,7 @@ object QOrganization {
   def updatePerson[F[_]](
       person: RPerson,
       contacts: Seq[RContact],
-      cid: Ident
+      cid: CollectiveId
   ): Store[F] => F[AddResult] = {
     val insert = for {
       n <- RPerson.update(person)
@@ -200,7 +200,7 @@ object QOrganization {
     store => store.add(insert, exists)
   }
 
-  def deleteOrg(orgId: Ident, collective: Ident): ConnectionIO[Int] =
+  def deleteOrg(orgId: Ident, collective: CollectiveId): ConnectionIO[Int] =
     for {
       n0 <- RItem.removeCorrOrg(collective, orgId)
       n1 <- RContact.deleteOrg(orgId)
@@ -208,7 +208,7 @@ object QOrganization {
       n3 <- ROrganization.delete(orgId, collective)
     } yield n0 + n1 + n2 + n3
 
-  def deletePerson(personId: Ident, collective: Ident): ConnectionIO[Int] =
+  def deletePerson(personId: Ident, collective: CollectiveId): ConnectionIO[Int] =
     for {
       n0 <- RItem.removeCorrPerson(collective, personId)
       n1 <- RItem.removeConcPerson(collective, personId)

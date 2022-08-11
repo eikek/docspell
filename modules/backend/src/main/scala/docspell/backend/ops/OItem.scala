@@ -19,6 +19,7 @@ import docspell.ftsclient.FtsClient
 import docspell.logging.Logger
 import docspell.notification.api.Event
 import docspell.scheduler.JobStore
+import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.queries.{QAttachment, QItem, QMoveAttachment}
 import docspell.store.records._
 import docspell.store.{AddResult, Store, UpdateResult}
@@ -31,7 +32,7 @@ trait OItem[F[_]] {
   def setTags(
       item: Ident,
       tagIds: List[String],
-      collective: Ident
+      collective: CollectiveId
   ): F[AttachedEvent[UpdateResult]]
 
   /** Sets tags for multiple items. The tags of the items will be replaced with the given
@@ -40,11 +41,15 @@ trait OItem[F[_]] {
   def setTagsMultipleItems(
       items: Nel[Ident],
       tags: List[String],
-      collective: Ident
+      collective: CollectiveId
   ): F[AttachedEvent[UpdateResult]]
 
   /** Create a new tag and add it to the item. */
-  def addNewTag(collective: Ident, item: Ident, tag: RTag): F[AttachedEvent[AddResult]]
+  def addNewTag(
+      collective: CollectiveId,
+      item: Ident,
+      tag: RTag
+  ): F[AttachedEvent[AddResult]]
 
   /** Apply all tags to the given item. Tags must exist, but can be IDs or names. Existing
     * tags on the item are left unchanged.
@@ -52,54 +57,58 @@ trait OItem[F[_]] {
   def linkTags(
       item: Ident,
       tags: List[String],
-      collective: Ident
+      collective: CollectiveId
   ): F[AttachedEvent[UpdateResult]]
 
   def linkTagsMultipleItems(
       items: Nel[Ident],
       tags: List[String],
-      collective: Ident
+      collective: CollectiveId
   ): F[AttachedEvent[UpdateResult]]
 
   def removeTagsOfCategories(
       item: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       categories: Set[String]
   ): F[AttachedEvent[UpdateResult]]
 
   def removeTagsMultipleItems(
       items: Nel[Ident],
       tags: List[String],
-      collective: Ident
+      collective: CollectiveId
   ): F[AttachedEvent[UpdateResult]]
 
   /** Toggles tags of the given item. Tags must exist, but can be IDs or names. */
   def toggleTags(
       item: Ident,
       tags: List[String],
-      collective: Ident
+      collective: CollectiveId
   ): F[AttachedEvent[UpdateResult]]
 
   def setDirection(
       item: Nel[Ident],
       direction: Direction,
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
   /** Set or remove the folder on an item. Folder can be the id or name. */
-  def setFolder(item: Ident, folder: Option[String], collective: Ident): F[UpdateResult]
+  def setFolder(
+      item: Ident,
+      folder: Option[String],
+      collective: CollectiveId
+  ): F[UpdateResult]
 
   /** Set or remove the folder on multiple items. Folder can be the id or name. */
   def setFolderMultiple(
       items: Nel[Ident],
       folder: Option[String],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
   def setCorrOrg(
       items: Nel[Ident],
       org: Option[Ident],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
   def addCorrOrg(item: Ident, org: OOrganization.OrgAndContacts): F[AddResult]
@@ -107,7 +116,7 @@ trait OItem[F[_]] {
   def setCorrPerson(
       items: Nel[Ident],
       person: Option[Ident],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
   def addCorrPerson(item: Ident, person: OOrganization.PersonAndContacts): F[AddResult]
@@ -115,7 +124,7 @@ trait OItem[F[_]] {
   def setConcPerson(
       items: Nel[Ident],
       person: Option[Ident],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
   def addConcPerson(item: Ident, person: OOrganization.PersonAndContacts): F[AddResult]
@@ -123,64 +132,68 @@ trait OItem[F[_]] {
   def setConcEquip(
       items: Nel[Ident],
       equip: Option[Ident],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
   def addConcEquip(item: Ident, equip: REquipment): F[AddResult]
 
-  def setNotes(item: Ident, notes: Option[String], collective: Ident): F[UpdateResult]
+  def setNotes(
+      item: Ident,
+      notes: Option[String],
+      collective: CollectiveId
+  ): F[UpdateResult]
 
   def addNotes(
       item: Ident,
       notes: String,
       separator: Option[String],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
-  def setName(item: Ident, name: String, collective: Ident): F[UpdateResult]
+  def setName(item: Ident, name: String, collective: CollectiveId): F[UpdateResult]
 
   def setNameMultiple(
       items: Nel[Ident],
       name: String,
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
-  def setState(item: Ident, state: ItemState, collective: Ident): F[AddResult] =
+  def setState(item: Ident, state: ItemState, collective: CollectiveId): F[AddResult] =
     setStates(Nel.of(item), state, collective)
 
   def setStates(
       item: Nel[Ident],
       state: ItemState,
-      collective: Ident
+      collective: CollectiveId
   ): F[AddResult]
 
-  def restore(items: Nel[Ident], collective: Ident): F[UpdateResult]
+  def restore(items: Nel[Ident], collective: CollectiveId): F[UpdateResult]
 
   def setItemDate(
       item: Nel[Ident],
       date: Option[Timestamp],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
   def setItemDueDate(
       item: Nel[Ident],
       date: Option[Timestamp],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
-  def getProposals(item: Ident, collective: Ident): F[MetaProposalList]
+  def getProposals(item: Ident, collective: CollectiveId): F[MetaProposalList]
 
-  def deleteItem(itemId: Ident, collective: Ident): F[Int]
+  def deleteItem(itemId: Ident, collective: CollectiveId): F[Int]
 
-  def deleteItemMultiple(items: Nel[Ident], collective: Ident): F[Int]
+  def deleteItemMultiple(items: Nel[Ident], collective: CollectiveId): F[Int]
 
-  def deleteAttachment(id: Ident, collective: Ident): F[Int]
+  def deleteAttachment(id: Ident, collective: CollectiveId): F[Int]
 
-  def setDeletedState(items: Nel[Ident], collective: Ident): F[Int]
+  def setDeletedState(items: Nel[Ident], collective: CollectiveId): F[Int]
 
   def deleteAttachmentMultiple(
       attachments: Nel[Ident],
-      collective: Ident
+      collective: CollectiveId
   ): F[Int]
 
   def moveAttachmentBefore(itemId: Ident, source: Ident, target: Ident): F[AddResult]
@@ -188,7 +201,7 @@ trait OItem[F[_]] {
   def setAttachmentName(
       attachId: Ident,
       name: Option[String],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 
   /** Submits the item for re-processing. The list of attachment ids can be used to only
@@ -196,28 +209,30 @@ trait OItem[F[_]] {
     * attachments are reprocessed. This call only submits the job into the queue.
     */
   def reprocess(
+      cid: CollectiveId,
       item: Ident,
       attachments: List[Ident],
-      account: AccountId
+      submitter: UserTaskScope
   ): F[UpdateResult]
 
   def reprocessAll(
+      cid: CollectiveId,
       items: Nel[Ident],
-      account: AccountId
+      submitter: UserTaskScope
   ): F[UpdateResult]
 
   /** Submits a task that finds all non-converted pdfs and triggers converting them using
     * ocrmypdf. Each file is converted by a separate task.
     */
   def convertAllPdf(
-      collective: Option[Ident],
-      submitter: Option[Ident]
+      collective: Option[CollectiveId],
+      submitter: UserTaskScope
   ): F[UpdateResult]
 
   /** Submits a task that (re)generates the preview image for an attachment. */
   def generatePreview(
       args: MakePreviewArgs,
-      account: AccountId
+      account: UserTaskScope
   ): F[UpdateResult]
 
   /** Submits a task that (re)generates the preview images for all attachments. */
@@ -227,7 +242,7 @@ trait OItem[F[_]] {
   def merge(
       logger: Logger[F],
       items: Nel[Ident],
-      collective: Ident
+      collective: CollectiveId
   ): F[UpdateResult]
 }
 
@@ -248,7 +263,7 @@ object OItem {
         def merge(
             logger: Logger[F],
             items: Nel[Ident],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           Merge(logger, store, this, createIndex).merge(items, collective).attempt.map {
             case Right(Right(_))                  => UpdateResult.success
@@ -269,14 +284,14 @@ object OItem {
         def linkTags(
             item: Ident,
             tags: List[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[AttachedEvent[UpdateResult]] =
           linkTagsMultipleItems(Nel.of(item), tags, collective)
 
         def linkTagsMultipleItems(
             items: Nel[Ident],
             tags: List[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[AttachedEvent[UpdateResult]] =
           tags.distinct match {
             case Nil => AttachedEvent.only(UpdateResult.success).pure[F]
@@ -305,7 +320,7 @@ object OItem {
 
         def removeTagsOfCategories(
             item: Ident,
-            collective: Ident,
+            collective: CollectiveId,
             categories: Set[String]
         ): F[AttachedEvent[UpdateResult]] =
           if (categories.isEmpty) {
@@ -328,7 +343,7 @@ object OItem {
         def removeTagsMultipleItems(
             items: Nel[Ident],
             tags: List[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[AttachedEvent[UpdateResult]] =
           tags.distinct match {
             case Nil => AttachedEvent.only(UpdateResult.success).pure[F]
@@ -354,7 +369,7 @@ object OItem {
         def toggleTags(
             item: Ident,
             tags: List[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[AttachedEvent[UpdateResult]] =
           tags.distinct match {
             case Nil => AttachedEvent.only(UpdateResult.success).pure[F]
@@ -383,14 +398,14 @@ object OItem {
         def setTags(
             item: Ident,
             tagIds: List[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[AttachedEvent[UpdateResult]] =
           setTagsMultipleItems(Nel.of(item), tagIds, collective)
 
         def setTagsMultipleItems(
             items: Nel[Ident],
             tags: List[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[AttachedEvent[UpdateResult]] = {
           val dbTask =
             for {
@@ -411,7 +426,7 @@ object OItem {
         }
 
         def addNewTag(
-            collective: Ident,
+            collective: CollectiveId,
             item: Ident,
             tag: RTag
         ): F[AttachedEvent[AddResult]] =
@@ -448,7 +463,7 @@ object OItem {
         def setDirection(
             items: Nel[Ident],
             direction: Direction,
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(
             store
@@ -458,7 +473,7 @@ object OItem {
         def setFolder(
             item: Ident,
             folder: Option[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           for {
             result <- store.transact(RItem.updateFolder(item, collective, folder)).attempt
@@ -478,7 +493,7 @@ object OItem {
         def setFolderMultiple(
             items: Nel[Ident],
             folder: Option[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           for {
             results <- items.traverse(i => setFolder(i, folder, collective))
@@ -499,7 +514,7 @@ object OItem {
         def setCorrOrg(
             items: Nel[Ident],
             org: Option[Ident],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(
             store
@@ -533,7 +548,7 @@ object OItem {
         def setCorrPerson(
             items: Nel[Ident],
             person: Option[Ident],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(
             store
@@ -571,7 +586,7 @@ object OItem {
         def setConcPerson(
             items: Nel[Ident],
             person: Option[Ident],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(
             store
@@ -609,7 +624,7 @@ object OItem {
         def setConcEquip(
             items: Nel[Ident],
             equip: Option[Ident],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(
             store
@@ -640,7 +655,7 @@ object OItem {
         def setNotes(
             item: Ident,
             notes: Option[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult
             .fromUpdate(
@@ -662,7 +677,7 @@ object OItem {
             item: Ident,
             notes: String,
             separator: Option[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           store
             .transact(RItem.appendNotes(item, collective, notes, separator))
@@ -685,7 +700,11 @@ object OItem {
                 UpdateResult.notFound.pure[F]
             }
 
-        def setName(item: Ident, name: String, collective: Ident): F[UpdateResult] =
+        def setName(
+            item: Ident,
+            name: String,
+            collective: CollectiveId
+        ): F[UpdateResult] =
           UpdateResult
             .fromUpdate(
               store
@@ -705,7 +724,7 @@ object OItem {
         def setNameMultiple(
             items: Nel[Ident],
             name: String,
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           for {
             results <- items.traverse(i => setName(i, name, collective))
@@ -726,7 +745,7 @@ object OItem {
         def setStates(
             items: Nel[Ident],
             state: ItemState,
-            collective: Ident
+            collective: CollectiveId
         ): F[AddResult] =
           store
             .transact(RItem.updateStateForCollective(items, state, collective))
@@ -735,7 +754,7 @@ object OItem {
 
         def restore(
             items: Nel[Ident],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(for {
             n <- store
@@ -748,7 +767,7 @@ object OItem {
         def setItemDate(
             items: Nel[Ident],
             date: Option[Timestamp],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(
             store
@@ -758,42 +777,42 @@ object OItem {
         def setItemDueDate(
             items: Nel[Ident],
             date: Option[Timestamp],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(
             store
               .transact(RItem.updateDueDate(items, collective, date))
           )
 
-        def deleteItem(itemId: Ident, collective: Ident): F[Int] =
+        def deleteItem(itemId: Ident, collective: CollectiveId): F[Int] =
           QItem
             .delete(store)(itemId, collective)
             .flatTap(_ => fts.removeItem(logger, itemId))
 
-        def deleteItemMultiple(items: Nel[Ident], collective: Ident): F[Int] =
+        def deleteItemMultiple(items: Nel[Ident], collective: CollectiveId): F[Int] =
           for {
             itemIds <- store.transact(RItem.filterItems(items, collective))
             results <- itemIds.traverse(item => deleteItem(item, collective))
             n = results.sum
           } yield n
 
-        def setDeletedState(items: Nel[Ident], collective: Ident): F[Int] =
+        def setDeletedState(items: Nel[Ident], collective: CollectiveId): F[Int] =
           for {
             n <- store.transact(RItem.setState(items, collective, ItemState.Deleted))
             _ <- items.traverse(id => fts.removeItem(logger, id))
           } yield n
 
-        def getProposals(item: Ident, collective: Ident): F[MetaProposalList] =
+        def getProposals(item: Ident, collective: CollectiveId): F[MetaProposalList] =
           store.transact(QAttachment.getMetaProposals(item, collective))
 
-        def deleteAttachment(id: Ident, collective: Ident): F[Int] =
+        def deleteAttachment(id: Ident, collective: CollectiveId): F[Int] =
           QAttachment
             .deleteSingleAttachment(store)(id, collective)
             .flatTap(_ => fts.removeAttachment(logger, id))
 
         def deleteAttachmentMultiple(
             attachments: Nel[Ident],
-            collective: Ident
+            collective: CollectiveId
         ): F[Int] =
           for {
             attachmentIds <- store.transact(
@@ -808,7 +827,7 @@ object OItem {
         def setAttachmentName(
             attachId: Ident,
             name: Option[String],
-            collective: Ident
+            collective: CollectiveId
         ): F[UpdateResult] =
           UpdateResult
             .fromUpdate(
@@ -833,49 +852,52 @@ object OItem {
             )
 
         def reprocess(
+            cid: CollectiveId,
             item: Ident,
             attachments: List[Ident],
-            account: AccountId
+            submitter: UserTaskScope
         ): F[UpdateResult] =
           (for {
             _ <- OptionT(
-              store.transact(RItem.findByIdAndCollective(item, account.collective))
+              store.transact(RItem.findByIdAndCollective(item, cid))
             )
             args = ReProcessItemArgs(item, attachments)
             job <- OptionT.liftF(
-              JobFactory.reprocessItem[F](args, account, Priority.Low)
+              JobFactory.reprocessItem[F](args, submitter, Priority.Low)
             )
             _ <- OptionT.liftF(jobStore.insertIfNew(job.encode))
           } yield UpdateResult.success).getOrElse(UpdateResult.notFound)
 
         def reprocessAll(
+            cid: CollectiveId,
             items: Nel[Ident],
-            account: AccountId
+            submitter: UserTaskScope
         ): F[UpdateResult] =
           UpdateResult.fromUpdate(for {
-            items <- store.transact(RItem.filterItems(items, account.collective))
+            items <- store.transact(RItem.filterItems(items, cid))
             jobs <- items
               .map(item => ReProcessItemArgs(item, Nil))
-              .traverse(arg => JobFactory.reprocessItem[F](arg, account, Priority.Low))
+              .traverse(arg => JobFactory.reprocessItem[F](arg, submitter, Priority.Low))
               .map(_.map(_.encode))
             _ <- jobStore.insertAllIfNew(jobs)
           } yield items.size)
 
         def convertAllPdf(
-            collective: Option[Ident],
-            submitter: Option[Ident]
+            collective: Option[CollectiveId],
+            submitter: UserTaskScope
         ): F[UpdateResult] =
           for {
-            job <- JobFactory.convertAllPdfs[F](collective, submitter, Priority.Low)
+            job <- JobFactory
+              .convertAllPdfs[F](ConvertAllPdfArgs(collective), submitter, Priority.Low)
             _ <- jobStore.insertIfNew(job.encode)
           } yield UpdateResult.success
 
         def generatePreview(
             args: MakePreviewArgs,
-            account: AccountId
+            submitter: UserTaskScope
         ): F[UpdateResult] =
           for {
-            job <- JobFactory.makePreview[F](args, account.some)
+            job <- JobFactory.makePreview[F](args, submitter)
             _ <- jobStore.insertIfNew(job.encode)
           } yield UpdateResult.success
 
@@ -883,7 +905,8 @@ object OItem {
             storeMode: MakePreviewArgs.StoreMode
         ): F[UpdateResult] =
           for {
-            job <- JobFactory.allPreviews[F](AllPreviewsArgs(None, storeMode), None)
+            job <- JobFactory
+              .allPreviews[F](AllPreviewsArgs(None, storeMode), UserTaskScope.system)
             _ <- jobStore.insertIfNew(job.encode)
           } yield UpdateResult.success
 

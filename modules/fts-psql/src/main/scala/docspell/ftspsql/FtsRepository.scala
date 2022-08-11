@@ -16,7 +16,14 @@ import doobie._
 import doobie.implicits._
 
 object FtsRepository extends DoobieMeta {
+  private[this] val logger = docspell.logging.getLogger[ConnectionIO]
   val table = fr"ftspsql_search"
+
+  def containsData: ConnectionIO[Boolean] =
+    sql"select id from $table limit 1".query[String].option.map(_.isDefined)
+
+  def containsNoData: ConnectionIO[Boolean] =
+    containsData.map(!_)
 
   def searchSummary(pq: PgQueryParser, rn: RankNormalization)(
       q: FtsQuery
@@ -56,15 +63,17 @@ object FtsRepository extends DoobieMeta {
 
     val query = mkQueryPart(pq, q)
 
-    sql"""select $select 
-         |from $table, $query
-         |where ${mkCondition(q)} AND query @@ text_index 
-         |order by rank desc
-         |limit ${q.limit}
-         |offset ${q.offset}
-         |""".stripMargin
-      .query[SearchResult]
-      .to[Vector]
+    val sqlFrag =
+      sql"""select $select 
+           |from $table, $query
+           |where ${mkCondition(q)} AND query @@ text_index 
+           |order by rank desc
+           |limit ${q.limit}
+           |offset ${q.offset}
+           |""".stripMargin
+
+    logger.asUnsafe.trace(s"PSQL Fulltext query: $sqlFrag")
+    sqlFrag.query[SearchResult].to[Vector]
   }
 
   private def mkCondition(q: FtsQuery): Fragment = {
@@ -78,7 +87,7 @@ object FtsRepository extends DoobieMeta {
     val folders =
       NonEmptyList.fromList(q.folders.toList).map { nel =>
         val ids = nel.map(id => fr"$id").reduceLeft(_ ++ fr"," ++ _)
-        fr"folder_id in ($ids)"
+        fr"(folder_id in ($ids) or folder_id is null)"
       }
 
     List(items, folders).flatten.foldLeft(coll)(_ ++ fr"AND" ++ _)
@@ -139,7 +148,7 @@ object FtsRepository extends DoobieMeta {
 
   def updateFolder(
       itemId: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       folder: Option[Ident]
   ): ConnectionIO[Int] =
     (sql"UPDATE $table" ++
@@ -155,7 +164,7 @@ object FtsRepository extends DoobieMeta {
   def deleteAll: ConnectionIO[Int] =
     sql"DELETE FROM $table".update.run
 
-  def delete(collective: Ident): ConnectionIO[Int] =
+  def delete(collective: CollectiveId): ConnectionIO[Int] =
     sql"DELETE FROM $table WHERE collective = $collective".update.run
 
   def resetAll: ConnectionIO[Int] = {

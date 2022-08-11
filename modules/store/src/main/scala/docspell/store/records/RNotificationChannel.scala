@@ -95,12 +95,12 @@ object RNotificationChannel {
       RNotificationChannelHttp.update
     )
 
-  def getByAccount(account: AccountId): ConnectionIO[Vector[RNotificationChannel]] =
+  def getByAccount(userId: Ident): ConnectionIO[Vector[RNotificationChannel]] =
     for {
-      mail <- RNotificationChannelMail.getByAccount(account)
-      gotify <- RNotificationChannelGotify.getByAccount(account)
-      matrix <- RNotificationChannelMatrix.getByAccount(account)
-      http <- RNotificationChannelHttp.getByAccount(account)
+      mail <- RNotificationChannelMail.getByAccount(userId)
+      gotify <- RNotificationChannelGotify.getByAccount(userId)
+      matrix <- RNotificationChannelMatrix.getByAccount(userId)
+      http <- RNotificationChannelHttp.getByAccount(userId)
     } yield mail.map(Email.apply) ++ gotify.map(Gotify.apply) ++ matrix.map(
       Matrix.apply
     ) ++ http.map(Http.apply)
@@ -177,12 +177,12 @@ object RNotificationChannel {
       .flatMap(_.flatTraverse(find))
   }
 
-  def deleteByAccount(id: Ident, account: AccountId): ConnectionIO[Int] =
+  def deleteByAccount(id: Ident, userId: Ident): ConnectionIO[Int] =
     for {
-      n1 <- RNotificationChannelMail.deleteByAccount(id, account)
-      n2 <- RNotificationChannelGotify.deleteByAccount(id, account)
-      n3 <- RNotificationChannelMatrix.deleteByAccount(id, account)
-      n4 <- RNotificationChannelHttp.deleteByAccount(id, account)
+      n1 <- RNotificationChannelMail.deleteByAccount(id, userId)
+      n2 <- RNotificationChannelGotify.deleteByAccount(id, userId)
+      n3 <- RNotificationChannelMatrix.deleteByAccount(id, userId)
+      n4 <- RNotificationChannelHttp.deleteByAccount(id, userId)
     } yield n1 + n2 + n3 + n4
 
   def fromChannel(
@@ -202,7 +202,7 @@ object RNotificationChannel {
                   s"Looking up user smtp for ${userId.id} and ${conn.id}"
                 )
               )
-              mailConn <- OptionT(RUserEmail.getByUser(userId, conn))
+              mailConn <- OptionT(RUserEmail.getByName(userId, conn))
               rec = RNotificationChannelMail(
                 id,
                 userId,

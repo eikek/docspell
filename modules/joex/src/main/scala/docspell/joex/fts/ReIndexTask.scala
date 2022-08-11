@@ -40,7 +40,7 @@ object ReIndexTask {
   def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log[F, Args](_.warn("Cancelling full-text re-index task"))
 
-  private def clearData[F[_]: Async](collective: Option[Ident]): FtsWork[F] =
+  private def clearData[F[_]: Async](collective: Option[CollectiveId]): FtsWork[F] =
     FtsWork.log[F](_.info("Clearing index data")) ++
       (collective match {
         case Some(_) =>

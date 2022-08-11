@@ -77,27 +77,21 @@ object RNotificationChannelGotify {
     )
 
   def getByAccount(
-      account: AccountId
+      userId: Ident
   ): ConnectionIO[Vector[RNotificationChannelGotify]] = {
-    val user = RUser.as("u")
     val gotify = as("c")
     Select(
       select(gotify.all),
-      from(gotify).innerJoin(user, user.uid === gotify.uid),
-      user.cid === account.collective && user.login === account.user
+      from(gotify),
+      gotify.uid === userId
     ).build.query[RNotificationChannelGotify].to[Vector]
   }
 
   def deleteById(id: Ident): ConnectionIO[Int] =
     DML.delete(T, T.id === id)
 
-  def deleteByAccount(id: Ident, account: AccountId): ConnectionIO[Int] = {
-    val u = RUser.as("u")
-    DML.delete(
-      T,
-      T.id === id && T.uid.in(Select(select(u.uid), from(u), u.isAccount(account)))
-    )
-  }
+  def deleteByAccount(id: Ident, userId: Ident): ConnectionIO[Int] =
+    DML.delete(T, T.id === id && T.uid === userId)
 
   def findRefs(ids: NonEmptyList[Ident]): Select =
     Select(

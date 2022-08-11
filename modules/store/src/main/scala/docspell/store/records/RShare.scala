@@ -32,7 +32,7 @@ final case class RShare(
 object RShare {
 
   final case class Table(alias: Option[String]) extends TableDef {
-    val tableName = "item_share";
+    val tableName = "item_share"
 
     val id = Column[Ident]("id", this)
     val userId = Column[Ident]("user_id", this)
@@ -94,17 +94,21 @@ object RShare {
             else Nil)
     )
 
-  def findOne(id: Ident, cid: Ident): OptionT[ConnectionIO, (RShare, RUser)] = {
+  def findOne(
+      id: Ident,
+      cid: CollectiveId
+  ): OptionT[ConnectionIO, (RShare, AccountInfo)] = {
     val s = RShare.as("s")
     val u = RUser.as("u")
+    val c = RCollective.as("c")
 
     OptionT(
       Select(
-        select(s.all, u.all),
-        from(s).innerJoin(u, u.uid === s.userId),
+        select(s.all, NonEmptyList.of(c.id, c.name, u.uid, u.login)),
+        from(s).innerJoin(u, u.uid === s.userId).innerJoin(c, c.id === u.cid),
         s.id === id && u.cid === cid
       ).build
-        .query[(RShare, RUser)]
+        .query[(RShare, AccountInfo)]
         .option
     )
   }
@@ -115,20 +119,21 @@ object RShare {
   def findActive(
       id: Ident,
       current: Timestamp
-  ): OptionT[ConnectionIO, (RShare, RUser)] = {
+  ): OptionT[ConnectionIO, (RShare, AccountInfo)] = {
     val s = RShare.as("s")
     val u = RUser.as("u")
+    val c = RCollective.as("c")
 
     OptionT(
       Select(
-        select(s.all, u.all),
-        from(s).innerJoin(u, s.userId === u.uid),
+        select(s.all, NonEmptyList.of(c.id, c.name, u.uid, u.login)),
+        from(s).innerJoin(u, s.userId === u.uid).innerJoin(c, c.id === u.cid),
         activeCondition(s, id, current)
-      ).build.query[(RShare, RUser)].option
+      ).build.query[(RShare, AccountInfo)].option
     )
   }
 
-  def findCurrentActive(id: Ident): OptionT[ConnectionIO, (RShare, RUser)] =
+  def findCurrentActive(id: Ident): OptionT[ConnectionIO, (RShare, AccountInfo)] =
     OptionT.liftF(Timestamp.current[ConnectionIO]).flatMap(now => findActive(id, now))
 
   def findActivePassword(id: Ident): OptionT[ConnectionIO, Option[Password]] =
@@ -139,7 +144,7 @@ object RShare {
     })
 
   def findOneByCollective(
-      cid: Ident,
+      cid: CollectiveId,
       enabled: Option[Boolean],
       nameOrId: String
   ): ConnectionIO[Option[RShare]] = {
@@ -156,28 +161,29 @@ object RShare {
   }
 
   def findAllByCollective(
-      cid: Ident,
+      cid: CollectiveId,
       ownerLogin: Option[Ident],
       q: Option[String]
-  ): ConnectionIO[List[(RShare, RUser)]] = {
+  ): ConnectionIO[List[(RShare, AccountInfo)]] = {
     val s = RShare.as("s")
     val u = RUser.as("u")
+    val c = RCollective.as("c")
 
     val ownerQ = ownerLogin.map(name => u.login === name)
     val nameQ = q.map(n => s.name.like(s"%$n%"))
 
     Select(
-      select(s.all, u.all),
-      from(s).innerJoin(u, u.uid === s.userId),
+      select(s.all, NonEmptyList.of(c.id, c.name, u.uid, u.login)),
+      from(s).innerJoin(u, u.uid === s.userId).innerJoin(c, c.id === u.cid),
       u.cid === cid &&? ownerQ &&? nameQ
     )
       .orderBy(s.publishedAt.desc)
       .build
-      .query[(RShare, RUser)]
+      .query[(RShare, AccountInfo)]
       .to[List]
   }
 
-  def deleteByIdAndCid(id: Ident, cid: Ident): ConnectionIO[Int] = {
+  def deleteByIdAndCid(id: Ident, cid: CollectiveId): ConnectionIO[Int] = {
     val u = RUser.T
     DML.delete(T, T.id === id && T.userId.in(Select(u.uid.s, from(u), u.cid === cid)))
   }

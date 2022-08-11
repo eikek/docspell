@@ -18,7 +18,7 @@ import docspell.store.queries.QCollective
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 
-case class NerFile(collective: Ident, updated: Timestamp, creation: Timestamp) {
+case class NerFile(collective: CollectiveId, updated: Timestamp, creation: Timestamp) {
   def nerFilePath(directory: Path): Path =
     NerFile.nerFilePath(directory, collective)
 
@@ -33,14 +33,14 @@ object NerFile {
   implicit val jsonEncoder: Encoder[NerFile] =
     deriveEncoder[NerFile]
 
-  private def nerFilePath(directory: Path, collective: Ident): Path =
-    directory.resolve(s"${collective.id}.txt")
+  private def nerFilePath(directory: Path, collective: CollectiveId): Path =
+    directory.resolve(s"${collective.value}.txt")
 
-  private def jsonFilePath(directory: Path, collective: Ident): Path =
-    directory.resolve(s"${collective.id}.json")
+  private def jsonFilePath(directory: Path, collective: CollectiveId): Path =
+    directory.resolve(s"${collective.value}.json")
 
   def find[F[_]: Async](
-      collective: Ident,
+      collective: CollectiveId,
       directory: Path
   ): F[Option[NerFile]] = {
     val file = jsonFilePath(directory, collective)

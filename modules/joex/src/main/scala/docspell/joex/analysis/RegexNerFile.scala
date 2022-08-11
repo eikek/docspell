@@ -24,7 +24,7 @@ import io.circe.syntax._
 /** Maintains a custom regex-ner file per collective for stanford's regexner annotator. */
 trait RegexNerFile[F[_]] {
 
-  def makeFile(collective: Ident): F[Option[Path]]
+  def makeFile(collective: CollectiveId): F[Option[Path]]
 
 }
 
@@ -49,11 +49,11 @@ object RegexNerFile {
 
     private[this] val logger = docspell.logging.getLogger[F]
 
-    def makeFile(collective: Ident): F[Option[Path]] =
+    def makeFile(collective: CollectiveId): F[Option[Path]] =
       if (cfg.maxEntries > 0) doMakeFile(collective)
       else (None: Option[Path]).pure[F]
 
-    def doMakeFile(collective: Ident): F[Option[Path]] =
+    def doMakeFile(collective: CollectiveId): F[Option[Path]] =
       for {
         now <- Timestamp.current[F]
         existing <- NerFile.find[F](collective, cfg.directory)
@@ -75,7 +75,7 @@ object RegexNerFile {
       } yield result
 
     private def updateFile(
-        collective: Ident,
+        collective: CollectiveId,
         now: Timestamp,
         current: Option[NerFile]
     ): F[Option[Path]] =
@@ -95,7 +95,7 @@ object RegexNerFile {
                     ) *> cur.pure[F]
                   else
                     logger.debug(
-                      s"There have been state changes for collective '${collective.id}'. Reload NER file."
+                      s"There have been state changes for collective '${collective.value}'. Reload NER file."
                     ) *> createFile(lup, collective, now)
                 nerf.map(_.nerFilePath(cfg.directory).some)
               case None =>
@@ -119,7 +119,7 @@ object RegexNerFile {
 
     private def createFile(
         lastUpdate: Timestamp,
-        collective: Ident,
+        collective: CollectiveId,
         now: Timestamp
     ): F[NerFile] = {
       def update(nf: NerFile, text: String): F[Unit] =
@@ -127,7 +127,7 @@ object RegexNerFile {
           for {
             jsonFile <- Sync[F].pure(nf.jsonFilePath(cfg.directory))
             _ <- logger.debug(
-              s"Writing custom NER file for collective '${collective.id}'"
+              s"Writing custom NER file for collective '${collective.value}'"
             )
             _ <- jsonFile.parent match {
               case Some(p) => File.mkDir(p)
@@ -139,7 +139,9 @@ object RegexNerFile {
         )
 
       for {
-        _ <- logger.info(s"Generating custom NER file for collective '${collective.id}'")
+        _ <- logger.info(
+          s"Generating custom NER file for collective '${collective.value}'"
+        )
         names <- store.transact(QCollective.allNames(collective, cfg.maxEntries))
         nerFile = NerFile(collective, lastUpdate, now)
         _ <- update(nerFile, NerFile.mkNerConfig(names))
@@ -152,8 +154,8 @@ object RegexNerFile {
     import docspell.store.qb.DSL._
     import docspell.store.qb._
 
-    def latestUpdate(collective: Ident): ConnectionIO[Option[Timestamp]] = {
-      def max_(col: Column[_], cidCol: Column[Ident]): Select =
+    def latestUpdate(collective: CollectiveId): ConnectionIO[Option[Timestamp]] = {
+      def max_(col: Column[_], cidCol: Column[CollectiveId]): Select =
         Select(max(col).as("t"), from(col.table), cidCol === collective)
 
       val sql = union(

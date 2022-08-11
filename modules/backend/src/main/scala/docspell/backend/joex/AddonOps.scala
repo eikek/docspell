@@ -26,7 +26,7 @@ import docspell.store.records.AddonRunConfigResolved
 trait AddonOps[F[_]] {
 
   def execAll(
-      collective: Ident,
+      collective: CollectiveId,
       trigger: Set[AddonTriggerType],
       runConfigIds: Set[Ident],
       logger: Option[Logger[F]]
@@ -34,7 +34,7 @@ trait AddonOps[F[_]] {
       middleware: Middleware[F]
   ): F[ExecResult]
 
-  def execById(collective: Ident, runConfigId: Ident, logger: Logger[F])(
+  def execById(collective: CollectiveId, runConfigId: Ident, logger: Logger[F])(
       middleware: Middleware[F]
   ): F[ExecResult]
 
@@ -42,13 +42,16 @@ trait AddonOps[F[_]] {
     * filtered by given ids and triggers.
     */
   def findAddonRefs(
-      collective: Ident,
+      collective: CollectiveId,
       trigger: Set[AddonTriggerType],
       runConfigIds: Set[Ident]
   ): F[List[AddonRunConfigRef]]
 
   /** Find enabled addon run config reference given an addon task id */
-  def findAddonRef(collective: Ident, runConfigId: Ident): F[Option[AddonRunConfigRef]]
+  def findAddonRef(
+      collective: CollectiveId,
+      runConfigId: Ident
+  ): F[Option[AddonRunConfigRef]]
 
   /** Creates an executor for addons given a configuration. */
   def getExecutor(cfg: AddonExecutorConfig): F[AddonExecutor[F]]
@@ -58,7 +61,7 @@ trait AddonOps[F[_]] {
 object AddonOps {
   case class AddonRunConfigRef(
       id: Ident,
-      collective: Ident,
+      collective: CollectiveId,
       userId: Option[Ident],
       name: String,
       refs: List[AddonRef]
@@ -110,7 +113,7 @@ object AddonOps {
       private val prepare = new AddonPrepare[F](store)
 
       def execAll(
-          collective: Ident,
+          collective: CollectiveId,
           trigger: Set[AddonTriggerType],
           runConfigIds: Set[Ident],
           logger: Option[Logger[F]]
@@ -125,7 +128,7 @@ object AddonOps {
           results <- runCfgs.traverse(r => execRunConfig(log, r, custom))
         } yield ExecResult(results.flatMap(_.result), runCfgs)
 
-      def execById(collective: Ident, runConfigId: Ident, logger: Logger[F])(
+      def execById(collective: CollectiveId, runConfigId: Ident, logger: Logger[F])(
           custom: Middleware[F]
       ): F[ExecResult] =
         (for {
@@ -167,7 +170,7 @@ object AddonOps {
         Async[F].pure(AddonExecutor(cfg, urlReader))
 
       def findAddonRefs(
-          collective: Ident,
+          collective: CollectiveId,
           trigger: Set[AddonTriggerType],
           runConfigIds: Set[Ident]
       ): F[List[AddonRunConfigRef]] =
@@ -183,7 +186,7 @@ object AddonOps {
           .map(_.map(AddonRunConfigRef.fromResolved))
 
       def findAddonRef(
-          collective: Ident,
+          collective: CollectiveId,
           runConfigId: Ident
       ): F[Option[AddonRunConfigRef]] =
         OptionT(

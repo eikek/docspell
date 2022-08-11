@@ -16,9 +16,9 @@ import io.circe.{Decoder, Encoder}
   * collective is specified, it considers all attachments.
   */
 case class AllPreviewsArgs(
-    collective: Option[Ident],
+    collective: Option[CollectiveId],
     storeMode: MakePreviewArgs.StoreMode
-)
+) extends TaskArguments
 
 object AllPreviewsArgs {
 

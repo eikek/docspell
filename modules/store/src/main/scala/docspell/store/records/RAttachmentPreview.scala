@@ -70,7 +70,7 @@ object RAttachmentPreview {
 
   def findByIdAndCollective(
       attachId: Ident,
-      collective: Ident
+      collective: CollectiveId
   ): ConnectionIO[Option[RAttachmentPreview]] = {
     val b = RAttachment.as("b")
     val a = RAttachmentPreview.as("a")
@@ -98,7 +98,7 @@ object RAttachmentPreview {
 
   def findByItemAndCollective(
       itemId: Ident,
-      coll: Ident
+      coll: CollectiveId
   ): ConnectionIO[Option[RAttachmentPreview]] = {
     val s = RAttachmentPreview.as("s")
     val a = RAttachment.as("a")

@@ -51,7 +51,7 @@ object QueryData {
     val items = fq.items.map(_.id).mkString(" ")
     val folders = fq.folders.map(_.id).mkString(" ")
     val filterQ = List(
-      s"""${Field.collectiveId.name}:"${fq.collective.id}"""",
+      s"""${Field.collectiveId.name}:"${fq.collective.value}"""",
       fq.items match {
         case s if s.isEmpty =>
           ""

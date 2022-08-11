@@ -33,7 +33,9 @@ object FullTextIndexRoutes {
 
       HttpRoutes.of { case POST -> Root / "reIndex" =>
         for {
-          res <- backend.fulltext.reindexCollective(user.account).attempt
+          res <- backend.fulltext
+            .reindexCollective(user.account.collectiveId, user.account.userId.some)
+            .attempt
           resp <- Ok(Conversions.basicResult(res, "Full-text index will be re-created."))
         } yield resp
       }

@@ -13,6 +13,7 @@ import fs2.{Pipe, Stream}
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
+import docspell.scheduler.usertask.UserTaskScope
 
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
@@ -34,8 +35,8 @@ object WebSocketRoutes {
     HttpRoutes.of { case GET -> Root =>
       val init =
         for {
-          jc <- backend.job.getUnfinishedJobCount(user.account.collective)
-          msg = OutputEvent.JobsWaiting(user.account.collective, jc)
+          jc <- backend.job.getUnfinishedJobCount(UserTaskScope(user.account))
+          msg = OutputEvent.JobsWaiting(user.account.collectiveId, jc)
         } yield Text(msg.encode)
 
       val toClient: Stream[F, WebSocketFrame.Text] =

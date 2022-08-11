@@ -18,7 +18,7 @@ import munit._
 class TagsChangedCtxTest extends FunSuite {
 
   val url = LenientUri.unsafe("http://test")
-  val account = AccountId(id("user2"), id("user2"))
+  val account = AccountInfo(CollectiveId(1), id("user2"), id("user-abc-def"), id("user2"))
   val tag = Tag(id("a-b-1"), "tag-red", Some("doctype"))
   val item = Item(
     id = id("item-1"),

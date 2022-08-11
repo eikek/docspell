@@ -21,7 +21,7 @@ object StoreClassifierModel {
   def handleModel[F[_]: Async](
       store: Store[F],
       logger: Logger[F],
-      collective: Ident,
+      collective: CollectiveId,
       modelName: ClassifierName
   )(
       trainedModel: ClassifierModel

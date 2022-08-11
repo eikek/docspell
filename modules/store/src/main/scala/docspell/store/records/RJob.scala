@@ -44,6 +44,9 @@ case class RJob(
 
   def isInProgress: Boolean =
     JobState.inProgress.contains(state)
+
+  def withArgs[A: Encoder](args: A): RJob =
+    copy(args = Encoder[A].apply(args).noSpaces)
 }
 
 object RJob {
@@ -151,6 +154,13 @@ object RJob {
     )
   }
 
+  def findByTaskName(task: Ident): ConnectionIO[Vector[RJob]] =
+    Select(
+      select(T.all),
+      from(T),
+      T.task === task
+    ).build.query[RJob].to[Vector]
+
   def findFromIds(ids: Seq[Ident]): ConnectionIO[Vector[RJob]] =
     NonEmptyList.fromList(ids.toList) match {
       case None =>
@@ -179,6 +189,12 @@ object RJob {
       DML.set(T.state.setTo(JobState.waiting))
     )
   }
+
+  def setJsonArgs[A: Encoder](jobId: Ident, args: A): ConnectionIO[Int] =
+    DML.update(T, T.id === jobId, DML.set(T.args.setTo(Encoder[A].apply(args).noSpaces)))
+
+  def setArgs(jobId: Ident, args: String): ConnectionIO[Int] =
+    DML.update(T, T.id === jobId, DML.set(T.args.setTo(args)))
 
   def incrementRetries(jobid: Ident): ConnectionIO[Int] =
     DML
@@ -300,6 +316,14 @@ object RJob {
       n0 <- RJobLog.deleteAll(jobId)
       n1 <- DML.delete(T, T.id === jobId)
     } yield n0 + n1
+
+  def deleteByTask(task: Ident): ConnectionIO[Int] = {
+    val query = Select(select(T.id), from(T), T.task === task)
+    for {
+      n1 <- DML.delete(RJobLog.T, RJobLog.T.jobId.in(query))
+      n2 <- DML.delete(T, T.task === task)
+    } yield n1 + n2
+  }
 
   def findIdsDoneAndOlderThan(ts: Timestamp): Stream[ConnectionIO, Ident] =
     run(
