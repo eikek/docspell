@@ -7,12 +7,10 @@
 package docspell.store
 
 import java.util.UUID
-
 import cats.effect._
-
+import cats.syntax.option._
 import docspell.common._
 import docspell.logging.TestLoggingConfig
-
 import com.dimafeng.testcontainers.munit.fixtures.TestContainersFixtures
 import com.dimafeng.testcontainers.{
   JdbcDatabaseContainer,
@@ -20,6 +18,7 @@ import com.dimafeng.testcontainers.{
   PostgreSQLContainer
 }
 import doobie._
+import fs2.io.file.{Files, Path}
 import munit.CatsEffectSuite
 import org.testcontainers.utility.DockerImageName
 
@@ -55,6 +54,15 @@ trait DatabaseTest
     }
   )
 
+  lazy val h2FileDataSource = ResourceSuiteLocalFixture(
+    "h2FileDataSource",
+    for {
+      file <- Files[IO].tempFile(Path("target").some, "h2-test-", ".db", None)
+      jdbc = StoreFixture.fileDB(file)
+      res <- StoreFixture.dataSource(jdbc).map(ds => (jdbc, ds))
+    } yield res
+  )
+
   lazy val newH2DataSource = ResourceFixture(for {
     jdbc <- Resource.eval(IO(StoreFixture.memoryDB(UUID.randomUUID().toString)))
     ds <- StoreFixture.dataSource(jdbc)
@@ -84,9 +92,18 @@ trait DatabaseTest
     } yield store
   )
 
+  lazy val h2FileStore = ResourceSuiteLocalFixture(
+    "h2FileStore",
+    for {
+      t <- Resource.eval(IO(h2FileDataSource()))
+      store <- StoreFixture.store(t._2, t._1)
+    } yield store
+  )
+
   def postgresAll = List(postgresCnt, pgDataSource, pgStore)
   def mariaDbAll = List(mariadbCnt, mariaDataSource, mariaStore)
-  def h2All = List(h2DataSource, h2Store)
+  def h2Memory = List(h2DataSource, h2Store)
+  def h2File = List(h2FileDataSource, h2FileStore)
 }
 
 object DatabaseTest {

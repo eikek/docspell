@@ -9,13 +9,11 @@ package docspell.scheduler.impl
 import cats.effect.Async
 import cats.implicits._
 import fs2.Stream
-
 import docspell.common._
 import docspell.store.Store
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.records.{RJob, RJobGroupUse}
-
 import doobie.ConnectionIO
 
 object QJob {
@@ -89,7 +87,7 @@ object QJob {
       res <- job.traverse(j => markJob(j))
     } yield res.map(_.map(_.some)).getOrElse {
       if (group.isDefined)
-        Left(()) // if a group was found, but no job someone else was faster
+        Left(()) // if a group was found but no job, someone else was faster
       else Right(None)
     }
   }
@@ -115,33 +113,27 @@ object QJob {
       val selectAll = Select(JC.group.s, from(JC), stateCond).distinct
     }
 
-    val sql1 =
-      Select(
-        select(min(AllGroups.group).as("g"), lit("0 as n")),
-        from(AllGroups),
-        AllGroups.group > Select(G.group.s, from(G), G.worker === worker)
-      )
-
-    val sql2 =
-      Select(
-        select(min(AllGroups.group).as("g"), lit("1 as n")),
-        from(AllGroups)
-      )
-
-    val gcol = Column[String]("g", TableDef(""))
-    val gnum = Column[Int]("n", TableDef(""))
     val groups =
       withCte(AllGroups -> AllGroups.selectAll)
-        .select(Select(gcol.s, from(union(sql1, sql2), "t0"), gcol.isNull.negate))
-        .orderBy(gnum.asc)
-        .limit(1)
+        .select(
+          Select(
+            coalesce(
+              Select(
+                select(min(AllGroups.group)),
+                from(AllGroups),
+                AllGroups.group > Select(G.group.s, from(G), G.worker === worker)
+              ).asSubSelect,
+              Select(select(min(AllGroups.group)), from(AllGroups)).asSubSelect
+            ).s
+          )
+        )
 
     val frag = groups.build
-    cioLogger.trace(
-      s"nextGroupQuery: $frag  (now=${now.toMillis}, pause=${initialPause.millis})"
-    )
-
-    frag.query[Ident].option
+    cioLogger
+      .trace(
+        s"nextGroupQuery: $frag  (now=${now.toMillis}, pause=${initialPause.millis})"
+      ) *>
+      groups.build.query[Ident].option
   }
 
   private def stuckTriggerValue(t: RJob.Table, initialPause: Duration, now: Timestamp) =

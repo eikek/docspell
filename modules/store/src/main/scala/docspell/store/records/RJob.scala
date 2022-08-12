@@ -300,11 +300,6 @@ object RJob {
   def setProgress(jobId: Ident, perc: Int): ConnectionIO[Int] =
     DML.update(T, T.id === jobId, DML.set(T.progress.setTo(perc)))
 
-  def selectWaiting: ConnectionIO[Option[RJob]] = {
-    val sql = run(select(T.all), from(T), T.state === JobState.waiting)
-    sql.query[RJob].to[Vector].map(_.headOption)
-  }
-
   def selectGroupInState(states: NonEmptyList[JobState]): ConnectionIO[Vector[Ident]] = {
     val sql =
       Select(select(T.group), from(T), T.state.in(states)).orderBy(T.group)
