@@ -30,7 +30,7 @@ object RContact {
     val tableName = "contact"
 
     val contactId = Column[Ident]("contactid", this)
-    val value = Column[String]("value", this)
+    val value = Column[String]("value_", this)
     val kind = Column[ContactKind]("kind", this)
     val personId = Column[Ident]("pid", this)
     val orgId = Column[Ident]("oid", this)
