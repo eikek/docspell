@@ -7,13 +7,16 @@
 package docspell.store
 
 import javax.sql.DataSource
+
 import cats.effect._
+import fs2.io.file.Path
+
 import docspell.common.LenientUri
 import docspell.store.file.{FileRepository, FileRepositoryConfig}
 import docspell.store.impl.StoreImpl
 import docspell.store.migrate.FlywayMigrate
+
 import doobie._
-import fs2.io.file.Path
 import munit._
 import org.h2.jdbcx.{JdbcConnectionPool, JdbcDataSource}
 import org.mariadb.jdbc.MariaDbDataSource

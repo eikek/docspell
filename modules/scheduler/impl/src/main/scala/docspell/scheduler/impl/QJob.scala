@@ -9,11 +9,13 @@ package docspell.scheduler.impl
 import cats.effect.Async
 import cats.implicits._
 import fs2.Stream
+
 import docspell.common._
 import docspell.store.Store
 import docspell.store.qb.DSL._
 import docspell.store.qb._
 import docspell.store.records.{RJob, RJobGroupUse}
+
 import doobie.ConnectionIO
 
 object QJob {

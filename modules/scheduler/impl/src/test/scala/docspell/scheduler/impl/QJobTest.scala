@@ -8,10 +8,12 @@ package docspell.scheduler.impl
 
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicLong
+
 import cats.syntax.all._
+
 import docspell.common._
-import docspell.store.{DatabaseTest, Db}
 import docspell.store.records.{RJob, RJobGroupUse}
+import docspell.store.{DatabaseTest, Db}
 
 class QJobTest extends DatabaseTest {
   private[this] val c = new AtomicLong(0)

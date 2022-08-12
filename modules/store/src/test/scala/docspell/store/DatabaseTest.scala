@@ -7,10 +7,14 @@
 package docspell.store
 
 import java.util.UUID
+
 import cats.effect._
 import cats.syntax.option._
+import fs2.io.file.{Files, Path}
+
 import docspell.common._
 import docspell.logging.TestLoggingConfig
+
 import com.dimafeng.testcontainers.munit.fixtures.TestContainersFixtures
 import com.dimafeng.testcontainers.{
   JdbcDatabaseContainer,
@@ -18,7 +22,6 @@ import com.dimafeng.testcontainers.{
   PostgreSQLContainer
 }
 import doobie._
-import fs2.io.file.{Files, Path}
 import munit.CatsEffectSuite
 import org.testcontainers.utility.DockerImageName
 
