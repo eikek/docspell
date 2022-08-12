@@ -33,6 +33,8 @@ object SelectExpr {
   case class SelectLiteral(value: String, alias: Option[String]) extends SelectExpr {
     def as(a: String): SelectLiteral =
       copy(alias = Some(a))
+    def as(otherCol: Column[_]): SelectExpr =
+      copy(alias = Some(otherCol.name))
   }
 
   case class SelectQuery(query: Select, alias: Option[String]) extends SelectExpr {

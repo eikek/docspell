@@ -50,9 +50,11 @@ class QueryBuilderTest extends FunSuite with TestLoggingConfig {
         )
         assertEquals(11, proj.size)
         from match {
-          case FromExpr.From(_) =>
+          case None =>
             fail("Unexpected from value")
-          case FromExpr.Joined(f, joins) =>
+          case Some(FromExpr.From(_)) =>
+            fail("Unexpected from value")
+          case Some(FromExpr.Joined(f, joins)) =>
             assertEquals(f, FromExpr.From(c))
             assertEquals(2, joins.size)
             joins.head match {
