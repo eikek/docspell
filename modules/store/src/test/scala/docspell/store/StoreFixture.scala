@@ -9,6 +9,7 @@ package docspell.store
 import javax.sql.DataSource
 
 import cats.effect._
+import fs2.io.file.Path
 
 import docspell.common.LenientUri
 import docspell.store.file.{FileRepository, FileRepositoryConfig}
@@ -50,6 +51,15 @@ object StoreFixture {
     JdbcConfig(
       LenientUri.unsafe(
         s"jdbc:h2:mem:$dbname;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1"
+      ),
+      "sa",
+      ""
+    )
+
+  def fileDB(file: Path): JdbcConfig =
+    JdbcConfig(
+      LenientUri.unsafe(
+        s"jdbc:h2:file://${file.absolute.toString};MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
       ),
       "sa",
       ""
@@ -115,5 +125,4 @@ object StoreFixture {
       case None =>
         IO.raiseError(new Exception(s"Resource not found: $resourceName"))
     }
-
 }

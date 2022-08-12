@@ -1,5 +1,5 @@
 -- add new id column
-alter table "collective" add column "id" bigserial not null;
+alter table "collective" add column "id" bigserial not null unique;
 create unique index "collective_id_idx" on "collective"("id");
 
 -- change references: source

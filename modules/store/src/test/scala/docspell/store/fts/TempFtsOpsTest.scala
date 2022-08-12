@@ -27,7 +27,7 @@ import doobie._
 class TempFtsOpsTest extends DatabaseTest {
   private[this] val logger = docspell.logging.getLogger[IO]
 
-  override def munitFixtures = postgresAll ++ mariaDbAll ++ h2All
+  override def munitFixtures = postgresAll ++ mariaDbAll ++ h2Memory
 
   def id(str: String): Ident = Ident.unsafe(str)
 

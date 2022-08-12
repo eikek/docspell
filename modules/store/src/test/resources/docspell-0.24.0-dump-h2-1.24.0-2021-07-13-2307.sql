@@ -1,58 +1,20 @@
+-- H2 2.1.214; 
 ;              
 CREATE USER IF NOT EXISTS "DOCSPELL" SALT '982433cdd49da2f5' HASH '28cc9a709ecd82c2d017c43c42038bc5df88230ea9e092fb6a53ccdaa5d4dbd2' ADMIN;    
-DROP TABLE IF EXISTS "public"."flyway_schema_history" CASCADE; 
-DROP TABLE IF EXISTS "public"."filemeta" CASCADE;              
-DROP TABLE IF EXISTS "public"."filechunk" CASCADE;             
-DROP TABLE IF EXISTS "public"."user_" CASCADE; 
-DROP TABLE IF EXISTS "public"."invitation" CASCADE;            
-DROP TABLE IF EXISTS "public"."tagsource" CASCADE;             
-DROP TABLE IF EXISTS "public"."node" CASCADE;  
-DROP TABLE IF EXISTS "public"."source" CASCADE;
-DROP TABLE IF EXISTS "public"."folder" CASCADE;
-DROP TABLE IF EXISTS "public"."rememberme" CASCADE;            
-DROP TABLE IF EXISTS "public"."contact" CASCADE;               
-DROP TABLE IF EXISTS "public"."organization" CASCADE;          
-DROP TABLE IF EXISTS "public"."attachment" CASCADE;            
-DROP TABLE IF EXISTS "public"."equipment" CASCADE;             
-DROP TABLE IF EXISTS "public"."tag" CASCADE;   
-DROP TABLE IF EXISTS "public"."tagitem" CASCADE;               
-DROP TABLE IF EXISTS "public"."job" CASCADE;   
-DROP TABLE IF EXISTS "public"."attachment_preview" CASCADE;    
-DROP TABLE IF EXISTS "public"."jobgroupuse" CASCADE;           
-DROP TABLE IF EXISTS "public"."useremail" CASCADE;             
-DROP TABLE IF EXISTS "public"."sentmail" CASCADE;              
-DROP TABLE IF EXISTS "public"."sentmailitem" CASCADE;          
-DROP TABLE IF EXISTS "public"."joblog" CASCADE;
-DROP TABLE IF EXISTS "public"."attachment_source" CASCADE;     
-DROP TABLE IF EXISTS "public"."client_settings" CASCADE;       
-DROP TABLE IF EXISTS "public"."attachment_archive" CASCADE;    
-DROP TABLE IF EXISTS "public"."collective" CASCADE;            
-DROP TABLE IF EXISTS "public"."folder_member" CASCADE;         
-DROP TABLE IF EXISTS "public"."item" CASCADE;  
-DROP TABLE IF EXISTS "public"."classifier_model" CASCADE;      
-DROP TABLE IF EXISTS "public"."custom_field" CASCADE;          
-DROP TABLE IF EXISTS "public"."custom_field_value" CASCADE;    
-DROP TABLE IF EXISTS "public"."person" CASCADE;
-DROP TABLE IF EXISTS "public"."userimap" CASCADE;              
-DROP TABLE IF EXISTS "public"."item_proposal" CASCADE;         
-DROP TABLE IF EXISTS "public"."attachmentmeta" CASCADE;        
-DROP TABLE IF EXISTS "public"."classifier_setting" CASCADE;    
-DROP TABLE IF EXISTS "public"."periodic_task" CASCADE;         
-DROP ALIAS IF EXISTS "public"."cast_to_numeric";               
-CREATE FORCE ALIAS "public"."cast_to_numeric" FOR "docspell.store.impl.h2.CastNumericFun.castToNumeric";       
-CREATE SEQUENCE "public"."SYSTEM_SEQUENCE_95446BBD_DF65_42A9_A00E_2556C5A54A0C" START WITH 977 BELONGS_TO_TABLE;               
+CREATE USER IF NOT EXISTS "SA" SALT '0350c81faca6374e' HASH '9e59bcd632e9d817d0cb48849febcda4ca45c879e8c77118930dbcf6d8c31ef6' ADMIN;          
+CREATE FORCE ALIAS "public"."cast_to_numeric" FOR 'docspell.store.impl.h2.CastNumericFun.castToNumeric';       
 CREATE CACHED TABLE "public"."flyway_schema_history"(
-    "installed_rank" INT NOT NULL,
-    "version" VARCHAR(50),
-    "description" VARCHAR(200) NOT NULL,
-    "type" VARCHAR(20) NOT NULL,
-    "script" VARCHAR(1000) NOT NULL,
-    "checksum" INT,
-    "installed_by" VARCHAR(100) NOT NULL,
+    "installed_rank" INTEGER NOT NULL,
+    "version" CHARACTER VARYING(50),
+    "description" CHARACTER VARYING(200) NOT NULL,
+    "type" CHARACTER VARYING(20) NOT NULL,
+    "script" CHARACTER VARYING(1000) NOT NULL,
+    "checksum" INTEGER,
+    "installed_by" CHARACTER VARYING(100) NOT NULL,
     "installed_on" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "execution_time" INT NOT NULL,
+    "execution_time" INTEGER NOT NULL,
     "success" BOOLEAN NOT NULL
-);         
+);           
 ALTER TABLE "public"."flyway_schema_history" ADD CONSTRAINT "public"."flyway_schema_history_pk" PRIMARY KEY("installed_rank"); 
 -- 35 +/- SELECT COUNT(*) FROM public.flyway_schema_history;   
 INSERT INTO "public"."flyway_schema_history" VALUES
@@ -68,7 +30,7 @@ INSERT INTO "public"."flyway_schema_history" VALUES
 (9, '1.8.0', 'folders', 'SQL', 'V1.8.0__folders.sql', 1074998524, 'DOCSPELL', TIMESTAMP '2021-01-03 20:49:32.515', 26, TRUE),
 (10, '1.9.0', 'updated column', 'SQL', 'V1.9.0__updated_column.sql', -1023981633, 'DOCSPELL', TIMESTAMP '2021-01-03 20:49:32.558', 30, TRUE),
 (11, '1.9.1', 'classifier', 'SQL', 'V1.9.1__classifier.sql', -920209386, 'DOCSPELL', TIMESTAMP '2021-01-03 20:49:32.572', 2, TRUE),
-(12, '1.9.3', 'joblog counter', 'SQL', 'V1.9.3__joblog_counter.sql', 175554607, 'DOCSPELL', TIMESTAMP '2021-01-03 20:49:32.591', 6, TRUE),
+(12, '1.9.3', 'joblog counter', 'SQL', 'V1.9.3__joblog_counter.sql', -276220379, 'DOCSPELL', TIMESTAMP '2021-01-03 20:49:32.591', 6, TRUE),
 (13, '1.9.4', 'unique equipments', 'SQL', 'V1.9.4__unique_equipments.sql', 770293754, 'DOCSPELL', TIMESTAMP '2021-01-03 20:49:32.605', 1, TRUE),
 (14, '1.10.0', 'attachment preview', 'SQL', 'V1.10.0__attachment_preview.sql', 175251272, 'DOCSPELL', TIMESTAMP '2021-01-03 20:49:32.619', 2, TRUE),
 (15, '1.11.0', 'pdf pages', 'SQL', 'V1.11.0__pdf_pages.sql', -235351002, 'DOCSPELL', TIMESTAMP '2021-01-03 20:49:32.636', 2, TRUE),
@@ -92,15 +54,15 @@ INSERT INTO "public"."flyway_schema_history" VALUES
 (32, '1.22.0', 'add task name', 'SQL', 'V1.22.0__add_task_name.sql', -1625232914, 'DOCSPELL', TIMESTAMP '2021-05-29 14:02:47.320332', 48, TRUE),
 (33, '1.23.0', 'clientsettings', 'SQL', 'V1.23.0__clientsettings.sql', 1152128793, 'DOCSPELL', TIMESTAMP '2021-05-29 14:02:47.454567', 17, TRUE),
 (34, '1.24.0', 'drop fts migration', 'SQL', 'V1.24.0__drop_fts_migration.sql', -501760318, 'DOCSPELL', TIMESTAMP '2021-06-11 16:12:26.558332', 35, TRUE);     
-CREATE INDEX "public"."flyway_schema_history_s_idx" ON "public"."flyway_schema_history"("success");            
+CREATE INDEX "public"."flyway_schema_history_s_idx" ON "public"."flyway_schema_history"("success" NULLS FIRST);
 CREATE CACHED TABLE "public"."filemeta"(
-    "id" VARCHAR(254) NOT NULL,
-    "timestamp" VARCHAR(40) NOT NULL,
-    "mimetype" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "timestamp" CHARACTER VARYING(40) NOT NULL,
+    "mimetype" CHARACTER VARYING(254) NOT NULL,
     "length" BIGINT NOT NULL,
-    "checksum" VARCHAR(254) NOT NULL,
-    "chunks" INT NOT NULL,
-    "chunksize" INT NOT NULL
+    "checksum" CHARACTER VARYING(254) NOT NULL,
+    "chunks" INTEGER NOT NULL,
+    "chunksize" INTEGER NOT NULL
 );            
 ALTER TABLE "public"."filemeta" ADD CONSTRAINT "public"."CONSTRAINT_D" PRIMARY KEY("id");      
 -- 11 +/- SELECT COUNT(*) FROM public.filemeta;
@@ -117,11 +79,11 @@ INSERT INTO "public"."filemeta" VALUES
 ('39fJiyTA5cF-NbFRocgVXsa-8HZq4chnjuj-PtT7VwD4EWV', '2021-07-13T21:03:16.189302Z', 'application/gzip', 13096, 'd9298fb169c51890ad5e146108c75bfeb8e8452bd54b2cdb32f1000e2146a4e4', 4, 4096),
 ('DHGeDybWtnT-AkD5avn2wTB-RvfFeVguPUu-LDJADAajdSD', '2021-07-13T21:03:16.435753Z', 'application/gzip', 12734, 'fc228c554ae12b3998728b00f098dbc0aa20ae767c6f945acc8f0ae65fcb35fb', 4, 4096);              
 CREATE CACHED TABLE "public"."filechunk"(
-    "fileid" VARCHAR(254) NOT NULL,
-    "chunknr" INT NOT NULL,
-    "chunklength" INT NOT NULL,
-    "chunkdata" BYTEA NOT NULL
-);    
+    "fileid" CHARACTER VARYING(254) NOT NULL,
+    "chunknr" INTEGER NOT NULL,
+    "chunklength" INTEGER NOT NULL,
+    "chunkdata" BINARY VARYING NOT NULL
+);         
 ALTER TABLE "public"."filechunk" ADD CONSTRAINT "public"."CONSTRAINT_B" PRIMARY KEY("fileid", "chunknr");      
 -- 26 +/- SELECT COUNT(*) FROM public.filechunk;               
 INSERT INTO "public"."filechunk" VALUES
@@ -173,13 +135,13 @@ INSERT INTO "public"."filechunk" VALUES
 INSERT INTO "public"."filechunk" VALUES
 ('DHGeDybWtnT-AkD5avn2wTB-RvfFeVguPUu-LDJADAajdSD', 3, 446, X'b0b0293c68be7ed0ed59549b5c5128b66a8dc9258dd184e0dd3b9f354fc63d3aafc3cda4e36945bcbb6cacd090212ddbe26610b2b4f3578567ac4bfaebf2498385e158fe5af08ca1e451bdd068950b1591e8da420bbeafe5f6351f514f1c5bbc73ded4a39306ddeef68df578589fc235f35f9cca14785701a7bd4f01674f799025c562bb51284eca5b53cff6a6450f8c56130f33d5391e9f36e876e3e3ee07c613a80be86e313bb554cbe0a95ef79948157b69c2c35262d9ddefeefdace75d83df058f37c6c02862ceca4c3cd37deca9a9f9fd99e41fe6fbc5979ff7e353ee9b7dbe7bf6bfa926e9bf932f3ef9df349a6a37d5d69f0a214a807bdd08163f655f48eef73beef15f3f77d95c83c9e34fb4a94ffd938fb80facfae0b987ee78e2feb7a461859fbed4699404197bf353f4a2267d532c5b31facd6dd5017f57dff9c9a43182d062d0e5eae4e79020742d179cd93c6aaa5311ff9aff15d3cc30fe23d3927f618aee7fc4b4e4dff4ffc4346f8a755d4c03fd9bfe0d9f003fc30cd7024edc7266fdfcc10bcfeafc6ffedc13cf3af282c317bfe0cc39072d3e62f116dc1f85db3ef979fec20b8f587cc8e20b122417f401f5ff016469b277dae20000');          
 CREATE CACHED TABLE "public"."user_"(
-    "uid" VARCHAR(254) NOT NULL,
-    "login" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "password" VARCHAR(254) NOT NULL,
-    "state" VARCHAR(254) NOT NULL,
-    "email" VARCHAR(254),
-    "logincount" INT NOT NULL,
+    "uid" CHARACTER VARYING(254) NOT NULL,
+    "login" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "password" CHARACTER VARYING(254) NOT NULL,
+    "state" CHARACTER VARYING(254) NOT NULL,
+    "email" CHARACTER VARYING(254),
+    "logincount" INTEGER NOT NULL,
     "lastlogin" TIMESTAMP,
     "created" TIMESTAMP NOT NULL
 );    
@@ -188,89 +150,89 @@ ALTER TABLE "public"."user_" ADD CONSTRAINT "public"."CONSTRAINT_6" PRIMARY KEY(
 INSERT INTO "public"."user_" VALUES
 ('Bx213P591Rr-enoBUH66pTn-81emkqRGdQj-XNxT85q7YM5', 'demo', 'demo', '$2a$10$GlIOWljA8hfBZpUVmXdJAON4cM96HyZcHzQKj.pYM7zImeY4uhHY.', 'active', NULL, 7, TIMESTAMP '2021-07-13 21:06:56.472803', TIMESTAMP '2021-01-03 21:13:16.146');       
 CREATE CACHED TABLE "public"."invitation"(
-    "id" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
     "created" TIMESTAMP NOT NULL
-); 
+);       
 ALTER TABLE "public"."invitation" ADD CONSTRAINT "public"."CONSTRAINT_4" PRIMARY KEY("id");    
 -- 0 +/- SELECT COUNT(*) FROM public.invitation;               
 CREATE CACHED TABLE "public"."tagsource"(
-    "id" VARCHAR(254) NOT NULL,
-    "source_id" VARCHAR(254) NOT NULL,
-    "tag_id" VARCHAR(254) NOT NULL
-);         
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "source_id" CHARACTER VARYING(254) NOT NULL,
+    "tag_id" CHARACTER VARYING(254) NOT NULL
+);           
 ALTER TABLE "public"."tagsource" ADD CONSTRAINT "public"."CONSTRAINT_9E" PRIMARY KEY("id");    
 -- 0 +/- SELECT COUNT(*) FROM public.tagsource;
 CREATE CACHED TABLE "public"."node"(
-    "id" VARCHAR(254) NOT NULL,
-    "type" VARCHAR(254) NOT NULL,
-    "url" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "type" CHARACTER VARYING(254) NOT NULL,
+    "url" CHARACTER VARYING(254) NOT NULL,
     "updated" TIMESTAMP NOT NULL,
     "created" TIMESTAMP NOT NULL,
-    "not_found" INT DEFAULT 0 NOT NULL
-);          
+    "not_found" INTEGER DEFAULT 0 NOT NULL
+);        
 -- 2 +/- SELECT COUNT(*) FROM public.node;     
 INSERT INTO "public"."node" VALUES
 ('rest1', 'restserver', 'http://localhost:7020', TIMESTAMP '2021-07-13 21:06:44.235033', TIMESTAMP '2021-01-03 20:49:33.047', 0),
 ('joex1', 'joex', 'http://localhost:7021', TIMESTAMP '2021-07-13 21:06:03.808725', TIMESTAMP '2021-01-03 20:49:34.078', 0);               
 CREATE CACHED TABLE "public"."source"(
-    "sid" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "abbrev" VARCHAR(254) NOT NULL,
-    "description" TEXT,
-    "counter" INT NOT NULL,
+    "sid" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "abbrev" CHARACTER VARYING(254) NOT NULL,
+    "description" CHARACTER VARYING,
+    "counter" INTEGER NOT NULL,
     "enabled" BOOLEAN NOT NULL,
-    "priority" INT NOT NULL,
+    "priority" INTEGER NOT NULL,
     "created" TIMESTAMP NOT NULL,
-    "folder_id" VARCHAR(254),
-    "file_filter" VARCHAR(254),
-    "doc_lang" VARCHAR(254)
-);   
+    "folder_id" CHARACTER VARYING(254),
+    "file_filter" CHARACTER VARYING(254),
+    "doc_lang" CHARACTER VARYING(254)
+);  
 ALTER TABLE "public"."source" ADD CONSTRAINT "public"."CONSTRAINT_C" PRIMARY KEY("sid");       
 -- 1 +/- SELECT COUNT(*) FROM public.source;   
 INSERT INTO "public"."source" VALUES
 ('FcVZWHAgfFD-MdYCm3qWTyX-a7hcbVhsgKG-FG9DwArw9eQ', 'demo', 'test', NULL, 0, TRUE, 0, TIMESTAMP '2021-01-03 21:35:32.86', NULL, NULL, NULL);              
 CREATE CACHED TABLE "public"."folder"(
-    "id" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "owner" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "owner" CHARACTER VARYING(254) NOT NULL,
     "created" TIMESTAMP NOT NULL
-);               
+);       
 ALTER TABLE "public"."folder" ADD CONSTRAINT "public"."CONSTRAINT_B4" PRIMARY KEY("id");       
 -- 0 +/- SELECT COUNT(*) FROM public.folder;   
 CREATE CACHED TABLE "public"."rememberme"(
-    "id" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "login" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "login" CHARACTER VARYING(254) NOT NULL,
     "created" TIMESTAMP NOT NULL,
-    "uses" INT NOT NULL
-);    
+    "uses" INTEGER NOT NULL
+);  
 ALTER TABLE "public"."rememberme" ADD CONSTRAINT "public"."CONSTRAINT_20" PRIMARY KEY("id");   
 -- 0 +/- SELECT COUNT(*) FROM public.rememberme;               
 CREATE CACHED TABLE "public"."contact"(
-    "contactid" VARCHAR(254) NOT NULL,
-    "value" VARCHAR(254) NOT NULL,
-    "kind" VARCHAR(254) NOT NULL,
-    "pid" VARCHAR(254),
-    "oid" VARCHAR(254),
+    "contactid" CHARACTER VARYING(254) NOT NULL,
+    "value" CHARACTER VARYING(254) NOT NULL,
+    "kind" CHARACTER VARYING(254) NOT NULL,
+    "pid" CHARACTER VARYING(254),
+    "oid" CHARACTER VARYING(254),
     "created" TIMESTAMP NOT NULL
-);        
+);      
 ALTER TABLE "public"."contact" ADD CONSTRAINT "public"."CONSTRAINT_3" PRIMARY KEY("contactid");
 -- 0 +/- SELECT COUNT(*) FROM public.contact;  
 CREATE CACHED TABLE "public"."organization"(
-    "oid" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
-    "street" VARCHAR(254),
-    "zip" VARCHAR(254),
-    "city" VARCHAR(254),
-    "country" VARCHAR(254),
-    "notes" TEXT,
+    "oid" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
+    "street" CHARACTER VARYING(254),
+    "zip" CHARACTER VARYING(254),
+    "city" CHARACTER VARYING(254),
+    "country" CHARACTER VARYING(254),
+    "notes" CHARACTER VARYING,
     "created" TIMESTAMP NOT NULL,
     "updated" TIMESTAMP NOT NULL,
-    "short_name" VARCHAR(254),
-    "org_use" VARCHAR(254) NOT NULL
-);           
+    "short_name" CHARACTER VARYING(254),
+    "org_use" CHARACTER VARYING(254) NOT NULL
+);    
 ALTER TABLE "public"."organization" ADD CONSTRAINT "public"."CONSTRAINT_46" PRIMARY KEY("oid");
 -- 3 +/- SELECT COUNT(*) FROM public.organization;             
 INSERT INTO "public"."organization" VALUES
@@ -278,36 +240,36 @@ INSERT INTO "public"."organization" VALUES
 ('85CGijc6q6q-Vj1dZXCPGcK-rpDK7MKVrRz-xyNsSbEbuJy', 'demo', 'Pancake Company', '', '', '', '', NULL, TIMESTAMP '2021-01-03 21:33:01.966', TIMESTAMP '2021-01-03 21:33:01.966', NULL, 'correspondent'),
 ('Gu3ufBQNyco-TqVjyREXNpJ-f4j9VCdyYoR-TNgUkiQXR1Y', 'demo', 'Sliced Invoices', '', '', '', '', NULL, TIMESTAMP '2021-01-03 21:34:29.153', TIMESTAMP '2021-01-03 21:34:29.153', NULL, 'correspondent');        
 CREATE CACHED TABLE "public"."attachment"(
-    "attachid" VARCHAR(254) NOT NULL,
-    "itemid" VARCHAR(254) NOT NULL,
-    "filemetaid" VARCHAR(254) NOT NULL,
-    "position" INT NOT NULL,
+    "attachid" CHARACTER VARYING(254) NOT NULL,
+    "itemid" CHARACTER VARYING(254) NOT NULL,
+    "filemetaid" CHARACTER VARYING(254) NOT NULL,
+    "position" INTEGER NOT NULL,
     "created" TIMESTAMP NOT NULL,
-    "name" VARCHAR(254)
-);         
+    "name" CHARACTER VARYING(254)
+);             
 ALTER TABLE "public"."attachment" ADD CONSTRAINT "public"."CONSTRAINT_8" PRIMARY KEY("attachid");              
 -- 2 +/- SELECT COUNT(*) FROM public.attachment;               
 INSERT INTO "public"."attachment" VALUES
 ('2ecoA7A7HgT-xPwzNQYfiZd-rF1XF3aEPMr-qsNJXoe36oZ', 'J4wAkg3jxt5-7QaYXD1WTmF-gq4kGaS89RP-DnPyUwa77fK', '8jre1Sk2anC-XycazyE1d9M-UUjNsj1LsLu-zmZfiPwKB6J', 0, TIMESTAMP '2021-01-03 21:13:33.416', 'wordpress-pdf-invoice-plugin-sample.converted.pdf'),
 ('4SDQngEFYuK-tb9xAachZSt-LNCrE36NFRr-U8avxFCW9A4', '2wKtSUVt3Kj-mAmexmm1jFe-BU6aY6PN4vo-5cpaDD2EyRm', 'BQR2G7GT5LQ-FKV4FQ1hnDu-9TSkF7nhUyz-nmpe9qDVvBd', 0, TIMESTAMP '2021-01-03 21:34:43.9', 'letter-en.converted.pdf');   
 CREATE CACHED TABLE "public"."equipment"(
-    "eid" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
+    "eid" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
     "created" TIMESTAMP NOT NULL,
     "updated" TIMESTAMP NOT NULL,
-    "notes" TEXT,
-    "equip_use" VARCHAR(254) NOT NULL
-);   
+    "notes" CHARACTER VARYING,
+    "equip_use" CHARACTER VARYING(254) NOT NULL
+);              
 ALTER TABLE "public"."equipment" ADD CONSTRAINT "public"."CONSTRAINT_40" PRIMARY KEY("eid");   
 -- 0 +/- SELECT COUNT(*) FROM public.equipment;
 CREATE CACHED TABLE "public"."tag"(
-    "tid" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
-    "category" VARCHAR(254),
+    "tid" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
+    "category" CHARACTER VARYING(254),
     "created" TIMESTAMP NOT NULL
-);       
+);               
 ALTER TABLE "public"."tag" ADD CONSTRAINT "public"."CONSTRAINT_1B" PRIMARY KEY("tid");         
 -- 5 +/- SELECT COUNT(*) FROM public.tag;      
 INSERT INTO "public"."tag" VALUES
@@ -317,10 +279,10 @@ INSERT INTO "public"."tag" VALUES
 ('4ugueUtfP1p-oqrtQDHmY6V-Yd9PEvhr1Zz-X9aurGADsgK', 'demo', 'Notice', 'doctype', TIMESTAMP '2021-01-03 21:32:41.632'),
 ('EMp5ZCBvt6X-jx579vGQa7Y-VpWD1zqFTnZ-XSU1r9bEn9j', 'demo', 'Todo', 'state', TIMESTAMP '2021-01-03 21:32:50.08');         
 CREATE CACHED TABLE "public"."tagitem"(
-    "tagitemid" VARCHAR(254) NOT NULL,
-    "itemid" VARCHAR(254) NOT NULL,
-    "tid" VARCHAR(254) NOT NULL
-);          
+    "tagitemid" CHARACTER VARYING(254) NOT NULL,
+    "itemid" CHARACTER VARYING(254) NOT NULL,
+    "tid" CHARACTER VARYING(254) NOT NULL
+);            
 ALTER TABLE "public"."tagitem" ADD CONSTRAINT "public"."CONSTRAINT_A" PRIMARY KEY("tagitemid");
 -- 3 +/- SELECT COUNT(*) FROM public.tagitem;  
 INSERT INTO "public"."tagitem" VALUES
@@ -328,23 +290,23 @@ INSERT INTO "public"."tagitem" VALUES
 ('ATAxJL8LASW-be9FMJabPbX-KBpHqAk5asG-KHxJMk1A7aw', '2wKtSUVt3Kj-mAmexmm1jFe-BU6aY6PN4vo-5cpaDD2EyRm', 'AYmkK5Y5mvF-xBh4gGkA3z9-HWHxM2cs4v6-r5Wcqw9vEpY'),
 ('6W1PtieE38Y-oLfG17gPirm-5sa9xjykAQ3-tqYH69ipDRy', 'J4wAkg3jxt5-7QaYXD1WTmF-gq4kGaS89RP-DnPyUwa77fK', 'EMp5ZCBvt6X-jx579vGQa7Y-VpWD1zqFTnZ-XSU1r9bEn9j');         
 CREATE CACHED TABLE "public"."job"(
-    "jid" VARCHAR(254) NOT NULL,
-    "task" VARCHAR(254) NOT NULL,
-    "group_" VARCHAR(254) NOT NULL,
-    "args" TEXT NOT NULL,
-    "subject" VARCHAR(254) NOT NULL,
+    "jid" CHARACTER VARYING(254) NOT NULL,
+    "task" CHARACTER VARYING(254) NOT NULL,
+    "group_" CHARACTER VARYING(254) NOT NULL,
+    "args" CHARACTER VARYING NOT NULL,
+    "subject" CHARACTER VARYING(254) NOT NULL,
     "submitted" TIMESTAMP NOT NULL,
-    "submitter" VARCHAR(254) NOT NULL,
-    "priority" INT NOT NULL,
-    "state" VARCHAR(254) NOT NULL,
-    "retries" INT NOT NULL,
-    "progress" INT NOT NULL,
-    "tracker" VARCHAR(254),
-    "worker" VARCHAR(254),
+    "submitter" CHARACTER VARYING(254) NOT NULL,
+    "priority" INTEGER NOT NULL,
+    "state" CHARACTER VARYING(254) NOT NULL,
+    "retries" INTEGER NOT NULL,
+    "progress" INTEGER NOT NULL,
+    "tracker" CHARACTER VARYING(254),
+    "worker" CHARACTER VARYING(254),
     "started" TIMESTAMP,
     "finished" TIMESTAMP,
     "startedmillis" BIGINT
-);          
+); 
 ALTER TABLE "public"."job" ADD CONSTRAINT "public"."CONSTRAINT_19" PRIMARY KEY("jid");         
 -- 17 +/- SELECT COUNT(*) FROM public.job;     
 INSERT INTO "public"."job" VALUES
@@ -367,72 +329,72 @@ INSERT INTO "public"."job" VALUES
 ('Fb6p5jSp6Xg-hSw4kYdk9gB-hSQFML94yzP-FLxtPWufche', 'all-previews', 'docspell-system', '{"collective":null,"storeMode":"whenmissing"}', 'Create preview images', TIMESTAMP '2021-07-13 21:06:03.679443', 'docspell-system', 0, 'success', 0, 0, 'generate-all-previews', 'joex1', TIMESTAMP '2021-07-13 21:06:08.582687', TIMESTAMP '2021-07-13 21:06:08.962884', 1626210368582),
 ('8HEvkXhpQPF-vswPxVSYdVP-fBcsCh6bCmk-vaaCguTKpWU', 'all-page-count', 'docspell-system', '{}', 'Create all page-counts', TIMESTAMP '2021-07-13 21:06:03.732908', 'docspell-system', 0, 'success', 0, 0, 'all-page-count-tracker', 'joex1', TIMESTAMP '2021-07-13 21:06:09.056159', TIMESTAMP '2021-07-13 21:06:09.175354', 1626210369056);           
 CREATE CACHED TABLE "public"."attachment_preview"(
-    "id" VARCHAR(254) NOT NULL,
-    "file_id" VARCHAR(254) NOT NULL,
-    "filename" VARCHAR(254),
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "file_id" CHARACTER VARYING(254) NOT NULL,
+    "filename" CHARACTER VARYING(254),
     "created" TIMESTAMP NOT NULL
-);       
+);         
 ALTER TABLE "public"."attachment_preview" ADD CONSTRAINT "public"."CONSTRAINT_2D" PRIMARY KEY("id");           
 -- 2 +/- SELECT COUNT(*) FROM public.attachment_preview;       
 INSERT INTO "public"."attachment_preview" VALUES
 ('2ecoA7A7HgT-xPwzNQYfiZd-rF1XF3aEPMr-qsNJXoe36oZ', 'D8Cj2R2fmSM-z31GMJF61iG-BQnDzjGWeh1-bhQfBym5qrQ', 'wordpress-pdf-invoice-plugin-sample.converted_preview.png', TIMESTAMP '2021-01-03 21:13:35.431'),
 ('4SDQngEFYuK-tb9xAachZSt-LNCrE36NFRr-U8avxFCW9A4', '7Vvy4bZfe3b-YCpAVWc8Lw9-wUkKLWjo3RL-4RnazGiQtnY', 'letter-en.converted_preview.png', TIMESTAMP '2021-01-03 21:34:45.865');     
 CREATE CACHED TABLE "public"."jobgroupuse"(
-    "groupid" VARCHAR(254) NOT NULL,
-    "workerid" VARCHAR(254) NOT NULL
-);       
+    "groupid" CHARACTER VARYING(254) NOT NULL,
+    "workerid" CHARACTER VARYING(254) NOT NULL
+);   
 ALTER TABLE "public"."jobgroupuse" ADD CONSTRAINT "public"."CONSTRAINT_7" PRIMARY KEY("groupid", "workerid");  
 -- 2 +/- SELECT COUNT(*) FROM public.jobgroupuse;              
 INSERT INTO "public"."jobgroupuse" VALUES
 ('joex1', 'docspell-system'),
 ('joex1', 'demo');     
 CREATE CACHED TABLE "public"."useremail"(
-    "id" VARCHAR(254) NOT NULL,
-    "uid" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
-    "smtp_host" VARCHAR(254) NOT NULL,
-    "smtp_port" INT,
-    "smtp_user" VARCHAR(254),
-    "smtp_password" VARCHAR(254),
-    "smtp_ssl" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "uid" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
+    "smtp_host" CHARACTER VARYING(254) NOT NULL,
+    "smtp_port" INTEGER,
+    "smtp_user" CHARACTER VARYING(254),
+    "smtp_password" CHARACTER VARYING(254),
+    "smtp_ssl" CHARACTER VARYING(254) NOT NULL,
     "smtp_certcheck" BOOLEAN NOT NULL,
-    "mail_from" VARCHAR(254) NOT NULL,
-    "mail_replyto" VARCHAR(254),
+    "mail_from" CHARACTER VARYING(254) NOT NULL,
+    "mail_replyto" CHARACTER VARYING(254),
     "created" TIMESTAMP NOT NULL
-);              
+);
 ALTER TABLE "public"."useremail" ADD CONSTRAINT "public"."CONSTRAINT_14" PRIMARY KEY("id");    
 -- 1 +/- SELECT COUNT(*) FROM public.useremail;
 INSERT INTO "public"."useremail" VALUES
 ('HjroW9mh3d7-Hpfc9aiWkjP-Uc9KbcRj2Hd-1rtLJEecUSn', 'Bx213P591Rr-enoBUH66pTn-81emkqRGdQj-XNxT85q7YM5', 'testmail', 'localhost', 25, 'test', 'test', 'noencryption', TRUE, 'test@test.com', NULL, TIMESTAMP '2021-01-04 08:57:55.739'); 
 CREATE CACHED TABLE "public"."sentmail"(
-    "id" VARCHAR(254) NOT NULL,
-    "uid" VARCHAR(254) NOT NULL,
-    "message_id" VARCHAR(254) NOT NULL,
-    "sender" VARCHAR(254) NOT NULL,
-    "conn_name" VARCHAR(254) NOT NULL,
-    "subject" VARCHAR(254) NOT NULL,
-    "recipients" VARCHAR(254) NOT NULL,
-    "body" TEXT NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "uid" CHARACTER VARYING(254) NOT NULL,
+    "message_id" CHARACTER VARYING(254) NOT NULL,
+    "sender" CHARACTER VARYING(254) NOT NULL,
+    "conn_name" CHARACTER VARYING(254) NOT NULL,
+    "subject" CHARACTER VARYING(254) NOT NULL,
+    "recipients" CHARACTER VARYING(254) NOT NULL,
+    "body" CHARACTER VARYING NOT NULL,
     "created" TIMESTAMP NOT NULL
-);        
+);     
 ALTER TABLE "public"."sentmail" ADD CONSTRAINT "public"."CONSTRAINT_4B" PRIMARY KEY("id");     
 -- 0 +/- SELECT COUNT(*) FROM public.sentmail; 
 CREATE CACHED TABLE "public"."sentmailitem"(
-    "id" VARCHAR(254) NOT NULL,
-    "item_id" VARCHAR(254) NOT NULL,
-    "sentmail_id" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "item_id" CHARACTER VARYING(254) NOT NULL,
+    "sentmail_id" CHARACTER VARYING(254) NOT NULL,
     "created" TIMESTAMP NOT NULL
-); 
+);   
 ALTER TABLE "public"."sentmailitem" ADD CONSTRAINT "public"."CONSTRAINT_5" PRIMARY KEY("id");  
 -- 0 +/- SELECT COUNT(*) FROM public.sentmailitem;             
 CREATE CACHED TABLE "public"."joblog"(
-    "id" VARCHAR(254) NOT NULL,
-    "jid" VARCHAR(254) NOT NULL,
-    "level" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "jid" CHARACTER VARYING(254) NOT NULL,
+    "level" CHARACTER VARYING(254) NOT NULL,
     "created" TIMESTAMP NOT NULL,
-    "message" TEXT NOT NULL,
-    "counter" BIGINT DEFAULT NEXT VALUE FOR "public"."SYSTEM_SEQUENCE_95446BBD_DF65_42A9_A00E_2556C5A54A0C" NOT NULL NULL_TO_DEFAULT SEQUENCE "public"."SYSTEM_SEQUENCE_95446BBD_DF65_42A9_A00E_2556C5A54A0C"
-);     
+    "message" CHARACTER VARYING NOT NULL,
+    "counter" BIGINT GENERATED BY DEFAULT AS IDENTITY(START WITH 977) DEFAULT ON NULL NOT NULL
+);         
 ALTER TABLE "public"."joblog" ADD CONSTRAINT "public"."CONSTRAINT_BB" PRIMARY KEY("id");       
 -- 185 +/- SELECT COUNT(*) FROM public.joblog; 
 INSERT INTO "public"."joblog" VALUES
@@ -631,88 +593,88 @@ INSERT INTO "public"."joblog" VALUES
 ('BBs6to96VHZ-4zr7ZPdztKL-HBoaftmqReY-MM1njyjcLBb', '8HEvkXhpQPF-vswPxVSYdVP-fBcsCh6bCmk-vaaCguTKpWU', 'info', TIMESTAMP '2021-07-13 21:06:09.126876', 'Submitted 0 jobs', 975),
 ('7fF3dSegsV2-nYAZd8pnFUM-efwZAJ1skr4-TDiJLZpsHFG', '8HEvkXhpQPF-vswPxVSYdVP-fBcsCh6bCmk-vaaCguTKpWU', 'info', TIMESTAMP '2021-07-13 21:06:09.173384', 'Job execution successful', 976);        
 CREATE CACHED TABLE "public"."attachment_source"(
-    "id" VARCHAR(254) NOT NULL,
-    "file_id" VARCHAR(254) NOT NULL,
-    "filename" VARCHAR(254),
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "file_id" CHARACTER VARYING(254) NOT NULL,
+    "filename" CHARACTER VARYING(254),
     "created" TIMESTAMP NOT NULL
-);        
+);          
 ALTER TABLE "public"."attachment_source" ADD CONSTRAINT "public"."CONSTRAINT_69" PRIMARY KEY("id");            
 -- 2 +/- SELECT COUNT(*) FROM public.attachment_source;        
 INSERT INTO "public"."attachment_source" VALUES
 ('2ecoA7A7HgT-xPwzNQYfiZd-rF1XF3aEPMr-qsNJXoe36oZ', 'DtG18bCtiGr-fGEwzMKktpB-tosSKp9g7ty-wDgXGffbp1f', 'wordpress-pdf-invoice-plugin-sample.pdf', TIMESTAMP '2021-01-03 21:13:33.416'),
 ('4SDQngEFYuK-tb9xAachZSt-LNCrE36NFRr-U8avxFCW9A4', 'JXziW35E2TW-zXPFxZeeNwA-M1fcdXMEdAL-FVYEyKNC7N', 'letter-en.pdf', TIMESTAMP '2021-01-03 21:34:43.9');             
 CREATE CACHED TABLE "public"."client_settings"(
-    "id" VARCHAR(254) NOT NULL,
-    "client_id" VARCHAR(254) NOT NULL,
-    "user_id" VARCHAR(254) NOT NULL,
-    "settings_data" TEXT NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "client_id" CHARACTER VARYING(254) NOT NULL,
+    "user_id" CHARACTER VARYING(254) NOT NULL,
+    "settings_data" CHARACTER VARYING NOT NULL,
     "created" TIMESTAMP NOT NULL,
     "updated" TIMESTAMP NOT NULL
-);           
+);
 ALTER TABLE "public"."client_settings" ADD CONSTRAINT "public"."CONSTRAINT_E" PRIMARY KEY("id");               
 -- 1 +/- SELECT COUNT(*) FROM public.client_settings;          
 INSERT INTO "public"."client_settings" VALUES
 ('JAX2ZTZsv6m-aTkj5aSfNjK-VTRkbN7o8QN-XfLNRdd7a8P', 'webClient', 'Bx213P591Rr-enoBUH66pTn-81emkqRGdQj-XNxT85q7YM5', '{"itemSearchPageSize":60,"tagCategoryColors":{"doctype":"yellow","state":"green"},"nativePdfPreview":true,"itemSearchNoteLength":0,"itemDetailNotesPosition":"bottom","searchMenuFolderCount":3,"searchMenuTagCount":6,"searchMenuTagCatCount":3,"formFields":["concequip","concperson","corrorg","corrperson","customfields","date","direction","duedate","folder","preview","sourcename","tag"],"itemDetailShortcuts":false,"searchMenuVisible":false,"editMenuVisible":false,"cardPreviewSize":"medium","cardTitleTemplate":"{{name}}","cardSubtitleTemplate":"{{dateLong}}","searchStatsVisible":true,"cardPreviewFullWidth":false,"uiTheme":"Dark","sideMenuVisible":true,"powerSearchEnabled":true,"uiLang":"gb"}', TIMESTAMP '2021-05-29 14:03:42.867883', TIMESTAMP '2021-05-29 14:04:52.065916');  
 CREATE CACHED TABLE "public"."attachment_archive"(
-    "id" VARCHAR(254) NOT NULL,
-    "file_id" VARCHAR(254) NOT NULL,
-    "filename" VARCHAR(254),
-    "message_id" VARCHAR(254),
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "file_id" CHARACTER VARYING(254) NOT NULL,
+    "filename" CHARACTER VARYING(254),
+    "message_id" CHARACTER VARYING(254),
     "created" TIMESTAMP NOT NULL
-);        
+);
 ALTER TABLE "public"."attachment_archive" ADD CONSTRAINT "public"."CONSTRAINT_13" PRIMARY KEY("id");           
 -- 0 +/- SELECT COUNT(*) FROM public.attachment_archive;       
-CREATE INDEX "public"."attachment_archive_message_id_idx" ON "public"."attachment_archive"("message_id");      
+CREATE INDEX "public"."attachment_archive_message_id_idx" ON "public"."attachment_archive"("message_id" NULLS FIRST);          
 CREATE CACHED TABLE "public"."collective"(
-    "cid" VARCHAR(254) NOT NULL,
-    "state" VARCHAR(254) NOT NULL,
-    "doclang" VARCHAR(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "state" CHARACTER VARYING(254) NOT NULL,
+    "doclang" CHARACTER VARYING(254) NOT NULL,
     "created" TIMESTAMP NOT NULL,
     "integration_enabled" BOOLEAN NOT NULL
-);            
+);              
 ALTER TABLE "public"."collective" ADD CONSTRAINT "public"."CONSTRAINT_9" PRIMARY KEY("cid");   
 -- 1 +/- SELECT COUNT(*) FROM public.collective;               
 INSERT INTO "public"."collective" VALUES
 ('demo', 'active', 'deu', TIMESTAMP '2021-01-03 21:13:16.146', TRUE); 
 CREATE CACHED TABLE "public"."folder_member"(
-    "id" VARCHAR(254) NOT NULL,
-    "folder_id" VARCHAR(254) NOT NULL,
-    "user_id" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "folder_id" CHARACTER VARYING(254) NOT NULL,
+    "user_id" CHARACTER VARYING(254) NOT NULL,
     "created" TIMESTAMP NOT NULL
-);  
+);    
 ALTER TABLE "public"."folder_member" ADD CONSTRAINT "public"."CONSTRAINT_BD" PRIMARY KEY("id");
 -- 0 +/- SELECT COUNT(*) FROM public.folder_member;            
 CREATE CACHED TABLE "public"."item"(
-    "itemid" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
+    "itemid" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
     "itemdate" TIMESTAMP,
-    "source" VARCHAR(254) NOT NULL,
+    "source" CHARACTER VARYING(254) NOT NULL,
     "incoming" BOOLEAN NOT NULL,
-    "state" VARCHAR(254) NOT NULL,
-    "corrorg" VARCHAR(254),
-    "corrperson" VARCHAR(254),
-    "concperson" VARCHAR(254),
-    "concequipment" VARCHAR(254),
-    "inreplyto" VARCHAR(254),
+    "state" CHARACTER VARYING(254) NOT NULL,
+    "corrorg" CHARACTER VARYING(254),
+    "corrperson" CHARACTER VARYING(254),
+    "concperson" CHARACTER VARYING(254),
+    "concequipment" CHARACTER VARYING(254),
+    "inreplyto" CHARACTER VARYING(254),
     "duedate" TIMESTAMP,
-    "notes" TEXT,
+    "notes" CHARACTER VARYING,
     "created" TIMESTAMP NOT NULL,
     "updated" TIMESTAMP NOT NULL,
-    "folder_id" VARCHAR(254)
-);         
+    "folder_id" CHARACTER VARYING(254)
+);              
 ALTER TABLE "public"."item" ADD CONSTRAINT "public"."CONSTRAINT_31" PRIMARY KEY("itemid");     
 -- 2 +/- SELECT COUNT(*) FROM public.item;     
 INSERT INTO "public"."item" VALUES
 ('J4wAkg3jxt5-7QaYXD1WTmF-gq4kGaS89RP-DnPyUwa77fK', 'demo', 'wordpress-pdf-invoice-plugin-sample.pdf', TIMESTAMP '2016-01-25 12:00:00', 'webapp', TRUE, 'confirmed', 'Gu3ufBQNyco-TqVjyREXNpJ-f4j9VCdyYoR-TNgUkiQXR1Y', NULL, NULL, NULL, NULL, NULL, NULL, TIMESTAMP '2021-01-03 21:13:33.41', TIMESTAMP '2021-01-03 21:34:33.901', NULL),
 ('2wKtSUVt3Kj-mAmexmm1jFe-BU6aY6PN4vo-5cpaDD2EyRm', 'demo', 'letter-en.pdf', TIMESTAMP '2019-09-03 12:00:00', 'webapp', TRUE, 'confirmed', '85CGijc6q6q-Vj1dZXCPGcK-rpDK7MKVrRz-xyNsSbEbuJy', '83XuNaLvbMt-E3ocm83uYtt-VoLgToV7gxz-rYhG6ZDZmB6', '2vhk349kjyK-LYQWRjTPLro-E4hCRgJyGC3-BMqG3bcVw4y', NULL, NULL, NULL, NULL, TIMESTAMP '2021-01-03 21:34:43.896', TIMESTAMP '2021-01-03 21:35:05.565', NULL);    
 CREATE CACHED TABLE "public"."classifier_model"(
-    "id" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
-    "file_id" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
+    "file_id" CHARACTER VARYING(254) NOT NULL,
     "created" TIMESTAMP NOT NULL
-);   
+);           
 ALTER TABLE "public"."classifier_model" ADD CONSTRAINT "public"."CONSTRAINT_BC" PRIMARY KEY("id");             
 -- 5 +/- SELECT COUNT(*) FROM public.classifier_model;         
 INSERT INTO "public"."classifier_model" VALUES
@@ -722,13 +684,13 @@ INSERT INTO "public"."classifier_model" VALUES
 ('EeRCrtyYxLw-sFZSqYQpF2x-xRNYmtpehF5-gnUpF3p677F', 'demo', 'concernedperson', '39fJiyTA5cF-NbFRocgVXsa-8HZq4chnjuj-PtT7VwD4EWV', TIMESTAMP '2021-07-13 21:03:16.246099'),
 ('7bSotqXw7Rh-JYioDdg7imG-3L2b5gbKrcJ-nHjGjYQo7A2', 'demo', 'concernedequip', 'DHGeDybWtnT-AkD5avn2wTB-RvfFeVguPUu-LDJADAajdSD', TIMESTAMP '2021-07-13 21:03:16.487072');             
 CREATE CACHED TABLE "public"."custom_field"(
-    "id" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
-    "label" VARCHAR(254),
-    "cid" VARCHAR(254) NOT NULL,
-    "ftype" VARCHAR(100) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
+    "label" CHARACTER VARYING(254),
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "ftype" CHARACTER VARYING(100) NOT NULL,
     "created" TIMESTAMP NOT NULL
-);               
+);             
 ALTER TABLE "public"."custom_field" ADD CONSTRAINT "public"."CONSTRAINT_2A" PRIMARY KEY("id"); 
 -- 3 +/- SELECT COUNT(*) FROM public.custom_field;             
 INSERT INTO "public"."custom_field" VALUES
@@ -736,120 +698,109 @@ INSERT INTO "public"."custom_field" VALUES
 ('HGU7e4ViYRK-C45csppWGya-JfvqSBK7RHV-hewejitFZLt', 'usd', 'USD', 'demo', 'money', TIMESTAMP '2021-01-03 21:33:38.397'),
 ('H4GdvuxxiTu-xkrSbSiLEYu-AaEmVaX3T8d-EwNA1fEWzar', 'paid', 'Paid', 'demo', 'date', TIMESTAMP '2021-01-03 21:33:49.783');         
 CREATE CACHED TABLE "public"."custom_field_value"(
-    "id" VARCHAR(254) NOT NULL,
-    "item_id" VARCHAR(254) NOT NULL,
-    "field" VARCHAR(254) NOT NULL,
-    "field_value" VARCHAR(300) NOT NULL
-);          
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "item_id" CHARACTER VARYING(254) NOT NULL,
+    "field" CHARACTER VARYING(254) NOT NULL,
+    "field_value" CHARACTER VARYING(300) NOT NULL
+);  
 ALTER TABLE "public"."custom_field_value" ADD CONSTRAINT "public"."CONSTRAINT_6F" PRIMARY KEY("id");           
 -- 2 +/- SELECT COUNT(*) FROM public.custom_field_value;       
 INSERT INTO "public"."custom_field_value" VALUES
 ('5mTamR1DWyQ-GnQbNwRN3hA-LhhkXvrLTAp-Rx8kzt5cHFV', 'J4wAkg3jxt5-7QaYXD1WTmF-gq4kGaS89RP-DnPyUwa77fK', 'HGU7e4ViYRK-C45csppWGya-JfvqSBK7RHV-hewejitFZLt', '93.50'),
 ('FRgFi2EJe7E-QHeQwhJJeJu-ddtSXiH3rY7-BFiTLJ52TbK', 'J4wAkg3jxt5-7QaYXD1WTmF-gq4kGaS89RP-DnPyUwa77fK', 'H4GdvuxxiTu-xkrSbSiLEYu-AaEmVaX3T8d-EwNA1fEWzar', '2016-01-28');  
 CREATE CACHED TABLE "public"."person"(
-    "pid" VARCHAR(254) NOT NULL,
-    "cid" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
-    "street" VARCHAR(254),
-    "zip" VARCHAR(254),
-    "city" VARCHAR(254),
-    "country" VARCHAR(254),
-    "notes" TEXT,
+    "pid" CHARACTER VARYING(254) NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
+    "street" CHARACTER VARYING(254),
+    "zip" CHARACTER VARYING(254),
+    "city" CHARACTER VARYING(254),
+    "country" CHARACTER VARYING(254),
+    "notes" CHARACTER VARYING,
     "created" TIMESTAMP NOT NULL,
     "updated" TIMESTAMP NOT NULL,
-    "oid" VARCHAR(254),
-    "person_use" VARCHAR(254)
-);              
+    "oid" CHARACTER VARYING(254),
+    "person_use" CHARACTER VARYING(254)
+);       
 ALTER TABLE "public"."person" ADD CONSTRAINT "public"."CONSTRAINT_C4" PRIMARY KEY("pid");      
 -- 2 +/- SELECT COUNT(*) FROM public.person;   
 INSERT INTO "public"."person" VALUES
 ('83XuNaLvbMt-E3ocm83uYtt-VoLgToV7gxz-rYhG6ZDZmB6', 'demo', 'Marcus Leaf', '', '', '', '', NULL, TIMESTAMP '2021-01-03 21:33:10.411', TIMESTAMP '2021-01-03 21:33:10.411', '85CGijc6q6q-Vj1dZXCPGcK-rpDK7MKVrRz-xyNsSbEbuJy', 'correspondent'),
 ('2vhk349kjyK-LYQWRjTPLro-E4hCRgJyGC3-BMqG3bcVw4y', 'demo', 'Derek Jeter', '', '', '', '', NULL, TIMESTAMP '2021-01-03 21:33:17.323', TIMESTAMP '2021-01-03 21:33:17.323', NULL, 'concerning');           
 CREATE CACHED TABLE "public"."userimap"(
-    "id" VARCHAR(254) NOT NULL,
-    "uid" VARCHAR(254) NOT NULL,
-    "name" VARCHAR(254) NOT NULL,
-    "imap_host" VARCHAR(254) NOT NULL,
-    "imap_port" INT,
-    "imap_user" VARCHAR(254),
-    "imap_password" VARCHAR(254),
-    "imap_ssl" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
+    "uid" CHARACTER VARYING(254) NOT NULL,
+    "name" CHARACTER VARYING(254) NOT NULL,
+    "imap_host" CHARACTER VARYING(254) NOT NULL,
+    "imap_port" INTEGER,
+    "imap_user" CHARACTER VARYING(254),
+    "imap_password" CHARACTER VARYING(254),
+    "imap_ssl" CHARACTER VARYING(254) NOT NULL,
     "imap_certcheck" BOOLEAN NOT NULL,
     "created" TIMESTAMP NOT NULL,
     "imap_oauth2" BOOLEAN NOT NULL
-);   
+);         
 ALTER TABLE "public"."userimap" ADD CONSTRAINT "public"."CONSTRAINT_F" PRIMARY KEY("id");      
 -- 1 +/- SELECT COUNT(*) FROM public.userimap; 
 INSERT INTO "public"."userimap" VALUES
 ('8B2utYsaPVY-SbAV8AfdLHY-HMM9DhcyLSh-tH1xPia5kab', 'Bx213P591Rr-enoBUH66pTn-81emkqRGdQj-XNxT85q7YM5', 'testmail', 'localhost', 143, 'test', 'test', 'noencryption', TRUE, TIMESTAMP '2021-01-04 08:58:06.485', FALSE); 
 CREATE CACHED TABLE "public"."item_proposal"(
-    "itemid" VARCHAR(254) NOT NULL,
-    "classifier_proposals" TEXT NOT NULL,
-    "classifier_tags" TEXT NOT NULL,
+    "itemid" CHARACTER VARYING(254) NOT NULL,
+    "classifier_proposals" CHARACTER VARYING NOT NULL,
+    "classifier_tags" CHARACTER VARYING NOT NULL,
     "created" TIMESTAMP NOT NULL
-);           
+);       
 ALTER TABLE "public"."item_proposal" ADD CONSTRAINT "public"."CONSTRAINT_DBF" PRIMARY KEY("itemid");           
 -- 0 +/- SELECT COUNT(*) FROM public.item_proposal;            
 CREATE CACHED TABLE "public"."attachmentmeta"(
-    "attachid" VARCHAR(254) NOT NULL,
-    "content" TEXT,
-    "nerlabels" TEXT,
-    "itemproposals" TEXT,
+    "attachid" CHARACTER VARYING(254) NOT NULL,
+    "content" CHARACTER VARYING,
+    "nerlabels" CHARACTER VARYING,
+    "itemproposals" CHARACTER VARYING,
     "page_count" SMALLINT,
-    "language" VARCHAR(254)
-);             
+    "language" CHARACTER VARYING(254)
+);  
 ALTER TABLE "public"."attachmentmeta" ADD CONSTRAINT "public"."CONSTRAINT_1" PRIMARY KEY("attachid");          
 -- 2 +/- SELECT COUNT(*) FROM public.attachmentmeta;           
-CREATE TABLE IF NOT EXISTS SYSTEM_LOB_STREAM(ID INT NOT NULL, PART INT NOT NULL, CDATA VARCHAR, BDATA BINARY); 
-CREATE PRIMARY KEY SYSTEM_LOB_STREAM_PRIMARY_KEY ON SYSTEM_LOB_STREAM(ID, PART);               
-CREATE ALIAS IF NOT EXISTS SYSTEM_COMBINE_CLOB FOR "org.h2.command.dml.ScriptCommand.combineClob";             
-CREATE ALIAS IF NOT EXISTS SYSTEM_COMBINE_BLOB FOR "org.h2.command.dml.ScriptCommand.combineBlob";             
-INSERT INTO SYSTEM_LOB_STREAM VALUES(0, 0, '[{"label":"Sliced Invoices | admin@slicedinvoices.com","tag":"misc","startPosition":138,"endPosition":180},{"label":"Page 1/1","tag":"misc","startPosition":182,"endPosition":190},{"label":"Sliced Invoices","tag":"misc","startPosition":206,"endPosition":221},{"label":"Date January","tag":"person","startPosition":359,"endPosition":371},{"label":"Due Date January","tag":"person","startPosition":382,"endPosition":398},{"label":"Total Due $","tag":"misc","startPosition":409,"endPosition":420},{"label":"Price Adjust Sub Total","tag":"misc","startPosition":522,"endPosition":544},{"label":"1.00 Web Design This","tag":"misc","startPosition":546,"endPosition":566},{"label":"Sub Total $","tag":"misc","startPosition":616,"endPosition":627},{"label":"Tax $","tag":"misc","startPosition":634,"endPosition":639},{"label":"ANZ Bank","tag":"organization","startPosition":659,"endPosition":667},{"label":"Pa id","tag":"misc","startPosition":701,"endPosition":706},{"label":"PDF Invoice Example Sliced","tag":"misc","startPosition":708,"endPosition":734},{"label":"Sliced","tag":"misc","startPosition":138,"endPosition":144},{"label":"Invoices","tag":"misc","startPosition":145,"endPosition":153},{"label":"|","tag":"misc","startPosition":154,"endPosition":155},{"label":"admin@slicedinvoices.com","tag":"misc","startPosition":156,"endPosition":180},{"label":"Page","tag":"misc","startPosition":182,"endPosition":186},{"label":"1/1","tag":"misc","startPosition":187,"endPosition":190},{"label":"From","tag":"misc","startPosition":192,"endPosition":196},{"label":"Sliced","tag":"misc","startPosition":206,"endPosition":212},{"label":"Invoices","tag":"misc","startPosition":213,"endPosition":221},{"label":"Suite","tag":"misc","startPosition":223,"endPosition":228},{"label":"Street","tag":"organization","startPosition":252,"endPosition":258},{"label":"Your","tag":"organization","startPosition":260,"endPosition":264},{"label":"Date","tag":"person","startPosition":359,"endPosition":363},{"label":"January","tag":"person","startPosition":364,"endPosition":371},{"label":"Due","tag":"person","startPosition":382,"endPosition":385},{"label":"Date","tag":"person","startPosition":386,"endPosition":390},{"label":"January","tag":"person","startPosition":391,"endPosition":398},{"label":"Total","tag":"misc","startPosition":409,"endPosition":414},{"label":"Due","tag":"misc","startPosition":415,"endPosition":418},{"label":"$","tag":"misc","startPosition":419,"endPosition":420},{"label":"St","tag":"location","startPosition":461,"endPosition":463},{"label":"Melbourne","tag":"location","startPosition":465,"endPosition":474},{"label":"Price","tag":"misc","startPosition":522,"endPosition":527},{"label":"Adjust","tag":"misc","startPosition":528,"endPosition":534},{"label":"Sub","tag":"misc","startPosition":535,"endPosition":538},{"label":"Total","tag":"misc","startPosition":539,"endPosition":544},{"label":"1.00","tag":"misc","startPosition":546,"endPosition":550},{"label":"Web","tag":"misc","startPosition":551,"endPosition":554},{"label":"Design","tag":"misc","startPosition":555,"endPosition":561},{"label":"This","tag":"misc","startPosition":562,"endPosition":566},{"label":"$","tag":"misc","startPosition":595,"endPosition":596},{"label":"$","tag":"misc","startPosition":608,"endPosition":609},{"label":"85.00","tag":"misc","startPosition":609,"endPosition":614},{"label":"Sub","tag":"misc","startPosition":616,"endPosition":619},{"label":"Total","tag":"misc","startPosition":620,"endPosition":625},{"label":"$","tag":"misc","startPosition":626,"endPosition":627},{"label":"85.00","tag":"misc","startPosition":627,"endPosition":632},{"label":"Tax","tag":"misc","startPosition":634,"endPosition":637},{"label":"$","tag":"misc","startPosition":638,"endPosition":639},{"label":"$","tag":"misc","startPosition":651,"endPosition":652},{"label":"ANZ","tag":"organization","startPosition":659,"endPosition":662},{"label":"Bank","tag":"organization","startPosition":663,"endPosition":667},{"label":"ACC","tag":"organization","startPosition":669,"endPosition":672},{"label":"Pa","tag":"misc","startPosition":7', NULL);          
-INSERT INTO SYSTEM_LOB_STREAM VALUES(0, 1, '01,"endPosition":703},{"label":"id","tag":"misc","startPosition":704,"endPosition":706},{"label":"PDF","tag":"misc","startPosition":708,"endPosition":711},{"label":"Invoice","tag":"misc","startPosition":712,"endPosition":719},{"label":"Example","tag":"misc","startPosition":720,"endPosition":727},{"label":"Sliced","tag":"misc","startPosition":728,"endPosition":734},{"label":"admin@slicedinvoices.com","tag":"email","startPosition":156,"endPosition":180},{"label":"admin@slicedinvoices.com","tag":"email","startPosition":280,"endPosition":304},{"label":"test@test.com","tag":"email","startPosition":486,"endPosition":499},{"label":"2016-01-25","tag":"date","startPosition":364,"endPosition":374},{"label":"2016-01-31","tag":"date","startPosition":391,"endPosition":401}]', NULL);       
-INSERT INTO SYSTEM_LOB_STREAM VALUES(1, 0, '[{"label":"Derek Jeter","tag":"person","startPosition":0,"endPosition":11},{"label":"Derek Jeter","tag":"person","startPosition":69,"endPosition":80},{"label":"M. Leaf","tag":"person","startPosition":142,"endPosition":149},{"label":"Syrup Production","tag":"organization","startPosition":160,"endPosition":176},{"label":"Old Sticky Pancake Company","tag":"organization","startPosition":178,"endPosition":204},{"label":"456 Maple Lane","tag":"organization","startPosition":206,"endPosition":220},{"label":"Let me begin by thanking you for your past contributions to our Little League baseball","tag":"misc","startPosition":287,"endPosition":373},{"label":"their past years of service and present employees for their","tag":"organization","startPosition":621,"endPosition":680},{"label":"Derek Jeter","tag":"person","startPosition":1128,"endPosition":1139},{"label":"Derek Jeter","tag":"person","startPosition":1141,"endPosition":1152},{"label":"Derek","tag":"person","startPosition":0,"endPosition":5},{"label":"Jeter","tag":"person","startPosition":6,"endPosition":11},{"label":"Elm","tag":"location","startPosition":17,"endPosition":20},{"label":"Derek","tag":"person","startPosition":69,"endPosition":74},{"label":"Jeter","tag":"person","startPosition":75,"endPosition":80},{"label":"Elm","tag":"location","startPosition":86,"endPosition":89},{"label":"M.","tag":"person","startPosition":142,"endPosition":144},{"label":"Leaf","tag":"person","startPosition":145,"endPosition":149},{"label":"Syrup","tag":"organization","startPosition":160,"endPosition":165},{"label":"Production","tag":"organization","startPosition":166,"endPosition":176},{"label":"Old","tag":"organization","startPosition":178,"endPosition":181},{"label":"Sticky","tag":"organization","startPosition":182,"endPosition":188},{"label":"Pancake","tag":"organization","startPosition":189,"endPosition":196},{"label":"Company","tag":"organization","startPosition":197,"endPosition":204},{"label":"456","tag":"organization","startPosition":206,"endPosition":209},{"label":"Maple","tag":"organization","startPosition":210,"endPosition":215},{"label":"Lane","tag":"organization","startPosition":216,"endPosition":220},{"label":"Forest","tag":"organization","startPosition":222,"endPosition":228},{"label":"Leaf","tag":"person","startPosition":280,"endPosition":284},{"label":"Let","tag":"misc","startPosition":287,"endPosition":290},{"label":"me","tag":"misc","startPosition":291,"endPosition":293},{"label":"begin","tag":"misc","startPosition":294,"endPosition":299},{"label":"by","tag":"misc","startPosition":300,"endPosition":302},{"label":"thanking","tag":"misc","startPosition":303,"endPosition":311},{"label":"you","tag":"misc","startPosition":312,"endPosition":315},{"label":"for","tag":"misc","startPosition":316,"endPosition":319},{"label":"your","tag":"misc","startPosition":320,"endPosition":324},{"label":"past","tag":"misc","startPosition":325,"endPosition":329},{"label":"contributions","tag":"misc","startPosition":330,"endPosition":343},{"label":"to","tag":"misc","startPosition":344,"endPosition":346},{"label":"our","tag":"misc","startPosition":347,"endPosition":350},{"label":"Little","tag":"misc","startPosition":351,"endPosition":357},{"label":"League","tag":"misc","startPosition":358,"endPosition":364},{"label":"baseball","tag":"misc","startPosition":365,"endPosition":373},{"label":"team","tag":"misc","startPosition":375,"endPosition":379},{"label":"company","tag":"organization","startPosition":524,"endPosition":531},{"label":"pancake","tag":"organization","startPosition":569,"endPosition":576},{"label":"their","tag":"organization","startPosition":621,"endPosition":626},{"label":"past","tag":"organization","startPosition":627,"endPosition":631},{"label":"years","tag":"organization","startPosition":632,"endPosition":637},{"label":"of","tag":"organization","startPosition":638,"endPosition":640},{"label":"service","tag":"organization","startPosition":641,"endPosition":648},{"label":"and","tag":"organization","startPosition":649,"endPosition":652},{"label":"present","tag":"organization","startPosit', NULL);          
-INSERT INTO SYSTEM_LOB_STREAM VALUES(1, 1, 'ion":653,"endPosition":660},{"label":"employees","tag":"organization","startPosition":661,"endPosition":670},{"label":"for","tag":"organization","startPosition":671,"endPosition":674},{"label":"their","tag":"organization","startPosition":675,"endPosition":680},{"label":"loyalty","tag":"organization","startPosition":682,"endPosition":689},{"label":"company","tag":"organization","startPosition":803,"endPosition":810},{"label":"pancake","tag":"organization","startPosition":828,"endPosition":835},{"label":"Derek","tag":"person","startPosition":1128,"endPosition":1133},{"label":"Jeter","tag":"person","startPosition":1134,"endPosition":1139},{"label":"Derek","tag":"person","startPosition":1141,"endPosition":1146},{"label":"Jeter","tag":"person","startPosition":1147,"endPosition":1152},{"label":"2016-11-07","tag":"date","startPosition":51,"endPosition":61},{"label":"2016-11-07","tag":"date","startPosition":120,"endPosition":130},{"label":"2019-09-03","tag":"date","startPosition":252,"endPosition":263},{"label":"2016-12-12","tag":"date","startPosition":1087,"endPosition":1098}]', NULL);            
 INSERT INTO "public"."attachmentmeta" VALUES
-('2ecoA7A7HgT-xPwzNQYfiZd-rF1XF3aEPMr-qsNJXoe36oZ', STRINGDECODE('Invoice\n\nPayment is due within 30 days from date of invoice. Late payment is subject to fees of 5% per month.\n\nThanks for choosing DEMO - Sliced Invoices | admin@slicedinvoices.com\n\nPage 1/1\n\nFrom:\n\nDEMO - Sliced Invoices\n\nSuite 5A-1204\n\n123 Somewhere Street\n\nYour City AZ 12345\n\nadmin@slicedinvoices.com\n\nInvoice Number INV-3337\n\nOrder Number 12345\n\nInvoice Date January 25, 2016\n\nDue Date January 31, 2016\n\nTotal Due $93.50\n\nTo:\n\nTest Business\n\n123 Somewhere St\n\nMelbourne, VIC 3000\n\ntest@test.com\n\nHrs/Qty Service Rate/Price Adjust Sub Total\n\n1.00\nWeb Design\nThis is a sample description...\n\n$85.00 0.00% $85.00\n\nSub Total $85.00\n\nTax $8.50\n\nTotal $93.50\n\nANZ Bank\n\nACC # 1234 1234\n\nBSB # 4321 432 Pa\nid\n\nPDF Invoice Example\nSliced Invoices\nExample PDF invoice that was created using the Sli\n2016-02-04'), SYSTEM_COMBINE_CLOB(0), '{"proposals":[{"proposalType":"docdate","values":[{"ref":{"id":"2016-01-25","name":"2016-01-25"},"origin":[{"label":"January 25, 2016","tag":"date","startPosition":364,"endPosition":374}],"weight":0.0753623188405797},{"ref":{"id":"2016-01-31","name":"2016-01-31"},"origin":[{"label":"January 31, 2016","tag":"date","startPosition":391,"endPosition":401}],"weight":0.08095238095238094}]}]}', 1, 'deu'),
-('4SDQngEFYuK-tb9xAachZSt-LNCrE36NFRr-U8avxFCW9A4', STRINGDECODE('Derek Jeter\n\n123 Elm Ave.\n\nTreesville, ON M1N 2P3\n\nNovember 7, 2016\n\nDerek Jeter, 123 Elm Ave., Treesville, ON M1N 2P3, November 7, 2016\n\nMr. M. Leaf\n\nChief of Syrup Production\n\nOld Sticky Pancake Company\n\n456 Maple Lane\n\nForest, ON 7W8 9Y0\n\nHemptown, September 3, 2019\n\nDear Mr. Leaf,\n\nLet me begin by thanking you for your past contributions to our Little League baseball\n\nteam. Your sponsorship aided in the purchase of ten full uniforms and several pieces of\n\nbaseball equipment for last year\u2019s season.\n\nNext month, our company is planning an employee appreciation pancake breakfast hon-\n\noring retired employees for their past years of service and present employees for their\n\nloyalty and dedication in spite of the current difficult economic conditions.\n\nWe would like to place an order with your company for 25 pounds of pancake mix and\n\nfive gallons of maple syrup. We hope you will be able to provide these products in the\n\nbulk quantities we require.\n\nAs you are a committed corporate sponsor and long-time associate, we hope that you\n\nwill be able to join us for breakfast on December 12, 2016.\n\nRespectfully yours,\n\nDerek Jeter\n\nDerek Jeter\n2019-09-03'), SYSTEM_COMBINE_CLOB(1), '{"proposals":[{"proposalType":"corrperson","values":[{"ref":{"id":"83XuNaLvbMt-E3ocm83uYtt-VoLgToV7gxz-rYhG6ZDZmB6","name":"Marcus Leaf"},"origin":[{"label":"Leaf","tag":"person","startPosition":145,"endPosition":149}],"weight":0.024935511607910577}]},{"proposalType":"corrorg","values":[{"ref":{"id":"85CGijc6q6q-Vj1dZXCPGcK-rpDK7MKVrRz-xyNsSbEbuJy","name":"Pancake Company"},"origin":[{"label":"Company","tag":"organization","startPosition":197,"endPosition":204},{"label":"Pancake","tag":"organization","startPosition":189,"endPosition":196}],"weight":0.03250214961306965}]},{"proposalType":"concperson","values":[{"ref":{"id":"2vhk349kjyK-LYQWRjTPLro-E4hCRgJyGC3-BMqG3bcVw4y","name":"Derek Jeter"},"origin":[{"label":"Derek Jeter","tag":"person","startPosition":0,"endPosition":11}],"weight":0.0}]},{"proposalType":"docdate","values":[{"ref":{"id":"2016-11-07","name":"2016-11-07"},"origin":[{"label":"November 7, 2016","tag":"date","startPosition":51,"endPosition":61}],"weight":0.007308684436801376},{"ref":{"id":"2016-11-07","name":"2016-11-07"},"origin":[{"label":"November 7, 2016","tag":"date","startPosition":120,"endPosition":130}],"weight":0.017196904557179708},{"ref":{"id":"2019-09-03","name":"2019-09-03"},"origin":[{"label":"September 3, 2019","tag":"date","startPosition":252,"endPosition":263}],"weight":0.03611349957007738},{"ref":{"id":"2016-12-12","name":"2016-12-12"},"origin":[{"label":"December 12, 2016","tag":"date","startPosition":1087,"endPosition":1098}],"weight":0.3115505875609057}]}]}', 1, 'deu');
+('2ecoA7A7HgT-xPwzNQYfiZd-rF1XF3aEPMr-qsNJXoe36oZ', U&'Invoice\000a\000aPayment is due within 30 days from date of invoice. Late payment is subject to fees of 5% per month.\000a\000aThanks for choosing DEMO - Sliced Invoices | admin@slicedinvoices.com\000a\000aPage 1/1\000a\000aFrom:\000a\000aDEMO - Sliced Invoices\000a\000aSuite 5A-1204\000a\000a123 Somewhere Street\000a\000aYour City AZ 12345\000a\000aadmin@slicedinvoices.com\000a\000aInvoice Number INV-3337\000a\000aOrder Number 12345\000a\000aInvoice Date January 25, 2016\000a\000aDue Date January 31, 2016\000a\000aTotal Due $93.50\000a\000aTo:\000a\000aTest Business\000a\000a123 Somewhere St\000a\000aMelbourne, VIC 3000\000a\000atest@test.com\000a\000aHrs/Qty Service Rate/Price Adjust Sub Total\000a\000a1.00\000aWeb Design\000aThis is a sample description...\000a\000a$85.00 0.00% $85.00\000a\000aSub Total $85.00\000a\000aTax $8.50\000a\000aTotal $93.50\000a\000aANZ Bank\000a\000aACC # 1234 1234\000a\000aBSB # 4321 432 Pa\000aid\000a\000aPDF Invoice Example\000aSliced Invoices\000aExample PDF invoice that was created using the Sli\000a2016-02-04', '[{"label":"Sliced Invoices | admin@slicedinvoices.com","tag":"misc","startPosition":138,"endPosition":180},{"label":"Page 1/1","tag":"misc","startPosition":182,"endPosition":190},{"label":"Sliced Invoices","tag":"misc","startPosition":206,"endPosition":221},{"label":"Date January","tag":"person","startPosition":359,"endPosition":371},{"label":"Due Date January","tag":"person","startPosition":382,"endPosition":398},{"label":"Total Due $","tag":"misc","startPosition":409,"endPosition":420},{"label":"Price Adjust Sub Total","tag":"misc","startPosition":522,"endPosition":544},{"label":"1.00 Web Design This","tag":"misc","startPosition":546,"endPosition":566},{"label":"Sub Total $","tag":"misc","startPosition":616,"endPosition":627},{"label":"Tax $","tag":"misc","startPosition":634,"endPosition":639},{"label":"ANZ Bank","tag":"organization","startPosition":659,"endPosition":667},{"label":"Pa id","tag":"misc","startPosition":701,"endPosition":706},{"label":"PDF Invoice Example Sliced","tag":"misc","startPosition":708,"endPosition":734},{"label":"Sliced","tag":"misc","startPosition":138,"endPosition":144},{"label":"Invoices","tag":"misc","startPosition":145,"endPosition":153},{"label":"|","tag":"misc","startPosition":154,"endPosition":155},{"label":"admin@slicedinvoices.com","tag":"misc","startPosition":156,"endPosition":180},{"label":"Page","tag":"misc","startPosition":182,"endPosition":186},{"label":"1/1","tag":"misc","startPosition":187,"endPosition":190},{"label":"From","tag":"misc","startPosition":192,"endPosition":196},{"label":"Sliced","tag":"misc","startPosition":206,"endPosition":212},{"label":"Invoices","tag":"misc","startPosition":213,"endPosition":221},{"label":"Suite","tag":"misc","startPosition":223,"endPosition":228},{"label":"Street","tag":"organization","startPosition":252,"endPosition":258},{"label":"Your","tag":"organization","startPosition":260,"endPosition":264},{"label":"Date","tag":"person","startPosition":359,"endPosition":363},{"label":"January","tag":"person","startPosition":364,"endPosition":371},{"label":"Due","tag":"person","startPosition":382,"endPosition":385},{"label":"Date","tag":"person","startPosition":386,"endPosition":390},{"label":"January","tag":"person","startPosition":391,"endPosition":398},{"label":"Total","tag":"misc","startPosition":409,"endPosition":414},{"label":"Due","tag":"misc","startPosition":415,"endPosition":418},{"label":"$","tag":"misc","startPosition":419,"endPosition":420},{"label":"St","tag":"location","startPosition":461,"endPosition":463},{"label":"Melbourne","tag":"location","startPosition":465,"endPosition":474},{"label":"Price","tag":"misc","startPosition":522,"endPosition":527},{"label":"Adjust","tag":"misc","startPosition":528,"endPosition":534},{"label":"Sub","tag":"misc","startPosition":535,"endPosition":538},{"label":"Total","tag":"misc","startPosition":539,"endPosition":544},{"label":"1.00","tag":"misc","startPosition":546,"endPosition":550},{"label":"Web","tag":"misc","startPosition":551,"endPosition":554},{"label":"Design","tag":"misc","startPosition":555,"endPosition":561},{"label":"This","tag":"misc","startPosition":562,"endPosition":566},{"label":"$","tag":"misc","startPosition":595,"endPosition":596},{"label":"$","tag":"misc","startPosition":608,"endPosition":609},{"label":"85.00","tag":"misc","startPosition":609,"endPosition":614},{"label":"Sub","tag":"misc","startPosition":616,"endPosition":619},{"label":"Total","tag":"misc","startPosition":620,"endPosition":625},{"label":"$","tag":"misc","startPosition":626,"endPosition":627},{"label":"85.00","tag":"misc","startPosition":627,"endPosition":632},{"label":"Tax","tag":"misc","startPosition":634,"endPosition":637},{"label":"$","tag":"misc","startPosition":638,"endPosition":639},{"label":"$","tag":"misc","startPosition":651,"endPosition":652},{"label":"ANZ","tag":"organization","startPosition":659,"endPosition":662},{"label":"Bank","tag":"organization","startPosition":663,"endPosition":667},{"label":"ACC","tag":"organization","startPosition":669,"endPosition":672},{"label":"Pa","tag":"misc","startPosition":701,"endPosition":703},{"label":"id","tag":"misc","startPosition":704,"endPosition":706},{"label":"PDF","tag":"misc","startPosition":708,"endPosition":711},{"label":"Invoice","tag":"misc","startPosition":712,"endPosition":719},{"label":"Example","tag":"misc","startPosition":720,"endPosition":727},{"label":"Sliced","tag":"misc","startPosition":728,"endPosition":734},{"label":"admin@slicedinvoices.com","tag":"email","startPosition":156,"endPosition":180},{"label":"admin@slicedinvoices.com","tag":"email","startPosition":280,"endPosition":304},{"label":"test@test.com","tag":"email","startPosition":486,"endPosition":499},{"label":"2016-01-25","tag":"date","startPosition":364,"endPosition":374},{"label":"2016-01-31","tag":"date","startPosition":391,"endPosition":401}]', '{"proposals":[{"proposalType":"docdate","values":[{"ref":{"id":"2016-01-25","name":"2016-01-25"},"origin":[{"label":"January 25, 2016","tag":"date","startPosition":364,"endPosition":374}],"weight":0.0753623188405797},{"ref":{"id":"2016-01-31","name":"2016-01-31"},"origin":[{"label":"January 31, 2016","tag":"date","startPosition":391,"endPosition":401}],"weight":0.08095238095238094}]}]}', 1, 'deu');          
+INSERT INTO "public"."attachmentmeta" VALUES
+('4SDQngEFYuK-tb9xAachZSt-LNCrE36NFRr-U8avxFCW9A4', U&'Derek Jeter\000a\000a123 Elm Ave.\000a\000aTreesville, ON M1N 2P3\000a\000aNovember 7, 2016\000a\000aDerek Jeter, 123 Elm Ave., Treesville, ON M1N 2P3, November 7, 2016\000a\000aMr. M. Leaf\000a\000aChief of Syrup Production\000a\000aOld Sticky Pancake Company\000a\000a456 Maple Lane\000a\000aForest, ON 7W8 9Y0\000a\000aHemptown, September 3, 2019\000a\000aDear Mr. Leaf,\000a\000aLet me begin by thanking you for your past contributions to our Little League baseball\000a\000ateam. Your sponsorship aided in the purchase of ten full uniforms and several pieces of\000a\000abaseball equipment for last year\2019s season.\000a\000aNext month, our company is planning an employee appreciation pancake breakfast hon-\000a\000aoring retired employees for their past years of service and present employees for their\000a\000aloyalty and dedication in spite of the current difficult economic conditions.\000a\000aWe would like to place an order with your company for 25 pounds of pancake mix and\000a\000afive gallons of maple syrup. We hope you will be able to provide these products in the\000a\000abulk quantities we require.\000a\000aAs you are a committed corporate sponsor and long-time associate, we hope that you\000a\000awill be able to join us for breakfast on December 12, 2016.\000a\000aRespectfully yours,\000a\000aDerek Jeter\000a\000aDerek Jeter\000a2019-09-03', '[{"label":"Derek Jeter","tag":"person","startPosition":0,"endPosition":11},{"label":"Derek Jeter","tag":"person","startPosition":69,"endPosition":80},{"label":"M. Leaf","tag":"person","startPosition":142,"endPosition":149},{"label":"Syrup Production","tag":"organization","startPosition":160,"endPosition":176},{"label":"Old Sticky Pancake Company","tag":"organization","startPosition":178,"endPosition":204},{"label":"456 Maple Lane","tag":"organization","startPosition":206,"endPosition":220},{"label":"Let me begin by thanking you for your past contributions to our Little League baseball","tag":"misc","startPosition":287,"endPosition":373},{"label":"their past years of service and present employees for their","tag":"organization","startPosition":621,"endPosition":680},{"label":"Derek Jeter","tag":"person","startPosition":1128,"endPosition":1139},{"label":"Derek Jeter","tag":"person","startPosition":1141,"endPosition":1152},{"label":"Derek","tag":"person","startPosition":0,"endPosition":5},{"label":"Jeter","tag":"person","startPosition":6,"endPosition":11},{"label":"Elm","tag":"location","startPosition":17,"endPosition":20},{"label":"Derek","tag":"person","startPosition":69,"endPosition":74},{"label":"Jeter","tag":"person","startPosition":75,"endPosition":80},{"label":"Elm","tag":"location","startPosition":86,"endPosition":89},{"label":"M.","tag":"person","startPosition":142,"endPosition":144},{"label":"Leaf","tag":"person","startPosition":145,"endPosition":149},{"label":"Syrup","tag":"organization","startPosition":160,"endPosition":165},{"label":"Production","tag":"organization","startPosition":166,"endPosition":176},{"label":"Old","tag":"organization","startPosition":178,"endPosition":181},{"label":"Sticky","tag":"organization","startPosition":182,"endPosition":188},{"label":"Pancake","tag":"organization","startPosition":189,"endPosition":196},{"label":"Company","tag":"organization","startPosition":197,"endPosition":204},{"label":"456","tag":"organization","startPosition":206,"endPosition":209},{"label":"Maple","tag":"organization","startPosition":210,"endPosition":215},{"label":"Lane","tag":"organization","startPosition":216,"endPosition":220},{"label":"Forest","tag":"organization","startPosition":222,"endPosition":228},{"label":"Leaf","tag":"person","startPosition":280,"endPosition":284},{"label":"Let","tag":"misc","startPosition":287,"endPosition":290},{"label":"me","tag":"misc","startPosition":291,"endPosition":293},{"label":"begin","tag":"misc","startPosition":294,"endPosition":299},{"label":"by","tag":"misc","startPosition":300,"endPosition":302},{"label":"thanking","tag":"misc","startPosition":303,"endPosition":311},{"label":"you","tag":"misc","startPosition":312,"endPosition":315},{"label":"for","tag":"misc","startPosition":316,"endPosition":319},{"label":"your","tag":"misc","startPosition":320,"endPosition":324},{"label":"past","tag":"misc","startPosition":325,"endPosition":329},{"label":"contributions","tag":"misc","startPosition":330,"endPosition":343},{"label":"to","tag":"misc","startPosition":344,"endPosition":346},{"label":"our","tag":"misc","startPosition":347,"endPosition":350},{"label":"Little","tag":"misc","startPosition":351,"endPosition":357},{"label":"League","tag":"misc","startPosition":358,"endPosition":364},{"label":"baseball","tag":"misc","startPosition":365,"endPosition":373},{"label":"team","tag":"misc","startPosition":375,"endPosition":379},{"label":"company","tag":"organization","startPosition":524,"endPosition":531},{"label":"pancake","tag":"organization","startPosition":569,"endPosition":576},{"label":"their","tag":"organization","startPosition":621,"endPosition":626},{"label":"past","tag":"organization","startPosition":627,"endPosition":631},{"label":"years","tag":"organization","startPosition":632,"endPosition":637},{"label":"of","tag":"organization","startPosition":638,"endPosition":640},{"label":"service","tag":"organization","startPosition":641,"endPosition":648},{"label":"and","tag":"organization","startPosition":649,"endPosition":652},{"label":"present","tag":"organization","startPosition":653,"endPosition":660},{"label":"employees","tag":"organization","startPosition":661,"endPosition":670},{"label":"for","tag":"organization","startPosition":671,"endPosition":674},{"label":"their","tag":"organization","startPosition":675,"endPosition":680},{"label":"loyalty","tag":"organization","startPosition":682,"endPosition":689},{"label":"company","tag":"organization","startPosition":803,"endPosition":810},{"label":"pancake","tag":"organization","startPosition":828,"endPosition":835},{"label":"Derek","tag":"person","startPosition":1128,"endPosition":1133},{"label":"Jeter","tag":"person","startPosition":1134,"endPosition":1139},{"label":"Derek","tag":"person","startPosition":1141,"endPosition":1146},{"label":"Jeter","tag":"person","startPosition":1147,"endPosition":1152},{"label":"2016-11-07","tag":"date","startPosition":51,"endPosition":61},{"label":"2016-11-07","tag":"date","startPosition":120,"endPosition":130},{"label":"2019-09-03","tag":"date","startPosition":252,"endPosition":263},{"label":"2016-12-12","tag":"date","startPosition":1087,"endPosition":1098}]', '{"proposals":[{"proposalType":"corrperson","values":[{"ref":{"id":"83XuNaLvbMt-E3ocm83uYtt-VoLgToV7gxz-rYhG6ZDZmB6","name":"Marcus Leaf"},"origin":[{"label":"Leaf","tag":"person","startPosition":145,"endPosition":149}],"weight":0.024935511607910577}]},{"proposalType":"corrorg","values":[{"ref":{"id":"85CGijc6q6q-Vj1dZXCPGcK-rpDK7MKVrRz-xyNsSbEbuJy","name":"Pancake Company"},"origin":[{"label":"Company","tag":"organization","startPosition":197,"endPosition":204},{"label":"Pancake","tag":"organization","startPosition":189,"endPosition":196}],"weight":0.03250214961306965}]},{"proposalType":"concperson","values":[{"ref":{"id":"2vhk349kjyK-LYQWRjTPLro-E4hCRgJyGC3-BMqG3bcVw4y","name":"Derek Jeter"},"origin":[{"label":"Derek Jeter","tag":"person","startPosition":0,"endPosition":11}],"weight":0.0}]},{"proposalType":"docdate","values":[{"ref":{"id":"2016-11-07","name":"2016-11-07"},"origin":[{"label":"November 7, 2016","tag":"date","startPosition":51,"endPosition":61}],"weight":0.007308684436801376},{"ref":{"id":"2016-11-07","name":"2016-11-07"},"origin":[{"label":"November 7, 2016","tag":"date","startPosition":120,"endPosition":130}],"weight":0.017196904557179708},{"ref":{"id":"2019-09-03","name":"2019-09-03"},"origin":[{"label":"September 3, 2019","tag":"date","startPosition":252,"endPosition":263}],"weight":0.03611349957007738},{"ref":{"id":"2016-12-12","name":"2016-12-12"},"origin":[{"label":"December 12, 2016","tag":"date","startPosition":1087,"endPosition":1098}],"weight":0.3115505875609057}]}]}', 1, 'deu');
 CREATE CACHED TABLE "public"."classifier_setting"(
-    "cid" VARCHAR(254) NOT NULL,
-    "schedule" VARCHAR(254) NOT NULL,
-    "item_count" INT NOT NULL,
+    "cid" CHARACTER VARYING(254) NOT NULL,
+    "schedule" CHARACTER VARYING(254) NOT NULL,
+    "item_count" INTEGER NOT NULL,
     "created" TIMESTAMP NOT NULL,
-    "categories" TEXT NOT NULL,
-    "category_list_type" VARCHAR(254) NOT NULL
-);   
+    "categories" CHARACTER VARYING NOT NULL,
+    "category_list_type" CHARACTER VARYING(254) NOT NULL
+);    
 ALTER TABLE "public"."classifier_setting" ADD CONSTRAINT "public"."CONSTRAINT_B9" PRIMARY KEY("cid");          
 -- 1 +/- SELECT COUNT(*) FROM public.classifier_setting;       
 INSERT INTO "public"."classifier_setting" VALUES
 ('demo', '*-01/3-01 01:00:00', 0, TIMESTAMP '2021-01-03 21:35:17.933', '["doctype"]', 'whitelist');           
 CREATE CACHED TABLE "public"."periodic_task"(
-    "id" VARCHAR(254) NOT NULL,
+    "id" CHARACTER VARYING(254) NOT NULL,
     "enabled" BOOLEAN NOT NULL,
-    "task" VARCHAR(254) NOT NULL,
-    "group_" VARCHAR(254) NOT NULL,
-    "args" TEXT NOT NULL,
-    "subject" VARCHAR(254) NOT NULL,
-    "submitter" VARCHAR(254) NOT NULL,
-    "priority" INT NOT NULL,
-    "worker" VARCHAR(254),
+    "task" CHARACTER VARYING(254) NOT NULL,
+    "group_" CHARACTER VARYING(254) NOT NULL,
+    "args" CHARACTER VARYING NOT NULL,
+    "subject" CHARACTER VARYING(254) NOT NULL,
+    "submitter" CHARACTER VARYING(254) NOT NULL,
+    "priority" INTEGER NOT NULL,
+    "worker" CHARACTER VARYING(254),
     "marked" TIMESTAMP,
-    "timer" VARCHAR(254) NOT NULL,
+    "timer" CHARACTER VARYING(254) NOT NULL,
     "nextrun" TIMESTAMP NOT NULL,
     "created" TIMESTAMP NOT NULL,
-    "summary" VARCHAR(254)
-); 
+    "summary" CHARACTER VARYING(254)
+);
 ALTER TABLE "public"."periodic_task" ADD CONSTRAINT "public"."CONSTRAINT_2" PRIMARY KEY("id"); 
 -- 2 +/- SELECT COUNT(*) FROM public.periodic_task;            
 INSERT INTO "public"."periodic_task" VALUES
 ('docspell-houskeeping', TRUE, 'housekeeping', 'docspell-system', '{}', 'Docspell house-keeping', 'docspell-system', 0, NULL, TIMESTAMP '2021-07-13 21:06:09.222925', 'Sun *-*-* 00:00:00', TIMESTAMP '2021-07-18 00:00:00', TIMESTAMP '2021-01-03 20:49:33.897', NULL),
 ('CdqeBRkD5Ft-ubJkLhMDTa5-K7k2ix6mqRM-Yu2Y7CGuVK7', TRUE, 'learn-classifier', 'demo', '{"collective":"demo"}', 'learn-classifier: learn-classifier', 'learn-classifier', 0, NULL, TIMESTAMP '2021-07-13 21:02:59.231627', '*-01/3-01 01:00:00', TIMESTAMP '2021-10-01 01:00:00', TIMESTAMP '2021-01-03 21:35:17.958', NULL);              
-CREATE INDEX "public"."periodic_task_nextrun_idx" ON "public"."periodic_task"("nextrun");      
-CREATE INDEX "public"."periodic_task_worker_idx" ON "public"."periodic_task"("worker");        
-DROP TABLE IF EXISTS SYSTEM_LOB_STREAM;        
-CALL SYSTEM_COMBINE_BLOB(-1);  
-DROP ALIAS IF EXISTS SYSTEM_COMBINE_CLOB;      
-DROP ALIAS IF EXISTS SYSTEM_COMBINE_BLOB;      
+CREATE INDEX "public"."periodic_task_nextrun_idx" ON "public"."periodic_task"("nextrun" NULLS FIRST);          
+CREATE INDEX "public"."periodic_task_worker_idx" ON "public"."periodic_task"("worker" NULLS FIRST);            
 ALTER TABLE "public"."tagitem" ADD CONSTRAINT "public"."CONSTRAINT_A3" UNIQUE("itemid", "tid");
 ALTER TABLE "public"."custom_field_value" ADD CONSTRAINT "public"."CONSTRAINT_6FD5B" UNIQUE("item_id", "field");               
 ALTER TABLE "public"."classifier_model" ADD CONSTRAINT "public"."CONSTRAINT_BC7B9" UNIQUE("cid", "name");      
