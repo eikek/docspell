@@ -135,7 +135,7 @@ object QJob {
       .trace(
         s"nextGroupQuery: $frag  (now=${now.toMillis}, pause=${initialPause.millis})"
       ) *>
-      groups.build.query[Ident].option
+      frag.query[Option[Ident]].unique
   }
 
   private def stuckTriggerValue(t: RJob.Table, initialPause: Duration, now: Timestamp) =
