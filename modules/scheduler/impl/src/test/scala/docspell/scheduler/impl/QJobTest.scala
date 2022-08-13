@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong
 import cats.syntax.all._
 
 import docspell.common._
+import docspell.store.qb.{Condition, DML}
 import docspell.store.records.{RJob, RJobGroupUse}
 import docspell.store.{DatabaseTest, Db}
 
@@ -41,6 +42,19 @@ class QJobTest extends DatabaseTest {
       Priority.Low,
       None
     )
+
+  Db.all.toList.foreach { db =>
+    test(s"selectNextGroup on empty table ($db)") {
+      val store = createStore(db)
+      val nextGroup = for {
+        _ <- store.transact(RJobGroupUse.deleteAll)
+        _ <- store.transact(DML.delete(RJob.T, Condition.unit))
+        next <- store.transact(QJob.selectNextGroup(worker, nowTs, initialPause))
+      } yield next
+
+      nextGroup.assertEquals(None)
+    }
+  }
 
   Db.all.toList.foreach { db =>
     test(s"set group must insert or update ($db)") {
