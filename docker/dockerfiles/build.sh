@@ -34,7 +34,7 @@ cd "$(dirname "$0")"
 
 trap "{ docker buildx rm docspell-builder; }" EXIT
 
-platforms=${PLATFORMS:-"linux/amd64,linux/arm64,linux/arm/v7"}
+platforms=${PLATFORMS:-"linux/amd64,linux/arm64"}
 docker buildx create --name docspell-builder --use
 
 case $version in
