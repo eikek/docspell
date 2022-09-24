@@ -76,7 +76,7 @@ object StringUtil {
     /** String content without the delimiter */
     def undelimitedString(endP: P[Unit]): P[String] =
       escapedToken.backtrack
-        .orElse((!endP).with1 ~ P.anyChar)
+        .orElse(((!endP).with1 ~ P.anyChar).void)
         .rep
         .string
         .flatMap { str =>
