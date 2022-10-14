@@ -9,7 +9,7 @@ pull_request_rules:
         add: ["type: dependencies"]
   - name: automatically merge Scala Steward PRs on CI success
     conditions:
-      - author=eikek-scala-steward
+      - author=apps/eikek-scala-steward
       - base=master
       - status-success=ci
     actions:
