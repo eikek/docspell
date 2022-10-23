@@ -5,7 +5,7 @@ weight = 35
 mktoc = true
 +++
 
-# Download all doocuments
+# Download all documents
 
 There is a (hidden) option to download all the documents in a filtered view (when you select at least one filter. For example a tag, category, corresponden, etc ...) either as converted PDF files or as original files.
 
