@@ -30,7 +30,7 @@ There is a (hidden) option to download all the documents in a filtered view (whe
 3. Click the top-right menu
 4. Click "Download all"
 
-Once the download panel is open you can select ehich version of the files you want to download.
+Once the download panel is open you can select which version of the files you want to download.
 
 <div class="flex items-center justify-center">
   {{ imgnormal2(light="download-all-02.png", width="") }}
