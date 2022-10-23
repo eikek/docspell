@@ -24,9 +24,6 @@ Native (firefox) view:
 
 {{ figure(file="example-html-native.jpg") }}
 
-Note: the example html is from
-[here](https://www.sparksuite.com/open-source/invoice.html).
-
 I downloaded the HTML file to disk together with its resources (using
 *Save as...* in the browser).
 
