@@ -1,5 +1,5 @@
 +++
-title = "Download all doocuments"
+title = "Download all documents"
 weight = 35
 [extra]
 mktoc = true
