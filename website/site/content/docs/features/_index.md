@@ -22,6 +22,7 @@ template = "docs.html"
   into searchable PDF/A pdfs.
 - A powerful [query language](@/docs/query/_index.md) to find
   documents
+- The possibility to download all the filtered documents (once at least one filter has been selected). 
 - use [bookmarks](@/docs/webapp/bookmarks.md) to save more complex queries
 - customizable [dashboards](@/docs/webapp/dashboards.md) as the main page
 - Non-destructive: all your uploaded files are never modified and can
