@@ -21,7 +21,7 @@ There is a (hidden) option to download all the documents in a filtered view (whe
 ## Detailed steps
 
 <div class="flex items-center justify-center">
-  {{ imgnormal2(light="download-all-01.png", width="") }}
+  {{ imgnormal2(light="download-all-01.png", dark="download-all-01-dark.png", width="") }}
 </div>
 
 
@@ -33,19 +33,19 @@ There is a (hidden) option to download all the documents in a filtered view (whe
 Once the download panel is open you can select which version of the files you want to download.
 
 <div class="flex items-center justify-center">
-  {{ imgnormal2(light="download-all-02.png", width="") }}
+  {{ imgnormal2(light="download-all-02.png", dark="download-all-02-dark.png", width="") }}
 </div>
 
 and the you click on create download
 
 <div class="flex items-center justify-center">
-  {{ imgnormal2(light="download-all-03.png", width="") }}
+  {{ imgnormal2(light="download-all-03.png", dark="download-all-03-dark.png", width="") }}
 </div>
 
 and finally you can download the files
 
 <div class="flex items-center justify-center">
-  {{ imgnormal2(light="download-all-04.png", width="") }}
+  {{ imgnormal2(light="download-all-04.png", dark="download-all-04-dark.png", width="") }}
 </div>
 
 a ZIP-File will be created will all the selected documents, with a folder structure one folder per month and corresponden folder inside `YYYY-mm/correspondent`.
