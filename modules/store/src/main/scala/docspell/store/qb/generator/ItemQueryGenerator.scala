@@ -100,10 +100,6 @@ object ItemQueryGenerator {
         val noLikeOp = if (op == Operator.Like) Operator.Eq else op
         Condition.CompareFVal(col, makeOp(noLikeOp), dt)
 
-      case Expr.SimpleExpr(op, Property.IntProperty(attr, value)) =>
-        val col = intColumn(tables)(attr)
-        Condition.CompareVal(col, makeOp(op), value)
-
       case Expr.InExpr(attr, values) =>
         val col = stringColumn(tables)(attr)
         if (values.tail.isEmpty) col === values.head
@@ -228,8 +224,6 @@ object ItemQueryGenerator {
         stringColumn(tables)(s).s
       case t: Attr.DateAttr =>
         timestampColumn(tables)(t)
-      case n: Attr.IntAttr =>
-        intColumn(tables)(n).s
     }
 
   private def timestampColumn(tables: Tables)(attr: Attr.DateAttr): SelectExpr =
@@ -258,11 +252,6 @@ object ItemQueryGenerator {
       case Attr.Concerning.EquipName     => tables.concEquip.name
       case Attr.Folder.FolderId          => tables.folder.id.cast[String]
       case Attr.Folder.FolderName        => tables.folder.name
-    }
-
-  private def intColumn(tables: Tables)(attr: Attr.IntAttr): Column[Int] =
-    attr match {
-      case Attr.AttachCount => tables.attachCount.num
     }
 
   private def makeOp(operator: Operator): QOp =

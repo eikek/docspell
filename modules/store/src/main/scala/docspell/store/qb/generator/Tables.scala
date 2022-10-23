@@ -6,7 +6,6 @@
 
 package docspell.store.qb.generator
 
-import docspell.store.queries.AttachCountTable
 import docspell.store.records._
 
 final case class Tables(
@@ -17,6 +16,5 @@ final case class Tables(
     concEquip: REquipment.Table,
     folder: RFolder.Table,
     attach: RAttachment.Table,
-    meta: RAttachmentMeta.Table,
-    attachCount: AttachCountTable
+    meta: RAttachmentMeta.Table
 )

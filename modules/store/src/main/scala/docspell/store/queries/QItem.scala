@@ -299,7 +299,7 @@ object QItem extends FtsSupport {
       coll: CollectiveId,
       q: ItemQuery.Expr
   ): Condition = {
-    val tables = Tables(i, org, pers0, pers1, equip, f, a, m, AttachCountTable("cta"))
+    val tables = Tables(i, org, pers0, pers1, equip, f, a, m)
     ItemQueryGenerator.fromExpr(today, tables, coll)(q)
   }
 

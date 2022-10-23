@@ -2,7 +2,6 @@
   "name": "docspell-css",
   "version": "1.0.0",
   "private": true,
-  "dependencies": {},
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@tailwindcss/forms": "^0.5.0",

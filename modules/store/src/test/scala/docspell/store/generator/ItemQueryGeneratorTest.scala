@@ -13,7 +13,6 @@ import docspell.query.ItemQueryParser
 import docspell.store.qb.DSL._
 import docspell.store.qb.Select
 import docspell.store.qb.generator.{ItemQueryGenerator, Tables}
-import docspell.store.queries.AttachCountTable
 import docspell.store.records._
 
 import munit._
@@ -29,8 +28,7 @@ class ItemQueryGeneratorTest extends FunSuite {
     REquipment.as("ne"),
     RFolder.as("f"),
     RAttachment.as("a"),
-    RAttachmentMeta.as("m"),
-    AttachCountTable("cta")
+    RAttachmentMeta.as("m")
   )
   val now: LocalDate = LocalDate.of(2021, 2, 25)
 

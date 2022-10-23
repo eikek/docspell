@@ -83,8 +83,8 @@ object ExprString {
             Right(s"${stringAttr(attr)}${opStr(op)}${quote(value)}")
           case Property.DateProperty(attr, value) =>
             Right(s"${dateAttr(attr)}${opStr(op)}${dateStr(value)}")
-          case Property.IntProperty(attr, value) =>
-            Right(s"${attrStr(attr)}${opStr(op)}$value")
+//          case Property.IntProperty(attr, value) =>
+//            Right(s"${attrStr(attr)}${opStr(op)}$value")
         }
 
       case TagCategoryMatch(op, values) =>
@@ -171,13 +171,6 @@ object ExprString {
     attr match {
       case a: StringAttr => stringAttr(a)
       case a: DateAttr   => dateAttr(a)
-      case a: IntAttr    => intAttr(a)
-    }
-
-  private[internal] def intAttr(attr: IntAttr): String =
-    attr match {
-      case AttachCount =>
-        Constants.attachCount
     }
 
   private[internal] def dateAttr(attr: DateAttr): String =

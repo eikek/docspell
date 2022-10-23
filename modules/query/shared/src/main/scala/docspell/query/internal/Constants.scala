@@ -8,7 +8,7 @@ package docspell.query.internal
 
 object Constants {
 
-  val attachCount = "attach.count"
+  // val attachCount = "attach.count"
   val attachId = "attach.id"
   val cat = "cat"
   val checksum = "checksum"
