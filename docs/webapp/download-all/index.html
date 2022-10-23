@@ -20,7 +20,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Components - Docspell">
+<meta name="og:site_name" content="Download all documents - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -33,7 +33,7 @@
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
 
-        <title>Components - Docspell Documentation</title>
+        <title>Download all documents - Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
 
         <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
@@ -420,7 +420,7 @@
             </a>
         </div>
         
-        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
             <a href="https://docspell.org/docs/webapp/download-all/" class="w-full block">
                 Download All Documents
             </a>
@@ -771,43 +771,42 @@
                         
   
   
-  <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
-<p>How should the application be structured into its main components? The
-goal is to be able to have multiple rest servers/webapps and multiple
-document processor components working togehter.</p>
-<h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
-<p>The following are the &quot;main&quot; modules. There may be more helper modules
-and libraries that support implementing a feature.</p>
-<h2 id="store">store<a class="zola-anchor" href="#store" aria-label="Anchor link for: store">🔗</a></h2>
-<p>The code related to database access. It also provides the job
-queue. It is designed as a library.</p>
-<h2 id="joex">joex<a class="zola-anchor" href="#joex" aria-label="Anchor link for: joex">🔗</a></h2>
-<p>Joex stands for &quot;job executor&quot;.</p>
-<p>An application that executes jobs from the queue and therefore depends
-on the <code>store</code> module. It provides the code for all tasks that can be
-submitted as jobs. If no jobs are in the queue, the joex &quot;sleeps&quot;
-and must be waked via an external request.</p>
-<p>It provides the document processing code.</p>
-<p>It provides a http rest server to get insight into the joex state
-and also to be notified for new jobs.</p>
-<h2 id="backend">backend<a class="zola-anchor" href="#backend" aria-label="Anchor link for: backend">🔗</a></h2>
-<p>It provides all the logic, except document processing, as a set of
-&quot;operations&quot;. An operation can be directly mapped to a rest
-endpoint.</p>
-<p>It is designed as a library.</p>
-<h2 id="rest-api">rest api<a class="zola-anchor" href="#rest-api" aria-label="Anchor link for: rest-api">🔗</a></h2>
-<p>This module contains the specification for the rest server as an
-<code>openapi.yml</code> file. It is packaged as a scala library that also
-provides types and conversions to/from json.</p>
-<p>The idea is that the <code>rest server</code> module can depend on it as well as
-rest clients.</p>
-<h2 id="rest-server">rest server<a class="zola-anchor" href="#rest-server" aria-label="Anchor link for: rest-server">🔗</a></h2>
-<p>This is the main application. It directly depends on the <code>backend</code>
-module, and each rest endpoint maps to a &quot;backend operation&quot;. It is
-also responsible for converting the json data inside http requests
-to/from types recognized by the <code>backend</code> module.</p>
-<h2 id="webapp">webapp<a class="zola-anchor" href="#webapp" aria-label="Anchor link for: webapp">🔗</a></h2>
-<p>This module provides the user interface as a web application.</p>
+  <h1 id="download-all-documents">Download all documents<a class="zola-anchor" href="#download-all-documents" aria-label="Anchor link for: download-all-documents">🔗</a></h1>
+<p>There is a (hidden) option to download all the documents in a filtered view (when you select at least one filter. For example a tag, category, corresponden, etc ...) either as converted PDF files or as original files.</p>
+<h2 id="important-quick-steps">Important (quick-steps)<a class="zola-anchor" href="#important-quick-steps" aria-label="Anchor link for: important-quick-steps">🔗</a></h2>
+<ul>
+<li>You have to go to &quot;Items&quot; (<code>app/search</code>)</li>
+<li>You have to select at least one filter from the left column</li>
+<li>You have to click on the menu on the top-right (three horizonal lines) -&gt; Download all</li>
+<li>You Have to select wheter to download the original files or the converted PDF files</li>
+</ul>
+<h2 id="detailed-steps">Detailed steps<a class="zola-anchor" href="#detailed-steps" aria-label="Anchor link for: detailed-steps">🔗</a></h2>
+<div class="flex items-center justify-center">
+  <img class="light-block" src="https://docspell.org/docs/webapp/download-all-01.png" width="">
+<img class="dark-block" src="https://docspell.org/docs/webapp/download-all-01-dark.png" width="">
+</div>
+<ol>
+<li>Go to &quot;Items&quot; (<code>app/search</code>) by clicking the docspell logo.</li>
+<li>Select at least one filter y clicking them. Once you select a filter the main panel will update itself showing only the documents which match the filters.</li>
+<li>Click the top-right menu</li>
+<li>Click &quot;Download all&quot;</li>
+</ol>
+<p>Once the download panel is open you can select which version of the files you want to download.</p>
+<div class="flex items-center justify-center">
+  <img class="light-block" src="https://docspell.org/docs/webapp/download-all-02.png" width="">
+<img class="dark-block" src="https://docspell.org/docs/webapp/download-all-02-dark.png" width="">
+</div>
+<p>and the you click on create download</p>
+<div class="flex items-center justify-center">
+  <img class="light-block" src="https://docspell.org/docs/webapp/download-all-03.png" width="">
+<img class="dark-block" src="https://docspell.org/docs/webapp/download-all-03-dark.png" width="">
+</div>
+<p>and finally you can download the files</p>
+<div class="flex items-center justify-center">
+  <img class="light-block" src="https://docspell.org/docs/webapp/download-all-04.png" width="">
+<img class="dark-block" src="https://docspell.org/docs/webapp/download-all-04-dark.png" width="">
+</div>
+<p>a ZIP-File will be created will all the selected documents, with a folder structure one folder per month and corresponden folder inside <code>YYYY-mm/correspondent</code>.</p>
 
   
 
@@ -834,7 +833,7 @@ to/from types recognized by the <code>backend</code> module.</p>
 
     
     <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
-        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;dev&#x2F;adr&#x2F;0001_components.md"
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;webapp&#x2F;download-all.md"
            title="Edit this page on Github"
            target="_blank"
         >
@@ -856,54 +855,21 @@ to/from types recognized by the <code>backend</code> module.</p>
                     
                     <div>
                         <i class="fa fa-hashtag mr-1"></i>
-                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0001-components&#x2F;#context-and-problem-statement" class="hover:text-stone-900 dark:hover:text-stone-100">
-                            Context and Problem Statement
-                        </a>
-                        
-                    </div>
-
-                    
-                    <div>
-                        <i class="fa fa-hashtag mr-1"></i>
-                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0001-components&#x2F;#decision-outcome" class="hover:text-stone-900 dark:hover:text-stone-100">
-                            Decision Outcome
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;download-all&#x2F;#download-all-documents" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Download all documents
                         </a>
                         
                         <div class="pl-4 opacity-75">
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0001-components&#x2F;#store" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    store
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;download-all&#x2F;#important-quick-steps" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Important (quick-steps)
                                 </a>
                             </div>
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0001-components&#x2F;#joex" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    joex
-                                </a>
-                            </div>
-                            
-                            <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0001-components&#x2F;#backend" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    backend
-                                </a>
-                            </div>
-                            
-                            <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0001-components&#x2F;#rest-api" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    rest api
-                                </a>
-                            </div>
-                            
-                            <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0001-components&#x2F;#rest-server" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    rest server
-                                </a>
-                            </div>
-                            
-                            <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0001-components&#x2F;#webapp" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    webapp
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;webapp&#x2F;download-all&#x2F;#detailed-steps" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Detailed steps
                                 </a>
                             </div>
                             
