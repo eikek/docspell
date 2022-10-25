@@ -13,7 +13,7 @@ object Dependencies {
   val CatsEffectVersion = "3.3.14"
   val CatsParseVersion = "0.3.8"
   val CirceVersion = "0.14.3"
-  val CirceGenericExtrasVersion = "0.14.2"
+  val CirceGenericExtrasVersion = "0.14.3"
   val CirceYamlVersion = "0.14.1"
   val ClipboardJsVersion = "2.0.6"
   val DoobieVersion = "1.0.0-RC2"
