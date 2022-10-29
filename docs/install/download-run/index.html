@@ -776,39 +776,57 @@
 <a href="https://docspell.org/docs/install/prereq/">prerequisites</a> first.</p>
 <h2 id="using-zip-files">Using zip files<a class="zola-anchor" href="#using-zip-files" aria-label="Anchor link for: using-zip-files">🔗</a></h2>
 <ol>
-<li>Download the two files:
-<ul>
-<li><a href="https://github.com/eikek/docspell/releases/download/v0.38.0/docspell-restserver-<pre data-shortcode>0.38.0</pre>.zip">docspell-restserver-0.38.0.zip</a></li>
-<li><a href="https://github.com/eikek/docspell/releases/download/v0.38.0/docspell-joex-<pre data-shortcode>0.38.0</pre>.zip">docspell-joex-0.38.0.zip</a></li>
+<li>Download the two files:<ul>
+ <li>
+     <a href="https://github.com/eikek/docspell/releases/download/v0.38.0/docspell-restserver-0.38.0.zip">docspell-restserver-0.38.0.zip</a>
+ </li>
+ <li>
+     <a href="https://github.com/eikek/docspell/releases/download/v0.38.0/docspell-joex-0.38.0.zip">docspell-joex-0.38.0.zip</a>
+ </li>
+</li>
+</ol>
 </ul>
-</li>
-<li>Unzip both files:<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> unzip docspell-<span class="z-keyword z-operator z-regexp z-quantifier z-shell">*</span>.zip</span>
+<ol start="2">
+<li>
+<p>Unzip both files:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> unzip docspell-<span class="z-keyword z-operator z-regexp z-quantifier z-shell">*</span>.zip</span>
 </span></code></pre>
 </li>
-<li>Open two terminal windows and navigate to the the directory
-containing the zip files.</li>
-<li>Start both components executing:<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> ./docspell-restserver<span class="z-keyword z-operator z-regexp z-quantifier z-shell">*</span>/bin/docspell-restserver</span>
+<li>
+<p>Open two terminal windows and navigate to the the directory
+containing the zip files.</p>
+</li>
+<li>
+<p>Start both components executing:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> ./docspell-restserver<span class="z-keyword z-operator z-regexp z-quantifier z-shell">*</span>/bin/docspell-restserver</span>
 </span></code></pre>
-in one terminal and<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> ./docspell-joex<span class="z-keyword z-operator z-regexp z-quantifier z-shell">*</span>/bin/docspell-joex</span>
+<p>in one terminal and</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> ./docspell-joex<span class="z-keyword z-operator z-regexp z-quantifier z-shell">*</span>/bin/docspell-joex</span>
 </span></code></pre>
-in the other.</li>
-<li>Point your browser to: <a href="http://localhost:7880/app">http://localhost:7880/app</a></li>
-<li>Register a new account, sign in and try it.</li>
+<p>in the other.</p>
+</li>
+<li>
+<p>Point your browser to: <a href="http://localhost:7880/app">http://localhost:7880/app</a></p>
+</li>
+<li>
+<p>Register a new account, sign in and try it.</p>
+</li>
 </ol>
 <p>Note, that this setup doesn't include watching a directory nor
 fulltext search. Using zip/deb files requires to take care of the
 <a href="https://docspell.org/docs/install/prereq/">prerequisites</a> yourself.</p>
-<p>The provided scripts in
-[docspell-tools-0.38.0.zip](https://github.com/eikek/docspell/releases/download/v0.38.0/docspell-tools-0.38.0.zip)
-must be extracted and installed manually somewhere in your <code>$PATH</code>.</p>
 <h2 id="using-deb-files">Using deb files<a class="zola-anchor" href="#using-deb-files" aria-label="Anchor link for: using-deb-files">🔗</a></h2>
 <p>Please checkout this comprehensive
 <a href="https://github.com/andreklug/docspell-debian">guide</a> for installing
 on a Debian system.</p>
 <p>Packages are also provided at the release page:</p>
 <ul>
-<li><a href="https://github.com/eikek/docspell/releases/download/v0.38.0/docspell-restserver_<pre data-shortcode>0.38.0</pre>_all.deb">docspell-restserver_0.38.0_all.deb</a></li>
-<li><a href="https://github.com/eikek/docspell/releases/download/v0.38.0/docspell-joex_<pre data-shortcode>0.38.0</pre>_all.deb">docspell-joex_0.38.0_all.deb</a></li>
+    <li>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.38.0/docspell-restserver_0.38.0_all.deb">docspell-restserver_0.38.0_all.deb</a>
+    </li>
+    <li>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.38.0/docspell-joex_0.38.0_all.deb">docspell-joex_0.38.0_all.deb</a>
+    </li>
 </ul>
 <p>The DEB packages can be installed on Debian, or Debian based Distros:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> sudo dpkg<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>i</span> docspell<span class="z-keyword z-operator z-regexp z-quantifier z-shell">*</span>.deb</span>
