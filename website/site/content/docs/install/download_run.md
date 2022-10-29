@@ -11,8 +11,8 @@ You can install via zip or deb archives. Please see the
 ## Using zip files
 
 1. Download the two files:
-   - <a href="https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-restserver-{{version()}}.zip">docspell-restserver-{{version()}}.zip</a>
-   - <a href="https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-joex-{{version()}}.zip">docspell-joex-{{version()}}.zip</a>
+   {{ zip_files() }}
+
 2. Unzip both files:
    ``` bash
    $ unzip docspell-*.zip
@@ -23,10 +23,13 @@ You can install via zip or deb archives. Please see the
    ``` bash
    $ ./docspell-restserver*/bin/docspell-restserver
    ```
+
    in one terminal and
+
    ``` bash
    $ ./docspell-joex*/bin/docspell-joex
    ```
+
    in the other.
 5. Point your browser to: <http://localhost:7880/app>
 6. Register a new account, sign in and try it.
@@ -35,9 +38,6 @@ Note, that this setup doesn't include watching a directory nor
 fulltext search. Using zip/deb files requires to take care of the
 [prerequisites](@/docs/install/prereq.md) yourself.
 
-The provided scripts in
-[docspell-tools-{{version()}}.zip](https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-tools-{{version()}}.zip)
-must be extracted and installed manually somewhere in your `$PATH`.
 
 ## Using deb files
 
@@ -47,8 +47,7 @@ on a Debian system.
 
 Packages are also provided at the release page:
 
-- <a href="https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-restserver_{{version()}}_all.deb">docspell-restserver_{{version()}}_all.deb</a>
-- <a href="https://github.com/eikek/docspell/releases/download/v{{version()}}/docspell-joex_{{version()}}_all.deb">docspell-joex_{{version()}}_all.deb</a>
+{{ deb_files() }}
 
 The DEB packages can be installed on Debian, or Debian based Distros:
 
