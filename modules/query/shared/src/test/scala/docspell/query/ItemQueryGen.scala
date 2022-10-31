@@ -93,20 +93,14 @@ object ItemQueryGen {
   val dateAttrGen: Gen[Attr.DateAttr] =
     Gen.oneOf(Attr.Date, Attr.DueDate, Attr.CreatedDate)
 
-  val intAttrGen: Gen[Attr.IntAttr] =
-    Gen.const(Attr.AttachCount)
-
   val attrGen: Gen[Attr] =
-    Gen.oneOf(stringAttrGen, dateAttrGen, intAttrGen)
+    Gen.oneOf(stringAttrGen, dateAttrGen)
 
   private val valueChars =
     Gen.oneOf(Gen.alphaNumChar, Gen.oneOf(" /{}*?-:@#$~+%…_[]^!ß"))
 
   private val stringValueGen: Gen[String] =
     Gen.choose(1, 20).flatMap(n => Gen.stringOfN(n, valueChars))
-
-  private val intValueGen: Gen[Int] =
-    Gen.choose(1900, 9999)
 
   private val identGen: Gen[String] =
     Gen
@@ -167,12 +161,6 @@ object ItemQueryGen {
       sval <- stringValueGen
     } yield Property.StringProperty(attr, sval)
 
-  val intPropGen: Gen[Property.IntProperty] =
-    for {
-      attr <- intAttrGen
-      ival <- intValueGen
-    } yield Property.IntProperty(attr, ival)
-
   val datePropGen: Gen[Property.DateProperty] =
     for {
       attr <- dateAttrGen
@@ -180,7 +168,7 @@ object ItemQueryGen {
     } yield Property.DateProperty(attr, dv)
 
   val propertyGen: Gen[Property] =
-    Gen.oneOf(stringPropGen, datePropGen, intPropGen)
+    Gen.oneOf(stringPropGen, datePropGen)
 
   val simpleExprGen: Gen[Expr.SimpleExpr] =
     for {

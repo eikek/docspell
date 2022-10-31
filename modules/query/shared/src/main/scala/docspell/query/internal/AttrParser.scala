@@ -72,13 +72,7 @@ object AttrParser {
   val folderName: P[Attr.StringAttr] =
     P.ignoreCase(C.folder).as(Attr.Folder.FolderName)
 
-  val attachCountAttr: P[Attr.IntAttr] =
-    P.ignoreCase(C.attachCount).as(Attr.AttachCount)
-
   // combining grouped by type
-
-  val intAttr: P[Attr.IntAttr] =
-    attachCountAttr
 
   val dateAttr: P[Attr.DateAttr] =
     P.oneOf(List(date, dueDate, created))
@@ -104,5 +98,5 @@ object AttrParser {
     )
 
   val anyAttr: P[Attr] =
-    P.oneOf(List(dateAttr, stringAttr, intAttr))
+    P.oneOf(List(dateAttr, stringAttr))
 }

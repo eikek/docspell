@@ -91,7 +91,6 @@ These fields map to at most one value:
 - `date` the item date
 - `due` the due date of the item
 - `created` the date when the item was created
-- `attach.count` the number of attachments of the item
 - `corr.org.id` the id of the correspondent organization
 - `corr.org.name` the name of the correspondent organization
 - `corr.pers.name` name of correspondent person
@@ -521,11 +520,6 @@ look into correspondent names and concerning names.
 
 
 # Examples
-
-Find items with 2 or more attachments:
-```
-attach.count>2
-```
 
 Find items with at least one tag invoice or todo that are due next:
 ```
