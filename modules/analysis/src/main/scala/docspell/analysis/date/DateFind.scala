@@ -110,6 +110,7 @@ object DateFind {
         case Language.Hebrew     => dmy
         case Language.Lithuanian => ymd
         case Language.Polish     => dmy
+        case Language.Estonian   => dmy
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>

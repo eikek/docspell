@@ -34,6 +34,7 @@ type Language
     | Hungarian
     | Lithuanian
     | Polish
+    | Estonian
 
 
 fromString : String -> Maybe Language
@@ -97,6 +98,9 @@ fromString str =
 
     else if str == "pol" || str == "pl" || str == "polish" then
         Just Polish
+
+    else if str == "est" || str == "et" || str == "estonian" then
+        Just Estonian
 
     else
         Nothing
@@ -165,6 +169,9 @@ toIso3 lang =
         Polish ->
             "pol"
 
+        Estonian ->
+            "est"
+
 
 all : List Language
 all =
@@ -188,4 +195,5 @@ all =
     , Hungarian
     , Lithuanian
     , Polish
+    , Estonian
     ]

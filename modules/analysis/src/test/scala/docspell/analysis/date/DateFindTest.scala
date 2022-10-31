@@ -259,4 +259,32 @@ class DateFindTest extends FunSuite {
       )
     )
   }
+
+  test("find estonian dates") {
+    assertEquals(
+      DateFind
+        .findDates(
+          "Some text in estonian 21 juuli 2022 and stuff",
+          Language.Estonian
+        )
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 7, 21),
+          NerLabel("21 juuli 2022", NerTag.Date, 22, 35)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("19.11.21", Language.Estonian)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2021, 11, 19),
+          NerLabel("19.11.21", NerTag.Date, 0, 8)
+        )
+      )
+    )
+  }
 }
