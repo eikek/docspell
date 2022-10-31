@@ -6,8 +6,9 @@
 
 package docspell.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
@@ -156,6 +157,40 @@ object AttachmentRoutes {
           res <- backend.item.setAttachmentName(id, nn.text, user.account.collectiveId)
           resp <- Ok(Conversions.basicResult(res, "Name updated."))
         } yield resp
+
+      case req @ POST -> Root / Ident(id) / "extracted-text" =>
+        (for {
+          itemId <- OptionT(
+            backend.itemSearch.findAttachment(id, user.account.collectiveId)
+          ).map(_.ra.itemId)
+          nn <- OptionT.liftF(req.as[OptionalText])
+          newText = nn.text.getOrElse("").pure[F]
+          _ <- OptionT.liftF(
+            backend.attachment
+              .setExtractedText(user.account.collectiveId, itemId, id, newText)
+          )
+          resp <- OptionT.liftF(Ok(BasicResult(true, "Extracted text updated.")))
+        } yield resp).getOrElseF(NotFound(BasicResult(false, "Attachment not found")))
+
+      case DELETE -> Root / Ident(id) / "extracted-text" =>
+        (for {
+          itemId <- OptionT(
+            backend.itemSearch.findAttachment(id, user.account.collectiveId)
+          ).map(_.ra.itemId)
+          _ <- OptionT.liftF(
+            backend.attachment
+              .setExtractedText(user.account.collectiveId, itemId, id, "".pure[F])
+          )
+          resp <- OptionT.liftF(Ok(BasicResult(true, "Extracted text cleared.")))
+        } yield resp).getOrElseF(NotFound())
+
+      case GET -> Root / Ident(id) / "extracted-text" =>
+        (for {
+          meta <- OptionT(
+            backend.itemSearch.findAttachmentMeta(id, user.account.collectiveId)
+          )
+          resp <- OptionT.liftF(Ok(OptionalText(meta.content)))
+        } yield resp).getOrElseF(NotFound(BasicResult(false, "Attachment not found")))
 
       case DELETE -> Root / Ident(id) =>
         for {

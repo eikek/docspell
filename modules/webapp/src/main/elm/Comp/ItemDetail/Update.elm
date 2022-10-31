@@ -991,11 +991,13 @@ update inav env msg model =
             case Dict.get id model.attachMeta of
                 Just cm ->
                     let
-                        am =
-                            Comp.AttachmentMeta.update lmsg cm
+                        ( am, ac ) =
+                            Comp.AttachmentMeta.update env.flags lmsg cm
                     in
-                    resultModel
-                        { model | attachMeta = Dict.insert id am model.attachMeta }
+                    resultModelCmd
+                        ( { model | attachMeta = Dict.insert id am model.attachMeta }
+                        , Cmd.map (AttachMetaMsg id) ac
+                        )
 
                 Nothing ->
                     resultModel model
