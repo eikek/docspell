@@ -159,6 +159,7 @@ module Api exposing
     , searchShare
     , searchShareStats
     , sendMail
+    , setAttachmentExtractedText
     , setAttachmentName
     , setCollectiveSettings
     , setConcEquip
@@ -2043,6 +2044,21 @@ setAttachmentName :
 setAttachmentName flags attachId newName receive =
     Http2.authPost
         { url = flags.config.baseUrl ++ "/api/v1/sec/attachment/" ++ attachId ++ "/name"
+        , account = getAccount flags
+        , body = Http.jsonBody (Api.Model.OptionalText.encode (OptionalText newName))
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+setAttachmentExtractedText :
+    Flags
+    -> String
+    -> Maybe String
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+setAttachmentExtractedText flags attachId newName receive =
+    Http2.authPost
+        { url = flags.config.baseUrl ++ "/api/v1/sec/attachment/" ++ attachId ++ "/extracted-text"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.OptionalText.encode (OptionalText newName))
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
