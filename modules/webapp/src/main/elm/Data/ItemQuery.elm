@@ -207,14 +207,14 @@ render q =
             "incoming:" ++ boolStr (dir == Data.Direction.Incoming)
 
         ItemIdIn ids ->
-            "id~=" ++ String.join "," ids
+            "id~=" ++ String.join "," (List.map quoteStr ids)
 
         ItemIdMatch id ->
             if String.length id == 47 then
-                "id" ++ attrMatch Eq ++ id
+                "id" ++ attrMatch Eq ++ quoteStr id
 
             else
-                "id" ++ attrMatch Like ++ Util.String.appendIfAbsent "*" id
+                "id" ++ attrMatch Like ++ (quoteStr <| Util.String.appendIfAbsent "*" id)
 
         ItemName m str ->
             "name" ++ attrMatch m ++ quoteStr str
