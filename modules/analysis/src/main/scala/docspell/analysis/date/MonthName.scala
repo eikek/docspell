@@ -60,6 +60,8 @@ object MonthName {
         lithuanian
       case Language.Polish =>
         polish
+      case Language.Estonian =>
+        estonian
     }
 
   private val numbers = List(
@@ -374,5 +376,20 @@ object MonthName {
     List("października", "paź"),
     List("listopada", "lis"),
     List("grudnia", "gru")
+  )
+
+  private val estonian = List(
+    List("jaanuar", "jaan"),
+    List("veebruar", "veebr"),
+    List("märts"),
+    List("aprill", "apr"),
+    List("mai"),
+    List("juuni"),
+    List("juuli"),
+    List("august", "aug"),
+    List("september", "sept"),
+    List("oktoober", "okt"),
+    List("november", "nov"),
+    List("detsember", "dets")
   )
 }

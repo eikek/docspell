@@ -204,5 +204,6 @@ object FtsRepository extends DoobieMeta {
       case Language.Hebrew     => "simple"
       case Language.Lithuanian => "simple"
       case Language.Polish     => "simple"
+      case Language.Estonian   => "simple"
     }
 }
