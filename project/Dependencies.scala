@@ -8,7 +8,7 @@ object Dependencies {
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
   val BinnyVersion = "0.6.0"
-  val CalevVersion = "0.6.3"
+  val CalevVersion = "0.6.4"
   val CatsVersion = "2.7.0"
   val CatsEffectVersion = "3.3.14"
   val CatsParseVersion = "0.3.8"
