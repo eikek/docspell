@@ -125,9 +125,8 @@ OAuth2 authentication …` in your imap settings.
 
 If you don't want to use application specific passwords, you can use
 OAuth2 directly. The e-mail integration in docspell relies on the
-[JavaMail](https://eclipse-ee4j.github.io/mail) library which has
-support for XOAUTH2. It also has documentation on what you need to do
-on your gmail account: <https://eclipse-ee4j.github.io/mail/OAuth2>.
+[JavaMail](https://projects.eclipse.org/projects/ee4j.mail) library
+which has support for XOAUTH2.
 
 To enable the auth scheme in docspell, you must enable the `Enable
 OAuth2 authentication …` in your imap settings. In this mode, the imap
