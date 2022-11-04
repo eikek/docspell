@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:3
 
 ARG version=
 ARG restserver_url=
@@ -15,7 +15,7 @@ RUN curl -L -O ${restserver_url:-https://github.com/eikek/docspell/releases/down
     ln -snf docspell-restserver-* docspell-restserver && \
     rm docspell-restserver/conf/docspell-server.conf
 
-ENTRYPOINT ["/opt/docspell-restserver/bin/docspell-restserver", "-J-XX:+UseG1GC"]
+ENTRYPOINT ["/opt/docspell-restserver/bin/docspell-restserver"]
 EXPOSE 7880
 
 HEALTHCHECK --interval=1m --timeout=10s --retries=2 --start-period=30s \
