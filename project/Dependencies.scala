@@ -56,7 +56,7 @@ object Dependencies {
 
   val scribe = Seq(
     "com.outr" %% "scribe" % ScribeVersion,
-    "com.outr" %% "scribe-slf4j" % ScribeVersion
+    "com.outr" %% "scribe-slf4j2" % ScribeVersion
   )
 
   val sourcecode = Seq(

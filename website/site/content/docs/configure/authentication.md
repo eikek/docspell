@@ -145,3 +145,36 @@ provider, skipping the login page for Docspell.
 
 For logging out, you can specify a `logout-url` for the provider which
 is used to redirect the browser after logging out from Docspell.
+
+## Mixing OIDC and local accounts
+
+Local accounts and those created from an openid provider can live next
+to each other. There is only a caveat for accounts with same login
+name that may occur from local and openid providers. By default,
+docspell treats OIDC and local accounts always as different when
+logging in.
+
+That means when a local user exists and the same account is trying to
+login via an openid provider, docspell fails the authentication
+attempt by default. It could be that these accounts belong to
+different persons in reality.
+
+The other way around is the same: signing up an account that exists
+due to an OIDC login doesn't work, because the collective already
+exists. And obviously, logging in without a password doesn't work
+either :). Even if a password would exists for an account created by
+an OIDC flow, logging in with it doesn't work. It would allow to
+bypass the openid provider (which may not be desired)
+
+This behavior can be changed by setting:
+
+```
+on-account-source-conflict = convert
+```
+
+in the config file (or environment variable). With this setting,
+accounts with same name are treated identical, independet where they
+came from. So you can login either locally **or** via the configured
+openid provider. Note that this also allows users to set a local
+password by themselves (which may not adhere to the password rules you
+can potentially define at an openid provider).

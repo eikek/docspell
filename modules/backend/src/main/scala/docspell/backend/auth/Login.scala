@@ -6,10 +6,11 @@
 
 package docspell.backend.auth
 
-import cats.data.{EitherT, OptionT}
+import cats.data.{EitherT, NonEmptyList, OptionT}
 import cats.effect._
 import cats.implicits._
 
+import docspell.backend.PasswordCrypt
 import docspell.backend.auth.Login._
 import docspell.common._
 import docspell.store.Store
@@ -17,7 +18,6 @@ import docspell.store.queries.QLogin
 import docspell.store.records._
 import docspell.totp.{OnetimePassword, Totp}
 
-import org.mindrot.jbcrypt.BCrypt
 import scodec.bits.ByteVector
 
 trait Login[F[_]] {
@@ -43,8 +43,31 @@ object Login {
   case class Config(
       serverSecret: ByteVector,
       sessionValid: Duration,
-      rememberMe: RememberMe
+      rememberMe: RememberMe,
+      onAccountSourceConflict: OnAccountSourceConflict
   )
+
+  sealed trait OnAccountSourceConflict {
+    def name: String
+  }
+  object OnAccountSourceConflict {
+    case object Fail extends OnAccountSourceConflict {
+      val name = "fail"
+    }
+    case object Convert extends OnAccountSourceConflict {
+      val name = "convert"
+    }
+
+    val all: NonEmptyList[OnAccountSourceConflict] =
+      NonEmptyList.of(Fail, Convert)
+
+    def fromString(str: String): Either[String, OnAccountSourceConflict] =
+      all
+        .find(_.name.equalsIgnoreCase(str))
+        .toRight(
+          s"Invalid on-account-source-conflict value: $str. Use one of ${all.toList.mkString(", ")}"
+        )
+  }
 
   case class RememberMe(enabled: Boolean, valid: Duration) {
     val disabled = !enabled
@@ -106,7 +129,25 @@ object Login {
             case Some(d) if checkNoPassword(d, Set(AccountSource.OpenId)) =>
               doLogin(config, d.account, false)
             case Some(d) if checkNoPassword(d, Set(AccountSource.Local)) =>
-              Result.invalidAccountSource(accountId).pure[F]
+              config.onAccountSourceConflict match {
+                case OnAccountSourceConflict.Fail =>
+                  Result.invalidAccountSource(accountId).pure[F]
+                case OnAccountSourceConflict.Convert =>
+                  for {
+                    _ <- logF.debug(
+                      s"Converting account ${d.account.asString} from Local to OpenId!"
+                    )
+                    _ <- store
+                      .transact(
+                        RUser.updateSource(
+                          d.account.userId,
+                          d.account.collectiveId,
+                          AccountSource.OpenId
+                        )
+                      )
+                    res <- doLogin(config, d.account, false)
+                  } yield res
+              }
             case _ =>
               Result.invalidAuth.pure[F]
           }
@@ -133,8 +174,31 @@ object Login {
               data <- store.transact(QLogin.findUser(acc))
               _ <- logF.trace(s"Account lookup: $data")
               res <- data match {
-                case Some(d) if check(up.pass)(d) =>
+                case Some(d) if check(up.pass)(d, Set(AccountSource.Local)) =>
                   doLogin(config, d.account, up.rememberMe)
+                case Some(d) if check(up.pass)(d, Set(AccountSource.OpenId)) =>
+                  config.onAccountSourceConflict match {
+                    case OnAccountSourceConflict.Fail =>
+                      logF.info(
+                        s"Fail authentication because of account source mismatch (local vs openid)."
+                      ) *>
+                        Result.invalidAccountSource(d.account.asAccountId).pure[F]
+                    case OnAccountSourceConflict.Convert =>
+                      for {
+                        _ <- logF.debug(
+                          s"Converting account ${d.account.asString} from OpenId to Local!"
+                        )
+                        _ <- store
+                          .transact(
+                            RUser.updateSource(
+                              d.account.userId,
+                              d.account.collectiveId,
+                              AccountSource.Local
+                            )
+                          )
+                        res <- doLogin(config, d.account, up.rememberMe)
+                      } yield res
+                  }
                 case _ =>
                   Result.invalidAuth.pure[F]
               }
@@ -285,9 +349,11 @@ object Login {
           token <- RememberToken.user(rme.id, config.serverSecret)
         } yield token
 
-      private def check(givenPass: String)(data: QLogin.Data): Boolean = {
-        val passOk = BCrypt.checkpw(givenPass, data.password.pass)
-        checkNoPassword(data, Set(AccountSource.Local)) && passOk
+      private def check(
+          givenPass: String
+      )(data: QLogin.Data, expectedSources: Set[AccountSource]): Boolean = {
+        val passOk = PasswordCrypt.check(Password(givenPass), data.password)
+        checkNoPassword(data, expectedSources) && passOk
       }
 
       def checkNoPassword(

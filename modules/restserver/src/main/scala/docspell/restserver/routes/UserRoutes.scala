@@ -10,7 +10,8 @@ import cats.effect._
 import cats.implicits._
 
 import docspell.backend.BackendApp
-import docspell.backend.auth.AuthToken
+import docspell.backend.auth.Login.OnAccountSourceConflict
+import docspell.backend.auth.{AuthToken, Login}
 import docspell.backend.ops.OCollective
 import docspell.common._
 import docspell.restapi.model._
@@ -24,7 +25,11 @@ import org.http4s.dsl.Http4sDsl
 
 object UserRoutes {
 
-  def apply[F[_]: Async](backend: BackendApp[F], user: AuthToken): HttpRoutes[F] = {
+  def apply[F[_]: Async](
+      backend: BackendApp[F],
+      loginConfig: Login.Config,
+      user: AuthToken
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -36,7 +41,8 @@ object UserRoutes {
             user.account.collectiveId,
             user.account.userId,
             data.currentPassword,
-            data.newPassword
+            data.newPassword,
+            expectedAccountSources(loginConfig)
           )
           resp <- Ok(basicResult(res))
         } yield resp
@@ -91,14 +97,20 @@ object UserRoutes {
     }
   }
 
-  def admin[F[_]: Async](backend: BackendApp[F]): HttpRoutes[F] = {
+  def admin[F[_]: Async](
+      backend: BackendApp[F],
+      loginConfig: Login.Config
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
     HttpRoutes.of { case req @ POST -> Root / "resetPassword" =>
       for {
         input <- req.as[ResetPassword]
-        result <- backend.collective.resetPassword(input.account)
+        result <- backend.collective.resetPassword(
+          input.account,
+          expectedAccountSources(loginConfig)
+        )
         resp <- Ok(result match {
           case OCollective.PassResetResult.Success(np) =>
             ResetPasswordResult(true, np, "Password updated")
@@ -108,14 +120,20 @@ object UserRoutes {
               Password(""),
               "Password update failed. User not found."
             )
-          case OCollective.PassResetResult.UserNotLocal =>
+          case OCollective.PassResetResult.InvalidSource(source) =>
             ResetPasswordResult(
               false,
               Password(""),
-              "Password update failed. User is not local, passwords are managed externally."
+              s"Password update failed. User has unexpected source: $source. Passwords are managed externally."
             )
         })
       } yield resp
     }
   }
+
+  private def expectedAccountSources(loginConfig: Login.Config): Set[AccountSource] =
+    loginConfig.onAccountSourceConflict match {
+      case OnAccountSourceConflict.Fail    => Set(AccountSource.Local)
+      case OnAccountSourceConflict.Convert => AccountSource.all.toList.toSet
+    }
 }

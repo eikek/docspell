@@ -11,6 +11,7 @@ import java.security.SecureRandom
 import cats.Monoid
 import cats.effect.Async
 
+import docspell.backend.auth.Login
 import docspell.backend.signup.{Config => SignupConfig}
 import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, FtsType, Validation}
@@ -50,6 +51,10 @@ object ConfigFile {
 
     implicit val openIdExtractorReader: ConfigReader[OpenId.UserInfo.Extractor] =
       ConfigReader[String].emap(reason(OpenId.UserInfo.Extractor.fromString))
+
+    implicit val onAccountSourceConflictReader
+        : ConfigReader[Login.OnAccountSourceConflict] =
+      ConfigReader[String].emap(reason(Login.OnAccountSourceConflict.fromString))
   }
 
   def generateSecretIfEmpty: Validation[Config] =
