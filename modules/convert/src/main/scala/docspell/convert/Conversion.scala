@@ -14,6 +14,7 @@ import fs2._
 
 import docspell.common._
 import docspell.convert.ConversionResult.Handler
+import docspell.convert.ConvertConfig.HtmlConverter
 import docspell.convert.extern._
 import docspell.convert.flexmark.Markdown
 import docspell.files.{ImageSize, TikaMimetype}
@@ -57,11 +58,21 @@ object Conversion {
 
           case MimeType.HtmlMatch(mt) =>
             val cs = mt.charsetOrUtf8
-            WkHtmlPdf
-              .toPDF(cfg.wkhtmlpdf, cfg.chunkSize, cs, sanitizeHtml, logger)(
-                in,
-                handler
-              )
+            cfg.htmlConverter match {
+              case HtmlConverter.Wkhtmltopdf =>
+                WkHtmlPdf
+                  .toPDF(cfg.wkhtmlpdf, cfg.chunkSize, cs, sanitizeHtml, logger)(
+                    in,
+                    handler
+                  )
+
+              case HtmlConverter.Weasyprint =>
+                Weasyprint
+                  .toPDF(cfg.weasyprint, cfg.chunkSize, cs, sanitizeHtml, logger)(
+                    in,
+                    handler
+                  )
+            }
 
           case MimeType.TextAllMatch(mt) =>
             val cs = mt.charsetOrUtf8

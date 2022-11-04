@@ -17,8 +17,8 @@ import fs2.Stream
 import docspell.common._
 import docspell.common.util.File
 import docspell.convert.ConversionResult.Handler
-import docspell.convert.extern.OcrMyPdfConfig
-import docspell.convert.extern.{TesseractConfig, UnoconvConfig, WkHtmlPdfConfig}
+import docspell.convert.ConvertConfig.HtmlConverter
+import docspell.convert.extern._
 import docspell.convert.flexmark.MarkdownConfig
 import docspell.files.ExampleFiles
 import docspell.logging.TestLoggingConfig
@@ -43,6 +43,15 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
       ),
       target
     ),
+    WeasyprintConfig(
+      SystemCommand.Config(
+        "weasyprint",
+        Seq("--encoding", "UTF-8", "-", "{{outfile}}"),
+        Duration.seconds(20)
+      ),
+      target
+    ),
+    HtmlConverter.Wkhtmltopdf,
     TesseractConfig(
       SystemCommand.Config(
         "tesseract",
