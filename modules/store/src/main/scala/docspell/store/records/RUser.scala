@@ -204,9 +204,18 @@ object RUser {
     val t = Table(None)
     DML.update(
       t,
-      t.cid === collId && t.uid === userId && t.source === AccountSource.Local,
+      t.cid === collId && t.uid === userId,
       DML.set(t.password.setTo(hashedPass))
     )
+  }
+
+  def updateSource(
+      userId: Ident,
+      collId: CollectiveId,
+      source: AccountSource
+  ): ConnectionIO[Int] = {
+    val t = Table(None)
+    DML.update(t, t.uid === userId && t.cid === collId, DML.set(t.source.setTo(source)))
   }
 
   def delete(user: Ident, coll: CollectiveId): ConnectionIO[Int] = {

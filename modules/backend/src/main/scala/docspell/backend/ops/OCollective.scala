@@ -55,10 +55,14 @@ trait OCollective[F[_]] {
       collectiveId: CollectiveId,
       userId: Ident,
       current: Password,
-      newPass: Password
+      newPass: Password,
+      expectedSources: Set[AccountSource]
   ): F[PassChangeResult]
 
-  def resetPassword(accountId: AccountId): F[PassResetResult]
+  def resetPassword(
+      accountId: AccountId,
+      expectedSources: Set[AccountSource]
+  ): F[PassResetResult]
 
   def getContacts(
       collective: CollectiveId,
@@ -114,11 +118,11 @@ object OCollective {
   object PassResetResult {
     case class Success(newPw: Password) extends PassResetResult
     case object NotFound extends PassResetResult
-    case object UserNotLocal extends PassResetResult
+    case class InvalidSource(source: AccountSource) extends PassResetResult
 
     def success(np: Password): PassResetResult = Success(np)
     def notFound: PassResetResult = NotFound
-    def userNotLocal: PassResetResult = UserNotLocal
+    def invalidSource(source: AccountSource): PassResetResult = InvalidSource(source)
   }
 
   sealed trait PassChangeResult
@@ -126,14 +130,14 @@ object OCollective {
     case object UserNotFound extends PassChangeResult
     case object PasswordMismatch extends PassChangeResult
     case object UpdateFailed extends PassChangeResult
-    case object UserNotLocal extends PassChangeResult
+    case class InvalidSource(source: AccountSource) extends PassChangeResult
     case object Success extends PassChangeResult
 
     def userNotFound: PassChangeResult = UserNotFound
     def passwordMismatch: PassChangeResult = PasswordMismatch
     def success: PassChangeResult = Success
     def updateFailed: PassChangeResult = UpdateFailed
-    def userNotLocal: PassChangeResult = UserNotLocal
+    def invalidSource(source: AccountSource): PassChangeResult = InvalidSource(source)
   }
 
   def apply[F[_]: Async](
@@ -280,7 +284,10 @@ object OCollective {
       def tagCloud(collective: CollectiveId): F[List[TagCount]] =
         store.transact(QCollective.tagCloud(collective))
 
-      def resetPassword(accountId: AccountId): F[PassResetResult] =
+      def resetPassword(
+          accountId: AccountId,
+          expectedSources: Set[AccountSource]
+      ): F[PassResetResult] =
         (for {
           user <- OptionT(store.transact(RUser.findByAccount(accountId)))
           newPass <- OptionT.liftF(Password.generate[F])
@@ -289,8 +296,8 @@ object OCollective {
             RUser.updatePassword(user.cid, user.uid, PasswordCrypt.crypt(newPass))
           )
           res <-
-            if (user.source != AccountSource.Local)
-              OptionT.pure[F](PassResetResult.userNotLocal)
+            if (!expectedSources.contains(user.source))
+              OptionT.pure[F](PassResetResult.invalidSource(user.source))
             else OptionT.liftF(doUpdate.as(PassResetResult.success(newPass)))
         } yield res).getOrElse(PassResetResult.notFound)
 
@@ -298,31 +305,31 @@ object OCollective {
           collectiveId: CollectiveId,
           userId: Ident,
           current: Password,
-          newPass: Password
+          newPass: Password,
+          expectedSources: Set[AccountSource]
       ): F[PassChangeResult] = {
         val q = for {
-          optUser <- RUser.findById(userId, collectiveId.some)
-          check = optUser.map(_.password).map(p => PasswordCrypt.check(current, p))
-          n <-
-            check
-              .filter(identity)
-              .traverse(_ =>
-                RUser.updatePassword(collectiveId, userId, PasswordCrypt.crypt(newPass))
+          user <- OptionT(store.transact(RUser.findById(userId, collectiveId.some)))
+          check = user.password.isEmpty || PasswordCrypt.check(current, user.password)
+          res <-
+            if (check && expectedSources.contains(user.source))
+              OptionT.liftF(
+                store
+                  .transact(
+                    RUser
+                      .updatePassword(collectiveId, userId, PasswordCrypt.crypt(newPass))
+                  )
+                  .map {
+                    case 0 => PassChangeResult.updateFailed
+                    case _ => PassChangeResult.success
+                  }
               )
-          res = check match {
-            case Some(true) =>
-              if (n.getOrElse(0) > 0) PassChangeResult.success
-              else if (optUser.exists(_.source != AccountSource.Local))
-                PassChangeResult.userNotLocal
-              else PassChangeResult.updateFailed
-            case Some(false) =>
-              PassChangeResult.passwordMismatch
-            case None =>
-              PassChangeResult.userNotFound
-          }
+            else if (check && !expectedSources.contains(user.source))
+              OptionT.some[F](PassChangeResult.invalidSource(user.source))
+            else OptionT.some[F](PassChangeResult.passwordMismatch)
         } yield res
 
-        store.transact(q)
+        q.getOrElse(PassChangeResult.userNotFound)
       }
 
       def getContacts(

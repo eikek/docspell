@@ -116,6 +116,7 @@ object RestServer {
   )(
       wsB: WebSocketBuilder2[F]
   ) = {
+    val logger = docspell.logging.getLogger[F]
     val internal = Router(
       "/" -> redirectTo("/app"),
       "/internal" -> InternalHeader(internSettings.internalRouteKey) {
@@ -123,6 +124,17 @@ object RestServer {
       }
     )
     val httpApp = (internal <+> restApp.routes(wsB)).orNotFound
+      .mapF(
+        _.attempt
+          .flatMap { eab =>
+            eab.fold(
+              ex =>
+                logger.error(ex)("Processing the request resulted in an error.").as(eab),
+              _ => eab.pure[F]
+            )
+          }
+          .rethrow
+      )
     Logger.httpApp(logHeaders = false, logBody = false)(httpApp)
   }
 

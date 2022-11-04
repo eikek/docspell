@@ -699,8 +699,11 @@ trait Conversions {
       case PassChangeResult.PasswordMismatch =>
         BasicResult(false, "The current password is incorrect.")
       case PassChangeResult.UserNotFound => BasicResult(false, "User not found.")
-      case PassChangeResult.UserNotLocal =>
-        BasicResult(false, "User is not local, passwords are managed externally.")
+      case PassChangeResult.InvalidSource(source) =>
+        BasicResult(
+          false,
+          s"User has invalid soure: $source. Passwords are managed elsewhere."
+        )
     }
 
   def basicResult(e: Either[Throwable, _], successMsg: String): BasicResult =

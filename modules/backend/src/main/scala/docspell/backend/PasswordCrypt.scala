@@ -11,10 +11,13 @@ import docspell.common.Password
 import org.mindrot.jbcrypt.BCrypt
 
 object PasswordCrypt {
+  // BCrypt requires non-empty strings
 
   def crypt(pass: Password): Password =
-    Password(BCrypt.hashpw(pass.pass, BCrypt.gensalt()))
+    if (pass.isEmpty) sys.error("Empty password given to hash")
+    else Password(BCrypt.hashpw(pass.pass, BCrypt.gensalt()))
 
   def check(plain: Password, hashed: Password): Boolean =
-    BCrypt.checkpw(plain.pass, hashed.pass)
+    if (plain.isEmpty || hashed.isEmpty) false
+    else BCrypt.checkpw(plain.pass, hashed.pass)
 }

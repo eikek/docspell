@@ -81,7 +81,7 @@ final class RestAppImpl[F[_]: Async](
     Router(
       "fts" -> FullTextIndexRoutes.admin(config, backend),
       "user/otp" -> TotpRoutes.admin(backend),
-      "user" -> UserRoutes.admin(backend),
+      "user" -> UserRoutes.admin(backend, config.auth),
       "info" -> InfoRoutes.admin(config),
       "attachments" -> AttachmentRoutes.admin(backend),
       "files" -> FileRepositoryRoutes.admin(backend)
@@ -129,7 +129,7 @@ final class RestAppImpl[F[_]: Async](
       "person" -> PersonRoutes(backend, token),
       "source" -> SourceRoutes(backend, token),
       "user/otp" -> TotpRoutes(backend, config, token),
-      "user" -> UserRoutes(backend, token),
+      "user" -> UserRoutes(backend, config.auth, token),
       "collective" -> CollectiveRoutes(backend, token),
       "queue" -> JobQueueRoutes(backend, token),
       "item" -> ItemRoutes(config, backend, token),
