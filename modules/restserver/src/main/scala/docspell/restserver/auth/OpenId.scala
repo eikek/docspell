@@ -105,6 +105,7 @@ object OpenId {
     import dsl._
 
     for {
+      _ <- logger.debug(s"Setting up external account: ${accountId.asString}")
       setup <- backend.signup.setupExternal(ExternalAccount(accountId))
       res <- setup match {
         case SignupResult.Failure(ex) =>
@@ -143,6 +144,7 @@ object OpenId {
     import dsl._
 
     for {
+      _ <- logger.debug(s"Login and verify external account: ${accountId.asString}")
       login <- backend.login.loginExternal(config.auth)(accountId)
       resp <- login match {
         case Login.Result.Ok(session, _) =>
@@ -158,7 +160,9 @@ object OpenId {
             .map(_.addCookie(CookieData(session).asCookie(baseUrl)))
 
         case failed =>
-          logger.error(s"External login failed: $failed") *>
+          logger.error(
+            s"External login failed: $failed. ${failed.toEither.left.getOrElse("")}"
+          ) *>
             SeeOther(location)
       }
     } yield resp

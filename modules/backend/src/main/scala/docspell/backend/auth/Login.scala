@@ -73,8 +73,13 @@ object Login {
     case object InvalidAuth extends Result {
       val toEither = Left("Authentication failed.")
     }
+    case class InvalidAccountSource(account: AccountId) extends Result {
+      val toEither = Left(
+        s"The account '${account.asString}' already exists from a different source (local vs openid)!"
+      )
+    }
     case object InvalidTime extends Result {
-      val toEither = Left("Authentication failed.")
+      val toEither = Left("Authentication failed due expired authenticator.")
     }
     case object InvalidFactor extends Result {
       val toEither = Left("Authentication requires second factor.")
@@ -85,6 +90,7 @@ object Login {
     def invalidAuth: Result = InvalidAuth
     def invalidTime: Result = InvalidTime
     def invalidFactor: Result = InvalidFactor
+    def invalidAccountSource(account: AccountId): Result = InvalidAccountSource(account)
   }
 
   def apply[F[_]: Async](store: Store[F], totp: Totp): Resource[F, Login[F]] =
@@ -99,6 +105,8 @@ object Login {
           res <- data match {
             case Some(d) if checkNoPassword(d, Set(AccountSource.OpenId)) =>
               doLogin(config, d.account, false)
+            case Some(d) if checkNoPassword(d, Set(AccountSource.Local)) =>
+              Result.invalidAccountSource(accountId).pure[F]
             case _ =>
               Result.invalidAuth.pure[F]
           }
