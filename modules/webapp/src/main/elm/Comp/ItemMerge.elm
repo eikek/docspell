@@ -105,7 +105,7 @@ type alias Action =
 
 type Outcome
     = OutcomeCancel
-    | OutcomeActionDone
+    | OutcomeActionDone (Maybe ItemLight)
     | OutcomeNotYet
 
 
@@ -148,7 +148,7 @@ update _ action msg model =
             if result.success then
                 { model = { model | formState = FormStateActionSuccessful }
                 , cmd = Cmd.none
-                , outcome = OutcomeActionDone
+                , outcome = OutcomeActionDone (List.head model.items)
                 }
 
             else

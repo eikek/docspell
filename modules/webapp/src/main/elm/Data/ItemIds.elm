@@ -17,8 +17,10 @@ module Data.ItemIds exposing
     , fromSet
     , isEmpty
     , isMember
+    , maybeOne
     , noChange
     , nonEmpty
+    , one
     , select
     , selectAll
     , size
@@ -64,6 +66,16 @@ size (ItemIds ids) =
 fromSet : Set String -> ItemIds
 fromSet ids =
     ItemIds ids
+
+
+one : String -> ItemIds
+one id =
+    ItemIds (Set.singleton id)
+
+
+maybeOne : Maybe String -> ItemIds
+maybeOne id =
+    Maybe.map one id |> Maybe.withDefault empty
 
 
 union : ItemIds -> ItemIds -> ItemIds
