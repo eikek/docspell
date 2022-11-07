@@ -1,5 +1,81 @@
 # Changelog
 
+## v0.39.0
+
+*Nov 7th, 2022*
+
+- Allow to set extracted content (#1775) You can now fix OCRed text
+  this way.
+- Improve handling mixes of OIDC and local accounts (#1827). It is now
+  possible to use the same account locally and via OIDC.
+- Add Estonian language (#1646)
+- Updated docker images to new alpine and openjdk, fixing #1736
+  (#1713) by @jberggg and @eikek
+  - drops support for arm7 (#1719)
+  - introduces `weasyprint` as an alternative to `wkhtmltopdf` for
+    converting html files to pdf
+- Fix docspell's query to remove `attach.count`. It has been removed a
+  while ago, but the query language didn't reflect it (#1758)
+- Fix search for linked items (#1808)
+- Fix item selection after merging (#1809)
+- Internal changes to how a collective is referenced as a preparation
+  for #585 (#1686)
+
+### PLEASE NOTE
+
+The database structure changed substantially in this release. Please
+make sure to create a backup of your database **before** attempting
+the upgrade!
+
+### Docker Users
+
+There are two major changes for docker users: First ARM7 support has
+been dropped, because it was too much work to maintain alongside the
+other architectures. Second the images have been updated to the latest
+alpine linux, which requires to sacrifice using `wkhtmltopdf` as a
+tool to convert HTML to PDF (often used for processing emails).
+
+The joex image doesn't have the `wkhtmltopdf` binary anymore, because
+it is not available for alpine linux. Instead `weasyprint` has been
+added. Docspell by default still uses `wkhtmltopdf`, because I found
+it has better results. But you can now switch to `weasyprint` and if
+you use the provided docker images you _have to_.
+
+There is a new config that you need to set - when using environment
+variables:
+
+```
+DOCSPELL_JOEX_CONVERT_HTML__CONVERTER=weasyprint
+```
+
+Just add it to the env variables in the `docker-compose.yml`. If you
+use a config file, add this to it:
+
+```
+docspell.joex {
+  convert.html-converter = "weasyprint"
+}
+```
+
+### Rest API changes
+
+- Adds apis for retrieving and setting extracted text at
+  `/sec/attachment/{id}/extracted-text`
+
+
+### Configuration Changes
+
+Restserver:
+- Adds `auth.on-account-source-conflict` to decide what to do if an
+  account exists locally and at some OIDC provider
+
+Joex:
+- Adds a new system command for `weasyprint` an alternative to
+  `wkhtmltopdf`
+- Adds the setting `convert.html-converter` to set which to use
+  (default stays on `wkhtmltopdf`)
+
+
 ## v0.38.0
 
 *Jul 09, 2022*
