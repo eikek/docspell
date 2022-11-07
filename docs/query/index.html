@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.38.0
+                    0.39.0
                 </div>
             </div>
 
@@ -840,7 +840,6 @@ are only shortcuts to a longer form.</p>
 <li><code>date</code> the item date</li>
 <li><code>due</code> the due date of the item</li>
 <li><code>created</code> the date when the item was created</li>
-<li><code>attach.count</code> the number of attachments of the item</li>
 <li><code>corr.org.id</code> the id of the correspondent organization</li>
 <li><code>corr.org.name</code> the name of the correspondent organization</li>
 <li><code>corr.pers.name</code> name of correspondent person</li>
@@ -1134,9 +1133,6 @@ look into correspondent names and concerning names.</p>
 <li><code>corr:marc*</code> → <code>(| corr.org.name:marc* corr.pers.name:marc* )</code></li>
 </ul>
 <h1 id="examples">Examples<a class="zola-anchor" href="#examples" aria-label="Anchor link for: examples">🔗</a></h1>
-<p>Find items with 2 or more attachments:</p>
-<pre class="z-code"><code><span class="z-text z-plain">attach.count&gt;2
-</span></code></pre>
 <p>Find items with at least one tag invoice or todo that are due next:</p>
 <pre class="z-code"><code><span class="z-text z-plain">tag:invoice,todo due&gt;today
 </span></code></pre>
@@ -1170,7 +1166,7 @@ fields <code>paid</code> as a date and <code>usd</code> as money):</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.38.0
+            Docspell 0.39.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
