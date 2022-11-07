@@ -10,6 +10,7 @@ _site/
 /website/site/content/docs/install/changelog.md
 /website/site/public/
 /website/site/static/openapi/
+/website/site/static/files/
 /website/site/static/js/bundle.js
 /website/site/static/styles.css
 /website/site/static/syntax-*.css
