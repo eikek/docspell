@@ -10,6 +10,7 @@ import cats.effect.Async
 
 import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, FtsType, Validation}
+import docspell.convert.ConvertConfig.HtmlConverter
 import docspell.scheduler.CountingScheme
 import docspell.store.Db
 
@@ -38,6 +39,9 @@ object ConfigFile {
 
     implicit val mailAddressReader: ConfigReader[MailAddress] =
       ConfigReader[String].emap(reason(MailAddress.parse))
+
+    implicit val htmlConverterReader: ConfigReader[HtmlConverter] =
+      ConfigReader[String].emap(reason(HtmlConverter.fromString))
   }
 
   def validate: Validation[Config] =

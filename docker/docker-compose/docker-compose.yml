@@ -66,6 +66,7 @@ services:
       - DOCSPELL_JOEX_JDBC_URL=jdbc:postgresql://db:5432/dbname
       - DOCSPELL_JOEX_JDBC_USER=dbuser
       - DOCSPELL_JOEX_ADDONS_EXECUTOR__CONFIG_RUNNER=docker,trivial
+      - DOCSPELL_JOEX_CONVERT_HTML__CONVERTER=weasyprint
     ports:
       - "7878:7878"
     depends_on:

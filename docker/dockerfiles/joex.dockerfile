@@ -1,14 +1,12 @@
-FROM alpine:3.14
+FROM alpine:3
 
 ARG version=
 ARG joex_url=
 ARG UNO_URL=https://raw.githubusercontent.com/unoconv/unoconv/0.9.0/unoconv
 ARG TARGETPLATFORM
 
-RUN JDKPKG="openjdk11-jre"; \
-    if [[ $TARGETPLATFORM = linux/arm* ]]; then JDKPKG="openjdk8-jre"; fi; \
-    apk update && \
-    apk add --no-cache $JDKPKG \
+RUN apk update && \
+    apk add --no-cache openjdk17-jre \
     tzdata \
     bash \
     curl \
@@ -35,7 +33,7 @@ RUN JDKPKG="openjdk11-jre"; \
     tesseract-ocr-data-pol \
     tesseract-ocr-data-est \
     unpaper \
-    wkhtmltopdf \
+    weasyprint \
     libreoffice \
     ttf-droid-nonlatin \
     ttf-droid \
@@ -60,7 +58,7 @@ RUN JDKPKG="openjdk11-jre"; \
   && curl -Ls $UNO_URL -o /usr/local/bin/unoconv \
   && chmod +x /usr/local/bin/unoconv \
   && apk del libxml2-dev libxslt-dev zlib-dev g++ python3-dev py3-pip libffi-dev qpdf-dev openssl-dev \
-  && ln -s /usr/bin/python3 /usr/bin/python
+  && ln -nfs /usr/bin/python3 /usr/bin/python
 
 WORKDIR /opt
 RUN wget ${joex_url:-https://github.com/eikek/docspell/releases/download/v$version/docspell-joex-$version.zip} && \
@@ -77,7 +75,7 @@ RUN \
 
 COPY joex-entrypoint.sh /opt/joex-entrypoint.sh
 
-ENTRYPOINT ["/opt/joex-entrypoint.sh", "-J-XX:+UseG1GC"]
+ENTRYPOINT ["/opt/joex-entrypoint.sh"]
 EXPOSE 7878
 
 HEALTHCHECK --interval=1m --timeout=10s --retries=2 --start-period=30s \
