@@ -620,25 +620,26 @@ update texts bookmarkId lastViewedItemId env msg model =
                                 Comp.ItemMerge.OutcomeNotYet ->
                                     SelectView { svm | mergeModel = createModel result.model }
 
-                                Comp.ItemMerge.OutcomeActionDone ->
+                                Comp.ItemMerge.OutcomeActionDone _ ->
                                     SearchView
 
                         model_ =
                             { model | viewMode = nextView }
                     in
-                    if result.outcome == Comp.ItemMerge.OutcomeActionDone then
-                        update texts
-                            bookmarkId
-                            lastViewedItemId
-                            env
-                            (DoSearch model.searchTypeDropdownValue)
-                            model_
+                    case result.outcome of
+                        Comp.ItemMerge.OutcomeActionDone target ->
+                            update texts
+                                bookmarkId
+                                lastViewedItemId
+                                { env | selectedItems = Data.ItemIds.maybeOne <| Maybe.map .id target }
+                                (DoSearch model.searchTypeDropdownValue)
+                                model_
 
-                    else
-                        resultModelCmd env.selectedItems
-                            ( model_
-                            , Cmd.map MergeItemsMsg result.cmd
-                            )
+                        _ ->
+                            resultModelCmd env.selectedItems
+                                ( model_
+                                , Cmd.map MergeItemsMsg result.cmd
+                                )
 
                 _ ->
                     resultModelCmd env.selectedItems ( model, Cmd.none )
