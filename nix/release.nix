@@ -1,5 +1,16 @@
 rec {
   cfg = {
+    v0_39_0 = rec {
+      version = "0.39.0";
+      server = {
+        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-restserver-${version}.zip";
+        sha256 = "sha256-YZzYOqJzp2J5ioTT8H7qpRA3mHDRjJYNA7fUOEQWSfY=";
+      };
+      joex = {
+        url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-joex-${version}.zip";
+        sha256 = "sha256-6Vcuk9+JDkNAdTQd+sRLARfE+y9cbtGE8hWTTcxZk3E=";
+      };
+    };
     v0_38_0 = rec {
       version = "0.38.0";
       server = {
@@ -120,7 +131,7 @@ rec {
     };
   };
   pkg = v: import ./pkg.nix v;
-  currentPkg = pkg cfg.v0_38_0;
+  currentPkg = pkg cfg.v0_39_0;
   module-joex = ./module-joex.nix;
   module-restserver = ./module-server.nix;
   modules = [ module-joex
