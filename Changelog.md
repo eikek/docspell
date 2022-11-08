@@ -20,6 +20,8 @@
 - Fix item selection after merging (#1809)
 - Internal changes to how a collective is referenced as a preparation
   for #585 (#1686)
+- Update H2 to 2.1.x, incompatible to the previous used version
+  (#1690)
 
 ### PLEASE NOTE
 
@@ -56,6 +58,41 @@ docspell.joex {
   convert.html-converter = "weasyprint"
 }
 ```
+
+### H2 
+
+If you use H2 as a database, there are some manual steps required. H2
+was bumped from 1.4.x to 2.1.x and the new version cannot read the
+database files of the old version.
+
+Additionally, one of the changesets for H2 used a now illegal syntax
+and had to be changed. This will lead to checksum mismatch errors when
+starting up.
+
+Creating and restoring a dump, the script `tools/h2-util.sh` can be
+used. The H2 version can be specified with an environment variable
+`H2_VERSION` to easily create a dump in one version and restore in
+another.
+
+To fix the changeset, you could simply run this sed command on the
+dump before restoring:
+
+```
+sed -i 's,175554607,-276220379,g' docspell-dump-h2.sql
+```
+
+But this could potentially change not only the checksum, but other
+things in the dump. It is not very likely, though. A more safe
+alternative is to use a text editor and find the correct place to
+change or just set `database-schema.repair-schema = true` in the
+config file or use the env variables
+
+```
+DOCSPELL_SERVER_BACKEND_DATABASE__SCHEMA_REPAIR__SCHEMA=true
+```
+
+and startup only the restserver one time to have the checksum fixed.
+
 
 ### Rest API changes
 
