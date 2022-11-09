@@ -59,6 +59,23 @@ docspell.joex {
 }
 ```
 
+### File Backends
+
+The internal change on how collectives are now referenced requires to
+adopt the files accordingly. If you have your files in the database,
+all is being migrated automatically on first start.
+
+For other file backends, the files must be migrated manually. The
+difference is that from now on a collective is referenced by a unique
+number and not by its name anymore. You can look at the table
+`collective` to see which number was assigned to a collective and then
+
+- for a filebackend, simply move the folder with a collective name to
+  its corresponding number
+- for s3 backend the same must happen, using some s3 client (maybe
+  [this
+  one](https://min.io/docs/minio/linux/reference/minio-mc/mc-mv.html))
+
 ### H2 
 
 If you use H2 as a database, there are some manual steps required. H2
@@ -92,6 +109,12 @@ DOCSPELL_SERVER_BACKEND_DATABASE__SCHEMA_REPAIR__SCHEMA=true
 ```
 
 and startup only the restserver one time to have the checksum fixed.
+Another safe variant is to run this update statement on your h2
+database:
+
+```sql
+UPDATE flyway_schema_history set checksum = -276220379 WHERE version = '1.9.3';
+```
 
 
 ### Rest API changes
