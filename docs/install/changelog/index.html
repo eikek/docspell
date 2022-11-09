@@ -794,6 +794,8 @@ while ago, but the query language didn't reflect it (#1758)</li>
 <li>Fix item selection after merging (#1809)</li>
 <li>Internal changes to how a collective is referenced as a preparation
 for #585 (#1686)</li>
+<li>Update H2 to 2.1.x, incompatible to the previous used version
+(#1690)</li>
 </ul>
 <h3 id="please-note">PLEASE NOTE<a class="zola-anchor" href="#please-note" aria-label="Anchor link for: please-note">🔗</a></h3>
 <p>The database structure changed substantially in this release. Please
@@ -819,6 +821,48 @@ use a config file, add this to it:</p>
 <pre class="z-code"><code><span class="z-text z-plain">docspell.joex {
   convert.html-converter = &quot;weasyprint&quot;
 }
+</span></code></pre>
+<h3 id="file-backends">File Backends<a class="zola-anchor" href="#file-backends" aria-label="Anchor link for: file-backends">🔗</a></h3>
+<p>The internal change on how collectives are now referenced requires to
+adopt the files accordingly. If you have your files in the database,
+all is being migrated automatically on first start.</p>
+<p>For other file backends, the files must be migrated manually. The
+difference is that from now on a collective is referenced by a unique
+number and not by its name anymore. You can look at the table
+<code>collective</code> to see which number was assigned to a collective and then</p>
+<ul>
+<li>for a filebackend, simply move the folder with a collective name to
+its corresponding number</li>
+<li>for s3 backend the same must happen, using some s3 client (maybe
+<a href="https://min.io/docs/minio/linux/reference/minio-mc/mc-mv.html">this
+one</a>)</li>
+</ul>
+<h3 id="h2">H2<a class="zola-anchor" href="#h2" aria-label="Anchor link for: h2">🔗</a></h3>
+<p>If you use H2 as a database, there are some manual steps required. H2
+was bumped from 1.4.x to 2.1.x and the new version cannot read the
+database files of the old version.</p>
+<p>Additionally, one of the changesets for H2 used a now illegal syntax
+and had to be changed. This will lead to checksum mismatch errors when
+starting up.</p>
+<p>Creating and restoring a dump, the script <code>tools/h2-util.sh</code> can be
+used. The H2 version can be specified with an environment variable
+<code>H2_VERSION</code> to easily create a dump in one version and restore in
+another.</p>
+<p>To fix the changeset, you could simply run this sed command on the
+dump before restoring:</p>
+<pre class="z-code"><code><span class="z-text z-plain">sed -i &#39;s,175554607,-276220379,g&#39; docspell-dump-h2.sql
+</span></code></pre>
+<p>But this could potentially change not only the checksum, but other
+things in the dump. It is not very likely, though. A more safe
+alternative is to use a text editor and find the correct place to
+change or just set <code>database-schema.repair-schema = true</code> in the
+config file or use the env variables</p>
+<pre class="z-code"><code><span class="z-text z-plain">DOCSPELL_SERVER_BACKEND_DATABASE__SCHEMA_REPAIR__SCHEMA=true
+</span></code></pre>
+<p>and startup only the restserver one time to have the checksum fixed.
+Another safe variant is to run this update statement on your h2
+database:</p>
+<pre data-lang="sql" class="language-sql z-code"><code class="language-sql" data-lang="sql"><span class="z-source z-sql"><span class="z-keyword z-other z-DML z-sql">UPDATE</span> flyway_schema_history <span class="z-keyword z-other z-DML z-sql">set</span> checksum <span class="z-keyword z-operator z-comparison z-sql">=</span> <span class="z-keyword z-operator z-math z-sql">-</span><span class="z-constant z-numeric z-sql">276220379</span> <span class="z-keyword z-other z-DML z-sql">WHERE</span> version <span class="z-keyword z-operator z-comparison z-sql">=</span> <span class="z-string z-quoted z-single z-sql"><span class="z-punctuation z-definition z-string z-begin z-sql">&#39;</span>1.9.3<span class="z-punctuation z-definition z-string z-end z-sql">&#39;</span></span>;
 </span></code></pre>
 <h3 id="rest-api-changes">Rest API changes<a class="zola-anchor" href="#rest-api-changes" aria-label="Anchor link for: rest-api-changes">🔗</a></h3>
 <ul>
