@@ -287,4 +287,82 @@ class DateFindTest extends FunSuite {
       )
     )
   }
+
+  test("find ukrainian dates") {
+    // officially used ones
+    assertEquals(
+      DateFind
+        .findDates(
+          "Цей текст був написаний 5 листопада 2022 року. Слава Україні!",
+          Language.Ukrainian
+        )
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 11, 5),
+          NerLabel("5 листопада 2022", NerTag.Date, 24, 40)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("05.11.2022 — це субота", Language.Ukrainian)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 11, 5),
+          NerLabel("05.11.2022", NerTag.Date, 0, 10)
+        )
+      )
+    )
+    // less common but also used
+    assertEquals(
+      DateFind
+        .findDates(
+          "Сьогодні 5 лист. 2022 р. Слава Україні!",
+          Language.Ukrainian
+        )
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 11, 5),
+          NerLabel("5 лист. 2022", NerTag.Date, 9, 21)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("Дата: 2022.11.05", Language.Ukrainian)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 11, 5),
+          NerLabel("2022.11.05", NerTag.Date, 6, 16)
+        )
+      )
+    )
+    // vernacular variants
+    assertEquals(
+      DateFind
+        .findDates("Ілля Рєпін народився 5-го серпня 1844-го року.", Language.Ukrainian)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(1844, 8, 5),
+          NerLabel("5-го серпня 1844", NerTag.Date, 21, 37)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("3-тє жовт., 2022-й рік  — це 33 дні тому", Language.Ukrainian)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 10, 3),
+          NerLabel("3-тє жовт., 2022", NerTag.Date, 0, 16)
+        )
+      )
+    )
+  }
 }

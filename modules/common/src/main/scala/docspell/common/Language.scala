@@ -138,6 +138,11 @@ object Language {
     val iso3 = "est"
   }
 
+  case object Ukrainian extends Language {
+    val iso2 = "uk"
+    val iso3 = "ukr"
+  }
+
   val all: List[Language] =
     List(
       German,
@@ -160,7 +165,8 @@ object Language {
       Hebrew,
       Lithuanian,
       Polish,
-      Estonian
+      Estonian,
+      Ukrainian
     )
 
   def fromString(str: String): Either[String, Language] = {
