@@ -80,6 +80,9 @@ gb lang =
         Estonian ->
             "Estonian"
 
+        Ukrainian ->
+            "Ukrainian"
+
 
 de : Language -> String
 de lang =
@@ -147,6 +150,9 @@ de lang =
         Estonian ->
             "Estnisch"
 
+        Ukrainian ->
+            "Ukrainisch"
+
 
 fr : Language -> String
 fr lang =
@@ -213,3 +219,6 @@ fr lang =
 
         Estonian ->
             "Estonien"
+
+        Ukrainian ->
+            "Ukrainien"

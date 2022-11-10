@@ -21,7 +21,11 @@ relevant things to do. These are:
   the `all` list (then fix compile errors)
 - define a list of month names to support date recognition and update
   `DateFind.scala` to recognize date patterns for that language. Add
-  some tests to `DateFindTest`.
+  some tests to `DateFindTest`. While writing test-cases, you can check
+  them via `sbt`'s command prompt as following:
+    ```
+    testOnly docspell.analysis.date.DateFindTest
+    ```
 - add it to joex' dockerfile to be available for tesseract
 - update the solr migration/field definitions in `SolrSetup`. Create a
   new solr migration that adds the content field for the new

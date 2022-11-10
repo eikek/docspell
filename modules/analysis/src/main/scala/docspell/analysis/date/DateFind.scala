@@ -54,10 +54,28 @@ object DateFind {
         (sep + "md") -> text
       } else sep -> text
 
+    val ukrFlexion = List(
+      "р",
+      "рік",
+      "року",
+      "ого",
+      "го",
+      "ий",
+      "ій",
+      "й",
+      "ше",
+      "ге",
+      "тє",
+      "те",
+      "ме",
+      "е",
+      "є"
+    )
     TextSplitter
       .splitToken(stext, separators.toSet)
       .filter(w => lang != Language.Latvian || w.value != "gada")
       .filter(w => lang != Language.Spanish || w.value != "de")
+      .filter(w => lang != Language.Ukrainian || !ukrFlexion.contains(w.value))
   }
 
   case class SimpleDate(year: Int, month: Int, day: Int) {
@@ -111,6 +129,7 @@ object DateFind {
         case Language.Lithuanian => ymd
         case Language.Polish     => dmy
         case Language.Estonian   => dmy
+        case Language.Ukrainian  => dmy.or(ymd)
       }
       p.read(parts) match {
         case Result.Success(sds, _) =>
