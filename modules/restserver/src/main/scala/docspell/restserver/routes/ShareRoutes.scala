@@ -14,6 +14,7 @@ import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
 import docspell.backend.ops.OShare
 import docspell.backend.ops.OShare.{SendResult, ShareMail, VerifyResult}
+import docspell.common.syntax.string._
 import docspell.common.{Ident, Timestamp}
 import docspell.restapi.model._
 import docspell.restserver.Config
@@ -37,7 +38,7 @@ object ShareRoutes {
       case GET -> Root :? QP.Query(q) :? QP.OwningFlag(owning) =>
         val login = if (owning) Some(user.account.login) else None
         for {
-          all <- backend.share.findAll(user.account.collectiveId, login, q)
+          all <- backend.share.findAll(user.account.collectiveId, login, q.asNonBlank)
           now <- Timestamp.current[F]
           res <- Ok(ShareList(all.map(mkShareDetail(now))))
         } yield res

@@ -17,6 +17,11 @@ trait StringSyntax {
     def parseJsonAs[A](implicit d: Decoder[A]): Either[Throwable, A] =
       parser.decode[A](s)
   }
+
+  implicit class OptionStringOpts(s: Option[String]) {
+    def asNonBlank: Option[String] =
+      s.filter(_.trim.nonEmpty)
+  }
 }
 
 object StringSyntax extends StringSyntax
