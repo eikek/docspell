@@ -60,6 +60,9 @@ RUN apk update && \
   && apk del libxml2-dev libxslt-dev zlib-dev g++ python3-dev py3-pip libffi-dev qpdf-dev openssl-dev \
   && ln -nfs /usr/bin/python3 /usr/bin/python
 
+# Special treatment for ocrmypdf. It is broken quite often
+RUN apk add --no-cache py3-setuptools && ocrmypdf --version
+
 WORKDIR /opt
 RUN wget ${joex_url:-https://github.com/eikek/docspell/releases/download/v$version/docspell-joex-$version.zip} && \
   unzip docspell-joex-*.zip && \
