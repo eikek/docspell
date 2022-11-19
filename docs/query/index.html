@@ -1026,7 +1026,9 @@ to indicate that the following is the name of a custom field.</p>
 <p>The type of a custom field is honored. So if you have a money or
 numeric type, comparsions are done numerically. Otherwise a
 alphnumeric comparison is performed. Custom fields do not support the
-in-operator (<code>~=</code>).</p>
+in-operator (<code>~=</code>). Date fields are an exception: they are always
+compared alphanumerically and thus the <code>today</code> special value doesn't
+work with them.</p>
 <p>For example: assuming there is a custom field of type <em>money</em> and name
 <em>usd</em>, the following selects all items with an amount between 10 and
 150:</p>
