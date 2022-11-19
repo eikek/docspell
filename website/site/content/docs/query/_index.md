@@ -359,7 +359,9 @@ to indicate that the following is the name of a custom field.
 The type of a custom field is honored. So if you have a money or
 numeric type, comparsions are done numerically. Otherwise a
 alphnumeric comparison is performed. Custom fields do not support the
-in-operator (`~=`).
+in-operator (`~=`). Date fields are an exception: they are always
+compared alphanumerically and thus the `today` special value doesn't
+work with them.
 
 For example: assuming there is a custom field of type *money* and name
 *usd*, the following selects all items with an amount between 10 and
