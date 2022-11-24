@@ -5,8 +5,7 @@ ARG restserver_url=
 ARG TARGETPLATFORM
 
 RUN apk update && \
-    apk add --no-cache openjdk17-jre bash tzdata curl && \
-    apk add 'zlib=1.2.12-r3'
+    apk add --no-cache openjdk17-jre bash tzdata curl
 
 WORKDIR /opt
 RUN curl -L -O ${restserver_url:-https://github.com/eikek/docspell/releases/download/v$version/docspell-restserver-$version.zip} && \
