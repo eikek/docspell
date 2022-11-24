@@ -53,7 +53,6 @@ RUN apk update && \
     qpdf-dev \
     openssl-dev \
     ocrmypdf \
-  && apk add 'zlib=1.2.12-r3' \
   && pip3 install --upgrade pip \
   && pip3 install ocrmypdf \
   && curl -Ls $UNO_URL -o /usr/local/bin/unoconv \
