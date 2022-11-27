@@ -36,7 +36,6 @@ RUN apk update && \
     unpaper \
     weasyprint \
     libreoffice \
-    ttf-droid-nonlatin \
     ttf-droid \
     ttf-dejavu \
     ttf-freefont \
