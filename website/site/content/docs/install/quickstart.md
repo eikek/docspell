@@ -21,8 +21,9 @@ To get started, here are some quick links:
   from the [release
   page](https://github.com/eikek/docspell/releases/latest).
 - via the [nix package manager](@/docs/install/nix.md) and/or as a
-  [NixOS module](@/docs/install/nix.md#nixos). If you use nix/nixos,
-  you know what to do. The linked page contains some examples.
+  [NixOS module](@/docs/install/nix.md#nixos) through a flake.
+  If you use nix/nixos, you know what to do. The linked page contains
+  some examples.
 - [Unraid](https://www.unraid.net/): There are user provided [notes
   and unraid
   templates](https://github.com/vakilando/unraid-docker-templates)

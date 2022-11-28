@@ -1,8 +1,15 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 # This module sets up solr with one core. It is a bit tedious…. If you
 # know a better solution, please let me know.
 {
+  nixpkgs.config = {
+    permittedInsecurePackages = [
+      "solr-8.6.3"
+      # NOTE: Qtwebkit is a dep for wkhtmltopdf, this line is needed until #201765 is fixed in nixpkgs
+      "qtwebkit-5.212.0-alpha4"
+    ];
+  };
 
   services.solr = {
     enable = true;
@@ -15,7 +22,7 @@
       solrPort = toString config.services.solr.port;
       initSolr = ''
         if [ ! -f ${config.services.solr.stateDir}/docspell_core ]; then
-          while ! echo "" | ${pkgs.telnet}/bin/telnet localhost ${solrPort}
+          while ! echo "" | ${pkgs.inetutils}/bin/telnet localhost ${solrPort}
           do
              echo "Waiting for SOLR become ready..."
              sleep 1.5
@@ -25,11 +32,12 @@
         fi
       '';
     in
-      { script = initSolr;
-        after = [ "solr.target" ];
-        wantedBy = [ "multi-user.target" ];
-        requires = [ "solr.target" ];
-        description = "Create a core at solr";
-      };
+    {
+      script = initSolr;
+      after = [ "solr.target" ];
+      wantedBy = [ "multi-user.target" ];
+      requires = [ "solr.target" ];
+      description = "Create a core at solr";
+    };
 
 }
