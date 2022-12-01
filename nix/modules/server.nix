@@ -1,4 +1,4 @@
-{config, lib, pkgs, ...}:
+overlay: { config, lib, pkgs, ... }:
 
 with lib;
 let
@@ -76,7 +76,7 @@ let
           user = "pguser";
           password = "";
         };
-        pg-config = {};
+        pg-config = { };
         pg-query-parser = "websearch_to_tsquery";
         pg-rank-normalization = [ 4 ];
       };
@@ -124,17 +124,18 @@ let
       };
       files = {
         chunk-size = 524288;
-        valid-mime-types = [];
+        valid-mime-types = [ ];
       };
       addons = {
         enabled = false;
         allow-impure = true;
-        allowed-urls = ["*"];
-        denied-urls = [];
+        allowed-urls = [ "*" ];
+        denied-urls = [ ];
       };
     };
   };
-in {
+in
+{
 
   ## interface
   options = {
@@ -153,7 +154,7 @@ in {
       };
       jvmArgs = mkOption {
         type = types.listOf types.str;
-        default = [];
+        default = [ ];
         example = [ "-J-Xmx1G" ];
         description = "The options passed to the executable for setting jvm arguments.";
       };
@@ -229,7 +230,7 @@ in {
       };
 
       bind = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             address = mkOption {
               type = types.str;
@@ -248,7 +249,7 @@ in {
       };
 
       server-options = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             enable-http-2 = mkOption {
               type = types.bool;
@@ -272,7 +273,7 @@ in {
       };
 
       logging = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             minimum-level = mkOption {
               type = types.str;
@@ -296,7 +297,7 @@ in {
       };
 
       auth = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             server-secret = mkOption {
               type = types.str;
@@ -317,7 +318,7 @@ in {
               '';
             };
             remember-me = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -341,7 +342,7 @@ in {
       };
 
       download-all = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             max-files = mkOption {
               type = types.int;
@@ -439,12 +440,12 @@ in {
             };
           };
         });
-        default = [];
+        default = [ ];
         description = "A list of OIDC provider configurations.";
       };
 
       integration-endpoint = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             enabled = mkOption {
               type = types.bool;
@@ -464,7 +465,7 @@ in {
               '';
             };
             allowed-ips = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -488,7 +489,7 @@ in {
               '';
             };
             http-basic = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -518,7 +519,7 @@ in {
               '';
             };
             http-header = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -563,7 +564,7 @@ in {
       };
 
       admin-endpoint = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             secret = mkOption {
               type = types.str;
@@ -577,7 +578,7 @@ in {
       };
 
       full-text-search = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             enabled = mkOption {
               type = types.bool;
@@ -594,7 +595,7 @@ in {
               description = "The backend to use, either solr or postgresql";
             };
             solr = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   url = mkOption {
                     type = types.str;
@@ -632,7 +633,7 @@ in {
             };
 
             postgresql = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   use-default-connection = mkOption {
                     type = types.bool;
@@ -691,16 +692,16 @@ in {
       };
 
       backend = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             mail-debug = mkOption {
               type = types.bool;
               default = defaults.backend.mail-debug;
               description = ''
-               Enable or disable debugging for e-mail related functionality. This
-               applies to both sending and receiving mails. For security reasons
-               logging is not very extensive on authentication failures. Setting
-               this to true, results in a lot of data printed to stdout.
+                Enable or disable debugging for e-mail related functionality. This
+                applies to both sending and receiving mails. For security reasons
+                logging is not very extensive on authentication failures. Setting
+                this to true, results in a lot of data printed to stdout.
               '';
             };
             jdbc = mkOption {
@@ -774,7 +775,7 @@ in {
               description = "Registration settings";
             };
             files = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   chunk-size = mkOption {
                     type = types.int;
@@ -803,10 +804,10 @@ in {
                 };
               });
               default = defaults.backend.files;
-              description= "Settings for how files are stored.";
+              description = "Settings for how files are stored.";
             };
             addons = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -844,6 +845,7 @@ in {
   ## implementation
   config = mkIf config.services.docspell-restserver.enable {
 
+    nixpkgs.overlays = [ overlay ];
     users.users."${user}" = mkIf (cfg.runAs == null) {
       name = user;
       isSystemUser = true;
@@ -852,25 +854,24 @@ in {
       description = "Docspell user";
       group = user;
     };
-    users.groups."${user}" = mkIf (cfg.runAs == null) {
-    };
+    users.groups."${user}" = mkIf (cfg.runAs == null) { };
 
 
     systemd.services.docspell-restserver =
-    let
-      args = builtins.concatStringsSep " " cfg.jvmArgs;
-      cmd = "${pkgs.docspell.server}/bin/docspell-restserver ${args} -- ${configFile}";
-    in
-    {
-      description = "Docspell Rest Server";
-      after = [ "networking.target" ];
-      wantedBy = [ "multi-user.target" ];
-      path = [ pkgs.gawk ];
-      preStart = ''
+      let
+        args = builtins.concatStringsSep " " cfg.jvmArgs;
+        cmd = "${pkgs.docspell-server}/bin/docspell-restserver ${args} -- ${configFile}";
+      in
+      {
+        description = "Docspell Rest Server";
+        after = [ "networking.target" ];
+        wantedBy = [ "multi-user.target" ];
+        path = [ pkgs.gawk ];
+        preStart = ''
       '';
 
-      script =
-        "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
-    };
+        script =
+          "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+      };
   };
 }

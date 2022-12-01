@@ -1,13 +1,13 @@
-{config, lib, pkgs, ...}:
+overlay: { config, lib, pkgs, ... }:
 
 with lib;
 let
   cfg = config.services.docspell-joex;
   user = if cfg.runAs == null then "docspell" else cfg.runAs;
   configFile = pkgs.writeText "docspell-joex.conf" ''
-  {"docspell": { "joex":
-       ${builtins.toJSON cfg}
-  }}
+    {"docspell": { "joex":
+         ${builtins.toJSON cfg}
+    }}
   '';
   defaults = {
     app-id = "joex1";
@@ -83,20 +83,20 @@ let
       schedule = "Sun *-*-* 00:00:00 UTC";
       sender-account = "";
       smtp-id = "";
-      recipients = [];
+      recipients = [ ];
       subject = "Docspell {{ latestVersion }} is available";
       body = ''
-Hello,
+        Hello,
 
-You are currently running Docspell {{ currentVersion }}. Version *{{ latestVersion }}*
-is now available, which was released on {{ releasedAt }}. Check the release page at:
+        You are currently running Docspell {{ currentVersion }}. Version *{{ latestVersion }}*
+        is now available, which was released on {{ releasedAt }}. Check the release page at:
 
-<https://github.com/eikek/docspell/releases/latest>
+        <https://github.com/eikek/docspell/releases/latest>
 
-Have a nice day!
+        Have a nice day!
 
-Docpell Update Check
-'';
+        Docpell Update Check
+      '';
     };
     extraction = {
       pdf = {
@@ -110,7 +110,7 @@ Docpell Update Check
         page-range = {
           begin = 10;
         };
-        ghostscript =  {
+        ghostscript = {
           working-dir = "/tmp/docspell-extraction";
           command = {
             program = "${pkgs.ghostscript}/bin/gs";
@@ -126,9 +126,9 @@ Docpell Update Check
           };
         };
         tesseract = {
-          command= {
+          command = {
             program = "${pkgs.tesseract4}/bin/tesseract";
-            args = ["{{file}}" "stdout" "-l" "{{lang}}" ];
+            args = [ "{{file}}" "stdout" "-l" "{{lang}}" ];
             timeout = "5 minutes";
           };
         };
@@ -149,7 +149,8 @@ Docpell Update Check
         enabled = true;
         item-count = 600;
         classifiers = [
-          { "useSplitWords" = "true";
+          {
+            "useSplitWords" = "true";
             "splitWordsTokenizerRegexp" = ''[\p{L}][\p{L}0-9]*|(?:\$ ?)?[0-9]+(?:\.[0-9]{2})?%?|\s+|.'';
             "splitWordsIgnoreRegexp" = ''\s+'';
             "useSplitPrefixSuffixNGrams" = "true";
@@ -169,14 +170,14 @@ Docpell Update Check
 
       markdown = {
         internal-css = ''
-            body { padding: 2em 5em; }
-          '';
+          body { padding: 2em 5em; }
+        '';
       };
 
       wkhtmlpdf = {
         command = {
           program = "${pkgs.wkhtmltopdf}/bin/wkhtmltopdf";
-          args = ["-s" "A4" "--encoding" "UTF-8" "-" "{{outfile}}"];
+          args = [ "-s" "A4" "--encoding" "UTF-8" "-" "{{outfile}}" ];
           timeout = "2 minutes";
         };
         working-dir = "/tmp/docspell-convert";
@@ -185,7 +186,7 @@ Docpell Update Check
       tesseract = {
         command = {
           program = "${pkgs.tesseract4}/bin/tesseract";
-          args = ["{{infile}}" "out" "-l" "{{lang}}" "pdf" "txt"];
+          args = [ "{{infile}}" "out" "-l" "{{lang}}" "pdf" "txt" ];
           timeout = "5 minutes";
         };
         working-dir = "/tmp/docspell-convert";
@@ -194,7 +195,7 @@ Docpell Update Check
       unoconv = {
         command = {
           program = "${pkgs.unoconv}/bin/unoconv";
-          args = ["-f" "pdf" "-o" "{{outfile}}" "{{infile}}"];
+          args = [ "-f" "pdf" "-o" "{{outfile}}" "{{infile}}" ];
           timeout = "2 minutes";
         };
         working-dir = "/tmp/docspell-convert";
@@ -205,12 +206,14 @@ Docpell Update Check
         command = {
           program = "${pkgs.ocrmypdf}/bin/ocrmypdf";
           args = [
-          "-l" "{{lang}}"
-          "--skip-text"
-          "--deskew"
-          "-j" "1"
-          "{{infile}}"
-          "{{outfile}}"
+            "-l"
+            "{{lang}}"
+            "--skip-text"
+            "--deskew"
+            "-j"
+            "1"
+            "{{infile}}"
+            "{{outfile}}"
           ];
           timeout = "5 minutes";
         };
@@ -219,7 +222,7 @@ Docpell Update Check
     };
     files = {
       chunk-size = 524288;
-      valid-mime-types = [];
+      valid-mime-types = [ ];
     };
     full-text-search = {
       enabled = false;
@@ -238,7 +241,7 @@ Docpell Update Check
           user = "pguser";
           password = "";
         };
-        pg-config = {};
+        pg-config = { };
         pg-query-parser = "websearch_to_tsquery";
         pg-rank-normalization = [ 4 ];
       };
@@ -260,7 +263,7 @@ Docpell Update Check
         fail-fast = true;
         run-timeout = "15 minutes";
         nix-runner = {
-          nix-binary = "${pkgs.nixFlakes}/bin/nix";
+          nix-binary = "${pkgs.nix}/bin/nix";
           build-timeout = "15 minutes";
         };
         docker-runner = {
@@ -270,7 +273,8 @@ Docpell Update Check
       };
     };
   };
-in {
+in
+{
 
   ## interface
   options = {
@@ -299,7 +303,7 @@ in {
       };
       jvmArgs = mkOption {
         type = types.listOf types.str;
-        default = [];
+        default = [ ];
         example = [ "-J-Xmx1G" ];
         description = "The options passed to the executable for setting jvm arguments.";
       };
@@ -318,7 +322,7 @@ in {
       };
 
       bind = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             address = mkOption {
               type = types.str;
@@ -337,7 +341,7 @@ in {
       };
 
       logging = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             minimum-level = mkOption {
               type = types.str;
@@ -364,10 +368,10 @@ in {
         type = types.bool;
         default = defaults.mail-debug;
         description = ''
-         Enable or disable debugging for e-mail related functionality. This
-         applies to both sending and receiving mails. For security reasons
-         logging is not very extensive on authentication failures. Setting
-         this to true, results in a lot of data printed to stdout.
+          Enable or disable debugging for e-mail related functionality. This
+          applies to both sending and receiving mails. For security reasons
+          logging is not very extensive on authentication failures. Setting
+          this to true, results in a lot of data printed to stdout.
         '';
       };
 
@@ -405,7 +409,7 @@ in {
       };
 
       send-mail = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             list-id = mkOption {
               type = types.str;
@@ -429,7 +433,7 @@ in {
       };
 
       scheduler = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             pool-size = mkOption {
               type = types.int;
@@ -485,7 +489,7 @@ in {
       };
 
       periodic-scheduler = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             wakeup-period = mkOption {
               type = types.str;
@@ -506,10 +510,10 @@ in {
       };
 
       user-tasks = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             scan-mailbox = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   max-folders = mkOption {
                     type = types.int;
@@ -534,12 +538,12 @@ in {
                     type = types.int;
                     default = defaults.user-tasks.scan-mailbox.max-mails;
                     description = ''
-                     A limit on how many mails to process in one job run. This is
-                     meant to avoid too heavy resource allocation to one
-                     user/collective.
+                      A limit on how many mails to process in one job run. This is
+                      meant to avoid too heavy resource allocation to one
+                      user/collective.
 
-                     If more than this number of mails is encountered, a warning is
-                     logged.
+                      If more than this number of mails is encountered, a warning is
+                      logged.
                     '';
                   };
                 };
@@ -554,7 +558,7 @@ in {
       };
 
       house-keeping = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             schedule = mkOption {
               type = types.str;
@@ -565,7 +569,7 @@ in {
               '';
             };
             cleanup-invites = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -587,7 +591,7 @@ in {
               '';
             };
             cleanup-jobs = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -622,7 +626,7 @@ in {
               '';
             };
             cleanup-remember-me = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -641,7 +645,7 @@ in {
             };
 
             cleanup-downloads = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -660,7 +664,7 @@ in {
             };
 
             check-nodes = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -687,7 +691,7 @@ in {
       };
 
       update-check = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             enabled = mkOption {
               type = types.bool;
@@ -769,10 +773,10 @@ in {
       };
 
       extraction = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             pdf = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   min-text-len = mkOption {
                     type = types.int;
@@ -791,7 +795,7 @@ in {
               description = "Settings for PDF extraction";
             };
             preview = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   dpi = mkOption {
                     type = types.int;
@@ -813,7 +817,7 @@ in {
               description = "";
             };
             ocr = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   max-image-size = mkOption {
                     type = types.int;
@@ -824,7 +828,7 @@ in {
                     '';
                   };
                   page-range = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         begin = mkOption {
                           type = types.int;
@@ -849,7 +853,7 @@ in {
                     '';
                   };
                   ghostscript = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         working-dir = mkOption {
                           type = types.str;
@@ -857,7 +861,7 @@ in {
                           description = "Directory where the extraction processes can put their temp files";
                         };
                         command = mkOption {
-                          type = types.submodule({
+                          type = types.submodule ({
                             options = {
                               program = mkOption {
                                 type = types.str;
@@ -885,10 +889,10 @@ in {
                     description = "The ghostscript command.";
                   };
                   unpaper = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         command = mkOption {
-                          type = types.submodule({
+                          type = types.submodule ({
                             options = {
                               program = mkOption {
                                 type = types.str;
@@ -916,10 +920,10 @@ in {
                     description = "The unpaper command.";
                   };
                   tesseract = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         command = mkOption {
-                          type = types.submodule({
+                          type = types.submodule ({
                             options = {
                               program = mkOption {
                                 type = types.str;
@@ -968,7 +972,7 @@ in {
       };
 
       text-analysis = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             max-length = mkOption {
               type = types.int;
@@ -993,7 +997,7 @@ in {
             };
 
             nlp = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   mode = mkOption {
                     type = types.str;
@@ -1051,7 +1055,7 @@ in {
                   };
 
                   regex-ner = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         max-entries = mkOption {
                           type = types.int;
@@ -1093,7 +1097,7 @@ in {
             };
 
             classification = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -1151,7 +1155,7 @@ in {
       };
 
       convert = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             chunk-size = mkOption {
               type = types.int;
@@ -1180,7 +1184,7 @@ in {
               '';
             };
             markdown = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   internal-css = mkOption {
                     type = types.str;
@@ -1202,7 +1206,7 @@ in {
               '';
             };
             wkhtmlpdf = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   working-dir = mkOption {
                     type = types.str;
@@ -1210,7 +1214,7 @@ in {
                     description = "Directory where the conversion processes can put their temp files";
                   };
                   command = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         program = mkOption {
                           type = types.str;
@@ -1241,7 +1245,7 @@ in {
               '';
             };
             tesseract = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   working-dir = mkOption {
                     type = types.str;
@@ -1249,7 +1253,7 @@ in {
                     description = "Directory where the conversion processes can put their temp files";
                   };
                   command = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         program = mkOption {
                           type = types.str;
@@ -1280,7 +1284,7 @@ in {
               '';
             };
             unoconv = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   working-dir = mkOption {
                     type = types.str;
@@ -1288,7 +1292,7 @@ in {
                     description = "Directory where the conversion processes can put their temp files";
                   };
                   command = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         program = mkOption {
                           type = types.str;
@@ -1326,7 +1330,7 @@ in {
             };
 
             ocrmypdf = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -1339,7 +1343,7 @@ in {
                     description = "Directory where the conversion processes can put their temp files";
                   };
                   command = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         program = mkOption {
                           type = types.str;
@@ -1396,7 +1400,7 @@ in {
         '';
       };
       files = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             chunk-size = mkOption {
               type = types.int;
@@ -1425,10 +1429,10 @@ in {
           };
         });
         default = defaults.files;
-        description= "Settings for how files are stored.";
+        description = "Settings for how files are stored.";
       };
       full-text-search = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             enabled = mkOption {
               type = types.bool;
@@ -1448,7 +1452,7 @@ in {
             };
 
             solr = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   url = mkOption {
                     type = types.str;
@@ -1486,7 +1490,7 @@ in {
             };
 
             postgresql = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   use-default-connection = mkOption {
                     type = types.bool;
@@ -1540,7 +1544,7 @@ in {
             };
 
             migration = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   index-all-chunk = mkOption {
                     type = types.int;
@@ -1562,7 +1566,7 @@ in {
         description = "Configuration for full-text search.";
       };
       addons = mkOption {
-        type = types.submodule({
+        type = types.submodule ({
           options = {
             working-dir = mkOption {
               type = types.str;
@@ -1575,7 +1579,7 @@ in {
               description = "Cache directory";
             };
             executor-config = mkOption {
-              type = types.submodule({
+              type = types.submodule ({
                 options = {
                   runner = mkOption {
                     type = types.str;
@@ -1593,7 +1597,7 @@ in {
                     description = "";
                   };
                   nspawn = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         enabled = mkOption {
                           type = types.bool;
@@ -1621,7 +1625,7 @@ in {
                     description = "";
                   };
                   nix-runner = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         nix-binary = mkOption {
                           type = types.str;
@@ -1639,7 +1643,7 @@ in {
                     description = "";
                   };
                   docker-runner = mkOption {
-                    type = types.submodule({
+                    type = types.submodule ({
                       options = {
                         docker-binary = mkOption {
                           type = types.str;
@@ -1672,6 +1676,8 @@ in {
   ## implementation
   config = mkIf config.services.docspell-joex.enable {
 
+    nixpkgs.overlays = [ overlay ];
+
     users.users."${user}" = mkIf (cfg.runAs == null) {
       name = user;
       isSystemUser = true;
@@ -1680,44 +1686,43 @@ in {
       description = "Docspell user";
       group = user;
     };
-    users.groups."${user}" = mkIf (cfg.runAs == null) {
-    };
+    users.groups."${user}" = mkIf (cfg.runAs == null) { };
 
     # Setting up a unoconv listener to improve conversion performance
     systemd.services.unoconv =
       let
         cmd = "${pkgs.unoconv}/bin/unoconv --listener -v";
       in
-        {
-          description = "Unoconv Listener";
-          after = [ "networking.target" ];
-          wantedBy = [ "multi-user.target" ];
-          serviceConfig = {
-            Restart = "always";
-          };
-          script =
-            "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+      {
+        description = "Unoconv Listener";
+        after = [ "networking.target" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          Restart = "always";
         };
+        script =
+          "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+      };
 
     systemd.services.docspell-joex =
       let
         args = builtins.concatStringsSep " " cfg.jvmArgs;
-        cmd = "${pkgs.docspell.joex}/bin/docspell-joex ${args} -- ${configFile}";
+        cmd = "${pkgs.docspell-joex}/bin/docspell-joex ${args} -- ${configFile}";
         waitTarget =
           if cfg.waitForTarget != null
           then
             [ cfg.waitForTarget ]
           else
-            [];
+            [ ];
       in
-        {
-          description = "Docspell Joex";
-          after = ([ "networking.target" ] ++ waitTarget);
-          wantedBy = [ "multi-user.target" ];
-          path = [ pkgs.gawk ];
+      {
+        description = "Docspell Joex";
+        after = ([ "networking.target" ] ++ waitTarget);
+        wantedBy = [ "multi-user.target" ];
+        path = [ pkgs.gawk ];
 
-          script =
-            "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
-        };
+        script =
+          "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+      };
   };
 }

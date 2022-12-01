@@ -1,6 +1,5 @@
 { config, pkgs, ... }:
 let
-  docspell = import ./release.nix;
   full-text-search = {
     enabled = true;
     solr.url = "http://localhost:${toString config.services.solr.port}/solr/docspell";
@@ -12,7 +11,6 @@ let
   };
 in
 {
-  imports = docspell.modules ++ [ ./solr.nix ];
 
   i18n = {
     defaultLocale = "en_US.UTF-8";
@@ -23,17 +21,6 @@ in
     password = "root";
   };
 
-  nixpkgs = {
-    config = {
-      packageOverrides = pkgs:
-        let
-          callPackage = pkgs.lib.callPackageWith(custom // pkgs);
-          custom = {
-            docspell = callPackage docspell.currentPkg {};
-          };
-        in custom;
-    };
-  };
 
   services.docspell-joex = {
     enable = true;
@@ -57,7 +44,8 @@ in
       };
     };
     openid = [
-      { enabled = true;
+      {
+        enabled = true;
         display = "Local";
         provider = {
           provider-id = "local";
@@ -73,10 +61,9 @@ in
   };
 
   environment.systemPackages =
-    [ pkgs.docspell.server
-      pkgs.docspell.joex
+    [
       pkgs.jq
-      pkgs.telnet
+      pkgs.inetutils
       pkgs.htop
       pkgs.openjdk
     ];
@@ -88,9 +75,9 @@ in
 
   networking = {
     hostName = "docspelltest";
-    firewall.allowedTCPPorts = [7880];
+    firewall.allowedTCPPorts = [ 7880 ];
   };
 
-  system.stateVersion = "21.05";
+  system.stateVersion = "22.05";
 
 }
