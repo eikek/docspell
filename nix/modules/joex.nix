@@ -3,10 +3,12 @@ overlay: { config, lib, pkgs, ... }:
 with lib;
 let
   cfg = config.services.docspell-joex;
+  # Extract the config without the extraConfig attribute. It will be merged later
+  declared_config = attrsets.filterAttrs (n: v: n != "extraConfig") cfg;
   user = if cfg.runAs == null then "docspell" else cfg.runAs;
   configFile = pkgs.writeText "docspell-joex.conf" ''
     {"docspell": { "joex":
-         ${builtins.toJSON cfg}
+      ${builtins.toJSON (lib.recursiveUpdate declared_config cfg.extraConfig)}
     }}
   '';
   defaults = {
@@ -1669,6 +1671,23 @@ in
         });
         default = defaults.addons;
         description = "Addon executor config";
+      };
+      extraConfig = mkOption {
+        type = types.attrs;
+        description = "Extra configuration for docspell server. Overwrites values in case of a conflict.";
+        default = { };
+        example = ''
+          {
+            files = {
+              default-store = "minio";
+              stores = {
+                minio = {
+                  enabled = true;
+                };
+              };
+            };
+          }
+        '';
       };
     };
   };
