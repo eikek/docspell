@@ -58,6 +58,16 @@ in
       }
     ];
     inherit full-text-search;
+    extraConfig = {
+      files = {
+        default-store = "database";
+        stores = {
+          minio = {
+            enabled = true;
+          };
+        };
+      };
+    };
   };
 
   environment.systemPackages =
