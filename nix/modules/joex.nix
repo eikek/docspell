@@ -1369,7 +1369,7 @@ in
                   };
                 };
               });
-              default = defaults.convert.orcmypdf;
+              default = defaults.convert.ocrmypdf;
               description = ''
                 The tool ocrmypdf can be used to convert pdf files to pdf files
                 in order to add extracted text as a separate layer. This makes
