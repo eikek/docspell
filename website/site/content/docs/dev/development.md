@@ -126,43 +126,35 @@ warnings should also be fixed.
 
 # Nix Expressions
 
-The directory `/nix` contains nix expressions to install docspell via
+The directory `/nix` contains Nix Flake to install docspell via
 the nix package manager and to integrate it into NixOS.
 
-## Testing NixOS Modules
+Flake implements `checks` output which can be run with `nix flake check`
+and it defines a development VM which can be used to interactively work
+with docspell.
 
-The modules can be build by building the `configuration-test.nix` file
-together with some nixpkgs version. For example:
+To run the VM, issue:
 
-``` bash
-nixos-rebuild build-vm -I nixos-config=./configuration-test.nix \
-  -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
+```bash
+cd $PROJECT_ROOT/nix
+nix run '.#nixosConfigurations.dev-vm.config.system.build.vm
 ```
 
-This will build all modules imported in `configuration-test.nix` and
-create a virtual machine containing the system. After that completes,
-the system configuration can be found behind the `./result/system`
-symlink. So it is possible to look at the generated systemd config for
-example:
+To open docspell, wait for docspell-restserver service to report that
+http listener is up and connect to `localhost:64080`.
 
-``` bash
-cat result/system/etc/systemd/system/docspell-joex.service
+To ssh into the machine, run:
+
+```bash
+ssh -o StrictHostKeyChecking=no \
+    -o UserKnownHostsFile=/dev/null \
+    -p 64022 root@localhost
 ```
 
-And with some more commands (there probably is an easier way…) the
-config file can be checked:
+Once connected to the machine, you can see the docspell config file via
 
-``` bash
-cat result/system/etc/systemd/system/docspell-joex.service | grep ExecStart | cut -d'=' -f2 | xargs cat | tail -n1 | awk '{print $NF}'| sed 's/.$//' | xargs cat | jq
-```
-
-To see the module in action, the vm can be started (the first line
-sets more memory for the vm):
-
-``` bash
-export QEMU_OPTS="-m 2048"
-export QEMU_NET_OPTS "hostfwd=tcp::7880-:7880"
-./result/bin/run-docspelltest-vm
+```bash
+systemd-show docspell-joex.service | grep ExecStart | cut -d'=' -f2 | xargs cat | tail -n1 | awk '{print $NF}'| sed 's/.$//' | xargs cat | jq
 ```
 
 # Release
