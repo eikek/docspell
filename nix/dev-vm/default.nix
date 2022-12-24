@@ -16,7 +16,7 @@
   };
 
   # Otherwise oomkiller kills docspell
-  virtualisation.memorySize = 2048;
+  virtualisation.memorySize = 4096;
 
   virtualisation.forwardPorts = [
     # SSH
