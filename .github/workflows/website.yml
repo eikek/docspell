@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 0
       - name: Set current version
         run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
-      - uses: jorelali/setup-elm@v3
+      - uses: jorelali/setup-elm@v4
         with:
           elm-version: 0.19.1
       - uses: cachix/install-nix-action@v18
