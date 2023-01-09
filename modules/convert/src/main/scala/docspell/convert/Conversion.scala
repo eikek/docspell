@@ -82,13 +82,26 @@ object Conversion {
                   Chunk.byteVector(ByteVector.view(html.getBytes(StandardCharsets.UTF_8)))
                 )
                 .covary[F]
-              WkHtmlPdf.toPDF(
-                cfg.wkhtmlpdf,
-                cfg.chunkSize,
-                StandardCharsets.UTF_8,
-                sanitizeHtml,
-                logger
-              )(bytes, handler)
+              cfg.htmlConverter match {
+                case HtmlConverter.Wkhtmltopdf =>
+                  WkHtmlPdf.toPDF(
+                    cfg.wkhtmlpdf,
+                    cfg.chunkSize,
+                    StandardCharsets.UTF_8,
+                    sanitizeHtml,
+                    logger
+                  )(bytes, handler)
+
+                case HtmlConverter.Weasyprint =>
+                  Weasyprint.toPDF(
+                    cfg.weasyprint,
+                    cfg.chunkSize,
+                    StandardCharsets.UTF_8,
+                    sanitizeHtml,
+                    logger
+                  )(bytes, handler)
+              }
+
             }
 
           case MimeType.ImageMatch(mt) =>
