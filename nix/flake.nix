@@ -115,5 +115,20 @@
         joex = ((import ./modules/joex.nix) self.overlays.default);
       };
 
+      nixosConfigurations =
+        let
+          lib = nixpkgs.lib;
+        in
+        {
+          dev-vm = lib.makeOverridable nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+              self.nixosModules.default
+              ./checks
+              # nixos-shell specific module. Should be kept outside nix flake checks
+              ./dev-vm
+            ];
+          };
+        };
     };
 }

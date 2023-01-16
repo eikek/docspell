@@ -6,8 +6,6 @@
   nixpkgs.config = {
     permittedInsecurePackages = [
       "solr-8.6.3"
-      # NOTE: Qtwebkit is a dep for wkhtmltopdf, this line is needed until #201765 is fixed in nixpkgs
-      "qtwebkit-5.212.0-alpha4"
     ];
   };
 

@@ -15,7 +15,7 @@ in
   i18n = {
     defaultLocale = "en_US.UTF-8";
   };
-  console.keyMap = "de";
+  console.keyMap = "us";
 
   users.users.root = {
     password = "root";
@@ -88,6 +88,9 @@ in
     firewall.allowedTCPPorts = [ 7880 ];
   };
 
-  system.stateVersion = "22.05";
+  system.stateVersion = "22.11";
+
+  # This slows down the build of a vm
+  documentation.enable = false;
 
 }
