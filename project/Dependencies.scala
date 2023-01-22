@@ -198,6 +198,7 @@ object Dependencies {
       ExclusionRule("com.sun.xml.bind", "jaxb-core"),
       ExclusionRule("javax.xml.bind", "jaxb-api"),
       ExclusionRule("javax.activation"),
+      ExclusionRule("junit", "junit"),
       ExclusionRule("de.jollyday", "jollyday"),
       ExclusionRule("com.apple", "AppleJavaExtensions"),
       ExclusionRule("org.glassfish", "javax.json")

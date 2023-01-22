@@ -10,13 +10,11 @@ object TestSettingsPlugin extends AutoPlugin {
       ds.fold(d0)(_ ++ _).map(_ % Test)
 
     implicit class ProjectTestSettingsSyntax(project: Project) {
-      def withTestSettings =
+      def withTestSettings: Project =
         project.settings(testSettings)
 
-      def withTestSettingsDependsOn(p: Project, ps: Project*) =
-        (p :: ps.toList).foldLeft(project) { (cur, dep) =>
-          cur.dependsOn(dep % "test->test,compile")
-        }
+      def withTestSettingsDependsOn(p: Project, ps: Project*): Project =
+        withTestSettings.dependsOn((p +: ps).map(_ % "test->test"): _*)
     }
 
     implicit class CrossprojectTestSettingsSyntax(project: CrossProject) {
@@ -29,7 +27,7 @@ object TestSettingsPlugin extends AutoPlugin {
   import autoImport._
 
   val testSettings = Seq(
-    libraryDependencies ++= inTest(Dependencies.munit, Dependencies.scribe),
+    libraryDependencies ++= (Dependencies.munit ++ Dependencies.scribe).map(_ % Test),
     testFrameworks += TestFrameworks.MUnit
   )
 

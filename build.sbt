@@ -662,7 +662,7 @@ val ftspsql = project
         Dependencies.postgres ++
         Dependencies.flyway
   )
-  .dependsOn(common, ftsclient, store % "compile->test;test->test")
+  .dependsOn(common, ftsclient, store % "compile->compile;test->test")
 
 val restapi = project
   .in(file("modules/restapi"))
