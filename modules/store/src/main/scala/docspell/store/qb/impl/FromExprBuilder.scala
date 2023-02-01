@@ -25,7 +25,7 @@ object FromExprBuilder {
 
   def buildTable(table: TableDef): Fragment =
     Fragment.const(table.tableName) ++ table.alias
-      .map(a => Fragment.const0(a))
+      .map(a => Fragment.const(a))
       .getOrElse(Fragment.empty)
 
   def buildRelation(rel: FromExpr.Relation): Fragment =
