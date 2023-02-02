@@ -17,6 +17,11 @@ class DSLTest extends FunSuite {
   val course = CourseRecord.as("c")
   val person = PersonRecord.as("p")
 
+  test("delete") {
+    val frag = DML.deleteFragment(course, course.ownerId === 15L)
+    assertEquals(frag.internals.sql, "DELETE FROM course c WHERE c.owner_id = ? ")
+  }
+
   test("and") {
     val c = course.lessons > 4 && person.id === 3 && person.name.like("%a%")
     val expect =

@@ -1584,9 +1584,9 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
   /sec/user/{username}:
     delete:
-      operationId: "sec-user-delete-by-username"
+      operationId: "sec-user-delete-by-userid-or-login"
       tags: [ Collective ]
-      summary: Delete a user.
+      summary: Delete a user by its id or login name.
       description: |
         Deletes a user.
       security:

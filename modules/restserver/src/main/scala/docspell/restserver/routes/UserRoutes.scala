@@ -6,6 +6,7 @@
 
 package docspell.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 
@@ -73,8 +74,13 @@ object UserRoutes {
         for {
           users <- backend.collective.listUser(user.account.collectiveId)
           ar <-
-            if (users.exists(_.uid == id)) backend.collective.deleteUser(id)
-            else UpdateResult.notFound.pure[F]
+            OptionT
+              .fromOption[F](
+                users
+                  .find(u => u.uid == id || u.login == id)
+              )
+              .semiflatMap(u => backend.collective.deleteUser(u.uid))
+              .getOrElse(UpdateResult.notFound)
           resp <- Ok(basicResult(ar, "User deleted."))
         } yield resp
 
