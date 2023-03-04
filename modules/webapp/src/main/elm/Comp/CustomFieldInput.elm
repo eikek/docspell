@@ -133,6 +133,15 @@ errorMsg texts model =
             Nothing
 
 
+textInputNumberConfig : Comp.SimpleTextInput.Config
+textInputNumberConfig =
+    let
+        cfg =
+            Comp.SimpleTextInput.defaultConfig
+    in
+    { cfg | valueTransform = normalizeStringToNumber }
+
+
 init : CustomField -> ( Model, Cmd Msg )
 init =
     init1 Comp.SimpleTextInput.defaultConfig
@@ -151,7 +160,7 @@ init1 cfg field =
                     TextField (Comp.SimpleTextInput.init cfg Nothing)
 
                 Data.CustomFieldType.Numeric ->
-                    NumberField (FloatModel (Comp.SimpleTextInput.init cfg Nothing) (Err NoValue))
+                    NumberField (FloatModel (Comp.SimpleTextInput.init textInputNumberConfig Nothing) (Err NoValue))
 
                 Data.CustomFieldType.Money ->
                     MoneyField (MoneyModel "" (Err NoValue))
@@ -193,7 +202,7 @@ initWith1 cfg value =
                 Data.CustomFieldType.Numeric ->
                     let
                         fm =
-                            Comp.SimpleTextInput.init cfg <| Just value.value
+                            Comp.SimpleTextInput.init textInputNumberConfig <| Just value.value
 
                         res =
                             string2Float value.value
@@ -414,7 +423,7 @@ updateFloatModel forSearch model lm fm parse =
                                 ( { input = result.model
                                   , result = Ok n
                                   }
-                                , Value value
+                                , Value (normalizeStringToNumber value)
                                 )
 
                             Err err ->
@@ -569,9 +578,14 @@ mkLabel model =
     Maybe.withDefault model.field.name model.field.label
 
 
+normalizeStringToNumber : String -> String
+normalizeStringToNumber =
+    String.replace "," "."
+
+
 string2Float : String -> Result FieldError Float
 string2Float str =
-    case String.toFloat str of
+    case (normalizeStringToNumber >> String.toFloat) str of
         Just n ->
             Ok n
 
