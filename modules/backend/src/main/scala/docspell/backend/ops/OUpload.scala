@@ -107,6 +107,11 @@ object OUpload {
     case object NoCollective extends UploadResult
 
     def noCollective: UploadResult = NoCollective
+
+    /** A file could not be stored due to error in the file backend. */
+    case class StoreFailure(cause: Throwable) extends UploadResult
+
+    def storeFailure(cause: Throwable): UploadResult = StoreFailure(cause)
   }
 
   private def right[F[_]: Functor, A](a: F[A]): EitherT[F, UploadResult, A] =
@@ -129,7 +134,7 @@ object OUpload {
           _ <- checkExistingItem(itemId, collectiveId)
           coll <- OptionT(store.transact(RCollective.findById(collectiveId)))
             .toRight(UploadResult.noCollective)
-          files <- right(data.files.traverse(saveFile(coll.id)).map(_.flatten))
+          files <- data.files.traverse(saveFile(coll.id))
           _ <- checkFileList(files)
           lang <- data.meta.language match {
             case Some(lang) => right(lang.pure[F])
@@ -204,28 +209,27 @@ object OUpload {
       /** Saves the file into the database. */
       private def saveFile(
           collectiveId: CollectiveId
-      )(file: File[F]): F[Option[ProcessItemArgs.File]] =
-        logger.info(s"Receiving file $file") *>
-          file.data
-            .through(
-              store.fileRepo.save(
-                collectiveId,
-                FileCategory.AttachmentSource,
-                MimeTypeHint(file.name, None)
+      )(file: File[F]): EitherT[F, UploadResult, ProcessItemArgs.File] =
+        for {
+          _ <- right(logger.info(s"Receiving file $file"))
+          id <- EitherT(
+            file.data
+              .through(
+                store.fileRepo.save(
+                  collectiveId,
+                  FileCategory.AttachmentSource,
+                  MimeTypeHint(file.name, None)
+                )
               )
+              .compile
+              .lastOrError
+              .attempt
+          ).leftSemiflatTap(ex =>
+            logger.warn(ex)(
+              s"Could not store file ${file.name}/${file.advertisedMime} for processing!"
             )
-            .compile
-            .lastOrError
-            .attempt
-            .map(
-              _.fold(
-                ex => {
-                  logger.warn(ex)(s"Could not store file for processing!")
-                  None
-                },
-                id => Some(ProcessItemArgs.File(file.name, id))
-              )
-            )
+          ).leftMap(UploadResult.storeFailure)
+        } yield ProcessItemArgs.File(file.name, id)
 
       private def checkExistingItem(
           itemId: Option[Ident],
