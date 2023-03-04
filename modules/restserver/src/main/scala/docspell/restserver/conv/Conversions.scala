@@ -689,6 +689,11 @@ trait Conversions {
       case UploadResult.NoItem   => BasicResult(false, "The item could not be found.")
       case UploadResult.NoCollective =>
         BasicResult(false, "The collective could not be found.")
+      case UploadResult.StoreFailure(_) =>
+        BasicResult(
+          false,
+          "There were errors storing a file! See the server logs for details."
+        )
     }
 
   def basicResult(cr: PassChangeResult): BasicResult =
