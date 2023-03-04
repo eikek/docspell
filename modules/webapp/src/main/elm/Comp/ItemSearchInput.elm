@@ -83,6 +83,7 @@ init cfg =
             , setOnTyping = True
             , setOnEnter = True
             , setOnBlur = False
+            , valueTransform = identity
             }
     in
     { searchModel = Comp.SimpleTextInput.init textCfg Nothing

@@ -40,6 +40,7 @@ type alias Config =
     , setOnTyping : Bool
     , setOnEnter : Bool
     , setOnBlur : Bool
+    , valueTransform : String -> String
     }
 
 
@@ -49,6 +50,7 @@ defaultConfig =
     , setOnTyping = True
     , setOnEnter = True
     , setOnBlur = True
+    , valueTransform = identity
     }
 
 
@@ -130,6 +132,7 @@ update msg (Model model) =
             let
                 maybeStr =
                     Util.Maybe.fromString str
+                        |> Maybe.map model.cfg.valueTransform
 
                 cmd_ =
                     Task.succeed () |> Task.perform (\_ -> DelayedSet)
