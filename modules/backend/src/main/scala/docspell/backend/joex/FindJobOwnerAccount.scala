@@ -6,6 +6,8 @@
 
 package docspell.backend.joex
 
+import cats.syntax.all._
+
 import docspell.common.AccountId
 import docspell.scheduler.FindJobOwner
 import docspell.store.Store
@@ -15,9 +17,11 @@ import docspell.store.queries.QLogin
   * login.
   */
 object FindJobOwnerAccount {
-  def apply[F[_]](store: Store[F]): FindJobOwner[F] =
+  def apply[F[_]: cats.effect.Sync](store: Store[F]): FindJobOwner[F] =
     FindJobOwner.of { job =>
+      val logger = docspell.logging.getLogger[F]
       val accountId = AccountId(job.group, job.submitter)
-      store.transact(QLogin.findAccount(accountId))
+      logger.debug(s"Searching for account of ids: $accountId ") *>
+        store.transact(QLogin.findAccount(accountId))
     }
 }

@@ -30,6 +30,7 @@ object EventNotify {
     Kleisli { event =>
       (for {
         hooks <- OptionT.liftF(store.transact(QNotification.findChannelsForEvent(event)))
+        _ <- OptionT.liftF(logger.trace(s"Found hooks: $hooks for event: $event"))
         evctx <- DbEventContext.apply.run(event).mapK(store.transform)
         channels = hooks
           .filter(hc =>

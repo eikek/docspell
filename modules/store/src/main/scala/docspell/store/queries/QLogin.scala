@@ -61,13 +61,25 @@ object QLogin {
   /** Finds the account given a combination of login/user-id and coll-id/coll-name pair.
     */
   def findAccount(acc: AccountId): ConnectionIO[Option[AccountInfo]] = {
+    // collective may be given as id or name and it is possible to have two collective
+    // ids given. In that (not so nice) case, we need to lookup the collective name and
+    // match it against the user. This kind-of edge case is currently used when a user task
+    // of scope UserTaskScope.collective is run.
+
     val collIdOpt = acc.collective.id.toLongOption.map(CollectiveId(_))
-    findUser0((ut, ct) =>
-      (ut.login === acc.user || ut.uid === acc.user) && collIdOpt
-        .map(id => ct.id === id)
-        .getOrElse(ct.name === acc.collective)
-    )
-      .map(_.map(_.account))
+    collIdOpt match {
+      case Some(cid) if acc.user == acc.collective =>
+        findUser0((ut, ct) => ct.id === cid && ut.login === ct.name)
+          .map(_.map(_.account))
+
+      case _ =>
+        findUser0((ut, ct) =>
+          (ut.login === acc.user || ut.uid === acc.user) && collIdOpt
+            .map(id => ct.id === id)
+            .getOrElse(ct.name === acc.collective)
+        )
+          .map(_.map(_.account))
+    }
   }
 
   def findByRememberMe(
