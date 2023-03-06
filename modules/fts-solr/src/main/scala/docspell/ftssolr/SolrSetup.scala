@@ -164,10 +164,15 @@ object SolrSetup {
           ),
           SolrMigration[F](
             29,
+            "Add new field type for ukrainian content",
+            addFieldType(AddFieldType.textUkr)
+          ),
+          SolrMigration[F](
+            30,
             "Add Ukrainian",
             addContentField(Language.Ukrainian)
           ),
-          SolrMigration.reIndexAll(30, "Re-Index after adding Estonian and Ukrainian")
+          SolrMigration.reIndexAll(31, "Re-Index after adding Estonian and Ukrainian")
         )
 
       def addFolderField: F[Unit] =
@@ -322,6 +327,17 @@ object SolrSetup {
 
     val textPol = AddFieldType(
       "text_pl",
+      "solr.TextField",
+      Analyzer(
+        Tokenizer("solr.StandardTokenizerFactory", Map.empty),
+        List(
+          Filter("solr.LowerCaseFilterFactory", Map.empty)
+        )
+      )
+    )
+
+    val textUkr = AddFieldType(
+      "text_uk",
       "solr.TextField",
       Analyzer(
         Tokenizer("solr.StandardTokenizerFactory", Map.empty),
