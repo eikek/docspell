@@ -7,7 +7,7 @@ jobs:
   auto-approve:
     runs-on: ubuntu-20.04
     steps:
-      - uses: hmarr/auto-approve-action@v3.1.0
+      - uses: hmarr/auto-approve-action@v3.2.0
         if: github.actor == 'eikek-scala-steward'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
