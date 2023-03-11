@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.40.0
+
+*Mar 11th, 2023*
+
+- Add Ukrainian language (#1835, @GooRoo)
+- webui: normalize `,` to `.` for numeric fields
+- improve error reporting when file backend fails (#1976)
+- docker: remove exlpicit zlib install (#1863)
+- nix: replace wkhtmltopdf with weasyprint (#1873, #1895, @VTimofeenko)
+- fix listing shares with no name (#1840)
+- fix html conversion of text files (#1915)
+- fix: remove test-scoped dependencies from artifacts (#1856)
+- fix deletin users (#1941)
+- fix notification for collective scoped tasks (#1987)
+
+### Rest API changes
+
+- None
+
+### Configuration Changes
+
+- None
+
 ## v0.39.0
 
 *Nov 7th, 2022*
