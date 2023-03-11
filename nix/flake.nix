@@ -11,19 +11,19 @@
       nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
       # Version config
       cfg = {
-        v0_39_0 = rec {
-          version = "0.39.0";
+        v0_40_0 = rec {
+          version = "0.40.0";
           server = {
             url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-restserver-${version}.zip";
-            sha256 = "sha256-YZzYOqJzp2J5ioTT8H7qpRA3mHDRjJYNA7fUOEQWSfY=";
+            sha256 = "sha256-lTvLZ9MBezEhELr2LhrTtm2fRWxdLWEjAhOqxRmBwwg=";
           };
           joex = {
             url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-joex-${version}.zip";
-            sha256 = "sha256-6Vcuk9+JDkNAdTQd+sRLARfE+y9cbtGE8hWTTcxZk3E=";
+            sha256 = "sha256-lVDRl7CrRmojL7ZIPIlR6VzHoplEB/ew7aID3urYspU=";
           };
         };
       };
-      current_version = cfg.v0_39_0;
+      current_version = cfg.v0_40_0;
       inherit (current_version) version;
     in
     rec
