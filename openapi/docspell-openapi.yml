@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Docspell
-  version: 0.39.0
+  version: 0.40.0
   description: |
     This is the remote API to Docspell. Docspell is a free document
     management system focused on small groups or families.
@@ -1584,9 +1584,9 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
   /sec/user/{username}:
     delete:
-      operationId: "sec-user-delete-by-username"
+      operationId: "sec-user-delete-by-userid-or-login"
       tags: [ Collective ]
-      summary: Delete a user.
+      summary: Delete a user by its id or login name.
       description: |
         Deletes a user.
       security:

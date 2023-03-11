@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.39.0
+                    0.40.0
                 </div>
             </div>
 
@@ -788,7 +788,10 @@ relevant things to do. These are:</p>
 the <code>all</code> list (then fix compile errors)</li>
 <li>define a list of month names to support date recognition and update
 <code>DateFind.scala</code> to recognize date patterns for that language. Add
-some tests to <code>DateFindTest</code>.</li>
+some tests to <code>DateFindTest</code>. While writing test-cases, you can check
+them via <code>sbt</code>'s command prompt as following:<pre class="z-code"><code><span class="z-text z-plain">testOnly docspell.analysis.date.DateFindTest
+</span></code></pre>
+</li>
 <li>add it to joex' dockerfile to be available for tesseract</li>
 <li>update the solr migration/field definitions in <code>SolrSetup</code>. Create a
 new solr migration that adds the content field for the new
@@ -834,7 +837,7 @@ others.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.39.0
+            Docspell 0.40.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

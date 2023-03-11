@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.39.0
+                    0.40.0
                 </div>
             </div>
 
@@ -776,53 +776,12 @@
 <p>Docspell can be installed via the <a href="https://nixos.org/nix">nix</a> package
 manager, which is available for Linux and OSX. Docspell is currently not
 part of the <a href="https://nixos.org/nixpkgs/">nixpkgs collection</a>, but you
-can use the derivation from this repository. This is sometimes
-referred to as <a href="https://nixos.wiki/wiki/Import_From_Derivation">import from
-derivation</a>.</p>
-<p>For example, the <code>builtins.fetchTarball</code> function can be used to
-retrieve the files; then import the <code>release.nix</code> file:</p>
-<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-keyword z-other z-nix">let</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspellsrc</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">builtins</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">fetchTarball</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>https://github.com/eikek/docspell/archive/master.tar.gz<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-<span class="z-keyword z-other z-nix">in</span>
-<span class="z-support z-function z-nix">import</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span><span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">docspellsrc</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/nix/release.nix<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-invalid z-illegal">;</span>
-</span></code></pre>
-<p>This creates a set containing a function for creating a derivation for
-docspell. This then needs to be called like other custom packages. For
-example, in your <code>~/.nixpkgs/config.nix</code> you could write this:</p>
-<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-keyword z-other z-nix">let</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspellsrc</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">builtins</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">fetchTarball</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>https://github.com/eikek/docspell/archive/master.tar.gz<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-support z-function z-nix">import</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span><span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">docspellsrc</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/nix/release.nix<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-<span class="z-keyword z-other z-nix">in</span>
-<span class="z-punctuation z-definition z-attrset z-nix">{</span> <span class="z-entity z-other z-attribute-name z-multipart z-nix">packageOverrides</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-function z-4 z-nix">pkgs</span><span class="z-punctuation z-definition z-function z-nix">:</span>
-   <span class="z-keyword z-other z-nix">let</span>
-     <span class="z-entity z-other z-attribute-name z-multipart z-nix">callPackage</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">lib</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">callPackageWith</span><span class="z-punctuation z-definition z-expression z-nix">(</span><span class="z-variable z-parameter z-name z-nix">custom</span> <span class="z-keyword z-operator z-nix">//</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-punctuation z-definition z-expression z-nix">)</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-     <span class="z-entity z-other z-attribute-name z-multipart z-nix">custom</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-       <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">callPackage</span> <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">currentPkg</span> <span class="z-punctuation z-definition z-attrset z-nix">{</span><span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-     <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-   <span class="z-keyword z-other z-nix">in</span> <span class="z-variable z-parameter z-name z-nix">custom</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-<span class="z-punctuation z-definition z-attrset z-nix">}</span>
-</span></code></pre>
-<p>The <code>docspell</code> custom package is again a set that contains derivations
-for all 3 installable docspell programs: the restserver, joex and the
-tools.</p>
-<p>Then you can install docspell via <code>nix-shell</code> or <code>nix-env</code>, for example:</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> nix-env<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>iA</span> nixpkgs.docspell.server nixpkgs.docspell.joex nixpkgs.docspell.tools</span>
-</span></code></pre>
-<p>You may need to replace <code>nixpkgs</code> with <code>nixos</code> when you're on NixOS.</p>
-<p>The expression <code>docspell.currentPkg</code> refers to the most current
-release of Docspell. So even if you use the tarball of the current
-master branch, the <code>release.nix</code> file only contains derivations for
-releases. The expression <code>docspell.currentPkg</code> is a shortcut for
-selecting the most current release. For example it translates to
-<code>docspell.pkg docspell.cfg.v&lt;pre data-shortcode&gt;0_39_0&lt;/pre&gt;</code> – if the current version
-is <code>&lt;pre data-shortcode&gt;0.39.0&lt;/pre&gt;</code>.</p>
+can use the flake from this repository.</p>
 <h2 id="upgrading">Upgrading<a class="zola-anchor" href="#upgrading" aria-label="Anchor link for: upgrading">🔗</a></h2>
 <p>Since <a href="https://docspell.org/docs/install/downgrading/">downgrading</a> is not supported,
 it is recommended to backup your database before upgrading. Should
 something not work as expected, restore the database backup and go
 back to the previous version.</p>
-<p>When using the provided nix setup, the <code>currentPkg</code> always points to
-the latest release. Thus it is enough to run <code>nix-build</code>.</p>
 <h1 id="nixos">Docspell on NixOS<a class="zola-anchor" href="#nixos" aria-label="Anchor link for: nixos">🔗</a></h1>
 <p>If you are running <a href="https://nixos.org">NixOS</a>, there is a module
 definition for installing Docspell as a service using systemd.</p>
@@ -830,54 +789,20 @@ definition for installing Docspell as a service using systemd.</p>
 <ul>
 <li>restserver</li>
 <li>joex</li>
-<li>consumedir</li>
 </ul>
-<p>The <code>consumedir</code> module defines a systemd unit that starts the <code>dsc watch</code> command to watch one or more directories for new files.</p>
-<p>You need to import the <code>release.nix</code> file as described above in your
-<code>configuration.nix</code> and then append the docspell module to your list of
-modules. Here is an example:</p>
-<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-punctuation z-definition z-entity z-function z-2 z-nix">{</span> <span class="z-variable z-parameter z-function z-1 z-nix">config</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">pkgs</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-keyword z-operator z-nix">... </span><span class="z-punctuation z-definition z-entity z-function z-nix">}</span><span class="z-punctuation z-definition z-function z-nix">:</span>
-<span class="z-keyword z-other z-nix">let</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspellsrc</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">builtins</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">fetchTarball</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>https://github.com/eikek/docspell/archive/master.tar.gz<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-support z-function z-nix">import</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span><span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">docspellsrc</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/nix/release.nix<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-<span class="z-keyword z-other z-nix">in</span>
-<span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">imports</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-list z-nix">[</span> <span class="z-variable z-parameter z-name z-nix">mymodule1</span> <span class="z-variable z-parameter z-name z-nix">mymodule2</span> <span class="z-punctuation z-definition z-list z-nix">]</span> <span class="z-keyword z-operator z-nix">++</span> <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">modules</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-comment z-line z-number-sign z-nix"># flake.nix</span>
+<span class="z-variable z-parameter z-name z-nix">inputs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">url</span> <span class="z-invalid z-illegal">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>github:eikek/docspell?dir=nix/<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-invalid z-illegal">;</span>
 
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">nixpkgs</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">config</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">packageOverrides</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-function z-4 z-nix">pkgs</span><span class="z-punctuation z-definition z-function z-nix">:</span>
-        <span class="z-keyword z-other z-nix">let</span>
-          <span class="z-entity z-other z-attribute-name z-multipart z-nix">callPackage</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">lib</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">callPackageWith</span><span class="z-punctuation z-definition z-expression z-nix">(</span><span class="z-variable z-parameter z-name z-nix">custom</span> <span class="z-keyword z-operator z-nix">//</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-punctuation z-definition z-expression z-nix">)</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-          <span class="z-entity z-other z-attribute-name z-multipart z-nix">custom</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-            <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">callPackage</span> <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">currentPkg</span> <span class="z-punctuation z-definition z-attrset z-nix">{</span><span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-          <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-        <span class="z-keyword z-other z-nix">in</span> <span class="z-variable z-parameter z-name z-nix">custom</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+<span class="z-comment z-line z-number-sign z-nix"># in modules</span>
+<span class="z-variable z-parameter z-name z-nix">imports</span> <span class="z-invalid z-illegal">=</span> <span class="z-punctuation z-definition z-list z-nix">[</span> 
+      <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">nixosModules</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">default</span>
+<span class="z-punctuation z-definition z-list z-nix">]</span>
 
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">services</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell-restserver</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">enable</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">base-url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>http://docspelltest:7880<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-comment z-line z-number-sign z-nix"># ... more settings here</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">services</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell-joex</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">enable</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">base-url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>http://docspelltexst:7878<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-comment z-line z-number-sign z-nix"># ... more settings here</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">services</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell-consumedir</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">enable</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">watchDirs</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-list z-nix">[</span><span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>/tmp/test<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-definition z-list z-nix">]</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">source-id</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>the-source-id<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-
-  ...
-<span class="z-punctuation z-definition z-attrset z-nix">}</span>
-
+<span class="z-variable z-parameter z-name z-nix">services</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">docspell-joex</span> <span class="z-invalid z-illegal">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span> <span class="z-keyword z-operator z-nix">...  </span><span class="z-punctuation z-definition z-entity z-function z-nix">}</span>
+<span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">r</span><span class="z-invalid z-illegal">v</span><span class="z-invalid z-illegal">i</span><span class="z-invalid z-illegal">c</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">.</span><span class="z-invalid z-illegal">d</span><span class="z-invalid z-illegal">o</span><span class="z-invalid z-illegal">c</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">p</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">l</span><span class="z-invalid z-illegal">l</span><span class="z-invalid z-illegal">-</span><span class="z-invalid z-illegal">r</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">t</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">r</span><span class="z-invalid z-illegal">v</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">r</span> <span class="z-invalid z-illegal">=</span> <span class="z-invalid z-illegal">{</span> <span class="z-invalid z-illegal">.</span><span class="z-invalid z-illegal">.</span><span class="z-invalid z-illegal">.</span>  <span class="z-invalid z-illegal">}</span>
 </span></code></pre>
-<p>Please see the <code>nix/module-server.nix</code> and <code>nix/module-joex.nix</code> files
-for the set of options. The nixos options are modelled after the
+<p>Please see the <code>nix/modules/server.nix</code> and <code>nix/modules/joex.nix</code> files
+for the set of options. The nixos options are modeled after the
 default configuration file.</p>
 <p>The modules files are only applicable to the newest version of
 Docspell. If you really need an older version, checkout the
@@ -886,25 +811,13 @@ appropriate commit.</p>
 <p>This is a example system configuration that installs docspell with a
 postgres database. This snippet can be used to create a vm (using
 <code>nixos-rebuild build-vm</code> as shown above) or a container, for example.</p>
-<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-punctuation z-definition z-entity z-function z-2 z-nix">{</span> <span class="z-variable z-parameter z-function z-1 z-nix">config</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">pkgs</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-keyword z-operator z-nix">... </span><span class="z-punctuation z-definition z-entity z-function z-nix">}</span><span class="z-punctuation z-definition z-function z-nix">:</span>
-<span class="z-keyword z-other z-nix">let</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspellsrc</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">builtins</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">fetchTarball</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>https://github.com/eikek/docspell/archive/master.tar.gz<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-support z-function z-nix">import</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span><span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">docspellsrc</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/nix/release.nix<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-<span class="z-keyword z-other z-nix">in</span>
-<span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">imports</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">modules</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-comment z-line z-number-sign z-nix"># flake.nix</span>
+<span class="z-variable z-parameter z-name z-nix">inputs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">url</span> <span class="z-invalid z-illegal">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>github:eikek/docspell?dir=nix/<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-invalid z-illegal">;</span>
 
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">nixpkgs</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">config</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">packageOverrides</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-function z-4 z-nix">pkgs</span><span class="z-punctuation z-definition z-function z-nix">:</span>
-        <span class="z-keyword z-other z-nix">let</span>
-          <span class="z-entity z-other z-attribute-name z-multipart z-nix">callPackage</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">lib</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">callPackageWith</span><span class="z-punctuation z-definition z-expression z-nix">(</span><span class="z-variable z-parameter z-name z-nix">custom</span> <span class="z-keyword z-operator z-nix">//</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-punctuation z-definition z-expression z-nix">)</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-          <span class="z-entity z-other z-attribute-name z-multipart z-nix">custom</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-            <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">callPackage</span> <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">currentPkg</span> <span class="z-punctuation z-definition z-attrset z-nix">{</span><span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-          <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-        <span class="z-keyword z-other z-nix">in</span> <span class="z-variable z-parameter z-name z-nix">custom</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+<span class="z-comment z-line z-number-sign z-nix"># module.nix</span>
+<span class="z-punctuation z-definition z-entity z-function z-2 z-nix">{</span> <span class="z-variable z-parameter z-function z-1 z-nix">config</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">pkgs</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">docspell</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-keyword z-operator z-nix">... </span><span class="z-punctuation z-definition z-entity z-function z-nix">}</span><span class="z-punctuation z-definition z-function z-nix">:</span>
+<span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+  <span class="z-entity z-other z-attribute-name z-multipart z-nix">imports</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">nixosModules</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">default</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
 
   <span class="z-comment z-line z-number-sign z-nix">##### just for the example…</span>
   <span class="z-entity z-other z-attribute-name z-multipart z-nix">users</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">users</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">root</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
@@ -992,7 +905,7 @@ postgres database. This snippet can be used to create a vm (using
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.39.0
+            Docspell 0.40.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
