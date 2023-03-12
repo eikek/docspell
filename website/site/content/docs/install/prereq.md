@@ -32,9 +32,9 @@ component.
 
 ## External Programs for Joex
 
-- [Ghostscript](http://pages.cs.wisc.edu/~ghost/) (the `gs` command)
-  is used to extract/convert PDF files into images that are then fed
-  to ocr. It is available on most GNU/Linux distributions.
+- [Ghostscript](https://www.ghostscript.com/) (the `gs` command) is
+  used to extract/convert PDF files into images that are then fed to
+  ocr. It is available on most GNU/Linux distributions.
 - [Unpaper](https://github.com/Flameeyes/unpaper) is a program that
   pre-processes images to yield better results when doing ocr. If this
   is not installed, docspell tries without it. However, it is
