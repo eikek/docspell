@@ -251,8 +251,8 @@ machine/setup.
 Another limit is `max-image-size` which defines the size of an image
 in pixel (`width * height`) where processing is skipped.
 
-Then [ghostscript](http://pages.cs.wisc.edu/~ghost/) is used to
-extract single pages into image files and
+Then [ghostscript](https://www.ghostscript.com/) is used to extract
+single pages into image files and
 [unpaper](https://github.com/Flameeyes/unpaper) is used to optimize
 the images for ocr. Unpaper is optional, if it is not found, it is
 skipped, which may be a compromise on slow machines.
