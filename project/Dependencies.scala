@@ -239,7 +239,7 @@ object Dependencies {
   val fs2 = fs2Core ++ fs2Io
 
   val http4sClient = Seq(
-    "org.http4s" %% "http4s-blaze-client" % "0.23.13"
+    "org.http4s" %% "http4s-blaze-client" % "0.23.14"
   )
 
   val http4sCirce = Seq(
@@ -251,7 +251,7 @@ object Dependencies {
   )
 
   val http4sServer = Seq(
-    "org.http4s" %% "http4s-blaze-server" % "0.23.13"
+    "org.http4s" %% "http4s-blaze-server" % "0.23.14"
   )
 
   val circeCore = Seq(
