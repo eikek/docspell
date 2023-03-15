@@ -3,24 +3,24 @@
 
 
 "@fontsource/montserrat@^4.5.3":
-  version "4.5.13"
-  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-4.5.13.tgz#58f12419c05e131b09ab17e9181aa24fb9c84b3a"
-  integrity sha512-/XlcNsMFjdWX4Away8Ax/4NgND8Ckk9gVDwgz1sfxF6h+gFHChLOV0IvPrUfCQjZ1F35igg+nR9bSxmjsYEskQ==
+  version "4.5.14"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-4.5.14.tgz#5f4bfc5e7f234a986d94d9e7e7193f852e6971e3"
+  integrity sha512-fTvrteVzuFUePhr4QYBGoK8G/YHLJ3IhF1HhKg0AxcFvZajJT7rM7ULdmKLSd2PkX44R3aaFZq1zDbmjbGGI+w==
 
 "@fontsource/source-code-pro@^4.5.2":
-  version "4.5.12"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-4.5.12.tgz#4ca4dffb485f3f2768dd13157cb09a9b134a9cd1"
-  integrity sha512-6r1dykX7SH1Orm7xUh4sA8pjM1uNPKo9fV+y9/wxS+y/fwN+sMf6b1jHDUTmfEtw1OxlTaHGrr2I7dGeNqxdPA==
+  version "4.5.14"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-4.5.14.tgz#97e7b889f485c56132925e3b5bd1cc114b67e163"
+  integrity sha512-EWE0djE7wFCBmExWa9oT1vIp+qj5MUroVvXWb9G7Ig4t4aXDd9QDidYZzMzNemb8gQxTdOzGmhx6EZnDTFMh5Q==
 
 "@fontsource/spectral@^4.5.1":
-  version "4.5.11"
-  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-4.5.11.tgz#cd305a6d91e09622b5633069ee7c701f9eb43697"
-  integrity sha512-VUHhshlLzpxwbT7q72qwkIc1ABaX78Ex9zaiJ2mbtOIQxlPQakCXs/WkzzmY0N4sqDj5tHeb0Jh56RlQgE1OQA==
+  version "4.5.13"
+  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-4.5.13.tgz#44ff6271b6b71b16ee4ad7b5b5927f6829c84a7b"
+  integrity sha512-fr/6K7x4mcplJYmopofPO/GGYzihq7hebZz0xtj/i9/y4S//y2cLoxnhY92u8CBTcW55LWUVsaif5/Qltovj6g==
 
 "@fortawesome/fontawesome-free@^6.0.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.2.0.tgz#ba3510825b332816fe7190f28827f8cb33a298b5"
-  integrity sha512-CNR7qRIfCwWHNN7FnKUniva94edPdyQzil/zCwk3v6k4R6rR2Fr8i4s3PM7n/lyfPA6Zfko9z5WDzFxG9SW1uQ==
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.3.0.tgz#b5877182692a6f7a39d1108837bec24247ba4bd7"
+  integrity sha512-qVtd5i1Cc7cdrqnTWqTObKQHjPWAiRwjUPaXObaeNPcy7+WKxJumGBx66rfSFgK6LNpIasVKkEgW8oyf0tmPLA==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
