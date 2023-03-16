@@ -36,7 +36,7 @@ object Language {
   case object German extends NLPLanguage {
     val iso2 = "de"
     val iso3 = "deu"
-  }
+  } 
 
   case object English extends NLPLanguage {
     val iso2 = "en"
@@ -71,6 +71,11 @@ object Language {
   case object Czech extends Language {
     val iso2 = "cs"
     val iso3 = "ces"
+  }
+
+  case object Khmer extends Language {
+    val iso2 = "kh"
+    val iso3 = "khm"
   }
 
   case object Danish extends Language {
@@ -166,7 +171,8 @@ object Language {
       Lithuanian,
       Polish,
       Estonian,
-      Ukrainian
+      Ukrainian,
+      Khmer
     )
 
   def fromString(str: String): Either[String, Language] = {
