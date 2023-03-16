@@ -126,8 +126,9 @@ services:
     volumes:
       - docspell-solr_data:/var/solr
     command:
-      - solr-precreate
-      - docspell
+      - bash
+      - -c
+      - 'precreate-core docspell; exec solr -f -Dsolr.modules=analysis-extras'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8983/solr/docspell/admin/ping"]
       interval: 1m
