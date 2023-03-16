@@ -36,6 +36,7 @@ type Language
     | Polish
     | Estonian
     | Ukrainian
+    | Khmer
 
 
 fromString : String -> Maybe Language
@@ -105,6 +106,9 @@ fromString str =
 
     else if str == "ukr" || str == "uk" || str == "ukrainian" then
         Just Ukrainian
+
+    else if str == "khm" || str == "kh" || str == "khmer" then
+        Just Khmer
 
     else
         Nothing
@@ -179,6 +183,9 @@ toIso3 lang =
         Ukrainian ->
             "ukr"
 
+        Khmer ->
+            "khm"
+
 
 all : List Language
 all =
@@ -204,4 +211,5 @@ all =
     , Polish
     , Estonian
     , Ukrainian
+    , Khmer
     ]

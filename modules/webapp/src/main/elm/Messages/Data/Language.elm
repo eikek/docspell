@@ -83,6 +83,9 @@ gb lang =
         Ukrainian ->
             "Ukrainian"
 
+        Khmer ->
+            "Khmer"
+
 
 de : Language -> String
 de lang =
@@ -153,6 +156,9 @@ de lang =
         Ukrainian ->
             "Ukrainisch"
 
+        Khmer ->
+            "Khmer"
+
 
 fr : Language -> String
 fr lang =
@@ -222,3 +228,6 @@ fr lang =
 
         Ukrainian ->
             "Ukrainien"
+
+        Khmer ->
+            "Khmer"
