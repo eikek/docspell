@@ -129,6 +129,7 @@ object DateFind {
         case Language.Lithuanian => ymd
         case Language.Polish     => dmy
         case Language.Estonian   => dmy
+        case Language.Khmer      => dmy
         case Language.Ukrainian  => dmy.or(ymd)
       }
       p.read(parts) match {
