@@ -33,7 +33,6 @@ RUN apk update && \
     tesseract-ocr-data-pol \
     tesseract-ocr-data-est \
     tesseract-ocr-data-ukr \
-    tesseract-ocr-data-khm \
     unpaper \
     weasyprint \
     libreoffice \
@@ -69,6 +68,12 @@ RUN wget ${joex_url:-https://github.com/eikek/docspell/releases/download/v$versi
   rm docspell-joex-*.zip && \
   ln -snf docspell-joex-* docspell-joex && \
   rm docspell-joex/conf/docspell-joex.conf
+
+# temporary download traineddata directly for khmer lang
+# before tesseract-ocr-data-khm being added to the registry
+RUN \
+  wget https://github.com/tesseract-ocr/tessdata/raw/main/khm.traineddata && \
+  mv khm.traineddata /usr/share/tessdata
 
 # Using these data files for japanese, because they work better. See #973
 RUN \
