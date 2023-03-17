@@ -36,7 +36,7 @@ object Language {
   case object German extends NLPLanguage {
     val iso2 = "de"
     val iso3 = "deu"
-  } 
+  }
 
   case object English extends NLPLanguage {
     val iso2 = "en"
