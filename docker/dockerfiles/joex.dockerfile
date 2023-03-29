@@ -40,6 +40,7 @@ RUN apk update && \
     ttf-dejavu \
     ttf-freefont \
     ttf-liberation \
+    font-noto-khmer \
     libxml2-dev \
     libxslt-dev \
     pngquant \
@@ -63,6 +64,7 @@ RUN apk update && \
 RUN apk add --no-cache py3-setuptools && ocrmypdf --version
 
 WORKDIR /opt
+
 RUN wget ${joex_url:-https://github.com/eikek/docspell/releases/download/v$version/docspell-joex-$version.zip} && \
   unzip docspell-joex-*.zip && \
   rm docspell-joex-*.zip && \
