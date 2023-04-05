@@ -15,7 +15,7 @@ object FileMetaExample extends Helper {
     language = Language.English.some,
     mimetype = MimeType.png,
     length = ByteSize(454654L),
-    checksum = ByteVector.fromValidHex("caffe0caffe").digest("sha256")
+    checksum = ByteVector.fromValidHex("caffe0caffe").digest("SHA-256")
   )
 
   val example2 = AttachedFile(
@@ -25,7 +25,7 @@ object FileMetaExample extends Helper {
     language = Language.English.some,
     mimetype = MimeType.pdf,
     length = ByteSize(1232214L),
-    checksum = ByteVector.fromValidHex("eff0eff0eff").digest("sha256")
+    checksum = ByteVector.fromValidHex("eff0eff0eff").digest("SHA-256")
   )
 
   val example = List(
