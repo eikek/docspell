@@ -30,6 +30,7 @@ object Field {
   val content_de = contentField(Language.German)
   val content_en = contentField(Language.English)
   val content_fr = contentField(Language.French)
+  val content_kh = contentField(Language.Khmer)
   val itemName = Field("itemName")
   val itemNotes = Field("itemNotes")
   val folderId = Field("folder")

@@ -79,6 +79,11 @@ documentation](https://solr.apache.org/guide/8_4/installing-solr.html).
 That will provide you with the connection url (the last part is the
 core name).
 
+Then start solr with `-Dsolr.modules=analysis-extras`
+to enable some additional analyzer like `icu` for `Khmer` language etc
+as described [here](https://solr.apache.org/guide/solr/latest/indexing-guide/language-analysis.html#hebrew-lao-myanmar-khmer),
+which we used for tokenization and segmentation for `Khmer` language in docspell.
+
 When using the provided `docker-compose.yml` setup, SOLR is already setup.
 
 SOLR must be reachable from all joex and all rest server components.

@@ -73,6 +73,11 @@ object Language {
     val iso3 = "ces"
   }
 
+  case object Khmer extends Language {
+    val iso2 = "kh"
+    val iso3 = "khm"
+  }
+
   case object Danish extends Language {
     val iso2 = "da"
     val iso3 = "dan"
@@ -166,7 +171,8 @@ object Language {
       Lithuanian,
       Polish,
       Estonian,
-      Ukrainian
+      Ukrainian,
+      Khmer
     )
 
   def fromString(str: String): Either[String, Language] = {
