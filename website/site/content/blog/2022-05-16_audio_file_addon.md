@@ -50,9 +50,10 @@ functions.
 
 It's usually good to play around with the tools at first. For stt, we
 first need to download a *model*. This will be used to "detect" the
-text in the audio data. They have a [page](https://coqui.ai/models)
-where we can download model files for any supported language. For the
-addon, we will implement English and German.
+text in the audio data. They have a
+[page](https://github.com/coqui-ai/STT-models/releases) where we can
+download model files for any supported language. For the addon, we
+will implement English and German.
 
 When creating a PDF with wkhtmltopdf, we prettify it a little by
 embedding the plain text into some html template. This will also take
