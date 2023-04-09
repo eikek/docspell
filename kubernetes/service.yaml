@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: restserver
+spec:
+  selector:
+    app: restserver
+  ports:
+    - name: http
+      protocol: TCP
+      port: 7880
+      targetPort: 7880
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: joex
+spec:
+  selector:
+    app: joex
+  ports:
+    - name: http
+      protocol: TCP
+      port: 7878
+      targetPort: 7878
+  type: ClusterIP

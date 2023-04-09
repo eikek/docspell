@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restserver
+  template:
+    metadata:
+      labels:
+        app: restserver
+    spec:
+      containers:
+        - name: restserver
+          image: docspell/restserver
+          ports:
+            - containerPort: 7880
+          envFrom:
+            - configMapRef:
+                name: restserver-config
+            - secretRef:
+                name: restserver-secrets
+          env:
+            - name: DOCSPELL_SERVER_INTERNAL__URL
+              value: "http://restserver:7880"
+            - name: DOCSPELL_SERVER_BACKEND_JDBC_URL
+              value: "jdbc:postgresql://postgres:5432/dbname"
+            - name: DOCSPELL_SERVER_BIND_ADDRESS
+              value: "0.0.0.0"
+            - name: DOCSPELL_SERVER_FULL__TEXT__SEARCH_ENABLED
+              value: "true"
+            - name: DOCSPELL_SERVER_FULL__TEXT__SEARCH_SOLR_URL
+              value: "http://solr:8983/solr/docspell"
+            - name: DOCSPELL_SERVER_INTEGRATION__ENDPOINT_ENABLED
+              value: "true"
+            - name: DOCSPELL_SERVER_INTEGRATION__ENDPOINT_HTTP__HEADER_ENABLED
+              value: "true"
+            - name: DOCSPELL_SERVER_BACKEND_SIGNUP_MODE
+              value: "open"
+            - name: DOCSPELL_SERVER_BACKEND_ADDONS_ENABLED
+              value: "false"
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: '0.5'
+              memory: 512Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: joex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: joex
+  template:
+    metadata:
+      labels:
+        app: joex
+    spec:
+      containers:
+        - name: joex
+          image: docspell/joex
+          ports:
+            - containerPort: 7878
+          envFrom:
+            - configMapRef:
+                name: joex-config
+            - secretRef:
+                name: joex-secrets
+          env:
+            - name: DOCSPELL_JOEX_APP__ID
+              value: "joex1"
+            - name: DOCSPELL_JOEX_PERIODIC__SCHEDULER_NAME
+              value: "joex1"
+            - name: DOCSPELL_JOEX_SCHEDULER_NAME
+              value: "joex1"
+            - name: DOCSPELL_JOEX_BASE__URL
+              value: "http://joex:7878"
+            - name: DOCSPELL_JOEX_BIND_ADDRESS
+              value: "0.0.0.0"
+            - name: DOCSPELL_JOEX_FULL__TEXT__SEARCH_ENABLED
+              value: "true"
+            - name: DOCSPELL_JOEX_FULL__TEXT__SEARCH_SOLR_URL
+              value: "http://solr:8983/solr/docspell"
+            - name: DOCSPELL_JOEX_JDBC_URL
+              value: "jdbc:postgresql://postgres:5432/dbname"
+            - name: DOCSPELL_JOEX_JDBC_USER
+              value: "dbuser"
+            - name: DOCSPELL_JOEX_ADDONS_EXECUTOR__CONFIG_RUNNER
+              value: "docker,trivial"
+            - name: DOCSPELL_JOEX_CONVERT_HTML__CONVERTER
+              value: "weasyprint"
+          args:
+            - "-J-Xmx3G"
+          resources:
+            limits:
+              cpu: '1'
+              memory: 3Gi
+            requests:
+              cpu: '0.5'
+              memory: 1.5Gi
