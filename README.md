@@ -77,6 +77,7 @@ Other ways are documented
 - Using the [nix](https://nixos.org/nix) package manager as [described
   here](https://docspell.org/docs/install/installing/#nix). A NixOS
   module is available, too.
+- Use the [Kubernetes](./kubernetes/README.md) configuration.
 
 
 ## Documentation

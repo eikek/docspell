@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: solr
+  labels:
+    app: solr
+spec:
+  replicas: 1
+  serviceName: solr
+  selector:
+    matchLabels:
+      app: solr
+  template:
+    metadata:
+      labels:
+        app: solr
+    spec:
+      containers:
+        - name: solr
+          image: solr:9
+          ports:
+            - containerPort: 8983
+          command:
+            - docker-entrypoint.sh
+            - solr-precreate
+            - docspell
+          livenessProbe: # Check for a 302 response
+            httpGet:
+              path: /solr/admin/info/system
+              port: 8983
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /solr/admin/info/system
+              port: 8983
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 1
+          volumeMounts:
+            - name: solr-data
+              mountPath: /var/solr
+  volumeClaimTemplates:
+    - metadata:
+        name: solr-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: solr
+spec:
+  selector:
+    app: solr
+  ports:
+  - name: solr
+    port: 8983
+    targetPort: 8983
