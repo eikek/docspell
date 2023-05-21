@@ -3,7 +3,7 @@
     "dependencies": {
         "@fontsource/montserrat": "^5.0.0",
         "@fontsource/source-code-pro": "^5.0.0",
-        "@fontsource/spectral": "^4.5.1",
+        "@fontsource/spectral": "^5.0.0",
         "@fortawesome/fontawesome-free": "^6.0.0",
         "@tailwindcss/forms": "^0.5.0",
         "autoprefixer": "^10.4",
