@@ -1,7 +1,7 @@
 {
     "license": "GPL-3.0-or-later",
     "dependencies": {
-        "@fontsource/montserrat": "^4.5.3",
+        "@fontsource/montserrat": "^5.0.0",
         "@fontsource/source-code-pro": "^4.5.2",
         "@fontsource/spectral": "^4.5.1",
         "@fortawesome/fontawesome-free": "^6.0.0",
