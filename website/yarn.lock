@@ -12,10 +12,10 @@
   resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.0.tgz#5fe10ab825257746bbdbc4fdb097cd667231253a"
   integrity sha512-iYvj+/WThVNBFKew8dqfwx3pHpJswJWwFy46gE6S+dlyd1XR9BhKRXVer4Jvjar/tOwZ3I5kK9Hko0+s3GlBuA==
 
-"@fontsource/source-code-pro@^4.5.2":
-  version "4.5.14"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-4.5.14.tgz#97e7b889f485c56132925e3b5bd1cc114b67e163"
-  integrity sha512-EWE0djE7wFCBmExWa9oT1vIp+qj5MUroVvXWb9G7Ig4t4aXDd9QDidYZzMzNemb8gQxTdOzGmhx6EZnDTFMh5Q==
+"@fontsource/source-code-pro@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.0.tgz#6c6bebe3fea37bd411aaa01c04f7e8e101cb7f34"
+  integrity sha512-2EqSMEfE3tt5x8RscAhiV3Ub8ObdzlOJS+6oRcecF1+PHIrk4nYK97f6+gKEBvVxZyMDSMyWweYVj2Yqngx2TQ==
 
 "@fontsource/spectral@^4.5.1":
   version "4.5.13"
