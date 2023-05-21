@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
-"@fontsource/montserrat@^4.5.3":
-  version "4.5.14"
-  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-4.5.14.tgz#5f4bfc5e7f234a986d94d9e7e7193f852e6971e3"
-  integrity sha512-fTvrteVzuFUePhr4QYBGoK8G/YHLJ3IhF1HhKg0AxcFvZajJT7rM7ULdmKLSd2PkX44R3aaFZq1zDbmjbGGI+w==
+"@fontsource/montserrat@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.0.tgz#5fe10ab825257746bbdbc4fdb097cd667231253a"
+  integrity sha512-iYvj+/WThVNBFKew8dqfwx3pHpJswJWwFy46gE6S+dlyd1XR9BhKRXVer4Jvjar/tOwZ3I5kK9Hko0+s3GlBuA==
 
 "@fontsource/source-code-pro@^4.5.2":
   version "4.5.14"
