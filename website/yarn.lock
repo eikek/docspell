@@ -7,20 +7,20 @@
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
-"@fontsource/montserrat@^4.5.3":
-  version "4.5.14"
-  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-4.5.14.tgz#5f4bfc5e7f234a986d94d9e7e7193f852e6971e3"
-  integrity sha512-fTvrteVzuFUePhr4QYBGoK8G/YHLJ3IhF1HhKg0AxcFvZajJT7rM7ULdmKLSd2PkX44R3aaFZq1zDbmjbGGI+w==
+"@fontsource/montserrat@^5.0.0":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.1.tgz#d0b0717d6c9d07fc7745e931611d358490a87222"
+  integrity sha512-Yv4V06evMh9ido3wsA9Z89pbINPXaWBAYTuOsNAuWLcKuy78b4WYIW3U3/WAcRSb0USP8dhQyy8DkSYVlHEeuw==
 
-"@fontsource/source-code-pro@^4.5.2":
-  version "4.5.14"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-4.5.14.tgz#97e7b889f485c56132925e3b5bd1cc114b67e163"
-  integrity sha512-EWE0djE7wFCBmExWa9oT1vIp+qj5MUroVvXWb9G7Ig4t4aXDd9QDidYZzMzNemb8gQxTdOzGmhx6EZnDTFMh5Q==
+"@fontsource/source-code-pro@^5.0.0":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.1.tgz#f894600cd8a1d5c31171f6d7bf706904757d954f"
+  integrity sha512-SItUWzo8ibNnz6INEqNka/yjBJibdjk5uLVz8C2XRUZHHQKR3HU2Fkgt8nwLy2pipQWzzh8VrC3Zncdv4mGGYw==
 
-"@fontsource/spectral@^4.5.1":
-  version "4.5.13"
-  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-4.5.13.tgz#44ff6271b6b71b16ee4ad7b5b5927f6829c84a7b"
-  integrity sha512-fr/6K7x4mcplJYmopofPO/GGYzihq7hebZz0xtj/i9/y4S//y2cLoxnhY92u8CBTcW55LWUVsaif5/Qltovj6g==
+"@fontsource/spectral@^5.0.0":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.0.1.tgz#27eaad1118abc6250d9fdb84cf2b4ed98cdcf6a8"
+  integrity sha512-vbBE26XjFAlGQNQXE5qac/qmFQus1rn/vE5ZJpDsT88bvC/760nL0xQnWkKMUcES5O/XeM6imt2yc6jkGfUIFA==
 
 "@fortawesome/fontawesome-free@^6.0.0":
   version "6.4.0"
