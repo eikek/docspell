@@ -8,19 +8,19 @@
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
 "@fontsource/montserrat@^5.0.0":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.1.tgz#d0b0717d6c9d07fc7745e931611d358490a87222"
-  integrity sha512-Yv4V06evMh9ido3wsA9Z89pbINPXaWBAYTuOsNAuWLcKuy78b4WYIW3U3/WAcRSb0USP8dhQyy8DkSYVlHEeuw==
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.2.tgz#47762d9179460588f819720a67b39f5aab33e111"
+  integrity sha512-pU5i2L3j1zWHmCxspsmgV46X+HE7XaT2rbpnsmYpmS8lSuSyiZhuwCzjU4To2+P3dxZj9WrJ9TcU26UcU8fhfg==
 
 "@fontsource/source-code-pro@^5.0.0":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.1.tgz#f894600cd8a1d5c31171f6d7bf706904757d954f"
-  integrity sha512-SItUWzo8ibNnz6INEqNka/yjBJibdjk5uLVz8C2XRUZHHQKR3HU2Fkgt8nwLy2pipQWzzh8VrC3Zncdv4mGGYw==
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.2.tgz#bffe8225b2a10dd12fdcfd54c94a8da11f981277"
+  integrity sha512-AElk4UAIUGl3TesV4CAkxWLC0S66Rb+jNIMM5F5rOKyxMg3CeH+VyXtUE7p2R8n2nKzgtBTGe6pJUcHOpuwBtw==
 
 "@fontsource/spectral@^5.0.0":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.0.1.tgz#27eaad1118abc6250d9fdb84cf2b4ed98cdcf6a8"
-  integrity sha512-vbBE26XjFAlGQNQXE5qac/qmFQus1rn/vE5ZJpDsT88bvC/760nL0xQnWkKMUcES5O/XeM6imt2yc6jkGfUIFA==
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.0.2.tgz#fdff699900ab16613d3eb9f1cc781cc631eb2c34"
+  integrity sha512-RFxEM0VnAcfjoBlTw4H9/RJa8J54OMRp8GewK7TEEFvQNnxWnc/SvoVKQ6lVB31r232HLDngy/pjlTkWzhI4/Q==
 
 "@fortawesome/fontawesome-free@^6.0.0":
   version "6.4.0"
@@ -1065,9 +1065,9 @@ postcss-value-parser@^4.0.0, postcss-value-parser@^4.2.0:
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
 postcss@^8.4.23, postcss@^8.4.4, postcss@^8.4.5:
-  version "8.4.23"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.23.tgz#df0aee9ac7c5e53e1075c24a3613496f9e6552ab"
-  integrity sha512-bQ3qMcpF6A/YjR55xtoTr0jGOlnPOKAIMdOWiv0EIT6HVPEaJiJB4NLljSbiHoC2RX7DN5Uvjtpbg1NPdwv1oA==
+  version "8.4.24"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.24.tgz#f714dba9b2284be3cc07dbd2fc57ee4dc972d2df"
+  integrity sha512-M0RzbcI0sO/XJNucsGjvWU9ERWxb/ytp1w6dKtxTKgixdtQDq4rmx/g8W1hnaheq9jgwL/oyEdH5Bc4WwJKMqg==
   dependencies:
     nanoid "^3.3.6"
     picocolors "^1.0.0"
