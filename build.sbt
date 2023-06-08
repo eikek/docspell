@@ -16,7 +16,7 @@ val scalafixSettings = Seq(
 
 val sharedSettings = Seq(
   organization := "com.github.eikek",
-  scalaVersion := "2.13.10",
+  scalaVersion := "2.13.11",
   organizationName := "Eike K. & Contributors",
   licenses += ("AGPL-3.0-or-later", url(
     "https://spdx.org/licenses/AGPL-3.0-or-later.html"
