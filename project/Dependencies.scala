@@ -11,7 +11,7 @@ object Dependencies {
   val CalevVersion = "0.6.4"
   val CatsVersion = "2.7.0"
   val CatsEffectVersion = "3.5.1"
-  val CatsParseVersion = "0.3.9"
+  val CatsParseVersion = "0.3.10"
   val CirceVersion = "0.14.5"
   val CirceGenericExtrasVersion = "0.14.3"
   val CirceYamlVersion = "0.14.2"
