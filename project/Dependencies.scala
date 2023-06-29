@@ -22,7 +22,7 @@ object Dependencies {
   val FlywayVersion = "9.20.0"
   val Fs2Version = "3.6.1"
   val H2Version = "2.1.214"
-  val Http4sVersion = "0.23.18"
+  val Http4sVersion = "0.23.22"
   val Icu4jVersion = "73.2"
   val JavaOtpVersion = "0.4.0"
   val JsoupVersion = "1.16.1"
