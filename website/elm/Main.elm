@@ -291,7 +291,7 @@ mainHero _ =
             , p [ class "px-2 text-center text-xl font-light shadow max-w-prose font-sans" ]
                 [ text "Docspell assists in organizing your piles of "
                 , text "digital documents, resulting from scanners, e-mails "
-                , text "and other sources with miminal effort."
+                , text "and other sources with minimal effort."
                 ]
             , div
                 [ class "mt-4 flex flex-col space-y-2 text-2xl"
