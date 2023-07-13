@@ -8,9 +8,9 @@
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
 "@fontsource/montserrat@^5.0.0":
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.4.tgz#52ad2b73bc91ba68b2106b1008a6fa438d96c72b"
-  integrity sha512-iCXJ8pzvq9nQTZZ2O9f+Ag0ihDA9OJqDoydjboCFszhy3l4BkXYRl39aOcB4rQLQ7YYv641M/eeX4A6PNZdvUA==
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.5.tgz#90b5420ab23076a9e76a98516200afcb6ba7de8d"
+  integrity sha512-kR4hwC44p0GZQsy1oA2X8EdFMg/lC7qwVX9jNgNBQ+uSZXKoV4Vyc1VepcRAcGRKPIgcc/3OC1j7FNQDYpFLJA==
 
 "@fontsource/source-code-pro@^5.0.0":
   version "5.0.5"
