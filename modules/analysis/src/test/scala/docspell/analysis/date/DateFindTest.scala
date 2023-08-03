@@ -365,4 +365,57 @@ class DateFindTest extends FunSuite {
       )
     )
   }
+
+  test("find slovak dates") {
+    assertEquals(
+      DateFind
+        .findDates(
+          "Do funkcie bola inaugurovaná 15. júna 2019 pred Národnou radou SR",
+          Language.Slovak
+        )
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2019, 6, 15),
+          NerLabel("15. júna 2019", NerTag.Date, 29, 42)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates(
+          "Dátum narodenia: 14. feb 2015",
+          Language.Slovak
+        )
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2015, 2, 14),
+          NerLabel("14. feb 2015", NerTag.Date, 17, 29)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("19.11.2021", Language.Slovak)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2021, 11, 19),
+          NerLabel("19.11.2021", NerTag.Date, 0, 10)
+        )
+      )
+    )
+    assertEquals(
+      DateFind
+        .findDates("Dátum: 2022.11.05", Language.Slovak)
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 11, 5),
+          NerLabel("2022.11.05", NerTag.Date, 7, 17)
+        )
+      )
+    )
+  }
 }

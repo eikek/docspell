@@ -33,6 +33,7 @@ RUN apk update && \
     tesseract-ocr-data-pol \
     tesseract-ocr-data-est \
     tesseract-ocr-data-ukr \
+    tesseract-ocr-data-slk \
     unpaper \
     weasyprint \
     libreoffice \

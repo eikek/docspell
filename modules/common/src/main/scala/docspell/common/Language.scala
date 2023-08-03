@@ -148,6 +148,11 @@ object Language {
     val iso3 = "ukr"
   }
 
+  case object Slovak extends Language {
+    val iso2 = "sk"
+    val iso3 = "svk"
+  }
+
   val all: List[Language] =
     List(
       German,
@@ -172,6 +177,7 @@ object Language {
       Polish,
       Estonian,
       Ukrainian,
+      Slovak,
       Khmer
     )
 
