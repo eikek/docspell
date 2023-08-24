@@ -64,7 +64,7 @@ processes:
 
 - REST server
 - JOEX, short for *job executor*
-- Fulltext Search Index (optional, currently Apache SOLR)
+- Fulltext Search Index (optional, Apache SOLR or PostgreSQL)
 
 The REST server provides the Api and the web application. The web
 application is a
@@ -84,9 +84,10 @@ database. And it is also recommended (though not strictly required),
 that all components can reach each other.
 
 The fulltext search index is another separate component, where
-currently only [SOLR](https://solr.apache.org) is supported.
-Fulltext search is optional, so the SOLR component is not required if
-docspell is run without fulltext search support.
+currently [SOLR](https://solr.apache.org) and
+[PostgreSQL](https://www.postgresql.org/docs/current/textsearch.html)
+is supported. Fulltext search is optional, this component is not
+required if docspell is run without fulltext search support.
 
 
 # Terms
