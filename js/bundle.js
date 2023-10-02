@@ -7114,7 +7114,7 @@ var $author$project$Main$mainHero = function (_v0) {
 							[
 								$elm$html$Html$text('Docspell assists in organizing your piles of '),
 								$elm$html$Html$text('digital documents, resulting from scanners, e-mails '),
-								$elm$html$Html$text('and other sources with miminal effort.')
+								$elm$html$Html$text('and other sources with minimal effort.')
 							])),
 						A2(
 						$elm$html$Html$div,

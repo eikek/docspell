@@ -500,26 +500,6 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -554,6 +534,26 @@
             </a>
         </div>
         
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
     </div>
     
 
@@ -818,7 +818,7 @@ processes:</p>
 <ul>
 <li>REST server</li>
 <li>JOEX, short for <em>job executor</em></li>
-<li>Fulltext Search Index (optional, currently Apache SOLR)</li>
+<li>Fulltext Search Index (optional, Apache SOLR or PostgreSQL)</li>
 </ul>
 <p>The REST server provides the Api and the web application. The web
 application is a
@@ -835,9 +835,10 @@ order to scale out. It must be ensured, that all connect to the same
 database. And it is also recommended (though not strictly required),
 that all components can reach each other.</p>
 <p>The fulltext search index is another separate component, where
-currently only <a href="https://solr.apache.org">SOLR</a> is supported.
-Fulltext search is optional, so the SOLR component is not required if
-docspell is run without fulltext search support.</p>
+currently <a href="https://solr.apache.org">SOLR</a> and
+<a href="https://www.postgresql.org/docs/current/textsearch.html">PostgreSQL</a>
+is supported. Fulltext search is optional, this component is not
+required if docspell is run without fulltext search support.</p>
 <h1 id="terms">Terms<a class="zola-anchor" href="#terms" aria-label="Anchor link for: terms">🔗</a></h1>
 <p>In order to better understand the following pages, some terms are
 explained.</p>
