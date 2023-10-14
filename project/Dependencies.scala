@@ -10,7 +10,7 @@ object Dependencies {
   val BinnyVersion = "0.9.1"
   val CalevVersion = "0.7.0"
   val CatsVersion = "2.7.0"
-  val CatsEffectVersion = "3.5.1"
+  val CatsEffectVersion = "3.5.2"
   val CatsParseVersion = "0.3.10"
   val CirceVersion = "0.14.6"
   val CirceGenericExtrasVersion = "0.14.3"
@@ -19,7 +19,7 @@ object Dependencies {
   val DoobieVersion = "1.0.0-RC2"
   val EmilVersion = "0.13.0"
   val FlexmarkVersion = "0.64.8"
-  val FlywayVersion = "9.22.2"
+  val FlywayVersion = "9.22.3"
   val Fs2Version = "3.6.1"
   val H2Version = "2.2.224"
   val Http4sVersion = "0.23.18"
@@ -45,8 +45,8 @@ object Dependencies {
   val ScodecBitsVersion = "1.1.37"
   val ScribeVersion = "3.11.9"
   val Slf4jVersion = "2.0.9"
-  val SourcecodeVersion = "0.3.0"
-  val StanfordNlpVersion = "4.5.4"
+  val SourcecodeVersion = "0.3.1"
+  val StanfordNlpVersion = "4.5.5"
   val TikaVersion = "2.9.0"
   val YamuscaVersion = "0.10.0"
   val SwaggerUIVersion = "5.7.2"
@@ -220,7 +220,7 @@ object Dependencies {
     "org.apache.tika" % "tika-core" % TikaVersion
   )
   val commonsIO = Seq(
-    "commons-io" % "commons-io" % "2.13.0"
+    "commons-io" % "commons-io" % "2.14.0"
   )
   val tikaParser = Seq(
     "org.apache.tika" % "tika-parsers" % TikaVersion

@@ -8,14 +8,14 @@
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
 "@fontsource/montserrat@^5.0.0":
-  version "5.0.8"
-  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.8.tgz#04d162d8929d2911c126e6dafbd218e67c8bb63d"
-  integrity sha512-bNj6wfiWXXbsxb2ffatjpX+GBv30cWZ1lwNXW9qTeX2FnzPomsGRV4HdPrf3TqyTiVqX6fLo80zrQcMi7r8+fA==
+  version "5.0.13"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.13.tgz#e9e78a726e4a452b820c8c0bdcddf4444c922db6"
+  integrity sha512-k10d+ooKagdqLDFUO2JNR2Ds5Y0yZ9x0scpxE/EvcaJFpa4Cu6Sra+cucZOTZsK4qfEBG2vR9/JiJegucMOi4w==
 
 "@fontsource/source-code-pro@^5.0.0":
-  version "5.0.8"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.8.tgz#8c239893cb817efa15b6738418f71ff7afd09b5a"
-  integrity sha512-2RtauxYX8gMBZr3kO97M/M0jNeE2pItqTLofpJWxsIiZKY+ir8xXmxz0Bxg3XttHadjJu9lP8gQpmBKRSn0dXQ==
+  version "5.0.13"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.13.tgz#6956d1d058371af20bdde90ed119c798461ed13c"
+  integrity sha512-fGKE9YC1mjvp0XjW4dVdqOjU+oROgPoT7MavORcJB+v1tzcqPJFJ0dbxZoa9KEMghf3HzfAYwfdgYvWPn/yTFA==
 
 "@fontsource/spectral@^5.0.0":
   version "5.0.8"
@@ -86,9 +86,9 @@
     fastq "^1.6.0"
 
 "@tailwindcss/forms@^0.5.0":
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/@tailwindcss/forms/-/forms-0.5.4.tgz#5316a782fd95369eb5b6fd01d46323b3dce656a2"
-  integrity sha512-YAm12D3R7/9Mh4jFbYSMnsd6jG++8KxogWgqs7hbdo/86aWjjlIEvL7+QYdVELmAI0InXTpZqFIg5e7aDVWI2Q==
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/@tailwindcss/forms/-/forms-0.5.6.tgz#29c6c2b032b363e0c5110efed1499867f6d7e868"
+  integrity sha512-Fw+2BJ0tmAwK/w01tEFL5TiaJBX1NLT1/YbWgvm7ws3Qcn11kiXxzNTEQDMs5V3mQemhB56l3u0i9dwdzSQldA==
   dependencies:
     mini-svg-data-uri "^1.2.3"
 
@@ -128,13 +128,13 @@ arg@^5.0.2:
   integrity sha512-PYjyFOLKQ9y57JvQ6QLo8dAgNqswh8M1RMJYdQduT6xbWSgK36P/Z/v+p888pM69jMMfS8Xd8F6I1kQ/I9HUGg==
 
 autoprefixer@^10.4:
-  version "10.4.15"
-  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-10.4.15.tgz#a1230f4aeb3636b89120b34a1f513e2f6834d530"
-  integrity sha512-KCuPB8ZCIqFdA4HwKXsvz7j6gvSDNhDP7WnUjBleRkKjPdvCmHFuQ77ocavI8FT6NdvlBnE2UFr2H4Mycn8Vew==
+  version "10.4.16"
+  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-10.4.16.tgz#fad1411024d8670880bdece3970aa72e3572feb8"
+  integrity sha512-7vd3UC6xKp0HLfua5IjZlcXvGAGy7cBAXTg2lyQ/8WpNhd6SiZ8Be+xm3FyBSYJx5GKcpRCzBh7RH4/0dnY+uQ==
   dependencies:
     browserslist "^4.21.10"
-    caniuse-lite "^1.0.30001520"
-    fraction.js "^4.2.0"
+    caniuse-lite "^1.0.30001538"
+    fraction.js "^4.3.6"
     normalize-range "^0.1.2"
     picocolors "^1.0.0"
     postcss-value-parser "^4.2.0"
@@ -187,14 +187,14 @@ browserslist@^4.0.0, browserslist@^4.21.4:
     update-browserslist-db "^1.0.10"
 
 browserslist@^4.21.10:
-  version "4.21.10"
-  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.21.10.tgz#dbbac576628c13d3b2231332cb2ec5a46e015bb0"
-  integrity sha512-bipEBdZfVH5/pwrvqc+Ub0kUPVfGUhlKxbvfD+z1BDnPEO/X98ruXGA1WP5ASpAFKan7Qr6j736IacbZQuAlKQ==
+  version "4.22.1"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.22.1.tgz#ba91958d1a59b87dab6fed8dfbcb3da5e2e9c619"
+  integrity sha512-FEVc202+2iuClEhZhrWy6ZiAcRLvNMyYcxZ8raemul1DYVOVdFsbqckWLdsixQZCpJlwe77Z3UTalE7jsjnKfQ==
   dependencies:
-    caniuse-lite "^1.0.30001517"
-    electron-to-chromium "^1.4.477"
+    caniuse-lite "^1.0.30001541"
+    electron-to-chromium "^1.4.535"
     node-releases "^2.0.13"
-    update-browserslist-db "^1.0.11"
+    update-browserslist-db "^1.0.13"
 
 camelcase-css@^2.0.1:
   version "2.0.1"
@@ -216,10 +216,10 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001449:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001481.tgz#f58a717afe92f9e69d0e35ff64df596bfad93912"
   integrity sha512-KCqHwRnaa1InZBtqXzP98LPg0ajCVujMKjqKDhZEthIpAsJl/YEIa3YvXjGXPVqzZVguccuu7ga9KOE1J9rKPQ==
 
-caniuse-lite@^1.0.30001517, caniuse-lite@^1.0.30001520:
-  version "1.0.30001520"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001520.tgz#62e2b7a1c7b35269594cf296a80bdf8cb9565006"
-  integrity sha512-tahF5O9EiiTzwTUqAeFjIZbn4Dnqxzz7ktrgGlMYNLH43Ul26IgTMH/zvL3DG0lZxBYnlT04axvInszUsZULdA==
+caniuse-lite@^1.0.30001538, caniuse-lite@^1.0.30001541:
+  version "1.0.30001543"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001543.tgz#478a3e9dddbb353c5ab214b0ecb0dbed529ed1d8"
+  integrity sha512-qxdO8KPWPQ+Zk6bvNpPeQIOH47qZSYdFZd6dXQzb2KzhnSXju4Kd7H1PkSJx6NICSMgo/IhRZRhhfPTHYpJUCA==
 
 chokidar@^3.3.0, chokidar@^3.5.3:
   version "3.5.3"
@@ -436,10 +436,10 @@ electron-to-chromium@^1.4.284:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.377.tgz#7f326a0b2c1b96eca6bb65907addc505d0d15989"
   integrity sha512-H3BYG6DW5Z+l0xcfXaicJGxrpA4kMlCxnN71+iNX+dBLkRMOdVJqFJiAmbNZZKA1zISpRg17JR03qGifXNsJtw==
 
-electron-to-chromium@^1.4.477:
-  version "1.4.490"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.490.tgz#d99286f6e915667fa18ea4554def1aa60eb4d5f1"
-  integrity sha512-6s7NVJz+sATdYnIwhdshx/N/9O6rvMxmhVoDSDFdj6iA45gHR8EQje70+RYsF4GeB+k0IeNSBnP7yG9ZXJFr7A==
+electron-to-chromium@^1.4.535:
+  version "1.4.539"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.539.tgz#5ce6b161e252132cc84501bc35d084995a2a9840"
+  integrity sha512-wRmWJ8F7rgmINuI32S6r2SLrw/h/bJQsDSvBiq9GBfvc2Lh73qTOwn73r3Cf67mjVgFGJYcYtmERzySa5jIWlg==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -492,10 +492,10 @@ fill-range@^7.0.1:
   dependencies:
     to-regex-range "^5.0.1"
 
-fraction.js@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.2.0.tgz#448e5109a313a3527f5a3ab2119ec4cf0e0e2950"
-  integrity sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==
+fraction.js@^4.3.6:
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.6.tgz#e9e3acec6c9a28cf7bc36cbe35eea4ceb2c5c92d"
+  integrity sha512-n2aZ9tNfYDwaHhvFTkhFErqOMIb8uyzSQ+vGJBjZyanAKZVbGUQ1sngfk9FdkBw7G26O7AgNjLcecLffD1c7eg==
 
 fs-extra@^11.0.0:
   version "11.1.0"
@@ -1104,9 +1104,9 @@ postcss-value-parser@^4.0.0, postcss-value-parser@^4.2.0:
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
 postcss@^8.4.23, postcss@^8.4.4, postcss@^8.4.5:
-  version "8.4.29"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.29.tgz#33bc121cf3b3688d4ddef50be869b2a54185a1dd"
-  integrity sha512-cbI+jaqIeu/VGqXEarWkRCCffhjgXc0qjBtXpqJhTBohMUjUQnbBr0xqX3vEKudc4iviTewcJo5ajcec5+wdJw==
+  version "8.4.31"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.31.tgz#92b451050a9f914da6755af352bdc0192508656d"
+  integrity sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==
   dependencies:
     nanoid "^3.3.6"
     picocolors "^1.0.0"
@@ -1305,10 +1305,18 @@ universalify@^2.0.0:
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-2.0.0.tgz#75a4984efedc4b08975c5aeb73f530d02df25717"
   integrity sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==
 
-update-browserslist-db@^1.0.10, update-browserslist-db@^1.0.11:
+update-browserslist-db@^1.0.10:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/update-browserslist-db/-/update-browserslist-db-1.0.11.tgz#9a2a641ad2907ae7b3616506f4b977851db5b940"
   integrity sha512-dCwEFf0/oT85M1fHBg4F0jtLwJrutGoHSQXCh7u4o2t1drG+c0a9Flnqww6XUKSfQMPpJBRjU8d4RXB09qtvaA==
+  dependencies:
+    escalade "^3.1.1"
+    picocolors "^1.0.0"
+
+update-browserslist-db@^1.0.13:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/update-browserslist-db/-/update-browserslist-db-1.0.13.tgz#3c5e4f5c083661bd38ef64b6328c26ed6c8248c4"
+  integrity sha512-xebP81SNcPuNpPP3uzeW1NYXxI3rxyJzF3pD6sH4jE7o/IX+WtSpwnVU+qIsDPyk0d3hmFQ7mjqc6AtV604hbg==
   dependencies:
     escalade "^3.1.1"
     picocolors "^1.0.0"

@@ -7,7 +7,7 @@ jobs:
   publish-website:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v4.1.0
         with:
           fetch-depth: 0
       - name: Set current version
@@ -15,7 +15,7 @@ jobs:
       - uses: jorelali/setup-elm@v5
         with:
           elm-version: 0.19.1
-      - uses: cachix/install-nix-action@v22
+      - uses: cachix/install-nix-action@v23
         with:
           nix_path: nixpkgs=channel:nixos-21.11
       - name: Print nixpkgs version
