@@ -1,4 +1,4 @@
-FROM alpine:20230329
+FROM alpine:20230901
 
 ARG version=
 ARG joex_url=
