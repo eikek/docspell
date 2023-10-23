@@ -12,9 +12,9 @@ import cats.implicits._
 import docspell.common.{Ident, LenientUri}
 import docspell.joexapi.model.{AddonSupport, BasicResult}
 
-import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.circe.CirceEntityDecoder
 import org.http4s.client.Client
+import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.{Method, Request, Uri}
 
 trait JoexClient[F[_]] {
@@ -73,5 +73,5 @@ object JoexClient {
     }
 
   def resource[F[_]: Async]: Resource[F, JoexClient[F]] =
-    BlazeClientBuilder[F].resource.map(apply[F])
+    EmberClientBuilder.default[F].build.map(apply[F])
 }
