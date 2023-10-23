@@ -15,7 +15,7 @@ a `github` account to make this convenient.
 The contents of this website is maintained in the [<i class="fab fa-github ml-1"></i> git
 repository](https://github.com/eikek/docspell) in the `website/site`
 folder. It is build by the static site generator
-[zola](https://getzola.org) from a set of
+[zola](https://www.getzola.org/) from a set of
 [markdown](https://www.markdownguide.org/basic-syntax) files.
 
 It is not necessary to know how everything is connected, you only need
@@ -66,7 +66,7 @@ are required. The easiest way to get these is to install
 [nix](https://nixos.org/) and run `nix-shell website/shell.nix` to get
 an environment with all these tools installed. Otherwise install the
 programs mentioned in `website/shell.nix`, which are:
-[yarn](https://yarnpkg.com/), [zola](https://getzola.org),
+[yarn](https://yarnpkg.com/), [zola](https://www.getzola.org/),
 [elm](https://elm-lang.org) and [sbt](https://scala-sbt.org).
 
 Then clone the sources to your machine and build the complete site
