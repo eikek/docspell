@@ -251,7 +251,7 @@ object Dependencies {
   )
 
   val http4sServer = Seq(
-    "org.http4s" %% "http4s-blaze-server" % "0.23.14"
+    "org.http4s" %% "http4s-blaze-server" % "0.23.15"
   )
 
   val circeCore = Seq(
