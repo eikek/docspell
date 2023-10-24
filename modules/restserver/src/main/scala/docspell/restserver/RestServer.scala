@@ -24,9 +24,9 @@ import docspell.store.Store
 import docspell.store.records.RInternalSetting
 
 import org.http4s._
-import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.dsl.Http4sDsl
+import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.headers.Location
 import org.http4s.implicits._
 import org.http4s.server.Router
@@ -83,7 +83,7 @@ object RestServer {
     (RestApp[F], NaivePubSub[F], RInternalSetting)
   ] =
     for {
-      httpClient <- BlazeClientBuilder[F].resource
+      httpClient <- EmberClientBuilder.default[F].build
       store <- Store.create[F](
         cfg.backend.jdbc,
         cfg.backend.databaseSchema,

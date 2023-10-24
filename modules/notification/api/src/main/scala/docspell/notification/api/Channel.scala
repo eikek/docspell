@@ -30,7 +30,8 @@ sealed trait Channel {
 }
 
 object Channel {
-  implicit val jsonConfig = Configuration.default.withDiscriminator("channelType")
+  implicit val jsonConfig: Configuration =
+    Configuration.default.withDiscriminator("channelType")
 
   final case class Mail(
       id: Ident,
@@ -38,7 +39,7 @@ object Channel {
       connection: Ident,
       recipients: Nel[MailAddress]
   ) extends Channel {
-    val channelType = ChannelType.Mail
+    val channelType: ChannelType = ChannelType.Mail
     def fold[A](
         f1: Mail => A,
         f2: Gotify => A,
@@ -85,7 +86,7 @@ object Channel {
       roomId: String,
       accessToken: Password
   ) extends Channel {
-    val channelType = ChannelType.Matrix
+    val channelType: ChannelType = ChannelType.Matrix
     def fold[A](
         f1: Mail => A,
         f2: Gotify => A,
@@ -101,7 +102,7 @@ object Channel {
 
   final case class Http(id: Ident, name: Option[String], url: LenientUri)
       extends Channel {
-    val channelType = ChannelType.Http
+    val channelType: ChannelType = ChannelType.Http
     def fold[A](
         f1: Mail => A,
         f2: Gotify => A,
