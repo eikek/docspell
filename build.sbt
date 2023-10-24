@@ -802,6 +802,7 @@ val joex = project
         Dependencies.http4sDsl ++
         Dependencies.circe ++
         Dependencies.pureconfig ++
+        Dependencies.pureconfigIp4s ++
         Dependencies.emilTnef ++
         Dependencies.poi ++
         Dependencies.emilMarkdown ++
@@ -859,6 +860,7 @@ val restserver = project
         Dependencies.http4sDsl ++
         Dependencies.circe ++
         Dependencies.pureconfig ++
+        Dependencies.pureconfigIp4s ++
         Dependencies.yamusca ++
         Dependencies.kittens ++
         Dependencies.webjars,
