@@ -9,6 +9,7 @@ package docspell.extract
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.common._
 import docspell.extract.internal.Text
@@ -32,7 +33,7 @@ trait Extraction[F[_]] {
 
 object Extraction {
 
-  def create[F[_]: Async](
+  def create[F[_]: Async: Files](
       logger: Logger[F],
       cfg: ExtractConfig
   ): Extraction[F] =

@@ -8,7 +8,7 @@ package docspell.extract.ocr
 
 import cats.effect._
 import fs2.Stream
-import fs2.io.file.Path
+import fs2.io.file.{Files, Path}
 
 import docspell.common._
 import docspell.common.util.File
@@ -17,7 +17,7 @@ import docspell.logging.Logger
 object Ocr {
 
   /** Extract the text of all pages in the given pdf file. */
-  def extractPdf[F[_]: Async](
+  def extractPdf[F[_]: Async: Files](
       pdf: Stream[F, Byte],
       logger: Logger[F],
       lang: String,
@@ -40,7 +40,7 @@ object Ocr {
   ): Stream[F, String] =
     runTesseractStdin(img, logger, lang, config)
 
-  def extractPdFFile[F[_]: Async](
+  def extractPdFFile[F[_]: Async: Files](
       pdf: Path,
       logger: Logger[F],
       lang: String,
@@ -65,7 +65,7 @@ object Ocr {
   /** Run ghostscript to extract all pdf pages into tiff files. The files are stored to a
     * temporary location on disk and returned.
     */
-  private[extract] def runGhostscript[F[_]: Async](
+  private[extract] def runGhostscript[F[_]: Async: Files](
       pdf: Stream[F, Byte],
       cfg: OcrConfig,
       wd: Path,
@@ -91,7 +91,7 @@ object Ocr {
   /** Run ghostscript to extract all pdf pages into tiff files. The files are stored to a
     * temporary location on disk and returned.
     */
-  private[extract] def runGhostscriptFile[F[_]: Async](
+  private[extract] def runGhostscriptFile[F[_]: Async: Files](
       pdf: Path,
       ghostscript: SystemCommand.Config,
       wd: Path,

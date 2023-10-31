@@ -72,6 +72,6 @@ object File {
       .drain
       .map(_ => file)
 
-  def readJson[F[_]: Async, A](file: Path)(implicit d: Decoder[A]): F[A] =
+  def readJson[F[_]: Async: Files, A](file: Path)(implicit d: Decoder[A]): F[A] =
     readText[F](file).map(parser.decode[A]).rethrow
 }

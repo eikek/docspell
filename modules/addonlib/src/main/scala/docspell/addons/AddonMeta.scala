@@ -50,7 +50,7 @@ case class AddonMeta(
     * inspecting the archive to return defaults when the addon isn't declaring it in the
     * descriptor.
     */
-  def enabledTypes[F[_]: Async](
+  def enabledTypes[F[_]: Async: Files](
       archive: Either[Path, Stream[F, Byte]]
   ): F[List[RunnerType]] =
     for {
@@ -207,7 +207,7 @@ object AddonMeta {
       )
   }
 
-  def findInZip[F[_]: Async](zipFile: Stream[F, Byte]): F[AddonMeta] = {
+  def findInZip[F[_]: Async: Files](zipFile: Stream[F, Byte]): F[AddonMeta] = {
     val logger = docspell.logging.getLogger[F]
     val fail: F[AddonMeta] = Async[F].raiseError(
       new FileNotFoundException(

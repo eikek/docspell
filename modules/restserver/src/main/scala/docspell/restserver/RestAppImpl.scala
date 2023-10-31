@@ -9,6 +9,7 @@ package docspell.restserver
 import cats.effect._
 import fs2.Stream
 import fs2.concurrent.Topic
+import fs2.io.file.Files
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.{AuthToken, ShareToken}
@@ -36,7 +37,7 @@ import org.http4s.client.Client
 import org.http4s.server.Router
 import org.http4s.server.websocket.WebSocketBuilder2
 
-final class RestAppImpl[F[_]: Async](
+final class RestAppImpl[F[_]: Async: Files](
     val config: Config,
     val backend: BackendApp[F],
     httpClient: Client[F],
@@ -162,7 +163,7 @@ final class RestAppImpl[F[_]: Async](
 
 object RestAppImpl {
 
-  def create[F[_]: Async](
+  def create[F[_]: Async: Files](
       cfg: Config,
       pools: Pools,
       store: Store[F],

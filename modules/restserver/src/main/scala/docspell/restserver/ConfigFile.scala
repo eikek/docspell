@@ -10,6 +10,7 @@ import java.security.SecureRandom
 
 import cats.Monoid
 import cats.effect.Async
+import fs2.io.file.Files
 
 import docspell.backend.auth.Login
 import docspell.backend.signup.{Config => SignupConfig}
@@ -30,7 +31,7 @@ object ConfigFile {
   // IntelliJ is wrong, this is required
   import Implicits._
 
-  def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
+  def loadConfig[F[_]: Async: Files](args: List[String]): F[Config] = {
     val logger = docspell.logging.getLogger[F]
     val validate =
       Validation.of(

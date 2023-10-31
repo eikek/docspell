@@ -9,6 +9,8 @@ package docspell.joex
 import cats.effect._
 import fs2.Stream
 import fs2.concurrent.SignallingRef
+import fs2.io.file.Files
+import fs2.io.net.Network
 
 import docspell.backend.msg.Topics
 import docspell.common.Pools
@@ -32,7 +34,10 @@ object JoexServer {
       exitRef: Ref[F, ExitCode]
   )
 
-  def stream[F[_]: Async](cfg: Config, pools: Pools): Stream[F, Nothing] = {
+  def stream[F[_]: Async: Files: Network](
+      cfg: Config,
+      pools: Pools
+  ): Stream[F, Nothing] = {
 
     val app = for {
       signal <- Resource.eval(SignallingRef[F, Boolean](false))

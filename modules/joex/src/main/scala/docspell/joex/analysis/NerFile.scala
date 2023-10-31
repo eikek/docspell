@@ -8,7 +8,7 @@ package docspell.joex.analysis
 
 import cats.effect._
 import cats.implicits._
-import fs2.io.file.Path
+import fs2.io.file.{Files, Path}
 
 import docspell.analysis.split.TextSplitter
 import docspell.common._
@@ -39,7 +39,7 @@ object NerFile {
   private def jsonFilePath(directory: Path, collective: CollectiveId): Path =
     directory.resolve(s"${collective.value}.json")
 
-  def find[F[_]: Async](
+  def find[F[_]: Async: Files](
       collective: CollectiveId,
       directory: Path
   ): F[Option[NerFile]] = {

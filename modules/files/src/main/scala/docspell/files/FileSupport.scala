@@ -7,7 +7,7 @@
 package docspell.files
 
 import cats.data.OptionT
-import cats.effect.{Async, Sync}
+import cats.effect.Sync
 import cats.syntax.all._
 import fs2.Pipe
 import fs2.io.file.{Files, Path}
@@ -39,7 +39,7 @@ trait FileSupport {
       TikaMimetype.detect[F](bin.data, hint).map(mt => bin.copy(mime = mt))
     }
 
-  def toBinaryWithMime[F[_]: Async]: Pipe[F, Path, Binary[F]] =
+  def toBinaryWithMime[F[_]: Sync: Files]: Pipe[F, Path, Binary[F]] =
     _.evalMap(file => file.mimeType.map(mt => Binary(file).copy(mime = mt)))
 }
 

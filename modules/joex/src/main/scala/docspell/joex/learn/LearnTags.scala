@@ -9,6 +9,7 @@ package docspell.joex.learn
 import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.analysis.TextAnalyser
 import docspell.common._
@@ -18,7 +19,7 @@ import docspell.store.records.RClassifierSetting
 
 object LearnTags {
 
-  def learnTagCategory[F[_]: Async, A](
+  def learnTagCategory[F[_]: Async: Files, A](
       analyser: TextAnalyser[F],
       store: Store[F],
       collective: CollectiveId,
@@ -43,7 +44,10 @@ object LearnTags {
         )
     }
 
-  def learnAllTagCategories[F[_]: Async, A](analyser: TextAnalyser[F], store: Store[F])(
+  def learnAllTagCategories[F[_]: Async: Files, A](
+      analyser: TextAnalyser[F],
+      store: Store[F]
+  )(
       collective: CollectiveId,
       maxItems: Int,
       maxTextLen: Int

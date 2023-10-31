@@ -9,6 +9,7 @@ package docspell.joex.process
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.common._
 import docspell.extract.{ExtractConfig, ExtractResult, Extraction}
@@ -19,7 +20,7 @@ import docspell.store.records.{RAttachment, RAttachmentMeta, RFileMeta}
 
 object TextExtraction {
 
-  def apply[F[_]: Async](cfg: ExtractConfig, fts: FtsClient[F], store: Store[F])(
+  def apply[F[_]: Async: Files](cfg: ExtractConfig, fts: FtsClient[F], store: Store[F])(
       item: ItemData
   ): Task[F, ProcessItemArgs, ItemData] =
     Task { ctx =>
@@ -66,7 +67,7 @@ object TextExtraction {
 
   case class Result(am: RAttachmentMeta, td: TextData, tags: List[String] = Nil)
 
-  def extractTextIfEmpty[F[_]: Async](
+  def extractTextIfEmpty[F[_]: Async: Files](
       ctx: Context[F, ProcessItemArgs],
       store: Store[F],
       cfg: ExtractConfig,
@@ -100,7 +101,7 @@ object TextExtraction {
     }
   }
 
-  def extractTextToMeta[F[_]: Async](
+  def extractTextToMeta[F[_]: Async: Files](
       ctx: Context[F, _],
       store: Store[F],
       cfg: ExtractConfig,
@@ -143,7 +144,7 @@ object TextExtraction {
       .flatMap(mt => extr.extractText(data, DataType(mt), lang))
   }
 
-  private def extractTextFallback[F[_]: Async](
+  private def extractTextFallback[F[_]: Async: Files](
       ctx: Context[F, _],
       store: Store[F],
       cfg: ExtractConfig,

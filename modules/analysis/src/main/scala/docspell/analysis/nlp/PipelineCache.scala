@@ -11,6 +11,7 @@ import scala.concurrent.duration.{Duration => _, _}
 import cats.effect.Ref
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.analysis.NlpSettings
 import docspell.common._
@@ -32,7 +33,7 @@ trait PipelineCache[F[_]] {
 object PipelineCache {
   private[this] val logger = docspell.logging.unsafeLogger
 
-  def apply[F[_]: Async](clearInterval: Duration)(
+  def apply[F[_]: Async: Files](clearInterval: Duration)(
       creator: NlpSettings => Annotator[F],
       release: F[Unit]
   ): F[PipelineCache[F]] = {
@@ -44,7 +45,7 @@ object PipelineCache {
     } yield new Impl[F](data, creator, cacheClear)
   }
 
-  final private class Impl[F[_]: Async](
+  final private class Impl[F[_]: Async: Files](
       data: Ref[F, Map[String, Entry[Annotator[F]]]],
       creator: NlpSettings => Annotator[F],
       cacheClear: CacheClearing[F]

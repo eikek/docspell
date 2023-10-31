@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets
 import cats.effect._
 import cats.implicits._
 import fs2._
+import fs2.io.file.Files
 
 import docspell.common._
 import docspell.convert.ConversionResult.Handler
@@ -32,7 +33,7 @@ trait Conversion[F[_]] {
 
 object Conversion {
 
-  def create[F[_]: Async](
+  def create[F[_]: Async: Files](
       cfg: ConvertConfig,
       sanitizeHtml: SanitizeHtml,
       additionalPasswords: List[Password],

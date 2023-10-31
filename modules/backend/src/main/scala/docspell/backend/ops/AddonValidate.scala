@@ -10,7 +10,7 @@ import cats.data.EitherT
 import cats.effect._
 import cats.syntax.all._
 import fs2.Stream
-import fs2.io.file.Path
+import fs2.io.file.{Files, Path}
 
 import docspell.addons.{AddonMeta, RunnerType}
 import docspell.backend.Config
@@ -21,7 +21,7 @@ import docspell.joexapi.model.AddonSupport
 import docspell.store.Store
 import docspell.store.records.RAddonArchive
 
-final class AddonValidate[F[_]: Async](
+final class AddonValidate[F[_]: Async: Files](
     cfg: Config.Addons,
     store: Store[F],
     joexOps: OJoex[F]

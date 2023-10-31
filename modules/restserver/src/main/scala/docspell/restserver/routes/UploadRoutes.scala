@@ -9,6 +9,7 @@ package docspell.restserver.routes
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.backend.BackendApp
 import docspell.backend.auth.AuthToken
@@ -25,7 +26,7 @@ import org.log4s._
 object UploadRoutes {
   private[this] val logger = getLogger
 
-  def secured[F[_]: Async](
+  def secured[F[_]: Async: Files](
       backend: BackendApp[F],
       cfg: Config,
       user: AuthToken
@@ -50,7 +51,7 @@ object UploadRoutes {
     }
   }
 
-  def open[F[_]: Async](backend: BackendApp[F], cfg: Config): HttpRoutes[F] = {
+  def open[F[_]: Async: Files](backend: BackendApp[F], cfg: Config): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] with ResponseGenerator[F] {}
     import dsl._
 
@@ -78,7 +79,7 @@ object UploadRoutes {
     }
   }
 
-  private def submitFiles[F[_]: Async](
+  private def submitFiles[F[_]: Async: Files](
       backend: BackendApp[F],
       cfg: Config,
       accOrSrc: Either[Ident, CollectiveId],
