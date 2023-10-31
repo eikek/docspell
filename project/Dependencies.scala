@@ -251,7 +251,7 @@ object Dependencies {
   )
 
   val http4sServer = Seq(
-    "org.http4s" %% "http4s-blaze-server" % "0.23.14"
+    "org.http4s" %% "http4s-ember-server" % Http4sVersion
   )
 
   val circeCore = Seq(
@@ -275,6 +275,10 @@ object Dependencies {
   // MPL 2.0
   val pureconfig = Seq(
     "com.github.pureconfig" %% "pureconfig" % PureConfigVersion
+  )
+
+  val pureconfigIp4s = Seq(
+    "com.github.pureconfig" %% "pureconfig-ip4s" % PureConfigVersion
   )
 
   // https://github.com/h2database/h2database

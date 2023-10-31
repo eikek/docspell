@@ -18,6 +18,7 @@ import emil.MailAddress
 import emil.javamail.syntax._
 import pureconfig._
 import pureconfig.generic.auto._
+import pureconfig.module.ip4s._
 import yamusca.imports._
 
 object ConfigFile {

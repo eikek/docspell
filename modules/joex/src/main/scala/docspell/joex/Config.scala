@@ -27,6 +27,8 @@ import docspell.pubsub.naive.PubSubConfig
 import docspell.scheduler.{PeriodicSchedulerConfig, SchedulerConfig}
 import docspell.store.{JdbcConfig, SchemaMigrateConfig}
 
+import com.comcast.ip4s.{Host, Port}
+
 case class Config(
     appId: Ident,
     baseUrl: LenientUri,
@@ -59,7 +61,7 @@ case class Config(
 }
 
 object Config {
-  case class Bind(address: String, port: Int)
+  case class Bind(address: Host, port: Port)
 
   case class ScanMailbox(maxFolders: Int, mailChunkSize: Int, maxMails: Int) {
     def mailBatchSize: Int =

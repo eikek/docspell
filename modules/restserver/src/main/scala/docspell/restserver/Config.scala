@@ -18,7 +18,7 @@ import docspell.restserver.Config.{DownloadAllCfg, OpenIdConfig, ServerOptions}
 import docspell.restserver.auth.OpenId
 import docspell.restserver.http4s.InternalHeader
 
-import com.comcast.ip4s.IpAddress
+import com.comcast.ip4s.{Host, IpAddress, Port}
 
 case class Config(
     appName: String,
@@ -63,7 +63,7 @@ object Config {
       enableHttp2: Boolean,
       maxConnections: Int
   )
-  case class Bind(address: String, port: Int)
+  case class Bind(address: Host, port: Port)
 
   case class AdminEndpoint(secret: String)
 
