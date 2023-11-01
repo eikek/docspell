@@ -29,7 +29,7 @@ trait AddonExecutor[F[_]] {
 
 object AddonExecutor {
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: AddonExecutorConfig,
       urlReader: UrlReader[F]
   ): AddonExecutor[F] =
@@ -104,7 +104,7 @@ object AddonExecutor {
         } yield result
     }
 
-  def selectRunner[F[_]: Async](
+  def selectRunner[F[_]: Async: Files](
       cfg: AddonExecutorConfig,
       meta: AddonMeta,
       addonDir: Path

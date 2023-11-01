@@ -9,6 +9,7 @@ package docspell.backend.joex
 import cats.data.OptionT
 import cats.effect._
 import cats.syntax.all._
+import fs2.io.file.Files
 
 import docspell.addons._
 import docspell.backend.joex.AddonOps.{AddonRunConfigRef, ExecResult}
@@ -98,7 +99,7 @@ object AddonOps {
       )
   }
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: AddonEnvConfig,
       store: Store[F],
       cmdRunner: BackendCommandRunner[F, Unit],
@@ -160,7 +161,10 @@ object AddonOps {
           execRes = ExecResult(List(result), List(runCfg))
         } yield execRes
 
-      def createMiddleware(custom: Middleware[F], runCfg: AddonRunConfigRef) = for {
+      def createMiddleware(
+          custom: Middleware[F],
+          runCfg: AddonRunConfigRef
+      ): F[Middleware[F]] = for {
         dscMW <- prepare.createDscEnv(runCfg, cfg.executorConfig.runTimeout)
         mm = dscMW >> custom >> prepare.logResult(logger, runCfg) >> Middleware
           .ephemeralRun[F]

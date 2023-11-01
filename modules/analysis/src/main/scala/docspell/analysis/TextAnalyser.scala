@@ -9,6 +9,7 @@ package docspell.analysis
 import cats.Applicative
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.analysis.classifier.{StanfordTextClassifier, TextClassifier}
 import docspell.analysis.contact.Contact
@@ -36,7 +37,7 @@ object TextAnalyser {
       labels ++ dates.map(dl => dl.label.copy(label = dl.date.toString))
   }
 
-  def create[F[_]: Async](cfg: TextAnalysisConfig): Resource[F, TextAnalyser[F]] =
+  def create[F[_]: Async: Files](cfg: TextAnalysisConfig): Resource[F, TextAnalyser[F]] =
     Resource
       .eval(Nlp(cfg.nlpConfig))
       .map(stanfordNer =>
@@ -83,7 +84,7 @@ object TextAnalyser {
 
   /** Provides the nlp pipeline based on the configuration. */
   private object Nlp {
-    def apply[F[_]: Async](
+    def apply[F[_]: Async: Files](
         cfg: TextAnalysisConfig.NlpConfig
     ): F[Input[F] => F[Vector[NerLabel]]] = {
       val log = docspell.logging.getLogger[F]

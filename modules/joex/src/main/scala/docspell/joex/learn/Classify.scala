@@ -21,7 +21,7 @@ import docspell.store.records.RClassifierModel
 
 object Classify {
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       logger: Logger[F],
       workingDir: Path,
       store: Store[F],

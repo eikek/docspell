@@ -7,6 +7,7 @@
 package docspell.backend
 
 import cats.effect._
+import fs2.io.file.Files
 
 import docspell.backend.BackendCommands.EventContext
 import docspell.backend.auth.Login
@@ -65,7 +66,7 @@ trait BackendApp[F[_]] {
 
 object BackendApp {
 
-  def create[F[_]: Async](
+  def create[F[_]: Async: Files](
       cfg: Config,
       store: Store[F],
       javaEmil: Emil[F],

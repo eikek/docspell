@@ -45,7 +45,7 @@ private[addons] object RunnerUtil {
     * expected to be relative to the `ctx.baseDir`. Additional arguments and environment
     * variables are added as configured in the addon.
     */
-  def runInContainer[F[_]: Async](
+  def runInContainer[F[_]: Async: Files](
       logger: Logger[F],
       cfg: AddonExecutorConfig.NSpawn,
       ctx: Context

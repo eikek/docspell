@@ -8,6 +8,7 @@ package docspell.joex.process
 
 import cats.effect._
 import cats.syntax.all._
+import fs2.io.file.Files
 
 import docspell.addons.AddonTriggerType
 import docspell.backend.joex.AddonOps
@@ -22,7 +23,7 @@ import docspell.store.Store
 object RunAddons {
   type Args = ProcessItemArgs
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       ops: AddonOps[F],
       store: Store[F],
       trigger: AddonTriggerType

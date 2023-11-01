@@ -9,6 +9,7 @@ package docspell.joex.process
 import cats.Traverse
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.analysis.classifier.TextClassifier
 import docspell.analysis.{NlpSettings, TextAnalyser}
@@ -26,7 +27,7 @@ import docspell.store.records.{RAttachmentMeta, RClassifierSetting}
 object TextAnalysis {
   type Args = ProcessItemArgs
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: Config.TextAnalysis,
       analyser: TextAnalyser[F],
       nerFile: RegexNerFile[F],
@@ -87,7 +88,7 @@ object TextAnalysis {
     } yield (rm.copy(nerlabels = labels.all.toList), AttachmentDates(rm, labels.dates))
   }
 
-  def predictTags[F[_]: Async](
+  def predictTags[F[_]: Async: Files](
       ctx: Context[F, Args],
       store: Store[F],
       cfg: Config.TextAnalysis,
@@ -107,7 +108,7 @@ object TextAnalysis {
     } yield tags.flatten
   }
 
-  def predictItemEntities[F[_]: Async](
+  def predictItemEntities[F[_]: Async: Files](
       ctx: Context[F, Args],
       store: Store[F],
       cfg: Config.TextAnalysis,
@@ -139,7 +140,7 @@ object TextAnalysis {
       .map(MetaProposalList.apply)
   }
 
-  private def makeClassify[F[_]: Async](
+  private def makeClassify[F[_]: Async: Files](
       ctx: Context[F, Args],
       store: Store[F],
       cfg: Config.TextAnalysis,

@@ -11,6 +11,7 @@ import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.common._
 import docspell.convert.ConversionResult.Handler
@@ -35,7 +36,7 @@ import docspell.store.records._
 object ConvertPdf {
   type Args = ProcessItemArgs
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: ConvertConfig,
       store: Store[F],
       item: ItemData
@@ -76,7 +77,7 @@ object ConvertPdf {
       .map(_.mimetype)
       .getOrElse(MimeType.octetStream)
 
-  def convertSafe[F[_]: Async](
+  def convertSafe[F[_]: Async: Files](
       cfg: ConvertConfig,
       sanitizeHtml: SanitizeHtml,
       ctx: Context[F, Args],

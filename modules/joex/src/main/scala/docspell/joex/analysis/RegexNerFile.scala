@@ -9,7 +9,7 @@ package docspell.joex.analysis
 import cats.effect._
 import cats.effect.std.Semaphore
 import cats.implicits._
-import fs2.io.file.Path
+import fs2.io.file.{Files, Path}
 
 import docspell.common._
 import docspell.common.util.File
@@ -32,7 +32,7 @@ object RegexNerFile {
 
   case class Config(maxEntries: Int, directory: Path, minTime: Duration)
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: Config,
       store: Store[F]
   ): Resource[F, RegexNerFile[F]] =
@@ -41,7 +41,7 @@ object RegexNerFile {
       writer <- Resource.eval(Semaphore(1))
     } yield new Impl[F](cfg.copy(directory = dir), store, writer)
 
-  final private class Impl[F[_]: Async](
+  final private class Impl[F[_]: Async: Files](
       cfg: Config,
       store: Store[F],
       writer: Semaphore[F] // TODO allow parallelism per collective

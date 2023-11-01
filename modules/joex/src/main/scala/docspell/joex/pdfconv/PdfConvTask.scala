@@ -11,6 +11,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.common._
 import docspell.convert.ConversionResult
@@ -35,9 +36,9 @@ object PdfConvTask {
       deriveEncoder[Args]
   }
 
-  val taskName = Ident.unsafe("pdf-files-migration")
+  val taskName: Ident = Ident.unsafe("pdf-files-migration")
 
-  def apply[F[_]: Async](cfg: Config, store: Store[F]): Task[F, Args, Unit] =
+  def apply[F[_]: Async: Files](cfg: Config, store: Store[F]): Task[F, Args, Unit] =
     Task { ctx =>
       for {
         _ <- ctx.logger.info(s"Converting pdf file ${ctx.args} using ocrmypdf")
@@ -89,7 +90,7 @@ object PdfConvTask {
     else none.pure[F]
   }
 
-  def convert[F[_]: Async](
+  def convert[F[_]: Async: Files](
       cfg: Config,
       ctx: Context[F, Args],
       store: Store[F],

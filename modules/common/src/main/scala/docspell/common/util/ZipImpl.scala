@@ -22,7 +22,7 @@ import fs2.{Chunk, Pipe, Stream}
 import docspell.common.Glob
 import docspell.logging.Logger
 
-final private class ZipImpl[F[_]: Async](
+final private class ZipImpl[F[_]: Async: Files](
     log: Option[Logger[F]],
     tempDir: Option[Path]
 ) extends Zip[F] {

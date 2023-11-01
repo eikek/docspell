@@ -8,6 +8,7 @@ package docspell.joex.process
 
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.addons.AddonTriggerType
 import docspell.analysis.TextAnalyser
@@ -22,7 +23,7 @@ import docspell.store.Store
 
 object ProcessItem {
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: Config,
       itemOps: OItem[F],
       fts: FtsClient[F],
@@ -40,7 +41,7 @@ object ProcessItem {
       .flatMap(RemoveEmptyItem(itemOps))
       .flatMap(RunAddons(addonOps, store, AddonTriggerType.FinalProcessItem))
 
-  def processAttachments[F[_]: Async](
+  def processAttachments[F[_]: Async: Files](
       cfg: Config,
       fts: FtsClient[F],
       analyser: TextAnalyser[F],
@@ -49,7 +50,7 @@ object ProcessItem {
   )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
     processAttachments0[F](cfg, fts, analyser, regexNer, store, (30, 60, 90))(item)
 
-  def analysisOnly[F[_]: Async](
+  def analysisOnly[F[_]: Async: Files](
       cfg: Config,
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F],
@@ -61,7 +62,7 @@ object ProcessItem {
       .flatMap(CrossCheckProposals[F](store))
       .flatMap(SaveProposals[F](store))
 
-  private def processAttachments0[F[_]: Async](
+  private def processAttachments0[F[_]: Async: Files](
       cfg: Config,
       fts: FtsClient[F],
       analyser: TextAnalyser[F],

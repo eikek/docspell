@@ -19,10 +19,12 @@ import docspell.common.Duration
 import docspell.common.exec.{Args, Env, SysCmd}
 import docspell.logging.Logger
 
-final class TrivialRunner[F[_]: Async](cfg: TrivialRunner.Config) extends AddonRunner[F] {
+final class TrivialRunner[F[_]: Async: Files](cfg: TrivialRunner.Config)
+    extends AddonRunner[F] {
   private val sync = Async[F]
   private val files = Files[F]
-  implicit val andMonoid: Monoid[Boolean] = Monoid.instance[Boolean](true, _ && _)
+  implicit val andMonoid: Monoid[Boolean] =
+    Monoid.instance[Boolean](emptyValue = true, _ && _)
 
   private val executeBits = PosixPermissions(
     OwnerExecute,
@@ -34,13 +36,13 @@ final class TrivialRunner[F[_]: Async](cfg: TrivialRunner.Config) extends AddonR
     OthersRead
   )
 
-  val runnerType = List(RunnerType.Trivial)
+  val runnerType: List[RunnerType] = List(RunnerType.Trivial)
 
   def run(
       logger: Logger[F],
       env: Env,
       ctx: Context
-  ) = {
+  ): F[AddonResult] = {
     val binaryPath = ctx.meta.runner
       .flatMap(_.trivial)
       .map(_.exec)
@@ -71,7 +73,7 @@ final class TrivialRunner[F[_]: Async](cfg: TrivialRunner.Config) extends AddonR
 }
 
 object TrivialRunner {
-  def apply[F[_]: Async](cfg: AddonExecutorConfig): TrivialRunner[F] =
+  def apply[F[_]: Async: Files](cfg: AddonExecutorConfig): TrivialRunner[F] =
     new TrivialRunner[F](Config(cfg.nspawn, cfg.runTimeout))
 
   case class Config(nspawn: NSpawn, timeout: Duration)

@@ -10,7 +10,7 @@ import java.nio.charset.Charset
 
 import cats.effect._
 import cats.implicits._
-import fs2.io.file.Path
+import fs2.io.file.{Files, Path}
 import fs2.{Chunk, Stream}
 
 import docspell.common._
@@ -20,7 +20,7 @@ import docspell.logging.Logger
 
 object Weasyprint {
 
-  def toPDF[F[_]: Async, A](
+  def toPDF[F[_]: Async: Files, A](
       cfg: WeasyprintConfig,
       chunkSize: Int,
       charset: Charset,
@@ -46,7 +46,7 @@ object Weasyprint {
     )
 
     ExternConv
-      .toPDF[F, A]("weasyprint", cmdCfg, cfg.workingDir, true, logger, reader)(
+      .toPDF[F, A]("weasyprint", cmdCfg, cfg.workingDir, useStdin = true, logger, reader)(
         inSane,
         handler
       )

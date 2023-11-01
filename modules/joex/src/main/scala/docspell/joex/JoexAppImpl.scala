@@ -9,6 +9,8 @@ package docspell.joex
 import cats.effect._
 import cats.implicits._
 import fs2.concurrent.SignallingRef
+import fs2.io.file.Files
+import fs2.io.net.Network
 
 import docspell.backend.MailAddressCodec
 import docspell.backend.joex.FindJobOwnerAccount
@@ -45,7 +47,7 @@ final class JoexAppImpl[F[_]: Async](
   def init: F[Unit] = {
     val run = scheduler.start.compile.drain
     val prun = periodicScheduler.start.compile.drain
-    val eventConsume = notificationMod.consumeAllEvents(2).compile.drain
+    val eventConsume = notificationMod.consumeAllEvents(maxConcurrent = 2).compile.drain
     for {
       _ <- scheduleBackgroundTasks
       _ <- Async[F].start(run)
@@ -62,7 +64,9 @@ final class JoexAppImpl[F[_]: Async](
     store.transact(RJobLog.findLogs(jobId))
 
   def initShutdown: F[Unit] =
-    periodicScheduler.shutdown *> scheduler.shutdown(false) *> termSignal.set(true)
+    periodicScheduler.shutdown *> scheduler.shutdown(cancelAll = false) *> termSignal.set(
+      true
+    )
 
   private def scheduleBackgroundTasks: F[Unit] =
     HouseKeepingTask
@@ -81,7 +85,8 @@ final class JoexAppImpl[F[_]: Async](
   private def scheduleEmptyTrashTasks: F[Unit] =
     store
       .transact(
-        REmptyTrashSetting.findForAllCollectives(OCollective.EmptyTrash.default, 50)
+        REmptyTrashSetting
+          .findForAllCollectives(OCollective.EmptyTrash.default, chunkSize = 50)
       )
       .evalMap { es =>
         val args = EmptyTrashArgs(es.cid, es.minAge)
@@ -98,7 +103,7 @@ final class JoexAppImpl[F[_]: Async](
 
 object JoexAppImpl extends MailAddressCodec {
 
-  def create[F[_]: Async](
+  def create[F[_]: Async: Files: Network](
       cfg: Config,
       termSignal: SignallingRef[F, Boolean],
       store: Store[F],
@@ -107,12 +112,14 @@ object JoexAppImpl extends MailAddressCodec {
       pools: Pools
   ): Resource[F, JoexApp[F]] =
     for {
-      joexLogger <- Resource.pure(docspell.logging.getLogger[F](s"joex-${cfg.appId.id}"))
+      joexLogger <- Resource.pure(
+        docspell.logging.getLogger[F](name = s"joex-${cfg.appId.id}")
+      )
       pubSubT = PubSubT(pubSub, joexLogger)
       javaEmil =
         JavaMailEmil(Settings.defaultSettings.copy(debug = cfg.mailDebug))
       notificationMod <- Resource.eval(
-        NotificationModuleImpl[F](store, javaEmil, httpClient, 200)
+        NotificationModuleImpl[F](store, javaEmil, httpClient, queueSize = 200)
       )
 
       jobStoreModule = JobStoreModuleBuilder(store)

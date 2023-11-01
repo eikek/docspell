@@ -10,6 +10,7 @@ import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.analysis.TextAnalyser
 import docspell.analysis.classifier.TextClassifier.Data
@@ -18,7 +19,7 @@ import docspell.scheduler._
 import docspell.store.Store
 
 object LearnItemEntities {
-  def learnAll[F[_]: Async, A](
+  def learnAll[F[_]: Async: Files, A](
       analyser: TextAnalyser[F],
       store: Store[F],
       collective: CollectiveId,
@@ -32,7 +33,7 @@ object LearnItemEntities {
       .flatMap(_ => learnConcPerson(analyser, store, collective, maxItems, maxTextLen))
       .flatMap(_ => learnConcEquip(analyser, store, collective, maxItems, maxTextLen))
 
-  def learnCorrOrg[F[_]: Async, A](
+  def learnCorrOrg[F[_]: Async: Files, A](
       analyser: TextAnalyser[F],
       store: Store[F],
       collective: CollectiveId,
@@ -44,7 +45,7 @@ object LearnItemEntities {
       _ => SelectItems.forCorrOrg(store, collective, maxItems, maxTextLen)
     )
 
-  def learnCorrPerson[F[_]: Async, A](
+  def learnCorrPerson[F[_]: Async: Files, A](
       analyser: TextAnalyser[F],
       store: Store[F],
       collective: CollectiveId,
@@ -56,7 +57,7 @@ object LearnItemEntities {
       _ => SelectItems.forCorrPerson(store, collective, maxItems, maxTextLen)
     )
 
-  def learnConcPerson[F[_]: Async, A](
+  def learnConcPerson[F[_]: Async: Files, A](
       analyser: TextAnalyser[F],
       store: Store[F],
       collective: CollectiveId,
@@ -68,7 +69,7 @@ object LearnItemEntities {
       _ => SelectItems.forConcPerson(store, collective, maxItems, maxTextLen)
     )
 
-  def learnConcEquip[F[_]: Async, A](
+  def learnConcEquip[F[_]: Async: Files, A](
       analyser: TextAnalyser[F],
       store: Store[F],
       collective: CollectiveId,
@@ -80,7 +81,7 @@ object LearnItemEntities {
       _ => SelectItems.forConcEquip(store, collective, maxItems, maxTextLen)
     )
 
-  private def learn[F[_]: Async, A](
+  private def learn[F[_]: Async: Files, A](
       store: Store[F],
       analyser: TextAnalyser[F],
       collective: CollectiveId

@@ -9,6 +9,7 @@ package docspell.joex.learn
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.analysis.TextAnalyser
 import docspell.backend.ops.OCollective
@@ -28,7 +29,7 @@ object LearnClassifierTask {
   def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn("Cancelling learn-classifier task"))
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: Config.TextAnalysis,
       store: Store[F],
       analyser: TextAnalyser[F]
@@ -37,7 +38,7 @@ object LearnClassifierTask {
       .flatMap(_ => learnItemEntities(cfg, store, analyser))
       .flatMap(_ => Task(_ => Sync[F].delay(System.gc())))
 
-  private def learnItemEntities[F[_]: Async](
+  private def learnItemEntities[F[_]: Async: Files](
       cfg: Config.TextAnalysis,
       store: Store[F],
       analyser: TextAnalyser[F]
@@ -56,7 +57,7 @@ object LearnClassifierTask {
       else ().pure[F]
     }
 
-  private def learnTags[F[_]: Async](
+  private def learnTags[F[_]: Async: Files](
       cfg: Config.TextAnalysis,
       store: Store[F],
       analyser: TextAnalyser[F]

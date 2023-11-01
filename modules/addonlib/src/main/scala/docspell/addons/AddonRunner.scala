@@ -10,6 +10,7 @@ import cats.Applicative
 import cats.effect._
 import cats.syntax.all._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.addons.runner._
 import docspell.common.exec.Env
@@ -26,7 +27,9 @@ trait AddonRunner[F[_]] {
 }
 
 object AddonRunner {
-  def forType[F[_]: Async](cfg: AddonExecutorConfig)(rt: RunnerType) =
+  def forType[F[_]: Async: Files](
+      cfg: AddonExecutorConfig
+  )(rt: RunnerType): AddonRunner[F] =
     rt match {
       case RunnerType.NixFlake => NixFlakeRunner[F](cfg)
       case RunnerType.Docker   => DockerRunner[F](cfg)
@@ -38,9 +41,9 @@ object AddonRunner {
 
   def pure[F[_]: Applicative](result: AddonResult): AddonRunner[F] =
     new AddonRunner[F] {
-      val runnerType = Nil
+      val runnerType: List[RunnerType] = Nil
 
-      def run(logger: Logger[F], env: Env, ctx: Context) =
+      def run(logger: Logger[F], env: Env, ctx: Context): F[AddonResult] =
         Applicative[F].pure(result)
     }
 
@@ -50,9 +53,9 @@ object AddonRunner {
       case a :: Nil => a
       case _ =>
         new AddonRunner[F] {
-          val runnerType = runners.flatMap(_.runnerType).distinct
+          val runnerType: List[RunnerType] = runners.flatMap(_.runnerType).distinct
 
-          def run(logger: Logger[F], env: Env, ctx: Context) =
+          def run(logger: Logger[F], env: Env, ctx: Context): F[AddonResult] =
             Stream
               .emits(runners)
               .evalTap(r =>

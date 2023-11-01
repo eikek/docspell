@@ -8,6 +8,7 @@ package docspell.joex.hk
 
 import cats.effect._
 import cats.implicits._
+import fs2.io.net.Network
 
 import docspell.backend.ops.{ODownloadAll, OFileRepository}
 import docspell.common._
@@ -26,7 +27,7 @@ object HouseKeepingTask {
 
   val taskName: Ident = Ident.unsafe("housekeeping")
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Network](
       cfg: Config,
       store: Store[F],
       fileRepo: OFileRepository[F],
