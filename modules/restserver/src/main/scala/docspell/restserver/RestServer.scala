@@ -24,9 +24,9 @@ import docspell.store.Store
 import docspell.store.records.RInternalSetting
 
 import org.http4s._
-import org.http4s.blaze.client.BlazeClientBuilder
-import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.dsl.Http4sDsl
+import org.http4s.ember.client.EmberClientBuilder
+import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.headers.Location
 import org.http4s.implicits._
 import org.http4s.server.Router
@@ -56,20 +56,27 @@ object RestServer {
             Stream(
               restApp.subscriptions,
               restApp.eventConsume(2),
-              BlazeServerBuilder[F]
-                .bindHttp(cfg.bind.port, cfg.bind.address)
-                .withoutBanner
-                .withResponseHeaderTimeout(cfg.serverOptions.responseTimeout.toScala)
-                .enableHttp2(cfg.serverOptions.enableHttp2)
-                .withMaxConnections(cfg.serverOptions.maxConnections)
-                .withHttpWebSocketApp(
-                  createHttpApp(setting, pubSub, restApp)
-                )
-                .serve
-                .drain
+              Stream.resource {
+                if (cfg.serverOptions.enableHttp2)
+                  EmberServerBuilder
+                    .default[F]
+                    .withHost(cfg.bind.address)
+                    .withPort(cfg.bind.port)
+                    .withMaxConnections(cfg.serverOptions.maxConnections)
+                    .withHttpWebSocketApp(createHttpApp(setting, pubSub, restApp))
+                    .withHttp2
+                    .build
+                else
+                  EmberServerBuilder
+                    .default[F]
+                    .withHost(cfg.bind.address)
+                    .withPort(cfg.bind.port)
+                    .withMaxConnections(cfg.serverOptions.maxConnections)
+                    .withHttpWebSocketApp(createHttpApp(setting, pubSub, restApp))
+                    .build
+              }
             )
           }
-
       exit <-
         (server ++ Stream(keepAlive)).parJoinUnbounded.compile.drain.as(ExitCode.Success)
     } yield exit
@@ -83,7 +90,7 @@ object RestServer {
     (RestApp[F], NaivePubSub[F], RInternalSetting)
   ] =
     for {
-      httpClient <- BlazeClientBuilder[F].resource
+      httpClient <- EmberClientBuilder.default[F].build
       store <- Store.create[F](
         cfg.backend.jdbc,
         cfg.backend.databaseSchema,

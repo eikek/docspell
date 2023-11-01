@@ -21,6 +21,7 @@ import docspell.store.Db
 
 import pureconfig._
 import pureconfig.generic.auto._
+import pureconfig.module.ip4s._
 import scodec.bits.ByteVector
 
 object ConfigFile {

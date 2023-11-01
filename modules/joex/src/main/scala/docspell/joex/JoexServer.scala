@@ -6,7 +6,6 @@
 
 package docspell.joex
 
-import cats.effect.Ref
 import cats.effect._
 import fs2.Stream
 import fs2.concurrent.SignallingRef
@@ -19,8 +18,8 @@ import docspell.store.Store
 import docspell.store.records.RInternalSetting
 
 import org.http4s.HttpApp
-import org.http4s.blaze.client.BlazeClientBuilder
-import org.http4s.blaze.server.BlazeServerBuilder
+import org.http4s.ember.client.EmberClientBuilder
+import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.middleware.Logger
@@ -46,7 +45,7 @@ object JoexServer {
         pools.connectEC
       )
       settings <- Resource.eval(store.transact(RInternalSetting.create))
-      httpClient <- BlazeClientBuilder[F].resource
+      httpClient <- EmberClientBuilder.default[F].build
       pubSub <- NaivePubSub(
         cfg.pubSubConfig(settings.internalRouteKey),
         store,
@@ -64,19 +63,21 @@ object JoexServer {
       ).orNotFound
 
       // With Middlewares in place
-      finalHttpApp = Logger.httpApp(false, false)(httpApp)
+      finalHttpApp = Logger.httpApp(logHeaders = false, logBody = false)(httpApp)
 
     } yield App(finalHttpApp, signal, exitCode)
 
     Stream
       .resource(app)
-      .flatMap(app =>
-        BlazeServerBuilder[F]
-          .bindHttp(cfg.bind.port, cfg.bind.address)
-          .withHttpApp(app.httpApp)
-          .withoutBanner
-          .serveWhile(app.termSig, app.exitRef)
-      )
-
+      .flatMap { app =>
+        Stream.resource {
+          EmberServerBuilder
+            .default[F]
+            .withHost(cfg.bind.address)
+            .withPort(cfg.bind.port)
+            .withHttpApp(app.httpApp)
+            .build
+        }
+      }
   }.drain
 }

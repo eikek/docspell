@@ -20,7 +20,7 @@ import org.typelevel.ci.CIString
 object ClientRequestInfo {
 
   def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =
-    if (cfg.baseUrl.isLocal) getBaseUrl(req, cfg.bind.port).getOrElse(cfg.baseUrl)
+    if (cfg.baseUrl.isLocal) getBaseUrl(req, cfg.bind.port.value).getOrElse(cfg.baseUrl)
     else cfg.baseUrl
 
   private def getBaseUrl[F[_]](req: Request[F], serverPort: Int): Option[LenientUri] =

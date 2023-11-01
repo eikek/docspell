@@ -27,3 +27,6 @@ _site/
 /website/site/templates/shortcodes/config.env.txt
 /docker/docs
 /docker/dev-log
+
+.idea/*
+sbt.json
