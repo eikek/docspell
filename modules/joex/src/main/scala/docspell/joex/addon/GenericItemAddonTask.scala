@@ -43,7 +43,7 @@ object GenericItemAddonTask extends LoggerExtension {
     "ITEM_PDF_JSON" -> pdfMetaJson
   )
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       ops: AddonOps[F],
       store: Store[F],
       trigger: AddonTriggerType,
@@ -57,7 +57,7 @@ object GenericItemAddonTask extends LoggerExtension {
       data
     )
 
-  def addonResult[F[_]: Async](
+  def addonResult[F[_]: Async: Files](
       ops: AddonOps[F],
       store: Store[F],
       trigger: AddonTriggerType,
@@ -73,7 +73,7 @@ object GenericItemAddonTask extends LoggerExtension {
       )
     }
 
-  def prepareItemData[F[_]: Async](
+  def prepareItemData[F[_]: Async: Files](
       logger: Logger[F],
       store: Store[F],
       data: ItemData,

@@ -9,6 +9,7 @@ package docspell.extract
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.common.Language
 import docspell.extract.internal.Text
@@ -24,7 +25,7 @@ object PdfExtract {
       Result(t._1, t._2)
   }
 
-  def get[F[_]: Async](
+  def get[F[_]: Async: Files](
       in: Stream[F, Byte],
       lang: Language,
       stripMinLen: Int,

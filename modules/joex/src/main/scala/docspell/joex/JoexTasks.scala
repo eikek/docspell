@@ -7,6 +7,8 @@
 package docspell.joex
 
 import cats.effect.{Async, Resource}
+import fs2.io.file.Files
+import fs2.io.net.Network
 
 import docspell.analysis.TextAnalyser
 import docspell.backend.BackendCommands
@@ -46,7 +48,7 @@ import docspell.store.Store
 import emil.Emil
 import org.http4s.client.Client
 
-final class JoexTasks[F[_]: Async](
+final class JoexTasks[F[_]: Async: Files: Network](
     cfg: Config,
     store: Store[F],
     itemOps: OItem[F],
@@ -257,7 +259,7 @@ final class JoexTasks[F[_]: Async](
 
 object JoexTasks {
 
-  def resource[F[_]: Async](
+  def resource[F[_]: Async: Files: Network](
       cfg: Config,
       pools: Pools,
       jobStoreModule: JobStoreModuleBuilder.Module[F],

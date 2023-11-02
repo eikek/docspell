@@ -39,7 +39,7 @@ final case class Binary[F[_]](name: String, mime: MimeType, data: Stream[F, Byte
 
 object Binary {
 
-  def apply[F[_]: Async](file: Path): Binary[F] =
+  def apply[F[_]: Files](file: Path): Binary[F] =
     Binary(file.fileName.toString, Files[F].readAll(file))
 
   def apply[F[_]](name: String, data: Stream[F, Byte]): Binary[F] =
@@ -74,11 +74,11 @@ object Binary {
     data.chunks.map(_.toByteVector).compile.fold(ByteVector.empty)((r, e) => r ++ e)
 
   /** Convert paths into `Binary`s */
-  def toBinary[F[_]: Async]: Pipe[F, Path, Binary[F]] =
+  def toBinary[F[_]: Files]: Pipe[F, Path, Binary[F]] =
     _.map(Binary[F](_))
 
   /** Save one or more binaries to a target directory. */
-  def saveTo[F[_]: Async](
+  def saveTo[F[_]: Async: Files](
       logger: Logger[F],
       targetDir: Path
   ): Pipe[F, Binary[F], Path] =

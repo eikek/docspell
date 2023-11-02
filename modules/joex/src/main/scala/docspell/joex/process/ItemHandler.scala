@@ -10,6 +10,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.analysis.TextAnalyser
 import docspell.backend.joex.AddonOps
@@ -36,7 +37,7 @@ object ItemHandler {
       }
     )
 
-  def newItem[F[_]: Async](
+  def newItem[F[_]: Async: Files](
       cfg: Config,
       store: Store[F],
       itemOps: OItem[F],
@@ -82,7 +83,7 @@ object ItemHandler {
   def isLastRetry[F[_]]: Task[F, Args, Boolean] =
     Task(_.isLastRetry)
 
-  def safeProcess[F[_]: Async](
+  def safeProcess[F[_]: Async: Files](
       cfg: Config,
       store: Store[F],
       itemOps: OItem[F],

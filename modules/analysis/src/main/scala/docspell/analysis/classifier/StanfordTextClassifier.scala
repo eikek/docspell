@@ -21,7 +21,7 @@ import docspell.logging.Logger
 
 import edu.stanford.nlp.classify.ColumnDataClassifier
 
-final class StanfordTextClassifier[F[_]: Async](cfg: TextClassifierConfig)
+final class StanfordTextClassifier[F[_]: Async: Files](cfg: TextClassifierConfig)
     extends TextClassifier[F] {
 
   def trainClassifier[A](

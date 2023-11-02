@@ -18,7 +18,7 @@ import docspell.common.Duration
 import docspell.common.exec._
 import docspell.logging.Logger
 
-final class NixFlakeRunner[F[_]: Async](cfg: NixFlakeRunner.Config)
+final class NixFlakeRunner[F[_]: Async: Files](cfg: NixFlakeRunner.Config)
     extends AddonRunner[F] {
 
   val runnerType = List(RunnerType.NixFlake)
@@ -104,7 +104,7 @@ final class NixFlakeRunner[F[_]: Async](cfg: NixFlakeRunner.Config)
 }
 
 object NixFlakeRunner {
-  def apply[F[_]: Async](cfg: AddonExecutorConfig): NixFlakeRunner[F] =
+  def apply[F[_]: Async: Files](cfg: AddonExecutorConfig): NixFlakeRunner[F] =
     new NixFlakeRunner[F](Config(cfg.nixRunner, cfg.nspawn, cfg.runTimeout))
 
   case class Config(

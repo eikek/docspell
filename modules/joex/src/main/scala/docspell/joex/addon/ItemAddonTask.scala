@@ -9,6 +9,7 @@ package docspell.joex.addon
 import cats.data.OptionT
 import cats.effect._
 import cats.syntax.all._
+import fs2.io.file.Files
 
 import docspell.addons.AddonTriggerType
 import docspell.backend.joex.AddonOps
@@ -26,7 +27,10 @@ object ItemAddonTask extends AddonTaskExtension {
   def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn(s"Cancelling ${name.id} task"))
 
-  def apply[F[_]: Async](ops: AddonOps[F], store: Store[F]): Task[F, Args, Result] =
+  def apply[F[_]: Async: Files](
+      ops: AddonOps[F],
+      store: Store[F]
+  ): Task[F, Args, Result] =
     Task { ctx =>
       (for {
         item <- OptionT(

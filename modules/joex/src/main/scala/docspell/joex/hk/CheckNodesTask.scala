@@ -8,6 +8,7 @@ package docspell.joex.hk
 
 import cats.effect._
 import cats.implicits._
+import fs2.io.net.Network
 
 import docspell.common._
 import docspell.logging.Logger
@@ -19,7 +20,7 @@ import org.http4s.client.Client
 import org.http4s.ember.client.EmberClientBuilder
 
 object CheckNodesTask {
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Network](
       cfg: HouseKeepingConfig.CheckNodes,
       store: Store[F]
   ): Task[F, Unit, CleanupResult] =

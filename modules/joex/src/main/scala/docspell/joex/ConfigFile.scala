@@ -7,6 +7,7 @@
 package docspell.joex
 
 import cats.effect.Async
+import fs2.io.file.Files
 
 import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, FtsType, Validation}
@@ -25,7 +26,7 @@ object ConfigFile {
   // IntelliJ is wrong, this is required
   import Implicits._
 
-  def loadConfig[F[_]: Async](args: List[String]): F[Config] = {
+  def loadConfig[F[_]: Async: Files](args: List[String]): F[Config] = {
     val logger = docspell.logging.getLogger[F]
     ConfigFactory
       .default[F, Config](logger, "docspell.joex")(args, validate)

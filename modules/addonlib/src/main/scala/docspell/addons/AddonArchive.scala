@@ -19,7 +19,7 @@ final case class AddonArchive(url: LenientUri, name: String, version: String) {
   def nameAndVersion: String =
     s"$name-$version"
 
-  def extractTo[F[_]: Async](
+  def extractTo[F[_]: Async: Files](
       reader: UrlReader[F],
       directory: Path,
       withSubdir: Boolean = true,
@@ -48,7 +48,7 @@ final case class AddonArchive(url: LenientUri, name: String, version: String) {
   /** Read meta either from the given directory or extract the url to find the metadata
     * file to read
     */
-  def readMeta[F[_]: Async](
+  def readMeta[F[_]: Async: Files](
       urlReader: UrlReader[F],
       directory: Option[Path] = None
   ): F[AddonMeta] =
@@ -58,7 +58,7 @@ final case class AddonArchive(url: LenientUri, name: String, version: String) {
 }
 
 object AddonArchive {
-  def read[F[_]: Async](
+  def read[F[_]: Async: Files](
       url: LenientUri,
       urlReader: UrlReader[F],
       extractDir: Option[Path] = None
@@ -69,7 +69,7 @@ object AddonArchive {
       .map(m => addon.copy(name = m.meta.name, version = m.meta.version))
   }
 
-  def dockerAndFlakeExists[F[_]: Async](
+  def dockerAndFlakeExists[F[_]: Async: Files](
       archive: Either[Path, Stream[F, Byte]]
   ): F[(Boolean, Boolean)] = {
     val files = Files[F]

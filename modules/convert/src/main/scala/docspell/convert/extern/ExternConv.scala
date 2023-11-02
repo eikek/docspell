@@ -19,7 +19,7 @@ import docspell.logging.Logger
 
 private[extern] object ExternConv {
 
-  def toPDF[F[_]: Async, A](
+  def toPDF[F[_]: Async: Files, A](
       name: String,
       cmdCfg: SystemCommand.Config,
       wd: Path,
@@ -71,7 +71,7 @@ private[extern] object ExternConv {
           handler.run(ConversionResult.failure(ex))
       }
 
-  def readResult[F[_]: Async](
+  def readResult[F[_]: Async: Files](
       chunkSize: Int,
       logger: Logger[F]
   )(out: Path, result: SystemCommand.Result): F[ConversionResult[F]] =
@@ -99,7 +99,7 @@ private[extern] object ExternConv {
           .pure[F]
     }
 
-  def readResultTesseract[F[_]: Async](
+  def readResultTesseract[F[_]: Async: Files](
       outPrefix: String,
       chunkSize: Int,
       logger: Logger[F]
@@ -127,7 +127,7 @@ private[extern] object ExternConv {
     }
   }
 
-  private def storeDataToFile[F[_]: Async](
+  private def storeDataToFile[F[_]: Async: Files](
       name: String,
       logger: Logger[F],
       inFile: Path
@@ -146,7 +146,7 @@ private[extern] object ExternConv {
     logger.debug(s"$name stdout: ${result.stdout}") *>
       logger.debug(s"$name stderr: ${result.stderr}")
 
-  private def storeFile[F[_]: Async](
+  private def storeFile[F[_]: Async: Files](
       in: Stream[F, Byte],
       target: Path
   ): F[Unit] =

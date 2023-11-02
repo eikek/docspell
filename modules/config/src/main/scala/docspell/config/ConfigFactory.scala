@@ -27,7 +27,10 @@ object ConfigFactory {
     *   1. if no file is found, read the config from environment variables falling back to
     *      the default config
     */
-  def default[F[_]: Async, C: ClassTag: ConfigReader](logger: Logger[F], atPath: String)(
+  def default[F[_]: Async: Files, C: ClassTag: ConfigReader](
+      logger: Logger[F],
+      atPath: String
+  )(
       args: List[String],
       validation: Validation[C]
   ): F[C] =
@@ -74,7 +77,7 @@ object ConfigFactory {
   /** Uses the first argument as a path to the config file. If it is specified but the
     * file doesn't exist, an exception is thrown.
     */
-  private def findFileFromArgs[F[_]: Async](args: List[String]): F[Option[Path]] =
+  private def findFileFromArgs[F[_]: Async: Files](args: List[String]): F[Option[Path]] =
     args.headOption
       .map(Path.apply)
       .traverse(p =>
@@ -89,7 +92,7 @@ object ConfigFactory {
     * to giving the file as argument, it is not an error to specify a non-existing file
     * via a system property.
     */
-  private def checkSystemProperty[F[_]: Async]: OptionT[F, Path] =
+  private def checkSystemProperty[F[_]: Async: Files]: OptionT[F, Path] =
     for {
       cf <- OptionT(
         Sync[F].delay(

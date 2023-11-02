@@ -11,6 +11,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.backend.JobFactory
 import docspell.common._
@@ -35,7 +36,10 @@ import docspell.store.Store
 object MultiUploadArchiveTask {
   type Args = ProcessItemArgs
 
-  def apply[F[_]: Async](store: Store[F], jobStore: JobStore[F]): Task[F, Args, Result] =
+  def apply[F[_]: Async: Files](
+      store: Store[F],
+      jobStore: JobStore[F]
+  ): Task[F, Args, Result] =
     Task { ctx =>
       ctx.args.files
         .traverse { file =>
@@ -104,7 +108,7 @@ object MultiUploadArchiveTask {
       .map(_.mimetype.matches(MimeType.zip))
       .getOrElse(false)
 
-  private def extractZip[F[_]: Async](
+  private def extractZip[F[_]: Async: Files](
       store: Store[F],
       args: Args
   )(file: ProcessItemArgs.File): Stream[F, ProcessItemArgs] =

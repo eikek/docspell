@@ -9,6 +9,7 @@ package docspell.backend.ops
 import cats.data.{EitherT, NonEmptyList, OptionT}
 import cats.effect._
 import cats.syntax.all._
+import fs2.io.file.Files
 
 import docspell.addons.{AddonMeta, AddonTriggerType}
 import docspell.backend.ops.AddonValidationError._
@@ -129,7 +130,7 @@ object OAddons {
     def failure[A](error: AddonValidationError): AddonValidationResult[A] = Left(error)
   }
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: Config.Addons,
       store: Store[F],
       userTasks: UserTaskStore[F],

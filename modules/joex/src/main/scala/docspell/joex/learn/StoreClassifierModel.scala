@@ -18,7 +18,7 @@ import docspell.store.records.RClassifierModel
 
 object StoreClassifierModel {
 
-  def handleModel[F[_]: Async](
+  def handleModel[F[_]: Async: Files](
       store: Store[F],
       logger: Logger[F],
       collective: CollectiveId,

@@ -9,6 +9,7 @@ package docspell.joex.process
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import docspell.addons.AddonTriggerType
 import docspell.analysis.TextAnalyser
@@ -30,7 +31,7 @@ import docspell.store.records.RItem
 object ReProcessItem {
   type Args = ReProcessItemArgs
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: Config,
       fts: FtsClient[F],
       itemOps: OItem[F],
@@ -106,7 +107,7 @@ object ReProcessItem {
       )
     }
 
-  def processFiles[F[_]: Async](
+  def processFiles[F[_]: Async: Files](
       cfg: Config,
       fts: FtsClient[F],
       itemOps: OItem[F],
@@ -162,7 +163,7 @@ object ReProcessItem {
   def isLastRetry[F[_]]: Task[F, Args, Boolean] =
     Task(_.isLastRetry)
 
-  def safeProcess[F[_]: Async](
+  def safeProcess[F[_]: Async: Files](
       cfg: Config,
       fts: FtsClient[F],
       itemOps: OItem[F],

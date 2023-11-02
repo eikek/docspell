@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter
 
 import cats.effect._
 import cats.syntax.all._
+import fs2.io.file.Files
 import fs2.{Pipe, Stream}
 
 import docspell.backend.ops.ODownloadAll
@@ -28,7 +29,7 @@ object DownloadZipTask {
   def onCancel[F[_]]: Task[F, Args, Unit] =
     Task.log(_.warn(s"Cancelling ${DownloadZipArgs.taskName.id} task"))
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       chunkSize: Int,
       store: Store[F],
       downloadOps: ODownloadAll[F]

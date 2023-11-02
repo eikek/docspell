@@ -8,6 +8,7 @@ package docspell.extract.ocr
 
 import cats.effect._
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.common._
 import docspell.extract.internal.Text
@@ -16,7 +17,7 @@ import docspell.logging.Logger
 
 object TextExtract {
 
-  def extract[F[_]: Async](
+  def extract[F[_]: Async: Files](
       in: Stream[F, Byte],
       logger: Logger[F],
       lang: String,
@@ -24,7 +25,7 @@ object TextExtract {
   ): Stream[F, Text] =
     extractOCR(in, logger, lang, config)
 
-  def extractOCR[F[_]: Async](
+  def extractOCR[F[_]: Async: Files](
       in: Stream[F, Byte],
       logger: Logger[F],
       lang: String,

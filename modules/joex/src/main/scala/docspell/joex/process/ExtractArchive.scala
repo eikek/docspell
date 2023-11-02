@@ -14,6 +14,7 @@ import cats.implicits._
 import cats.kernel.Monoid
 import cats.kernel.Order
 import fs2.Stream
+import fs2.io.file.Files
 
 import docspell.common._
 import docspell.common.util.Zip
@@ -35,12 +36,12 @@ import emil.Mail
 object ExtractArchive {
   type Args = ProcessItemArgs
 
-  def apply[F[_]: Async](store: Store[F])(
+  def apply[F[_]: Async: Files](store: Store[F])(
       item: ItemData
   ): Task[F, Args, ItemData] =
     multiPass(store, item, None).map(_._2)
 
-  def multiPass[F[_]: Async](
+  def multiPass[F[_]: Async: Files](
       store: Store[F],
       item: ItemData,
       archive: Option[RAttachmentArchive]
@@ -50,7 +51,7 @@ object ExtractArchive {
       else multiPass(store, t._2, t._1)
     }
 
-  def singlePass[F[_]: Async](
+  def singlePass[F[_]: Async: Files](
       store: Store[F],
       item: ItemData,
       archive: Option[RAttachmentArchive]
@@ -91,7 +92,7 @@ object ExtractArchive {
       .map(_.mimetype)
       .getOrElse(MimeType.octetStream)
 
-  def extractSafe[F[_]: Async](
+  def extractSafe[F[_]: Async: Files](
       ctx: Context[F, Args],
       store: Store[F],
       archive: Option[RAttachmentArchive]
@@ -137,7 +138,7 @@ object ExtractArchive {
         } yield extracted.copy(files = extracted.files.filter(_.id != ra.id))
     }
 
-  def extractZip[F[_]: Async](
+  def extractZip[F[_]: Async: Files](
       ctx: Context[F, Args],
       store: Store[F],
       archive: Option[RAttachmentArchive]

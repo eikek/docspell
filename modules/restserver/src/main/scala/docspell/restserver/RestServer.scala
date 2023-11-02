@@ -12,6 +12,8 @@ import cats.effect._
 import cats.implicits._
 import fs2.Stream
 import fs2.concurrent.Topic
+import fs2.io.file.Files
+import fs2.io.net.Network
 
 import docspell.backend.msg.Topics
 import docspell.backend.ops.ONode
@@ -35,7 +37,7 @@ import org.http4s.server.websocket.WebSocketBuilder2
 
 object RestServer {
 
-  def serve[F[_]: Async](
+  def serve[F[_]: Async: Files: Network](
       cfg: Config,
       pools: Pools
   ): F[ExitCode] =
@@ -55,7 +57,7 @@ object RestServer {
           .flatMap { case (restApp, pubSub, setting) =>
             Stream(
               restApp.subscriptions,
-              restApp.eventConsume(2),
+              restApp.eventConsume(maxConcurrent = 2),
               Stream.resource {
                 if (cfg.serverOptions.enableHttp2)
                   EmberServerBuilder
@@ -81,7 +83,7 @@ object RestServer {
         (server ++ Stream(keepAlive)).parJoinUnbounded.compile.drain.as(ExitCode.Success)
     } yield exit
 
-  def createApp[F[_]: Async](
+  def createApp[F[_]: Async: Files: Network](
       cfg: Config,
       pools: Pools,
       wsTopic: Topic[F, OutputEvent]

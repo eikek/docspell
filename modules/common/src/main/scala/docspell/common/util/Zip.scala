@@ -7,7 +7,7 @@
 package docspell.common.util
 
 import cats.effect._
-import fs2.io.file.Path
+import fs2.io.file.{Files, Path}
 import fs2.{Pipe, Stream}
 
 import docspell.common.Glob
@@ -33,9 +33,9 @@ trait Zip[F[_]] {
 }
 
 object Zip {
-  val defaultChunkSize = 64 * 1024
+  private val defaultChunkSize = 64 * 1024
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       logger: Option[Logger[F]] = None,
       tempDir: Option[Path] = None
   ): Zip[F] =
