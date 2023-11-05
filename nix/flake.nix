@@ -34,7 +34,7 @@
           pname = "docspell-server";
 
           src = fetchzip current_version.server;
-          buildInputs = [ jdk11 ];
+          buildInputs = [ jdk17 ];
           buildPhase = "true";
 
           installPhase = ''
@@ -42,7 +42,7 @@
             cp -R * $out/docspell-restserver-${version}/
             cat > $out/bin/docspell-restserver <<-EOF
             #!${bash}/bin/bash
-            $out/docspell-restserver-${version}/bin/docspell-restserver -java-home ${jdk11} "\$@"
+            $out/docspell-restserver-${version}/bin/docspell-restserver -java-home ${jdk17} "\$@"
             EOF
             chmod 755 $out/bin/docspell-restserver
           '';
@@ -54,7 +54,7 @@
 
           src = fetchzip current_version.joex;
 
-          buildInputs = [ jdk11 ];
+          buildInputs = [ jdk17 ];
 
           buildPhase = "true";
 
@@ -63,7 +63,7 @@
             cp -R * $out/docspell-joex-${version}/
             cat > $out/bin/docspell-joex <<-EOF
             #!${bash}/bin/bash
-            $out/docspell-joex-${version}/bin/docspell-joex -java-home ${jdk11} "\$@"
+            $out/docspell-joex-${version}/bin/docspell-joex -java-home ${jdk17} "\$@"
             EOF
             chmod 755 $out/bin/docspell-joex
           '';

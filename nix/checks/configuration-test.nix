@@ -75,7 +75,7 @@ in
       pkgs.jq
       pkgs.inetutils
       pkgs.htop
-      pkgs.openjdk
+      pkgs.jdk17
     ];
 
 
