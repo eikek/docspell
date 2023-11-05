@@ -12,6 +12,7 @@ import cats.arrow.FunctionK
 import cats.effect.Async
 import cats.implicits._
 import cats.~>
+import fs2.io.file.Files
 
 import docspell.store._
 import docspell.store.file.{FileRepository, FileRepositoryConfig}
@@ -20,7 +21,7 @@ import docspell.store.migrate.FlywayMigrate
 import doobie._
 import doobie.implicits._
 
-final class StoreImpl[F[_]: Async](
+final class StoreImpl[F[_]: Async: Files](
     val fileRepo: FileRepository[F],
     jdbc: JdbcConfig,
     schemaCfg: SchemaMigrateConfig,
