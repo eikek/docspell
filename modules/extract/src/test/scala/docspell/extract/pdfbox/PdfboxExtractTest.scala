@@ -21,16 +21,6 @@ class PdfboxExtractTest extends FunSuite with TestLoggingConfig {
     ExampleFiles.letter_en_pdf -> TestFiles.letterENText
   )
 
-  test("extract text from text PDFs by inputstream") {
-    textPDFs.foreach { case (file, txt) =>
-      val url = file.toJavaUrl.fold(sys.error, identity)
-      val str = PdfboxExtract.getText(url.openStream()).fold(throw _, identity)
-      val received = removeFormatting(str.value)
-      val expect = removeFormatting(txt)
-      assertEquals(received, expect)
-    }
-  }
-
   test("extract text from text PDFs via Stream") {
     textPDFs.foreach { case (file, txt) =>
       val data = file.readURL[IO](8192)
@@ -42,18 +32,18 @@ class PdfboxExtractTest extends FunSuite with TestLoggingConfig {
   }
 
   test("extract text from image PDFs") {
-    val url = ExampleFiles.scanner_pdf13_pdf.toJavaUrl.fold(sys.error, identity)
+    val pdfData = ExampleFiles.scanner_pdf13_pdf.readURL[IO](8192)
 
-    val str = PdfboxExtract.getText(url.openStream()).fold(throw _, identity)
+    val str = PdfboxExtract.getText(pdfData).unsafeRunSync().fold(throw _, identity)
 
     assertEquals(str.value, "")
   }
 
   test("extract metadata from pdf") {
-    val url = ExampleFiles.keywords_pdf.toJavaUrl.fold(sys.error, identity)
-    val str = PdfboxExtract.getText(url.openStream()).fold(throw _, identity)
+    val pdfData = ExampleFiles.keywords_pdf.readURL[IO](8192)
+    val str = PdfboxExtract.getText(pdfData).unsafeRunSync().fold(throw _, identity)
     assert(str.value.startsWith("Keywords in PDF"))
-    val md = PdfboxExtract.getMetaData(url.openStream()).fold(throw _, identity)
+    val md = PdfboxExtract.getMetaData(pdfData).unsafeRunSync().fold(throw _, identity)
     assertEquals(md.author, Some("E.K."))
     assertEquals(md.title, Some("Keywords in PDF"))
     assertEquals(md.subject, Some("This is a subject"))

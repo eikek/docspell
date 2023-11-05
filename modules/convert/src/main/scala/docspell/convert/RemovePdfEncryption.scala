@@ -16,6 +16,7 @@ import docspell.logging.Logger
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException
+import org.apache.pdfbox.{Loader => PdfboxLoader}
 
 /** Using PDFBox, the incoming pdf is loaded while trying the given passwords. */
 object RemovePdfEncryption {
@@ -76,7 +77,7 @@ object RemovePdfEncryption {
   }
 
   private def load(bytes: Array[Byte], pw: Password): Option[PDDocument] =
-    try Option(PDDocument.load(bytes, pw.pass))
+    try Option(PdfboxLoader.loadPDF(bytes, pw.pass))
     catch {
       case _: InvalidPasswordException =>
         None

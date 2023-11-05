@@ -22,8 +22,8 @@ import docspell.common.util.File
 import docspell.convert.ConversionResult.Handler
 import docspell.files.TikaMimetype
 
-import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException
+import org.apache.pdfbox.{Loader => PdfboxLoader}
 
 trait FileChecks {
 
@@ -42,7 +42,7 @@ trait FileChecks {
       isType(MimeType.text("plain"))
 
     def isUnencryptedPDF: Boolean =
-      Try(PDDocument.load(p.toNioPath.toFile)).map(_.close()).isSuccess
+      Try(PdfboxLoader.loadPDF(p.toNioPath.toFile)).map(_.close()).isSuccess
   }
 
   implicit class ByteStreamOps(delegate: Stream[IO, Byte]) {
@@ -58,14 +58,14 @@ trait FileChecks {
     def isUnencryptedPDF: IO[Boolean] =
       delegate.compile
         .to(Array)
-        .map(PDDocument.load(_))
+        .map(PdfboxLoader.loadPDF)
         .map(_.close())
         .map(_ => true)
 
     def isEncryptedPDF: IO[Boolean] =
       delegate.compile
         .to(Array)
-        .map(PDDocument.load(_))
+        .map(PdfboxLoader.loadPDF)
         .attempt
         .map(e =>
           e.fold(

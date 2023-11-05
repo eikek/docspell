@@ -11,11 +11,12 @@ import cats.implicits._
 import fs2.Stream
 
 import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.{Loader => PdfboxLoader}
 
 object PdfLoader {
 
   private def readBytes1[F[_]: Sync](bytes: Array[Byte]): F[PDDocument] =
-    Sync[F].delay(PDDocument.load(bytes))
+    Sync[F].delay(PdfboxLoader.loadPDF(bytes))
 
   private def closePDDocument[F[_]: Sync](pd: PDDocument): F[Unit] =
     Sync[F].delay(pd.close())
