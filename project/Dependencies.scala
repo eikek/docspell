@@ -7,26 +7,26 @@ object Dependencies {
 
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BinnyVersion = "0.9.1"
+  val BinnyVersion = "0.10.0"
   val CalevVersion = "0.7.0"
   val CatsVersion = "2.7.0"
   val CatsEffectVersion = "3.5.2"
   val CatsParseVersion = "0.3.10"
-  val CirceVersion = "0.14.6"
+  val CirceVersion = "0.15.0-M1"
   val CirceGenericExtrasVersion = "0.14.3"
-  val CirceYamlVersion = "0.14.2"
+  val CirceYamlVersion = "0.15.1"
   val ClipboardJsVersion = "2.0.11"
   val DoobieVersion = "1.0.0-RC2"
   val EmilVersion = "0.13.0"
   val FlexmarkVersion = "0.64.8"
-  val FlywayVersion = "9.22.3"
+  val FlywayVersion = "10.0.0"
   val Fs2Version = "3.9.2"
   val H2Version = "2.2.224"
   val Http4sVersion = "0.23.23"
   val Icu4jVersion = "74.1"
   val JavaOtpVersion = "0.4.0"
   val JsoupVersion = "1.16.2"
-  val JwtScalaVersion = "9.2.0"
+  val JwtScalaVersion = "9.4.4"
   val KindProjectorVersion = "0.10.3"
   val KittensVersion = "3.1.0"
   val LevigoJbig2Version = "2.0"
@@ -35,15 +35,14 @@ object Dependencies {
   val MariaDbVersion = "3.2.0"
   val MUnitVersion = "0.7.29"
   val MUnitCatsEffectVersion = "1.0.7"
-  val OrganizeImportsVersion = "0.6.0"
-  val PdfboxVersion = "2.0.29"
+  val PdfboxVersion = "3.0.0"
   val PdfjsViewerVersion = "2.12.313"
   val PoiVersion = "4.1.2"
   val PostgresVersion = "42.6.0"
   val PureConfigVersion = "0.17.4"
   val ScalaJavaTimeVersion = "2.5.0"
   val ScodecBitsVersion = "1.1.38"
-  val ScribeVersion = "3.11.9"
+  val ScribeVersion = "3.12.2"
   val Slf4jVersion = "2.0.9"
   val SourcecodeVersion = "0.3.1"
   val StanfordNlpVersion = "4.5.5"
@@ -312,6 +311,7 @@ object Dependencies {
   // ASL 2.0
   val flyway = Seq(
     "org.flywaydb" % "flyway-core" % FlywayVersion,
+    "org.flywaydb" % "flyway-database-postgresql" % FlywayVersion,
     "org.flywaydb" % "flyway-mysql" % FlywayVersion
   )
 
@@ -342,7 +342,4 @@ object Dependencies {
     "com.ibm.icu" % "icu4j" % Icu4jVersion
   )
 
-  val organizeImports = Seq(
-    "com.github.liancheng" %% "organize-imports" % OrganizeImportsVersion
-  )
 }

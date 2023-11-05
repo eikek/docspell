@@ -12,7 +12,7 @@ import io.circe.syntax._
 import io.circe.{Encoder, Json}
 import perfolation._
 import scribe.LogRecord
-import scribe.data.MDC
+import scribe.mdc.MDC
 import scribe.message.Message
 
 // From: https://github.com/outr/scribe/blob/8e99521e1ee1f0c421629764dd96e4eb193d84bd/json/shared/src/main/scala/scribe/json/JsonWriter.scala

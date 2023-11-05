@@ -23,9 +23,9 @@ It is enough to install the JRE. The JDK is required, if you want to
 build docspell from source. For newer versions, the JRE is not shipped
 anymore, simply use JDK then.
 
-Docspell has been tested with Java 11 (or sometimes referred to as JDK
-11). The provided packages are build using JDK 11. However, it also
-works on newer java versions. The provided docker images use JDK11.
+Docspell has been tested with Java 17 (or sometimes referred to as JDK
+17). The provided packages are build using JDK 17. However, it also
+works on newer java versions. The provided docker images use JDK17.
 
 The next tools are only required on machines running the *Joex*
 component.

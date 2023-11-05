@@ -32,7 +32,7 @@ object SignatureAlgo {
   case object ES256 extends SignatureAlgo
   case object ES384 extends SignatureAlgo
   case object ES512 extends SignatureAlgo
-  case object Ed25519 extends SignatureAlgo
+  case object EdDSA extends SignatureAlgo
 
   case object HMD5 extends SignatureAlgo
   case object HS224 extends SignatureAlgo
@@ -48,7 +48,7 @@ object SignatureAlgo {
       ES256,
       ES384,
       ES512,
-      Ed25519,
+      EdDSA,
       HMD5,
       HS224,
       HS256,
@@ -58,19 +58,19 @@ object SignatureAlgo {
 
   def fromString(str: String): Either[String, SignatureAlgo] =
     str.toUpperCase() match {
-      case "RS256"   => Right(RS256)
-      case "RS384"   => Right(RS384)
-      case "RS512"   => Right(RS512)
-      case "ES256"   => Right(ES256)
-      case "ES384"   => Right(ES384)
-      case "ES512"   => Right(ES512)
-      case "ED25519" => Right(Ed25519)
-      case "HMD5"    => Right(HMD5)
-      case "HS224"   => Right(HS224)
-      case "HS256"   => Right(HS256)
-      case "HS384"   => Right(HS384)
-      case "HS512"   => Right(HS512)
-      case _         => Left(s"Unknown signature algo: $str")
+      case "RS256" => Right(RS256)
+      case "RS384" => Right(RS384)
+      case "RS512" => Right(RS512)
+      case "ES256" => Right(ES256)
+      case "ES384" => Right(ES384)
+      case "ES512" => Right(ES512)
+      case "EDDSA" => Right(EdDSA)
+      case "HMD5"  => Right(HMD5)
+      case "HS224" => Right(HS224)
+      case "HS256" => Right(HS256)
+      case "HS384" => Right(HS384)
+      case "HS512" => Right(HS512)
+      case _       => Left(s"Unknown signature algo: $str")
     }
 
   def unsafeFromString(str: String): SignatureAlgo =
@@ -127,11 +127,11 @@ object SignatureAlgo {
             .toEither
         } yield Jwt.create(decoded)
 
-      case Ed25519 =>
+      case EdDSA =>
         for {
           pubKey <- createPublicKey(sigKey, "EdDSA")
           decoded <- JwtCirce
-            .decodeJsonAll(token, pubKey, Seq(JwtAlgorithm.Ed25519))
+            .decodeJsonAll(token, pubKey, Seq(JwtAlgorithm.EdDSA))
             .toEither
         } yield Jwt.create(decoded)
 

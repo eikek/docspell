@@ -11,6 +11,7 @@ import scala.concurrent.ExecutionContext
 import cats.effect._
 import cats.~>
 import fs2._
+import fs2.io.file.Files
 
 import docspell.store.file.{FileRepository, FileRepositoryConfig}
 import docspell.store.impl.StoreImpl
@@ -42,7 +43,7 @@ trait Store[F[_]] {
 
 object Store {
 
-  def create[F[_]: Async](
+  def create[F[_]: Async: Files](
       jdbc: JdbcConfig,
       schemaCfg: SchemaMigrateConfig,
       fileRepoConfig: FileRepositoryConfig,

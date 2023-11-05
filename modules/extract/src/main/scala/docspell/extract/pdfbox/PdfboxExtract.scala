@@ -6,8 +6,6 @@
 
 package docspell.extract.pdfbox
 
-import java.io.InputStream
-
 import scala.util.{Try, Using}
 
 import cats.effect.Sync
@@ -20,6 +18,7 @@ import docspell.extract.internal.Text
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
+import org.apache.pdfbox.{Loader => PdfboxLoader}
 
 object PdfboxExtract {
 
@@ -44,11 +43,8 @@ object PdfboxExtract {
       .attempt
       .map(_.flatten)
 
-  def getText(is: InputStream): Either[Throwable, Text] =
-    Using(PDDocument.load(is))(readText).toEither.flatten
-
   def getText(inFile: Path): Either[Throwable, Text] =
-    Using(PDDocument.load(inFile.toNioPath.toFile))(readText).toEither.flatten
+    Using(PdfboxLoader.loadPDF(inFile.toNioPath.toFile))(readText).toEither.flatten
 
   private def readText(doc: PDDocument): Either[Throwable, Text] =
     Try {
@@ -64,11 +60,8 @@ object PdfboxExtract {
       .attempt
       .map(_.flatten)
 
-  def getMetaData(is: InputStream): Either[Throwable, PdfMetaData] =
-    Using(PDDocument.load(is))(readMetaData).toEither.flatten
-
   def getMetaData(inFile: Path): Either[Throwable, PdfMetaData] =
-    Using(PDDocument.load(inFile.toNioPath.toFile))(readMetaData).toEither.flatten
+    Using(PdfboxLoader.loadPDF(inFile.toNioPath.toFile))(readMetaData).toEither.flatten
 
   private def readMetaData(doc: PDDocument): Either[Throwable, PdfMetaData] =
     Try {
@@ -83,7 +76,7 @@ object PdfboxExtract {
         mkValue(info.getKeywords),
         mkValue(info.getCreator),
         Option(info.getCreationDate).map(c => Timestamp(c.toInstant)),
-        doc.getNumberOfPages()
+        doc.getNumberOfPages
       )
     }.toEither
 }

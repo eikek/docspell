@@ -10,6 +10,7 @@ import javax.sql.DataSource
 
 import cats.effect._
 import fs2._
+import fs2.io.file.Files
 
 import docspell.common._
 
@@ -34,7 +35,7 @@ trait FileRepository[F[_]] {
 
 object FileRepository {
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       xa: Transactor[F],
       ds: DataSource,
       cfg: FileRepositoryConfig,

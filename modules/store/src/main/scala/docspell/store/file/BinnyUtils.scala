@@ -9,7 +9,7 @@ package docspell.store.file
 import javax.sql.DataSource
 
 import cats.effect._
-import fs2.io.file.Path
+import fs2.io.file.{Files, Path}
 
 import docspell.common._
 import docspell.files.TikaMimetype
@@ -97,7 +97,7 @@ object BinnyUtils {
     PathMapping(toPath)(toId)
   }
 
-  def binaryStore[F[_]: Async](
+  def binaryStore[F[_]: Async: Files](
       cfg: FileRepositoryConfig,
       ds: DataSource,
       logger: Logger[F]
