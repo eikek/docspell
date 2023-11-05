@@ -19,7 +19,7 @@ import docspell.common.syntax.file._
 import docspell.common.util.Zip
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.yaml.{parser => YamlParser}
+import io.circe.yaml.{Parser => YamlParser}
 import io.circe.{Decoder, Encoder}
 import io.circe.{parser => JsonParser}
 
@@ -161,7 +161,7 @@ object AddonMeta {
       .rethrow
 
   def fromYamlString(str: String): Either[Throwable, AddonMeta] =
-    YamlParser.parse(str).flatMap(_.as[AddonMeta])
+    YamlParser.default.parse(str).flatMap(_.as[AddonMeta])
 
   def fromYamlBytes[F[_]: Sync](bytes: Stream[F, Byte]): F[AddonMeta] =
     bytes
@@ -171,12 +171,16 @@ object AddonMeta {
       .map(fromYamlString)
       .rethrow
 
-  def fromYamlFile[F[_]: Sync](file: Path): F[AddonMeta] =
-    Sync[F]
-      .blocking(YamlParser.parse(java.nio.file.Files.newBufferedReader(file.toNioPath)))
+  def fromYamlFile[F[_]: Sync](file: Path): F[AddonMeta] = {
+    val reader: F[java.io.Reader] =
+      Sync[F].blocking(java.nio.file.Files.newBufferedReader(file.toNioPath))
+    reader
+      .flatMap(r =>
+        Sync[F]
+          .blocking(YamlParser.default.decode[AddonMeta](r))
+      )
       .rethrow
-      .map(_.as[AddonMeta])
-      .rethrow
+  }
 
   def findInDirectory[F[_]: Sync: Files](dir: Path): F[AddonMeta] = {
     val logger = docspell.logging.getLogger[F]
