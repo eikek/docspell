@@ -8,7 +8,7 @@ package docspell.store.qb
 
 import cats.data.{NonEmptyList => Nel}
 
-import docspell.store.impl.DoobieMeta
+import docspell.store.impl.{DoobieLogging, DoobieMeta}
 import docspell.store.qb.impl._
 
 import doobie._
@@ -34,7 +34,9 @@ object DML extends DoobieMeta {
       cols: Nel[Column[_]],
       values: Fragment
   ): ConnectionIO[Int] =
-    insertFragment(table, cols, List(values)).update(LogHandler.nop).run
+    insertFragment(table, cols, List(values))
+      .updateWithLabel(DoobieLogging.LogLabel.Silent.name)
+      .run
 
   def insertMany(
       table: TableDef,

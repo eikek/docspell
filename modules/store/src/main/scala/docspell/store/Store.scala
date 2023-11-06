@@ -14,7 +14,7 @@ import fs2._
 import fs2.io.file.Files
 
 import docspell.store.file.{FileRepository, FileRepositoryConfig}
-import docspell.store.impl.StoreImpl
+import docspell.store.impl.{DoobieLogging, StoreImpl}
 
 import com.zaxxer.hikari.HikariDataSource
 import doobie._
@@ -60,8 +60,9 @@ object Store {
         ds.setPassword(jdbc.password)
         ds.setDriverClassName(jdbc.dbms.driverClass)
       }
-      xa = HikariTransactor(ds, connectEC)
-      fr = FileRepository(xa, ds, fileRepoConfig, true)
+      logh = DoobieLogging[F](docspell.logging.getLogger[F])
+      xa = HikariTransactor[F](ds, connectEC, Some(logh))
+      fr = FileRepository(xa, ds, fileRepoConfig, withAttributeStore = true)
       st = new StoreImpl[F](fr, jdbc, schemaCfg, ds, xa)
       _ <- Resource.eval(st.migrate)
     } yield st

@@ -22,20 +22,11 @@ import binny.BinaryId
 import com.github.eikek.calev.CalEvent
 import doobie._
 import doobie.implicits.legacy.instant._
-import doobie.util.log.Success
 import emil.doobie.EmilDoobieMeta
-import io.circe.Json
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, Json}
 import scodec.bits.ByteVector
 
 trait DoobieMeta extends EmilDoobieMeta {
-
-  implicit val sqlLogging: LogHandler = LogHandler {
-    case e @ Success(_, _, _, _) =>
-      DoobieMeta.logger.trace(s"SQL: $e")
-    case e =>
-      DoobieMeta.logger.warn(s"SQL Failure: $e")
-  }
 
   def jsonMeta[A](implicit d: Decoder[A], e: Encoder[A]): Meta[A] =
     Meta[String].imap(str => str.parseJsonAs[A].fold(ex => throw ex, identity))(a =>
@@ -180,12 +171,9 @@ trait DoobieMeta extends EmilDoobieMeta {
 }
 
 object DoobieMeta extends DoobieMeta {
-  import org.log4s._
-  private val logger = getLogger
 
   private def parseJsonUnsafe(str: String): Json =
     io.circe.parser
       .parse(str)
       .fold(throw _, identity)
-
 }
