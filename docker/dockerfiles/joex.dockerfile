@@ -53,8 +53,6 @@ RUN apk update && \
     qpdf-dev \
     openssl-dev \
     ocrmypdf \
-  && pip3 install --upgrade pip \
-  && pip3 install ocrmypdf \
   && curl -Ls $UNO_URL -o /usr/local/bin/unoconv \
   && chmod +x /usr/local/bin/unoconv \
   && apk del libxml2-dev libxslt-dev zlib-dev g++ python3-dev py3-pip libffi-dev qpdf-dev openssl-dev \
