@@ -15,6 +15,7 @@ import fs2.Stream
 import docspell.common._
 import docspell.ftsclient._
 import docspell.logging.Logger
+import docspell.store.impl.DoobieLogging
 
 import com.zaxxer.hikari.HikariDataSource
 import doobie._
@@ -157,7 +158,8 @@ object PsqlFtsClient {
         ds.setPassword(cfg.password.pass)
         ds.setDriverClassName("org.postgresql.Driver")
       }
-      xa = HikariTransactor[F](ds, connectEC)
+      logh = DoobieLogging[F](docspell.logging.getLogger[F])
+      xa = HikariTransactor[F](ds, connectEC, Some(logh))
 
       pc = new PsqlFtsClient[F](cfg, xa)
     } yield pc
