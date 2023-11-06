@@ -58,24 +58,16 @@ object RestServer {
             Stream(
               restApp.subscriptions,
               restApp.eventConsume(maxConcurrent = 2),
-              Stream.resource {
-                if (cfg.serverOptions.enableHttp2)
-                  EmberServerBuilder
-                    .default[F]
-                    .withHost(cfg.bind.address)
-                    .withPort(cfg.bind.port)
-                    .withMaxConnections(cfg.serverOptions.maxConnections)
-                    .withHttpWebSocketApp(createHttpApp(setting, pubSub, restApp))
-                    .withHttp2
-                    .build
-                else
-                  EmberServerBuilder
-                    .default[F]
-                    .withHost(cfg.bind.address)
-                    .withPort(cfg.bind.port)
-                    .withMaxConnections(cfg.serverOptions.maxConnections)
-                    .withHttpWebSocketApp(createHttpApp(setting, pubSub, restApp))
-                    .build
+              Stream.eval {
+                EmberServerBuilder
+                  .default[F]
+                  .withHost(cfg.bind.address)
+                  .withPort(cfg.bind.port)
+                  .withMaxConnections(cfg.serverOptions.maxConnections)
+                  .withHttpWebSocketApp(createHttpApp(setting, pubSub, restApp))
+                  .toggleHttp2(cfg.serverOptions.enableHttp2)
+                  .build
+                  .useForever
               }
             )
           }
@@ -163,5 +155,10 @@ object RestServer {
         headers = Headers(Location(Uri(path = Uri.Path.unsafeFromString(path))))
       ).pure[F]
     }
+  }
+
+  implicit final class EmberServerBuilderExt[F[_]](self: EmberServerBuilder[F]) {
+    def toggleHttp2(flag: Boolean) =
+      if (flag) self.withHttp2 else self.withoutHttp2
   }
 }
