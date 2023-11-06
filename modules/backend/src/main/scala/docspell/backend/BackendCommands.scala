@@ -121,6 +121,12 @@ private[backend] class BackendCommands[F[_]: Sync](
       case ItemAction.SetName(name) =>
         logger.debug(s"Set name '$name' on item ${item.id} for $collective") *>
           itemOps.setName(item, name, collective).void
+
+      case ItemAction.SetDate(date) =>
+        logger.debug(s"Set date $date on item ${item.id} for $collective") *>
+          itemOps
+            .setItemDate(Nel.of(item), date.some, collective)
+            .void
     }
 
   def runAttachAction(
