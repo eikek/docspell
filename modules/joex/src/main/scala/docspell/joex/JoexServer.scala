@@ -14,6 +14,7 @@ import fs2.io.net.Network
 
 import docspell.backend.msg.Topics
 import docspell.common.Pools
+import docspell.common.util.ResourceUse.Implicits._
 import docspell.joex.routes._
 import docspell.pubsub.naive.NaivePubSub
 import docspell.store.Store
@@ -74,15 +75,14 @@ object JoexServer {
 
     Stream
       .resource(app)
-      .flatMap { app =>
-        Stream.resource {
-          EmberServerBuilder
-            .default[F]
-            .withHost(cfg.bind.address)
-            .withPort(cfg.bind.port)
-            .withHttpApp(app.httpApp)
-            .build
-        }
+      .evalMap { app =>
+        EmberServerBuilder
+          .default[F]
+          .withHost(cfg.bind.address)
+          .withPort(cfg.bind.port)
+          .withHttpApp(app.httpApp)
+          .build
+          .useUntil(app.termSig, app.exitRef)
       }
   }.drain
 }
