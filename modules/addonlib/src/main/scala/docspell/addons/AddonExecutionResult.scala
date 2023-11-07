@@ -20,7 +20,7 @@ case class AddonExecutionResult(
 
 object AddonExecutionResult {
   val empty: AddonExecutionResult =
-    AddonExecutionResult(Nil, false)
+    AddonExecutionResult(Nil, pure = true)
 
   def combine(a: AddonExecutionResult, b: AddonExecutionResult): AddonExecutionResult =
     AddonExecutionResult(
