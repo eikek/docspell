@@ -136,4 +136,15 @@ class AddonExecutorTest extends CatsEffectSuite with Fixtures with TestLoggingCo
       assertEquals(res.addonResults(1), AddonResult.success(testOut2))
     }
   }
+
+  test("AddonExecutionResult's monoid") {
+    assert(
+      AddonExecutionResult.executionResultMonoid
+        .combine(
+          AddonExecutionResult.empty,
+          AddonExecutionResult(Nil, true)
+        )
+        .pure
+    )
+  }
 }
