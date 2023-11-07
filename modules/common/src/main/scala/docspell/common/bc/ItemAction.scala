@@ -6,7 +6,7 @@
 
 package docspell.common.bc
 
-import docspell.common.Ident
+import docspell.common.{Ident, Timestamp}
 
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto.{deriveConfiguredDecoder, deriveConfiguredEncoder}
@@ -99,4 +99,10 @@ object ItemAction {
 
   implicit val jsonDecoder: Decoder[ItemAction] = deriveConfiguredDecoder
   implicit val jsonEncoder: Encoder[ItemAction] = deriveConfiguredEncoder
+
+  case class SetDate(date: Timestamp) extends ItemAction
+  object SetDate {
+    implicit val jsonDecoder: Decoder[SetDate] = deriveDecoder
+    implicit val jsonEncoder: Encoder[SetDate] = deriveEncoder
+  }
 }
