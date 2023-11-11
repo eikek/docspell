@@ -15,7 +15,7 @@ object AddonOutputExample extends Helper {
       BackendCommand.ItemUpdate(
         itemId = id("XabZ-item-id"),
         actions = List(
-          ItemAction.SetDate(1699632496000),
+          ItemAction.SetDate(1699632496000L),
           ItemAction.AddTags(Set("tag1", "tag2")),
           ItemAction.ReplaceTags(Set("tagX", "tagY")),
           ItemAction.RemoveTags(Set("tag0", "tag9")),
