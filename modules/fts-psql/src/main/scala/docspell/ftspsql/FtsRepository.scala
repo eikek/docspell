@@ -32,9 +32,9 @@ object FtsRepository extends DoobieMeta {
     val query = mkQueryPart(pq, q)
 
     fr"""select count(id), coalesce(max($selectRank), 0)
-         |from $table, $query
-         |where ${mkCondition(q)} AND query @@ text_index 
-         |""".stripMargin
+        |from $table, $query
+        |where ${mkCondition(q)} AND query @@ text_index 
+        |""".stripMargin
       .query[SearchSummary]
       .unique
   }
@@ -65,12 +65,12 @@ object FtsRepository extends DoobieMeta {
 
     val sqlFrag =
       fr"""select $select 
-           |from $table, $query
-           |where ${mkCondition(q)} AND query @@ text_index 
-           |order by rank desc
-           |limit ${q.limit}
-           |offset ${q.offset}
-           |""".stripMargin
+          |from $table, $query
+          |where ${mkCondition(q)} AND query @@ text_index 
+          |order by rank desc
+          |limit ${q.limit}
+          |offset ${q.offset}
+          |""".stripMargin
 
     logger.asUnsafe.trace(s"PSQL Fulltext query: $sqlFrag")
     sqlFrag.query[SearchResult].to[Vector]
