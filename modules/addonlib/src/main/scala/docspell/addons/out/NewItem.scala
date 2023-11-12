@@ -15,7 +15,7 @@ import docspell.common._
 import docspell.logging.Logger
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
+import io.circe.{Decoder, Encoder, Json}
 
 case class NewItem(metadata: Option[Meta], files: List[String]) {
 
@@ -25,7 +25,7 @@ case class NewItem(metadata: Option[Meta], files: List[String]) {
       sourceAbbrev: String
   ): ProcessItemArgs.ProcessMeta =
     metadata
-      .getOrElse(Meta(None, None, None, None, None, None, None))
+      .getOrElse(Meta.empty)
       .toProcessArgs(cid, collLang, sourceAbbrev)
 
   def resolveFiles[F[_]: Files: Monad](
@@ -58,7 +58,8 @@ object NewItem {
       source: Option[String],
       skipDuplicate: Option[Boolean],
       tags: Option[List[String]],
-      attachmentsOnly: Option[Boolean]
+      attachmentsOnly: Option[Boolean],
+      customData: Option[Json]
   ) {
 
     def toProcessArgs(
@@ -78,11 +79,14 @@ object NewItem {
         fileFilter = None,
         tags = tags,
         reprocess = false,
-        attachmentsOnly = attachmentsOnly
+        attachmentsOnly = attachmentsOnly,
+        customData = customData
       )
   }
 
   object Meta {
+    val empty: Meta = Meta(None, None, None, None, None, None, None, None)
+
     implicit val jsonEncoder: Encoder[Meta] = deriveEncoder
     implicit val jsonDecoder: Decoder[Meta] = deriveDecoder
   }

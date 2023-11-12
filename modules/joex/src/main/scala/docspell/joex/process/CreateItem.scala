@@ -112,7 +112,8 @@ object CreateItem {
         MetaProposalList.empty,
         Nil,
         MetaProposalList.empty,
-        Nil
+        Nil,
+        ctx.args.meta.customData
       )
     }
 
@@ -175,7 +176,8 @@ object CreateItem {
           MetaProposalList.empty,
           Nil,
           MetaProposalList.empty,
-          Nil
+          Nil,
+          ctx.args.meta.customData
         )
       )
     }

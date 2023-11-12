@@ -15,10 +15,10 @@ import docspell.common.ProcessItemArgs.ProcessMeta
 import docspell.common.{CollectiveId, Ident, Language}
 import docspell.logging.Logger
 
-import io.circe.Codec
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto.deriveConfiguredCodec
 import io.circe.generic.semiauto.deriveCodec
+import io.circe.{Codec, Json}
 
 case class NewFile(metadata: Meta = Meta.empty, file: String) {
 
@@ -41,7 +41,8 @@ object NewFile {
   case class Meta(
       language: Option[Language],
       skipDuplicate: Option[Boolean],
-      attachmentsOnly: Option[Boolean]
+      attachmentsOnly: Option[Boolean],
+      customData: Option[Json]
   ) {
 
     def toProcessMeta(
@@ -62,12 +63,13 @@ object NewFile {
         fileFilter = None,
         tags = None,
         reprocess = false,
-        attachmentsOnly = attachmentsOnly
+        attachmentsOnly = attachmentsOnly,
+        customData = customData
       )
   }
 
   object Meta {
-    val empty = Meta(None, None, None)
+    val empty = Meta(None, None, None, None)
     implicit val jsonCodec: Codec[Meta] = deriveCodec
   }
 

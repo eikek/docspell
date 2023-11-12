@@ -101,7 +101,8 @@ object ReProcessItem {
         MetaProposalList.empty,
         Nil,
         MetaProposalList.empty,
-        Nil
+        Nil,
+        None // cannot retain customData from an already existing item
       )).getOrElseF(
         Sync[F].raiseError(new Exception(s"Item not found: ${ctx.args.itemId.id}"))
       )
@@ -134,7 +135,8 @@ object ReProcessItem {
               None,
               None,
               true,
-              None // attachOnly (not used when reprocessing attachments)
+              None, // attachOnly (not used when reprocessing attachments)
+              None // cannot retain customData from an already existing item
             ),
             Nil
           ).pure[F]
