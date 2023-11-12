@@ -20,21 +20,20 @@ object ResourceUse {
   object Implicits {
     implicit final class UseSyntax[F[_]: Concurrent, A](resource: Resource[F, A]) {
 
-      /** Evaluates `resource` endlessly or until the signal turns `true`. */
-      def useUntil(
+      def useWhile(
           signal: Signal[F, Boolean],
           returnValue: Ref[F, ExitCode]
-      ): F[ExitCode] = {
+      ): Stream[F, ExitCode] = {
         val server = Stream.resource(resource)
         val blockUntilTrue = signal.discrete.takeWhile(_ == false).drain
-        val exit = fs2.Stream.eval(returnValue.get)
-        (server *> (blockUntilTrue ++ exit)).compile.lastOrError
+        val exit = Stream.eval(returnValue.get)
+        server *> (blockUntilTrue ++ exit)
       }
 
-      def useForever(implicit ev: Async[F]): F[ExitCode] = for {
-        termSignal <- SignallingRef.of[F, Boolean](false)
-        exitValue <- Ref.of(ExitCode.Success)
-        rc <- useUntil(termSignal, exitValue)
+      def useForever(implicit ev: Async[F]): Stream[F, ExitCode] = for {
+        termSignal <- Stream.eval(SignallingRef.of[F, Boolean](false))
+        exitValue <- Stream.eval(Ref.of(ExitCode.Success))
+        rc <- useWhile(termSignal, exitValue)
       } yield rc
     }
   }
