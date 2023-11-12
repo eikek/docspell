@@ -91,7 +91,7 @@ are presented above. The available storage types are
 
 If you use the docker setup, you can find the corresponding
 environment variables to the above config snippet
-[below](#environment-variables).
+[here](@/docs/configure/defaults.md#environment-variables).
 
 ### Change Backends
 
@@ -100,7 +100,7 @@ doing this, please make sure that the application is not used. It is
 important that no file is uploaded during the following steps.
 
 The [cli](@/docs/tools/cli.md) will be used, please set it up first
-and you need to enable the [admin endpoint](#admin-endpoint). Config
+and you need to enable the [admin endpoint](@admin-endpoint.md). Config
 changes mentioned here must be applied to all nodes - joex and
 restserver!
 
