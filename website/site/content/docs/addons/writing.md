@@ -162,8 +162,8 @@ You find the complete structure below. It consists of these parts:
 - `newItems`: declares files relative to `OUTPUT_DIR` that should be
   processed as new uploads
 
-The `commands` allows to set tags, fields and other things. All parts
-are optional, you don't need to return the complete structure. Just
+The `commands` allows to set the item date, tags, fields and other things. All
+parts are optional, you don't need to return the complete structure. Just
 returning `commands` or only `files` is ok.
 
 **Example**

@@ -5,6 +5,7 @@ import docspell.addons.out.{AddonOutput, ItemFile, NewFile, NewItem}
 import docspell.addons.out.NewFile.{Meta => FileMeta}
 import docspell.addons.out.NewItem.{Meta => ItemMeta}
 import docspell.common._
+import docspell.common.Timestamp
 import docspell.common.bc.{AttachmentAction, BackendCommand, ItemAction}
 import io.circe.syntax._
 
@@ -15,6 +16,7 @@ object AddonOutputExample extends Helper {
       BackendCommand.ItemUpdate(
         itemId = id("XabZ-item-id"),
         actions = List(
+          ItemAction.SetDate(Timestamp.ofMillis(1699697471000L)),
           ItemAction.AddTags(Set("tag1", "tag2")),
           ItemAction.ReplaceTags(Set("tagX", "tagY")),
           ItemAction.RemoveTags(Set("tag0", "tag9")),
