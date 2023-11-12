@@ -20,7 +20,7 @@ object FtsRepository extends DoobieMeta {
   val table = fr"ftspsql_search"
 
   def containsData: ConnectionIO[Boolean] =
-    sql"select id from $table limit 1".query[String].option.map(_.isDefined)
+    fr"select id from $table limit 1".query[String].option.map(_.isDefined)
 
   def containsNoData: ConnectionIO[Boolean] =
     containsData.map(!_)
@@ -31,10 +31,10 @@ object FtsRepository extends DoobieMeta {
     val selectRank = mkSelectRank(rn)
     val query = mkQueryPart(pq, q)
 
-    sql"""select count(id), coalesce(max($selectRank), 0)
-         |from $table, $query
-         |where ${mkCondition(q)} AND query @@ text_index 
-         |""".stripMargin
+    fr"""select count(id), coalesce(max($selectRank), 0)
+        |from $table, $query
+        |where ${mkCondition(q)} AND query @@ text_index 
+        |""".stripMargin
       .query[SearchSummary]
       .unique
   }
@@ -64,13 +64,13 @@ object FtsRepository extends DoobieMeta {
     val query = mkQueryPart(pq, q)
 
     val sqlFrag =
-      sql"""select $select 
-           |from $table, $query
-           |where ${mkCondition(q)} AND query @@ text_index 
-           |order by rank desc
-           |limit ${q.limit}
-           |offset ${q.offset}
-           |""".stripMargin
+      fr"""select $select 
+          |from $table, $query
+          |where ${mkCondition(q)} AND query @@ text_index 
+          |order by rank desc
+          |limit ${q.limit}
+          |offset ${q.offset}
+          |""".stripMargin
 
     logger.asUnsafe.trace(s"PSQL Fulltext query: $sqlFrag")
     sqlFrag.query[SearchResult].to[Vector]
@@ -99,7 +99,7 @@ object FtsRepository extends DoobieMeta {
   }
 
   private def mkSelectRank(rn: RankNormalization): Fragment = {
-    val bits = rn.value.toNonEmptyList.map(n => sql"$n").reduceLeft(_ ++ sql"|" ++ _)
+    val bits = rn.value.toNonEmptyList.map(n => fr"$n").reduceLeft(_ ++ sql"|" ++ _)
     fr"ts_rank_cd(text_index, query, $bits)"
   }
 
@@ -111,36 +111,36 @@ object FtsRepository extends DoobieMeta {
   )(r: FtsRecord): ConnectionIO[Int] =
     (fr"INSERT INTO $table (id,item_id,collective,lang,attach_id,folder_id,attach_name,attach_content,item_name,item_notes,fts_config) VALUES (" ++
       commas(
-        sql"${r.id}",
-        sql"${r.itemId}",
-        sql"${r.collective}",
-        sql"${r.language}",
-        sql"${r.attachId}",
-        sql"${r.folderId}",
-        sql"${r.attachName}",
-        sql"${r.attachContent}",
-        sql"${r.itemName}",
-        sql"${r.itemNotes}",
-        sql"${pgConfig(r.language)}::regconfig"
-      ) ++ sql") on conflict (id) do update set " ++ commas(
-        sql"lang = ${r.language}",
-        sql"folder_id = ${r.folderId}",
-        sql"attach_name = ${r.attachName}",
-        sql"attach_content = ${r.attachContent}",
-        sql"item_name = ${r.itemName}",
-        sql"item_notes = ${r.itemNotes}",
-        sql"fts_config = ${pgConfig(r.language)}::regconfig"
+        fr"${r.id}",
+        fr"${r.itemId}",
+        fr"${r.collective}",
+        fr"${r.language}",
+        fr"${r.attachId}",
+        fr"${r.folderId}",
+        fr"${r.attachName}",
+        fr"${r.attachContent}",
+        fr"${r.itemName}",
+        fr"${r.itemNotes}",
+        fr"${pgConfig(r.language)}::regconfig"
+      ) ++ fr") on conflict (id) do update set " ++ commas(
+        fr"lang = ${r.language}",
+        fr"folder_id = ${r.folderId}",
+        fr"attach_name = ${r.attachName}",
+        fr"attach_content = ${r.attachContent}",
+        fr"item_name = ${r.itemName}",
+        fr"item_notes = ${r.itemNotes}",
+        fr"fts_config = ${pgConfig(r.language)}::regconfig"
       )).update.run
 
   def update(pgConfig: Language => String)(r: FtsRecord): ConnectionIO[Int] =
     (fr"UPDATE $table SET" ++ commas(
-      sql"lang = ${r.language}",
-      sql"folder_id = ${r.folderId}",
-      sql"attach_name = ${r.attachName}",
-      sql"attach_content = ${r.attachContent}",
-      sql"item_name = ${r.itemName}",
-      sql"item_notes = ${r.itemNotes}",
-      sql"fts_config = ${pgConfig(r.language)}::regconfig"
+      fr"lang = ${r.language}",
+      fr"folder_id = ${r.folderId}",
+      fr"attach_name = ${r.attachName}",
+      fr"attach_content = ${r.attachContent}",
+      fr"item_name = ${r.itemName}",
+      fr"item_notes = ${r.itemNotes}",
+      fr"fts_config = ${pgConfig(r.language)}::regconfig"
     ) ++ fr"WHERE id = ${r.id}").update.run
 
   def updateChunk(pgConfig: Language => String)(r: Chunk[FtsRecord]): ConnectionIO[Int] =
@@ -151,25 +151,25 @@ object FtsRepository extends DoobieMeta {
       collective: CollectiveId,
       folder: Option[Ident]
   ): ConnectionIO[Int] =
-    (sql"UPDATE $table" ++
+    (fr"UPDATE $table" ++
       fr"SET folder_id = $folder" ++
       fr"WHERE item_id = $itemId AND collective = $collective").update.run
 
   def deleteByItemId(itemId: Ident): ConnectionIO[Int] =
-    sql"DELETE FROM $table WHERE item_id = $itemId".update.run
+    fr"DELETE FROM $table WHERE item_id = $itemId".update.run
 
   def deleteByAttachId(attachId: Ident): ConnectionIO[Int] =
-    sql"DELETE FROM $table WHERE attach_id = $attachId".update.run
+    fr"DELETE FROM $table WHERE attach_id = $attachId".update.run
 
   def deleteAll: ConnectionIO[Int] =
-    sql"DELETE FROM $table".update.run
+    fr"DELETE FROM $table".update.run
 
   def delete(collective: CollectiveId): ConnectionIO[Int] =
-    sql"DELETE FROM $table WHERE collective = $collective".update.run
+    fr"DELETE FROM $table WHERE collective = $collective".update.run
 
   def resetAll: ConnectionIO[Int] = {
-    val dropFlyway = sql"DROP TABLE IF EXISTS flyway_fts_history".update.run
-    val dropSearch = sql"DROP TABLE IF EXISTS $table".update.run
+    val dropFlyway = fr"DROP TABLE IF EXISTS flyway_fts_history".update.run
+    val dropSearch = fr"DROP TABLE IF EXISTS $table".update.run
     for {
       a <- dropFlyway
       b <- dropSearch
