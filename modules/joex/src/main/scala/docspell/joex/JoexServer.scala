@@ -75,14 +75,14 @@ object JoexServer {
 
     Stream
       .resource(app)
-      .evalMap { app =>
+      .flatMap { app =>
         EmberServerBuilder
           .default[F]
           .withHost(cfg.bind.address)
           .withPort(cfg.bind.port)
           .withHttpApp(app.httpApp)
           .build
-          .useUntil(app.termSig, app.exitRef)
+          .useWhile(app.termSig, app.exitRef)
       }
   }.drain
 }

@@ -12,8 +12,8 @@ import java.nio.charset.StandardCharsets
 import cats.data.OptionT
 import cats.effect._
 import cats.syntax.all._
+import fs2._
 import fs2.io.file.{Files, Path}
-import fs2.{Chunk, Pipe, Stream}
 
 import docspell.logging.Logger
 
@@ -64,11 +64,11 @@ object Binary {
   def html[F[_]](name: String, content: ByteVector, cs: Charset): Binary[F] =
     Binary(name, MimeType.html.withCharset(cs), Stream.chunk(Chunk.byteVector(content)))
 
-  def decode[F[_]](cs: Charset): Pipe[F, Byte, String] =
+  def decode[F[_]: RaiseThrowable](cs: Charset): Pipe[F, Byte, String] =
     if (cs == StandardCharsets.UTF_8)
       fs2.text.utf8.decode
     else
-      util.decode[F](cs)
+      fs2.text.decodeWithCharset(cs)
 
   def loadAllBytes[F[_]: Sync](data: Stream[F, Byte]): F[ByteVector] =
     data.chunks.map(_.toByteVector).compile.fold(ByteVector.empty)((r, e) => r ++ e)
@@ -104,49 +104,4 @@ object Binary {
         }
         .drain
         .as(targetDir)
-
-  // This is a copy from org.http4s.util
-  // Http4s is licensed under the Apache License 2.0
-  private object util {
-    import fs2._
-    import java.nio._
-
-    private val utf8Bom: Chunk[Byte] = Chunk(0xef.toByte, 0xbb.toByte, 0xbf.toByte)
-
-    def decode[F[_]](charset: Charset): Pipe[F, Byte, String] = {
-      val decoder = charset.newDecoder
-      val maxCharsPerByte = math.ceil(decoder.maxCharsPerByte().toDouble).toInt
-      val avgBytesPerChar = math.ceil(1.0 / decoder.averageCharsPerByte().toDouble).toInt
-      val charBufferSize = 128
-
-      _.repeatPull[String] {
-        _.unconsN(charBufferSize * avgBytesPerChar, allowFewer = true).flatMap {
-          case None =>
-            val charBuffer = CharBuffer.allocate(1)
-            decoder.decode(ByteBuffer.allocate(0), charBuffer, true)
-            decoder.flush(charBuffer)
-            val outputString = charBuffer.flip().toString
-            if (outputString.isEmpty) Pull.done.as(None)
-            else Pull.output1(outputString).as(None)
-          case Some((chunk, stream)) =>
-            if (chunk.nonEmpty) {
-              val chunkWithoutBom = skipByteOrderMark(chunk)
-              val bytes = chunkWithoutBom.toArray
-              val byteBuffer = ByteBuffer.wrap(bytes)
-              val charBuffer = CharBuffer.allocate(bytes.length * maxCharsPerByte)
-              decoder.decode(byteBuffer, charBuffer, false)
-              val nextStream = stream.consChunk(Chunk.byteBuffer(byteBuffer.slice()))
-              Pull.output1(charBuffer.flip().toString).as(Some(nextStream))
-            } else
-              Pull.output(Chunk.empty[String]).as(Some(stream))
-        }
-      }
-    }
-
-    private def skipByteOrderMark[F[_]](chunk: Chunk[Byte]): Chunk[Byte] =
-      if (chunk.size >= 3 && chunk.take(3) == utf8Bom)
-        chunk.drop(3)
-      else chunk
-
-  }
 }

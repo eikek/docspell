@@ -52,7 +52,7 @@ object Markdown {
       cfg: MarkdownConfig,
       cs: Charset
   ): F[String] =
-    data.through(Binary.decode(cs)).compile.foldMonoid.map(str => toHtml(str, cfg))
+    data.through(Binary.decode(cs)).compile.string.map(str => toHtml(str, cfg))
 
   private def wrapHtml(body: String, cfg: MarkdownConfig): String =
     s"""<!DOCTYPE html>
