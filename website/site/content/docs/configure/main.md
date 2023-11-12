@@ -28,7 +28,7 @@ At last, it is possible to configure docspell via environment
 variables if there is no config file supplied (if a config file *is*
 supplied, it is always preferred). Note that this approach is limited,
 as arrays are not supported. A list of environment variables can be
-found at the [end of this page](#environment-variables). The
+found at [here](@/docs/configure/defaults.md#environment-variables). The
 environment variable name follows the corresponding config key - where
 dots are replaced by underscores and dashes are replaced by two
 underscores. For example, the config key `docspell.server.app-name`
