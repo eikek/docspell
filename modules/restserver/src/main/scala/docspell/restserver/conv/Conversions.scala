@@ -32,7 +32,6 @@ import docspell.store.queries.{
 import docspell.store.records._
 import docspell.store.{AddResult, UpdateResult}
 
-import io.circe.Json
 import org.http4s.headers.`Content-Type`
 import org.http4s.multipart.Multipart
 import org.log4s.Logger
@@ -317,7 +316,7 @@ trait Conversions {
               m.language,
               m.attachmentsOnly,
               m.flattenArchives,
-              m.customData.map(Json.fromString) // TODO fix openapi spec
+              m.customData
             )
           )
         )
