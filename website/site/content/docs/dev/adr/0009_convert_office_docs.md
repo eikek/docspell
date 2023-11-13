@@ -16,7 +16,7 @@ Since Docspell is free software, the tools must also be free.
 # Considered Options
 
 * [Apache POI](https://poi.apache.org) together with
-  [this](https://search.maven.org/artifact/fr.opensagres.xdocreport/org.apache.poi.xwpf.converter.pdf/1.0.6/jar)
+  [this](https://central.sonatype.com/artifact/fr.opensagres.xdocreport/org.apache.poi.xwpf.converter.pdf/1.0.6)
   library
 * [pandoc](https://pandoc.org/) external command
 * [abiword](https://www.abisource.com/) external command
