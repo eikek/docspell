@@ -7,6 +7,7 @@ import docspell.addons.out.NewItem.{Meta => ItemMeta}
 import docspell.common._
 import docspell.common.Timestamp
 import docspell.common.bc.{AttachmentAction, BackendCommand, ItemAction}
+import io.circe.Json
 import io.circe.syntax._
 
 object AddonOutputExample extends Helper {
@@ -52,7 +53,8 @@ object AddonOutputExample extends Helper {
             metadata = FileMeta(
               language = Some(Language.English),
               skipDuplicate = Some(true),
-              attachmentsOnly = Some(false)
+              attachmentsOnly = Some(false),
+              customData = None
             ),
             file = "new-file1.docx"
           ),
@@ -60,7 +62,8 @@ object AddonOutputExample extends Helper {
             metadata = FileMeta(
               language = Some(Language.German),
               skipDuplicate = Some(true),
-              attachmentsOnly = Some(false)
+              attachmentsOnly = Some(false),
+              customData = None
             ),
             file = "new-file2.pdf"
           )
@@ -76,7 +79,8 @@ object AddonOutputExample extends Helper {
           source = "the-addon-x".some,
           skipDuplicate = true.some,
           tags = List("tag1", "tag2").some,
-          attachmentsOnly = None
+          attachmentsOnly = None,
+          customData = Some(Json.obj("my-id" -> Json.fromInt(42)))
         ).some,
         files = List("a-file.pdf", "another.jpg")
       )
