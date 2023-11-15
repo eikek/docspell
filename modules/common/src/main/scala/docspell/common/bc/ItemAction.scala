@@ -105,4 +105,10 @@ object ItemAction {
     implicit val jsonDecoder: Decoder[SetDate] = deriveDecoder
     implicit val jsonEncoder: Encoder[SetDate] = deriveEncoder
   }
+
+  case class SetDueDate(duedate: Option[Timestamp]) extends ItemAction
+  object SetDueDate {
+    implicit val jsonDecoder: Decoder[SetDueDate] = deriveDecoder
+    implicit val jsonEncoder: Encoder[SetDueDate] = deriveEncoder
+  }
 }

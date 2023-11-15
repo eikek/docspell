@@ -21,6 +21,7 @@ object AddonOutputExample extends Helper {
           ItemAction.ReplaceTags(Set("tagX", "tagY")),
           ItemAction.RemoveTags(Set("tag0", "tag9")),
           ItemAction.RemoveTagsCategory(Set("doc-type")),
+          ItemAction.SetDueDate(Some(Timestamp.ofMillis(1707908400000L))),
           ItemAction.SetFolder("folder-name".some),
           ItemAction.SetCorrOrg(id("OaIy-org-ID").some),
           ItemAction.SetCorrPerson(id("OaIy-person-ID").some),

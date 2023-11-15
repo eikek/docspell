@@ -127,6 +127,12 @@ private[backend] class BackendCommands[F[_]: Sync](
           itemOps
             .setItemDate(Nel.of(item), date.some, collective)
             .void
+
+      case ItemAction.SetDueDate(duedate) =>
+        logger.debug(s"Set due date $duedate on item ${item.id} for $collective") *>
+          itemOps
+            .setItemDueDate(Nel.of(item), duedate, collective)
+            .void
     }
 
   def runAttachAction(
