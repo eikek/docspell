@@ -5,6 +5,7 @@ import docspell.common.MetaProposal.Candidate
 import docspell.common._
 import docspell.joex.process.ItemData
 import docspell.store.records.{RAttachment, RAttachmentMeta, RItem}
+import io.circe.Json
 import io.circe.syntax._
 
 object ItemDataExample extends Helper {
@@ -67,7 +68,8 @@ object ItemDataExample extends Helper {
     givenMeta = givenProposals,
     tags = List("tag-1"),
     classifyProposals = MetaProposalList.empty,
-    classifyTags = List("invoice")
+    classifyTags = List("invoice"),
+    customData = Some(Json.obj("my-id" -> Json.fromInt(42)))
   )
 
   val exampleJson = example.asJson.spaces2

@@ -75,6 +75,7 @@ object ItemAddonTask extends AddonTaskExtension {
       givenMeta = proposals,
       tags = tags.map(_.name).toList,
       classifyProposals = MetaProposalList.empty,
-      classifyTags = Nil
+      classifyTags = Nil,
+      customData = None // can't retain this information from a final item. TODO
     )
 }

@@ -315,7 +315,8 @@ trait Conversions {
               m.tags.map(_.items).getOrElse(Nil),
               m.language,
               m.attachmentsOnly,
-              m.flattenArchives
+              m.flattenArchives,
+              m.customData
             )
           )
         )
@@ -331,6 +332,7 @@ trait Conversions {
             false,
             Glob.all,
             Nil,
+            None,
             None,
             None,
             None

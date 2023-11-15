@@ -19,6 +19,8 @@ import docspell.scheduler.{Job, JobStore}
 import docspell.store.Store
 import docspell.store.records._
 
+import io.circe.Json
+
 trait OUpload[F[_]] {
 
   def submit(
@@ -69,7 +71,8 @@ object OUpload {
       tags: List[String],
       language: Option[Language],
       attachmentsOnly: Option[Boolean],
-      flattenArchives: Option[Boolean]
+      flattenArchives: Option[Boolean],
+      customData: Option[Json]
   )
 
   case class UploadData[F[_]](
@@ -157,7 +160,8 @@ object OUpload {
             data.meta.fileFilter.some,
             data.meta.tags.some,
             false,
-            data.meta.attachmentsOnly
+            data.meta.attachmentsOnly,
+            data.meta.customData
           )
           args = ProcessItemArgs(meta, files.toList)
           jobs <- right(

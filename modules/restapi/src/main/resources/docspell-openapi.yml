@@ -8250,6 +8250,13 @@ components:
             attachments of the e-mail are imported and the e-mail body
             is discarded. E-mails that don't have any attachments are
             skipped.
+        customData:
+          type: object
+          format: json
+          description: |
+            Custom user data that gets threaded through the processing. Docspell
+            ignores it completely, but will pass it to the outcome of processing
+            to be able to react on it in addons or other ways.
 
     Collective:
       description: |

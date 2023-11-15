@@ -46,7 +46,8 @@ case class ItemData(
     tags: List[String],
     // proposals obtained from the classifier
     classifyProposals: MetaProposalList,
-    classifyTags: List[String]
+    classifyTags: List[String],
+    customData: Option[Json]
 ) {
 
   /** sort by weight; order of equal weights is not important, just choose one others are
@@ -121,6 +122,7 @@ object ItemData {
             )
           )
           .asJson,
+        "customData" -> data.customData.asJson,
         "tags" -> data.tags.asJson,
         "assumedTags" -> data.classifyTags.asJson,
         "assumedCorrOrg" -> data.finalProposals
