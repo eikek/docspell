@@ -73,6 +73,7 @@ files {
        access-key = "username"
        secret-key = "password"
        bucket = "docspell"
+       # region = "…"
      }
   }
 }

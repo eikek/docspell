@@ -11,6 +11,7 @@ import cats.implicits._
 
 import docspell.backend.signup.{Config => SignupConfig}
 import docspell.common._
+import docspell.common.syntax.string._
 import docspell.store.file.FileRepositoryConfig
 import docspell.store.{JdbcConfig, SchemaMigrateConfig}
 
@@ -51,6 +52,12 @@ object Config {
       stores.get(id).map(FileRepositoryConfig.fromFileStoreConfig(chunkSize, _))
 
     def validate: ValidatedNec[String, Files] = {
+      def filterEmptyRegion =
+        copy(stores = stores.view.mapValues {
+          case c: FileStoreConfig.S3 => c.copy(region = c.region.flatMap(_.asNonBlank))
+          case c                     => c
+        }.toMap)
+
       val storesEmpty =
         if (enabledStores.isEmpty)
           Validated.invalidNec(
@@ -65,7 +72,7 @@ object Config {
             Validated.invalidNec(s"Default file store not present: ${defaultStore.id}")
         }
 
-      (storesEmpty |+| defaultStorePresent).map(_ => this)
+      (storesEmpty |+| defaultStorePresent).map(_ => filterEmptyRegion)
     }
   }
 
