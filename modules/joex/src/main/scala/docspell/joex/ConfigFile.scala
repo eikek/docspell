@@ -60,7 +60,7 @@ object ConfigFile {
         cfg => cfg.updateCheck.enabled && cfg.updateCheck.subject.els.isEmpty,
         "No subject given for enabled update check!"
       ),
-      Validation(cfg => cfg.files.validate.map(_ => cfg)),
+      Validation(cfg => cfg.files.validate.map(f => cfg.copy(files = f))),
       Validation.failWhen(
         cfg =>
           cfg.fullTextSearch.enabled &&

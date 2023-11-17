@@ -108,11 +108,22 @@ object BinnyUtils {
           JdbcStoreConfig("filechunk", chunkSize, BinnyUtils.TikaContentTypeDetect)
         GenericJdbcStore[F](ds, LoggerAdapter(logger), jdbcConfig)
 
-      case FileRepositoryConfig.S3(endpoint, accessKey, secretKey, bucket, chunkSize) =>
+      case FileRepositoryConfig.S3(
+            endpoint,
+            accessKey,
+            secretKey,
+            bucket,
+            region,
+            chunkSize
+          ) =>
         val keyMapping = S3KeyMapping.constant(bucket)
         val minioCfg = MinioConfig
           .default(endpoint, accessKey, secretKey, keyMapping)
-          .copy(chunkSize = chunkSize, detect = BinnyUtils.TikaContentTypeDetect)
+          .copy(
+            chunkSize = chunkSize,
+            detect = BinnyUtils.TikaContentTypeDetect,
+            region = region
+          )
 
         MinioBinaryStore[F](minioCfg, LoggerAdapter(logger))
 

@@ -10,7 +10,7 @@ import fs2.io.file.Path
 
 import docspell.common.FileStoreConfig
 
-sealed trait FileRepositoryConfig {}
+sealed trait FileRepositoryConfig
 
 object FileRepositoryConfig {
 
@@ -21,6 +21,7 @@ object FileRepositoryConfig {
       accessKey: String,
       secretKey: String,
       bucketName: String,
+      region: Option[String],
       chunkSize: Int
   ) extends FileRepositoryConfig
 
@@ -30,8 +31,15 @@ object FileRepositoryConfig {
     cfg match {
       case FileStoreConfig.DefaultDatabase(_) =>
         FileRepositoryConfig.Database(chunkSize)
-      case FileStoreConfig.S3(_, endpoint, accessKey, secretKey, bucket) =>
-        FileRepositoryConfig.S3(endpoint, accessKey, secretKey, bucket, chunkSize)
+      case FileStoreConfig.S3(_, endpoint, accessKey, secretKey, region, bucket) =>
+        FileRepositoryConfig.S3(
+          endpoint,
+          accessKey,
+          secretKey,
+          bucket,
+          region.map(_.trim).filter(_.nonEmpty),
+          chunkSize
+        )
       case FileStoreConfig.FileSystem(_, directory) =>
         FileRepositoryConfig.Directory(directory, chunkSize)
     }

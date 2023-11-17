@@ -54,8 +54,8 @@ For linuxes, the default location is `~/.config/dsc/config.toml`. You
 can give a config file explicitly via an option or the environment
 variable `DSC_CONFIG`.
 
-If you use the [pass](https://passwordstore.org) password manager, you
-can add your password entry to the config file as well.
+If you use the [pass](https://www.passwordstore.org) password manager,
+you can add your password entry to the config file as well.
 
 ## Output format
 

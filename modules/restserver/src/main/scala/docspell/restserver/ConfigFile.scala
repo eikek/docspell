@@ -113,7 +113,9 @@ object ConfigFile {
     }
 
   def filesValidate: Validation[Config] =
-    Validation(cfg => cfg.backend.files.validate.map(_ => cfg))
+    Validation(cfg =>
+      cfg.backend.files.validate.map(f => cfg.copy(backend = cfg.backend.copy(files = f)))
+    )
 
   def postgresFtsValidate: Validation[Config] =
     Validation.failWhen(
