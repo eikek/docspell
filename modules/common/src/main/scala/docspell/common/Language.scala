@@ -178,7 +178,7 @@ object Language {
       Estonian,
       Ukrainian,
       Khmer,
-      thai
+      Thai
     )
 
   def fromString(str: String): Either[String, Language] = {
