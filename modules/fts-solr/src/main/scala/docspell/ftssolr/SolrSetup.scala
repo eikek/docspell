@@ -194,7 +194,7 @@ object SolrSetup {
             "Add Thai",
             addContentField(Language.Thai)
           ),
-          SolrMigration.reIndexAll(34, "Re-Index after adding Thai")
+          SolrMigration.reIndexAll(38, "Re-Index after adding Thai")
         )
 
       def addFolderField: F[Unit] =
