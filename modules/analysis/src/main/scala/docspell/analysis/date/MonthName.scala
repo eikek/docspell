@@ -66,6 +66,8 @@ object MonthName {
         ukrainian
       case Language.Khmer =>
         khmer
+      case Language.Thai =>
+        thai
     }
 
   private val numbers = List(
@@ -425,5 +427,19 @@ object MonthName {
     List("жовтня", "жовт", "жов"),
     List("листопада", "лист", "лис"),
     List("грудня", "груд", "гру")
+  )
+  private val thai = List(
+    List("ม.ค.", "มกราคม"),
+    List("ก.พ.", "กุมภาพันธ์"),
+    List("มี.ค.", "มีนาคม"),
+    List("เม.ย.", "เมษายน"),
+    List("พ.ค.", "พฤษภาคม"),
+    List("มิ.ย.", "มิถุนายน"),
+    List("ก.ค.", "กรกฎาคม"),
+    List("ส.ค.", "สิงหาคม"),
+    List("ก.ย.", "กันยายน"),
+    List("ต.ค.", "ตุลาคม"),
+    List("พ.ย.", "พฤศจิกายน"),
+    List("ธ.ค.", "ธันวาคม")
   )
 }
