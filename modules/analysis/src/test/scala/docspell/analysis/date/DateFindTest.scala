@@ -372,7 +372,7 @@ class DateFindTest extends FunSuite {
       DateFind
         .findDates(
           "ข้อความนี้เขียนเมื่อวันที่ 5 พฤศจิกายน 2022",
-          Language.thai
+          Language.Thai
         )
         .toVector,
       Vector(
