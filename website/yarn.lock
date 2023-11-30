@@ -23,9 +23,9 @@
   integrity sha512-Gp/tqCe9scBJHwH0RgGasf5KkLYgW4Y2rKgQqMe3j5cYpZyCJA2g0OOVVvF8U7VQfvfw3TW8d3hWT4IISXqQCQ==
 
 "@fortawesome/fontawesome-free@^6.0.0":
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.5.0.tgz#054bfee3488f0a7de2a52138b4244c5743d6743d"
-  integrity sha512-npV8sIYN4tQmLkzkWU6Q2Ot8L3XqBzLpS+rGTl96nFM7qbMWIoFqcdp0YrcWlfRDQx5G+gA2sn8uSFNRAYTrrA==
+  version "6.5.1"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.5.1.tgz#55cc8410abf1003b726324661ce5b0d1c10de258"
+  integrity sha512-CNy5vSwN3fsUStPRLX7fUYojyuzoEMSXPl7zSLJ8TgtRfjv24LOnOWKT2zYwaHZCJGkdyRnTmstR0P+Ah503Gw==
 
 "@jridgewell/gen-mapping@^0.3.2":
   version "0.3.3"
