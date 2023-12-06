@@ -13,9 +13,9 @@
   integrity sha512-ZJbsCIJp6VHL1wYQUPpyBjXMzwGdfFedrmrw4r5sFi7WrMpnfJv+el1uVO6yDPIqnVqkPvjJ+xeKgJwnj2LuQQ==
 
 "@fontsource/source-code-pro@^5.0.0":
-  version "5.0.15"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.15.tgz#7bc6287771e699098326dc933a454fce3743713a"
-  integrity sha512-G+kD+5Ba2mgqsOpwZQetQi5aAOaMw0SiY73VpmycSeL17WKl2GmyTP6mIc95d+r+HJJazmg9yYYBp3qeHNNG1w==
+  version "5.0.16"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.16.tgz#5943c67cfec5493b0f1a5bc416e14ab7d5ebe760"
+  integrity sha512-ErErGXjKo9/fAJE49fyU8M6DuJUpdqR5YLM8jGJOC5ZcKIDSTQ5m+R3DTa0VYHAGGFbk2qLWVWD/r5sfCLA/jQ==
 
 "@fontsource/spectral@^5.0.0":
   version "5.0.8"
