@@ -23,7 +23,7 @@ object Dependencies {
   val Fs2Version = "3.9.3"
   val H2Version = "2.2.224"
   val Http4sVersion = "0.23.24"
-  val Icu4jVersion = "74.1"
+  val Icu4jVersion = "74.2"
   val JavaOtpVersion = "0.4.0"
   val JsoupVersion = "1.17.1"
   val JwtScalaVersion = "9.4.5"
