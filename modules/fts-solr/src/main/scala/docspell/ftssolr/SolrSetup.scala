@@ -194,7 +194,7 @@ object SolrSetup {
             "Add Slovak",
             addContentField(Language.Slovak)
           ),
-          SolrMigration.reIndexAll(37, "Re-Index after adding Slovak"),
+          SolrMigration.reIndexAll(37, "Re-Index after adding Slovak")
         )
 
       def addFolderField: F[Unit] =
