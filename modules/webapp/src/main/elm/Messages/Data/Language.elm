@@ -86,6 +86,9 @@ gb lang =
         Khmer ->
             "Khmer"
 
+        Slovak ->
+            "Slovak"
+
 
 de : Language -> String
 de lang =
@@ -159,6 +162,9 @@ de lang =
         Khmer ->
             "Khmer"
 
+        Slovak ->
+            "Slowakisch"
+
 
 fr : Language -> String
 fr lang =
@@ -231,3 +237,6 @@ fr lang =
 
         Khmer ->
             "Khmer"
+
+        Slovak ->
+            "Slovaquie"

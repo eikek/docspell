@@ -183,7 +183,18 @@ object SolrSetup {
             "Add Khmer",
             addContentField(Language.Khmer)
           ),
-          SolrMigration.reIndexAll(34, "Re-Index after adding Khmer")
+          SolrMigration.reIndexAll(34, "Re-Index after adding Khmer"),
+          SolrMigration[F](
+            35,
+            "Add new field type for slovak content",
+            addFieldType(AddFieldType.textSvk)
+          ),
+          SolrMigration[F](
+            36,
+            "Add Slovak",
+            addContentField(Language.Slovak)
+          ),
+          SolrMigration.reIndexAll(37, "Re-Index after adding Slovak")
         )
 
       def addFolderField: F[Unit] =
@@ -364,6 +375,17 @@ object SolrSetup {
       Analyzer(
         Tokenizer("solr.ICUTokenizerFactory", Map.empty),
         List(
+        )
+      )
+    )
+
+    val textSvk = AddFieldType(
+      "text_sk",
+      "solr.TextField",
+      Analyzer(
+        Tokenizer("solr.StandardTokenizerFactory", Map.empty),
+        List(
+          Filter("solr.LowerCaseFilterFactory", Map.empty)
         )
       )
     )
