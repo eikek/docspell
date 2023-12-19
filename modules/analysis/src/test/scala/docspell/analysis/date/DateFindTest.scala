@@ -365,4 +365,22 @@ class DateFindTest extends FunSuite {
       )
     )
   }
+
+  test("find thai dates") {
+    // officially used ones
+    assertEquals(
+      DateFind
+        .findDates(
+          "ข้อความนี้เขียนเมื่อวันที่ 5 พฤศจิกายน 2022",
+          Language.Thai
+        )
+        .toVector,
+      Vector(
+        NerDateLabel(
+          LocalDate.of(2022, 11, 5),
+          NerLabel("5 พฤศจิกายน 2022", NerTag.Date, 19, 34)
+        )
+      )
+    )
+  }
 }
