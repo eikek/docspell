@@ -1,4 +1,4 @@
-FROM alpine:20230901
+FROM alpine:20231219
 
 ARG version=
 ARG restserver_url=
