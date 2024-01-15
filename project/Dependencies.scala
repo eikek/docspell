@@ -28,7 +28,7 @@ object Dependencies {
   val JsoupVersion = "1.17.2"
   val JwtScalaVersion = "9.4.5"
   val KindProjectorVersion = "0.10.3"
-  val KittensVersion = "3.1.0"
+  val KittensVersion = "3.2.0"
   val LevigoJbig2Version = "2.0"
   val Log4sVersion = "1.10.0"
   val LogbackVersion = "1.2.10"
