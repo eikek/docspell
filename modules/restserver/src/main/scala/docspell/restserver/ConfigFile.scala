@@ -14,6 +14,7 @@ import fs2.io.file.Files
 
 import docspell.backend.auth.Login
 import docspell.backend.signup.{Config => SignupConfig}
+import docspell.common.Duration
 import docspell.config.Implicits._
 import docspell.config.{ConfigFactory, FtsType, Validation}
 import docspell.oidc.{ProviderConfig, SignatureAlgo}
@@ -38,7 +39,8 @@ object ConfigFile {
         generateSecretIfEmpty,
         duplicateOpenIdProvider,
         signKeyVsUserUrl,
-        filesValidate
+        filesValidate,
+        sessionValidValidate
       )
     ConfigFactory
       .default[F, Config](logger, "docspell.server")(args, validate)
@@ -127,4 +129,11 @@ object ConfigFile {
       s"PostgreSQL defined fulltext search backend with default-connection, which is not a PostgreSQL connection!"
     )
 
+  def sessionValidValidate: Validation[Config] =
+    Validation.failWhen(
+      cfg =>
+        cfg.auth.sessionValid > Duration.hours(48) || cfg.auth.sessionValid < Duration
+          .minutes(1),
+      s"The value for session-valued must be between 1min and 48h"
+    )
 }
