@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.40.0
+                    0.41.0
                 </div>
             </div>
 
@@ -163,9 +163,9 @@ MYCOLL); note that path to the file upload (the one with
 <li>
 <p>Create a file <code>docspell-upload-MYCOLL</code> with the following content (replace <code>UPLOAD_PATH</code> with the actual path):</p>
 <pre class="z-code"><code><span class="z-text z-plain">#!/bin/bash
-</span>logger -t docspell_upload -- Docspell upload to MYCOLL: &quot;$*&quot; $(
-</span>curl -s -XPOST -F file=@&quot;$1&quot; UPLOAD_PATH
-</span>)
+logger -t docspell_upload -- Docspell upload to MYCOLL: &quot;$*&quot; $(
+curl -s -XPOST -F file=@&quot;$1&quot; UPLOAD_PATH
+)
 </span></code></pre>
 </li>
 <li>
@@ -176,11 +176,11 @@ MYCOLL); note that path to the file upload (the one with
 content (note that you need the full path to
 <code>docspell-upload-MYCOLL</code>):</p>
 <pre class="z-code"><code><span class="z-text z-plain">[Desktop Entry]
-</span>Exec=PATH_TO_docspell-upload-MYCOLL %F
-</span>MimeType=application/pdf;application/x-zip;application/x-zip-compressed;application/zip
-</span>Name=Docspell Upload (MYCOLL)
-</span>NoDisplay=true
-</span>Type=Application
+Exec=PATH_TO_docspell-upload-MYCOLL %F
+MimeType=application/pdf;application/x-zip;application/x-zip-compressed;application/zip
+Name=Docspell Upload (MYCOLL)
+NoDisplay=true
+Type=Application
 </span></code></pre>
 </li>
 <li>
@@ -207,21 +207,9 @@ command <code>journalctl -f -t docspell_upload</code></p>
 
     <div class="flex items-center flex-col sm:flex-row" title="Previous post">
         
-        
-        <a class="no-default button1 my-auto" href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;scan-and-process-from-adf&#x2F;">
-            <i class="fa fa-chevron-left"></i>
-        </a>
-        <div class="italic my-2 ml-2"> Preproces Scans before upload </div>
-        
     </div>
 
     <div class="flex items-center flex-col sm:flex-row justify-end"  title="Next post">
-        
-        
-        <div class="italic my-2 mr-2"> Create a new post </div>
-        <a class="no-default button1 my-auto" href="https:&#x2F;&#x2F;docspell.org&#x2F;blog&#x2F;create-post&#x2F;">
-            <i class="fa fa-chevron-right"></i>
-        </a>
         
     </div>
 
@@ -232,7 +220,7 @@ command <code>journalctl -f -t docspell_upload</code></p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.40.0
+            Docspell 0.41.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

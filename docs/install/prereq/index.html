@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.40.0
+                    0.41.0
                 </div>
             </div>
 
@@ -500,6 +500,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +554,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -785,9 +785,9 @@ other options.</p>
 <p>It is enough to install the JRE. The JDK is required, if you want to
 build docspell from source. For newer versions, the JRE is not shipped
 anymore, simply use JDK then.</p>
-<p>Docspell has been tested with Java 11 (or sometimes referred to as JDK
-11). The provided packages are build using JDK 11. However, it also
-works on newer java versions. The provided docker images use JDK11.</p>
+<p>Docspell has been tested with Java 17 (or sometimes referred to as JDK
+17). The provided packages are build using JDK 17. However, it also
+works on newer java versions. The provided docker images use JDK17.</p>
 <p>The next tools are only required on machines running the <em>Joex</em>
 component.</p>
 <h2 id="external-programs-for-joex">External Programs for Joex<a class="zola-anchor" href="#external-programs-for-joex" aria-label="Anchor link for: external-programs-for-joex">🔗</a></h2>
@@ -831,6 +831,10 @@ create a core as described in the <a href="https://solr.apache.org/guide/8_4/ins
 documentation</a>.
 That will provide you with the connection url (the last part is the
 core name).</p>
+<p>Then start solr with <code>-Dsolr.modules=analysis-extras</code>
+to enable some additional analyzer like <code>icu</code> for <code>Khmer</code> language etc
+as described <a href="https://solr.apache.org/guide/solr/latest/indexing-guide/language-analysis.html#hebrew-lao-myanmar-khmer">here</a>,
+which we used for tokenization and segmentation for <code>Khmer</code> language in docspell.</p>
 <p>When using the provided <code>docker-compose.yml</code> setup, SOLR is already setup.</p>
 <p>SOLR must be reachable from all joex and all rest server components.</p>
 <div class="my-3 rounded border border-indigo-200 bg-indigo-100 bg-opacity-40 text-indigo-400 shadow shadow-indigo-200  dark:bg-cyan-500 dark:bg-opacity-30 dark:text-cyan-100 dark:border-cyan-700 dark:shadow-none">
@@ -879,7 +883,7 @@ table) to that database.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.40.0
+            Docspell 0.41.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

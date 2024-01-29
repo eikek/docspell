@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.40.0
+                    0.41.0
                 </div>
             </div>
 
@@ -500,6 +500,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +554,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -841,7 +841,7 @@ in docspell.</p>
 automatically. The <code>StringList</code> is a json object containing one
 field <code>items</code> that is a list of strings:</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> items<span class="z-keyword z-operator z-elm">:</span> <span class="z-keyword z-other z-parenthesis z-elm">(</span><span class="z-constant z-other z-elm">List</span> <span class="z-constant z-other z-elm">String</span><span class="z-keyword z-other z-parenthesis z-elm">)</span>
-</span><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
+<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <p>Tags can be defined using their ids or names.</p>
 </li>
@@ -865,16 +865,17 @@ only the attachments are imported. An e-mail without any attachments
 is therefore skipped.</p>
 </li>
 <li>
-<p><code>flattenArchives</code> is flag to control how zip files are treated. When
-this is <code>false</code> (the default), then one zip file results in one item
-and its contents are the attachments. If you rather want the
-contents to be treated as independent files, then set this to
-<code>true</code>. This will submit each entry in the zip file as a separate
-processing job. Note: when this is <code>true</code> the zip file is just a
-container and doesn't contain other useful information and therefore
-is <em>NOT</em> kept in docspell, only its contents are. Also note that
-only the uploaded zip files are extracted once (not recursively), so
-if it contains other zip files, they are treated as normal.</p>
+<p><code>flattenArchives</code> is flag to control how <code>zip</code> and <code>eml</code> files are
+treated. When this is <code>false</code> (the default), then one <code>zip</code> or <code>eml</code>
+file results in one item and its contents are the attachments. If
+you rather want the contents to be treated as independent files,
+then set this to <code>true</code>. This will submit each entry in the archive
+file as a separate processing job. Note: when this is <code>true</code> the
+archive file is assumed to be just a container and doesn't contain
+other useful information. It is therefore <em>NOT</em> kept in docspell,
+only its contents are. Also note that only the uploaded archive
+files are extracted once (not recursively), so if it contains other
+archive files, they are treated as normal.</p>
 </li>
 </ul>
 <h1 id="endpoints">Endpoints<a class="zola-anchor" href="#endpoints" aria-label="Anchor link for: endpoints">🔗</a></h1>
@@ -936,7 +937,7 @@ this endpoint.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.40.0
+            Docspell 0.41.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
