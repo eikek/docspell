@@ -44,6 +44,7 @@ type alias Model =
     , languageModel : Comp.FixedDropdown.Model Language
     , language : Maybe Language
     , flattenArchives : Bool
+    , uploadDone : Maybe Bool
     }
 
 
@@ -74,6 +75,7 @@ init =
         Comp.FixedDropdown.init Data.Language.all
     , language = Nothing
     , flattenArchives = False
+    , uploadDone = Nothing
     }
 
 
@@ -221,7 +223,11 @@ update sourceId flags msg model =
                     List.map (\fid -> ( fid, 0 )) fileids
                         |> Dict.fromList
             in
-            ( { model | loading = nowLoading, dropzone = cm2 }, uploads, tracker )
+            if List.isEmpty model.files then
+                ( model, Cmd.none, Sub.none )
+
+            else
+                ( { model | loading = nowLoading, dropzone = cm2 }, uploads, tracker )
 
         SingleUploadResp fileid (Ok res) ->
             let
@@ -245,8 +251,29 @@ update sourceId flags msg model =
 
                     else
                         Dict.remove fileid model.loading
+
+                nextModel =
+                    { model | completed = compl, errored = errs, loading = load }
+
+                uploadsDone =
+                    if isDone nextModel && hasErrors nextModel then
+                        Just False
+
+                    else if isDone nextModel && isSuccessAll nextModel then
+                        Just True
+
+                    else
+                        Nothing
+
+                result =
+                    case uploadsDone of
+                        Just _ ->
+                            { nextModel | uploadDone = uploadsDone, files = [], dropzone = Comp.Dropzone.init [] }
+
+                        Nothing ->
+                            { nextModel | uploadDone = uploadsDone }
             in
-            ( { model | completed = compl, errored = errs, loading = load }
+            ( result
             , Cmd.none
             , Sub.none
             )
@@ -300,7 +327,7 @@ update sourceId flags msg model =
                 nextFiles =
                     List.append model.files files
             in
-            ( { model | files = nextFiles, dropzone = m2 }, Cmd.map DropzoneMsg c2, Sub.none )
+            ( { model | files = nextFiles, dropzone = m2, uploadDone = Nothing }, Cmd.map DropzoneMsg c2, Sub.none )
 
         LanguageMsg lm ->
             let
@@ -491,7 +518,7 @@ renderErrorMsg : Texts -> Model -> Html Msg
 renderErrorMsg texts model =
     div
         [ class "row"
-        , classList [ ( "hidden", not (isDone model && hasErrors model) ) ]
+        , classList [ ( "hidden", Maybe.withDefault True model.uploadDone ) ]
         ]
         [ div [ class "mt-4" ]
             [ div [ class Styles.errorMessage ]
@@ -505,7 +532,7 @@ renderSuccessMsg : Texts -> Bool -> Model -> Html Msg
 renderSuccessMsg texts public model =
     div
         [ class "row"
-        , classList [ ( "hidden", List.isEmpty model.files || not (isSuccessAll model) ) ]
+        , classList [ ( "hidden", Maybe.map not model.uploadDone |> Maybe.withDefault True ) ]
         ]
         [ div [ class "mt-4" ]
             [ div [ class Styles.successMessage ]
