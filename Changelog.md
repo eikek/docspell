@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.41.0
+
+*Jan 29th, 2024*
+
+- Add khmer language (#2011)
+- Replace blaze with ember (http stack) (#2221, #2348)
+- Updated several dependencies (#2348, #2354, 2355)
+- Fix `AddonExecutionResult` monoid (#2363)
+- Setting item date from addons (#2345)
+- Fix sql queries where a space was missing (#2367, #2368)
+- Change AWS region for minio file backend (#2386)
+- Allow additional metadata to be passed on upload for addons and hooks (#2334)
+- Add support for Slovak language
+- Fix possibility to configure too large `session-valid` values (#2309)
+- Consider emails when `flattenArchives` is true (#2063)
+- Allow new file upload without hitting reset (#2323)
+
+Big thanks to:
+- @eikek
+- @madduck
+- @mprasil
+- @rehanone
+- @v6ak
+- @xshadowlegendx
+
 ## v0.40.0
 
 *Mar 11th, 2023*
