@@ -7,19 +7,20 @@
 package docspell.joex.multiupload
 
 import cats.Monoid
-import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import fs2.Stream
 import fs2.io.file.Files
+import fs2.{Pipe, Stream}
 
 import docspell.backend.JobFactory
 import docspell.common._
 import docspell.common.util.Zip
+import docspell.joex.mail.ReadMail
 import docspell.logging.Logger
 import docspell.scheduler._
 import docspell.scheduler.usertask.UserTaskScope
 import docspell.store.Store
+import docspell.store.file.FileMetadata
 
 /** Task to submit multiple files at once. By default, one file in an upload results in
   * one item. Zip files are extracted, but its inner files are considered to be one item
@@ -43,8 +44,8 @@ object MultiUploadArchiveTask {
     Task { ctx =>
       ctx.args.files
         .traverse { file =>
-          isZipFile(store)(file).flatMap {
-            case true =>
+          store.fileRepo.findMeta(file.fileMetaId).map(ArchiveType.from).flatMap {
+            case ArchiveType.Zip =>
               ctx.logger.info(s"Extracting zip file ${file.name}") *>
                 extractZip(store, ctx.args)(file)
                   .evalTap(entry =>
@@ -57,7 +58,20 @@ object MultiUploadArchiveTask {
                   .toList
                   .map(Jobs.extracted(file))
 
-            case false =>
+            case ArchiveType.Email =>
+              ctx.logger.info(s"Extracting email file ${file.name}") *>
+                extractMail(store, ctx)(file)
+                  .evalTap(entry =>
+                    ctx.logger.debug(
+                      s"Create job for entry: ${entry.files.flatMap(_.name).mkString(", ")}"
+                    )
+                  )
+                  .evalMap(makeJob[F](ctx, jobStore))
+                  .compile
+                  .toList
+                  .map(Jobs.extracted(file))
+
+            case _ =>
               makeJob(ctx, jobStore)(ctx.args.copy(files = List(file))).map(Jobs.normal)
           }
         }
@@ -101,13 +115,6 @@ object MultiUploadArchiveTask {
       )
     } yield job.encode
 
-  private def isZipFile[F[_]: Sync](
-      store: Store[F]
-  )(file: ProcessItemArgs.File): F[Boolean] =
-    OptionT(store.fileRepo.findMeta(file.fileMetaId))
-      .map(_.mimetype.matches(MimeType.zip))
-      .getOrElse(false)
-
   private def extractZip[F[_]: Async: Files](
       store: Store[F],
       args: Args
@@ -116,16 +123,53 @@ object MultiUploadArchiveTask {
       .getBytes(file.fileMetaId)
       .through(Zip[F]().unzip(glob = args.meta.fileFilter.getOrElse(Glob.all)))
       .through(Binary.toBinary[F])
-      .flatMap { entry =>
-        val hint = MimeTypeHint(entry.name.some, entry.mime.asString.some)
-        entry.data
-          .through(
-            store.fileRepo.save(args.meta.collective, FileCategory.AttachmentSource, hint)
-          )
-          .map(key =>
-            args.copy(files = ProcessItemArgs.File(entry.name.some, key) :: Nil)
-          )
+      .through(entryToArgs(store, args))
+
+  private def extractMail[F[_]: Async](
+      store: Store[F],
+      ctx: Context[F, Args]
+  )(file: ProcessItemArgs.File): Stream[F, ProcessItemArgs] = {
+    val glob = ctx.args.meta.fileFilter.getOrElse(Glob.all)
+    val attachOnly = ctx.args.meta.attachmentsOnly.getOrElse(false)
+    store.fileRepo
+      .getBytes(file.fileMetaId)
+      .through(ReadMail.bytesToMail(ctx.logger))
+      .flatMap(
+        ReadMail
+          .mailToEntries(ctx.logger, glob, attachOnly)
+      )
+      .through(entryToArgs(store, ctx.args))
+  }
+
+  private def entryToArgs[F[_]](
+      store: Store[F],
+      args: Args
+  ): Pipe[F, Binary[F], ProcessItemArgs] =
+    _.flatMap { entry =>
+      val hint = MimeTypeHint(entry.name.some, entry.mime.asString.some)
+      entry.data
+        .through(
+          store.fileRepo.save(args.meta.collective, FileCategory.AttachmentSource, hint)
+        )
+        .map(key => args.copy(files = ProcessItemArgs.File(entry.name.some, key) :: Nil))
+    }
+
+  sealed trait ArchiveType
+  object ArchiveType {
+    case object Email extends ArchiveType
+    case object Zip extends ArchiveType
+    case object NoArchive extends ArchiveType
+
+    def from(fm: FileMetadata): ArchiveType =
+      fm.mimetype match {
+        case MimeType.ZipMatch(_)   => Zip
+        case MimeType.EmailMatch(_) => Email
+        case _                      => NoArchive
       }
+
+    def from(fm: Option[FileMetadata]): ArchiveType =
+      fm.map(from).getOrElse(NoArchive)
+  }
 
   case class Jobs(
       result: Result,
