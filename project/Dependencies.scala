@@ -17,7 +17,7 @@ object Dependencies {
   val CirceYamlVersion = "0.15.1"
   val ClipboardJsVersion = "2.0.11"
   val DoobieVersion = "1.0.0-RC4"
-  val EmilVersion = "0.15.0"
+  val EmilVersion = "0.16.1"
   val FlexmarkVersion = "0.64.8"
   val FlywayVersion = "10.6.0"
   val Fs2Version = "3.9.4"
