@@ -1,7 +1,7 @@
 {
   description = "Docspell flake";
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-22.11";
+    nixpkgs.url = "nixpkgs/nixos-23.11";
   };
 
   outputs = { self, nixpkgs }:
@@ -11,19 +11,19 @@
       nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
       # Version config
       cfg = {
-        v0_40_0 = rec {
-          version = "0.40.0";
+        v0_41_0 = rec {
+          version = "0.41.0";
           server = {
             url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-restserver-${version}.zip";
-            sha256 = "sha256-lTvLZ9MBezEhELr2LhrTtm2fRWxdLWEjAhOqxRmBwwg=";
+            sha256 = "sha256-JFftIzI94UNLLh96I++qFsBZhOkquPIPhNhtS2Ov8wI=";
           };
           joex = {
             url = "https://github.com/eikek/docspell/releases/download/v${version}/docspell-joex-${version}.zip";
-            sha256 = "sha256-lVDRl7CrRmojL7ZIPIlR6VzHoplEB/ew7aID3urYspU=";
+            sha256 = "sha256-flKWjEsMd2/XT3Bu6EjFgf3lCojvLbKFDEXemP1K+/8=";
           };
         };
       };
-      current_version = cfg.v0_40_0;
+      current_version = cfg.v0_41_0;
       inherit (current_version) version;
     in
     rec
@@ -76,7 +76,7 @@
           default = (import nixpkgs {
             inherit system;
             overlays = [ self.overlays.default ];
-          }).docspell-server;
+          }).docspell-joex;
         });
 
       checks = forAllSystems

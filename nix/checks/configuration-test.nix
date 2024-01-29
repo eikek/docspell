@@ -2,7 +2,7 @@
 let
   full-text-search = {
     enabled = true;
-    solr.url = "http://localhost:${toString config.services.solr.port}/solr/docspell";
+    backend = "postgresql";
     postgresql = {
       pg-config = {
         "german" = "my-germam";
@@ -24,7 +24,6 @@ in
 
   services.docspell-joex = {
     enable = true;
-    waitForTarget = "solr-init.target";
     bind.address = "0.0.0.0";
     base-url = "http://localhost:7878";
     jvmArgs = [ "-J-Xmx1536M" ];
