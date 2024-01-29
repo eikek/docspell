@@ -96,16 +96,17 @@ specified via a JSON structure in a part with name `meta`:
   `*.eml`). If this is `true`, then the e-mail body is discarded and
   only the attachments are imported. An e-mail without any attachments
   is therefore skipped.
-- `flattenArchives` is flag to control how zip files are treated. When
-  this is `false` (the default), then one zip file results in one item
-  and its contents are the attachments. If you rather want the
-  contents to be treated as independent files, then set this to
-  `true`. This will submit each entry in the zip file as a separate
-  processing job. Note: when this is `true` the zip file is just a
-  container and doesn't contain other useful information and therefore
-  is *NOT* kept in docspell, only its contents are. Also note that
-  only the uploaded zip files are extracted once (not recursively), so
-  if it contains other zip files, they are treated as normal.
+- `flattenArchives` is flag to control how `zip` and `eml` files are
+  treated. When this is `false` (the default), then one `zip` or `eml`
+  file results in one item and its contents are the attachments. If
+  you rather want the contents to be treated as independent files,
+  then set this to `true`. This will submit each entry in the archive
+  file as a separate processing job. Note: when this is `true` the
+  archive file is assumed to be just a container and doesn't contain
+  other useful information. It is therefore *NOT* kept in docspell,
+  only its contents are. Also note that only the uploaded archive
+  files are extracted once (not recursively), so if it contains other
+  archive files, they are treated as normal.
 
 # Endpoints
 
