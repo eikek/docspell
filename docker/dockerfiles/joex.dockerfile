@@ -18,6 +18,7 @@ RUN apk update && \
     tesseract-ocr-data-ita \
     tesseract-ocr-data-spa \
     tesseract-ocr-data-por \
+    tesseract-ocr-data-eng \
     tesseract-ocr-data-ces \
     tesseract-ocr-data-nld \
     tesseract-ocr-data-dan \
