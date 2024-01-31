@@ -105,7 +105,7 @@ contains all data (including binary files by default) and is the
 central component of docspell. Docspell has support these databases:
 
 - PostreSQL
-- MariaDB
+- MariaDB (>= 10.6)
 - H2
 
 The H2 database is an interesting option for personal and mid-size
@@ -120,6 +120,6 @@ add the options
 of the url. See the [config page](@/docs/configure/database.md) for
 an example.
 
-For large installations, PostgreSQL or MariaDB is recommended. Create
-a database and a user with enough privileges (read, write, create
-table) to that database.
+For larger installations, PostgreSQL is recommended. Create a database
+and a user with enough privileges (read, write, create table) to that
+database.
