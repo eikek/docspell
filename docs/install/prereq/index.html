@@ -857,7 +857,7 @@ contains all data (including binary files by default) and is the
 central component of docspell. Docspell has support these databases:</p>
 <ul>
 <li>PostreSQL</li>
-<li>MariaDB</li>
+<li>MariaDB (&gt;= 10.6)</li>
 <li>H2</li>
 </ul>
 <p>The H2 database is an interesting option for personal and mid-size
@@ -870,9 +870,9 @@ add the options
 <code>;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE</code> at the end
 of the url. See the <a href="https://docspell.org/docs/configure/database/">config page</a> for
 an example.</p>
-<p>For large installations, PostgreSQL or MariaDB is recommended. Create
-a database and a user with enough privileges (read, write, create
-table) to that database.</p>
+<p>For larger installations, PostgreSQL is recommended. Create a database
+and a user with enough privileges (read, write, create table) to that
+database.</p>
 
   
 
