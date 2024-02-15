@@ -15,6 +15,16 @@ spec:
       labels:
         app: solr
     spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command:
+            - "sh"
+            - "-c"
+            - "chown -R 8983:8983 /var/solr"
+          volumeMounts:
+            - name: solr-data
+              mountPath: /var/solr
       containers:
         - name: solr
           image: solr:9
