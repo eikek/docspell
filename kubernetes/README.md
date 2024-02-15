@@ -42,6 +42,10 @@ patches:
     - op: replace
       path: /data/DOCSPELL_SERVER_BACKEND_JDBC_PASSWORD
       value: ZGJwYXNzMg== # dbpass2
+- target:
+    kind: Secret
+    name: joex-secrets
+  patch: |-
     - op: replace
       path: /data/DOCSPELL_JOEX_JDBC_PASSWORD
       value: ZGJwYXNzMg== # dbpass2
