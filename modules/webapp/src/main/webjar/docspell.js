@@ -152,6 +152,8 @@ function initWS() {
             var dataJSON = JSON.parse(event.data);
             if (dataJSON.tag !== "keep-alive") {
                 elmApp.ports.receiveWsMessage.send(dataJSON);
+            } else {
+                dsWebSocket.send(event.data);
             }
         }
     });
