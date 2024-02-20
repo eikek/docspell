@@ -77,7 +77,7 @@ RUN \
   wget https://github.com/tesseract-ocr/tessdata/raw/main/khm.traineddata && \
   mv khm.traineddata /usr/share/tessdata
 
-# Using these data files for japanese, because they work better. See #973
+# Using these data files for japanese, because they work better. Includes vertical data. See #973 and #2445.
 RUN \
   wget https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/master/jpn_vert.traineddata && \
   wget https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/master/jpn.traineddata && \

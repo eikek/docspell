@@ -65,6 +65,9 @@ gb lang =
         Japanese ->
             "Japanese"
 
+        JpnVert ->
+            "JpnVert"
+
         Hebrew ->
             "Hebrew"
 
@@ -141,6 +144,9 @@ de lang =
         Japanese ->
             "Japanisch"
 
+        JpnVert ->
+            "JpnSenk"
+
         Hebrew ->
             "Hebräisch"
 
@@ -216,6 +222,9 @@ fr lang =
 
         Japanese ->
             "Japonnais"
+
+        JpnVert ->
+            "JpnVert"
 
         Hebrew ->
             "Hébreu"
