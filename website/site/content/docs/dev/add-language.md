@@ -11,7 +11,7 @@ Then there are other commits and issues to look at:
 - [Add Polish](https://github.com/eikek/docspell/issues/1345) and [PR](https://github.com/eikek/docspell/pull/1559/commits/5ec311c331f1f78cc483cce54d5ab0e08454fea8)
 - [Add Spanish language](https://github.com/eikek/docspell/commit/26dff18ae0d32ce2b32b4d11ce381ada0e99314f)
 - [Add Latvian language](https://github.com/eikek/docspell/issues/679) and [PR](https://github.com/eikek/docspell/pull/694/commits/9991ad5fcc43ccefe011a6cc4d01bdae4bcd4573)
-- [Add Japanese language](https://github.com/eikek/docspell/issues/948) and [PR](https://github.com/eikek/docspell/pull/961/commits/f994d4b2488e64668ee064676f8c6469d9ccc1be), had some corrections: [1](https://github.com/eikek/docspell/commit/c59d4f8a6d021ec4b01a92320c211248503f16a5), [Issue](https://github.com/eikek/docspell/issues/973)
+- [Add Japanese language](https://github.com/eikek/docspell/issues/948) and [PR](https://github.com/eikek/docspell/pull/961/commits/f994d4b2488e64668ee064676f8c6469d9ccc1be), had some corrections: [1](https://github.com/eikek/docspell/commit/c59d4f8a6d021ec4b01a92320c211248503f16a5), [Issue](https://github.com/eikek/docspell/issues/973), [2](https://github.com/eikek/docspell/pull/2505), [Issue](https://github.com/eikek/docspell/issues/2445)
 - [Add Hebrew language](https://github.com/eikek/docspell/pull/1027)
 
 Some older commits may be a bit out of date, but still show the
