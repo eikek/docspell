@@ -1020,7 +1020,7 @@ Additionally there are some other minor features and bug fixes.
     to be able to add a request header. Check [this for
     firefox](https://addons.mozilla.org/en-US/firefox/addon/modheader-firefox/)
     or [this for
-    chromium](https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj)
+    chromium](https://chromewebstore.google.com/detail/modheader-modify-http-hea/idgpnmonknjnojddfkpgkljpfnnfcklj)
   - then add the request header `Docspell-Ui` with value `1`.
     Reloading the page gets you back the old ui.
 - With new Web-UI, certain features and fixes were realized, but not
