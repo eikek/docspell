@@ -36,7 +36,7 @@ object MailSendRoutes {
           backend.mail.sendMail(user.account.userId, user.account.collectiveId, name, m)
         )
         resp <- res.fold(
-          err => Ok(BasicResult(false, s"Invalid mail data: $err")),
+          err => Ok(BasicResult(success = false, s"Invalid mail data: $err")),
           res => Ok(convertOut(res))
         )
       } yield resp
@@ -56,15 +56,15 @@ object MailSendRoutes {
   def convertOut(res: SendResult): BasicResult =
     res match {
       case SendResult.Success(_) =>
-        BasicResult(true, "Mail sent.")
+        BasicResult(success = true, "Mail sent.")
       case SendResult.SendFailure(ex) =>
-        BasicResult(false, s"Mail sending failed: ${ex.getMessage}")
+        BasicResult(success = false, s"Mail sending failed: ${ex.getMessage}")
       case SendResult.StoreFailure(ex) =>
         BasicResult(
-          false,
+          success = false,
           s"Mail was sent, but could not be store to database: ${ex.getMessage}"
         )
       case SendResult.NotFound =>
-        BasicResult(false, s"There was no mail-connection or item found.")
+        BasicResult(success = false, s"There was no mail-connection or item found.")
     }
 }

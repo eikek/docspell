@@ -40,9 +40,9 @@ object CalEventCheckRoutes {
           val next = ev
             .nextElapses(now.toUtcDateTime, 2)
             .map(Timestamp.atUtc)
-          CalEventCheckResult(true, "Valid.", ev.some, next)
+          CalEventCheckResult(success = true, "Valid.", ev.some, next)
         case Left(err) =>
-          CalEventCheckResult(false, err, None, Nil)
+          CalEventCheckResult(success = false, err, None, Nil)
       }
     }
 }

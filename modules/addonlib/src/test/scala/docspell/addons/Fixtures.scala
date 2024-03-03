@@ -40,13 +40,13 @@ trait Fixtures extends TestLoggingConfig { self: CatsEffectSuite =>
       ),
       None,
       runner = Runner(
-        nix = NixRunner(true).some,
+        nix = NixRunner(enable = true).some,
         docker = DockerRunner(
           enable = true,
           image = None,
           build = "Dockerfile".some
         ).some,
-        trivial = TrivialRunner(true, "src/addon.sh").some
+        trivial = TrivialRunner(enable = true, "src/addon.sh").some
       ).some,
       options = Options(networking = true, collectOutput = true).some
     )
@@ -65,7 +65,7 @@ trait Fixtures extends TestLoggingConfig { self: CatsEffectSuite =>
       runner: RunnerType,
       runners: RunnerType*
   ): AddonExecutorConfig = {
-    val nspawn = NSpawn(false, "sudo", "systemd-nspawn", Duration.millis(100))
+    val nspawn = NSpawn(enabled = false, "sudo", "systemd-nspawn", Duration.millis(100))
     AddonExecutorConfig(
       runner = runner :: runners.toList,
       runTimeout = Duration.minutes(2),

@@ -114,14 +114,14 @@ object ONotification {
           )
           _ <- notMod.send(logbuf._2.andThen(log), ev, ch)
           logs <- logbuf._1.get
-          res = SendTestResult(true, logs)
+          res = SendTestResult(success = true, logs)
         } yield res).attempt
           .map {
             case Right(res) => res
             case Left(ex) =>
               val ev =
                 LogEvent.of(Level.Error, "Failed sending sample event").addError(ex)
-              SendTestResult(false, Vector(ev))
+              SendTestResult(success = false, Vector(ev))
           }
 
       def listChannels(userId: Ident): F[Vector[Channel]] =

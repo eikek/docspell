@@ -35,5 +35,5 @@ object AddonRoutes {
         "run" -> AddonRunRoutes(backend, token)
       )
     else
-      Responses.notFoundRoute(BasicResult(false, "Addons disabled"))
+      Responses.notFoundRoute(BasicResult(success = false, "Addons disabled"))
 }

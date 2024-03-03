@@ -75,7 +75,7 @@ object TextAnalysis {
       analyser: TextAnalyser[F],
       nerFile: RegexNerFile[F]
   )(rm: RAttachmentMeta): F[(RAttachmentMeta, AttachmentDates)] = {
-    val settings = NlpSettings(ctx.args.meta.language, false, None)
+    val settings = NlpSettings(ctx.args.meta.language, highRecall = false, None)
     for {
       customNer <- nerFile.makeFile(ctx.args.meta.collective)
       sett = settings.copy(regexNer = customNer)

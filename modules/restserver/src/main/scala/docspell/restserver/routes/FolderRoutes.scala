@@ -118,12 +118,12 @@ object FolderRoutes {
   private def mkFolderChangeResult(r: OFolder.FolderChangeResult): BasicResult =
     r match {
       case OFolder.FolderChangeResult.Success =>
-        BasicResult(true, "Successfully changed folder.")
+        BasicResult(success = true, "Successfully changed folder.")
       case OFolder.FolderChangeResult.NotFound =>
-        BasicResult(false, "Folder or user not found.")
+        BasicResult(success = false, "Folder or user not found.")
       case OFolder.FolderChangeResult.Forbidden =>
-        BasicResult(false, "Not allowed to edit folder.")
+        BasicResult(success = false, "Not allowed to edit folder.")
       case OFolder.FolderChangeResult.Exists =>
-        BasicResult(false, "The member already exists.")
+        BasicResult(success = false, "The member already exists.")
     }
 }

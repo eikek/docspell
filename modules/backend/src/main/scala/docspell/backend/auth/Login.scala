@@ -127,7 +127,7 @@ object Login {
           _ <- logF.trace(s"Account lookup: $data")
           res <- data match {
             case Some(d) if checkNoPassword(d, Set(AccountSource.OpenId)) =>
-              doLogin(config, d.account, false)
+              doLogin(config, d.account, rememberMe = false)
             case Some(d) if checkNoPassword(d, Set(AccountSource.Local)) =>
               config.onAccountSourceConflict match {
                 case OnAccountSourceConflict.Fail =>
@@ -145,7 +145,7 @@ object Login {
                           AccountSource.OpenId
                         )
                       )
-                    res <- doLogin(config, d.account, false)
+                    res <- doLogin(config, d.account, rememberMe = false)
                   } yield res
               }
             case _ =>
@@ -212,7 +212,12 @@ object Login {
         val okResult: F[Result] =
           for {
             _ <- store.transact(RUser.updateLogin(sf.token.account))
-            newToken <- AuthToken.user(sf.token.account, false, config.serverSecret, None)
+            newToken <- AuthToken.user(
+              sf.token.account,
+              requireSecondFactor = false,
+              config.serverSecret,
+              None
+            )
             rem <- OptionT
               .whenF(sf.rememberMe && config.rememberMe.enabled)(
                 insertRememberToken(store, sf.token.account, config)
@@ -239,7 +244,9 @@ object Login {
         (for {
           _ <- validateToken
           key <- EitherT.fromOptionF(
-            store.transact(RTotp.findEnabledByUserId(sf.token.account.userId, true)),
+            store.transact(
+              RTotp.findEnabledByUserId(sf.token.account.userId, enabled = true)
+            ),
             Result.invalidAuth
           )
           now <- EitherT.right[Result](Timestamp.current[F])
@@ -255,7 +262,12 @@ object Login {
         def okResult(acc: AccountInfo) =
           for {
             _ <- store.transact(RUser.updateLogin(acc))
-            token <- AuthToken.user(acc, false, config.serverSecret, None)
+            token <- AuthToken.user(
+              acc,
+              requireSecondFactor = false,
+              config.serverSecret,
+              None
+            )
           } yield Result.ok(token, None)
 
         def rememberedLogin(rid: Ident) =

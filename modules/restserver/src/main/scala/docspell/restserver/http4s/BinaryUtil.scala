@@ -38,7 +38,7 @@ object BinaryUtil {
         if (matches) withResponseHeaders(dsl, NotModified())(data)
         else makeByteResp(dsl)(data)
       }
-      .getOrElse(NotFound(BasicResult(false, "Not found")))
+      .getOrElse(NotFound(BasicResult(success = false, "Not found")))
   }
 
   def respondHead[F[_]: Async](dsl: Http4sDsl[F])(
@@ -48,7 +48,7 @@ object BinaryUtil {
 
     fileData
       .map(data => withResponseHeaders(dsl, Ok())(data))
-      .getOrElse(NotFound(BasicResult(false, "Not found")))
+      .getOrElse(NotFound(BasicResult(success = false, "Not found")))
   }
 
   def respondPreview[F[_]: Async](dsl: Http4sDsl[F], req: Request[F])(
@@ -56,7 +56,7 @@ object BinaryUtil {
   ): F[Response[F]] = {
     import dsl._
     def notFound =
-      NotFound(BasicResult(false, "Not found"))
+      NotFound(BasicResult(success = false, "Not found"))
 
     QP.WithFallback.unapply(req.multiParams) match {
       case Some(bool) =>
@@ -75,7 +75,7 @@ object BinaryUtil {
           )
 
       case None =>
-        BadRequest(BasicResult(false, "Invalid query parameter 'withFallback'"))
+        BadRequest(BasicResult(success = false, "Invalid query parameter 'withFallback'"))
     }
   }
 
@@ -85,7 +85,7 @@ object BinaryUtil {
     import dsl._
     fileData
       .map(data => withResponseHeaders(dsl, Ok())(data))
-      .getOrElse(NotFound(BasicResult(false, "Not found")))
+      .getOrElse(NotFound(BasicResult(success = false, "Not found")))
   }
 
   def withResponseHeaders[F[_]: Sync](dsl: Http4sDsl[F], resp: F[Response[F]])(

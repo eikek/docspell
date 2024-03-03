@@ -69,7 +69,7 @@ object MailSettingsRoutes {
           resp <- OptionT.liftF(
             Ok(
               up.fold(
-                err => BasicResult(false, err),
+                err => BasicResult(success = false, err),
                 ar => Conversions.basicResult(ar, "Mail settings stored.")
               )
             )
@@ -86,7 +86,7 @@ object MailSettingsRoutes {
           resp <- OptionT.liftF(
             Ok(
               up.fold(
-                err => BasicResult(false, err),
+                err => BasicResult(success = false, err),
                 ar => Conversions.basicResult(ar, "Mail settings stored.")
               )
             )
@@ -105,10 +105,10 @@ object MailSettingsRoutes {
           resp <- OptionT.liftF(
             Ok(
               up.fold(
-                err => BasicResult(false, err),
+                err => BasicResult(success = false, err),
                 n =>
-                  if (n > 0) BasicResult(true, "Mail settings stored.")
-                  else BasicResult(false, "Mail settings could not be saved")
+                  if (n > 0) BasicResult(success = true, "Mail settings stored.")
+                  else BasicResult(success = false, "Mail settings could not be saved")
               )
             )
           )
@@ -126,10 +126,10 @@ object MailSettingsRoutes {
           resp <- OptionT.liftF(
             Ok(
               up.fold(
-                err => BasicResult(false, err),
+                err => BasicResult(success = false, err),
                 n =>
-                  if (n > 0) BasicResult(true, "Mail settings stored.")
-                  else BasicResult(false, "Mail settings could not be saved")
+                  if (n > 0) BasicResult(success = true, "Mail settings stored.")
+                  else BasicResult(success = false, "Mail settings could not be saved")
               )
             )
           )
@@ -139,8 +139,8 @@ object MailSettingsRoutes {
         for {
           n <- backend.mail.deleteSmtpSettings(user.account.userId, name)
           resp <- Ok(
-            if (n > 0) BasicResult(true, "Mail settings removed")
-            else BasicResult(false, "Mail settings could not be removed")
+            if (n > 0) BasicResult(success = true, "Mail settings removed")
+            else BasicResult(success = false, "Mail settings could not be removed")
           )
         } yield resp
 
@@ -148,8 +148,8 @@ object MailSettingsRoutes {
         for {
           n <- backend.mail.deleteImapSettings(user.account.userId, name)
           resp <- Ok(
-            if (n > 0) BasicResult(true, "Mail settings removed")
-            else BasicResult(false, "Mail settings could not be removed")
+            if (n > 0) BasicResult(success = true, "Mail settings removed")
+            else BasicResult(success = false, "Mail settings could not be removed")
           )
         } yield resp
     }

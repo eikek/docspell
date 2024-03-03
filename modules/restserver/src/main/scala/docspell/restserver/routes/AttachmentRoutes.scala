@@ -66,7 +66,7 @@ object AttachmentRoutes {
           resp <-
             fileData
               .map(data => withResponseHeaders(Ok())(data))
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
+              .getOrElse(NotFound(BasicResult(success = false, "Not found")))
         } yield resp
 
       case req @ GET -> Root / Ident(id) / "original" =>
@@ -83,7 +83,7 @@ object AttachmentRoutes {
                 if (matches) withResponseHeaders(NotModified())(data)
                 else makeByteResp(data)
               }
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
+              .getOrElse(NotFound(BasicResult(success = false, "Not found")))
         } yield resp
 
       case HEAD -> Root / Ident(id) / "archive" =>
@@ -93,7 +93,7 @@ object AttachmentRoutes {
           resp <-
             fileData
               .map(data => withResponseHeaders(Ok())(data))
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
+              .getOrElse(NotFound(BasicResult(success = false, "Not found")))
         } yield resp
 
       case req @ GET -> Root / Ident(id) / "archive" =>
@@ -108,7 +108,7 @@ object AttachmentRoutes {
                 if (matches) withResponseHeaders(NotModified())(data)
                 else makeByteResp(data)
               }
-              .getOrElse(NotFound(BasicResult(false, "Not found")))
+              .getOrElse(NotFound(BasicResult(success = false, "Not found")))
         } yield resp
 
       case req @ GET -> Root / Ident(id) / "preview" =>
@@ -148,7 +148,9 @@ object AttachmentRoutes {
         for {
           rm <- backend.itemSearch.findAttachmentMeta(id, user.account.collectiveId)
           md = rm.map(Conversions.mkAttachmentMeta)
-          resp <- md.map(Ok(_)).getOrElse(NotFound(BasicResult(false, "Not found.")))
+          resp <- md
+            .map(Ok(_))
+            .getOrElse(NotFound(BasicResult(success = false, "Not found.")))
         } yield resp
 
       case req @ POST -> Root / Ident(id) / "name" =>
@@ -169,8 +171,11 @@ object AttachmentRoutes {
             backend.attachment
               .setExtractedText(user.account.collectiveId, itemId, id, newText)
           )
-          resp <- OptionT.liftF(Ok(BasicResult(true, "Extracted text updated.")))
-        } yield resp).getOrElseF(NotFound(BasicResult(false, "Attachment not found")))
+          resp <- OptionT.liftF(
+            Ok(BasicResult(success = true, "Extracted text updated."))
+          )
+        } yield resp)
+          .getOrElseF(NotFound(BasicResult(success = false, "Attachment not found")))
 
       case DELETE -> Root / Ident(id) / "extracted-text" =>
         (for {
@@ -181,7 +186,9 @@ object AttachmentRoutes {
             backend.attachment
               .setExtractedText(user.account.collectiveId, itemId, id, "".pure[F])
           )
-          resp <- OptionT.liftF(Ok(BasicResult(true, "Extracted text cleared.")))
+          resp <- OptionT.liftF(
+            Ok(BasicResult(success = true, "Extracted text cleared."))
+          )
         } yield resp).getOrElseF(NotFound())
 
       case GET -> Root / Ident(id) / "extracted-text" =>
@@ -190,14 +197,15 @@ object AttachmentRoutes {
             backend.itemSearch.findAttachmentMeta(id, user.account.collectiveId)
           )
           resp <- OptionT.liftF(Ok(OptionalText(meta.content)))
-        } yield resp).getOrElseF(NotFound(BasicResult(false, "Attachment not found")))
+        } yield resp)
+          .getOrElseF(NotFound(BasicResult(success = false, "Attachment not found")))
 
       case DELETE -> Root / Ident(id) =>
         for {
           n <- backend.item.deleteAttachment(id, user.account.collectiveId)
           res =
-            if (n == 0) BasicResult(false, "Attachment not found")
-            else BasicResult(true, "Attachment deleted.")
+            if (n == 0) BasicResult(success = false, "Attachment not found")
+            else BasicResult(success = true, "Attachment deleted.")
           resp <- Ok(res)
         } yield resp
     }

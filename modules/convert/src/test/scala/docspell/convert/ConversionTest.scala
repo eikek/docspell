@@ -69,7 +69,7 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
       target
     ),
     OcrMyPdfConfig(
-      true,
+      enabled = true,
       SystemCommand.Config(
         "ocrmypdf",
         Seq(
@@ -86,7 +86,7 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
       ),
       target
     ),
-    ConvertConfig.DecryptPdf(true, Nil)
+    ConvertConfig.DecryptPdf(enabled = true, Nil)
   )
 
   val conversion =

@@ -159,7 +159,7 @@ object OUpload {
             data.meta.skipDuplicates,
             data.meta.fileFilter.some,
             data.meta.tags.some,
-            false,
+            reprocess = false,
             data.meta.attachmentsOnly,
             data.meta.customData
           )

@@ -28,7 +28,7 @@ object JoexRoutes {
         for {
           _ <- app.scheduler.notifyChange
           _ <- app.periodicScheduler.notifyChange
-          resp <- Ok(BasicResult(true, "Schedulers notified."))
+          resp <- Ok(BasicResult(success = true, "Schedulers notified."))
         } yield resp
 
       case GET -> Root / "running" =>
@@ -43,7 +43,7 @@ object JoexRoutes {
           _ <- Async[F].start(
             Temporal[F].sleep(Duration.seconds(1).toScala) *> app.initShutdown
           )
-          resp <- Ok(BasicResult(true, "Shutdown initiated."))
+          resp <- Ok(BasicResult(success = true, "Shutdown initiated."))
         } yield resp
 
       case GET -> Root / "job" / Ident(id) =>
@@ -54,7 +54,9 @@ object JoexRoutes {
             job <- optJob
             log <- optLog
           } yield mkJobLog(job, log)
-          resp <- jAndL.map(Ok(_)).getOrElse(NotFound(BasicResult(false, "Not found")))
+          resp <- jAndL
+            .map(Ok(_))
+            .getOrElse(NotFound(BasicResult(success = false, "Not found")))
         } yield resp
 
       case POST -> Root / "job" / Ident(id) / "cancel" =>

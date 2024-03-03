@@ -43,8 +43,11 @@ object MigrateDueItemTasks extends TransactorSupport with JsonCodecs {
       )
       _ <- tasks2.traverse(migratePeriodicDueItemsTask)
       _ <- tasks3.traverse(migratePeriodicQueryTask)
-      _ <- RPeriodicTask.setEnabledByTask(PeriodicQueryArgsOld.taskName, false)
-      _ <- RPeriodicTask.setEnabledByTask(PeriodicDueItemsArgsOld.taskName, false)
+      _ <- RPeriodicTask.setEnabledByTask(PeriodicQueryArgsOld.taskName, enabled = false)
+      _ <- RPeriodicTask.setEnabledByTask(
+        PeriodicDueItemsArgsOld.taskName,
+        enabled = false
+      )
     } yield ()
 
   private def migratePeriodicQueryTask(old: RPeriodicTask): ConnectionIO[Int] =

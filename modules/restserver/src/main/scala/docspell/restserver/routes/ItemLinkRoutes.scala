@@ -37,7 +37,7 @@ class ItemLinkRoutes[F[_]: Async](account: AccountInfo, backend: OItemLink[F])
       case DELETE -> Root / Ident(target) / Ident(id) =>
         for {
           _ <- backend.removeAll(account.collectiveId, target, NonEmptyList.of(id))
-          resp <- Ok(BasicResult(true, "Related items removed"))
+          resp <- Ok(BasicResult(success = true, "Related items removed"))
         } yield resp
 
       case req @ POST -> Root / "addAll" =>
@@ -58,19 +58,21 @@ class ItemLinkRoutes[F[_]: Async](account: AccountInfo, backend: OItemLink[F])
           _ <- related
             .map(backend.removeAll(account.collectiveId, input.item, _))
             .getOrElse(
-              BadRequest(BasicResult(false, "List of related items must not be empty"))
+              BadRequest(
+                BasicResult(success = false, "List of related items must not be empty")
+              )
             )
-          resp <- Ok(BasicResult(true, "Related items removed"))
+          resp <- Ok(BasicResult(success = true, "Related items removed"))
         } yield resp
     }
 
   private def convertResult(r: Option[LinkResult]): BasicResult =
     r match {
-      case Some(LinkResult.Success) => BasicResult(true, "Related items added")
+      case Some(LinkResult.Success) => BasicResult(success = true, "Related items added")
       case Some(LinkResult.LinkTargetItemError) =>
-        BasicResult(false, "Items cannot be related to itself.")
+        BasicResult(success = false, "Items cannot be related to itself.")
       case None =>
-        BasicResult(false, "List of related items must not be empty")
+        BasicResult(success = false, "List of related items must not be empty")
     }
 
 }

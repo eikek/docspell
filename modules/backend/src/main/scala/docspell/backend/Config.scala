@@ -90,6 +90,6 @@ object Config {
   }
   object Addons {
     val disabled: Addons =
-      Addons(false, false, UrlMatcher.False, UrlMatcher.True)
+      Addons(enabled = false, allowImpure = false, UrlMatcher.False, UrlMatcher.True)
   }
 }

@@ -93,7 +93,7 @@ object AddonOps {
           AddonResult.executionFailed(
             new Exception(s"Addon run config ${id.id} not found.")
           ) :: Nil,
-          false
+          pure = false
         ) :: Nil,
         Nil
       )

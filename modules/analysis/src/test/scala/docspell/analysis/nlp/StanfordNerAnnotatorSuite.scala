@@ -22,7 +22,7 @@ import munit._
 
 class StanfordNerAnnotatorSuite extends FunSuite with TestLoggingConfig {
   lazy val germanClassifier =
-    new StanfordCoreNLP(Properties.nerGerman(None, false))
+    new StanfordCoreNLP(Properties.nerGerman(None, highRecall = false))
   lazy val englishClassifier =
     new StanfordCoreNLP(Properties.nerEnglish(None))
 

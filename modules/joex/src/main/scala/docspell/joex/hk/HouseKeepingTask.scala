@@ -55,7 +55,7 @@ object HouseKeepingTask {
     UserTask(
       periodicId,
       taskName,
-      true,
+      enabled = true,
       ce,
       "Docspell house-keeping".some,
       ()

@@ -97,7 +97,7 @@ object UserRoutes {
                 )
 
             case None =>
-              NotFound(BasicResult(false, s"User '${username.id}' not found"))
+              NotFound(BasicResult(success = false, s"User '${username.id}' not found"))
           }
         } yield resp
     }
@@ -119,16 +119,16 @@ object UserRoutes {
         )
         resp <- Ok(result match {
           case OCollective.PassResetResult.Success(np) =>
-            ResetPasswordResult(true, np, "Password updated")
+            ResetPasswordResult(success = true, np, "Password updated")
           case OCollective.PassResetResult.NotFound =>
             ResetPasswordResult(
-              false,
+              success = false,
               Password(""),
               "Password update failed. User not found."
             )
           case OCollective.PassResetResult.InvalidSource(source) =>
             ResetPasswordResult(
-              false,
+              success = false,
               Password(""),
               s"Password update failed. User has unexpected source: $source. Passwords are managed externally."
             )

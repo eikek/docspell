@@ -348,7 +348,7 @@ object SchedulerImpl {
   type CancelToken[F[_]] = F[Unit]
 
   def emptyState[F[_]]: State[F] =
-    State(Map.empty, Set.empty, Map.empty, false)
+    State(Map.empty, Set.empty, Map.empty, shutdownRequest = false)
 
   case class State[F[_]](
       counters: Map[Ident, CountingScheme],

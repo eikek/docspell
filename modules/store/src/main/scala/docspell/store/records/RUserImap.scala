@@ -195,13 +195,13 @@ object RUserImap {
       userId: Ident,
       nameQ: Option[String]
   ): ConnectionIO[Vector[RUserImap]] =
-    findByAccount0(userId, nameQ, false).to[Vector]
+    findByAccount0(userId, nameQ, exact = false).to[Vector]
 
   def getByName(
       userId: Ident,
       name: Ident
   ): ConnectionIO[Option[RUserImap]] =
-    findByAccount0(userId, Some(name.id), true).option
+    findByAccount0(userId, Some(name.id), exact = true).option
 
   def delete(
       userId: Ident,

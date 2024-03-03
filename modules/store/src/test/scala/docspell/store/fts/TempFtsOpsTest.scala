@@ -193,7 +193,7 @@ class TempFtsOpsTest extends DatabaseTest {
       DocspellSystem.account.collective,
       CollectiveState.Active,
       Language.English,
-      true,
+      integrationEnabled = true,
       ts
     )
 

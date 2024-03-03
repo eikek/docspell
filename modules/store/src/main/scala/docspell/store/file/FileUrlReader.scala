@@ -25,7 +25,7 @@ object FileUrlReader {
       authority = Some(""),
       path = LenientUri.NonEmptyPath(
         Nel.of(key.collective.valueAsString, key.category.id.id, key.id.id),
-        false
+        trailingSlash = false
       ),
       query = None,
       fragment = None

@@ -62,7 +62,7 @@ object UrlMatcher {
       // strip path to only match prefixes
       val mPath: LenientUri.Path =
         NonEmptyList.fromList(url.path.segments.take(pathSegmentCount)) match {
-          case Some(nel) => LenientUri.NonEmptyPath(nel, false)
+          case Some(nel) => LenientUri.NonEmptyPath(nel, trailingSlash = false)
           case None      => LenientUri.RootPath
         }
 

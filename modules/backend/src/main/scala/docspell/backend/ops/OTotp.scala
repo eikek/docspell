@@ -120,7 +120,9 @@ object OTotp {
       def confirmInit(accountId: AccountInfo, otp: OnetimePassword): F[ConfirmResult] =
         for {
           _ <- log.info(s"Confirm TOTP setup for account ${accountId.asString}")
-          key <- store.transact(RTotp.findEnabledByUserId(accountId.userId, false))
+          key <- store.transact(
+            RTotp.findEnabledByUserId(accountId.userId, enabled = false)
+          )
           now <- Timestamp.current[F]
           res <- key match {
             case None =>
@@ -129,7 +131,7 @@ object OTotp {
               val check = totp.checkPassword(r.secret, otp, now.value)
               if (check)
                 store
-                  .transact(RTotp.setEnabled(accountId.userId, true))
+                  .transact(RTotp.setEnabled(accountId.userId, enabled = true))
                   .map(_ => ConfirmResult.Success)
               else ConfirmResult.Failed.pure[F]
           }
@@ -140,7 +142,7 @@ object OTotp {
           case Some(pw) =>
             for {
               _ <- log.info(s"Validating TOTP, because it is requested to disable it.")
-              key <- store.transact(RTotp.findEnabledByLogin(accountId, true))
+              key <- store.transact(RTotp.findEnabledByLogin(accountId, enabled = true))
               now <- Timestamp.current[F]
               res <- key match {
                 case None =>
@@ -149,7 +151,7 @@ object OTotp {
                   val check = totp.checkPassword(r.secret, pw, now.value)
                   if (check)
                     UpdateResult.fromUpdate(
-                      store.transact(RTotp.setEnabled(r.userId, false))
+                      store.transact(RTotp.setEnabled(r.userId, enabled = false))
                     )
                   else
                     log.info(s"TOTP code was invalid. Not disabling it.") *> UpdateResult
@@ -160,15 +162,15 @@ object OTotp {
           case None =>
             UpdateResult.fromUpdate {
               (for {
-                key <- OptionT(RTotp.findEnabledByLogin(accountId, true))
-                n <- OptionT.liftF(RTotp.setEnabled(key.userId, false))
+                key <- OptionT(RTotp.findEnabledByLogin(accountId, enabled = true))
+                n <- OptionT.liftF(RTotp.setEnabled(key.userId, enabled = false))
               } yield n).mapK(store.transform).getOrElse(0)
             }
         }
 
       def state(acc: AccountInfo): F[OtpState] =
         for {
-          record <- store.transact(RTotp.findEnabledByUserId(acc.userId, true))
+          record <- store.transact(RTotp.findEnabledByUserId(acc.userId, enabled = true))
           result = record match {
             case Some(r) =>
               OtpState.Enabled(r.created)
