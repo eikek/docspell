@@ -26,6 +26,7 @@ skip_prefixes = [
   "/openapi",
   "https://www.abisource.com", # has bad ssl config
   "https://chromewebstore.google.com" # too many redirects reported
+  "https://stackoverflow.com/" # forbidden
 ]
 skip_anchor_prefixes = [
   "https://github.com",
