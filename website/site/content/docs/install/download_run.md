@@ -125,12 +125,12 @@ pg_dump docspelldb > docspelldb_backup.sql
 
 Optionally, once the docspell backup is complete you can 
 use `rsync` or `scp` to send `docspelldb_backup.sql` to a backup server.
-Now that you have known backup(s) of Docspell, you may one day have to restore a backup. 
+Now that you have known backup(s) of Docspell's database, you may one day have to restore this backup. 
 
-Let's test restoring a backup. You can start a PostgreSQL shell by using 
+Let's test try restoring it. You can start a PostgreSQL shell by using 
 the `psql` command as the `postgres` user or a PostgreSQL admin account. 
 If the database is corrupted or still exists, you will first need to remove it.
-Warning: By performing this next step you are *deleting* your database.
+Warning: By performing this next step you are **deleting** your database.
 ```sql
 DROP DATABASE docspelldb;
 ```
@@ -153,8 +153,8 @@ psql docspelldb < docspelldb_backup.sql
 Now your database should be fully restored from your backup!
 Let's go to the Docspell server and restart the Docspell services.
 ```bash
-sudo systemctl stop docspell-joex
-sudo systemctl stop docspell-restserver
+sudo systemctl start docspell-joex
+sudo systemctl start docspell-restserver
 ```
 
 If your database and owner are the same as your initial configuration,
