@@ -199,10 +199,10 @@ object RUserEmail {
       userId: Ident,
       nameQ: Option[String]
   ): ConnectionIO[Vector[RUserEmail]] =
-    findByAccount0(userId, nameQ, false).to[Vector]
+    findByAccount0(userId, nameQ, exact = false).to[Vector]
 
   def getByName(userId: Ident, name: Ident): ConnectionIO[Option[RUserEmail]] =
-    findByAccount0(userId, Some(name.id), true).option
+    findByAccount0(userId, Some(name.id), exact = true).option
 
   def getById(id: Ident): ConnectionIO[Option[RUserEmail]] = {
     val t = Table(None)

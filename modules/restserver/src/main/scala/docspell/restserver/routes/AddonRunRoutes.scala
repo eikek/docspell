@@ -35,7 +35,7 @@ object AddonRunRoutes {
           input.addonRunConfigIds.toSet,
           UserTaskScope(token.account)
         )
-        resp <- Ok(BasicResult(true, "Job for running addons submitted."))
+        resp <- Ok(BasicResult(success = true, "Job for running addons submitted."))
       } yield resp
     }
   }

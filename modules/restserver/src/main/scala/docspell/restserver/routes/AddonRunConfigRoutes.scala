@@ -43,8 +43,8 @@ object AddonRunConfigRoutes {
               .map(_.leftMap(_.message))
           )
           resp <- res.fold(
-            msg => Ok(BasicResult(false, msg)),
-            id => Ok(IdResult(true, s"Addon run config added", id))
+            msg => Ok(BasicResult(success = false, msg)),
+            id => Ok(IdResult(success = true, s"Addon run config added", id))
           )
         } yield resp
 
@@ -58,8 +58,8 @@ object AddonRunConfigRoutes {
               .map(_.leftMap(_.message))
           )
           resp <- res.fold(
-            msg => Ok(BasicResult(false, msg)),
-            id => Ok(IdResult(true, s"Addon run config updated", id))
+            msg => Ok(BasicResult(success = false, msg)),
+            id => Ok(IdResult(success = true, s"Addon run config updated", id))
           )
         } yield resp
 
@@ -67,8 +67,8 @@ object AddonRunConfigRoutes {
         for {
           flag <- backend.addons.deleteAddonRunConfig(token.account.collectiveId, id)
           resp <-
-            if (flag) Ok(BasicResult(true, "Addon task deleted"))
-            else NotFound(BasicResult(false, "Addon task not found"))
+            if (flag) Ok(BasicResult(success = true, "Addon task deleted"))
+            else NotFound(BasicResult(success = false, "Addon task not found"))
         } yield resp
     }
   }

@@ -180,8 +180,8 @@ object RTag {
           .sortBy(_._1)
 
         byCat match {
-          case (None, tags) :: rest =>
-            rest.flatMap(_._2) ++ tags
+          case (None, tagsByCat) :: rest =>
+            rest.flatMap(_._2) ++ tagsByCat
           case _ =>
             byCat.flatMap(_._2)
         }

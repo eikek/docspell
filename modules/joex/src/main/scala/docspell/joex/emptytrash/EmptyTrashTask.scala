@@ -30,7 +30,7 @@ object EmptyTrashTask {
     UserTask(
       args.periodicTaskId,
       EmptyTrashArgs.taskName,
-      true,
+      enabled = true,
       ce,
       None,
       args

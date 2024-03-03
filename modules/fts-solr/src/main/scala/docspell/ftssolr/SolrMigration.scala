@@ -45,7 +45,7 @@ object SolrMigration {
         description,
         FtsMigration.Result.reIndexAll.pure[F]
       ),
-      true
+      dataChangeOnly = true
     )
 
   def indexAll[F[_]: Applicative](
@@ -59,7 +59,7 @@ object SolrMigration {
         description,
         FtsMigration.Result.indexAll.pure[F]
       ),
-      true
+      dataChangeOnly = true
     )
 
   def apply[F[_]: Functor](
@@ -74,6 +74,6 @@ object SolrMigration {
         description,
         task.map(_ => FtsMigration.Result.workDone)
       ),
-      false
+      dataChangeOnly = false
     )
 }

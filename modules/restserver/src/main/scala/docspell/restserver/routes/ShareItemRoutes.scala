@@ -34,7 +34,7 @@ object ShareItemRoutes {
         resp <-
           result
             .map(r => Ok(r))
-            .getOrElse(NotFound(BasicResult(false, "Not found.")))
+            .getOrElse(NotFound(BasicResult(success = false, "Not found.")))
       } yield resp
     }
   }

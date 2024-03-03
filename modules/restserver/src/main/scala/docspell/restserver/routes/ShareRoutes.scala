@@ -81,7 +81,7 @@ object ShareRoutes {
               .sendMail(user.account.collectiveId, user.account.userId, name, m)
           )
           resp <- res.fold(
-            err => Ok(BasicResult(false, s"Invalid mail data: $err")),
+            err => Ok(BasicResult(success = false, s"Invalid mail data: $err")),
             res => Ok(convertOut(res))
           )
         } yield resp
@@ -100,14 +100,46 @@ object ShareRoutes {
         resp <- res match {
           case VerifyResult.Success(token, name) =>
             val cd = ShareCookieData(token)
-            Ok(ShareVerifyResult(true, token.asString, false, "Success", name))
+            Ok(
+              ShareVerifyResult(
+                success = true,
+                token.asString,
+                passwordRequired = false,
+                "Success",
+                name
+              )
+            )
               .map(cd.addCookie(ClientRequestInfo.getBaseUrl(cfg, req)))
           case VerifyResult.PasswordMismatch =>
-            Ok(ShareVerifyResult(false, "", true, "Failed", None))
+            Ok(
+              ShareVerifyResult(
+                success = false,
+                "",
+                passwordRequired = true,
+                "Failed",
+                None
+              )
+            )
           case VerifyResult.NotFound =>
-            Ok(ShareVerifyResult(false, "", false, "Failed", None))
+            Ok(
+              ShareVerifyResult(
+                success = false,
+                "",
+                passwordRequired = false,
+                "Failed",
+                None
+              )
+            )
           case VerifyResult.InvalidToken =>
-            Ok(ShareVerifyResult(false, "", false, "Failed", None))
+            Ok(
+              ShareVerifyResult(
+                success = false,
+                "",
+                passwordRequired = false,
+                "Failed",
+                None
+              )
+            )
         }
       } yield resp
     }
@@ -125,18 +157,18 @@ object ShareRoutes {
 
   def mkIdResult(r: OShare.ChangeResult, msg: => String): IdResult =
     r match {
-      case OShare.ChangeResult.Success(id) => IdResult(true, msg, id)
+      case OShare.ChangeResult.Success(id) => IdResult(success = true, msg, id)
       case OShare.ChangeResult.PublishUntilInPast =>
-        IdResult(false, "Until date must not be in the past", Ident.unsafe(""))
+        IdResult(success = false, "Until date must not be in the past", Ident.unsafe(""))
       case OShare.ChangeResult.NotFound =>
         IdResult(
-          false,
+          success = false,
           "Share not found or not owner. Only the owner can update a share.",
           Ident.unsafe("")
         )
       case OShare.ChangeResult.QueryWithFulltext =>
         IdResult(
-          false,
+          success = false,
           "Sorry, shares with fulltext queries are currently not supported.",
           Ident.unsafe("")
         )
@@ -144,17 +176,17 @@ object ShareRoutes {
 
   def mkBasicResult(r: OShare.ChangeResult, msg: => String): BasicResult =
     r match {
-      case OShare.ChangeResult.Success(_) => BasicResult(true, msg)
+      case OShare.ChangeResult.Success(_) => BasicResult(success = true, msg)
       case OShare.ChangeResult.PublishUntilInPast =>
-        BasicResult(false, "Until date must not be in the past")
+        BasicResult(success = false, "Until date must not be in the past")
       case OShare.ChangeResult.NotFound =>
         BasicResult(
-          false,
+          success = false,
           "Share not found or not owner. Only the owner can update a share."
         )
       case OShare.ChangeResult.QueryWithFulltext =>
         BasicResult(
-          false,
+          success = false,
           "Sorry, shares with fulltext queries are currently not supported."
         )
     }
@@ -184,10 +216,10 @@ object ShareRoutes {
   def convertOut(res: SendResult): BasicResult =
     res match {
       case SendResult.Success(_) =>
-        BasicResult(true, "Mail sent.")
+        BasicResult(success = true, "Mail sent.")
       case SendResult.SendFailure(ex) =>
-        BasicResult(false, s"Mail sending failed: ${ex.getMessage}")
+        BasicResult(success = false, s"Mail sending failed: ${ex.getMessage}")
       case SendResult.NotFound =>
-        BasicResult(false, s"There was no mail-connection or item found.")
+        BasicResult(success = false, s"There was no mail-connection or item found.")
     }
 }

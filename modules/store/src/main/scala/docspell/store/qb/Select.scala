@@ -76,32 +76,38 @@ sealed trait Select {
 
 object Select {
   def apply(projection: SelectExpr) =
-    SimpleSelect(false, Nel.of(projection), None, Condition.unit, None)
+    SimpleSelect(distinctFlag = false, Nel.of(projection), None, Condition.unit, None)
 
   def apply(projection: Nel[SelectExpr], from: FromExpr) =
-    SimpleSelect(false, projection, from.some, Condition.unit, None)
+    SimpleSelect(distinctFlag = false, projection, from.some, Condition.unit, None)
 
   def apply(projection: SelectExpr, from: FromExpr) =
-    SimpleSelect(false, Nel.of(projection), from.some, Condition.unit, None)
+    SimpleSelect(
+      distinctFlag = false,
+      Nel.of(projection),
+      from.some,
+      Condition.unit,
+      None
+    )
 
   def apply(
       projection: Nel[SelectExpr],
       from: FromExpr,
       where: Condition
-  ) = SimpleSelect(false, projection, from.some, where, None)
+  ) = SimpleSelect(distinctFlag = false, projection, from.some, where, None)
 
   def apply(
       projection: SelectExpr,
       from: FromExpr,
       where: Condition
-  ) = SimpleSelect(false, Nel.of(projection), from.some, where, None)
+  ) = SimpleSelect(distinctFlag = false, Nel.of(projection), from.some, where, None)
 
   def apply(
       projection: Nel[SelectExpr],
       from: FromExpr,
       where: Condition,
       groupBy: GroupBy
-  ) = SimpleSelect(false, projection, from.some, where, Some(groupBy))
+  ) = SimpleSelect(distinctFlag = false, projection, from.some, where, Some(groupBy))
 
   case class SimpleSelect(
       distinctFlag: Boolean,

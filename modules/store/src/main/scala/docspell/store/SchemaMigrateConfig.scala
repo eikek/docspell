@@ -13,5 +13,9 @@ case class SchemaMigrateConfig(
 )
 
 object SchemaMigrateConfig {
-  val defaults = SchemaMigrateConfig(true, true, false)
+  val defaults = SchemaMigrateConfig(
+    runMainMigrations = true,
+    runFixupMigrations = true,
+    repairSchema = false
+  )
 }

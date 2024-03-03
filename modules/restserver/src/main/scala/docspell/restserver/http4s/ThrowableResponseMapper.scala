@@ -33,10 +33,10 @@ object ThrowableResponseMapper {
     def toResponse(ex: Throwable): F[Response[F]] =
       ex match {
         case _: IllegalArgumentException =>
-          BadRequest(BasicResult(false, ex.getMessage))
+          BadRequest(BasicResult(success = false, ex.getMessage))
 
         case _ =>
-          InternalServerError(BasicResult(false, ex.getMessage))
+          InternalServerError(BasicResult(success = false, ex.getMessage))
       }
   }
 }

@@ -29,7 +29,7 @@ object Unoconv {
       "unoconv",
       cfg.command,
       cfg.workingDir,
-      false,
+      useStdin = false,
       logger,
       reader
     )(

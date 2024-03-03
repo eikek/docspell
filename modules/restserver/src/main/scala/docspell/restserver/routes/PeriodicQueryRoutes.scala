@@ -87,7 +87,8 @@ object PeriodicQueryRoutes extends MailAddressCodec with NonEmptyListSupport {
         for {
           data <- req.as[PeriodicQuerySettings]
           resp <-
-            if (data.id.isEmpty) Ok(BasicResult(false, "Empty id is not allowed"))
+            if (data.id.isEmpty)
+              Ok(BasicResult(success = false, "Empty id is not allowed"))
             else run(data)
         } yield resp
 

@@ -72,7 +72,7 @@ private[joex] class AddonPrepare[F[_]: Sync](store: Store[F]) extends LoggerExte
 
       token <- AuthToken.user(
         account,
-        false,
+        requireSecondFactor = false,
         secret.getOrElse(ByteVector.empty),
         tokenValidity.some
       )

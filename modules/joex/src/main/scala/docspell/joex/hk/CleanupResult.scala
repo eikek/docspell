@@ -13,8 +13,8 @@ case class CleanupResult(removed: Int, disabled: Boolean) {
   def asString = if (disabled) "disabled" else s"$removed"
 }
 object CleanupResult {
-  def of(n: Int): CleanupResult = CleanupResult(n, false)
-  def disabled: CleanupResult = CleanupResult(0, true)
+  def of(n: Int): CleanupResult = CleanupResult(n, disabled = false)
+  def disabled: CleanupResult = CleanupResult(0, disabled = true)
 
   implicit val jsonEncoder: Encoder[CleanupResult] =
     deriveEncoder

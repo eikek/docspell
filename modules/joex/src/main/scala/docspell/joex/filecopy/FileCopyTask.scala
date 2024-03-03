@@ -29,23 +29,23 @@ object FileCopyTask {
   case class CopyResult(success: Boolean, message: String, counter: List[Counter])
   object CopyResult {
     def noSourceImpl: CopyResult =
-      CopyResult(false, "No source BinaryStore implementation found!", Nil)
+      CopyResult(success = false, "No source BinaryStore implementation found!", Nil)
 
     def noTargetImpl: CopyResult =
-      CopyResult(false, "No target BinaryStore implementation found!", Nil)
+      CopyResult(success = false, "No target BinaryStore implementation found!", Nil)
 
     def noSourceStore(id: Ident): CopyResult =
       CopyResult(
-        false,
+        success = false,
         s"No source file repo found with id: ${id.id}. Make sure it is present in the config.",
         Nil
       )
 
     def noTargetStore: CopyResult =
-      CopyResult(false, "No target file repositories defined", Nil)
+      CopyResult(success = false, "No target file repositories defined", Nil)
 
     def success(counter: NonEmptyList[Counter]): CopyResult =
-      CopyResult(true, "Done", counter.toList)
+      CopyResult(success = true, "Done", counter.toList)
 
     implicit val binaryIdCodec: Codec[BinaryId] =
       Codec.from(
@@ -96,8 +96,10 @@ object FileCopyTask {
             .fromList(targets.filter(_ != srcConfig))
             .toRight(CopyResult.noTargetStore)
 
-          srcRepo = store.createFileRepository(srcConfig, true)
-          targetRepos = trgConfig.map(store.createFileRepository(_, false))
+          srcRepo = store.createFileRepository(srcConfig, withAttributeStore = true)
+          targetRepos = trgConfig.map(
+            store.createFileRepository(_, withAttributeStore = false)
+          )
         } yield (srcRepo, targetRepos)
 
       data match {

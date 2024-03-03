@@ -44,7 +44,7 @@ object RTotp {
     for {
       now <- Timestamp.current[F]
       key <- Key.generate[F](mac)
-    } yield RTotp(userId, false, key, now)
+    } yield RTotp(userId, enabled = false, key, now)
 
   def insert(r: RTotp): ConnectionIO[Int] =
     DML.insert(T, T.all, sql"${r.userId},${r.enabled},${r.secret},${r.created}")

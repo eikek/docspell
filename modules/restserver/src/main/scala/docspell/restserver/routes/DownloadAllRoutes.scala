@@ -126,7 +126,7 @@ object DownloadAllRoutes {
       case DELETE -> Root / "file" / Ident(id) =>
         for {
           _ <- backend.downloadAll.deleteFile(id)
-          resp <- Ok(BasicResult(true, "File deleted."))
+          resp <- Ok(BasicResult(success = true, "File deleted."))
         } yield resp
 
       case PUT -> Root / "cancel" / Ident(id) =>

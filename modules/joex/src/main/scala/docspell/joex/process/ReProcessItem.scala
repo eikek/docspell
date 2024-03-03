@@ -131,10 +131,10 @@ object ReProcessItem {
               data.item.source, // source-id
               None, // folder
               Seq.empty,
-              false,
+              skipDuplicate = false,
               None,
               None,
-              true,
+              reprocess = true,
               None, // attachOnly (not used when reprocessing attachments)
               None // cannot retain customData from an already existing item
             ),

@@ -31,7 +31,7 @@ object Tesseract {
       "tesseract",
       cfg.command.replace(Map("{{lang}}" -> lang.iso3)),
       cfg.workingDir,
-      false,
+      useStdin = false,
       logger,
       reader
     )(in, handler)

@@ -72,7 +72,7 @@ object NotificationRoutes extends NonEmptyListSupport {
                 .createChannel(c, user.account.userId)
                 .map(res => Conversions.basicResult(res, "Channel created"))
             }
-            .foldF(ex => BadRequest(BasicResult(false, ex.getMessage)), Ok(_))
+            .foldF(ex => BadRequest(BasicResult(success = false, ex.getMessage)), Ok(_))
         } yield resp
 
       case req @ PUT -> Root =>
@@ -86,7 +86,7 @@ object NotificationRoutes extends NonEmptyListSupport {
                 .updateChannel(c, user.account.userId)
                 .map(res => Conversions.basicResult(res, "Channel created"))
             }
-            .foldF(ex => BadRequest(BasicResult(false, ex.getMessage)), Ok(_))
+            .foldF(ex => BadRequest(BasicResult(success = false, ex.getMessage)), Ok(_))
         } yield resp
     }
   }
@@ -173,7 +173,7 @@ object NotificationRoutes extends NonEmptyListSupport {
         resp <- data.asJsonWithMessage match {
           case Right(m) => Ok(m)
           case Left(err) =>
-            BadRequest(BasicResult(false, s"Unable to render message: $err"))
+            BadRequest(BasicResult(success = false, s"Unable to render message: $err"))
         }
       } yield resp
     }

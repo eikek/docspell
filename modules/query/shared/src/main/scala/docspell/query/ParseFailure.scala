@@ -87,10 +87,10 @@ object ParseFailure {
         SimpleMessage(offset, message)
 
       case InRange(offset, lower, upper) =>
-        if (lower == upper) ExpectMessage(offset, List(lower.toString), true)
+        if (lower == upper) ExpectMessage(offset, List(lower.toString), exhaustive = true)
         else {
           val expect = s"$lower-$upper"
-          ExpectMessage(offset, List(expect), true)
+          ExpectMessage(offset, List(expect), exhaustive = true)
         }
 
       case Length(offset, expected, actual) =>
@@ -110,6 +110,10 @@ object ParseFailure {
         ExpectMessage(offset, options.take(7), options.size < 8)
 
       case WithContext(ctx, expect) =>
-        ExpectMessage(expect.offset, s"Failed to parse near: $ctx" :: Nil, true)
+        ExpectMessage(
+          expect.offset,
+          s"Failed to parse near: $ctx" :: Nil,
+          exhaustive = true
+        )
     }
 }

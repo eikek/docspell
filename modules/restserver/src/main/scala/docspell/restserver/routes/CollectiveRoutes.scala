@@ -118,7 +118,7 @@ object CollectiveRoutes {
       case POST -> Root / "classifier" / "startonce" =>
         for {
           _ <- backend.collective.startLearnClassifier(user.account.collectiveId)
-          resp <- Ok(BasicResult(true, "Task submitted"))
+          resp <- Ok(BasicResult(success = true, "Task submitted"))
         } yield resp
 
       case req @ POST -> Root / "emptytrash" / "startonce" =>
@@ -127,7 +127,7 @@ object CollectiveRoutes {
           _ <- backend.collective.startEmptyTrash(
             EmptyTrashArgs(user.account.collectiveId, data.minAge)
           )
-          resp <- Ok(BasicResult(true, "Task submitted"))
+          resp <- Ok(BasicResult(success = true, "Task submitted"))
         } yield resp
     }
   }
