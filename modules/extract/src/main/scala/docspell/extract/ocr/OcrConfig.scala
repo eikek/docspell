@@ -11,6 +11,7 @@ import java.nio.file.Paths
 import fs2.io.file.Path
 
 import docspell.common._
+import docspell.common.exec.ExternalCommand
 import docspell.common.util.File
 
 case class OcrConfig(
@@ -25,17 +26,17 @@ object OcrConfig {
 
   case class PageRange(begin: Int)
 
-  case class Ghostscript(command: SystemCommand.Config, workingDir: Path)
+  case class Ghostscript(command: ExternalCommand, workingDir: Path)
 
-  case class Tesseract(command: SystemCommand.Config)
+  case class Tesseract(command: ExternalCommand)
 
-  case class Unpaper(command: SystemCommand.Config)
+  case class Unpaper(command: ExternalCommand)
 
   val default = OcrConfig(
     maxImageSize = 3000 * 3000,
     pageRange = PageRange(10),
     ghostscript = Ghostscript(
-      SystemCommand.Config(
+      ExternalCommand(
         "gs",
         Seq(
           "-dNOPAUSE",
@@ -52,16 +53,14 @@ object OcrConfig {
       )
     ),
     unpaper = Unpaper(
-      SystemCommand
-        .Config("unpaper", Seq("{{infile}}", "{{outfile}}"), Duration.seconds(30))
+      ExternalCommand("unpaper", Seq("{{infile}}", "{{outfile}}"), Duration.seconds(30))
     ),
     tesseract = Tesseract(
-      SystemCommand
-        .Config(
-          "tesseract",
-          Seq("{{file}}", "stdout", "-l", "{{lang}}"),
-          Duration.minutes(1)
-        )
+      ExternalCommand(
+        "tesseract",
+        Seq("{{file}}", "stdout", "-l", "{{lang}}"),
+        Duration.minutes(1)
+      )
     )
   )
 }
