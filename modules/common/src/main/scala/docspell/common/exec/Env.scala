@@ -17,6 +17,9 @@ case class Env(values: Map[String, String]) {
   def addAll(e: Env): Env =
     Env(values ++ e.values)
 
+  def modifyValue(f: String => String): Env =
+    Env(values.view.mapValues(f).toMap)
+
   def ++(e: Env) = addAll(e)
 
   def foreach(f: (String, String) => Unit): Unit =
