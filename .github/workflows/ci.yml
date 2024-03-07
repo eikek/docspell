@@ -29,6 +29,8 @@ jobs:
       #   uses: coursier/cache-action@v6
       - name: sbt ci ${{ github.ref }}
         run: sbt ci
+        env:
+          SBT_OPTS: "-Xmx2G -Xss4m"
   ci:
     runs-on: ubuntu-22.04
     needs: [ci-matrix]
