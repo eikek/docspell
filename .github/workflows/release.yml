@@ -29,6 +29,8 @@ jobs:
         run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
       - name: sbt make-pkg (${{ env.DOCSPELL_VERSION }})
         run: sbt make-pkg
+        env:
+          SBT_OPTS: "-Xmx2G -Xss4m"
       - uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
