@@ -11,9 +11,9 @@ import fs2.Stream
 import fs2.io.file.{Files, Path}
 
 import docspell.common.exec.ExternalCommand
+import docspell.common.exec.SysExec
 import docspell.common.util.File
 import docspell.logging.Logger
-import docspell.common.exec.SysExec
 
 object Ocr {
 
@@ -90,12 +90,6 @@ object Ocr {
       .resource(SysExec(cmd, logger, Some(wd), Some(pdf)))
       .evalMap(_.runToSuccess(logger))
       .flatMap(_ => File.listFiles(pathEndsWith(".tif"), wd))
-
-    // println(x)
-
-    // SystemCommand
-    //   .execSuccess(cmd, logger, wd = Some(wd), stdin = pdf)
-    //   .flatMap(_ => File.listFiles(pathEndsWith(".tif"), wd))
   }
 
   /** Run ghostscript to extract all pdf pages into tiff files. The files are stored to a
@@ -120,10 +114,6 @@ object Ocr {
       .resource(SysExec(cmd, logger, Some(wd)))
       .evalMap(_.runToSuccess(logger))
       .flatMap(_ => File.listFiles(pathEndsWith(".tif"), wd))
-
-    // SystemCommand
-    //   .execSuccess[F](cmd, logger, wd = Some(wd))
-    //   .flatMap(_ => File.listFiles(pathEndsWith(".tif"), wd))
   }
 
   private def pathEndsWith(ext: String): Path => Boolean =
@@ -159,17 +149,6 @@ object Ocr {
           )
         Stream.emit(img)
       }
-
-    // SystemCommand
-    //   .execSuccess[F](cmd, logger, wd = wd)
-    //   .map(_ => targetFile)
-    //   .handleErrorWith { th =>
-    //     logger
-    //       .warn(
-    //         s"Unpaper command failed: ${th.getMessage}. Using input file for text extraction."
-    //       )
-    //     Stream.emit(img)
-    //   }
   }
 
   /** Run tesseract on the given image file and return the extracted text. */
@@ -191,10 +170,6 @@ object Ocr {
       Stream
         .resource(SysExec(cmd, logger, uimg.parent))
         .evalMap(_.runToSuccessStdout(logger))
-
-      // SystemCommand
-      //   .execSuccess[F](cmd, logger, wd = uimg.parent)
-      //   .map(_.stdout)
     }
 
   /** Run tesseract on the given image file and return the extracted text. */
@@ -211,8 +186,6 @@ object Ocr {
     Stream
       .resource(SysExec(cmd, logger, None, Some(img)))
       .evalMap(_.runToSuccessStdout(logger))
-
-//    SystemCommand.execSuccess(cmd, logger, stdin = img).map(_.stdout)
   }
 
   private def fixLanguage(lang: String): String =
