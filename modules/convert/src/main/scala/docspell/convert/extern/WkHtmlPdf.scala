@@ -30,7 +30,7 @@ object WkHtmlPdf {
     val reader: (Path, Int) => F[ConversionResult[F]] =
       ExternConv.readResult[F](chunkSize, logger)
 
-    val cmdCfg = cfg.command.withVars(Map("{{encoding}}" -> charset.name()))
+    val cmdCfg = cfg.command.withVars(Map("encoding" -> charset.name()))
 
     // html sanitize should (among other) remove links to invalid
     // protocols like cid: which is not supported by further

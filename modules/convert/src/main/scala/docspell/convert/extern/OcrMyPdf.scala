@@ -27,7 +27,7 @@ object OcrMyPdf {
       val reader: (Path, Int) => F[ConversionResult[F]] =
         ExternConv.readResult[F](chunkSize, logger)
 
-      val cmd = cfg.command.withVars(Map("{{lang}}" -> lang.iso3))
+      val cmd = cfg.command.withVars(Map("lang" -> lang.iso3))
 
       ExternConv.toPDF[F, A](
         "ocrmypdf",

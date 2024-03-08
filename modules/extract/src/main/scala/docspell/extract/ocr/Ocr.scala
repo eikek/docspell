@@ -80,8 +80,8 @@ object Ocr {
       .copy(args = xargs)
       .withVars(
         Map(
-          "{{infile}}" -> "-",
-          "{{outfile}}" -> "%d.tif"
+          "infile" -> "-",
+          "outfile" -> "%d.tif"
         )
       )
       .resolved
@@ -110,8 +110,8 @@ object Ocr {
     val cmd = ghostscript
       .withVars(
         Map(
-          "{{infile}}" -> pdf.absolute.toString,
-          "{{outfile}}" -> "%d.tif"
+          "infile" -> pdf.absolute.toString,
+          "outfile" -> "%d.tif"
         )
       )
       .resolved
@@ -142,8 +142,8 @@ object Ocr {
     val cmd = unpaper
       .withVars(
         Map(
-          "{{infile}}" -> img.absolute.toString,
-          "{{outfile}}" -> targetFile.toString
+          "infile" -> img.absolute.toString,
+          "outfile" -> targetFile.toString
         )
       )
       .resolved
@@ -184,7 +184,7 @@ object Ocr {
     runUnpaperFile(img, config.unpaper.command, img.parent, logger).flatMap { uimg =>
       val cmd = config.tesseract.command
         .withVars(
-          Map("{{file}}" -> uimg.fileName.toString, "{{lang}}" -> fixLanguage(lang))
+          Map("file" -> uimg.fileName.toString, "lang" -> fixLanguage(lang))
         )
         .resolved
 
@@ -205,7 +205,7 @@ object Ocr {
       config: OcrConfig
   ): Stream[F, String] = {
     val cmd = config.tesseract.command
-      .withVars(Map("{{file}}" -> "stdin", "{{lang}}" -> fixLanguage(lang)))
+      .withVars(Map("file" -> "stdin", "lang" -> fixLanguage(lang)))
       .resolved
 
     Stream

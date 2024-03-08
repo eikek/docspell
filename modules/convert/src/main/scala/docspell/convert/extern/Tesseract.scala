@@ -27,7 +27,7 @@ object Tesseract {
     val reader: (Path, Int) => F[ConversionResult[F]] =
       ExternConv.readResultTesseract[F](outBase, chunkSize, logger)
 
-    val cmd = cfg.command.withVars(Map("{{lang}}" -> lang.iso3))
+    val cmd = cfg.command.withVars(Map("lang" -> lang.iso3))
 
     ExternConv.toPDF[F, A](
       "tesseract",

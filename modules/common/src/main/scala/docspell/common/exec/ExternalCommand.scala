@@ -15,12 +15,14 @@ import docspell.common.exec.SysCmd
 final case class ExternalCommand(
     program: String,
     args: Seq[String],
-    env: Map[String, String],
     timeout: Duration,
-    argMappings: Map[Ident, ArgMapping]
+    env: Map[String, String] = Map.empty,
+    argMappings: Map[Ident, ArgMapping] = Map.empty
 ) {
   def withVars(vars: Map[String, String]): ExternalCommand.WithVars =
     ExternalCommand.WithVars(this, vars)
+
+  import ExternalCommand.pattern
 
   def resolve(vars: Map[String, String]): SysCmd = {
     val replace = ExternalCommand.replaceString(vars) _
@@ -28,7 +30,7 @@ final case class ExternalCommand(
       argMappings.view.mapValues(_.resolve(replace).firstMatch).toMap
     val resolvedArgs = args.map(replace).flatMap { arg =>
       resolvedArgMappings
-        .find(e => s"{{${e._1.id}}}" == arg)
+        .find(e => pattern(e._1.id) == arg)
         .map(_._2)
         .getOrElse(List(arg))
     }
@@ -40,8 +42,13 @@ final case class ExternalCommand(
 }
 
 object ExternalCommand {
+  private val openPattern = "{{"
+  private val closePattern = "}}"
+
+  private def pattern(s: String): String = s"${openPattern}${s}${closePattern}"
+
   def apply(program: String, args: Seq[String], timeout: Duration): ExternalCommand =
-    ExternalCommand(program, args, Map.empty, timeout, Map.empty)
+    ExternalCommand(program, args, timeout, Map.empty, Map.empty)
 
   final case class ArgMapping(
       value: String,

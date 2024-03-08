@@ -36,7 +36,7 @@ private[extern] object ExternConv {
         val sysCfg =
           cmdCfg
             .withVar("outfile", out.toString)
-            .withVarOption("infile", Option.when(useStdin)(inFile.toString))
+            .withVarOption("infile", Option.when(!useStdin)(inFile.toString))
             .resolved
 
         val createInput: Pipe[F, Byte, Unit] =
