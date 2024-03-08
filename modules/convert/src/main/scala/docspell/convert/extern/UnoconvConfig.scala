@@ -8,6 +8,6 @@ package docspell.convert.extern
 
 import fs2.io.file.Path
 
-import docspell.common.SystemCommand
+import docspell.common.exec.ExternalCommand
 
-case class UnoconvConfig(command: SystemCommand.Config, workingDir: Path)
+case class UnoconvConfig(command: ExternalCommand, workingDir: Path)

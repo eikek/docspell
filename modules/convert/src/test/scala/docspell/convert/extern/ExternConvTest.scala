@@ -14,6 +14,7 @@ import cats.effect.unsafe.implicits.global
 import fs2.io.file.Path
 
 import docspell.common._
+import docspell.common.exec._
 import docspell.common.util.File
 import docspell.convert._
 import docspell.files.ExampleFiles
@@ -27,7 +28,7 @@ class ExternConvTest extends FunSuite with FileChecks with TestLoggingConfig {
   val target = File.path(Paths.get("target"))
 
   test("convert html to pdf") {
-    val cfg = SystemCommand.Config(
+    val cfg = ExternalCommand(
       "wkhtmltopdf",
       Seq("-s", "A4", "--encoding", "UTF-8", "-", "{{outfile}}"),
       Duration.seconds(20)
@@ -53,7 +54,7 @@ class ExternConvTest extends FunSuite with FileChecks with TestLoggingConfig {
   }
 
   test("convert office to pdf") {
-    val cfg = SystemCommand.Config(
+    val cfg = ExternalCommand(
       "unoconv",
       Seq("-f", "pdf", "-o", "{{outfile}}", "{{infile}}"),
       Duration.seconds(20)
@@ -80,7 +81,7 @@ class ExternConvTest extends FunSuite with FileChecks with TestLoggingConfig {
   }
 
   test("convert image to pdf") {
-    val cfg = SystemCommand.Config(
+    val cfg = ExternalCommand(
       "tesseract",
       Seq("{{infile}}", "out", "-l", "deu", "pdf", "txt"),
       Duration.seconds(20)
@@ -105,5 +106,4 @@ class ExternConvTest extends FunSuite with FileChecks with TestLoggingConfig {
       )
       .unsafeRunSync()
   }
-
 }

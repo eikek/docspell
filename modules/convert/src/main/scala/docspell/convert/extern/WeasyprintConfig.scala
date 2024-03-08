@@ -8,6 +8,6 @@ package docspell.convert.extern
 
 import fs2.io.file.Path
 
-import docspell.common.SystemCommand
+import docspell.common.exec.ExternalCommand
 
-case class WeasyprintConfig(command: SystemCommand.Config, workingDir: Path)
+case class WeasyprintConfig(command: ExternalCommand, workingDir: Path)
