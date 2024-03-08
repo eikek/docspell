@@ -25,7 +25,7 @@ skip_prefixes = [
   "https://docs.github.com", # doesn't allow checking anymore
   "/openapi",
   "https://www.abisource.com", # has bad ssl config
-  "https://chromewebstore.google.com" # too many redirects reported
+  "https://chromewebstore.google.com", # too many redirects reported
   "https://stackoverflow.com/" # forbidden
 ]
 skip_anchor_prefixes = [
