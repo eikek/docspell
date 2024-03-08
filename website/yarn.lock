@@ -18,9 +18,9 @@
   integrity sha512-ErErGXjKo9/fAJE49fyU8M6DuJUpdqR5YLM8jGJOC5ZcKIDSTQ5m+R3DTa0VYHAGGFbk2qLWVWD/r5sfCLA/jQ==
 
 "@fontsource/spectral@^5.0.0":
-  version "5.0.8"
-  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.0.8.tgz#013d48a177ce6b9eba8bdb4ed99a8a37aac57fd2"
-  integrity sha512-Gp/tqCe9scBJHwH0RgGasf5KkLYgW4Y2rKgQqMe3j5cYpZyCJA2g0OOVVvF8U7VQfvfw3TW8d3hWT4IISXqQCQ==
+  version "5.0.12"
+  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.0.12.tgz#cfdc1608258c1edf69dd18996501604ab69bcd2c"
+  integrity sha512-tscRgEvVW/eRnBaGRnnlg86rx0NUMGzXFNePFBIXqdZE++9hOH0RTUqtpzUR+zS037kgbkitaVqotyGY8Vq+jw==
 
 "@fortawesome/fontawesome-free@^6.0.0":
   version "6.5.1"
