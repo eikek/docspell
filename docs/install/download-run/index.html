@@ -881,11 +881,11 @@ We'll assume in our guide example that <code>docspelldb</code> is the name of yo
 </span></code></pre>
 <p>Optionally, once the docspell backup is complete you can 
 use <code>rsync</code> or <code>scp</code> to send <code>docspelldb_backup.sql</code> to a backup server.
-Now that you have known backup(s) of Docspell, you may one day have to restore a backup. </p>
-<p>Let's test restoring a backup. You can start a PostgreSQL shell by using 
+Now that you have known backup(s) of Docspell's database, you may one day have to restore this backup. </p>
+<p>Let's test try restoring it. You can start a PostgreSQL shell by using 
 the <code>psql</code> command as the <code>postgres</code> user or a PostgreSQL admin account. 
 If the database is corrupted or still exists, you will first need to remove it.
-Warning: By performing this next step you are <em>deleting</em> your database.</p>
+Warning: By performing this next step you are <strong>deleting</strong> your database.</p>
 <pre data-lang="sql" class="language-sql z-code"><code class="language-sql" data-lang="sql"><span class="z-source z-sql"><span class="z-meta z-drop z-sql"><span class="z-keyword z-other z-create z-sql">DROP</span> <span class="z-keyword z-other z-sql">DATABASE</span></span> docspelldb;
 </span></code></pre>
 <p>And now we'll create a new database for your backup to restore to.
@@ -901,8 +901,8 @@ This command will also take some time to complete.</p>
 </span></code></pre>
 <p>Now your database should be fully restored from your backup!
 Let's go to the Docspell server and restart the Docspell services.</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl stop docspell-joex</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl stop docspell-restserver</span>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl start docspell-joex</span>
+<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl start docspell-restserver</span>
 </span></code></pre>
 <p>If your database and owner are the same as your initial configuration,
 and you see your docspell data restored, you have sucessfully restored
