@@ -15,10 +15,11 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
+      sbt17 = pkgs.sbt.override { jre = pkgs.jdk17; };
       devshellPkgs = with pkgs; [
         jq
         scala-cli
-        sbt
+        sbt17
 
         netcat
         jdk17
@@ -85,6 +86,7 @@
             (builtins.attrValues devshell-tools.legacyPackages.${system}.cnt-scripts)
             ++ devshellPkgs;
 
+          DOCSPELL_ENV = "dev";
           DEV_CONTAINER = "docsp-dev";
           SBT_OPTS = "-Xmx2G -Xss4m";
         };
@@ -93,6 +95,7 @@
             (builtins.attrValues devshell-tools.legacyPackages.${system}.vm-scripts)
             ++ devshellPkgs;
 
+          DOCSPELL_ENV = "dev";
           SBT_OPTS = "-Xmx2G -Xss4m";
           DEV_VM = "dev-vm";
           VM_SSH_PORT = "10022";
@@ -132,10 +135,16 @@
           system = "x86_64-linux";
           modules = [
             {
-              services.dev-postgres.enable = true;
+              services.dev-postgres = {
+                enable = true;
+                databases = ["docspell"];
+              };
               services.dev-email.enable = true;
               services.dev-minio.enable = true;
-              services.dev-solr.enable = true;
+              services.dev-solr = {
+                enable = true;
+                cores = ["docspell"];
+              };
             }
           ];
         };
@@ -143,10 +152,17 @@
           system = "x86_64-linux";
           modules = [
             {
-              services.dev-postgres.enable = true;
+              services.dev-postgres = {
+                enable = true;
+                databases = ["docspell"];
+              };
               services.dev-email.enable = true;
               services.dev-minio.enable = true;
-              services.dev-solr.enable = true;
+              services.dev-solr = {
+                enable = true;
+                cores = ["docspell"];
+              };
+
               port-forward.ssh = 10022;
               port-forward.dev-postgres = 6534;
               port-forward.dev-smtp = 10025;

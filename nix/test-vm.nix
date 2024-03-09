@@ -27,6 +27,13 @@ in {
   port-forward.dev-webmail = 8080;
   port-forward.dev-solr = 8983;
 
+  environment.systemPackages = with pkgs; [
+    jq
+    htop
+    iotop
+    coreutils
+  ];
+
   networking = {
     hostName = "docspell-test-vm";
     firewall.allowedTCPPorts = [7880];

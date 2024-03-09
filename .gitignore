@@ -1,4 +1,5 @@
 #artwork/*.png
+.envrc
 target/
 local/
 node_modules/
