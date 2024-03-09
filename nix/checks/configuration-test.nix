@@ -1,5 +1,8 @@
-{ config, pkgs, ... }:
-let
+{
+  config,
+  pkgs,
+  ...
+}: let
   full-text-search = {
     enabled = true;
     backend = "postgresql";
@@ -9,9 +12,7 @@ let
       };
     };
   };
-in
-{
-
+in {
   i18n = {
     defaultLocale = "en_US.UTF-8";
   };
@@ -21,12 +22,11 @@ in
     password = "root";
   };
 
-
   services.docspell-joex = {
     enable = true;
     bind.address = "0.0.0.0";
     base-url = "http://localhost:7878";
-    jvmArgs = [ "-J-Xmx1536M" ];
+    jvmArgs = ["-J-Xmx1536M"];
     inherit full-text-search;
   };
   services.docspell-restserver = {
@@ -69,14 +69,12 @@ in
     };
   };
 
-  environment.systemPackages =
-    [
-      pkgs.jq
-      pkgs.inetutils
-      pkgs.htop
-      pkgs.jdk17
-    ];
-
+  environment.systemPackages = [
+    pkgs.jq
+    pkgs.inetutils
+    pkgs.htop
+    pkgs.jdk17
+  ];
 
   services.xserver = {
     enable = false;
@@ -84,12 +82,11 @@ in
 
   networking = {
     hostName = "docspelltest";
-    firewall.allowedTCPPorts = [ 7880 ];
+    firewall.allowedTCPPorts = [7880];
   };
 
   system.stateVersion = "22.11";
 
   # This slows down the build of a vm
   documentation.enable = false;
-
 }

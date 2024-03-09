@@ -1,11 +1,17 @@
-overlay: { config, lib, pkgs, ... }:
-
-with lib;
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.services.docspell-joex;
   # Extract the config without the extraConfig attribute. It will be merged later
   declared_config = attrsets.filterAttrs (n: v: n != "extraConfig") cfg;
-  user = if cfg.runAs == null then "docspell" else cfg.runAs;
+  user =
+    if cfg.runAs == null
+    then "docspell"
+    else cfg.runAs;
   configFile = pkgs.writeText "docspell-joex.conf" ''
     {"docspell": { "joex":
       ${builtins.toJSON (lib.recursiveUpdate declared_config cfg.extraConfig)}
@@ -85,7 +91,7 @@ let
       schedule = "Sun *-*-* 00:00:00 UTC";
       sender-account = "";
       smtp-id = "";
-      recipients = [ ];
+      recipients = [];
       subject = "Docspell {{ latestVersion }} is available";
       body = ''
         Hello,
@@ -116,21 +122,21 @@ let
           working-dir = "/tmp/docspell-extraction";
           command = {
             program = "${pkgs.ghostscript}/bin/gs";
-            args = [ "-dNOPAUSE" "-dBATCH" "-dSAFER" "-sDEVICE=tiffscaled8" "-sOutputFile={{outfile}}" "{{infile}}" ];
+            args = ["-dNOPAUSE" "-dBATCH" "-dSAFER" "-sDEVICE=tiffscaled8" "-sOutputFile={{outfile}}" "{{infile}}"];
             timeout = "5 minutes";
           };
         };
         unpaper = {
           command = {
             program = "${pkgs.unpaper}/bin/unpaper";
-            args = [ "{{infile}}" "{{outfile}}" ];
+            args = ["{{infile}}" "{{outfile}}"];
             timeout = "5 minutes";
           };
         };
         tesseract = {
           command = {
             program = "${pkgs.tesseract4}/bin/tesseract";
-            args = [ "{{file}}" "stdout" "-l" "{{lang}}" ];
+            args = ["{{file}}" "stdout" "-l" "{{lang}}"];
             timeout = "5 minutes";
           };
         };
@@ -179,7 +185,7 @@ let
       wkhtmlpdf = {
         command = {
           program = "";
-          args = [ "--encoding" "UTF-8" "-" "{{outfile}}" ];
+          args = ["--encoding" "UTF-8" "-" "{{outfile}}"];
           timeout = "2 minutes";
         };
         working-dir = "/tmp/docspell-convert";
@@ -204,7 +210,7 @@ let
       tesseract = {
         command = {
           program = "${pkgs.tesseract4}/bin/tesseract";
-          args = [ "{{infile}}" "out" "-l" "{{lang}}" "pdf" "txt" ];
+          args = ["{{infile}}" "out" "-l" "{{lang}}" "pdf" "txt"];
           timeout = "5 minutes";
         };
         working-dir = "/tmp/docspell-convert";
@@ -213,7 +219,7 @@ let
       unoconv = {
         command = {
           program = "${pkgs.unoconv}/bin/unoconv";
-          args = [ "-f" "pdf" "-o" "{{outfile}}" "{{infile}}" ];
+          args = ["-f" "pdf" "-o" "{{outfile}}" "{{infile}}"];
           timeout = "2 minutes";
         };
         working-dir = "/tmp/docspell-convert";
@@ -240,7 +246,7 @@ let
     };
     files = {
       chunk-size = 524288;
-      valid-mime-types = [ ];
+      valid-mime-types = [];
     };
     full-text-search = {
       enabled = false;
@@ -259,9 +265,9 @@ let
           user = "pguser";
           password = "";
         };
-        pg-config = { };
+        pg-config = {};
         pg-query-parser = "websearch_to_tsquery";
-        pg-rank-normalization = [ 4 ];
+        pg-rank-normalization = [4];
       };
       migration = {
         index-all-chunk = 10;
@@ -291,9 +297,7 @@ let
       };
     };
   };
-in
-{
-
+in {
   ## interface
   options = {
     services.docspell-joex = {
@@ -321,11 +325,10 @@ in
       };
       jvmArgs = mkOption {
         type = types.listOf types.str;
-        default = [ ];
-        example = [ "-J-Xmx1G" ];
+        default = [];
+        example = ["-J-Xmx1G"];
         description = "The options passed to the executable for setting jvm arguments.";
       };
-
 
       app-id = mkOption {
         type = types.str;
@@ -340,7 +343,7 @@ in
       };
 
       bind = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             address = mkOption {
               type = types.str;
@@ -353,13 +356,13 @@ in
               description = "The port to bind the REST server";
             };
           };
-        });
+        };
         default = defaults.bind;
         description = "Address and port bind the rest server.";
       };
 
       logging = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             minimum-level = mkOption {
               type = types.str;
@@ -377,7 +380,7 @@ in
               description = "Set of logger and their levels";
             };
           };
-        });
+        };
         default = defaults.logging;
         description = "Settings for logging";
       };
@@ -394,7 +397,7 @@ in
       };
 
       jdbc = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             url = mkOption {
               type = types.str;
@@ -421,13 +424,13 @@ in
               description = "The password to connect to the database.";
             };
           };
-        });
+        };
         default = defaults.jdbc;
         description = "Database connection settings";
       };
 
       send-mail = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             list-id = mkOption {
               type = types.str;
@@ -443,15 +446,14 @@ in
                 https://tools.ietf.org/html/rfc2919 for a formal specification
               '';
             };
-
           };
-        });
+        };
         default = defaults.send-mail;
         description = "Settings for sending mails.";
       };
 
       scheduler = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             pool-size = mkOption {
               type = types.int;
@@ -501,13 +503,13 @@ in
               '';
             };
           };
-        });
+        };
         default = defaults.scheduler;
         description = "Settings for the scheduler";
       };
 
       periodic-scheduler = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             wakeup-period = mkOption {
               type = types.str;
@@ -520,7 +522,7 @@ in
               '';
             };
           };
-        });
+        };
         default = defaults.periodic-scheduler;
         description = ''
           Settings for the periodic scheduler.
@@ -528,10 +530,10 @@ in
       };
 
       user-tasks = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             scan-mailbox = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   max-folders = mkOption {
                     type = types.int;
@@ -565,18 +567,18 @@ in
                     '';
                   };
                 };
-              });
+              };
               default = defaults.user-tasks.scan-mailbox;
               description = "Allows to import e-mails by scanning a mailbox.";
             };
           };
-        });
+        };
         default = defaults.user-tasks;
         description = "Configuration for the user tasks.";
       };
 
       house-keeping = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             schedule = mkOption {
               type = types.str;
@@ -587,7 +589,7 @@ in
               '';
             };
             cleanup-invites = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -600,7 +602,7 @@ in
                     description = "The minimum age of invites to be deleted.";
                   };
                 };
-              });
+              };
               default = defaults.house-keeping.cleanup-invites;
               description = ''
                 This task removes invitation keys that have been created but not
@@ -609,7 +611,7 @@ in
               '';
             };
             cleanup-jobs = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -633,9 +635,8 @@ in
                       whether more or less memory should be used.
                     '';
                   };
-
                 };
-              });
+              };
               default = defaults.house-keeping.cleanup-jobs;
               description = ''
                 Jobs store their log output in the database. Normally this data
@@ -644,7 +645,7 @@ in
               '';
             };
             cleanup-remember-me = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -657,13 +658,13 @@ in
                     description = "The miminum age of remember me tokens to delete.";
                   };
                 };
-              });
+              };
               default = defaults.house-keeping.cleanup-remember-me;
               description = "Settings for cleaning up remember me tokens.";
             };
 
             cleanup-downloads = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -676,13 +677,13 @@ in
                     description = "The miminum age of a download file to delete.";
                   };
                 };
-              });
+              };
               default = defaults.house-keeping.cleanup-downloads;
               description = "";
             };
 
             check-nodes = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -695,12 +696,12 @@ in
                     description = "How often the node must be unreachable, before it is removed.";
                   };
                 };
-              });
+              };
               default = defaults.house-keeping.cleanup-nodes;
               description = "Removes node entries that are not reachable anymore.";
             };
           };
-        });
+        };
         default = defaults.house-keeping;
         description = ''
           Docspell uses periodic house keeping tasks, like cleaning expired
@@ -709,7 +710,7 @@ in
       };
 
       update-check = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             enabled = mkOption {
               type = types.bool;
@@ -753,7 +754,7 @@ in
             recipients = mkOption {
               type = types.listOf types.str;
               default = defaults.update-check.recipients;
-              example = [ "josh.doe@gmail.com" ];
+              example = ["josh.doe@gmail.com"];
               description = ''
                 A list of recipient e-mail addresses.
               '';
@@ -781,7 +782,7 @@ in
               '';
             };
           };
-        });
+        };
         default = defaults.update-check;
         description = ''
           A periodic task to check for new releases of docspell. It can
@@ -791,10 +792,10 @@ in
       };
 
       extraction = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             pdf = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   min-text-len = mkOption {
                     type = types.int;
@@ -808,12 +809,12 @@ in
                     '';
                   };
                 };
-              });
+              };
               default = defaults.extraction.pdf;
               description = "Settings for PDF extraction";
             };
             preview = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   dpi = mkOption {
                     type = types.int;
@@ -830,12 +831,12 @@ in
                     '';
                   };
                 };
-              });
+              };
               default = defaults.extraction.preview;
               description = "";
             };
             ocr = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   max-image-size = mkOption {
                     type = types.int;
@@ -846,7 +847,7 @@ in
                     '';
                   };
                   page-range = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         begin = mkOption {
                           type = types.int;
@@ -854,7 +855,7 @@ in
                           description = "Specifies the first N pages of a file to process.";
                         };
                       };
-                    });
+                    };
                     default = defaults.extraction.page-range;
                     description = ''
                       Defines what pages to process. If a PDF with 600 pages is
@@ -871,7 +872,7 @@ in
                     '';
                   };
                   ghostscript = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         working-dir = mkOption {
                           type = types.str;
@@ -879,7 +880,7 @@ in
                           description = "Directory where the extraction processes can put their temp files";
                         };
                         command = mkOption {
-                          type = types.submodule ({
+                          type = types.submodule {
                             options = {
                               program = mkOption {
                                 type = types.str;
@@ -897,20 +898,20 @@ in
                                 description = "The timeout when executing the command";
                               };
                             };
-                          });
+                          };
                           default = defaults.extraction.ghostscript.command;
                           description = "The system command";
                         };
                       };
-                    });
+                    };
                     default = defaults.extraction.ghostscript;
                     description = "The ghostscript command.";
                   };
                   unpaper = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         command = mkOption {
-                          type = types.submodule ({
+                          type = types.submodule {
                             options = {
                               program = mkOption {
                                 type = types.str;
@@ -928,20 +929,20 @@ in
                                 description = "The timeout when executing the command";
                               };
                             };
-                          });
+                          };
                           default = defaults.extraction.unpaper.command;
                           description = "The system command";
                         };
                       };
-                    });
+                    };
                     default = defaults.extraction.unpaper;
                     description = "The unpaper command.";
                   };
                   tesseract = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         command = mkOption {
-                          type = types.submodule ({
+                          type = types.submodule {
                             options = {
                               program = mkOption {
                                 type = types.str;
@@ -959,23 +960,22 @@ in
                                 description = "The timeout when executing the command";
                               };
                             };
-                          });
+                          };
                           default = defaults.extraction.tesseract.command;
                           description = "The system command";
                         };
                       };
-                    });
+                    };
                     default = defaults.extraction.tesseract;
                     description = "The tesseract command.";
                   };
-
                 };
-              });
+              };
               default = defaults.extraction.ocr;
               description = "";
             };
           };
-        });
+        };
         default = defaults.extraction;
         description = ''
           Configuration of text extraction
@@ -990,7 +990,7 @@ in
       };
 
       text-analysis = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             max-length = mkOption {
               type = types.int;
@@ -1015,7 +1015,7 @@ in
             };
 
             nlp = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   mode = mkOption {
                     type = types.str;
@@ -1073,7 +1073,7 @@ in
                   };
 
                   regex-ner = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         max-entries = mkOption {
                           type = types.int;
@@ -1104,18 +1104,18 @@ in
                           '';
                         };
                       };
-                    });
+                    };
                     default = defaults.text-analysis.nlp.regex-ner;
                     description = "";
                   };
                 };
-              });
+              };
               default = defaults.text-analysis.nlp;
               description = "Configure NLP";
             };
 
             classification = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -1147,9 +1147,8 @@ in
                       good results with *my* dataset.
                     '';
                   };
-
                 };
-              });
+              };
               default = defaults.text-analysis.classification;
               description = ''
                 Settings for doing document classification.
@@ -1167,13 +1166,13 @@ in
               '';
             };
           };
-        });
+        };
         default = defaults.text-analysis;
         description = "Settings for text analysis";
       };
 
       convert = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             chunk-size = mkOption {
               type = types.int;
@@ -1202,7 +1201,7 @@ in
               '';
             };
             markdown = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   internal-css = mkOption {
                     type = types.str;
@@ -1212,7 +1211,7 @@ in
                     '';
                   };
                 };
-              });
+              };
               default = defaults.convert.markdown;
               description = ''
                 Settings when processing markdown files (and other text files)
@@ -1224,12 +1223,12 @@ in
               '';
             };
             html-converter = mkOption {
-              type = types.enum [ "wkhtmlpdf" "weasyprint" ];
+              type = types.enum ["wkhtmlpdf" "weasyprint"];
               default = "weasyprint";
               description = "Which tool to use for converting html to pdfs";
             };
             wkhtmlpdf = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   working-dir = mkOption {
                     type = types.str;
@@ -1237,7 +1236,7 @@ in
                     description = "Directory where the conversion processes can put their temp files";
                   };
                   command = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         program = mkOption {
                           type = types.str;
@@ -1255,12 +1254,12 @@ in
                           description = "The timeout when executing the command";
                         };
                       };
-                    });
+                    };
                     default = defaults.convert.wkhtmlpdf.command;
                     description = "The system command";
                   };
                 };
-              });
+              };
               default = defaults.convert.wkhtmlpdf;
               description = ''
                 To convert HTML files into PDF files, the external tool
@@ -1268,7 +1267,7 @@ in
               '';
             };
             weasyprint = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   working-dir = mkOption {
                     type = types.str;
@@ -1276,7 +1275,7 @@ in
                     description = "Directory where the conversion processes can put their temp files";
                   };
                   command = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         program = mkOption {
                           type = types.str;
@@ -1294,12 +1293,12 @@ in
                           description = "The timeout when executing the command";
                         };
                       };
-                    });
+                    };
                     default = defaults.convert.weasyprint.command;
                     description = "The system command";
                   };
                 };
-              });
+              };
               default = defaults.convert.weasyprint;
               description = ''
                 To convert HTML files into PDF files, the external tool
@@ -1307,7 +1306,7 @@ in
               '';
             };
             tesseract = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   working-dir = mkOption {
                     type = types.str;
@@ -1315,7 +1314,7 @@ in
                     description = "Directory where the conversion processes can put their temp files";
                   };
                   command = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         program = mkOption {
                           type = types.str;
@@ -1333,12 +1332,12 @@ in
                           description = "The timeout when executing the command";
                         };
                       };
-                    });
+                    };
                     default = defaults.convert.tesseract.command;
                     description = "The system command";
                   };
                 };
-              });
+              };
               default = defaults.convert.tesseract;
               description = ''
                 To convert image files to PDF files, tesseract is used. This
@@ -1346,7 +1345,7 @@ in
               '';
             };
             unoconv = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   working-dir = mkOption {
                     type = types.str;
@@ -1354,7 +1353,7 @@ in
                     description = "Directory where the conversion processes can put their temp files";
                   };
                   command = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         program = mkOption {
                           type = types.str;
@@ -1372,12 +1371,12 @@ in
                           description = "The timeout when executing the command";
                         };
                       };
-                    });
+                    };
                     default = defaults.convert.unoconv.command;
                     description = "The system command";
                   };
                 };
-              });
+              };
               default = defaults.convert.unoconv;
               description = ''
                 To convert "office" files to PDF files, the external tool
@@ -1392,7 +1391,7 @@ in
             };
 
             ocrmypdf = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   enabled = mkOption {
                     type = types.bool;
@@ -1405,7 +1404,7 @@ in
                     description = "Directory where the conversion processes can put their temp files";
                   };
                   command = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         program = mkOption {
                           type = types.str;
@@ -1423,12 +1422,12 @@ in
                           description = "The timeout when executing the command";
                         };
                       };
-                    });
+                    };
                     default = defaults.convert.ocrmypdf.command;
                     description = "The system command";
                   };
                 };
-              });
+              };
               default = defaults.convert.ocrmypdf;
               description = ''
                 The tool ocrmypdf can be used to convert pdf files to pdf files
@@ -1449,9 +1448,8 @@ in
                 converted to PDF/A.
               '';
             };
-
           };
-        });
+        };
         default = defaults.convert;
         description = ''
           Configuration for converting files into PDFs.
@@ -1462,7 +1460,7 @@ in
         '';
       };
       files = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             chunk-size = mkOption {
               type = types.int;
@@ -1489,12 +1487,12 @@ in
               '';
             };
           };
-        });
+        };
         default = defaults.files;
         description = "Settings for how files are stored.";
       };
       full-text-search = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             enabled = mkOption {
               type = types.bool;
@@ -1514,7 +1512,7 @@ in
             };
 
             solr = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   url = mkOption {
                     type = types.str;
@@ -1546,13 +1544,13 @@ in
                     description = "The default combiner for tokens. One of {AND, OR}.";
                   };
                 };
-              });
+              };
               default = defaults.full-text-search.solr;
               description = "Configuration for the SOLR backend.";
             };
 
             postgresql = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   use-default-connection = mkOption {
                     type = types.bool;
@@ -1560,7 +1558,7 @@ in
                     description = "Whether to use the primary db connection.";
                   };
                   jdbc = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         url = mkOption {
                           type = types.str;
@@ -1580,7 +1578,7 @@ in
                           description = "The password to connect to the database.";
                         };
                       };
-                    });
+                    };
                     default = defaults.full-text-search.postgresql.jdbc;
                     description = "Database connection settings";
                   };
@@ -1600,13 +1598,13 @@ in
                     description = "";
                   };
                 };
-              });
+              };
               default = defaults.full-text-search.postgresql;
               description = "PostgreSQL for fulltext search";
             };
 
             migration = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   index-all-chunk = mkOption {
                     type = types.int;
@@ -1618,17 +1616,17 @@ in
                     '';
                   };
                 };
-              });
+              };
               default = defaults.full-text-search.migration;
               description = "Settings for running the index migration tasks";
             };
           };
-        });
+        };
         default = defaults.full-text-search;
         description = "Configuration for full-text search.";
       };
       addons = mkOption {
-        type = types.submodule ({
+        type = types.submodule {
           options = {
             working-dir = mkOption {
               type = types.str;
@@ -1641,7 +1639,7 @@ in
               description = "Cache directory";
             };
             executor-config = mkOption {
-              type = types.submodule ({
+              type = types.submodule {
                 options = {
                   runner = mkOption {
                     type = types.str;
@@ -1659,7 +1657,7 @@ in
                     description = "";
                   };
                   nspawn = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         enabled = mkOption {
                           type = types.bool;
@@ -1682,12 +1680,12 @@ in
                           description = "";
                         };
                       };
-                    });
+                    };
                     default = defaults.addons.executor-config.nspawn;
                     description = "";
                   };
                   nix-runner = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         nix-binary = mkOption {
                           type = types.str;
@@ -1700,12 +1698,12 @@ in
                           description = "";
                         };
                       };
-                    });
+                    };
                     default = defaults.addons.executor-config.nix-runner;
                     description = "";
                   };
                   docker-runner = mkOption {
-                    type = types.submodule ({
+                    type = types.submodule {
                       options = {
                         docker-binary = mkOption {
                           type = types.str;
@@ -1718,24 +1716,24 @@ in
                           description = "";
                         };
                       };
-                    });
+                    };
                     default = defaults.addons.executor-config.docker-runner;
                     description = "";
                   };
                 };
-              });
+              };
               default = defaults.addons.executor-config;
               description = "";
             };
           };
-        });
+        };
         default = defaults.addons;
         description = "Addon executor config";
       };
       extraConfig = mkOption {
         type = types.attrs;
         description = "Extra configuration for docspell server. Overwrites values in case of a conflict.";
-        default = { };
+        default = {};
         example = ''
           {
             files = {
@@ -1754,9 +1752,6 @@ in
 
   ## implementation
   config = mkIf config.services.docspell-joex.enable {
-
-    nixpkgs.overlays = [ overlay ];
-
     users.users."${user}" = mkIf (cfg.runAs == null) {
       name = user;
       isSystemUser = true;
@@ -1765,43 +1760,35 @@ in
       description = "Docspell user";
       group = user;
     };
-    users.groups."${user}" = mkIf (cfg.runAs == null) { };
+    users.groups."${user}" = mkIf (cfg.runAs == null) {};
 
     # Setting up a unoconv listener to improve conversion performance
-    systemd.services.unoconv =
-      let
-        cmd = "${pkgs.unoconv}/bin/unoconv --listener -v";
-      in
-      {
-        description = "Unoconv Listener";
-        after = [ "networking.target" ];
-        wantedBy = [ "multi-user.target" ];
-        serviceConfig = {
-          Restart = "always";
-        };
-        script =
-          "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+    systemd.services.unoconv = let
+      cmd = "${pkgs.unoconv}/bin/unoconv --listener -v";
+    in {
+      description = "Unoconv Listener";
+      after = ["networking.target"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Restart = "always";
       };
+      script = "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+    };
 
-    systemd.services.docspell-joex =
-      let
-        args = builtins.concatStringsSep " " cfg.jvmArgs;
-        cmd = "${pkgs.docspell-joex}/bin/docspell-joex ${args} -- ${configFile}";
-        waitTarget =
-          if cfg.waitForTarget != null
-          then
-            [ cfg.waitForTarget ]
-          else
-            [ ];
-      in
-      {
-        description = "Docspell Joex";
-        after = ([ "networking.target" ] ++ waitTarget);
-        wantedBy = [ "multi-user.target" ];
-        path = [ pkgs.gawk ];
+    systemd.services.docspell-joex = let
+      args = builtins.concatStringsSep " " cfg.jvmArgs;
+      cmd = "${pkgs.docspell-joex}/bin/docspell-joex ${args} -- ${configFile}";
+      waitTarget =
+        if cfg.waitForTarget != null
+        then [cfg.waitForTarget]
+        else [];
+    in {
+      description = "Docspell Joex";
+      after = ["networking.target"] ++ waitTarget;
+      wantedBy = ["multi-user.target"];
+      path = [pkgs.gawk];
 
-        script =
-          "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
-      };
+      script = "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+    };
   };
 }

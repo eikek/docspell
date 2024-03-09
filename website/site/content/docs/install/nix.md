@@ -8,9 +8,9 @@ weight = 24
 ## Install via Nix
 
 Docspell can be installed via the [nix](https://nixos.org/nix) package
-manager, which is available for Linux and OSX. Docspell is currently not
-part of the [nixpkgs collection](https://nixos.org/nixpkgs/), but you
-can use the flake from this repository.
+manager. Docspell is currently not part of the [nixpkgs
+collection](https://nixos.org/nixpkgs/), but you can use the flake
+from this repository.
 
 ## Upgrading
 
@@ -31,7 +31,7 @@ There are the following modules provided:
 
 ```nix
 # flake.nix
-inputs.docspell.url = "github:eikek/docspell?dir=nix/";
+inputs.docspell.url = "github:eikek/docspell";
 
 # in modules
 imports = [ 
@@ -134,10 +134,33 @@ inputs.docspell.url = "github:eikek/docspell?dir=nix/";
       '';
   };
 
-
   networking = {
     hostName = "docspellexample";
     firewall.allowedTCPPorts = [7880];
   };
 }
 ```
+
+You can also look at `nix/test-vm.nix` for another example.
+
+## Without Flakes
+
+Of course, you can also use it without flakes. There is `nix/pkg.nix`
+which contains the derivation of both packages, `docspell-server` and
+`docspell-joex`. Just call it with your nixpkgs instance as usual:
+
+``` nix
+let 
+  repo = fetchurl {
+    url = "https://github.com/eikek/docspell";
+    sha256 = "sha256-X2mM+Z5s8Xm1E6zrZ0wcRaivLEvqbk5Dn+GSXkZHdLM=";
+  };
+  docspellPkgs = pkgs.callPackage (import "${repo}/nix/pkg.nix") {};
+in
+ #
+ # use docspellPkgs.docspell-server or docspellPkgs.docspell-joex
+ #
+```
+
+The same way import NixOS modules from
+`nix/modules/{joex|server}.nix`.
