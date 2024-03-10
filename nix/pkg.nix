@@ -14,9 +14,9 @@
     sha256 = "sha256-flKWjEsMd2/XT3Bu6EjFgf3lCojvLbKFDEXemP1K+/8=";
   };
 in {
-  docspell-server = stdenv.mkDerivation {
+  docspell-restserver = stdenv.mkDerivation {
     inherit version;
-    pname = "docspell-server";
+    pname = "docspell-restserver";
 
     src = fetchzip server;
     buildInputs = [jdk17];
@@ -30,6 +30,7 @@ in {
       $out/docspell-restserver-${version}/bin/docspell-restserver -java-home ${jdk17} "\$@"
       EOF
       chmod 755 $out/bin/docspell-restserver
+
     '';
   };
 

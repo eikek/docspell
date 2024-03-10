@@ -14,7 +14,7 @@ described below.
 You can try out the server and joex packages by running the following:
 
 ```
-nix run github:eikek/docspell#docspell-server
+nix run github:eikek/docspell#docspell-restserver
 nix run github:eikek/docspell#docspell-joex
 ```
 
@@ -42,7 +42,7 @@ from this repository.
 
 You could install the server and joex by running the following:
 ```
-nix profile install github:eikek/docspell#docspell-server
+nix profile install github:eikek/docspell#docspell-restserver
 nix profile install github:eikek/docspell#docspell-joex
 ```
 
@@ -184,7 +184,7 @@ You can also look at `nix/test-vm.nix` for another example.
 ## Without Flakes
 
 Of course, you can also use it without flakes. There is `nix/pkg.nix`
-which contains the derivation of both packages, `docspell-server` and
+which contains the derivation of both packages, `docspell-restserver` and
 `docspell-joex`. Just call it with your nixpkgs instance as usual:
 
 ``` nix
@@ -196,7 +196,7 @@ let
   docspellPkgs = pkgs.callPackage (import "${repo}/nix/pkg.nix") {};
 in
  #
- # use docspellPkgs.docspell-server or docspellPkgs.docspell-joex
+ # use docspellPkgs.docspell-restserver or docspellPkgs.docspell-joex
  #
 ```
 

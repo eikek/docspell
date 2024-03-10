@@ -33,31 +33,31 @@
       ];
       docspellPkgs = pkgs.callPackage (import ./nix/pkg.nix) {};
       dockerAmd64 = pkgs.pkgsCross.gnu64.callPackage (import ./nix/docker.nix) {
-        inherit (docspellPkgs) docspell-server docspell-joex;
+        inherit (docspellPkgs) docspell-restserver docspell-joex;
       };
       dockerArm64 = pkgs.pkgsCross.aarch64-multiplatform.callPackage (import ./nix/docker.nix) {
-        inherit (docspellPkgs) docspell-server docspell-joex;
+        inherit (docspellPkgs) docspell-restserver docspell-joex;
       };
     in {
       formatter = pkgs.alejandra;
 
       packages = {
-        inherit (docspellPkgs) docspell-server docspell-joex;
+        inherit (docspellPkgs) docspell-restserver docspell-joex;
       };
 
       legacyPackages = {
         docker = {
           amd64 = {
-            inherit (dockerAmd64) docspell-server docspell-joex;
+            inherit (dockerAmd64) docspell-restserver docspell-joex;
           };
           arm64 = {
-            inherit (dockerArm64) docspell-server docspell-joex;
+            inherit (dockerArm64) docspell-restserver docspell-joex;
           };
         };
       };
 
       checks = {
-        build-server = self.packages.${system}.docspell-server;
+        build-server = self.packages.${system}.docspell-restserver;
         build-joex = self.packages.${system}.docspell-joex;
 
         test = with import (nixpkgs + "/nixos/lib/testing-python.nix")
@@ -117,7 +117,7 @@
       overlays.default = final: prev: let
         docspellPkgs = final.callPackage (import ./nix/pkg.nix) {};
       in {
-        inherit (docspellPkgs) docspell-server docspell-joex;
+        inherit (docspellPkgs) docspell-restserver docspell-joex;
       };
 
       nixosConfigurations = {

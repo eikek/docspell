@@ -9,7 +9,7 @@
   tesseract4,
   python3Packages,
   unoconv,
-  docspell-server,
+  docspell-restserver,
   docspell-joex,
 }: let
   mkImage = {
@@ -64,10 +64,10 @@
       tag = "v${pkg.version}";
     };
 in {
-  docspell-server = mkImage {
+  docspell-restserver = mkImage {
     name = "docspell-restserver";
     port = 7880;
-    pkg = docspell-server;
+    pkg = docspell-restserver;
     tools = [];
   };
   docspell-joex = mkImage {

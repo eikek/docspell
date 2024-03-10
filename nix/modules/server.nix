@@ -12,7 +12,7 @@ with lib; let
     if cfg.runAs == null
     then "docspell"
     else cfg.runAs;
-  configFile = pkgs.writeText "docspell-server.conf" ''
+  configFile = pkgs.writeText "docspell-restserver.conf" ''
     {"docspell": {"server":
       ${builtins.toJSON (lib.recursiveUpdate declared_config cfg.extraConfig)}
     }}
@@ -878,7 +878,7 @@ in {
 
     systemd.services.docspell-restserver = let
       args = builtins.concatStringsSep " " cfg.jvmArgs;
-      cmd = "${pkgs.docspell-server}/bin/docspell-restserver ${args} -- ${configFile}";
+      cmd = "${pkgs.docspell-restserver}/bin/docspell-restserver ${args} -- ${configFile}";
     in {
       description = "Docspell Rest Server";
       after = ["networking.target"];
