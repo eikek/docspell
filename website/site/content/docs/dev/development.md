@@ -65,6 +65,159 @@ docspell.joex {
 }
 ```
 
+## Installing Nix
+
+It is recommended to install [nix](https://nixos.org/nix). You can use
+the official installer or [this
+one](https://github.com/DeterminateSystems/nix-installer), which will
+enable Flakes by default.
+
+If not enabled, enable flakes by creating a config file:
+
+```
+mkdir -p ~/.config/nix  #on Linux
+echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+```
+
+With nix installed you can use the provided development environments
+to get started quickly.
+
+# Nix Expressions
+
+The soure root contains a `flake.nix` file to install docspell via the
+nix package manager and to integrate it into NixOS.
+
+The flake provides docspell packages of the latest release and NixOS
+modules. It doesn't provide package builds from the current source
+tree.
+
+## Dev Environments
+
+Additionally it provides devshells that can be used to create a
+development environment for docspell.
+
+These two `devShell` definitions address two different setups: one
+uses a NixOS container and the other a VM. Both provide the same set
+of services that can be used with the local docspell instance:
+
+- postgresql database, with a database `docspell` and user `dev`
+- solr with a core `docspell`
+- email setup with smtp/imap and webmail
+- minio with root user `minioadmin`
+
+If you are on NixOS the container is probably more convenient to use.
+For other systems, the vm should be good. Drop into either shell by
+running:
+
+``` bash
+# drop into the environment setup for using a vm
+nix develop .#dev-vm
+
+# drop into the environment setup for using a container
+nix deveop .#docsp-dev
+```
+
+Once in such an environment, you can create the container or vm like
+this:
+
+```bash
+# dev-vm env
+# - build the vm
+vm-build
+
+# -run the vm
+vm-run
+
+# - ssh into the vm
+vm-ssh
+
+# docsp-dev container env
+# - create the container
+cnt-recreate
+
+# - login
+cnt-login
+```
+
+You can use tab completion on `vm-` or `cnt-` and see other useful
+commands. For instance it allows to recreate solr cores or check logs
+of services on the container or vm.
+
+Then you can adjust your dev config file in `local/dev.conf` to
+connect to the services on the vm or container. The container exposes
+the default ports while the vm uses port-forwarding from the host to
+the guest machine. The ports are define in `flake.nix`. For example, a
+jdbc connection to postgres on the container can look like this:
+
+```
+jdbc.url = "jdbc:postgresql://docsp-dev:5432/docspelldev"
+```
+
+on the vm, it would be
+```
+jdbc.url = "jdbc:postgresql://localhost:6543/docspelldev"
+```
+
+You can reach the webmail on both versions at port `8080`. In order to
+enable sending mails between users, you need to login as some
+arbitrary user so the underlying services can create the data
+directories. In your dev docspell you can then connect to smtp on the
+vm or container. Mails send from docspell can be checked in the
+webmail. Conversely, you can send mails using webmail to any user and
+have their mailbox scanned by docspell.
+
+### Direnv
+
+Using [direnv](https://direnv.net) entering the dev environment is
+very convenient. Install this tool (it also has integration in several
+IDEs and editors) and create a file `.envrc` in the source root:
+
+```
+use flake .#<env-name>
+```
+
+The file `.envrc` is git-ignored, because are different ones possible.
+Here `<env-name>` refers to either `dev-cnt` or `dev-vm` - one of the
+devshells defined in `flake.nix`.
+
+After allowing direnv to execute this file via `direnv allow` you will
+be dropped into this environment whenever you enter the directory. It
+will also preserve your shell, don't need to use bash.
+
+## Checks
+
+The command `nix flake check` would run all checks defined in the
+flake. It will build both packages and runs a vm with docspell
+installed (via NixOS modules) and check whether the services come up.
+
+## Test VM
+
+There is another VM defined in the flake that provides a full setup
+for docspell. It contains docspell server and joex, a postgresql, a
+solr and a email setup. The intention is to use it as an easy 'getting
+started' approach with nix.
+
+Once it has started, you can connect to `localhost:7881` to reach
+docspell. The webmail will be available at `localhost:8080`.
+
+You can run this vm with a single command:
+
+```
+nix run github:eikek/docspell#nixosConfigurations.test-vm.config.system.build.vm
+```
+
+It uses the same setup as the dev-vm, so you can drop into the
+`.#dev-vm` development shell and use `vm-ssh` to connect to the
+running test vm.
+
+Once connected to the machine, you can see the docspell config file via
+
+```bash
+systemctl show docspell-joex.service | grep "ExecStart=" | sed 's/^ExecStart=.*path=\([^;]*\).*/\1/' | xargs tac | grep -m 1 . | awk '{print $NF}' | tr -d '"' | xargs jq '.'
+# or replace "joex" with "restserver"
+systemctl show docspell-restserver.service | grep "ExecStart=" | sed 's/^ExecStart=.*path=\([^;]*\).*/\1/' | xargs tac | grep -m 1 . | awk '{print $NF}' | tr -d '"' | xargs jq '.'
+```
+
 # Developing Frontend
 
 The frontend is a SPA written in [Elm](https://elm-lang.org). The UI
@@ -123,39 +276,6 @@ joexapi/openapiLint
 These tasks must not show any errors (it is checked by the CI). The
 warnings should also be fixed.
 
-
-# Nix Expressions
-
-The directory `/nix` contains Nix Flake to install docspell via
-the nix package manager and to integrate it into NixOS.
-
-Flake implements `checks` output which can be run with `nix flake check`
-and it defines a development VM which can be used to interactively work
-with docspell.
-
-To run the VM, issue:
-
-```bash
-cd $PROJECT_ROOT/nix
-nix run '.#nixosConfigurations.dev-vm.config.system.build.vm
-```
-
-To open docspell, wait for docspell-restserver service to report that
-http listener is up and connect to `localhost:64080`.
-
-To ssh into the machine, run:
-
-```bash
-ssh -o StrictHostKeyChecking=no \
-    -o UserKnownHostsFile=/dev/null \
-    -p 64022 root@localhost
-```
-
-Once connected to the machine, you can see the docspell config file via
-
-```bash
-systemd-show docspell-joex.service | grep ExecStart | cut -d'=' -f2 | xargs cat | tail -n1 | awk '{print $NF}'| sed 's/.$//' | xargs cat | jq
-```
 
 # Release
 
