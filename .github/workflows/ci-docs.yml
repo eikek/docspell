@@ -17,9 +17,5 @@ jobs:
         with:
           elm-version: 0.19.1
       - uses: cachix/install-nix-action@v26
-        with:
-          nix_path: nixpkgs=channel:nixos-23.05
-      - name: Print nixpkgs version
-        run: nix-instantiate --eval -E '(import <nixpkgs> {}).lib.version'
       - name: Build website (${{ env.DOCSPELL_VERSION }})
-        run: nix-shell website/shell.nix --run "sbt make-website"
+        run: nix develop .#dev-cnt --command sbt make-website

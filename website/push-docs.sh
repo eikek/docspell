@@ -37,7 +37,7 @@ git clone git@github.com:eikek/docspell.git "$temp"
 cd "$temp" && git checkout --track origin/gh-pages && rm -rf "$temp"/*
 
 echo "Create new website from current working directory"
-cd $cdir && nix-shell website/shell.nix --run 'sbt make-website'
+cd $cdir && sbt make-website
 
 echo "Copying new site to target"
 cp -R "$cdir"/website/target/zola-site/* "$temp/"

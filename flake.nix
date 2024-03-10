@@ -30,6 +30,7 @@
         fakeroot
         zola
         yarn
+        inotifyTools
       ];
       docspellPkgs = pkgs.callPackage (import ./nix/pkg.nix) {};
       dockerAmd64 = pkgs.pkgsCross.gnu64.callPackage (import ./nix/docker.nix) {
