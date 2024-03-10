@@ -15,7 +15,7 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      sbt17 = pkgs.sbt.override { jre = pkgs.jdk17; };
+      sbt17 = pkgs.sbt.override {jre = pkgs.jdk17;};
       ciPkgs = with pkgs; [
         sbt17
         jdk17
@@ -28,14 +28,16 @@
         redocly-cli
         tailwindcss
       ];
-      devshellPkgs = ciPkgs ++ (with pkgs; [
-        jq
-        scala-cli
-        netcat
-        wget
-        which
-        inotifyTools
-      ]);
+      devshellPkgs =
+        ciPkgs
+        ++ (with pkgs; [
+          jq
+          scala-cli
+          netcat
+          wget
+          which
+          inotifyTools
+        ]);
       docspellPkgs = pkgs.callPackage (import ./nix/pkg.nix) {};
       dockerAmd64 = pkgs.pkgsCross.gnu64.callPackage (import ./nix/docker.nix) {
         inherit (docspellPkgs) docspell-restserver docspell-joex;
@@ -161,6 +163,9 @@
           system = "x86_64-linux";
           modules = [
             {
+              networking.hostName = "dev-vm";
+              virtualisation.memorySize = 2048;
+
               services.dev-postgres = {
                 enable = true;
                 databases = ["docspell"];
@@ -170,8 +175,8 @@
               services.dev-solr = {
                 enable = true;
                 cores = ["docspell"];
+                heap = 512;
               };
-
               port-forward.ssh = 10022;
               port-forward.dev-postgres = 6534;
               port-forward.dev-smtp = 10025;
@@ -180,7 +185,6 @@
               port-forward.dev-minio-api = 9000;
               port-forward.dev-minio-console = 9001;
               port-forward.dev-solr = 8983;
-              networking.hostName = "dev-vm";
             }
           ];
         };

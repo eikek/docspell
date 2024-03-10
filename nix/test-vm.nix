@@ -22,6 +22,7 @@ in {
   services.dev-solr = {
     enable = true;
     cores = ["docspell"];
+    heap = 512;
   };
 
   port-forward.dev-webmail = 8080;
@@ -39,7 +40,8 @@ in {
     firewall.allowedTCPPorts = [7880];
   };
 
-  virtualisation.memorySize = 6144;
+  virtualisation.memorySize = 2048;
+  virtualisation.cores = 2;
 
   virtualisation.forwardPorts = [
     {
