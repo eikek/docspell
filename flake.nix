@@ -16,22 +16,24 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
       sbt17 = pkgs.sbt.override { jre = pkgs.jdk17; };
-      devshellPkgs = with pkgs; [
-        jq
-        scala-cli
+      ciPkgs = with pkgs; [
         sbt17
-
-        netcat
         jdk17
-        wget
-        which
         dpkg
         elmPackages.elm
         fakeroot
         zola
         yarn
-        inotifyTools
+        nodejs
       ];
+      devshellPkgs = ciPkgs ++ (with pkgs; [
+        jq
+        scala-cli
+        netcat
+        wget
+        which
+        inotifyTools
+      ]);
       docspellPkgs = pkgs.callPackage (import ./nix/pkg.nix) {};
       dockerAmd64 = pkgs.pkgsCross.gnu64.callPackage (import ./nix/docker.nix) {
         inherit (docspellPkgs) docspell-restserver docspell-joex;
@@ -100,6 +102,10 @@
           SBT_OPTS = "-Xmx2G -Xss4m";
           DEV_VM = "dev-vm";
           VM_SSH_PORT = "10022";
+        };
+        ci = pkgs.mkShellNoCC {
+          buildInputs = ciPkgs;
+          SBT_OPTS = "-Xmx2G -Xss4m";
         };
       };
     })

@@ -5,20 +5,17 @@ on:
       - "current-docs"
 jobs:
   publish-website:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
+      - uses: cachix/install-nix-action@v26
       - name: Set current version
         run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
-      - uses: jorelali/setup-elm@v5
-        with:
-          elm-version: 0.19.1
-      - uses: cachix/install-nix-action@v26
       - name: Build website (${{ env.DOCSPELL_VERSION }})
-        run: nix develop .#dev-cnt --command sbt make-website
+        run: nix develop .#ci --command sbt make-website
       - name: Publish website (${{ env.DOCSPELL_VERSION }})
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: nix develop .#dev-cnt --command sbt publish-website
+        run: nix develop .#ci --command sbt publish-website
