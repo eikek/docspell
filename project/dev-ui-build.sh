@@ -23,7 +23,7 @@ compile_css() {
     echo "Building css …"
     local srcs="$wdir/modules/webapp/src/main/styles/index.css"
     local target="$targetbase/css/styles.css"
-    cd $wdir/modules/webapp && npx tailwindcss --input "$srcs" -o "$target" --config ./tailwind.config.js --postcss ./postcss.config.js  --env development && cd -
+    cd $wdir/modules/webapp && tailwindcss --input "$srcs" -o "$target" --config ./tailwind.config.js --postcss ./postcss.config.js  --env development && cd -
     cat "$target" | gzip > "$targetbase/css/styles.css.gz"
     cp "$targetbase/css/styles.css" "$resourcebase/css/"
     cp "$targetbase/css/styles.css.gz" "$resourcebase/css/"
@@ -47,7 +47,7 @@ watch_css() {
     local srcs="$wdir/modules/webapp/src/main/styles/index.css"
     local target="$targetbase/css/styles.css"
     cd $wdir/modules/webapp && \
-        npx tailwindcss --input "$srcs" \
+        tailwindcss --input "$srcs" \
             -o "$target" -m \
             --config ./tailwind.config.js \
             --postcss ./postcss.config.js --watch

@@ -26,6 +26,7 @@
         yarn
         nodejs
         redocly-cli
+        tailwindcss
       ];
       devshellPkgs = ciPkgs ++ (with pkgs; [
         jq
