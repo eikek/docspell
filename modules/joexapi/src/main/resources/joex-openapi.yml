@@ -18,6 +18,8 @@ servers:
   - url: /api/v1
     description: Current host
 
+security: []
+
 paths:
   /api/info/version:
     get:
