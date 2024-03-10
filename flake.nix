@@ -25,6 +25,7 @@
         zola
         yarn
         nodejs
+        redocly-cli
       ];
       devshellPkgs = ciPkgs ++ (with pkgs; [
         jq

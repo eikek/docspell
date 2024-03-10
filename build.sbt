@@ -677,7 +677,11 @@ val restapi = project
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.restapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
-    openapiStaticGen := OpenApiDocGenerator.Redoc
+    openapiStaticGen := OpenApiDocGenerator.Redoc,
+    openapiRedoclyCmd := Seq("redocly-cli"),
+    openapiRedoclyConfig := Some(
+      (LocalRootProject / baseDirectory).value / "project" / "redocly.yml"
+    )
   )
   .dependsOn(common, query.jvm, notificationApi, jsonminiq, addonlib)
 
@@ -697,7 +701,11 @@ val joexapi = project
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("docspell.joexapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml",
-    openapiStaticGen := OpenApiDocGenerator.Redoc
+    openapiStaticGen := OpenApiDocGenerator.Redoc,
+    openapiRedoclyCmd := Seq("redocly-cli"),
+    openapiRedoclyConfig := Some(
+      (LocalRootProject / baseDirectory).value / "project" / "redocly.yml"
+    )
   )
   .dependsOn(common, loggingScribe, addonlib)
 
