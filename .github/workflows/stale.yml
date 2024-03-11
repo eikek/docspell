@@ -1,0 +1,21 @@
+name: 'Handle stale issues'
+on:
+  schedule:
+    - cron: '30 1 * * *'
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/actions/stale
+      - uses: actions/stale@v9
+        with:
+          days-before-stale: 30
+          days-before-close: 7
+          only-labels: question
+          stale-issue-label: stale
+          stale-issue-message: >
+            This issue has been automatically marked as stale because it has not
+            had recent activity. It will be closed if no further activity
+            occurs. This only applies to 'question' issues. Always feel free to
+            reopen or create new issues. Thank you!
