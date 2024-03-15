@@ -25,7 +25,7 @@
             "justinmimbs/timezone-data": "5.1.2",
             "norpan/elm-html5-drag-drop": "3.1.4",
             "pablohirafuji/elm-qrcode": "4.0.1",
-            "ryannhg/date-format": "2.3.0",
+            "ryan-haskell/date-format": "1.0.0",
             "truqu/elm-base64": "2.0.4",
             "ursi/elm-scroll": "1.0.0",
             "ursi/elm-throttle": "1.0.1"
