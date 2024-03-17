@@ -66,7 +66,7 @@ object ClientSettingsRoutes {
         for {
           data <- req.as[Json]
           _ <- backend.clientSettings.saveUser(clientId, user.account.userId, data)
-          res <- Ok(BasicResult(true, "Settings stored"))
+          res <- Ok(BasicResult(success = true, "Settings stored"))
         } yield res
 
       case GET -> Root / "user" / Ident(clientId) =>
@@ -97,7 +97,7 @@ object ClientSettingsRoutes {
             user.account.collectiveId,
             data
           )
-          res <- Ok(BasicResult(true, "Settings stored"))
+          res <- Ok(BasicResult(success = true, "Settings stored"))
         } yield res
 
       case GET -> Root / "collective" / Ident(clientId) =>

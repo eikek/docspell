@@ -24,17 +24,18 @@ object Tesseract {
       logger: Logger[F]
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] = {
     val outBase = cfg.command.args.tail.headOption.getOrElse("out")
-    val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
+    val reader: (Path, Int) => F[ConversionResult[F]] =
       ExternConv.readResultTesseract[F](outBase, chunkSize, logger)
+
+    val cmd = cfg.command.withVars(Map("lang" -> lang.iso3))
 
     ExternConv.toPDF[F, A](
       "tesseract",
-      cfg.command.replace(Map("{{lang}}" -> lang.iso3)),
+      cmd,
       cfg.workingDir,
-      false,
+      useStdin = false,
       logger,
       reader
     )(in, handler)
   }
-
 }

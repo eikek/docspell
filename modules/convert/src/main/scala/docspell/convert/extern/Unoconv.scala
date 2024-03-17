@@ -10,7 +10,6 @@ import cats.effect._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
 
-import docspell.common._
 import docspell.convert.ConversionResult
 import docspell.convert.ConversionResult.Handler
 import docspell.logging.Logger
@@ -22,14 +21,15 @@ object Unoconv {
       chunkSize: Int,
       logger: Logger[F]
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] = {
-    val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
+    val reader: (Path, Int) => F[ConversionResult[F]] =
       ExternConv.readResult[F](chunkSize, logger)
+    val cmd = cfg.command.withVars(Map.empty)
 
     ExternConv.toPDF[F, A](
       "unoconv",
-      cfg.command,
+      cmd,
       cfg.workingDir,
-      false,
+      useStdin = false,
       logger,
       reader
     )(
@@ -37,5 +37,4 @@ object Unoconv {
       handler
     )
   }
-
 }

@@ -142,7 +142,7 @@ class AddonExecutorTest extends CatsEffectSuite with Fixtures with TestLoggingCo
       AddonExecutionResult.executionResultMonoid
         .combine(
           AddonExecutionResult.empty,
-          AddonExecutionResult(Nil, true)
+          AddonExecutionResult(Nil, pure = true)
         )
         .pure
     )

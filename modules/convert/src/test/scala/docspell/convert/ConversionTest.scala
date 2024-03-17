@@ -15,6 +15,7 @@ import cats.implicits._
 import fs2.Stream
 
 import docspell.common._
+import docspell.common.exec._
 import docspell.common.util.File
 import docspell.convert.ConversionResult.Handler
 import docspell.convert.ConvertConfig.HtmlConverter
@@ -36,7 +37,7 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
     3000 * 3000,
     MarkdownConfig("body { padding: 2em 5em; }"),
     WkHtmlPdfConfig(
-      SystemCommand.Config(
+      ExternalCommand(
         "wkhtmltopdf",
         Seq("-s", "A4", "--encoding", "UTF-8", "-", "{{outfile}}"),
         Duration.seconds(20)
@@ -44,7 +45,7 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
       target
     ),
     WeasyprintConfig(
-      SystemCommand.Config(
+      ExternalCommand(
         "weasyprint",
         Seq("--encoding", "UTF-8", "-", "{{outfile}}"),
         Duration.seconds(20)
@@ -53,7 +54,7 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
     ),
     HtmlConverter.Wkhtmltopdf,
     TesseractConfig(
-      SystemCommand.Config(
+      ExternalCommand(
         "tesseract",
         Seq("{{infile}}", "out", "-l", "deu", "pdf", "txt"),
         Duration.seconds(20)
@@ -61,7 +62,7 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
       target
     ),
     UnoconvConfig(
-      SystemCommand.Config(
+      ExternalCommand(
         "unoconv",
         Seq("-f", "pdf", "-o", "{{outfile}}", "{{infile}}"),
         Duration.seconds(20)
@@ -69,8 +70,8 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
       target
     ),
     OcrMyPdfConfig(
-      true,
-      SystemCommand.Config(
+      enabled = true,
+      ExternalCommand(
         "ocrmypdf",
         Seq(
           "-l",
@@ -86,7 +87,7 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
       ),
       target
     ),
-    ConvertConfig.DecryptPdf(true, Nil)
+    ConvertConfig.DecryptPdf(enabled = true, Nil)
   )
 
   val conversion =

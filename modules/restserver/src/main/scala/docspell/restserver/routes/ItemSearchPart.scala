@@ -196,17 +196,17 @@ final class ItemSearchPart[F[_]: Async](
         Right(s)
 
       case QueryParseResult.ParseFailed(err) =>
-        BadRequest(BasicResult(false, s"Invalid query: $err")).asLeft
+        BadRequest(BasicResult(success = false, s"Invalid query: $err")).asLeft
 
       case QueryParseResult.FulltextMismatch(Result.TooMany) =>
         BadRequest(
-          BasicResult(false, "Only one fulltext search expression is allowed.")
+          BasicResult(success = false, "Only one fulltext search expression is allowed.")
         ).asLeft
 
       case QueryParseResult.FulltextMismatch(Result.UnsupportedPosition) =>
         BadRequest(
           BasicResult(
-            false,
+            success = false,
             "A fulltext search may only appear in the root and expression."
           )
         ).asLeft

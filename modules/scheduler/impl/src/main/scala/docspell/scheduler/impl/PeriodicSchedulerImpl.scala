@@ -169,7 +169,7 @@ final class PeriodicSchedulerImpl[F[_]: Async](
 
 object PeriodicSchedulerImpl {
   def emptyState[F[_]]: State[F] =
-    State(false, None)
+    State(shutdownRequest = false, None)
 
   case class State[F[_]](
       shutdownRequest: Boolean,

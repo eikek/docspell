@@ -56,7 +56,7 @@ object CustomFieldRoutes {
         (for {
           field <- OptionT(backend.customFields.findById(user.account.collectiveId, id))
           res <- OptionT.liftF(Ok(convertField(field)))
-        } yield res).getOrElseF(NotFound(BasicResult(false, "Not found")))
+        } yield res).getOrElseF(NotFound(BasicResult(success = false, "Not found")))
 
       case req @ PUT -> Root / Ident(id) =>
         for {

@@ -52,7 +52,7 @@ object AddonArchiveRoutes extends AddonValidationSupport {
       case req @ POST -> Root :? Sync(sync) =>
         def create(r: Option[RAddonArchive]) =
           IdResult(
-            true,
+            success = true,
             r.fold("Addon submitted for installation")(r =>
               s"Addon installed: ${r.id.id}"
             ),
@@ -77,7 +77,7 @@ object AddonArchiveRoutes extends AddonValidationSupport {
       case PUT -> Root / Ident(id) :? Sync(sync) =>
         def create(r: Option[AddonMeta]) =
           BasicResult(
-            true,
+            success = true,
             r.fold("Addon updated in background")(m =>
               s"Addon updated: ${m.nameAndVersion}"
             )
@@ -99,8 +99,8 @@ object AddonArchiveRoutes extends AddonValidationSupport {
         for {
           flag <- backend.addons.deleteAddon(token.account.collectiveId, id)
           resp <-
-            if (flag) Ok(BasicResult(true, "Addon deleted"))
-            else NotFound(BasicResult(false, "Addon not found"))
+            if (flag) Ok(BasicResult(success = true, "Addon deleted"))
+            else NotFound(BasicResult(success = false, "Addon not found"))
         } yield resp
     }
   }
@@ -112,11 +112,11 @@ object AddonArchiveRoutes extends AddonValidationSupport {
     import dsl._
 
     def failWith(msg: String): F[Response[F]] =
-      Ok(IdResult(false, msg, Ident.unsafe("")))
+      Ok(IdResult(success = false, msg, Ident.unsafe("")))
 
     e match {
       case AddonValidationError.AddonNotFound =>
-        NotFound(BasicResult(false, "Addon not found."))
+        NotFound(BasicResult(success = false, "Addon not found."))
 
       case _ =>
         failWith(validationErrorToMessage(e))

@@ -323,7 +323,7 @@ object ScanMailboxTask {
           s"mailbox-${ctx.args.account.login.id}",
           args.itemFolder,
           Seq.empty,
-          true,
+          skipDuplicates = true,
           args.fileFilter.getOrElse(Glob.all),
           args.tags.getOrElse(Nil),
           args.language,

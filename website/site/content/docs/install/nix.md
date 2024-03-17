@@ -5,12 +5,50 @@ weight = 24
 
 # Nix
 
+Docspell is a flake, you need to enable flakes in order to make use of
+it. You can also use the provided expressions without Flakes, which is
+described below.
+
+## Try it out {try-it-out}
+
+You can try out the server and joex packages by running the following:
+
+```
+nix run github:eikek/docspell#docspell-restserver
+nix run github:eikek/docspell#docspell-joex
+```
+
+While this works, it will be only a very basic setup. The database
+defaults to a directory in `/tmp` and no fulltext search enabled. Then
+for processing documents, some external tools are required which would
+need to be present on yout system to make it work.
+
+A more elaborate setup with PostgreSQL and SOLR can be started using
+the `test-vm`:
+
+```
+nix run github:eikek/docspell#nixosConfigurations.test-vm.config.system.build.vm
+```
+
+The vm contains all the required tools. After starting up, you can
+find docspell at `http://localhost:7881`.
+
 ## Install via Nix
 
 Docspell can be installed via the [nix](https://nixos.org/nix) package
-manager, which is available for Linux and OSX. Docspell is currently not
-part of the [nixpkgs collection](https://nixos.org/nixpkgs/), but you
-can use the flake from this repository.
+manager. Docspell is currently not part of the [nixpkgs
+collection](https://nixos.org/nixpkgs/), but you can use the flake
+from this repository.
+
+You could install the server and joex by running the following:
+```
+nix profile install github:eikek/docspell#docspell-restserver
+nix profile install github:eikek/docspell#docspell-joex
+```
+
+This would install the packages on your system. If you use NixOS you
+probably want to use the provided [NixOS modules](#nixos) instead.
+
 
 ## Upgrading
 
@@ -31,7 +69,7 @@ There are the following modules provided:
 
 ```nix
 # flake.nix
-inputs.docspell.url = "github:eikek/docspell?dir=nix/";
+inputs.docspell.url = "github:eikek/docspell";
 
 # in modules
 imports = [ 
@@ -134,10 +172,37 @@ inputs.docspell.url = "github:eikek/docspell?dir=nix/";
       '';
   };
 
-
   networking = {
     hostName = "docspellexample";
     firewall.allowedTCPPorts = [7880];
   };
 }
 ```
+
+You can also look at `nix/test-vm.nix` for another example.
+
+## Without Flakes
+
+Of course, you can also use it without flakes. There is `nix/pkg.nix`
+which contains the derivation of both packages, `docspell-restserver` and
+`docspell-joex`. Just call it with your nixpkgs instance as usual:
+
+``` nix
+let 
+  repo = fetchurl {
+    url = "https://github.com/eikek/docspell";
+    sha256 = "sha256-X2mM+Z5s8Xm1E6zrZ0wcRaivLEvqbk5Dn+GSXkZHdLM=";
+  };
+  docspellPkgs = pkgs.callPackage (import "${repo}/nix/pkg.nix") {};
+in
+ #
+ # use docspellPkgs.docspell-restserver or docspellPkgs.docspell-joex
+ #
+```
+
+The same way import NixOS modules from
+`nix/modules/{joex|server}.nix`.
+
+An alternative can be to use `builtins.getFlake` to fetch the flake
+and get access to its output. But this requires to use a flake enabled
+nix, which then defeats the idea of "not using flakes".

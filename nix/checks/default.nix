@@ -1,5 +1,4 @@
-{ ... }:
-{
+{...}: {
   imports = [
     ./configuration-test.nix
   ];

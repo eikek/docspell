@@ -38,7 +38,7 @@ object MigrateNotifyTasks extends TransactorSupport {
         logger.info(s"Starting to migrate ${tasks.size} user tasks")
       )
       _ <- tasks.traverse(migrateDueItemTask1)
-      _ <- RPeriodicTask.setEnabledByTask(NotifyDueItemsArgs.taskName, false)
+      _ <- RPeriodicTask.setEnabledByTask(NotifyDueItemsArgs.taskName, enabled = false)
     } yield ()
 
   private def migrateDueItemTask1(old: RPeriodicTask): ConnectionIO[Int] = {

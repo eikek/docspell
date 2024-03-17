@@ -78,10 +78,10 @@ trait DSL extends DoobieMeta {
     FromExpr.From(sel, alias)
 
   def count(c: Column[_]): DBFunction =
-    DBFunction.Count(c, false)
+    DBFunction.Count(c, distinct = false)
 
   def countDistinct(c: Column[_]): DBFunction =
-    DBFunction.Count(c, true)
+    DBFunction.Count(c, distinct = true)
 
   def countAll: DBFunction =
     DBFunction.CountAll
@@ -250,22 +250,22 @@ trait DSL extends DoobieMeta {
       in(subsel).negate
 
     def in(values: Nel[A])(implicit P: Put[A]): Condition =
-      Condition.InValues(col.s, values, false)
+      Condition.InValues(col.s, values, lower = false)
 
     def notIn(values: Nel[A])(implicit P: Put[A]): Condition =
       in(values).negate
 
     def inLower(values: Nel[String]): Condition =
-      Condition.InValues(col.s, values.map(_.toLowerCase), true)
+      Condition.InValues(col.s, values.map(_.toLowerCase), lower = true)
 
     def inLowerA(values: Nel[A])(implicit P: Put[A]): Condition =
-      Condition.InValues(col.s, values, true)
+      Condition.InValues(col.s, values, lower = true)
 
     def notInLower(values: Nel[String]): Condition =
-      Condition.InValues(col.s, values.map(_.toLowerCase), true).negate
+      Condition.InValues(col.s, values.map(_.toLowerCase), lower = true).negate
 
     def notInLowerA(values: Nel[A])(implicit P: Put[A]): Condition =
-      Condition.InValues(col.s, values, true).negate
+      Condition.InValues(col.s, values, lower = true).negate
 
     def isNull: Condition =
       Condition.IsNull(col.s)
@@ -382,7 +382,7 @@ trait DSL extends DoobieMeta {
       Condition.CompareFVal(sel, Operator.Neq, value)
 
     def in[A](values: Nel[A])(implicit P: Put[A]): Condition =
-      Condition.InValues(sel, values, false)
+      Condition.InValues(sel, values, lower = false)
   }
 }
 

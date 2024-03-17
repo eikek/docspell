@@ -15,7 +15,7 @@ object DBFunction {
   val countAll: DBFunction = CountAll
 
   def countAs[A](column: Column[A]): DBFunction =
-    Count(column, false)
+    Count(column, distinct = false)
 
   case object CountAll extends DBFunction
 

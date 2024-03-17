@@ -41,7 +41,9 @@ object LoginRoutes {
                 makeResponse(dsl, cfg, req, result, token.account.asString)
               )
             case Left(err) =>
-              BadRequest(BasicResult(false, s"Invalid authentication token: $err"))
+              BadRequest(
+                BasicResult(success = false, s"Invalid authentication token: $err")
+              )
           }
         } yield resp
 
@@ -97,7 +99,7 @@ object LoginRoutes {
             AuthResult(
               token.account.collective.id,
               token.account.login.id,
-              true,
+              success = true,
               "Login successful",
               Some(cd.asString),
               cfg.auth.sessionValid.millis,
@@ -112,7 +114,17 @@ object LoginRoutes {
 
         } yield resp
       case _ =>
-        Ok(AuthResult("", account, false, "Login failed.", None, 0L, false))
+        Ok(
+          AuthResult(
+            "",
+            account,
+            success = false,
+            "Login failed.",
+            None,
+            0L,
+            requireSecondFactor = false
+          )
+        )
     }
   }
 

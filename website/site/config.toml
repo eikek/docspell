@@ -20,6 +20,7 @@ highlight_themes_css = [
 ]
 
 [link_checker]
+external_level = "warn"
 skip_prefixes = [
   "http://localhost",
   "https://docs.github.com", # doesn't allow checking anymore

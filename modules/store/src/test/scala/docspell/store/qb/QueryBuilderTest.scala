@@ -39,7 +39,7 @@ class QueryBuilderTest extends FunSuite with TestLoggingConfig {
     val q = Select(proj, tables, cond).orderBy(c.name.desc)
     q match {
       case Select.Ordered(
-            Select.SimpleSelect(false, proj, from, where, group),
+            Select.SimpleSelect(false, projs, from, where, group),
             sb,
             vempty
           ) =>
@@ -48,7 +48,7 @@ class QueryBuilderTest extends FunSuite with TestLoggingConfig {
           sb,
           OrderBy(SelectExpr.SelectColumn(c.name, None), OrderBy.OrderType.Desc)
         )
-        assertEquals(11, proj.size)
+        assertEquals(11, projs.size)
         from match {
           case None =>
             fail("Unexpected from value")

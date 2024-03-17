@@ -222,13 +222,13 @@ object FindProposal {
     def searchExact[F[_]: Sync](ctx: Context[F, Args], store: Store[F]): Finder[F] =
       labels =>
         labels.toList
-          .traverse(nl => search(nl, true, ctx, store))
+          .traverse(nl => search(nl, exact = true, ctx, store))
           .map(MetaProposalList.flatten)
 
     def searchFuzzy[F[_]: Sync](ctx: Context[F, Args], store: Store[F]): Finder[F] =
       labels =>
         labels.toList
-          .traverse(nl => search(nl, false, ctx, store))
+          .traverse(nl => search(nl, exact = false, ctx, store))
           .map(MetaProposalList.flatten)
   }
 

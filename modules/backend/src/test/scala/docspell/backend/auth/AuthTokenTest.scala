@@ -32,9 +32,12 @@ class AuthTokenTest extends CatsEffectSuite {
   val otherSecret = ByteVector.fromValidHex("16bad")
 
   test("validate") {
-    val token1 = AuthToken.user[IO](user, false, secret, None).unsafeRunSync()
+    val token1 =
+      AuthToken.user[IO](user, requireSecondFactor = false, secret, None).unsafeRunSync()
     val token2 =
-      AuthToken.user[IO](user, false, secret, Duration.seconds(10).some).unsafeRunSync()
+      AuthToken
+        .user[IO](user, requireSecondFactor = false, secret, Duration.seconds(10).some)
+        .unsafeRunSync()
     assert(token1.validate(secret, Duration.seconds(5)))
     assert(!token1.validate(otherSecret, Duration.seconds(5)))
     assert(!token1.copy(account = john).validate(secret, Duration.seconds(5)))
@@ -46,9 +49,12 @@ class AuthTokenTest extends CatsEffectSuite {
   }
 
   test("signature") {
-    val token1 = AuthToken.user[IO](user, false, secret, None).unsafeRunSync()
+    val token1 =
+      AuthToken.user[IO](user, requireSecondFactor = false, secret, None).unsafeRunSync()
     val token2 =
-      AuthToken.user[IO](user, false, secret, Duration.seconds(10).some).unsafeRunSync()
+      AuthToken
+        .user[IO](user, requireSecondFactor = false, secret, Duration.seconds(10).some)
+        .unsafeRunSync()
 
     assert(token1.sigValid(secret))
     assert(token1.sigInvalid(otherSecret))

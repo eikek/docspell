@@ -299,14 +299,22 @@ object SolrSetup {
       Map("add-field" -> body.asJson).asJson
 
     def string(field: Field): AddField =
-      AddField(field, "string", true, true, false)
+      AddField(field, "string", stored = true, indexed = true, multiValued = false)
 
     def textGeneral(field: Field): AddField =
-      AddField(field, "text_general", true, true, false)
+      AddField(field, "text_general", stored = true, indexed = true, multiValued = false)
 
     def textLang(field: Field, lang: Language): AddField =
-      if (lang == Language.Czech) AddField(field, s"text_cz", true, true, false)
-      else AddField(field, s"text_${lang.iso2}", true, true, false)
+      if (lang == Language.Czech)
+        AddField(field, s"text_cz", stored = true, indexed = true, multiValued = false)
+      else
+        AddField(
+          field,
+          s"text_${lang.iso2}",
+          stored = true,
+          indexed = true,
+          multiValued = false
+        )
   }
 
   case class DeleteField(name: Field)

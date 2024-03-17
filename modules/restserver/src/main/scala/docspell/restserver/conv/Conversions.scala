@@ -329,7 +329,7 @@ trait Conversions {
             sourceName,
             None,
             validFileTypes,
-            false,
+            skipDuplicates = false,
             Glob.all,
             Nil,
             None,
@@ -641,82 +641,86 @@ trait Conversions {
   def basicResult(r: SetValueResult): BasicResult =
     r match {
       case SetValueResult.FieldNotFound =>
-        BasicResult(false, "The given field is unknown")
+        BasicResult(success = false, "The given field is unknown")
       case SetValueResult.ItemNotFound =>
-        BasicResult(false, "The given item is unknown")
+        BasicResult(success = false, "The given item is unknown")
       case SetValueResult.ValueInvalid(msg) =>
-        BasicResult(false, s"The value is invalid: $msg")
+        BasicResult(success = false, s"The value is invalid: $msg")
       case SetValueResult.Success =>
-        BasicResult(true, "Custom field value set successfully.")
+        BasicResult(success = true, "Custom field value set successfully.")
     }
 
   def basicResult(cr: JobCancelResult): BasicResult =
     cr match {
-      case JobCancelResult.JobNotFound => BasicResult(false, "Job not found")
+      case JobCancelResult.JobNotFound => BasicResult(success = false, "Job not found")
       case JobCancelResult.CancelRequested =>
-        BasicResult(true, "Cancel was requested at the job executor")
+        BasicResult(success = true, "Cancel was requested at the job executor")
       case JobCancelResult.Removed =>
-        BasicResult(true, "The job has been removed from the queue.")
+        BasicResult(success = true, "The job has been removed from the queue.")
     }
 
   def idResult(ar: AddResult, id: Ident, successMsg: String): IdResult =
     ar match {
-      case AddResult.Success           => IdResult(true, successMsg, id)
-      case AddResult.EntityExists(msg) => IdResult(false, msg, Ident.unsafe(""))
+      case AddResult.Success           => IdResult(success = true, successMsg, id)
+      case AddResult.EntityExists(msg) => IdResult(success = false, msg, Ident.unsafe(""))
       case AddResult.Failure(ex) =>
-        IdResult(false, s"Internal error: ${ex.getMessage}", Ident.unsafe(""))
+        IdResult(success = false, s"Internal error: ${ex.getMessage}", Ident.unsafe(""))
     }
 
   def basicResult(ar: AddResult, successMsg: String): BasicResult =
     ar match {
-      case AddResult.Success           => BasicResult(true, successMsg)
-      case AddResult.EntityExists(msg) => BasicResult(false, msg)
+      case AddResult.Success           => BasicResult(success = true, successMsg)
+      case AddResult.EntityExists(msg) => BasicResult(success = false, msg)
       case AddResult.Failure(ex) =>
-        BasicResult(false, s"Internal error: ${ex.getMessage}")
+        BasicResult(success = false, s"Internal error: ${ex.getMessage}")
     }
 
   def basicResult(ar: UpdateResult, successMsg: String): BasicResult =
     ar match {
-      case UpdateResult.Success  => BasicResult(true, successMsg)
-      case UpdateResult.NotFound => BasicResult(false, "Not found")
+      case UpdateResult.Success  => BasicResult(success = true, successMsg)
+      case UpdateResult.NotFound => BasicResult(success = false, "Not found")
       case UpdateResult.Failure(ex) =>
-        BasicResult(false, s"Error: ${ex.getMessage}")
+        BasicResult(success = false, s"Error: ${ex.getMessage}")
     }
 
   def basicResult(ur: OUpload.UploadResult): BasicResult =
     ur match {
-      case UploadResult.Success  => BasicResult(true, "Files submitted.")
-      case UploadResult.NoFiles  => BasicResult(false, "There were no files to submit.")
-      case UploadResult.NoSource => BasicResult(false, "The source id is not valid.")
-      case UploadResult.NoItem   => BasicResult(false, "The item could not be found.")
+      case UploadResult.Success => BasicResult(success = true, "Files submitted.")
+      case UploadResult.NoFiles =>
+        BasicResult(success = false, "There were no files to submit.")
+      case UploadResult.NoSource =>
+        BasicResult(success = false, "The source id is not valid.")
+      case UploadResult.NoItem =>
+        BasicResult(success = false, "The item could not be found.")
       case UploadResult.NoCollective =>
-        BasicResult(false, "The collective could not be found.")
+        BasicResult(success = false, "The collective could not be found.")
       case UploadResult.StoreFailure(_) =>
         BasicResult(
-          false,
+          success = false,
           "There were errors storing a file! See the server logs for details."
         )
     }
 
   def basicResult(cr: PassChangeResult): BasicResult =
     cr match {
-      case PassChangeResult.Success => BasicResult(true, "Password changed.")
+      case PassChangeResult.Success => BasicResult(success = true, "Password changed.")
       case PassChangeResult.UpdateFailed =>
-        BasicResult(false, "The database update failed.")
+        BasicResult(success = false, "The database update failed.")
       case PassChangeResult.PasswordMismatch =>
-        BasicResult(false, "The current password is incorrect.")
-      case PassChangeResult.UserNotFound => BasicResult(false, "User not found.")
+        BasicResult(success = false, "The current password is incorrect.")
+      case PassChangeResult.UserNotFound =>
+        BasicResult(success = false, "User not found.")
       case PassChangeResult.InvalidSource(source) =>
         BasicResult(
-          false,
+          success = false,
           s"User has invalid soure: $source. Passwords are managed elsewhere."
         )
     }
 
   def basicResult(e: Either[Throwable, _], successMsg: String): BasicResult =
     e match {
-      case Right(_) => BasicResult(true, successMsg)
-      case Left(ex) => BasicResult(false, ex.getMessage)
+      case Right(_) => BasicResult(success = true, successMsg)
+      case Left(ex) => BasicResult(success = false, ex.getMessage)
     }
 
   // MIME Type

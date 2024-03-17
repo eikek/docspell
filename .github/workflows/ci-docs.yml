@@ -6,20 +6,13 @@ on:
       - "master"
 jobs:
   check-website:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
+      - uses: cachix/install-nix-action@v26
       - name: Set current version
         run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
-      - uses: jorelali/setup-elm@v5
-        with:
-          elm-version: 0.19.1
-      - uses: cachix/install-nix-action@v25
-        with:
-          nix_path: nixpkgs=channel:nixos-23.05
-      - name: Print nixpkgs version
-        run: nix-instantiate --eval -E '(import <nixpkgs> {}).lib.version'
       - name: Build website (${{ env.DOCSPELL_VERSION }})
-        run: nix-shell website/shell.nix --run "sbt make-website"
+        run: nix develop .#ci --command sbt make-website

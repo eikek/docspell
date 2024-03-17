@@ -10,7 +10,8 @@ import cats.effect._
 import fs2.Stream
 import fs2.io.file.{Files, Path}
 
-import docspell.common._
+import docspell.common.exec.ExternalCommand
+import docspell.common.exec.SysExec
 import docspell.common.util.File
 import docspell.logging.Logger
 
@@ -77,14 +78,17 @@ object Ocr {
       else cfg.ghostscript.command.args
     val cmd = cfg.ghostscript.command
       .copy(args = xargs)
-      .replace(
+      .withVars(
         Map(
-          "{{infile}}" -> "-",
-          "{{outfile}}" -> "%d.tif"
+          "infile" -> "-",
+          "outfile" -> "%d.tif"
         )
       )
-    SystemCommand
-      .execSuccess(cmd, logger, wd = Some(wd), stdin = pdf)
+      .resolved
+
+    Stream
+      .resource(SysExec(cmd, logger, Some(wd), Some(pdf)))
+      .evalMap(_.runToSuccess(logger))
       .flatMap(_ => File.listFiles(pathEndsWith(".tif"), wd))
   }
 
@@ -93,18 +97,22 @@ object Ocr {
     */
   private[extract] def runGhostscriptFile[F[_]: Async: Files](
       pdf: Path,
-      ghostscript: SystemCommand.Config,
+      ghostscript: ExternalCommand,
       wd: Path,
       logger: Logger[F]
   ): Stream[F, Path] = {
-    val cmd = ghostscript.replace(
-      Map(
-        "{{infile}}" -> pdf.absolute.toString,
-        "{{outfile}}" -> "%d.tif"
+    val cmd = ghostscript
+      .withVars(
+        Map(
+          "infile" -> pdf.absolute.toString,
+          "outfile" -> "%d.tif"
+        )
       )
-    )
-    SystemCommand
-      .execSuccess[F](cmd, logger, wd = Some(wd))
+      .resolved
+
+    Stream
+      .resource(SysExec(cmd, logger, Some(wd)))
+      .evalMap(_.runToSuccess(logger))
       .flatMap(_ => File.listFiles(pathEndsWith(".tif"), wd))
   }
 
@@ -116,19 +124,23 @@ object Ocr {
     */
   private[extract] def runUnpaperFile[F[_]: Async](
       img: Path,
-      unpaper: SystemCommand.Config,
+      unpaper: ExternalCommand,
       wd: Option[Path],
       logger: Logger[F]
   ): Stream[F, Path] = {
     val targetFile = img.resolveSibling("u-" + img.fileName.toString).absolute
-    val cmd = unpaper.replace(
-      Map(
-        "{{infile}}" -> img.absolute.toString,
-        "{{outfile}}" -> targetFile.toString
+    val cmd = unpaper
+      .withVars(
+        Map(
+          "infile" -> img.absolute.toString,
+          "outfile" -> targetFile.toString
+        )
       )
-    )
-    SystemCommand
-      .execSuccess[F](cmd, logger, wd = wd)
+      .resolved
+
+    Stream
+      .resource(SysExec(cmd, logger, wd))
+      .evalMap(_.runToSuccess(logger))
       .map(_ => targetFile)
       .handleErrorWith { th =>
         logger
@@ -150,12 +162,14 @@ object Ocr {
     // so use the parent as working dir
     runUnpaperFile(img, config.unpaper.command, img.parent, logger).flatMap { uimg =>
       val cmd = config.tesseract.command
-        .replace(
-          Map("{{file}}" -> uimg.fileName.toString, "{{lang}}" -> fixLanguage(lang))
+        .withVars(
+          Map("file" -> uimg.fileName.toString, "lang" -> fixLanguage(lang))
         )
-      SystemCommand
-        .execSuccess[F](cmd, logger, wd = uimg.parent)
-        .map(_.stdout)
+        .resolved
+
+      Stream
+        .resource(SysExec(cmd, logger, uimg.parent))
+        .evalMap(_.runToSuccessStdout(logger))
     }
 
   /** Run tesseract on the given image file and return the extracted text. */
@@ -166,8 +180,12 @@ object Ocr {
       config: OcrConfig
   ): Stream[F, String] = {
     val cmd = config.tesseract.command
-      .replace(Map("{{file}}" -> "stdin", "{{lang}}" -> fixLanguage(lang)))
-    SystemCommand.execSuccess(cmd, logger, stdin = img).map(_.stdout)
+      .withVars(Map("file" -> "stdin", "lang" -> fixLanguage(lang)))
+      .resolved
+
+    Stream
+      .resource(SysExec(cmd, logger, None, Some(img)))
+      .evalMap(_.runToSuccessStdout(logger))
   }
 
   private def fixLanguage(lang: String): String =

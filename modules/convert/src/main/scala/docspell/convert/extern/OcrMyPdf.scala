@@ -24,14 +24,16 @@ object OcrMyPdf {
       logger: Logger[F]
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] =
     if (cfg.enabled) {
-      val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
+      val reader: (Path, Int) => F[ConversionResult[F]] =
         ExternConv.readResult[F](chunkSize, logger)
+
+      val cmd = cfg.command.withVars(Map("lang" -> lang.iso3))
 
       ExternConv.toPDF[F, A](
         "ocrmypdf",
-        cfg.command.replace(Map("{{lang}}" -> lang.iso3)),
+        cmd,
         cfg.workingDir,
-        false,
+        useStdin = false,
         logger,
         reader
       )(in, handler)

@@ -36,7 +36,10 @@ object TotpRoutes {
         for {
           result <- backend.totp.state(user.account)
           resp <- Ok(
-            result.fold(en => OtpState(true, en.created.some), _ => OtpState(false, None))
+            result.fold(
+              en => OtpState(enabled = true, en.created.some),
+              _ => OtpState(enabled = false, None)
+            )
           )
         } yield resp
       case POST -> Root / "init" =>
@@ -44,11 +47,13 @@ object TotpRoutes {
           result <- backend.totp.initialize(user.account)
           resp <- result match {
             case OTotp.InitResult.AlreadyExists =>
-              UnprocessableEntity(BasicResult(false, "A totp setup already exists!"))
+              UnprocessableEntity(
+                BasicResult(success = false, "A totp setup already exists!")
+              )
             case OTotp.InitResult.NotFound =>
-              NotFound(BasicResult(false, "User not found"))
+              NotFound(BasicResult(success = false, "User not found"))
             case OTotp.InitResult.Failed(ex) =>
-              InternalServerError(BasicResult(false, ex.getMessage))
+              InternalServerError(BasicResult(success = false, ex.getMessage))
             case s @ OTotp.InitResult.Success(_, key) =>
               val issuer = cfg.appName
               val uri = s.authenticatorUrl(issuer)
@@ -62,9 +67,9 @@ object TotpRoutes {
           result <- backend.totp.confirmInit(user.account, OnetimePassword(data.otp.pass))
           resp <- result match {
             case OTotp.ConfirmResult.Success =>
-              Ok(BasicResult(true, "TOTP setup successful."))
+              Ok(BasicResult(success = true, "TOTP setup successful."))
             case OTotp.ConfirmResult.Failed =>
-              Ok(BasicResult(false, "TOTP setup failed!"))
+              Ok(BasicResult(success = false, "TOTP setup failed!"))
           }
         } yield resp
 

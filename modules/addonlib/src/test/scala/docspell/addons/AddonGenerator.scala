@@ -27,9 +27,9 @@ object AddonGenerator {
   ): Resource[IO, AddonArchive] =
     output match {
       case None =>
-        generate(name, version, false)("exit 0")
+        generate(name, version, collectOutput = false)("exit 0")
       case Some(out) =>
-        generate(name, version, true)(
+        generate(name, version, collectOutput = true)(
           s"""
              |cat <<-EOF
              |${out.asJson.noSpaces}
@@ -77,8 +77,9 @@ object AddonGenerator {
       meta = AddonMeta.Meta(name, version, None),
       triggers = Set(AddonTriggerType.ExistingItem: AddonTriggerType).some,
       args = None,
-      runner =
-        AddonMeta.Runner(None, None, AddonMeta.TrivialRunner(true, "addon.sh").some).some,
+      runner = AddonMeta
+        .Runner(None, None, AddonMeta.TrivialRunner(enable = true, "addon.sh").some)
+        .some,
       options =
         AddonMeta.Options(networking = !collectOutput, collectOutput = collectOutput).some
     )

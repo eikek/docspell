@@ -24,11 +24,8 @@
         z-index: 35;
     }
 
-    @variants responsive {
-        .min-h-7 {
-            min-height: 1.75rem;
-        }
-
+    .min-h-7 {
+        min-height: 1.75rem;
     }
 
     .scrollbar-none {
@@ -47,37 +44,35 @@
         width: 8px;
     }
 
-    @variants dark {
-        .scrollbar-dark-sidebar {
-            scrollbar-color: rgba(15,23,42,0.9) rgba(15,23,42,0.3);
-        }
-        .scrollbar-light-sidebar {
-            scrollbar-color: rgba(219, 234, 254, 1.0) rgba(219, 234, 254,0.3);
-        }
-        .scrollbar-main {
-            scrollbar-color: rgba(156, 163, 175,0.9) rgba(156, 163, 175,0.3);
-        }
+    .scrollbar-dark-sidebar {
+        scrollbar-color: rgba(15,23,42,0.9) rgba(15,23,42,0.3);
+    }
+    .scrollbar-light-sidebar {
+        scrollbar-color: rgba(219, 234, 254, 1.0) rgba(219, 234, 254,0.3);
+    }
+    .scrollbar-main {
+        scrollbar-color: rgba(156, 163, 175,0.9) rgba(156, 163, 175,0.3);
+    }
 
-        .scrollbar-dark-sidebar::-webkit-scrollbar {
-            background-color: rgba(15,23,42,0.3);
-        }
-        .scrollbar-dark-sidebar::-webkit-scrollbar-thumb {
-            background: rgba(15,23,42,0.9);
-        }
+    .scrollbar-dark-sidebar::-webkit-scrollbar {
+        background-color: rgba(15,23,42,0.3);
+    }
+    .scrollbar-dark-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(15,23,42,0.9);
+    }
 
-        .scrollbar-light-sidebar::-webkit-scrollbar {
-            background-color: rgba(219, 234, 254, 0.3);
-        }
-        .scrollbar-light-sidebar::-webkit-scrollbar-thumb {
-            background: rgba(219, 234, 254, 1.0);
-        }
+    .scrollbar-light-sidebar::-webkit-scrollbar {
+        background-color: rgba(219, 234, 254, 0.3);
+    }
+    .scrollbar-light-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(219, 234, 254, 1.0);
+    }
 
-        .scrollbar-main::-webkit-scrollbar {
-            background-color: rgba(156, 163, 175, 0.3);
-        }
-        .scrollbar-main::-webkit-scrollbar-thumb {
-            background:  rgba(156, 163, 175, 0.9);
-        }
+    .scrollbar-main::-webkit-scrollbar {
+        background-color: rgba(156, 163, 175, 0.3);
+    }
+    .scrollbar-main::-webkit-scrollbar-thumb {
+        background:  rgba(156, 163, 175, 0.9);
     }
 
     .ds-card-search-hl strong {

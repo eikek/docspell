@@ -63,11 +63,11 @@ you can look at the results while writing.
 
 If you want to see a live view of the page while editing, some tools
 are required. The easiest way to get these is to install
-[nix](https://nixos.org/) and run `nix-shell website/shell.nix` to get
-an environment with all these tools installed. Otherwise install the
-programs mentioned in `website/shell.nix`, which are:
-[yarn](https://yarnpkg.com/), [zola](https://www.getzola.org/),
-[elm](https://elm-lang.org) and [sbt](https://scala-sbt.org).
+[nix](https://nixos.org/) and run `nix develop .#dev-vm` to get an
+environment with all these tools installed. Otherwise install the
+programs: [yarn](https://yarnpkg.com/),
+[zola](https://www.getzola.org/), [elm](https://elm-lang.org) and
+[sbt](https://scala-sbt.org).
 
 Then clone the sources to your machine and build the complete site
 once, so that all assets and required stuff is present:

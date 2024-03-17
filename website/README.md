@@ -15,19 +15,20 @@ Sbt is used to build the site.
 
 Install things by running `yarn install`.
 
-Open terminal for each script below:
+Use a dev [environment](https://docspell.org/docs/dev/development/)
+and open terminal for each script below:
 
 1. Starting the server
    ``` shell
-   nix-shell --run "cd site && zola serve"
+   cd site && zola serve
    ```
 2. Building the stylesheet
    ``` shell
-   nix-shell --run ./scripts/run-styles.sh
+   ./scripts/run-styles.sh
    ```
 3. Building some javascript files
    ``` shell
-   nix-shell --run ./scripts/run-elm.sh
+   ./scripts/run-elm.sh
    ```
 
 Open browser at `localhost:1111`.
@@ -40,7 +41,7 @@ be finally deployed. To see this, start sbt and change into the
 website project.
 
 ``` shell
-nix-shell website/shell.nix --run sbt
+$ sbt
 sbt> project website
 ```
 

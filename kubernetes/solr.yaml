@@ -15,6 +15,16 @@ spec:
       labels:
         app: solr
     spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command:
+            - "sh"
+            - "-c"
+            - "chown -R 8983:8983 /var/solr"
+          volumeMounts:
+            - name: solr-data
+              mountPath: /var/solr
       containers:
         - name: solr
           image: solr:9
@@ -24,6 +34,9 @@ spec:
             - docker-entrypoint.sh
             - solr-precreate
             - docspell
+          env:
+            - name: SOLR_OPTS
+              value: "-Dsolr.modules=analysis-extras"
           livenessProbe: # Check for a 302 response
             httpGet:
               path: /solr/admin/info/system

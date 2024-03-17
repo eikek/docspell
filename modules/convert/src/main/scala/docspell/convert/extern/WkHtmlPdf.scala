@@ -27,10 +27,10 @@ object WkHtmlPdf {
       sanitizeHtml: SanitizeHtml,
       logger: Logger[F]
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] = {
-    val reader: (Path, SystemCommand.Result) => F[ConversionResult[F]] =
+    val reader: (Path, Int) => F[ConversionResult[F]] =
       ExternConv.readResult[F](chunkSize, logger)
 
-    val cmdCfg = cfg.command.replace(Map("{{encoding}}" -> charset.name()))
+    val cmdCfg = cfg.command.withVars(Map("encoding" -> charset.name()))
 
     // html sanitize should (among other) remove links to invalid
     // protocols like cid: which is not supported by further
@@ -58,5 +58,4 @@ object WkHtmlPdf {
         handler
       )
   }
-
 }

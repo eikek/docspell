@@ -38,6 +38,20 @@ trait SysExec[F[_]] {
 
   def waitFor(timeout: Option[Duration] = None): F[Int]
 
+  /** Uses `waitFor` and throws when return code is non-zero. Logs stderr and stdout while
+    * waiting.
+    */
+  def runToSuccess(logger: Logger[F], timeout: Option[Duration] = None)(implicit
+      F: Async[F]
+  ): F[Int]
+
+  /** Uses `waitFor` and throws when return code is non-zero. Logs stderr while waiting
+    * and collects stdout once finished successfully.
+    */
+  def runToSuccessStdout(logger: Logger[F], timeout: Option[Duration] = None)(implicit
+      F: Async[F]
+  ): F[String]
+
   /** Sends a signal to the process to terminate it immediately */
   def cancel: F[Unit]
 
@@ -75,6 +89,12 @@ object SysExec {
       proc <- startProcess(logger, cmd, workdir, stdin)
       fibers <- Resource.eval(Ref.of[F, List[F[Unit]]](Nil))
     } yield new SysExec[F] {
+      private lazy val basicName: String =
+        cmd.program.lastIndexOf(java.io.File.separatorChar.toInt) match {
+          case n if n > 0 => cmd.program.drop(n + 1)
+          case _          => cmd.program.takeRight(16)
+        }
+
       def stdout: Stream[F, Byte] =
         fs2.io.readInputStream(
           Sync[F].blocking(proc.getInputStream),
@@ -106,6 +126,39 @@ object SysExec {
                   )
             )
       }
+
+      def runToSuccess(logger: Logger[F], timeout: Option[Duration])(implicit
+          F: Async[F]
+      ): F[Int] =
+        logOutputs(logger, basicName).use(_.waitFor(timeout).flatMap {
+          case rc if rc == 0 => Sync[F].pure(0)
+          case rc =>
+            Sync[F].raiseError(
+              new Exception(s"Command `${cmd.program}` returned non-zero exit code ${rc}")
+            )
+        })
+
+      def runToSuccessStdout(logger: Logger[F], timeout: Option[Duration])(implicit
+          F: Async[F]
+      ): F[String] =
+        F.background(
+          stderrLines
+            .through(line => Stream.eval(logger.debug(s"[$basicName (err)]: $line")))
+            .compile
+            .drain
+        ).use { f1 =>
+          waitFor(timeout)
+            .flatMap {
+              case rc if rc == 0 => stdout.through(fs2.text.utf8.decode).compile.string
+              case rc =>
+                Sync[F].raiseError[String](
+                  new Exception(
+                    s"Command `${cmd.program}` returned non-zero exit code ${rc}"
+                  )
+                )
+            }
+            .flatTap(_ => f1)
+        }
 
       def consumeOutputs(out: Pipe[F, String, Unit], err: Pipe[F, String, Unit])(implicit
           F: Async[F]

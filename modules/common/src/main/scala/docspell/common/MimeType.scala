@@ -194,7 +194,7 @@ object MimeType {
           val csValueStart = in.substring(n + "charset=".length).trim
           val csName = csValueStart.indexOf(';') match {
             case -1 => unquote(csValueStart).trim
-            case n  => unquote(csValueStart.substring(0, n)).trim
+            case n2 => unquote(csValueStart.substring(0, n2)).trim
           }
           if (Charset.isSupported(csName)) Right((Some(Charset.forName(csName)), ""))
           else Right((None, ""))

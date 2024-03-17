@@ -19,14 +19,7 @@ module.exports = {
             }
         }
     },
-    variants: {
-        extend: {
-            backgroundOpacity: ['dark']
-        }
-    },
-    purge: false,
     plugins: [
         require('@tailwindcss/forms')
     ]
-//    prefix: 'tw-'
 }

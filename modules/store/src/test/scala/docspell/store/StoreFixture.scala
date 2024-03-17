@@ -106,7 +106,7 @@ object StoreFixture {
     for {
       xa <- makeXA(ds)
       cfg = FileRepositoryConfig.Database(64 * 1024)
-      fr = FileRepository[IO](xa, ds, cfg, true)
+      fr = FileRepository[IO](xa, ds, cfg, withAttributeStore = true)
       store = new StoreImpl[IO](fr, jdbc, schemaMigrateConfig, ds, xa)
       _ <- Resource.eval(store.migrate)
     } yield store

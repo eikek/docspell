@@ -46,7 +46,7 @@ object RCollective {
       collName,
       CollectiveState.Active,
       Language.German,
-      true,
+      integrationEnabled = true,
       created
     )
 

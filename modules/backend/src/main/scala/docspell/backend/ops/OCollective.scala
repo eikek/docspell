@@ -194,7 +194,14 @@ object OCollective {
           id <- Ident.randomId[F]
           settings = sett.emptyTrash.getOrElse(EmptyTrash.default)
           args = EmptyTrashArgs(cid, settings.minAge)
-          ut = UserTask(id, EmptyTrashArgs.taskName, true, settings.schedule, None, args)
+          ut = UserTask(
+            id,
+            EmptyTrashArgs.taskName,
+            enabled = true,
+            settings.schedule,
+            None,
+            args
+          )
           _ <- uts.updateOneTask(UserTaskScope.collective(cid), args.makeSubject.some, ut)
           _ <- joex.notifyAllNodes
         } yield ()
@@ -220,7 +227,7 @@ object OCollective {
           ut = UserTask(
             id,
             LearnClassifierArgs.taskName,
-            true,
+            enabled = true,
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
             None,
             args
@@ -239,7 +246,7 @@ object OCollective {
           ut = UserTask(
             id,
             EmptyTrashArgs.taskName,
-            true,
+            enabled = true,
             CalEvent(WeekdayComponent.All, DateEvent.All, TimeEvent.All),
             None,
             args

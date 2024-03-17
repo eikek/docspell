@@ -49,7 +49,7 @@ object ItemRoutes {
             resp <-
               result
                 .map(r => Ok(r))
-                .getOrElse(NotFound(BasicResult(false, "Not found.")))
+                .getOrElse(NotFound(BasicResult(success = false, "Not found.")))
           } yield resp
 
         case POST -> Root / Ident(id) / "confirm" =>
@@ -285,7 +285,7 @@ object ItemRoutes {
 
         case req @ GET -> Root / Ident(id) / "preview" :? QP.WithFallback(flag) =>
           def notFound =
-            NotFound(BasicResult(false, "Not found"))
+            NotFound(BasicResult(success = false, "Not found"))
           for {
             preview <- backend.itemSearch.findItemPreview(id, user.account.collectiveId)
             inm = req.headers.get[`If-None-Match`].flatMap(_.tags)
@@ -309,7 +309,7 @@ object ItemRoutes {
             resp <-
               preview
                 .map(data => BinaryUtil.withResponseHeaders(dsl, Ok())(data))
-                .getOrElse(NotFound(BasicResult(false, "Not found")))
+                .getOrElse(NotFound(BasicResult(success = false, "Not found")))
           } yield resp
 
         case req @ POST -> Root / Ident(id) / "reprocess" =>
