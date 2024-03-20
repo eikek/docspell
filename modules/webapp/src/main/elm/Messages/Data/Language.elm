@@ -145,7 +145,7 @@ de lang =
             "Japanisch"
 
         JpnVert ->
-            "JpnSenk"
+            "JpnVert"
 
         Hebrew ->
             "Hebräisch"
