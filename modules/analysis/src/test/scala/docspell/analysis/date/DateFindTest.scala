@@ -143,7 +143,6 @@ class DateFindTest extends FunSuite {
     )
   }
 
-  /*The output of a vertical OCR should also be horizontal and be able to be tested in the same way, so an additional test for vertical Japanese is not necessary.*/
   test("find japanese dates") {
     assertEquals(
       DateFind
