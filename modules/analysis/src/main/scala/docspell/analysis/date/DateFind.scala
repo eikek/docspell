@@ -125,6 +125,7 @@ object DateFind {
         case Language.Dutch      => dmy.or(ymd).or(mdy)
         case Language.Latvian    => dmy.or(lavLong).or(ymd)
         case Language.Japanese   => ymd
+        case Language.JpnVert    => ymd
         case Language.Hebrew     => dmy
         case Language.Lithuanian => ymd
         case Language.Polish     => dmy

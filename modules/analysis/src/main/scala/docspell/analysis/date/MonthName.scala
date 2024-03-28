@@ -54,6 +54,8 @@ object MonthName {
         latvian
       case Language.Japanese =>
         japanese
+      case Language.JpnVert =>
+        japanese
       case Language.Hebrew =>
         hebrew
       case Language.Lithuanian =>
