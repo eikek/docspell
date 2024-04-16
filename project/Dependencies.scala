@@ -43,12 +43,12 @@ object Dependencies {
   val ScalaJavaTimeVersion = "2.5.0"
   val ScodecBitsVersion = "1.1.38"
   val ScribeVersion = "3.13.2"
-  val Slf4jVersion = "2.0.12"
-  val SourcecodeVersion = "0.3.1"
+  val Slf4jVersion = "2.0.13"
+  val SourcecodeVersion = "0.4.1"
   val StanfordNlpVersion = "4.5.6"
   val TikaVersion = "2.9.2"
   val YamuscaVersion = "0.10.0"
-  val SwaggerUIVersion = "5.13.0"
+  val SwaggerUIVersion = "5.15.1"
   val TestContainerVersion = "0.40.14"
   val TwelveMonkeysVersion = "3.10.1"
   val JQueryVersion = "3.5.1"
@@ -219,7 +219,7 @@ object Dependencies {
     "org.apache.tika" % "tika-core" % TikaVersion
   )
   val commonsIO = Seq(
-    "commons-io" % "commons-io" % "2.16.0"
+    "commons-io" % "commons-io" % "2.16.1"
   )
   val tikaParser = Seq(
     "org.apache.tika" % "tika-parsers" % TikaVersion
