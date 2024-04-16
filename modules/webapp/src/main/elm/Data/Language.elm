@@ -92,7 +92,7 @@ fromString str =
         Just Japanese
 
     else if str == "jpn_vert" || str == "ja_vert" || str == "jpnvert" then
-        Just Japanese
+        Just JpnVert
 
     else if str == "heb" || str == "he" || str == "hebrew" then
         Just Hebrew
