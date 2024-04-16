@@ -123,6 +123,11 @@ object Language {
     val iso3 = "jpn"
   }
 
+  /*It's not an ISO value, but this needs to be unique and tesseract will need jpn_vert for it's scan from the config of /etc/docspell-joex/docspell-joex.conf.*/
+  case object JpnVert extends Language {
+    val iso2 = "ja_vert"
+    val iso3 = "jpn_vert"
+  }
   case object Hebrew extends Language {
     val iso2 = "he"
     val iso3 = "heb"
@@ -172,6 +177,7 @@ object Language {
       Romanian,
       Latvian,
       Japanese,
+      JpnVert,
       Hebrew,
       Lithuanian,
       Polish,

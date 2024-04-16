@@ -30,6 +30,7 @@ type Language
     | Dutch
     | Latvian
     | Japanese
+    | JpnVert
     | Hebrew
     | Hungarian
     | Lithuanian
@@ -89,6 +90,9 @@ fromString str =
 
     else if str == "jpn" || str == "ja" || str == "japanese" then
         Just Japanese
+
+    else if str == "jpn_vert" || str == "ja_vert" || str == "jpnvert" then
+        Just JpnVert
 
     else if str == "heb" || str == "he" || str == "hebrew" then
         Just Hebrew
@@ -169,6 +173,9 @@ toIso3 lang =
         Japanese ->
             "jpn"
 
+        JpnVert ->
+            "jpn_vert"
+
         Hebrew ->
             "heb"
 
@@ -212,6 +219,7 @@ all =
     , Romanian
     , Latvian
     , Japanese
+    , JpnVert
     , Hebrew
     , Hungarian
     , Lithuanian
