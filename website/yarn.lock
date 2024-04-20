@@ -8,19 +8,19 @@
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
 "@fontsource/montserrat@^5.0.0":
-  version "5.0.17"
-  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.17.tgz#ea8003b028dc41d5baab1ab7765193fd342548c3"
-  integrity sha512-3V3F8GqeN8wawLmAkAfTCYsBYRKu+JLm6ivWWX/v0dCYYPcwtQX0h5Z8j68N1YumuT75MqrghqU42w9DnFHojQ==
+  version "5.0.18"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.0.18.tgz#eecb91b0f0062787a0eee5622988ed21f2899a90"
+  integrity sha512-85JBs2rCdFK/VBdSb401e2lXk5gynVo2zi3Rh2Guem4WNtT2q52+V90o3KzjmajY3TPJvCZA/kI7R05ev7148g==
 
 "@fontsource/source-code-pro@^5.0.0":
-  version "5.0.17"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.17.tgz#a69df6b9fc19fe8b2d04126ce28ad9213cf0049b"
-  integrity sha512-Q5GfthInOTW+Ek5k97/LH6FWLmD+IwHwBEEXF+KStvsyPwSZz+0ssdWJfz/ZRaTZxOk7FwlRgysXAWo41fq6bQ==
+  version "5.0.18"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.18.tgz#fbb6989cdae05e4717c82c5da6b99ed5817c2c2c"
+  integrity sha512-5z+MFKaj+qs0PGAzv+WpMBTd8wEvAJEqATj6cGFVFJmFk6A6liJB07F2HAzLe/83FYikGeE4okh1sHM2JDVV+Q==
 
 "@fontsource/spectral@^5.0.0":
-  version "5.0.12"
-  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.0.12.tgz#cfdc1608258c1edf69dd18996501604ab69bcd2c"
-  integrity sha512-tscRgEvVW/eRnBaGRnnlg86rx0NUMGzXFNePFBIXqdZE++9hOH0RTUqtpzUR+zS037kgbkitaVqotyGY8Vq+jw==
+  version "5.0.13"
+  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.0.13.tgz#decc0b840c31972000917c9678f86a562e09038e"
+  integrity sha512-t/E81Rp78LtpwSO19BErGP2HxWAib2/lBriYqJ1OsmYwdFTS4k3wqUJ6+vlr1dKWvjbMks+M3e999JyQC5JaMA==
 
 "@fortawesome/fontawesome-free@^6.0.0":
   version "6.5.2"
