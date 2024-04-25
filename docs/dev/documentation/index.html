@@ -20,7 +20,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Raspberry-Pi - Docspell">
+<meta name="og:site_name" content="Documentation - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -33,7 +33,7 @@
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
 
-        <title>Raspberry-Pi - Docspell Documentation</title>
+        <title>Documentation - Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
 
         <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
@@ -200,7 +200,7 @@
             </a>
         </div>
         
-        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/install/rpi/" class="w-full block">
                 Raspberry-Pi
             </a>
@@ -733,7 +733,7 @@
             </a>
         </div>
         
-        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
             <a href="https://docspell.org/docs/dev/documentation/" class="w-full block">
                 Documentation
             </a>
@@ -777,41 +777,45 @@
                         
   
   
-  <h1 id="raspberry-pi">Raspberry Pi<a class="zola-anchor" href="#raspberry-pi" aria-label="Anchor link for: raspberry-pi">🔗</a></h1>
-<p>Both components can run next to each other on a raspberry pi or
-similiar device.</p>
-<p>There is a <a href="https://github.com/docspell/rpi-scripts">project on
-github</a> that can help with
-setting up a raspberry pi with docspell.</p>
-<p>The docker images are built for arm64 and armv7, these can also be
-used on the pi.</p>
-<h2 id="rest-server">REST Server<a class="zola-anchor" href="#rest-server" aria-label="Anchor link for: rest-server">🔗</a></h2>
-<p>The REST server component runs very well on the Raspberry Pi and
-similiar devices. It doesn't require much resources, because the heavy
-work is done by the joex components.</p>
-<h2 id="joex">Joex<a class="zola-anchor" href="#joex" aria-label="Anchor link for: joex">🔗</a></h2>
-<p>Running the joex component on the Raspberry Pi is possible, but will
-result in long processing times for OCR and text analysis. The board
-should provide 4G of RAM (like the current RPi4), especially if also a
-database and solr are running next to it. The memory required by joex
-depends on the config and document language. Please pick a value that
-suits your setup from
-<a href="https://docspell.org/docs/configure/file-processing/#memory-usage">here</a>. For boards
-like the RPi, it might be necessary to use <code>nlp.mode=basic</code>, rather
-than <code>nlp.mode=full</code>. You should also set the joex pool size to 1.</p>
-<p>An example: on this <a href="https://up-board.org/up/specifications/">UP
-board</a> with an Intel Atom
-x5-Z8350 CPU (@1.44Ghz) and 4G RAM, a scanned (300dpi, in German) pdf
-file with 6 pages took <em>3:20 min</em> to process. This board also runs the
-SOLR and a postgresql database.</p>
-<p>The same file was processed in 55s on a qemu virtual machine on my i7
-notebook, using 1 CPU and 4G RAM (and identical config for joex). The
-virtual machine only had to host docspell (joex and restserver, but
-the restserver is very lightweight).</p>
-<p>The learning task for text classification can also use high amount of
-memory, but this depends on the amount of data you have in docspell.
-If you encounter problems here, you can set the maximum amount of
-items to consider in the collective settings page.</p>
+  <h1 id="documentation">Documentation<a class="zola-anchor" href="#documentation" aria-label="Anchor link for: documentation">🔗</a></h1>
+<h2 id="about">About<a class="zola-anchor" href="#about" aria-label="Anchor link for: about">🔗</a></h2>
+<p>Docspell's documentation primarily lives on this website, but
+there is also valuable information contained with in the main
+<a href="https://github.com/eikek/docspell/blob/master/README.md">README.md</a>
+and <a href="https://github.com/search?q=repo%3Aeikek%2Fdocspell+path%3A.md+NOT+path%3A%2F%5Ewebsite%5C%2Fsite%5C%2F%2F&amp;type=code">various other
+READMEs</a>
+in the repository.</p>
+<h2 id="contributing">Contributing<a class="zola-anchor" href="#contributing" aria-label="Anchor link for: contributing">🔗</a></h2>
+<p>First, please take a look at the <a href="https://github.com/eikek/docspell/blob/master/Contributing.md#Documentation">&quot;Documentation&quot; portion of the
+README</a>.</p>
+<p>Please note that the documentation hosted at https://docspell.org/ is for
+the current version of Docspell and will not reflect any unreleased changes
+to the code or documentation. Given that, before proposing a documentation
+improvement, please check the latest version of the documentation (on the
+<code>master</code> branch) to avoid potentially duplicating effort.</p>
+<h3 id="simple-changes">Simple Changes<a class="zola-anchor" href="#simple-changes" aria-label="Anchor link for: simple-changes">🔗</a></h3>
+<p>If you would like to contribute to this documentation website, simple edits
+to existing pages can be made by clicking the &quot;Edit&quot; button at the bottom
+of the live website page you wish to propose changes to. Doing so will take
+you to GitHub where you can make your changes, commit them to a branch on
+your fork of the repository, and ultimately create a pull request to get
+them reviewed and merged into the official documentation.</p>
+<p>Similarly, READMEs in the <code>docspell</code> repository can be made by opening
+the file on GitHub and clicking the &quot;Edit&quot; icon. New files can be added as
+well. The process is then the same as above.</p>
+<p>Of course, if you would like to make your changes locally or make more complex
+changes, you can fork the repository, clone your fork, make your changes,
+push them to the fork, and then open a pull request.</p>
+<h3 id="local-preview">Local Preview<a class="zola-anchor" href="#local-preview" aria-label="Anchor link for: local-preview">🔗</a></h3>
+<p>If you would like to also preview your local changes, you can do so as follows.</p>
+<p>The subsequent commands assume you have already locally cloned the repository
+(or a fork), and have a working development environment.</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> in repository root</span><span class="z-comment z-line z-number-sign z-shell">
+</span><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sbt</span></span><span class="z-meta z-function-call z-arguments z-shell"> website/zolaBuild</span>
+<span class="z-meta z-function-call z-shell"><span class="z-support z-function z-cd z-shell">cd</span></span><span class="z-meta z-function-call z-arguments z-shell"> website/site</span> <span class="z-keyword z-operator z-logical z-and z-shell">&amp;&amp;</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">zola</span></span><span class="z-meta z-function-call z-arguments z-shell"> serve</span>
+</span></code></pre>
+<p>As you write changes to the website content (to disk), Zola will live-reload
+the site.</p>
 
   
 
@@ -838,7 +842,7 @@ items to consider in the collective settings page.</p>
 
     
     <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
-        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;install&#x2F;rpi.md"
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;dev&#x2F;documentation.md"
            title="Edit this page on Github"
            target="_blank"
         >
@@ -860,21 +864,21 @@ items to consider in the collective settings page.</p>
                     
                     <div>
                         <i class="fa fa-hashtag mr-1"></i>
-                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;rpi&#x2F;#raspberry-pi" class="hover:text-stone-900 dark:hover:text-stone-100">
-                            Raspberry Pi
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;documentation&#x2F;#documentation" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Documentation
                         </a>
                         
                         <div class="pl-4 opacity-75">
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;rpi&#x2F;#rest-server" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    REST Server
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;documentation&#x2F;#about" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    About
                                 </a>
                             </div>
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;rpi&#x2F;#joex" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    Joex
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;documentation&#x2F;#contributing" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Contributing
                                 </a>
                             </div>
                             
