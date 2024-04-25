@@ -114,7 +114,7 @@ running:
 nix develop .#dev-vm
 
 # drop into the environment setup for using a container
-nix deveop .#docsp-dev
+nix develop .#docsp-dev
 ```
 
 Once in such an environment, you can create the container or vm like
@@ -176,7 +176,7 @@ IDEs and editors) and create a file `.envrc` in the source root:
 use flake .#<env-name>
 ```
 
-The file `.envrc` is git-ignored, because are different ones possible.
+The file `.envrc` is git-ignored, because different ones are possible.
 Here `<env-name>` refers to either `dev-cnt` or `dev-vm` - one of the
 devshells defined in `flake.nix`.
 
