@@ -306,6 +306,7 @@ in {
         default = false;
         description = "Whether to enable docspell docspell job executor.";
       };
+      package = mkPackageOption pkgs "docspell-joex" {};
       runAs = mkOption {
         type = types.nullOr types.str;
         default = null;
@@ -1777,7 +1778,7 @@ in {
 
     systemd.services.docspell-joex = let
       args = builtins.concatStringsSep " " cfg.jvmArgs;
-      cmd = "${pkgs.docspell-joex}/bin/docspell-joex ${args} -- ${configFile}";
+      cmd = "${lib.getExe' cfg.package "docspell-joex"} ${args} -- ${configFile}";
       waitTarget =
         if cfg.waitForTarget != null
         then [cfg.waitForTarget]
