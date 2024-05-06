@@ -150,6 +150,7 @@ in {
         default = false;
         description = "Whether to enable docspell.";
       };
+      package = mkPackageOption pkgs "docspell-restserver" {};
       runAs = mkOption {
         type = types.nullOr types.str;
         default = null;
@@ -878,7 +879,7 @@ in {
 
     systemd.services.docspell-restserver = let
       args = builtins.concatStringsSep " " cfg.jvmArgs;
-      cmd = "${pkgs.docspell-restserver}/bin/docspell-restserver ${args} -- ${configFile}";
+      cmd = "${lib.getExe' cfg.package "docspell-restserver"} ${args} -- ${configFile}";
     in {
       description = "Docspell Rest Server";
       after = ["networking.target"];
