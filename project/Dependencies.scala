@@ -26,7 +26,7 @@ object Dependencies {
   val Icu4jVersion = "75.1"
   val JavaOtpVersion = "0.4.0"
   val JsoupVersion = "1.17.2"
-  val JwtScalaVersion = "10.0.0"
+  val JwtScalaVersion = "10.0.1"
   val KindProjectorVersion = "0.10.3"
   val KittensVersion = "3.3.0"
   val LevigoJbig2Version = "2.0"
