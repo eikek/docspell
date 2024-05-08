@@ -7,7 +7,7 @@ jobs:
   publish-website:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.4
+      - uses: actions/checkout@v4.1.5
         with:
           fetch-depth: 0
       - uses: cachix/install-nix-action@v26
