@@ -111,6 +111,7 @@ with lib; let
         scope = "profile";
         authorize-url = null;
         token-url = null;
+        logout-url = "";
         user-url = null;
         sign-key = "";
         sig-algo = "RS256";
@@ -423,6 +424,11 @@ in {
                     type = types.str;
                     default = defaults.openid.provider.token-url;
                     description = "The URL used to retrieve the token.";
+                  };
+                  logout-url = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.logout-url;
+                    description = "The URL used for user's logout.";
                   };
                   user-url = mkOption {
                     type = types.nullOr types.str;
