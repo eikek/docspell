@@ -92,6 +92,7 @@ with lib; let
     auth = {
       server-secret = "hex:caffee";
       session-valid = "5 minutes";
+      on-account-source-conflict = "fail";
       remember-me = {
         enabled = true;
         valid = "30 days";
@@ -111,6 +112,7 @@ with lib; let
         scope = "profile";
         authorize-url = null;
         token-url = null;
+        logout-url = "";
         user-url = null;
         sign-key = "";
         sig-algo = "RS256";
@@ -323,6 +325,19 @@ in {
                 will get a new one periodically.
               '';
             };
+            on-account-source-conflict = mkOption {
+              type = types.enum ["fail" "convert"];
+              default = defaults.auth.on-account-source-conflict;
+              description = ''
+                Accounts can be local or defined at a remote provider and
+                integrated via OIDC. If the same account is defined in both
+                sources, docspell by default fails if a user mixes logins (e.g.
+                when registering a user locally and then logging in with the
+                same user via OIDC). When set to `convert` docspell treats it as
+                being the same and simply updates the account to reflect the new
+                account source.
+              '';
+            };
             remember-me = mkOption {
               type = types.submodule {
                 options = {
@@ -423,6 +438,11 @@ in {
                     type = types.str;
                     default = defaults.openid.provider.token-url;
                     description = "The URL used to retrieve the token.";
+                  };
+                  logout-url = mkOption {
+                    type = types.str;
+                    default = defaults.openid.provider.logout-url;
+                    description = "The URL used for user's logout.";
                   };
                   user-url = mkOption {
                     type = types.nullOr types.str;
