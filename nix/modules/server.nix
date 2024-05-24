@@ -92,6 +92,7 @@ with lib; let
     auth = {
       server-secret = "hex:caffee";
       session-valid = "5 minutes";
+      on-account-source-conflict = "fail";
       remember-me = {
         enabled = true;
         valid = "30 days";
@@ -322,6 +323,19 @@ in {
               description = ''
                 How long an authentication token is valid. The web application
                 will get a new one periodically.
+              '';
+            };
+            on-account-source-conflict = mkOption {
+              type = types.enum ["fail" "convert"];
+              default = defaults.auth.on-account-source-conflict;
+              description = ''
+                Accounts can be local or defined at a remote provider and
+                integrated via OIDC. If the same account is defined in both
+                sources, docspell by default fails if a user mixes logins (e.g.
+                when registering a user locally and then logging in with the
+                same user via OIDC). When set to `convert` docspell treats it as
+                being the same and simply updates the account to reflect the new
+                account source.
               '';
             };
             remember-me = mkOption {
