@@ -31,6 +31,9 @@ trait Fixtures extends TestLoggingConfig { self: CatsEffectSuite =>
   val miniAddonUrl =
     LenientUri.fromJava(getClass.getResource("/minimal-addon.zip"))
 
+  val singleFileAddonUrl =
+    LenientUri.fromJava(getClass.getResource("/docspell-addon-single-file.zip"))
+
   val dummyAddonMeta =
     AddonMeta(
       meta =
