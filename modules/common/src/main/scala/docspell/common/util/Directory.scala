@@ -6,6 +6,7 @@
 
 package docspell.common.util
 
+import cats.data.OptionT
 import cats.effect._
 import cats.syntax.all._
 import cats.{Applicative, Monad}
@@ -26,10 +27,10 @@ object Directory {
     (dir :: dirs.toList).traverse_(Files[F].createDirectories(_))
 
   def nonEmpty[F[_]: Files: Sync](dir: Path): F[Boolean] =
-    List(
-      Files[F].isDirectory(dir),
-      Files[F].list(dir).take(1).compile.last.map(_.isDefined)
-    ).sequence.map(_.forall(identity))
+    OptionT
+      .whenM(Files[F].isDirectory(dir))(Files[F].list(dir).take(1).compile.toList)
+      .map(_.nonEmpty)
+      .isDefined
 
   def isEmpty[F[_]: Files: Sync](dir: Path): F[Boolean] =
     nonEmpty(dir).map(b => !b)
