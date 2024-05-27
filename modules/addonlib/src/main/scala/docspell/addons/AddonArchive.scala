@@ -38,9 +38,9 @@ final case class AddonArchive(url: LenientUri, name: String, version: String) {
           Files[F].createDirectories(target) *>
             reader(url)
               .through(Zip[F](logger.some).unzip(glob = glob, targetDir = target.some))
-              .evalTap(_ => Directory.unwrapSingle[F](logger, target))
               .compile
               .drain
+              .flatTap(_ => Directory.unwrapSingle[F](logger, target))
               .as(target)
       }
   }
