@@ -35,4 +35,13 @@ class AddonMetaTest extends CatsEffectSuite with TestLoggingConfig with Fixtures
       _ = assertEquals(meta, dummyAddonMeta)
     } yield ()
   }
+
+  test("parse yaml with defaults") {
+    val yamlStr = """meta:
+                    |  name: "test"
+                    |  version: "0.1.0"
+                    |""".stripMargin
+    val meta = AddonMeta.fromYamlString(yamlStr).fold(throw _, identity)
+    assert(meta.parseResult)
+  }
 }

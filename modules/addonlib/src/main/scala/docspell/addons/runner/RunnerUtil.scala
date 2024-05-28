@@ -110,7 +110,7 @@ private[addons] object RunnerUtil {
   ): F[AddonResult] =
     for {
       stdout <-
-        if (ctx.meta.options.exists(_.collectOutput)) CollectOut.buffer[F]
+        if (ctx.meta.parseResult) CollectOut.buffer[F]
         else CollectOut.none[F].pure[F]
       cmdResult <- SysExec(cmd, logger, ctx.baseDir.some)
         .flatMap(
@@ -135,7 +135,7 @@ private[addons] object RunnerUtil {
             out <- stdout.get
             _ <- logger.debug(s"Addon stdout: $out")
             result = Option
-              .when(ctx.meta.options.exists(_.collectOutput) && out.nonEmpty)(
+              .when(ctx.meta.parseResult && out.nonEmpty)(
                 JsonParser
                   .decode[AddonOutput](out)
                   .fold(AddonResult.decodingError, AddonResult.success)
