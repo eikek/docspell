@@ -55,7 +55,7 @@ trait Fixtures extends TestLoggingConfig { self: CatsEffectSuite =>
     Path(s"/tmp/target/test-temp")
 
   val tempDir =
-    ResourceFixture[Path](
+    ResourceFunFixture[Path](
       Resource.eval(Files[IO].createDirectories(baseTempDir)) *>
         Files[IO]
           .tempDirectory(baseTempDir.some, "run-", PosixPermissions.fromOctal("777"))

@@ -19,7 +19,7 @@ import munit._
 
 class ZipTest extends CatsEffectSuite with TestLoggingConfig {
   val logger = docspell.logging.getLogger[IO]
-  val tempDir = ResourceFixture(
+  val tempDir = ResourceFunFixture(
     Files[IO].tempDirectory(Path("target").some, "zip-test-", None)
   )
 

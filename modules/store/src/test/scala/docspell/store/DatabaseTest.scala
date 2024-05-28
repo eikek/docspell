@@ -66,7 +66,7 @@ trait DatabaseTest
     } yield res
   )
 
-  lazy val newH2DataSource = ResourceFixture(for {
+  lazy val newH2DataSource = ResourceFunFixture(for {
     jdbc <- Resource.eval(IO(StoreFixture.memoryDB(UUID.randomUUID().toString)))
     ds <- StoreFixture.dataSource(jdbc)
   } yield (jdbc, ds))

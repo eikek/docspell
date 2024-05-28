@@ -20,9 +20,9 @@ import org.typelevel.ci._
 
 trait Fixtures extends HttpClientOps { self: CatsEffectSuite =>
 
-  val pubsubEnv = ResourceFixture(Fixtures.envResource("node-1"))
+  val pubsubEnv = ResourceFunFixture(Fixtures.envResource("node-1"))
 
-  val pubsubT = ResourceFixture {
+  val pubsubT = ResourceFunFixture {
     Fixtures
       .envResource("node-1")
       .flatMap(_.pubSub)
