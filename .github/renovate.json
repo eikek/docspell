@@ -1,6 +1,6 @@
 {
   "automerge": true,
-  "labels": ["type: dependencies"],
+  "labels": ["dependencies"],
   "packageRules": [
     {
       "matchManagers": [

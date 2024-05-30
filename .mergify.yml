@@ -6,7 +6,7 @@ pull_request_rules:
       assign:
         users: [eikek]
       label:
-        add: ["type: dependencies"]
+        add: ["dependencies"]
   - name: automatically merge Scala Steward PRs on CI success
     conditions:
       - author=eikek-scala-steward[bot]
