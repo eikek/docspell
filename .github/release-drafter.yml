@@ -17,8 +17,11 @@ categories:
   - title: "💚 Maintenance"
     labels:
       - 'chore'
-      - 'dependencies'
       - 'documentation'
+  - title: "🧱 Dependencies"
+    labels:
+      - 'dependencies'
+      - 'type: dependencies'
 
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 version-resolver:
