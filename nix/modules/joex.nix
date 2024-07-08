@@ -12,11 +12,6 @@ with lib; let
     if cfg.runAs == null
     then "docspell"
     else cfg.runAs;
-  configFile = pkgs.writeText "docspell-joex.conf" ''
-    {"docspell": { "joex":
-      ${builtins.toJSON (lib.recursiveUpdate declared_config cfg.extraConfig)}
-    }}
-  '';
   defaults = {
     app-id = "joex1";
     base-url = "http://localhost:7878";
@@ -329,6 +324,15 @@ in {
         default = [];
         example = ["-J-Xmx1G"];
         description = "The options passed to the executable for setting jvm arguments.";
+      };
+      configFile = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        example = literalExpression ''"''${config.sops.secrets.docspell_joex_config.path}"'';
+        description = ''
+          Path to an existing configuration file.
+          If null, a configuration file will be generated at /etc/docspell-joex.conf
+        '';
       };
 
       app-id = mkOption {
@@ -1763,6 +1767,17 @@ in {
     };
     users.groups."${user}" = mkIf (cfg.runAs == null) {};
 
+    environment.etc."docspell-joex.conf" = mkIf (cfg.configFile == null) {
+      text = ''
+        {"docspell": {"joex":
+          ${builtins.toJSON (lib.recursiveUpdate declared_config cfg.extraConfig)}
+        }}
+      '';
+      user = user;
+      group = user;
+      mode = "0400";
+    };
+
     # Setting up a unoconv listener to improve conversion performance
     systemd.services.unoconv = let
       cmd = "${pkgs.unoconv}/bin/unoconv --listener -v";
@@ -1778,6 +1793,9 @@ in {
 
     systemd.services.docspell-joex = let
       args = builtins.concatStringsSep " " cfg.jvmArgs;
+      configFile = if cfg.configFile == null
+        then "/etc/docspell-joex.conf"
+        else "${cfg.configFile}";
       cmd = "${lib.getExe' cfg.package "docspell-joex"} ${args} -- ${configFile}";
       waitTarget =
         if cfg.waitForTarget != null
