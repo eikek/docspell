@@ -109,7 +109,7 @@ services:
       - restserver
 
   db:
-    image: postgres:16.3
+    image: postgres:16.4
     container_name: postgres_db
     restart: unless-stopped
     volumes:
