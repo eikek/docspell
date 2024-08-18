@@ -40,6 +40,7 @@ object Field {
 
   def contentField(lang: Language): Field =
     if (lang == Language.Czech) Field(s"content_cz")
+    else if (lang == Language.JpnVert) contentField(Language.Japanese)
     else Field(s"content_${lang.iso2}")
 
   implicit val jsonEncoder: Encoder[Field] =
