@@ -2,7 +2,7 @@
   description = "Docspell";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     devshell-tools.url = "github:eikek/devshell-tools";
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -15,9 +15,8 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      sbt17 = pkgs.sbt.override {jre = pkgs.jdk17;};
       ciPkgs = with pkgs; [
-        sbt17
+        devshell-tools.packages.${system}.sbt17
         jdk17
         dpkg
         elmPackages.elm
