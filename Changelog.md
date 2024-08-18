@@ -1,5 +1,40 @@
 # Changelog
 
+## v0.42.0
+
+*Aug 18, 2024*
+
+### 🚀 Features
+
+- Nix module: secure config file @ivanbrennan (#2699)
+- Add logout-url option to Nix module @VTimofeenko (#2646)
+- Add package option to Nix modules @VTimofeenko (#2630)
+- Add Japanese Vertical Support Branch for Tesseract and Ocrmypdf OCR @tenpai-git (#2505)
+- Extend nix setup, including dev environments @eikek (#2539)
+- Extend config for external commands @eikek (#2536)
+
+### 🐛 Bug Fixes
+
+- Honor default value `true` for `collectOutput` @eikek (#2663)
+- FIx extracting addons with only a single file @eikek (#2660)
+- Move arg-mappings underneath `command` section @eikek (#2659)
+- Change docker base images to 3.19.1 @eikek (#2519)
+- fix(webapp): downstream keep-alive events to backend preventing timeout @nekrondev (#2500)
+- Fix some Kubernetes Kustomize deployment issues @TheAnachronism (#2501)
+- tesseract english data is now a separate package @programmerq (#2479)
+
+### 💚 Maintenance
+
+- Update flake @eikek (#2736)
+- Adding CJK and Custom Mapping Documentation @tenpai-git (#2669)
+- docs(development.md): Fix minor typos @ChanceHarrison (#2613)
+- Add page to website about contributing to docs @ChanceHarrison (#2612)
+- Fix renamed elm package @eikek (#2547)
+- Redocly tailwind setup @eikek (#2540)
+- Pushing a minor fix to the bash commands. @tenpai-git (#2523)
+- Add documentation for backup and restore process for PostgreSQL. @tenpai-git (#2508)
+
+
 ## v0.41.0
 
 *Jan 29th, 2024*
