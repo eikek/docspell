@@ -307,6 +307,8 @@ object SolrSetup {
     def textLang(field: Field, lang: Language): AddField =
       if (lang == Language.Czech)
         AddField(field, s"text_cz", stored = true, indexed = true, multiValued = false)
+      else if (lang == Language.JpnVert)
+        textLang(field, Language.Japanese)
       else
         AddField(
           field,
