@@ -1793,7 +1793,8 @@ in {
 
     systemd.services.docspell-joex = let
       args = builtins.concatStringsSep " " cfg.jvmArgs;
-      configFile = if cfg.configFile == null
+      configFile =
+        if cfg.configFile == null
         then "/etc/docspell-joex.conf"
         else "${cfg.configFile}";
       cmd = "${lib.getExe' cfg.package "docspell-joex"} ${args} -- ${configFile}";

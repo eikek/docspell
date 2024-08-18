@@ -914,7 +914,8 @@ in {
 
     systemd.services.docspell-restserver = let
       args = builtins.concatStringsSep " " cfg.jvmArgs;
-      configFile = if cfg.configFile == null
+      configFile =
+        if cfg.configFile == null
         then "/etc/docspell-restserver.conf"
         else "${cfg.configFile}";
       cmd = "${lib.getExe' cfg.package "docspell-restserver"} ${args} -- ${configFile}";
