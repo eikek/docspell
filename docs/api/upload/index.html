@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -798,24 +804,24 @@ have support for this.</p>
 <p>For example, here is a curl command uploading two files with meta
 data. Since <code>multiple</code> is <code>false</code>, both files are added to one item:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">curl</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>XPOST</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>F</span> meta=<span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>{&quot;multiple&quot;:false, &quot;direction&quot;: &quot;outgoing&quot;, &quot;tags&quot;: {&quot;items&quot;:[&quot;Order&quot;]}}<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span> <span class="z-punctuation z-separator z-continuation z-line z-shell">\
-</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">            -</span>F</span> file=@letter-en.pdf <span class="z-punctuation z-separator z-continuation z-line z-shell">\
-</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">            -</span>F</span> file=@letter-de.pdf <span class="z-punctuation z-separator z-continuation z-line z-shell">\
-</span>            http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa</span>
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">            -</span>F</span> file=@letter-en.pdf <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">            -</span>F</span> file=@letter-de.pdf <span class="z-punctuation z-separator z-continuation z-line z-shell">\
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell">            http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa</span>
 </span></code></pre>
 <h1 id="metadata">Metadata<a class="zola-anchor" href="#metadata" aria-label="Anchor link for: metadata">🔗</a></h1>
 <p>Each upload request can specify a set of metadata that should be
 applied to the item(s) that are created from this upload. This is
 specified via a JSON structure in a part with name <code>meta</code>:</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> multiple<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Bool</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> direction<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> folder<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> skipDuplicates<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> tags<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">StringList</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> fileFilter<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> language<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> attachmentsOnly<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> flattenArchives<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> direction<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> folder<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> skipDuplicates<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> tags<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">StringList</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> fileFilter<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> language<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> attachmentsOnly<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> flattenArchives<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <ul>
 <li>
@@ -847,7 +853,7 @@ in docspell.</p>
 automatically. The <code>StringList</code> is a json object containing one
 field <code>items</code> that is a list of strings:</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> items<span class="z-keyword z-operator z-elm">:</span> <span class="z-keyword z-other z-parenthesis z-elm">(</span><span class="z-constant z-other z-elm">List</span> <span class="z-constant z-other z-elm">String</span><span class="z-keyword z-other z-parenthesis z-elm">)</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <p>Tags can be defined using their ids or names.</p>
 </li>
@@ -943,7 +949,7 @@ this endpoint.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

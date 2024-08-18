@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -795,11 +801,11 @@ joex. For machines that are not very strong, choosing a <code>1</code> is
 recommended.</p>
 <h1 id="stages">Stages<a class="zola-anchor" href="#stages" aria-label="Anchor link for: stages">🔗</a></h1>
 <pre class="z-code"><code><span class="z-text z-plain">DuplicateCheck -&gt;
-Extract Archives -&gt;
-Conversion to PDF -&gt;
-Text Extraction -&gt;
-Generate Previews -&gt;
-Text Analysis
+</span><span class="z-text z-plain">Extract Archives -&gt;
+</span><span class="z-text z-plain">Conversion to PDF -&gt;
+</span><span class="z-text z-plain">Text Extraction -&gt;
+</span><span class="z-text z-plain">Generate Previews -&gt;
+</span><span class="z-text z-plain">Text Analysis
 </span></code></pre>
 <p>These steps are executed sequentially. There are many config options
 available for each step.</p>
@@ -809,24 +815,24 @@ command (add, remove options etc) in the config file. As an example,
 here is the <code>wkhtmltopdf</code> command that is used to convert html files
 to pdf:</p>
 <pre data-lang="conf" class="language-conf z-code"><code class="language-conf" data-lang="conf"><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig"><span class="z-variable z-parameter z-genconfig">docspell</span></span><span class="z-keyword z-operator z-genconfig">.</span>joex<span class="z-keyword z-operator z-genconfig">.</span>convert {
-<span class="z-storage z-type z-genconfig">  wkhtmlpdf </span>{
-<span class="z-meta z-param z-genconfig">    <span class="z-variable z-parameter z-genconfig">command</span> <span class="z-keyword z-operator z-genconfig">=</span></span> {
-<span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">program</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;wkhtmltopdf&quot;</span>
-<span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">args</span> <span class="z-keyword z-operator z-genconfig">=</span></span> [
-        <span class="z-string z-quoted z-double z-genconfig">&quot;-s&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
-        <span class="z-string z-quoted z-double z-genconfig">&quot;A4&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
-        <span class="z-string z-quoted z-double z-genconfig">&quot;--encoding&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
-        <span class="z-string z-quoted z-double z-genconfig">&quot;{{encoding}}&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
-        <span class="z-string z-quoted z-double z-genconfig">&quot;--load-error-handling&quot;</span><span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;ignore&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
-        <span class="z-string z-quoted z-double z-genconfig">&quot;--load-media-error-handling&quot;</span><span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;ignore&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
-        <span class="z-string z-quoted z-double z-genconfig">&quot;-&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
-        <span class="z-string z-quoted z-double z-genconfig">&quot;{{outfile}}&quot;</span>
-      ]
-<span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">timeout</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;2 minutes&quot;</span>
-    }
-<span class="z-meta z-param z-genconfig">    <span class="z-variable z-parameter z-genconfig">working-dir</span> <span class="z-keyword z-operator z-genconfig">=</span></span> ${java<span class="z-keyword z-operator z-genconfig">.</span>io<span class="z-keyword z-operator z-genconfig">.</span>tmpdir}<span class="z-string z-quoted z-double z-genconfig">&quot;/docspell-convert&quot;</span>
-  }
-}
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">  wkhtmlpdf </span>{
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">    <span class="z-variable z-parameter z-genconfig">command</span> <span class="z-keyword z-operator z-genconfig">=</span></span> {
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">program</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;wkhtmltopdf&quot;</span>
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">args</span> <span class="z-keyword z-operator z-genconfig">=</span></span> [
+</span><span class="z-source z-genconfig">        <span class="z-string z-quoted z-double z-genconfig">&quot;-s&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
+</span><span class="z-source z-genconfig">        <span class="z-string z-quoted z-double z-genconfig">&quot;A4&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
+</span><span class="z-source z-genconfig">        <span class="z-string z-quoted z-double z-genconfig">&quot;--encoding&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
+</span><span class="z-source z-genconfig">        <span class="z-string z-quoted z-double z-genconfig">&quot;{{encoding}}&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
+</span><span class="z-source z-genconfig">        <span class="z-string z-quoted z-double z-genconfig">&quot;--load-error-handling&quot;</span><span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;ignore&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
+</span><span class="z-source z-genconfig">        <span class="z-string z-quoted z-double z-genconfig">&quot;--load-media-error-handling&quot;</span><span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;ignore&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
+</span><span class="z-source z-genconfig">        <span class="z-string z-quoted z-double z-genconfig">&quot;-&quot;</span><span class="z-keyword z-operator z-genconfig">,</span>
+</span><span class="z-source z-genconfig">        <span class="z-string z-quoted z-double z-genconfig">&quot;{{outfile}}&quot;</span>
+</span><span class="z-source z-genconfig">      ]
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">timeout</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;2 minutes&quot;</span>
+</span><span class="z-source z-genconfig">    }
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">    <span class="z-variable z-parameter z-genconfig">working-dir</span> <span class="z-keyword z-operator z-genconfig">=</span></span> ${java<span class="z-keyword z-operator z-genconfig">.</span>io<span class="z-keyword z-operator z-genconfig">.</span>tmpdir}<span class="z-string z-quoted z-double z-genconfig">&quot;/docspell-convert&quot;</span>
+</span><span class="z-source z-genconfig">  }
+</span><span class="z-source z-genconfig">}
 </span></code></pre>
 <p>Strings in <code>{{…}}</code> are replaced by docspell with the appropriate
 values at runtime. However, based on your use case you can just set
@@ -853,9 +859,9 @@ commands used.</p>
 <p>See the section <code>docspell.joex.convert</code> in the config file.</p>
 <p>The following config options apply to the conversion as a whole:</p>
 <pre data-lang="conf" class="language-conf z-code"><code class="language-conf" data-lang="conf"><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig"><span class="z-variable z-parameter z-genconfig">docspell</span></span><span class="z-keyword z-operator z-genconfig">.</span>joex<span class="z-keyword z-operator z-genconfig">.</span>convert {
-<span class="z-meta z-param z-genconfig">  <span class="z-variable z-parameter z-genconfig">converted-filename-part</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;converted&quot;</span>
-<span class="z-meta z-param z-genconfig">  <span class="z-variable z-parameter z-genconfig">max-image-size</span> <span class="z-keyword z-operator z-genconfig">=</span></span> ${docspell<span class="z-keyword z-operator z-genconfig">.</span>joex<span class="z-keyword z-operator z-genconfig">.</span>extraction<span class="z-keyword z-operator z-genconfig">.</span>ocr<span class="z-keyword z-operator z-genconfig">.</span>max<span class="z-keyword z-operator z-genconfig">-</span>image<span class="z-keyword z-operator z-genconfig">-</span>size}
-}
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">  <span class="z-variable z-parameter z-genconfig">converted-filename-part</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;converted&quot;</span>
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">  <span class="z-variable z-parameter z-genconfig">max-image-size</span> <span class="z-keyword z-operator z-genconfig">=</span></span> ${docspell<span class="z-keyword z-operator z-genconfig">.</span>joex<span class="z-keyword z-operator z-genconfig">.</span>extraction<span class="z-keyword z-operator z-genconfig">.</span>ocr<span class="z-keyword z-operator z-genconfig">.</span>max<span class="z-keyword z-operator z-genconfig">-</span>image<span class="z-keyword z-operator z-genconfig">-</span>size}
+</span><span class="z-source z-genconfig">}
 </span></code></pre>
 <p>The first setting defines a suffix that is appended to the original
 file name to name the converted file. You can set an empty string to
@@ -932,12 +938,12 @@ tika.</p>
 text that is greater than the configured minimum length, it is used.
 Otherwise, OCR is started for the whole pdf file page by page.</p>
 <pre data-lang="conf" class="language-conf z-code"><code class="language-conf" data-lang="conf"><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig"><span class="z-variable z-parameter z-genconfig">docspell</span></span><span class="z-keyword z-operator z-genconfig">.</span>joex {
-<span class="z-storage z-type z-genconfig">  extraction </span>{
-<span class="z-storage z-type z-genconfig">    pdf </span>{
-<span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">min-text-len</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-constant z-numeric z-genconfig">500</span>
-    }
-  }
-}
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">  extraction </span>{
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">    pdf </span>{
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">min-text-len</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-constant z-numeric z-genconfig">500</span>
+</span><span class="z-source z-genconfig">    }
+</span><span class="z-source z-genconfig">  }
+</span><span class="z-source z-genconfig">}
 </span></code></pre>
 <p>After OCR both texts are compared and the longer is used. Since PDFs
 can contain text and images, it might be safer to always do OCR, but
@@ -956,47 +962,47 @@ single pages into image files and
 the images for ocr. Unpaper is optional, if it is not found, it is
 skipped, which may be a compromise on slow machines.</p>
 <pre data-lang="conf" class="language-conf z-code"><code class="language-conf" data-lang="conf"><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig"><span class="z-variable z-parameter z-genconfig">docspell</span></span><span class="z-keyword z-operator z-genconfig">.</span>joex {
-<span class="z-storage z-type z-genconfig">  extraction </span>{
-<span class="z-storage z-type z-genconfig">    ocr </span>{
-<span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">max-image-size</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-constant z-numeric z-genconfig">14000000</span>
-<span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">page-range</span> </span>{
-<span class="z-meta z-param z-genconfig">        <span class="z-variable z-parameter z-genconfig">begin</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-constant z-numeric z-genconfig">10</span>
-      }
-<span class="z-storage z-type z-genconfig">      ghostscript </span>{
-<span class="z-storage z-type z-genconfig">        command </span>{
-<span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">program</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;gs&quot;</span>
-<span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">args</span> <span class="z-keyword z-operator z-genconfig">=</span></span> [ <span class="z-string z-quoted z-double z-genconfig">&quot;-dNOPAUSE&quot;</span>
-                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-dBATCH&quot;</span>
-                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-dSAFER&quot;</span>
-                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-sDEVICE=tiffscaled8&quot;</span>
-                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-sOutputFile={{outfile}}&quot;</span>
-                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;{{infile}}&quot;</span>
-                 ]
-<span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">timeout</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;5 minutes&quot;</span>
-        }
-<span class="z-meta z-param z-genconfig">        <span class="z-variable z-parameter z-genconfig">working-dir</span> <span class="z-keyword z-operator z-genconfig">=</span></span> ${java<span class="z-keyword z-operator z-genconfig">.</span>io<span class="z-keyword z-operator z-genconfig">.</span>tmpdir}<span class="z-string z-quoted z-double z-genconfig">&quot;/docspell-extraction&quot;</span>
-      }
-<span class="z-storage z-type z-genconfig">      unpaper </span>{
-<span class="z-storage z-type z-genconfig">        command </span>{
-<span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">program</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;unpaper&quot;</span>
-<span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">args</span> <span class="z-keyword z-operator z-genconfig">=</span></span> [ <span class="z-string z-quoted z-double z-genconfig">&quot;{{infile}}&quot;</span><span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;{{outfile}}&quot;</span> ]
-<span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">timeout</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;5 minutes&quot;</span>
-        }
-      }
-<span class="z-storage z-type z-genconfig">      tesseract </span>{
-<span class="z-storage z-type z-genconfig">        command </span>{
-<span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">program</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;tesseract&quot;</span>
-<span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">args</span> <span class="z-keyword z-operator z-genconfig">=</span></span> [<span class="z-string z-quoted z-double z-genconfig">&quot;{{file}}&quot;</span>
-                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;stdout&quot;</span>
-                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-l&quot;</span>
-                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;{{lang}}&quot;</span>
-                 ]
-<span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">timeout</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;5 minutes&quot;</span>
-        }
-      }
-    }
-  }
-}
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">  extraction </span>{
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">    ocr </span>{
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">max-image-size</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-constant z-numeric z-genconfig">14000000</span>
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">page-range</span> </span>{
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">        <span class="z-variable z-parameter z-genconfig">begin</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-constant z-numeric z-genconfig">10</span>
+</span><span class="z-source z-genconfig">      }
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">      ghostscript </span>{
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">        command </span>{
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">program</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;gs&quot;</span>
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">args</span> <span class="z-keyword z-operator z-genconfig">=</span></span> [ <span class="z-string z-quoted z-double z-genconfig">&quot;-dNOPAUSE&quot;</span>
+</span><span class="z-source z-genconfig">                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-dBATCH&quot;</span>
+</span><span class="z-source z-genconfig">                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-dSAFER&quot;</span>
+</span><span class="z-source z-genconfig">                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-sDEVICE=tiffscaled8&quot;</span>
+</span><span class="z-source z-genconfig">                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-sOutputFile={{outfile}}&quot;</span>
+</span><span class="z-source z-genconfig">                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;{{infile}}&quot;</span>
+</span><span class="z-source z-genconfig">                 ]
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">timeout</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;5 minutes&quot;</span>
+</span><span class="z-source z-genconfig">        }
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">        <span class="z-variable z-parameter z-genconfig">working-dir</span> <span class="z-keyword z-operator z-genconfig">=</span></span> ${java<span class="z-keyword z-operator z-genconfig">.</span>io<span class="z-keyword z-operator z-genconfig">.</span>tmpdir}<span class="z-string z-quoted z-double z-genconfig">&quot;/docspell-extraction&quot;</span>
+</span><span class="z-source z-genconfig">      }
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">      unpaper </span>{
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">        command </span>{
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">program</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;unpaper&quot;</span>
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">args</span> <span class="z-keyword z-operator z-genconfig">=</span></span> [ <span class="z-string z-quoted z-double z-genconfig">&quot;{{infile}}&quot;</span><span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;{{outfile}}&quot;</span> ]
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">timeout</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;5 minutes&quot;</span>
+</span><span class="z-source z-genconfig">        }
+</span><span class="z-source z-genconfig">      }
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">      tesseract </span>{
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">        command </span>{
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">program</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;tesseract&quot;</span>
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">args</span> <span class="z-keyword z-operator z-genconfig">=</span></span> [<span class="z-string z-quoted z-double z-genconfig">&quot;{{file}}&quot;</span>
+</span><span class="z-source z-genconfig">                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;stdout&quot;</span>
+</span><span class="z-source z-genconfig">                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;-l&quot;</span>
+</span><span class="z-source z-genconfig">                 <span class="z-keyword z-operator z-genconfig">,</span> <span class="z-string z-quoted z-double z-genconfig">&quot;{{lang}}&quot;</span>
+</span><span class="z-source z-genconfig">                 ]
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">          <span class="z-variable z-parameter z-genconfig">timeout</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-string z-quoted z-double z-genconfig">&quot;5 minutes&quot;</span>
+</span><span class="z-source z-genconfig">        }
+</span><span class="z-source z-genconfig">      }
+</span><span class="z-source z-genconfig">    }
+</span><span class="z-source z-genconfig">  }
+</span><span class="z-source z-genconfig">}
 </span></code></pre>
 <h1 id="generating-previews">Generating Previews<a class="zola-anchor" href="#generating-previews" aria-label="Anchor link for: generating-previews">🔗</a></h1>
 <p>Previews are generated from the converted PDF of every file. The first
@@ -1006,12 +1012,12 @@ default is set to 32dpi, which results roughly in a 200x300px image.
 For comparison, a standard A4 is usually rendered at 96dpi, which
 results in a 790x1100px image.</p>
 <pre data-lang="conf" class="language-conf z-code"><code class="language-conf" data-lang="conf"><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig"><span class="z-variable z-parameter z-genconfig">docspell</span></span><span class="z-keyword z-operator z-genconfig">.</span>joex {
-<span class="z-storage z-type z-genconfig">  extraction </span>{
-<span class="z-storage z-type z-genconfig">    preview </span>{
-<span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">dpi</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-constant z-numeric z-genconfig">32</span>
-    }
-  }
-}
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">  extraction </span>{
+</span><span class="z-source z-genconfig"><span class="z-storage z-type z-genconfig">    preview </span>{
+</span><span class="z-source z-genconfig"><span class="z-meta z-param z-genconfig">      <span class="z-variable z-parameter z-genconfig">dpi</span> <span class="z-keyword z-operator z-genconfig">=</span></span> <span class="z-constant z-numeric z-genconfig">32</span>
+</span><span class="z-source z-genconfig">    }
+</span><span class="z-source z-genconfig">  }
+</span><span class="z-source z-genconfig">}
 </span></code></pre>
 <div class="my-3 rounded border border-yellow-300 bg-yellow-200 bg-opacity-40 text-yellow-600 shadow shadow-yellow-200  dark:bg-amber-500 dark:bg-opacity-30 dark:text-amber-100 dark:border-amber-700 dark:shadow-none">
     <div class="px-1 py-1 border-b border-yellow-300 text-yellow-600 dark:text-amber-300 font-medium w-full bg-yellow-300 bg-opacity-50 dark:bg-amber-700 dark:border-amber-700">
@@ -1152,7 +1158,7 @@ to disable it by setting it to <code>0</code>.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

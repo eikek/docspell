@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -809,25 +815,25 @@ doesn't look so great, that is ok.</p>
 <h2 id="xwpfconverter"><code>XWPFConverter</code><a class="zola-anchor" href="#xwpfconverter" aria-label="Anchor link for: xwpfconverter">🔗</a></h2>
 <p>I couldn't get any example to work. There were exceptions:</p>
 <pre class="z-code"><code><span class="z-text z-plain">java.lang.IllegalArgumentException: Value for parameter &#39;id&#39; was out of bounds
-    at org.apache.poi.util.IdentifierManager.reserve(IdentifierManager.java:80)
-    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:101)
-    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:146)
-    at org.apache.poi.xwpf.usermodel.XWPFParagraph.buildRunsInOrderFromXml(XWPFParagraph.java:135)
-    at org.apache.poi.xwpf.usermodel.XWPFParagraph.&lt;init&gt;(XWPFParagraph.java:88)
-    at org.apache.poi.xwpf.usermodel.XWPFDocument.onDocumentRead(XWPFDocument.java:147)
-    at org.apache.poi.POIXMLDocument.load(POIXMLDocument.java:159)
-    at org.apache.poi.xwpf.usermodel.XWPFDocument.&lt;init&gt;(XWPFDocument.java:124)
-    at docspell.convert.Testing$.withPoi(Testing.scala:17)
-    at docspell.convert.Testing$.$anonfun$run$1(Testing.scala:12)
-    at cats.effect.internals.IORunLoop$.cats$effect$internals$IORunLoop$$loop(IORunLoop.scala:87)
-    at cats.effect.internals.IORunLoop$RestartCallback.signal(IORunLoop.scala:355)
-    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:376)
-    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:316)
-    at cats.effect.internals.IOShift$Tick.run(IOShift.scala:36)
-    at cats.effect.internals.PoolUtils$$anon$2$$anon$3.run(PoolUtils.scala:51)
-    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-    at java.lang.Thread.run(Thread.java:748)
+</span><span class="z-text z-plain">    at org.apache.poi.util.IdentifierManager.reserve(IdentifierManager.java:80)
+</span><span class="z-text z-plain">    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:101)
+</span><span class="z-text z-plain">    at org.apache.poi.xwpf.usermodel.XWPFRun.&lt;init&gt;(XWPFRun.java:146)
+</span><span class="z-text z-plain">    at org.apache.poi.xwpf.usermodel.XWPFParagraph.buildRunsInOrderFromXml(XWPFParagraph.java:135)
+</span><span class="z-text z-plain">    at org.apache.poi.xwpf.usermodel.XWPFParagraph.&lt;init&gt;(XWPFParagraph.java:88)
+</span><span class="z-text z-plain">    at org.apache.poi.xwpf.usermodel.XWPFDocument.onDocumentRead(XWPFDocument.java:147)
+</span><span class="z-text z-plain">    at org.apache.poi.POIXMLDocument.load(POIXMLDocument.java:159)
+</span><span class="z-text z-plain">    at org.apache.poi.xwpf.usermodel.XWPFDocument.&lt;init&gt;(XWPFDocument.java:124)
+</span><span class="z-text z-plain">    at docspell.convert.Testing$.withPoi(Testing.scala:17)
+</span><span class="z-text z-plain">    at docspell.convert.Testing$.$anonfun$run$1(Testing.scala:12)
+</span><span class="z-text z-plain">    at cats.effect.internals.IORunLoop$.cats$effect$internals$IORunLoop$$loop(IORunLoop.scala:87)
+</span><span class="z-text z-plain">    at cats.effect.internals.IORunLoop$RestartCallback.signal(IORunLoop.scala:355)
+</span><span class="z-text z-plain">    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:376)
+</span><span class="z-text z-plain">    at cats.effect.internals.IORunLoop$RestartCallback.apply(IORunLoop.scala:316)
+</span><span class="z-text z-plain">    at cats.effect.internals.IOShift$Tick.run(IOShift.scala:36)
+</span><span class="z-text z-plain">    at cats.effect.internals.PoolUtils$$anon$2$$anon$3.run(PoolUtils.scala:51)
+</span><span class="z-text z-plain">    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+</span><span class="z-text z-plain">    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+</span><span class="z-text z-plain">    at java.lang.Thread.run(Thread.java:748)
 </span></code></pre>
 <p>The project (not Apache Poi, the other) seems unmaintained. I could
 not find any website and the artifact in maven central is from 2016.</p>
@@ -993,7 +999,7 @@ exchange it at any time with a different one.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

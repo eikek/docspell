@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -785,78 +791,78 @@ contained when uploaded to Docspell.</p>
 <p>The test file is the current documentation page of Docspell, found in
 <code>microsite/docs/doc.md</code>.</p>
 <pre class="z-code"><code><span class="z-text z-plain">---
-layout: docs
-position: 4
-title: Documentation
----
-
-# {page .title}
-
-
-Docspell assists in organizing large amounts of PDF files that are
-...
-
-## How it works
-
-Documents have two ...
-
-1. You maintain a kind of address book. It should list all possible
-   correspondents and the concerning people/things. This grows
-   incrementally with each new unknown document.
-2. When docspell analyzes a document, it tries to find matches within
-   your address ...
-3. You can inspect ...
-
-The set of meta data that docspell uses to draw suggestions from, must
-be maintained ...
-
-
-## Terms
-
-In order to better understand these pages, some terms should be
-explained first.
-
-### Item
-
-An **Item** is roughly your (pdf) document, only that an item may span
-multiple files, which are called **attachments**. And an item has
-**meta data** associated:
-
-- a **correspondent**: the other side of the communication. It can be
-  an organization or a person.
-- a **concerning person** or **equipment**: a person or thing that
-  this item is about. Maybe it is an insurance contract about your
-  car.
-- ...
-
-### Collective
-
-The users of the application are part of a **collective**. A
-**collective** is a group of users that share access to the same
-items. The account name is therefore comprised of a *collective name*
-and a *user name*.
-
-All users of a collective are equal; they have same permissions to
-access all...
+</span><span class="z-text z-plain">layout: docs
+</span><span class="z-text z-plain">position: 4
+</span><span class="z-text z-plain">title: Documentation
+</span><span class="z-text z-plain">---
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># {page .title}
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Docspell assists in organizing large amounts of PDF files that are
+</span><span class="z-text z-plain">...
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">## How it works
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Documents have two ...
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">1. You maintain a kind of address book. It should list all possible
+</span><span class="z-text z-plain">   correspondents and the concerning people/things. This grows
+</span><span class="z-text z-plain">   incrementally with each new unknown document.
+</span><span class="z-text z-plain">2. When docspell analyzes a document, it tries to find matches within
+</span><span class="z-text z-plain">   your address ...
+</span><span class="z-text z-plain">3. You can inspect ...
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">The set of meta data that docspell uses to draw suggestions from, must
+</span><span class="z-text z-plain">be maintained ...
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">## Terms
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">In order to better understand these pages, some terms should be
+</span><span class="z-text z-plain">explained first.
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">### Item
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">An **Item** is roughly your (pdf) document, only that an item may span
+</span><span class="z-text z-plain">multiple files, which are called **attachments**. And an item has
+</span><span class="z-text z-plain">**meta data** associated:
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">- a **correspondent**: the other side of the communication. It can be
+</span><span class="z-text z-plain">  an organization or a person.
+</span><span class="z-text z-plain">- a **concerning person** or **equipment**: a person or thing that
+</span><span class="z-text z-plain">  this item is about. Maybe it is an insurance contract about your
+</span><span class="z-text z-plain">  car.
+</span><span class="z-text z-plain">- ...
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">### Collective
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">The users of the application are part of a **collective**. A
+</span><span class="z-text z-plain">**collective** is a group of users that share access to the same
+</span><span class="z-text z-plain">items. The account name is therefore comprised of a *collective name*
+</span><span class="z-text z-plain">and a *user name*.
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">All users of a collective are equal; they have same permissions to
+</span><span class="z-text z-plain">access all...
 </span></code></pre>
 <p>Then a plain text file is tried, too (without any markup).</p>
 <pre class="z-code"><code><span class="z-text z-plain">Maecenas mauris lectus, lobortis et purus mattis
-
-Duis vehicula mi vel mi pretium
-
-In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu.
-
-Pellentesque scelerisque fermentum erat, id posuere justo pulvinar ut.
-Cras id eros sed enim aliquam lobortis. Sed lobortis nisl ut eros
-efficitur tincidunt. Cras justo mi, porttitor quis mattis vel,
-ultricies ut purus. Ut facilisis et lacus eu cursus.
-
-In eleifend velit vitae libero sollicitudin euismod:
-
-- Fusce vitae vestibulum velit,
-- Pellentesque vulputate lectus quis pellentesque commodo
-
-the end.
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Duis vehicula mi vel mi pretium
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">In non mauris justo. Duis vehicula mi vel mi pretium, a viverra erat efficitur. Cras aliquam est ac eros varius, id iaculis dui auctor. Duis pretium neque ligula, et pulvinar mi placerat et. Nulla nec nunc sit amet nunc posuere vestibulum. Ut id neque eget tortor mattis tristique. Donec ante est, blandit sit amet tristique vel, lacinia pulvinar arcu.
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Pellentesque scelerisque fermentum erat, id posuere justo pulvinar ut.
+</span><span class="z-text z-plain">Cras id eros sed enim aliquam lobortis. Sed lobortis nisl ut eros
+</span><span class="z-text z-plain">efficitur tincidunt. Cras justo mi, porttitor quis mattis vel,
+</span><span class="z-text z-plain">ultricies ut purus. Ut facilisis et lacus eu cursus.
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">In eleifend velit vitae libero sollicitudin euismod:
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">- Fusce vitae vestibulum velit,
+</span><span class="z-text z-plain">- Pellentesque vulputate lectus quis pellentesque commodo
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">the end.
 </span></code></pre>
 <h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
 <ul>
@@ -870,23 +876,23 @@ HTML, then use existing machinery described in <a href="https://docspell.org/doc
 and then create a PDF from the resulting html.</p>
 <p>Using the following snippet:</p>
 <pre data-lang="scala" class="language-scala z-code"><code class="language-scala" data-lang="scala"><span class="z-source z-scala"><span class="z-storage z-type z-function z-scala">def</span> <span class="z-entity z-name z-function z-scala">renderMarkdown</span><span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-ascription z-scala">:</span> <span class="z-support z-class z-scala">ExitCode</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-meta z-block z-scala"><span class="z-punctuation z-section z-block z-begin z-scala">{</span>
-    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">opts</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-keyword z-other z-scala">new</span> <span class="z-support z-class z-scala">MutableDataSet</span><span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
-    opts<span class="z-punctuation z-accessor z-scala">.</span>set<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">Parser</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">EXTENSIONS</span><span class="z-punctuation z-accessor z-scala">.</span>asInstanceOf<span class="z-meta z-generic z-scala"><span class="z-punctuation z-definition z-generic z-begin z-scala">[</span><span class="z-support z-class z-scala">DataKey</span><span class="z-punctuation z-definition z-generic z-begin z-scala">[</span><span class="z-support z-type z-scala">util</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-class z-scala">Collection</span><span class="z-punctuation z-definition z-generic z-begin z-scala">[</span><span class="z-variable z-language z-underscore z-scala">_</span><span class="z-punctuation z-definition z-generic z-end z-scala">]</span><span class="z-punctuation z-definition z-generic z-end z-scala">]</span><span class="z-punctuation z-definition z-generic z-end z-scala">]</span></span><span class="z-punctuation z-separator z-scala">,</span>
-      util<span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">Arrays</span><span class="z-punctuation z-accessor z-scala">.</span>asList<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">TablesExtension</span><span class="z-punctuation z-accessor z-scala">.</span>create<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-separator z-scala">,</span>
-      <span class="z-support z-constant z-scala">StrikethroughExtension</span><span class="z-punctuation z-accessor z-scala">.</span>create<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-terminator z-scala">;</span>
-
-    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">parser</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-support z-constant z-scala">Parser</span><span class="z-punctuation z-accessor z-scala">.</span>builder<span class="z-punctuation z-section z-group z-begin z-scala">(</span>opts<span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-accessor z-scala">.</span>build<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
-    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">renderer</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-support z-constant z-scala">HtmlRenderer</span><span class="z-punctuation z-accessor z-scala">.</span>builder<span class="z-punctuation z-section z-group z-begin z-scala">(</span>opts<span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-accessor z-scala">.</span>build<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
-    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">reader</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-support z-constant z-scala">Files</span><span class="z-punctuation z-accessor z-scala">.</span>newBufferedReader<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">Paths</span><span class="z-punctuation z-accessor z-scala">.</span>get<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>in.txt|md<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
-    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">doc</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> parser<span class="z-punctuation z-accessor z-scala">.</span>parseReader<span class="z-punctuation z-section z-group z-begin z-scala">(</span>reader<span class="z-punctuation z-section z-group z-end z-scala">)</span>
-    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">html</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> renderer<span class="z-punctuation z-accessor z-scala">.</span>render<span class="z-punctuation z-section z-group z-begin z-scala">(</span>doc<span class="z-punctuation z-section z-group z-end z-scala">)</span>
-    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">body</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body style=<span class="z-constant z-character z-escape z-scala">\&quot;</span>padding: 0 5em;<span class="z-constant z-character z-escape z-scala">\&quot;</span>&gt;<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span> + html + <span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>&lt;/body&gt;&lt;/html&gt;<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span>
-    <span class="z-support z-constant z-scala">Files</span><span class="z-punctuation z-accessor z-scala">.</span>write<span class="z-punctuation z-section z-group z-begin z-scala">(</span>
-      <span class="z-support z-constant z-scala">Paths</span><span class="z-punctuation z-accessor z-scala">.</span>get<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>test.html<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-separator z-scala">,</span>
-      body<span class="z-punctuation z-accessor z-scala">.</span>getBytes<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">StandardCharsets</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">UTF_8</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
-
-    <span class="z-support z-constant z-scala">ExitCode</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">Success</span>
-  <span class="z-punctuation z-section z-block z-end z-scala">}</span></span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">opts</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-keyword z-other z-scala">new</span> <span class="z-support z-class z-scala">MutableDataSet</span><span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    opts<span class="z-punctuation z-accessor z-scala">.</span>set<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">Parser</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">EXTENSIONS</span><span class="z-punctuation z-accessor z-scala">.</span>asInstanceOf<span class="z-meta z-generic z-scala"><span class="z-punctuation z-definition z-generic z-begin z-scala">[</span><span class="z-support z-class z-scala">DataKey</span><span class="z-punctuation z-definition z-generic z-begin z-scala">[</span><span class="z-support z-type z-scala">util</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-class z-scala">Collection</span><span class="z-punctuation z-definition z-generic z-begin z-scala">[</span><span class="z-variable z-language z-underscore z-scala">_</span><span class="z-punctuation z-definition z-generic z-end z-scala">]</span><span class="z-punctuation z-definition z-generic z-end z-scala">]</span><span class="z-punctuation z-definition z-generic z-end z-scala">]</span></span><span class="z-punctuation z-separator z-scala">,</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">      util<span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">Arrays</span><span class="z-punctuation z-accessor z-scala">.</span>asList<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">TablesExtension</span><span class="z-punctuation z-accessor z-scala">.</span>create<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-separator z-scala">,</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">      <span class="z-support z-constant z-scala">StrikethroughExtension</span><span class="z-punctuation z-accessor z-scala">.</span>create<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-terminator z-scala">;</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">parser</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-support z-constant z-scala">Parser</span><span class="z-punctuation z-accessor z-scala">.</span>builder<span class="z-punctuation z-section z-group z-begin z-scala">(</span>opts<span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-accessor z-scala">.</span>build<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">renderer</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-support z-constant z-scala">HtmlRenderer</span><span class="z-punctuation z-accessor z-scala">.</span>builder<span class="z-punctuation z-section z-group z-begin z-scala">(</span>opts<span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-accessor z-scala">.</span>build<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">reader</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-support z-constant z-scala">Files</span><span class="z-punctuation z-accessor z-scala">.</span>newBufferedReader<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">Paths</span><span class="z-punctuation z-accessor z-scala">.</span>get<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>in.txt|md<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">doc</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> parser<span class="z-punctuation z-accessor z-scala">.</span>parseReader<span class="z-punctuation z-section z-group z-begin z-scala">(</span>reader<span class="z-punctuation z-section z-group z-end z-scala">)</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">html</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> renderer<span class="z-punctuation z-accessor z-scala">.</span>render<span class="z-punctuation z-section z-group z-begin z-scala">(</span>doc<span class="z-punctuation z-section z-group z-end z-scala">)</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    <span class="z-storage z-type z-stable z-scala">val</span> <span class="z-variable z-other z-constant z-scala">body</span> <span class="z-keyword z-operator z-assignment z-scala">=</span> <span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body style=<span class="z-constant z-character z-escape z-scala">\&quot;</span>padding: 0 5em;<span class="z-constant z-character z-escape z-scala">\&quot;</span>&gt;<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span> + html + <span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>&lt;/body&gt;&lt;/html&gt;<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    <span class="z-support z-constant z-scala">Files</span><span class="z-punctuation z-accessor z-scala">.</span>write<span class="z-punctuation z-section z-group z-begin z-scala">(</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">      <span class="z-support z-constant z-scala">Paths</span><span class="z-punctuation z-accessor z-scala">.</span>get<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-string z-quoted z-double z-scala"><span class="z-punctuation z-definition z-string z-begin z-scala">&quot;</span>test.html<span class="z-punctuation z-definition z-string z-end z-scala">&quot;</span></span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-separator z-scala">,</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">      body<span class="z-punctuation z-accessor z-scala">.</span>getBytes<span class="z-punctuation z-section z-group z-begin z-scala">(</span><span class="z-support z-constant z-scala">StandardCharsets</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">UTF_8</span><span class="z-punctuation z-section z-group z-end z-scala">)</span><span class="z-punctuation z-section z-group z-end z-scala">)</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">    <span class="z-support z-constant z-scala">ExitCode</span><span class="z-punctuation z-accessor z-scala">.</span><span class="z-support z-constant z-scala">Success</span>
+</span></span><span class="z-source z-scala"><span class="z-meta z-block z-scala">  <span class="z-punctuation z-section z-block z-end z-scala">}</span></span>
 </span></code></pre>
 <p>Then run the result through <code>wkhtmltopdf</code>.</p>
 <p>Markdown file:
@@ -974,7 +980,7 @@ and then the already existing html-&gt;pdf conversion.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

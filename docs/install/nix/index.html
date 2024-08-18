@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -778,11 +784,35 @@
   
   
   <h1 id="nix">Nix<a class="zola-anchor" href="#nix" aria-label="Anchor link for: nix">🔗</a></h1>
+<p>Docspell is a flake, you need to enable flakes in order to make use of
+it. You can also use the provided expressions without Flakes, which is
+described below.</p>
+<h2 id="try-it-out">Try it out<a class="zola-anchor" href="#try-it-out" aria-label="Anchor link for: try-it-out">🔗</a></h2>
+<p>You can try out the server and joex packages by running the following:</p>
+<pre class="z-code"><code><span class="z-text z-plain">nix run github:eikek/docspell#docspell-restserver
+</span><span class="z-text z-plain">nix run github:eikek/docspell#docspell-joex
+</span></code></pre>
+<p>While this works, it will be only a very basic setup. The database
+defaults to a directory in <code>/tmp</code> and no fulltext search enabled. Then
+for processing documents, some external tools are required which would
+need to be present on yout system to make it work.</p>
+<p>A more elaborate setup with PostgreSQL and SOLR can be started using
+the <code>test-vm</code>:</p>
+<pre class="z-code"><code><span class="z-text z-plain">nix run github:eikek/docspell#nixosConfigurations.test-vm.config.system.build.vm
+</span></code></pre>
+<p>The vm contains all the required tools. After starting up, you can
+find docspell at <code>http://localhost:7881</code>.</p>
 <h2 id="install-via-nix">Install via Nix<a class="zola-anchor" href="#install-via-nix" aria-label="Anchor link for: install-via-nix">🔗</a></h2>
 <p>Docspell can be installed via the <a href="https://nixos.org/nix">nix</a> package
-manager, which is available for Linux and OSX. Docspell is currently not
-part of the <a href="https://nixos.org/nixpkgs/">nixpkgs collection</a>, but you
-can use the flake from this repository.</p>
+manager. Docspell is currently not part of the <a href="https://nixos.org/nixpkgs/">nixpkgs
+collection</a>, but you can use the flake
+from this repository.</p>
+<p>You could install the server and joex by running the following:</p>
+<pre class="z-code"><code><span class="z-text z-plain">nix profile install github:eikek/docspell#docspell-restserver
+</span><span class="z-text z-plain">nix profile install github:eikek/docspell#docspell-joex
+</span></code></pre>
+<p>This would install the packages on your system. If you use NixOS you
+probably want to use the provided <a href="https://docspell.org/docs/install/nix/#nixos">NixOS modules</a> instead.</p>
 <h2 id="upgrading">Upgrading<a class="zola-anchor" href="#upgrading" aria-label="Anchor link for: upgrading">🔗</a></h2>
 <p>Since <a href="https://docspell.org/docs/install/downgrading/">downgrading</a> is not supported,
 it is recommended to backup your database before upgrading. Should
@@ -797,15 +827,15 @@ definition for installing Docspell as a service using systemd.</p>
 <li>joex</li>
 </ul>
 <pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-comment z-line z-number-sign z-nix"># flake.nix</span>
-<span class="z-variable z-parameter z-name z-nix">inputs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">url</span> <span class="z-invalid z-illegal">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>github:eikek/docspell?dir=nix/<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-invalid z-illegal">;</span>
-
-<span class="z-comment z-line z-number-sign z-nix"># in modules</span>
-<span class="z-variable z-parameter z-name z-nix">imports</span> <span class="z-invalid z-illegal">=</span> <span class="z-punctuation z-definition z-list z-nix">[</span> 
-      <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">nixosModules</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">default</span>
-<span class="z-punctuation z-definition z-list z-nix">]</span>
-
-<span class="z-variable z-parameter z-name z-nix">services</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">docspell-joex</span> <span class="z-invalid z-illegal">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span> <span class="z-keyword z-operator z-nix">...  </span><span class="z-punctuation z-definition z-entity z-function z-nix">}</span>
-<span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">r</span><span class="z-invalid z-illegal">v</span><span class="z-invalid z-illegal">i</span><span class="z-invalid z-illegal">c</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">.</span><span class="z-invalid z-illegal">d</span><span class="z-invalid z-illegal">o</span><span class="z-invalid z-illegal">c</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">p</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">l</span><span class="z-invalid z-illegal">l</span><span class="z-invalid z-illegal">-</span><span class="z-invalid z-illegal">r</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">t</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">r</span><span class="z-invalid z-illegal">v</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">r</span> <span class="z-invalid z-illegal">=</span> <span class="z-invalid z-illegal">{</span> <span class="z-invalid z-illegal">.</span><span class="z-invalid z-illegal">.</span><span class="z-invalid z-illegal">.</span>  <span class="z-invalid z-illegal">}</span>
+</span><span class="z-source z-nix"><span class="z-variable z-parameter z-name z-nix">inputs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">url</span> <span class="z-invalid z-illegal">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>github:eikek/docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-invalid z-illegal">;</span>
+</span><span class="z-source z-nix">
+</span><span class="z-source z-nix"><span class="z-comment z-line z-number-sign z-nix"># in modules</span>
+</span><span class="z-source z-nix"><span class="z-variable z-parameter z-name z-nix">imports</span> <span class="z-invalid z-illegal">=</span> <span class="z-punctuation z-definition z-list z-nix">[</span> 
+</span><span class="z-source z-nix">      <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">nixosModules</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">default</span>
+</span><span class="z-source z-nix"><span class="z-punctuation z-definition z-list z-nix">]</span>
+</span><span class="z-source z-nix">
+</span><span class="z-source z-nix"><span class="z-variable z-parameter z-name z-nix">services</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">docspell-joex</span> <span class="z-invalid z-illegal">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span> <span class="z-keyword z-operator z-nix">...  </span><span class="z-punctuation z-definition z-entity z-function z-nix">}</span>
+</span><span class="z-source z-nix"><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">r</span><span class="z-invalid z-illegal">v</span><span class="z-invalid z-illegal">i</span><span class="z-invalid z-illegal">c</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">.</span><span class="z-invalid z-illegal">d</span><span class="z-invalid z-illegal">o</span><span class="z-invalid z-illegal">c</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">p</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">l</span><span class="z-invalid z-illegal">l</span><span class="z-invalid z-illegal">-</span><span class="z-invalid z-illegal">r</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">t</span><span class="z-invalid z-illegal">s</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">r</span><span class="z-invalid z-illegal">v</span><span class="z-invalid z-illegal">e</span><span class="z-invalid z-illegal">r</span> <span class="z-invalid z-illegal">=</span> <span class="z-invalid z-illegal">{</span> <span class="z-invalid z-illegal">.</span><span class="z-invalid z-illegal">.</span><span class="z-invalid z-illegal">.</span>  <span class="z-invalid z-illegal">}</span>
 </span></code></pre>
 <p>Please see the <code>nix/modules/server.nix</code> and <code>nix/modules/joex.nix</code> files
 for the set of options. The nixos options are modeled after the
@@ -818,89 +848,109 @@ appropriate commit.</p>
 postgres database. This snippet can be used to create a vm (using
 <code>nixos-rebuild build-vm</code> as shown above) or a container, for example.</p>
 <pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-comment z-line z-number-sign z-nix"># flake.nix</span>
-<span class="z-variable z-parameter z-name z-nix">inputs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">url</span> <span class="z-invalid z-illegal">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>github:eikek/docspell?dir=nix/<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-invalid z-illegal">;</span>
-
-<span class="z-comment z-line z-number-sign z-nix"># module.nix</span>
-<span class="z-punctuation z-definition z-entity z-function z-2 z-nix">{</span> <span class="z-variable z-parameter z-function z-1 z-nix">config</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">pkgs</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">docspell</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-keyword z-operator z-nix">... </span><span class="z-punctuation z-definition z-entity z-function z-nix">}</span><span class="z-punctuation z-definition z-function z-nix">:</span>
-<span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">imports</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">nixosModules</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">default</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-
-  <span class="z-comment z-line z-number-sign z-nix">##### just for the example…</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">users</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">users</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">root</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">password</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>root<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-comment z-line z-number-sign z-nix">#####</span>
-
-  <span class="z-comment z-line z-number-sign z-nix"># install docspell-joex and enable the systemd service</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">services</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell-joex</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">enable</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">base-url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>http://localhost:7878<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">bind</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">address</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>0.0.0.0<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">port</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-numeric z-nix">7878</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">scheduler</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">pool-size</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-numeric z-nix">1</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">jdbc</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>jdbc:postgresql://localhost:5432/docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">user</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">password</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-
-  <span class="z-comment z-line z-number-sign z-nix"># install docspell-restserver and enable the systemd service</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">services</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell-restserver</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">enable</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">base-url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>http://localhost:7880<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">bind</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">address</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>0.0.0.0<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">port</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-numeric z-nix">7880</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">auth</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">server-secret</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>b64:EirgaudMyNvWg4TvxVGxTu-fgtrto4ETz--Hk9Pv2o4=<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">backend</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">signup</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-        <span class="z-entity z-other z-attribute-name z-multipart z-nix">mode</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>invite<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-        <span class="z-entity z-other z-attribute-name z-multipart z-nix">new-invite-password</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>dsinvite2<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-        <span class="z-entity z-other z-attribute-name z-multipart z-nix">invite-time</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>30 days<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">jdbc</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-        <span class="z-entity z-other z-attribute-name z-multipart z-nix">url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>jdbc:postgresql://localhost:5432/docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-        <span class="z-entity z-other z-attribute-name z-multipart z-nix">user</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-        <span class="z-entity z-other z-attribute-name z-multipart z-nix">password</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-
-  <span class="z-comment z-line z-number-sign z-nix"># install postgresql and initially create user/database</span>
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">services</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">postgresql</span> <span class="z-keyword z-operator z-bind z-nix">=</span>
-  <span class="z-keyword z-other z-nix">let</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">pginit</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">writeText</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>pginit.sql<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span> <span class="z-string z-quoted z-other z-nix"><span class="z-punctuation z-definition z-string z-other z-start z-nix">&#39;&#39;</span>
-      CREATE USER docspell WITH PASSWORD &#39;docspell&#39; LOGIN CREATEDB;
-      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO docspell;
-      GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO docspell;
-      CREATE DATABASE DOCSPELL OWNER &#39;docspell&#39;;
-    <span class="z-punctuation z-definition z-string z-other z-end z-nix">&#39;&#39;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-keyword z-other z-nix">in</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">enable</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">package</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">postgresql_11</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">enableTCPIP</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">initialScript</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pginit</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">port</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-numeric z-nix">5432</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-      <span class="z-entity z-other z-attribute-name z-multipart z-nix">authentication</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-other z-nix"><span class="z-punctuation z-definition z-string z-other z-start z-nix">&#39;&#39;</span>
-        host  all  all 0.0.0.0/0 md5
-      <span class="z-punctuation z-definition z-string z-other z-end z-nix">&#39;&#39;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-
-
-  <span class="z-entity z-other z-attribute-name z-multipart z-nix">networking</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">hostName</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspellexample<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-    <span class="z-entity z-other z-attribute-name z-multipart z-nix">firewall</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">allowedTCPPorts</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-list z-nix">[</span><span class="z-constant z-numeric z-nix">7880</span><span class="z-punctuation z-definition z-list z-nix">]</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
-<span class="z-punctuation z-definition z-attrset z-nix">}</span>
+</span><span class="z-source z-nix"><span class="z-variable z-parameter z-name z-nix">inputs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">url</span> <span class="z-invalid z-illegal">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>github:eikek/docspell?dir=nix/<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-invalid z-illegal">;</span>
+</span><span class="z-source z-nix">
+</span><span class="z-source z-nix"><span class="z-comment z-line z-number-sign z-nix"># module.nix</span>
+</span><span class="z-source z-nix"><span class="z-punctuation z-definition z-entity z-function z-2 z-nix">{</span> <span class="z-variable z-parameter z-function z-1 z-nix">config</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">pkgs</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">docspell</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-keyword z-operator z-nix">... </span><span class="z-punctuation z-definition z-entity z-function z-nix">}</span><span class="z-punctuation z-definition z-function z-nix">:</span>
+</span><span class="z-source z-nix"><span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">  <span class="z-entity z-other z-attribute-name z-multipart z-nix">imports</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">docspell</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">nixosModules</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">default</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">
+</span><span class="z-source z-nix">  <span class="z-comment z-line z-number-sign z-nix">##### just for the example…</span>
+</span><span class="z-source z-nix">  <span class="z-entity z-other z-attribute-name z-multipart z-nix">users</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">users</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">root</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">password</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>root<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">  <span class="z-comment z-line z-number-sign z-nix">#####</span>
+</span><span class="z-source z-nix">
+</span><span class="z-source z-nix">  <span class="z-comment z-line z-number-sign z-nix"># install docspell-joex and enable the systemd service</span>
+</span><span class="z-source z-nix">  <span class="z-entity z-other z-attribute-name z-multipart z-nix">services</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell-joex</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">enable</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">base-url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>http://localhost:7878<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">bind</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">address</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>0.0.0.0<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">port</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-numeric z-nix">7878</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">scheduler</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">pool-size</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-numeric z-nix">1</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">jdbc</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>jdbc:postgresql://localhost:5432/docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">user</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">password</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">
+</span><span class="z-source z-nix">  <span class="z-comment z-line z-number-sign z-nix"># install docspell-restserver and enable the systemd service</span>
+</span><span class="z-source z-nix">  <span class="z-entity z-other z-attribute-name z-multipart z-nix">services</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">docspell-restserver</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">enable</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">base-url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>http://localhost:7880<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">bind</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">address</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>0.0.0.0<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">port</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-numeric z-nix">7880</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">auth</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">server-secret</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>b64:EirgaudMyNvWg4TvxVGxTu-fgtrto4ETz--Hk9Pv2o4=<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">backend</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">signup</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">        <span class="z-entity z-other z-attribute-name z-multipart z-nix">mode</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>invite<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">        <span class="z-entity z-other z-attribute-name z-multipart z-nix">new-invite-password</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>dsinvite2<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">        <span class="z-entity z-other z-attribute-name z-multipart z-nix">invite-time</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>30 days<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">jdbc</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">        <span class="z-entity z-other z-attribute-name z-multipart z-nix">url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>jdbc:postgresql://localhost:5432/docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">        <span class="z-entity z-other z-attribute-name z-multipart z-nix">user</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">        <span class="z-entity z-other z-attribute-name z-multipart z-nix">password</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">
+</span><span class="z-source z-nix">  <span class="z-comment z-line z-number-sign z-nix"># install postgresql and initially create user/database</span>
+</span><span class="z-source z-nix">  <span class="z-entity z-other z-attribute-name z-multipart z-nix">services</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">postgresql</span> <span class="z-keyword z-operator z-bind z-nix">=</span>
+</span><span class="z-source z-nix">  <span class="z-keyword z-other z-nix">let</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">pginit</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">writeText</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>pginit.sql<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span> <span class="z-string z-quoted z-other z-nix"><span class="z-punctuation z-definition z-string z-other z-start z-nix">&#39;&#39;</span>
+</span></span><span class="z-source z-nix"><span class="z-string z-quoted z-other z-nix">      CREATE USER docspell WITH PASSWORD &#39;docspell&#39; LOGIN CREATEDB;
+</span></span><span class="z-source z-nix"><span class="z-string z-quoted z-other z-nix">      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO docspell;
+</span></span><span class="z-source z-nix"><span class="z-string z-quoted z-other z-nix">      GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO docspell;
+</span></span><span class="z-source z-nix"><span class="z-string z-quoted z-other z-nix">      CREATE DATABASE DOCSPELL OWNER &#39;docspell&#39;;
+</span></span><span class="z-source z-nix"><span class="z-string z-quoted z-other z-nix">    <span class="z-punctuation z-definition z-string z-other z-end z-nix">&#39;&#39;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">  <span class="z-keyword z-other z-nix">in</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">enable</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">package</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">postgresql_11</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">enableTCPIP</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-language z-nix">true</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">initialScript</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pginit</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">port</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-constant z-numeric z-nix">5432</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">      <span class="z-entity z-other z-attribute-name z-multipart z-nix">authentication</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-other z-nix"><span class="z-punctuation z-definition z-string z-other z-start z-nix">&#39;&#39;</span>
+</span></span><span class="z-source z-nix"><span class="z-string z-quoted z-other z-nix">        host  all  all 0.0.0.0/0 md5
+</span></span><span class="z-source z-nix"><span class="z-string z-quoted z-other z-nix">      <span class="z-punctuation z-definition z-string z-other z-end z-nix">&#39;&#39;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">
+</span><span class="z-source z-nix">  <span class="z-entity z-other z-attribute-name z-multipart z-nix">networking</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">hostName</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>docspellexample<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">firewall</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">allowedTCPPorts</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-punctuation z-definition z-list z-nix">[</span><span class="z-constant z-numeric z-nix">7880</span><span class="z-punctuation z-definition z-list z-nix">]</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix"><span class="z-punctuation z-definition z-attrset z-nix">}</span>
 </span></code></pre>
+<p>You can also look at <code>nix/test-vm.nix</code> for another example.</p>
+<h2 id="without-flakes">Without Flakes<a class="zola-anchor" href="#without-flakes" aria-label="Anchor link for: without-flakes">🔗</a></h2>
+<p>Of course, you can also use it without flakes. There is <code>nix/pkg.nix</code>
+which contains the derivation of both packages, <code>docspell-restserver</code> and
+<code>docspell-joex</code>. Just call it with your nixpkgs instance as usual:</p>
+<pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-keyword z-other z-nix">let</span> 
+</span><span class="z-source z-nix">  <span class="z-entity z-other z-attribute-name z-multipart z-nix">repo</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">fetchurl</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>https://github.com/eikek/docspell<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">sha256</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>sha256-X2mM+Z5s8Xm1E6zrZ0wcRaivLEvqbk5Dn+GSXkZHdLM=<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix">  <span class="z-entity z-other z-attribute-name z-multipart z-nix">docspellPkgs</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-variable z-parameter z-name z-nix">pkgs</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">callPackage</span> <span class="z-punctuation z-definition z-expression z-nix">(</span><span class="z-support z-function z-nix">import</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span><span class="z-markup z-italic"><span class="z-punctuation z-section z-embedded z-begin z-nix">${</span><span class="z-variable z-parameter z-name z-nix">repo</span><span class="z-punctuation z-section z-embedded z-end z-nix">}</span></span>/nix/pkg.nix<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-definition z-expression z-nix">)</span> <span class="z-punctuation z-definition z-attrset z-nix">{</span><span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
+</span><span class="z-source z-nix"><span class="z-keyword z-other z-nix">in</span>
+</span><span class="z-source z-nix"> <span class="z-comment z-line z-number-sign z-nix">#</span>
+</span><span class="z-source z-nix"> <span class="z-comment z-line z-number-sign z-nix"># use docspellPkgs.docspell-restserver or docspellPkgs.docspell-joex</span>
+</span><span class="z-source z-nix"> <span class="z-comment z-line z-number-sign z-nix">#</span>
+</span></code></pre>
+<p>The same way import NixOS modules from
+<code>nix/modules/{joex|server}.nix</code>.</p>
+<p>An alternative can be to use <code>builtins.getFlake</code> to fetch the flake
+and get access to its output. But this requires to use a flake enabled
+nix, which then defeats the idea of &quot;not using flakes&quot;.</p>
 
   
 
@@ -911,7 +961,7 @@ postgres database. This snippet can be used to create a vm (using
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -956,6 +1006,12 @@ postgres database. This snippet can be used to create a vm (using
                         <div class="pl-4 opacity-75">
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;nix&#x2F;#try-it-out" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Try it out
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;nix&#x2F;#install-via-nix" class="hover:text-stone-900 dark:hover:text-stone-100">
                                     Install via Nix
                                 </a>
@@ -983,6 +1039,12 @@ postgres database. This snippet can be used to create a vm (using
                             <div class="border-l-2 dark:border-stone-700 pl-1">
                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;nix&#x2F;#nixos-example" class="hover:text-stone-900 dark:hover:text-stone-100">
                                     NixOS Example
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;nix&#x2F;#without-flakes" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Without Flakes
                                 </a>
                             </div>
                             

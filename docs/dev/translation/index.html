@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -810,34 +816,34 @@ translating, just start the application.</p>
 <p>Use git to clone the docspell repository to your machine. In a
 terminal type:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> git clone https://github.com/eikek/docspell.git</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Cloning</span></span><span class="z-meta z-function-call z-arguments z-shell"> into <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>docspell<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span>...</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Enumerating objects: 1861, done.</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Counting objects: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (1861/1861</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> done.</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Compressing objects: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (861/861</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> done.</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Total 30276 (delta 821</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> reused 1604 (delta 668</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> pack-reused 28415</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Receiving</span></span><span class="z-meta z-function-call z-arguments z-shell"> objects: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (30276/30276</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> 60.89 MiB</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">23.62</span></span><span class="z-meta z-function-call z-arguments z-shell"> MiB/s, done.</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Resolving</span></span><span class="z-meta z-function-call z-arguments z-shell"> deltas: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (14658/14658</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> done.</span>
-
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">/tmp</span></span><span class="z-meta z-function-call z-arguments z-shell"> took 4s</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Cloning</span></span><span class="z-meta z-function-call z-arguments z-shell"> into <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>docspell<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span>...</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Enumerating objects: 1861, done.</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Counting objects: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (1861/1861</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> done.</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Compressing objects: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (861/861</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> done.</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">remote:</span></span><span class="z-meta z-function-call z-arguments z-shell"> Total 30276 (delta 821</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> reused 1604 (delta 668</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> pack-reused 28415</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Receiving</span></span><span class="z-meta z-function-call z-arguments z-shell"> objects: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (30276/30276</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> 60.89 MiB</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">23.62</span></span><span class="z-meta z-function-call z-arguments z-shell"> MiB/s, done.</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Resolving</span></span><span class="z-meta z-function-call z-arguments z-shell"> deltas: 100<span class="z-meta z-group z-expansion z-job z-shell"><span class="z-punctuation z-definition z-variable z-job z-shell">%</span></span> (14658/14658</span><span class="z-meta z-function-call z-shell"></span>)<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">,</span></span><span class="z-meta z-function-call z-arguments z-shell"> done.</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">/tmp</span></span><span class="z-meta z-function-call z-arguments z-shell"> took 4s</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span>
 </span></code></pre>
 <p>This creates a new directory <code>docspell</code>. Change into it, create a
 <code>DOCSPELL_ENV</code> environment variable and run sbt:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> cd docspell</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docspell</span></span><span class="z-meta z-function-call z-arguments z-shell"> on  master via 🌳 v0.19.1 via ☕ v11.0.9 via ⬢ v12.21.0</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> export DOCSPELL_ENV=dev</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> sbt</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> welcome to sbt 1.5.0 (Oracle Corporation Java 1.8.0_212</span><span class="z-meta z-function-call z-shell"></span>)
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading settings for project global-plugins from plugins.sbt ...</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading settings for project docspell-build from plugins.sbt ...</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading project definition from /tmp/docspell/project</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> compiling 6 Scala sources to /tmp/docspell/project/target/scala-2.12/sbt-1.0/classes ...</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading settings for project root from build.sbt,version.sbt ...</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> resolving key references (24191 settings</span><span class="z-meta z-function-call z-shell"></span>) <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">...</span></span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> set current project to docspell-root (in build file:/tmp/docspell/</span><span class="z-meta z-function-call z-shell"></span>)
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> sbt server started at local:///home/eike/.sbt/1.0/server/3cf61b9ad9af43ee6032/sock</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> started sbt server</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sbt:docspell-root</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docspell</span></span><span class="z-meta z-function-call z-arguments z-shell"> on  master via 🌳 v0.19.1 via ☕ v11.0.9 via ⬢ v12.21.0</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> export DOCSPELL_ENV=dev</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> sbt</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> welcome to sbt 1.5.0 (Oracle Corporation Java 1.8.0_212</span><span class="z-meta z-function-call z-shell"></span>)
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading settings for project global-plugins from plugins.sbt ...</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading settings for project docspell-build from plugins.sbt ...</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading project definition from /tmp/docspell/project</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> compiling 6 Scala sources to /tmp/docspell/project/target/scala-2.12/sbt-1.0/classes ...</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> loading settings for project root from build.sbt,version.sbt ...</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> resolving key references (24191 settings</span><span class="z-meta z-function-call z-shell"></span>) <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">...</span></span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> set current project to docspell-root (in build file:/tmp/docspell/</span><span class="z-meta z-function-call z-shell"></span>)
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> sbt server started at local:///home/eike/.sbt/1.0/server/3cf61b9ad9af43ee6032/sock</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">[info]</span></span><span class="z-meta z-function-call z-arguments z-shell"> started sbt server</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sbt:docspell-root</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>
 </span></span></code></pre>
 <p>This downloads some stuff and puts you in the sbt shell. Now compile
 everything (only needed the first time after checkout):</p>
@@ -848,7 +854,7 @@ everything (only needed the first time after checkout):</p>
 <p>If sbt is not started, start sbt from within the source root. Also
 export the <code>DOCSPELL_ENV</code> variable <em>before</em> starting sbt:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> export <span class="z-variable z-other z-readwrite z-assignment z-shell">DOCSPELL_ENV</span><span class="z-keyword z-operator z-assignment z-shell">=</span><span class="z-string z-unquoted z-shell">dev</span>
-<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> sbt
+</span><span class="z-source z-shell z-bash"><span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> sbt
 </span></code></pre>
 <p>Then start the application:</p>
 <pre data-lang="sbt" class="language-sbt z-code"><code class="language-sbt" data-lang="sbt"><span class="z-source z-scala">sbt<span class="z-punctuation z-ascription z-scala">:</span><span class="z-support z-type z-scala">docspell</span><span class="z-support z-type z-scala">-</span><span class="z-support z-type z-scala">root</span><span class="z-support z-type z-scala">&gt;</span> <span class="z-support z-type z-scala">reStart</span>
@@ -869,18 +875,18 @@ to the running server. For this, a script is provided in the
 <p>Now open two more terminals and <code>cd</code> into the docspell folder as before
 and run the following in one:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> ./project/dev-ui-build.sh watch-js</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Compile</span></span><span class="z-meta z-function-call z-arguments z-shell"> elm to js …</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Success!</span></span>
-
-    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Main</span></span><span class="z-meta z-function-call z-arguments z-shell"> ───<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> /tmp/docspell/modules/webapp/target/scala-2.13/classes/META-INF/resources/webjars/docspell-webapp/0.22.0-SNAPSHOT/docspell-app.js</span>
-
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Watching</span></span><span class="z-meta z-function-call z-arguments z-shell"> elm sources. C-c to quit.</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Setting</span></span><span class="z-meta z-function-call z-arguments z-shell"> up watches.  Beware: since<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>r</span> was given, this may take a while!</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Watches</span></span><span class="z-meta z-function-call z-arguments z-shell"> established.</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Compile</span></span><span class="z-meta z-function-call z-arguments z-shell"> elm to js …</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Success!</span></span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Main</span></span><span class="z-meta z-function-call z-arguments z-shell"> ───<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> /tmp/docspell/modules/webapp/target/scala-2.13/classes/META-INF/resources/webjars/docspell-webapp/0.22.0-SNAPSHOT/docspell-app.js</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Watching</span></span><span class="z-meta z-function-call z-arguments z-shell"> elm sources. C-c to quit.</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Setting</span></span><span class="z-meta z-function-call z-arguments z-shell"> up watches.  Beware: since<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>r</span> was given, this may take a while!</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Watches</span></span><span class="z-meta z-function-call z-arguments z-shell"> established.</span>
 </span></code></pre>
 <p>And in the other run this:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">❯</span></span><span class="z-meta z-function-call z-arguments z-shell"> ./project/dev-ui-build.sh watch-css</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Watching</span></span><span class="z-meta z-function-call z-arguments z-shell"> css …</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">Watching</span></span><span class="z-meta z-function-call z-arguments z-shell"> css …</span>
 </span></code></pre>
 <p>Once you have this, you're all set. The docspell application is
 running and changes to elm and css files are detected, the webapp is
@@ -902,40 +908,40 @@ below for details.</p>
 <p>Start by editing <code>UiLanguage.elm</code> and add another language to the
 list:</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-keyword z-other z-elm">type <span class="z-entity z-name z-type z-elm">UiLanguage</span></span>
-    <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">English</span>
-    <span class="z-keyword z-operator z-elm">|</span> <span class="z-constant z-other z-elm">German</span>
+</span><span class="z-source z-elm">    <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">English</span>
+</span><span class="z-source z-elm">    <span class="z-keyword z-operator z-elm">|</span> <span class="z-constant z-other z-elm">German</span>
 </span></code></pre>
 <p>More languaes are simply appended using the <code>|</code> symbol. Use the
 English name here, because this is source code.</p>
 <p>Also add it to the list of all languages below. Simply add the new
 language separated by a comma <code>,</code>.</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">all</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">List</span> <span class="z-storage z-type z-elm">UiLanguage</span>
-</span><span class="z-entity z-name z-function z-elm">all </span><span class="z-keyword z-operator z-elm">=</span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">[</span></span> <span class="z-constant z-other z-elm">English</span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> <span class="z-constant z-other z-elm">German</span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">]</span></span>
+</span></span><span class="z-source z-elm"><span class="z-entity z-name z-function z-elm">all </span><span class="z-keyword z-operator z-elm">=</span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">[</span></span> <span class="z-constant z-other z-elm">English</span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> <span class="z-constant z-other z-elm">German</span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">]</span></span>
 </span></code></pre>
 <p>If you make a mistake, the elm compiler will tell you with usually
 quite helpful messages. Now, after adding this, there will be errors
 when compiling the elm files. You should see something like this:</p>
 <pre class="z-code"><code><span class="z-text z-plain">Detected problems in 1 module.
--- MISSING PATTERNS ------------------- modules/webapp/src/main/elm/Messages.elm
-
-This `case` does not have branches for all possibilities:
-
-45|&gt;    case lang of
-46|&gt;        English -&gt;
-47|&gt;            gb
-
-Missing possibilities include:
-
-    German
-
-I would have to crash if I saw one of those. Add branches for them!
-
-Hint: If you want to write the code for each branch later, use `Debug.todo` as a
-placeholder. Read &lt;https://elm-lang.org/0.19.1/missing-patterns&gt; for more
-guidance on this workflow.
+</span><span class="z-text z-plain">-- MISSING PATTERNS ------------------- modules/webapp/src/main/elm/Messages.elm
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">This `case` does not have branches for all possibilities:
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">45|&gt;    case lang of
+</span><span class="z-text z-plain">46|&gt;        English -&gt;
+</span><span class="z-text z-plain">47|&gt;            gb
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Missing possibilities include:
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">    German
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">I would have to crash if I saw one of those. Add branches for them!
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Hint: If you want to write the code for each branch later, use `Debug.todo` as a
+</span><span class="z-text z-plain">placeholder. Read &lt;https://elm-lang.org/0.19.1/missing-patterns&gt; for more
+</span><span class="z-text z-plain">guidance on this workflow.
 </span></code></pre>
 <p>So around line 45 in <code>Messages.elm</code> there is something wrong. This is
 the place where a record of all strings is returned given some
@@ -944,23 +950,23 @@ Open this file, you see at the and a value of name <code>gb</code> for English.
 Copy it to another name, <code>de</code> for this example (it's good practice to
 stick to the two letter country code).</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">de</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">Messages</span>
-</span><span class="z-entity z-name z-function z-elm">de </span><span class="z-keyword z-operator z-elm">=</span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> lang <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">German</span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> iso2 <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> label <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Deutsch<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> flagIcon <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>flag-icon flag-icon-de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> app <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">App</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> collectiveSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">CollectiveSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> login <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Login</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> register <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Register</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> newInvite <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">NewInvite</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> upload <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Upload</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> itemDetail <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ItemDetail</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> queue <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Queue</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> userSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">UserSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> manageData <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ManageData</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> search <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Search</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
+</span></span><span class="z-source z-elm"><span class="z-entity z-name z-function z-elm">de </span><span class="z-keyword z-operator z-elm">=</span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> lang <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">German</span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> iso2 <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> label <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Deutsch<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> flagIcon <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>flag-icon flag-icon-de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> app <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">App</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> collectiveSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">CollectiveSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> login <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Login</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> register <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Register</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> newInvite <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">NewInvite</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> upload <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Upload</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> itemDetail <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ItemDetail</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> queue <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Queue</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> userSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">UserSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> manageData <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ManageData</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> search <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Search</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <p>Change <code>lang</code>, <code>iso2</code>, <code>label</code> and <code>flagIcon</code> appropriately. For the
 <code>label</code> use the native language name (not English), as this is the
@@ -971,13 +977,13 @@ additional information.</p>
 <p>Now the error can be fixed. Go to line 45 and add another branch to
 the <code>case</code> expression:</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">get</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">UiLanguage</span> <span class="z-keyword z-other z-arrow z-elm">-&gt;</span> <span class="z-storage z-type z-elm">Messages</span>
-</span><span class="z-entity z-name z-function z-elm">get </span>lang <span class="z-keyword z-operator z-elm">=</span>
-    <span class="z-keyword z-other z-elm">case </span>lang <span class="z-keyword z-other z-elm">of
-</span>        <span class="z-constant z-other z-elm">English</span> <span class="z-keyword z-operator z-elm">-&gt;</span>
-            gb
-
-        <span class="z-constant z-other z-elm">German</span> <span class="z-keyword z-operator z-elm">-&gt;</span>
-            de
+</span></span><span class="z-source z-elm"><span class="z-entity z-name z-function z-elm">get </span>lang <span class="z-keyword z-operator z-elm">=</span>
+</span><span class="z-source z-elm">    <span class="z-keyword z-other z-elm">case </span>lang <span class="z-keyword z-other z-elm">of
+</span></span><span class="z-source z-elm">        <span class="z-constant z-other z-elm">English</span> <span class="z-keyword z-operator z-elm">-&gt;</span>
+</span><span class="z-source z-elm">            gb
+</span><span class="z-source z-elm">
+</span><span class="z-source z-elm">        <span class="z-constant z-other z-elm">German</span> <span class="z-keyword z-operator z-elm">-&gt;</span>
+</span><span class="z-source z-elm">            de
 </span></code></pre>
 <p>This makes the compiler happy again. If you refresh the browser, you
 should see the new language in the dropdown menu. You can already
@@ -995,48 +1001,48 @@ first one which is <code>Messages.App</code>. The file to this is
 find a file to an elm module. Open this file and you'll see again a
 <code>gb</code> value at the end. Copy it to <code>de</code> and start translating:</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">de</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">Texts</span>
-</span><span class="z-entity z-name z-function z-elm">de </span><span class="z-keyword z-operator z-elm">=</span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> collectiveProfile <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Kollektiv-Profil<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> userProfile <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Benutzer-Profil<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> lightDark <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Hell/Dunkel<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> logout <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Abmelden<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> items <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Dokumente<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> manageData <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Daten verwalten<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> uploadFiles <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Dateien hochladen<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> processingQueue <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Verarbeitung<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> newInvites <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Neue Einladung<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> help <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Hilfe (English)<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
+</span></span><span class="z-source z-elm"><span class="z-entity z-name z-function z-elm">de </span><span class="z-keyword z-operator z-elm">=</span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> collectiveProfile <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Kollektiv-Profil<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> userProfile <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Benutzer-Profil<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> lightDark <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Hell/Dunkel<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> logout <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Abmelden<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> items <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Dokumente<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> manageData <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Daten verwalten<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> uploadFiles <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Dateien hochladen<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> processingQueue <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Verarbeitung<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> newInvites <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Neue Einladung<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> help <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Hilfe (English)<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <p>Then go to the beginning of the file and add the new <code>de</code> value to the
 list of &quot;exposed&quot; values. This is necessary so it can be used from
 within the <code>Messages.elm</code> module.</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-declaration z-module z-elm"><span class="z-keyword z-other z-elm">module</span> <span class="z-support z-other z-module z-elm">Messages.App</span> <span class="z-keyword z-other z-elm">exposing</span></span>
-    <span class="z-keyword z-other z-parenthesis z-elm">(</span> <span class="z-constant z-other z-elm">Texts</span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> de <span class="z-comment z-block z-elm"><span class="z-punctuation z-definition z-comment z-elm">{-</span> the new value <span class="z-punctuation z-definition z-comment z-elm">-}</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> gb
-    <span class="z-keyword z-other z-parenthesis z-elm">)</span>
+</span><span class="z-source z-elm">    <span class="z-keyword z-other z-parenthesis z-elm">(</span> <span class="z-constant z-other z-elm">Texts</span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> de <span class="z-comment z-block z-elm"><span class="z-punctuation z-definition z-comment z-elm">{-</span> the new value <span class="z-punctuation z-definition z-comment z-elm">-}</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> gb
+</span><span class="z-source z-elm">    <span class="z-keyword z-other z-parenthesis z-elm">)</span>
 </span></code></pre>
 <p>Now you can go back to <code>Messages.elm</code> and exchange <code>Messages.App.gb</code>
 with <code>Messages.App.de</code>.</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-function z-type-declaration z-elm"><span class="z-entity z-name z-function z-elm"><span class="z-hide z-from z-goto_symbol">de</span></span> <span class="z-keyword z-other z-colon z-elm">:</span> <span class="z-storage z-type z-elm">Messages</span>
-</span><span class="z-entity z-name z-function z-elm">de </span><span class="z-keyword z-operator z-elm">=</span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> lang <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">German</span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> iso2 <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> label <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Deutsch<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> flagIcon <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>flag-icon flag-icon-de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> app <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">App</span><span class="z-keyword z-operator z-elm">.</span>de
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> collectiveSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">CollectiveSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> login <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Login</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> register <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Register</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> newInvite <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">NewInvite</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> upload <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Upload</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> itemDetail <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ItemDetail</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> queue <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Queue</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> userSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">UserSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> manageData <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ManageData</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> search <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Search</span><span class="z-keyword z-operator z-elm">.</span>gb
-    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
+</span></span><span class="z-source z-elm"><span class="z-entity z-name z-function z-elm">de </span><span class="z-keyword z-operator z-elm">=</span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> lang <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">German</span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> iso2 <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> label <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>Deutsch<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> flagIcon <span class="z-keyword z-operator z-elm">=</span> <span class="z-string z-quoted z-double z-elm"><span class="z-punctuation z-definition z-string z-begin z-elm">&quot;</span>flag-icon flag-icon-de<span class="z-punctuation z-definition z-string z-end z-elm">&quot;</span></span>
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> app <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">App</span><span class="z-keyword z-operator z-elm">.</span>de
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> collectiveSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">CollectiveSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> login <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Login</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> register <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Register</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> newInvite <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">NewInvite</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> upload <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Upload</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> itemDetail <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ItemDetail</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> queue <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Queue</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> userSettings <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">UserSettings</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> manageData <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">ManageData</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> search <span class="z-keyword z-operator z-elm">=</span> <span class="z-constant z-other z-elm">Messages</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Page</span><span class="z-keyword z-operator z-elm">.</span><span class="z-constant z-other z-elm">Search</span><span class="z-keyword z-operator z-elm">.</span>gb
+</span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <p>If you refresh the browser, you should now see the new values. Then
 take the next entry and start over. It happens that some files contain
@@ -1052,16 +1058,16 @@ github</a>.</p>
 <ol>
 <li>Fork this repository in the github webapp</li>
 <li>Go to the docspell source root you checked out in the terminal. Run:<pre class="z-code"><code><span class="z-text z-plain">git remote rename origin upstream
-git remote add origin git@github.com:&lt;your-github-name&gt;/docspell.git
-git fetch --all
+</span><span class="z-text z-plain">git remote add origin git@github.com:&lt;your-github-name&gt;/docspell.git
+</span><span class="z-text z-plain">git fetch --all
 </span></code></pre>
 </li>
 <li>Create a new git branch:<pre class="z-code"><code><span class="z-text z-plain">git checkout -b translate origin/master
 </span></code></pre>
 </li>
 <li>Make a commit of your changes:<pre class="z-code"><code><span class="z-text z-plain">git config user.name &quot;Your Name&quot;
-git config user.email &quot;Your Email&quot; #(note that this email will be publicly viewable! a dummy address is fine, too)
-git commit -am &#39;Add translation for German&#39;
+</span><span class="z-text z-plain">git config user.email &quot;Your Email&quot; #(note that this email will be publicly viewable! a dummy address is fine, too)
+</span><span class="z-text z-plain">git commit -am &#39;Add translation for German&#39;
 </span></code></pre>
 Modify the message to your needs.</li>
 <li>Push the change to your fork:<pre class="z-code"><code><span class="z-text z-plain">git push origin translate
@@ -1091,7 +1097,7 @@ work, try:</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

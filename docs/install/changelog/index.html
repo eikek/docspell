@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -778,6 +784,38 @@
   
   
   <h1 id="changelog">Changelog<a class="zola-anchor" href="#changelog" aria-label="Anchor link for: changelog">🔗</a></h1>
+<h2 id="v0-42-0">v0.42.0<a class="zola-anchor" href="#v0-42-0" aria-label="Anchor link for: v0-42-0">🔗</a></h2>
+<p><em>Aug 18, 2024</em></p>
+<h3 id="rocket-features">🚀 Features<a class="zola-anchor" href="#rocket-features" aria-label="Anchor link for: rocket-features">🔗</a></h3>
+<ul>
+<li>Nix module: secure config file @ivanbrennan (#2699)</li>
+<li>Add logout-url option to Nix module @VTimofeenko (#2646)</li>
+<li>Add package option to Nix modules @VTimofeenko (#2630)</li>
+<li>Add Japanese Vertical Support Branch for Tesseract and Ocrmypdf OCR @tenpai-git (#2505)</li>
+<li>Extend nix setup, including dev environments @eikek (#2539)</li>
+<li>Extend config for external commands @eikek (#2536)</li>
+</ul>
+<h3 id="bug-bug-fixes">🐛 Bug Fixes<a class="zola-anchor" href="#bug-bug-fixes" aria-label="Anchor link for: bug-bug-fixes">🔗</a></h3>
+<ul>
+<li>Honor default value <code>true</code> for <code>collectOutput</code> @eikek (#2663)</li>
+<li>FIx extracting addons with only a single file @eikek (#2660)</li>
+<li>Move arg-mappings underneath <code>command</code> section @eikek (#2659)</li>
+<li>Change docker base images to 3.19.1 @eikek (#2519)</li>
+<li>fix(webapp): downstream keep-alive events to backend preventing timeout @nekrondev (#2500)</li>
+<li>Fix some Kubernetes Kustomize deployment issues @TheAnachronism (#2501)</li>
+<li>tesseract english data is now a separate package @programmerq (#2479)</li>
+</ul>
+<h3 id="green-heart-maintenance">💚 Maintenance<a class="zola-anchor" href="#green-heart-maintenance" aria-label="Anchor link for: green-heart-maintenance">🔗</a></h3>
+<ul>
+<li>Update flake @eikek (#2736)</li>
+<li>Adding CJK and Custom Mapping Documentation @tenpai-git (#2669)</li>
+<li>docs(development.md): Fix minor typos @ChanceHarrison (#2613)</li>
+<li>Add page to website about contributing to docs @ChanceHarrison (#2612)</li>
+<li>Fix renamed elm package @eikek (#2547)</li>
+<li>Redocly tailwind setup @eikek (#2540)</li>
+<li>Pushing a minor fix to the bash commands. @tenpai-git (#2523)</li>
+<li>Add documentation for backup and restore process for PostgreSQL. @tenpai-git (#2508)</li>
+</ul>
 <h2 id="v0-41-0">v0.41.0<a class="zola-anchor" href="#v0-41-0" aria-label="Anchor link for: v0-41-0">🔗</a></h2>
 <p><em>Jan 29th, 2024</em></p>
 <ul>
@@ -872,8 +910,8 @@ variables:</p>
 <p>Just add it to the env variables in the <code>docker-compose.yml</code>. If you
 use a config file, add this to it:</p>
 <pre class="z-code"><code><span class="z-text z-plain">docspell.joex {
-  convert.html-converter = &quot;weasyprint&quot;
-}
+</span><span class="z-text z-plain">  convert.html-converter = &quot;weasyprint&quot;
+</span><span class="z-text z-plain">}
 </span></code></pre>
 <h3 id="file-backends">File Backends<a class="zola-anchor" href="#file-backends" aria-label="Anchor link for: file-backends">🔗</a></h3>
 <p>The internal change on how collectives are now referenced requires to
@@ -2834,7 +2872,7 @@ Web UI:</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -2877,6 +2915,12 @@ Web UI:</p>
                         </a>
                         
                         <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;changelog&#x2F;#v0-42-0" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    v0.42.0
+                                </a>
+                            </div>
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;changelog&#x2F;#v0-41-0" class="hover:text-stone-900 dark:hover:text-stone-100">

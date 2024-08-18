@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -189,11 +189,11 @@ it to your machine to do the modification. The big advantage is, that
 you can look at the results while writing.</p>
 <p>If you want to see a live view of the page while editing, some tools
 are required. The easiest way to get these is to install
-<a href="https://nixos.org/">nix</a> and run <code>nix-shell website/shell.nix</code> to get
-an environment with all these tools installed. Otherwise install the
-programs mentioned in <code>website/shell.nix</code>, which are:
-<a href="https://yarnpkg.com/">yarn</a>, <a href="https://www.getzola.org/">zola</a>,
-<a href="https://elm-lang.org">elm</a> and <a href="https://scala-sbt.org">sbt</a>.</p>
+<a href="https://nixos.org/">nix</a> and run <code>nix develop .#dev-vm</code> to get an
+environment with all these tools installed. Otherwise install the
+programs: <a href="https://yarnpkg.com/">yarn</a>,
+<a href="https://www.getzola.org/">zola</a>, <a href="https://elm-lang.org">elm</a> and
+<a href="https://scala-sbt.org">sbt</a>.</p>
 <p>Then clone the sources to your machine and build the complete site
 once, so that all assets and required stuff is present:</p>
 <pre class="z-code"><code><span class="z-text z-plain">sbt website/zolaBuildTest
@@ -217,13 +217,13 @@ the css.</p>
 <p>The very beginning of such a markdown file contains some metadata.
 Start each page with these lines:</p>
 <pre data-lang="markdown" class="language-markdown z-code"><code class="language-markdown" data-lang="markdown"><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">+++
-title = &quot;Title of the post&quot;
-[extra]
-author = &quot;<span class="z-meta z-tag z-other z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span></span><span class="z-meta z-tag z-other z-html"><span class="z-entity z-name z-tag z-other z-html">your</span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">name</span></span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>&quot;
-authorLink = &quot;https://some-url&quot;
-+++
-
-</span><span class="z-meta z-block-level z-markdown"><span class="z-markup z-heading z-1 z-markdown"><span class="z-punctuation z-definition z-heading z-begin z-markdown">#</span> </span><span class="z-markup z-heading z-1 z-markdown"><span class="z-entity z-name z-section z-markdown">First heading…</span><span class="z-meta z-whitespace z-newline z-markdown">
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">title = &quot;Title of the post&quot;
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">[extra]
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">author = &quot;<span class="z-meta z-tag z-other z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span></span><span class="z-meta z-tag z-other z-html"><span class="z-entity z-name z-tag z-other z-html">your</span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">name</span></span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>&quot;
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">authorLink = &quot;https://some-url&quot;
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">+++
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-block-level z-markdown"><span class="z-markup z-heading z-1 z-markdown"><span class="z-punctuation z-definition z-heading z-begin z-markdown">#</span> </span><span class="z-markup z-heading z-1 z-markdown"><span class="z-entity z-name z-section z-markdown">First heading…</span><span class="z-meta z-whitespace z-newline z-markdown">
 </span></span></span></span></code></pre>
 <p>The front matter is the first part enclosed in <code>+++</code>. See
 <a href="https://www.getzola.org/documentation/content/page/">zola</a>
@@ -247,13 +247,13 @@ checks for dead links).</p>
 <p>There are small templates available to format a basic info or warning
 box message.</p>
 <pre data-lang="markdown" class="language-markdown z-code"><code class="language-markdown" data-lang="markdown"><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">{% infobubble(title=&quot;My Title&quot;) %}
-Your content here ….
-{% end %}
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">Your content here ….
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">{% end %}
 </span></span></code></pre>
 <p>For a box more styled like a warning, replace <code>info</code> with <code>warning</code>.</p>
 <pre data-lang="markdown" class="language-markdown z-code"><code class="language-markdown" data-lang="markdown"><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">{% warningbubble(title=&quot;My Title&quot;) %}
-Your content here ….
-{% end %}
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">Your content here ….
+</span></span><span class="z-text z-html z-markdown"><span class="z-meta z-paragraph z-markdown">{% end %}
 </span></span></code></pre>
 <p>This will render into:</p>
 <div class="my-3 rounded border border-indigo-200 bg-indigo-100 bg-opacity-40 text-indigo-400 shadow shadow-indigo-200  dark:bg-cyan-500 dark:bg-opacity-30 dark:text-cyan-100 dark:border-cyan-700 dark:shadow-none">
@@ -294,8 +294,8 @@ on the blog listing.</p>
 <h3 id="images">Images<a class="zola-anchor" href="#images" aria-label="Anchor link for: images">🔗</a></h3>
 <p>In image to appear on the whole page, use HTML with a <code>figure</code> tag:</p>
 <pre class="z-code"><code><span class="z-text z-plain">&lt;figure&gt;
-  &lt;img src=&quot;image-url.jpg&quot;&gt;
-&lt;/figure&gt;
+</span><span class="z-text z-plain">  &lt;img src=&quot;image-url.jpg&quot;&gt;
+</span><span class="z-text z-plain">&lt;/figure&gt;
 </span></code></pre>
 <figure>
   <img src="/img/jesse-gardner-EqdpXeemf58-unsplash.jpg" >
@@ -304,11 +304,11 @@ on the blog listing.</p>
 images for both variants. You can use HTML for this and a specific
 class per theme:</p>
 <pre data-lang="html" class="language-html z-code"><code class="language-html" data-lang="html"><span class="z-text z-html z-basic"><span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span> <span class="z-meta z-attribute-with-value z-class z-html"><span class="z-entity z-other z-attribute-name z-class z-html">class</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span></span><span class="z-string z-quoted z-double z-html"><span class="z-meta z-class-name z-html">dark-block</span><span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
-    <span class="z-meta z-tag z-inline z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-inline z-any z-html">img</span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">src</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span>dark-image.jpg<span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span> <span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
-<span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;/</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
-<span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span> <span class="z-meta z-attribute-with-value z-class z-html"><span class="z-entity z-other z-attribute-name z-class z-html">class</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span></span><span class="z-string z-quoted z-double z-html"><span class="z-meta z-class-name z-html">light-block</span><span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
-    <span class="z-meta z-tag z-inline z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-inline z-any z-html">img</span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">src</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span>light-image.jpg<span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span> <span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
-<span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;/</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+</span><span class="z-text z-html z-basic">    <span class="z-meta z-tag z-inline z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-inline z-any z-html">img</span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">src</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span>dark-image.jpg<span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span> <span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+</span><span class="z-text z-html z-basic"><span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;/</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+</span><span class="z-text z-html z-basic"><span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span> <span class="z-meta z-attribute-with-value z-class z-html"><span class="z-entity z-other z-attribute-name z-class z-html">class</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span></span><span class="z-string z-quoted z-double z-html"><span class="z-meta z-class-name z-html">light-block</span><span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+</span><span class="z-text z-html z-basic">    <span class="z-meta z-tag z-inline z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;</span><span class="z-entity z-name z-tag z-inline z-any z-html">img</span> <span class="z-meta z-attribute-with-value z-html"><span class="z-entity z-other z-attribute-name z-html">src</span><span class="z-punctuation z-separator z-key-value z-html">=</span><span class="z-string z-quoted z-double z-html"><span class="z-punctuation z-definition z-string z-begin z-html">&quot;</span>light-image.jpg<span class="z-punctuation z-definition z-string z-end z-html">&quot;</span></span></span> <span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
+</span><span class="z-text z-html z-basic"><span class="z-meta z-tag z-block z-any z-html"><span class="z-punctuation z-definition z-tag z-begin z-html">&lt;/</span><span class="z-entity z-name z-tag z-block z-any z-html">figure</span><span class="z-punctuation z-definition z-tag z-end z-html">&gt;</span></span>
 </span></code></pre>
 <p>See the effect when changing the theme:</p>
 <figure class="dark-block">
@@ -347,7 +347,7 @@ content is available minutes after.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

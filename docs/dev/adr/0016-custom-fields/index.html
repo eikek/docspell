@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -810,23 +816,23 @@ don't have any value associated and could be deleted.</li>
 <h3 id="database">Database<a class="zola-anchor" href="#database" aria-label="Anchor link for: database">🔗</a></h3>
 <p>Initial sketch:</p>
 <pre data-lang="sql" class="language-sql z-code"><code class="language-sql" data-lang="sql"><span class="z-source z-sql"><span class="z-meta z-create z-sql"><span class="z-keyword z-other z-create z-sql">CREATE</span> <span class="z-keyword z-other z-sql">TABLE</span> </span><span class="z-meta z-toc-list z-full-identifier z-sql"><span class="z-entity z-name z-function z-sql">custom_field</span></span> (
-  id <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">244</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span> <span class="z-storage z-modifier z-sql">primary key</span>,
-  name <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">100</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
-  cid <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
-  ftype <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">100</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
-  <span class="z-storage z-modifier z-sql">foreign key</span> <span class="z-string z-quoted z-double z-sql"><span class="z-punctuation z-definition z-string z-begin z-sql">&quot;</span>cid<span class="z-punctuation z-definition z-string z-end z-sql">&quot;</span></span> <span class="z-storage z-modifier z-sql">references</span> collective(cid),
-  unique (cid, name)
-);
-
-<span class="z-meta z-create z-sql"><span class="z-keyword z-other z-create z-sql">CREATE</span> <span class="z-keyword z-other z-sql">TABLE</span> </span><span class="z-meta z-toc-list z-full-identifier z-sql"><span class="z-entity z-name z-function z-sql">custom_field_item_value</span></span> (
-  id <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span> <span class="z-storage z-modifier z-sql">primary key</span>,
-  item_id <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
-  field <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
-  field_value <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>),
-  <span class="z-storage z-modifier z-sql">foreign key</span> item_id <span class="z-storage z-modifier z-sql">references</span> item(id),
-  <span class="z-storage z-modifier z-sql">foreign key</span> field <span class="z-storage z-modifier z-sql">references</span> custom_field(id),
-  unique (item_id, field) <span class="z-comment z-line z-double-dash z-sql"><span class="z-punctuation z-definition z-comment z-sql">--</span> only one value allowed per item
-</span>)
+</span><span class="z-source z-sql">  id <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">244</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span> <span class="z-storage z-modifier z-sql">primary key</span>,
+</span><span class="z-source z-sql">  name <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">100</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
+</span><span class="z-source z-sql">  cid <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
+</span><span class="z-source z-sql">  ftype <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">100</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
+</span><span class="z-source z-sql">  <span class="z-storage z-modifier z-sql">foreign key</span> <span class="z-string z-quoted z-double z-sql"><span class="z-punctuation z-definition z-string z-begin z-sql">&quot;</span>cid<span class="z-punctuation z-definition z-string z-end z-sql">&quot;</span></span> <span class="z-storage z-modifier z-sql">references</span> collective(cid),
+</span><span class="z-source z-sql">  unique (cid, name)
+</span><span class="z-source z-sql">);
+</span><span class="z-source z-sql">
+</span><span class="z-source z-sql"><span class="z-meta z-create z-sql"><span class="z-keyword z-other z-create z-sql">CREATE</span> <span class="z-keyword z-other z-sql">TABLE</span> </span><span class="z-meta z-toc-list z-full-identifier z-sql"><span class="z-entity z-name z-function z-sql">custom_field_item_value</span></span> (
+</span><span class="z-source z-sql">  id <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span> <span class="z-storage z-modifier z-sql">primary key</span>,
+</span><span class="z-source z-sql">  item_id <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
+</span><span class="z-source z-sql">  field <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>) <span class="z-keyword z-operator z-logical z-sql">not</span> <span class="z-constant z-language z-sql">null</span>,
+</span><span class="z-source z-sql">  field_value <span class="z-storage z-type z-sql">varchar</span>(<span class="z-constant z-numeric z-sql">254</span>),
+</span><span class="z-source z-sql">  <span class="z-storage z-modifier z-sql">foreign key</span> item_id <span class="z-storage z-modifier z-sql">references</span> item(id),
+</span><span class="z-source z-sql">  <span class="z-storage z-modifier z-sql">foreign key</span> field <span class="z-storage z-modifier z-sql">references</span> custom_field(id),
+</span><span class="z-source z-sql">  unique (item_id, field) <span class="z-comment z-line z-double-dash z-sql"><span class="z-punctuation z-definition z-comment z-sql">--</span> only one value allowed per item
+</span></span><span class="z-source z-sql">)
 </span></code></pre>
 <ul>
 <li>field carries the type in the column <code>ftype</code>. type is an enum:
@@ -881,9 +887,9 @@ functions</li>
 and converts accordingly (e.g. string-&gt;date)</li>
 <li>json only knows number, strings and bools (and null).</li>
 <li>make a structure to allow to specify all json types:<pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> value_str<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">String</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> value_num<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Float</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> value_bool<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> value_num<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Float</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">,</span></span> value_bool<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">Maybe</span> <span class="z-constant z-other z-elm">Bool</span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 </li>
 <li>con: setting all to <code>Nothing</code> is an error as well as using the wrong
@@ -896,7 +902,7 @@ field with some type (e.g. setting <code>value_str</code> for setting a
 <p>Input 2:</p>
 <ul>
 <li>send one value as a string<pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">{</span></span> value<span class="z-keyword z-operator z-elm">:</span> <span class="z-constant z-other z-elm">String</span>
-<span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
+</span><span class="z-source z-elm"><span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 </li>
 <li>string must be in a specific format according to its type. server
@@ -947,7 +953,7 @@ fields</li>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

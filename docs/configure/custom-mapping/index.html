@@ -20,7 +20,7 @@
 <meta name="title" property="og:title" content="Docspell – Simple Document Organizer">
 <meta name="og:image" content="/img/poster.png">
 <meta name="og:title" content="Docspell – Simple Document Organizer">
-<meta name="og:site_name" content="Extract Text from Files - Docspell">
+<meta name="og:site_name" content="Custom Mappings &amp; CJK - Docspell">
 <meta name="og:url" content="">
 <meta name="og:type" content="website">
 <meta name="og:description" content="Simple Document Organizer">
@@ -33,7 +33,7 @@
 <link rel="icon" href="/favicon-mc.ico" type="image/x-icon">
 
 
-        <title>Extract Text from Files - Docspell Documentation</title>
+        <title>Custom Mappings &amp; CJK - Docspell Documentation</title>
         <link rel="stylesheet" href="/styles.css">
 
         <script type="text/javascript" src="https://docspell.org/elasticlunr.min.js"></script>
@@ -294,7 +294,7 @@
             </a>
         </div>
         
-        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  dark:bg-stone-800 border-l-2 dark:border-stone-100 border-stone-800 ">
             <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
                 Custom Mappings &amp; Cjk
             </a>
@@ -783,56 +783,82 @@
                         
   
   
-  <h1 id="context-and-problem-statement">Context and Problem Statement<a class="zola-anchor" href="#context-and-problem-statement" aria-label="Anchor link for: context-and-problem-statement">🔗</a></h1>
-<p>With support for more file types there must be a way to extract text
-from all of them. It is better to extract text from the source files,
-in contrast to extracting the text from the converted pdf file.</p>
-<p>There are multiple options and multiple file types. Again, most
-priority is to use a java/scala library to reduce external
-dependencies.</p>
-<h1 id="considered-options">Considered Options<a class="zola-anchor" href="#considered-options" aria-label="Anchor link for: considered-options">🔗</a></h1>
-<h2 id="ms-office-documents">MS Office Documents<a class="zola-anchor" href="#ms-office-documents" aria-label="Anchor link for: ms-office-documents">🔗</a></h2>
-<p>There is only one library I know: <a href="https://poi.apache.org/">Apache
-POI</a>. It supports <code>doc(x)</code> and <code>xls(x)</code>.
-However, it doesn't support open-document format (odt and ods).</p>
-<h2 id="opendocument-format">OpenDocument Format<a class="zola-anchor" href="#opendocument-format" aria-label="Anchor link for: opendocument-format">🔗</a></h2>
-<p>There are two libraries:</p>
-<ul>
-<li><a href="https://tika.apache.org/">Apache Tika Parser</a></li>
-<li><a href="https://github.com/tdf/odftoolkit">ODFToolkit</a></li>
-</ul>
-<p><em>Tika:</em> The tika-parsers package contains an opendocument parser for
-extracting text. But it has a huge dependency tree, since it is a
-super-package containing a parser for almost every common file type.</p>
-<p><em>ODF Toolkit:</em> This depends on <a href="https://jena.apache.org">Apache Jena</a>
-and also pulls in quite some dependencies (while not as much as
-tika-parser). It is not too bad, since it is a library for
-manipulating opendocument files. But all I need is to only extract
-text. I created tests that extracted text from my odt/ods files. It
-worked at first sight, but running the tests in a loop resulted in
-strange nullpointer exceptions (it only worked the first run).</p>
-<h2 id="richtext">Richtext<a class="zola-anchor" href="#richtext" aria-label="Anchor link for: richtext">🔗</a></h2>
-<p>Richtext is supported by the jdk (using <code>RichtextEditorKit</code> from
-swing).</p>
-<h2 id="pdf">PDF<a class="zola-anchor" href="#pdf" aria-label="Anchor link for: pdf">🔗</a></h2>
-<p>For &quot;image&quot; pdf files, tesseract is used. For &quot;text&quot; PDF files, the
-library <a href="https://pdfbox.apache.org">Apache PDFBox</a> can be used.</p>
-<p>There also is <a href="https://github.com/itext/itext7">iText</a> with a AGPL
-license.</p>
-<h2 id="images">Images<a class="zola-anchor" href="#images" aria-label="Anchor link for: images">🔗</a></h2>
-<p>For images and &quot;image&quot; PDF files, there is already tesseract in place.</p>
-<h2 id="html">HTML<a class="zola-anchor" href="#html" aria-label="Anchor link for: html">🔗</a></h2>
-<p>HTML must be converted into a PDF file before text can be extracted.</p>
-<h2 id="text-markdown">Text/Markdown<a class="zola-anchor" href="#text-markdown" aria-label="Anchor link for: text-markdown">🔗</a></h2>
-<p>These files can be used as-is, obviously.</p>
-<h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
-<ul>
-<li>MS Office files: POI library</li>
-<li>Open Document files: Tika, but integrating the few source files that
-make up the open document parser. Due to its huge dependency tree,
-the library is not added.</li>
-<li>PDF: Apache PDFBox. I know this library better than itext.</li>
-</ul>
+  <h2 id="vertical-languages">Vertical Languages<a class="zola-anchor" href="#vertical-languages" aria-label="Anchor link for: vertical-languages">🔗</a></h2>
+<p>Many of the underlying tools that Docspell uses to recognize, read, and extract text from documents have mixed support for vertical languages and other specific situations, making a default implementation difficult for language specific use cases. </p>
+<p>As a result, Docspell has implemented custom argument mappings for individual languages so Tessearct, OCRmyPDF, or any program can process documents with specific arguments for a given language. One of the biggests use cases for these custom mappings are vertical and CJK (Chinese, Japanese, Korean) languages.</p>
+<h3 id="custom-mappings-example-default">Custom Mappings Example (Default)<a class="zola-anchor" href="#custom-mappings-example-default" aria-label="Anchor link for: custom-mappings-example-default">🔗</a></h3>
+<p>For example, lets say you need to read a PDF in Japanese but you're unsure of what a specific kanji may be. If you insert this pdf into Docspell on Tesseract and OCRmyPDF defaults, or try to use these programs on their own, you may be greeted by encoding error outputs, resulting in something like the following: </p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">ス¿ンÀーùßÝ�Ï項<span class="z-meta z-group z-expansion z-tilde"><span class="z-variable z-language z-tilde z-shell">~</span></span>t®ÿÝ�Ï®þĀ</span></span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">イン¿ーネッø募Ö</span></span><span class="z-meta z-function-call z-shell"></span>}
+</span></code></pre>
+<p>Even if you don't speak Japanese, you have probably realized that this is not very helpful for you! </p>
+<p>To solve this problem, we need to make use of custom argument mappings. In the default docspell Joex file, there are two existing custom mappings for Japanese (<code>jpn</code>) and Vertical Japanese (<code>jpn_vert</code>). Let's take a look at the default OCRmyPDF mapping below:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">ocrmypdf</span></span><span class="z-meta z-function-call z-arguments z-shell"> = <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">      enabled = true
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">      command = <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">        program = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>ocrmypdf<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">        <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Custom argument mappings for this program.</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">        arg-mappings = <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">          <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>ocr_lang<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> = <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">            value = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>{{lang}}<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">            <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Custom Language Mappings Below</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">            <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Japanese Vertical Mapping</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">            mappings = [
+</span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">              <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">                matches = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>jpn_vert<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">                args = <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>-l<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>jpn_vert<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>--pdf-renderer<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>sandwich<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>--tesseract-pagesegmode<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>5<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>--output-type<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>pdf<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">              <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span><span class="z-punctuation z-separator z-shell">,</span>
+</span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">            <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Japanese Mapping for OCR Optimization</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">              <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">                matches = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>jpn<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">                args = <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>-l<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>jpn<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>--output-type<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>pdf<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">              <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span><span class="z-punctuation z-separator z-shell">,</span>
+</span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">            <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Start Other Custom Language Mappings Here</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">            <span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Default Mapping Below</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">              <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">                matches = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>.*<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">                args = <span class="z-keyword z-control z-regexp z-set z-begin z-shell">[</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>-l<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>, <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>{{lang}}<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-keyword z-control z-regexp z-set z-end z-shell">]</span>
+</span></span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">              <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+</span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">            ]
+</span></span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">          <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+</span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">        <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">
+</span></span></span></span></code></pre>
+<p>OCRmyPDF is used anytime you upload a PDF document. Here we see (2) custom mappings. The mapping for <code>jpn_vert</code> includes options such as <code>--tesseract-pageesgmode=5</code>. Page segmentation mode 5 helps with reading vertical text and sets the expected page layout. The mapping for <code>jpn</code> and <code>jpn_vert</code> both have <code>--output-type</code> set to accept PDF rather than the default PDF/A. This is to help read files that may have special encoding schemes and reduce them to PDF so that they can be read with more compatibility.</p>
+<p>The result winds up that our above document winds up outputting the following:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">契約概要のご説明・注意喚起情報のご説明</span></span><span class="z-meta z-function-call z-arguments z-shell"> </span>
+</span></code></pre>
+<p>And now you can easily look up these words or use 3rd party translation tools to get the meaning. </p>
+<p>This is only one such example of the power of custom mappings, and advanced users of Tesseract, OCRmyPDF, or other tools will enjoy customizing Docspell with the defaults best for their use case.</p>
+<h3 id="converting-vertical-text-to-horizontal">Converting Vertical Text to Horizontal<a class="zola-anchor" href="#converting-vertical-text-to-horizontal" aria-label="Anchor link for: converting-vertical-text-to-horizontal">🔗</a></h3>
+<p>Currently, Vertical Japanese (JpnVert) supports converting vertical text from images directly to horizontal metadata. However, if you use a PDF or other format, OCRmyPDF will read the text as newlines, so you may wind up with an output from a vertical scan that has metadata like the following: </p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">や</span></span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">さ</span></span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">し</span></span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">い</span></span>
+</span></code></pre>
+<p>Obviously we want that written out nicely <code>やさしい</code>, but the file could be much longer. There are multiple ways to accomplish this, but the easiest way on small scale is to run the extracted metadata through a script. </p>
+<p>Here's a simple bash script to very roughly convert vertical text to horizontal text, and adds in a new line if the line is empty to get you most of the way there. Take the text extracted from docspell, copy and paste it into something like <code>vertical.txt</code> and then run the following;</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">!/bin/bash</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-keyword z-control z-loop z-while z-shell">while</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">IFS</span></span><span class="z-meta z-function-call z-arguments z-shell">= read<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>r</span> line</span><span class="z-keyword z-operator z-logical z-continue z-shell">;</span> <span class="z-keyword z-control z-loop z-do z-shell">do</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-keyword z-control z-conditional z-if z-shell">if</span> <span class="z-support z-function z-test z-begin z-shell">[</span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">-</span>z</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">line</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-support z-function z-test z-end z-shell">]</span></span><span class="z-keyword z-operator z-logical z-continue z-shell">;</span> <span class="z-keyword z-control z-conditional z-then z-shell">then</span>
+</span><span class="z-source z-shell z-bash">        <span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span>
+</span><span class="z-source z-shell z-bash">    <span class="z-keyword z-control z-conditional z-else z-shell">else</span>
+</span><span class="z-source z-shell z-bash">        <span class="z-meta z-function-call z-shell"><span class="z-support z-function z-echo z-shell">echo</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">-</span>n</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">line</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+</span><span class="z-source z-shell z-bash">    <span class="z-keyword z-control z-conditional z-end z-shell">fi</span>
+</span><span class="z-source z-shell z-bash"><span class="z-keyword z-control z-loop z-end z-shell">done</span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">1</span></span><span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span> <span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;&gt;</span> horizontal_output.txt</span>
+</span></code></pre>
+<p>Run chmod +x <code>text_converter.sh</code> on this script to make it executable.</p>
+<p>Then put both files in the same directory and run <code>./text_converter.sh vertical.txt</code> and it will output <code>horizontal_output.txt</code> for you so you can work with horizontal text.</p>
+<h3 id="converting-vertical-text-to-horizontal-using-ocrmypdf">Converting Vertical Text to Horizontal (Using OCRmyPDF)<a class="zola-anchor" href="#converting-vertical-text-to-horizontal-using-ocrmypdf" aria-label="Anchor link for: converting-vertical-text-to-horizontal-using-ocrmypdf">🔗</a></h3>
+<p>If you want to try and force <code>ocrmypdf</code> to do this directly, just run (you can replace <code>jpn_vert</code> with any vertical language in theory):</p>
+<p><code>ocrmypdf --force-ocr -l jpn_vert --sidecar horizontal_ocr_output.txt input.pdf output.converted.pdf --tesseract-pagesegmode 5 --tesseract-config cfg.file --pdf-renderer sandwich</code></p>
+<p>With the <code>cfg.file</code> content in the directory you run <code>ocrmypdf</code> being:</p>
+<pre class="z-code"><code><span class="z-text z-plain">preserve_interword_spaces 1
+</span></code></pre>
+<p>Your horizontal data will then be in <code>horizontal_ocr_output.txt</code> or whatever you named it above. </p>
+<p>That should help anyone where ocrmypdf skips text in the docspell defaults if they desperately need the metadata out of a vertical file. Docspell may be able to directly support this <code>--sidecar</code> output in the future with additional open source contributions.</p>
 
   
 
@@ -859,7 +885,7 @@ the library is not added.</li>
 
     
     <div class="flex-grow flex flex-row justify-end items-end text-xs opacity-60">
-        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;dev&#x2F;adr&#x2F;0011_extract_text.md"
+        <a href="https://github.com/eikek/docspell/edit/current-docs/website/site/content/docs&#x2F;configure&#x2F;custom-mapping.md"
            title="Edit this page on Github"
            target="_blank"
         >
@@ -881,73 +907,31 @@ the library is not added.</li>
                     
                     <div>
                         <i class="fa fa-hashtag mr-1"></i>
-                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#context-and-problem-statement" class="hover:text-stone-900 dark:hover:text-stone-100">
-                            Context and Problem Statement
-                        </a>
-                        
-                    </div>
-
-                    
-                    <div>
-                        <i class="fa fa-hashtag mr-1"></i>
-                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#considered-options" class="hover:text-stone-900 dark:hover:text-stone-100">
-                            Considered Options
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;custom-mapping&#x2F;#vertical-languages" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Vertical Languages
                         </a>
                         
                         <div class="pl-4 opacity-75">
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#ms-office-documents" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    MS Office Documents
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;custom-mapping&#x2F;#custom-mappings-example-default" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Custom Mappings Example (Default)
                                 </a>
                             </div>
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#opendocument-format" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    OpenDocument Format
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;custom-mapping&#x2F;#converting-vertical-text-to-horizontal" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Converting Vertical Text to Horizontal
                                 </a>
                             </div>
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#richtext" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    Richtext
-                                </a>
-                            </div>
-                            
-                            <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#pdf" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    PDF
-                                </a>
-                            </div>
-                            
-                            <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#images" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    Images
-                                </a>
-                            </div>
-                            
-                            <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#html" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    HTML
-                                </a>
-                            </div>
-                            
-                            <div class="border-l-2 dark:border-stone-700 pl-1">
-                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#text-markdown" class="hover:text-stone-900 dark:hover:text-stone-100">
-                                    Text&#x2F;Markdown
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;configure&#x2F;custom-mapping&#x2F;#converting-vertical-text-to-horizontal-using-ocrmypdf" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Converting Vertical Text to Horizontal (Using OCRmyPDF)
                                 </a>
                             </div>
                             
                         </div>
-                        
-                    </div>
-
-                    
-                    <div>
-                        <i class="fa fa-hashtag mr-1"></i>
-                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;adr&#x2F;0011-extract-text&#x2F;#decision-outcome" class="hover:text-stone-900 dark:hover:text-stone-100">
-                            Decision Outcome
-                        </a>
                         
                     </div>
 

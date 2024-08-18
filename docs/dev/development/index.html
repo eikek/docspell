@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -798,29 +804,140 @@ results in recompile+restart once a source file is modified.</p>
 it exists. So you can create a custom config file for development. For
 example, a custom database for development may be setup this way:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">jdbcurl = &quot;jdbc:h2:///home/dev/workspace/projects/docspell/local/docspell-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE&quot;</span><span class="z-comment z-line z-number-sign z-shell">
-</span><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">jdbcurl</span></span><span class="z-meta z-function-call z-arguments z-shell"> = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>jdbc:postgresql://localhost:5432/docspelldev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
-<span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">jdbcurl = &quot;jdbc:mariadb://localhost:3306/docspelldev&quot;</span><span class="z-comment z-line z-number-sign z-shell">
-</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docspell.server</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
-  backend <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
-    jdbc <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
-      url = <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-expansion z-parameter z-begin z-shell">{</span></span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-variable z-other z-readwrite z-shell">jdbcurl</span></span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-section z-expansion z-parameter z-end z-shell">}</span></span>
-      user = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
-      password = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
-    <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
-  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
-<span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
-
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docspell.joex</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
-  jdbc <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
-    url = <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-expansion z-parameter z-begin z-shell">{</span></span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-variable z-other z-readwrite z-shell">jdbcurl</span></span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-section z-expansion z-parameter z-end z-shell">}</span></span>
-    user = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
-    password = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
-  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
-  scheduler <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
-    pool-size = 1
-  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
-<span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">jdbcurl</span></span><span class="z-meta z-function-call z-arguments z-shell"> = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>jdbc:postgresql://localhost:5432/docspelldev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">jdbcurl = &quot;jdbc:mariadb://localhost:3306/docspelldev&quot;</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docspell.server</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">  backend <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">    jdbc <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">      url = <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-expansion z-parameter z-begin z-shell">{</span></span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-variable z-other z-readwrite z-shell">jdbcurl</span></span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-section z-expansion z-parameter z-end z-shell">}</span></span>
+</span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">      user = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">      password = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">    <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">docspell.joex</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">  jdbc <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">    url = <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-punctuation z-section z-expansion z-parameter z-begin z-shell">{</span></span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-variable z-other z-readwrite z-shell">jdbcurl</span></span><span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-section z-expansion z-parameter z-end z-shell">}</span></span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">    user = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">    password = <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>dev<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">  scheduler <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">    pool-size = 1
+</span></span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">  <span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span>
+</span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-end z-shell">}</span></span></span>
+</span></code></pre>
+<h2 id="installing-nix">Installing Nix<a class="zola-anchor" href="#installing-nix" aria-label="Anchor link for: installing-nix">🔗</a></h2>
+<p>It is recommended to install <a href="https://nixos.org/nix">nix</a>. You can use
+the official installer or <a href="https://github.com/DeterminateSystems/nix-installer">this
+one</a>, which will
+enable Flakes by default.</p>
+<p>If not enabled, enable flakes by creating a config file:</p>
+<pre class="z-code"><code><span class="z-text z-plain">mkdir -p ~/.config/nix  #on Linux
+</span><span class="z-text z-plain">echo &quot;experimental-features = nix-command flakes&quot; &gt;&gt; ~/.config/nix/nix.conf
+</span></code></pre>
+<p>With nix installed you can use the provided development environments
+to get started quickly.</p>
+<h1 id="nix-expressions">Nix Expressions<a class="zola-anchor" href="#nix-expressions" aria-label="Anchor link for: nix-expressions">🔗</a></h1>
+<p>The soure root contains a <code>flake.nix</code> file to install docspell via the
+nix package manager and to integrate it into NixOS.</p>
+<p>The flake provides docspell packages of the latest release and NixOS
+modules. It doesn't provide package builds from the current source
+tree.</p>
+<h2 id="dev-environments">Dev Environments<a class="zola-anchor" href="#dev-environments" aria-label="Anchor link for: dev-environments">🔗</a></h2>
+<p>Additionally it provides devshells that can be used to create a
+development environment for docspell.</p>
+<p>These two <code>devShell</code> definitions address two different setups: one
+uses a NixOS container and the other a VM. Both provide the same set
+of services that can be used with the local docspell instance:</p>
+<ul>
+<li>postgresql database, with a database <code>docspell</code> and user <code>dev</code></li>
+<li>solr with a core <code>docspell</code></li>
+<li>email setup with smtp/imap and webmail</li>
+<li>minio with root user <code>minioadmin</code></li>
+</ul>
+<p>If you are on NixOS the container is probably more convenient to use.
+For other systems, the vm should be good. Drop into either shell by
+running:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> drop into the environment setup for using a vm</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">nix</span></span><span class="z-meta z-function-call z-arguments z-shell"> develop .#dev-vm</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> drop into the environment setup for using a container</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">nix</span></span><span class="z-meta z-function-call z-arguments z-shell"> develop .#docsp-dev</span>
+</span></code></pre>
+<p>Once in such an environment, you can create the container or vm like
+this:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> dev-vm env</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> - build the vm</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">vm-build</span></span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> -run the vm</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">vm-run</span></span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> - ssh into the vm</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">vm-ssh</span></span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> docsp-dev container env</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> - create the container</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">cnt-recreate</span></span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> - login</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">cnt-login</span></span>
+</span></code></pre>
+<p>You can use tab completion on <code>vm-</code> or <code>cnt-</code> and see other useful
+commands. For instance it allows to recreate solr cores or check logs
+of services on the container or vm.</p>
+<p>Then you can adjust your dev config file in <code>local/dev.conf</code> to
+connect to the services on the vm or container. The container exposes
+the default ports while the vm uses port-forwarding from the host to
+the guest machine. The ports are define in <code>flake.nix</code>. For example, a
+jdbc connection to postgres on the container can look like this:</p>
+<pre class="z-code"><code><span class="z-text z-plain">jdbc.url = &quot;jdbc:postgresql://docsp-dev:5432/docspelldev&quot;
+</span></code></pre>
+<p>on the vm, it would be</p>
+<pre class="z-code"><code><span class="z-text z-plain">jdbc.url = &quot;jdbc:postgresql://localhost:6543/docspelldev&quot;
+</span></code></pre>
+<p>You can reach the webmail on both versions at port <code>8080</code>. In order to
+enable sending mails between users, you need to login as some
+arbitrary user so the underlying services can create the data
+directories. In your dev docspell you can then connect to smtp on the
+vm or container. Mails send from docspell can be checked in the
+webmail. Conversely, you can send mails using webmail to any user and
+have their mailbox scanned by docspell.</p>
+<h3 id="direnv">Direnv<a class="zola-anchor" href="#direnv" aria-label="Anchor link for: direnv">🔗</a></h3>
+<p>Using <a href="https://direnv.net">direnv</a> entering the dev environment is
+very convenient. Install this tool (it also has integration in several
+IDEs and editors) and create a file <code>.envrc</code> in the source root:</p>
+<pre class="z-code"><code><span class="z-text z-plain">use flake .#&lt;env-name&gt;
+</span></code></pre>
+<p>The file <code>.envrc</code> is git-ignored, because different ones are possible.
+Here <code>&lt;env-name&gt;</code> refers to either <code>dev-cnt</code> or <code>dev-vm</code> - one of the
+devshells defined in <code>flake.nix</code>.</p>
+<p>After allowing direnv to execute this file via <code>direnv allow</code> you will
+be dropped into this environment whenever you enter the directory. It
+will also preserve your shell, don't need to use bash.</p>
+<h2 id="checks">Checks<a class="zola-anchor" href="#checks" aria-label="Anchor link for: checks">🔗</a></h2>
+<p>The command <code>nix flake check</code> would run all checks defined in the
+flake. It will build both packages and runs a vm with docspell
+installed (via NixOS modules) and check whether the services come up.</p>
+<h2 id="test-vm">Test VM<a class="zola-anchor" href="#test-vm" aria-label="Anchor link for: test-vm">🔗</a></h2>
+<p>There is another VM defined in the flake that provides a full setup
+for docspell. It contains docspell server and joex, a postgresql, a
+solr and a email setup. The intention is to use it as an easy 'getting
+started' approach with nix.</p>
+<p>Once it has started, you can connect to <code>localhost:7881</code> to reach
+docspell. The webmail will be available at <code>localhost:8080</code>.</p>
+<p>You can run this vm with a single command:</p>
+<pre class="z-code"><code><span class="z-text z-plain">nix run github:eikek/docspell#nixosConfigurations.test-vm.config.system.build.vm
+</span></code></pre>
+<p>It uses the same setup as the dev-vm, so you can drop into the
+<code>.#dev-vm</code> development shell and use <code>vm-ssh</code> to connect to the
+running test vm.</p>
+<p>Once connected to the machine, you can see the docspell config file via</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">systemctl</span></span><span class="z-meta z-function-call z-arguments z-shell"> show docspell-joex.service</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">grep</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>ExecStart=<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sed</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>s/^ExecStart=.*path=\([^;]*\).*/\1/<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">xargs</span></span><span class="z-meta z-function-call z-arguments z-shell"> tac</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">grep</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>m</span> 1 .</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">awk</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>{print $NF}<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">tr</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>&quot;<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">xargs</span></span><span class="z-meta z-function-call z-arguments z-shell"> jq <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>.<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span>
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> or replace &quot;joex&quot; with &quot;restserver&quot;</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">systemctl</span></span><span class="z-meta z-function-call z-arguments z-shell"> show docspell-restserver.service</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">grep</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>ExecStart=<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sed</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>s/^ExecStart=.*path=\([^;]*\).*/\1/<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">xargs</span></span><span class="z-meta z-function-call z-arguments z-shell"> tac</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">grep</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>m</span> 1 .</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">awk</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>{print $NF}<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">tr</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>&quot;<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">xargs</span></span><span class="z-meta z-function-call z-arguments z-shell"> jq <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>.<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span>
 </span></code></pre>
 <h1 id="developing-frontend">Developing Frontend<a class="zola-anchor" href="#developing-frontend" aria-label="Anchor link for: developing-frontend">🔗</a></h1>
 <p>The frontend is a SPA written in <a href="https://elm-lang.org">Elm</a>. The UI
@@ -851,7 +968,7 @@ value <code>dev</code>. Docspell then adds a response header, preventing the
 browser to cache these files. This must be done, obviously, before
 starting the restserver:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> export DOCSPELL_ENV=dev</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> sbt <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>restserver/reStart<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> sbt <span class="z-string z-quoted z-double z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&quot;</span>restserver/reStart<span class="z-punctuation z-definition z-string z-end z-shell">&quot;</span></span></span>
 </span></code></pre>
 <h1 id="developing-backend">Developing Backend<a class="zola-anchor" href="#developing-backend" aria-label="Anchor link for: developing-backend">🔗</a></h1>
 <h2 id="openapi">OpenAPI<a class="zola-anchor" href="#openapi" aria-label="Anchor link for: openapi">🔗</a></h2>
@@ -861,30 +978,10 @@ and the server, so that both are always in sync. However, the route
 definitions are not checked against the server implementation.</p>
 <p>Changes to the openapi files can be checked by running a sbt task:</p>
 <pre data-lang="scala" class="language-scala z-code"><code class="language-scala" data-lang="scala"><span class="z-source z-scala">restapi/openapiLint <span class="z-comment z-line z-double-slash z-scala"><span class="z-punctuation z-definition z-comment z-scala">//</span>and/or</span>
-joexapi/openapiLint
+</span><span class="z-source z-scala">joexapi/openapiLint
 </span></code></pre>
 <p>These tasks must not show any errors (it is checked by the CI). The
 warnings should also be fixed.</p>
-<h1 id="nix-expressions">Nix Expressions<a class="zola-anchor" href="#nix-expressions" aria-label="Anchor link for: nix-expressions">🔗</a></h1>
-<p>The directory <code>/nix</code> contains Nix Flake to install docspell via
-the nix package manager and to integrate it into NixOS.</p>
-<p>Flake implements <code>checks</code> output which can be run with <code>nix flake check</code>
-and it defines a development VM which can be used to interactively work
-with docspell.</p>
-<p>To run the VM, issue:</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-support z-function z-cd z-shell">cd</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-meta z-group z-expansion z-parameter z-shell"><span class="z-punctuation z-definition z-variable z-shell">$</span><span class="z-variable z-other z-readwrite z-shell">PROJECT_ROOT</span></span>/nix</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">nix</span></span><span class="z-meta z-function-call z-arguments z-shell"> run <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>.#nixosConfigurations.dev-vm.config.system.build.vm
-</span></span></span></code></pre>
-<p>To open docspell, wait for docspell-restserver service to report that
-http listener is up and connect to <code>localhost:64080</code>.</p>
-<p>To ssh into the machine, run:</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">ssh</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>o</span> StrictHostKeyChecking=no <span class="z-punctuation z-separator z-continuation z-line z-shell">\
-</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">    -</span>o</span> UserKnownHostsFile=/dev/null <span class="z-punctuation z-separator z-continuation z-line z-shell">\
-</span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">    -</span>p</span> 64022 root@localhost</span>
-</span></code></pre>
-<p>Once connected to the machine, you can see the docspell config file via</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">systemd-show</span></span><span class="z-meta z-function-call z-arguments z-shell"> docspell-joex.service</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">grep</span></span><span class="z-meta z-function-call z-arguments z-shell"> ExecStart</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">cut</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span><span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>=<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>f2</span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">xargs</span></span><span class="z-meta z-function-call z-arguments z-shell"> cat</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">tail</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>n1</span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">awk</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>{print $NF}<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span><span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sed</span></span><span class="z-meta z-function-call z-arguments z-shell"> <span class="z-string z-quoted z-single z-shell"><span class="z-punctuation z-definition z-string z-begin z-shell">&#39;</span>s/.$//<span class="z-punctuation z-definition z-string z-end z-shell">&#39;</span></span></span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">xargs</span></span><span class="z-meta z-function-call z-arguments z-shell"> cat</span> <span class="z-keyword z-operator z-logical z-pipe z-shell">|</span> <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">jq</span></span>
-</span></code></pre>
 <h1 id="release">Release<a class="zola-anchor" href="#release" aria-label="Anchor link for: release">🔗</a></h1>
 <p>The CI and making a release is done via github actions. The workflow
 is roughly like this:</p>
@@ -935,7 +1032,7 @@ that have been released at github (in contrast to being built again).</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -991,6 +1088,43 @@ that have been released at github (in contrast to being built again).</p>
                                 </a>
                             </div>
                             
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#installing-nix" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Installing Nix
+                                </a>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+
+                    
+                    <div>
+                        <i class="fa fa-hashtag mr-1"></i>
+                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#nix-expressions" class="hover:text-stone-900 dark:hover:text-stone-100">
+                            Nix Expressions
+                        </a>
+                        
+                        <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#dev-environments" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Dev Environments
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#checks" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Checks
+                                </a>
+                            </div>
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#test-vm" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    Test VM
+                                </a>
+                            </div>
+                            
                         </div>
                         
                     </div>
@@ -1020,15 +1154,6 @@ that have been released at github (in contrast to being built again).</p>
                             </div>
                             
                         </div>
-                        
-                    </div>
-
-                    
-                    <div>
-                        <i class="fa fa-hashtag mr-1"></i>
-                        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;dev&#x2F;development&#x2F;#nix-expressions" class="hover:text-stone-900 dark:hover:text-stone-100">
-                            Nix Expressions
-                        </a>
                         
                     </div>
 

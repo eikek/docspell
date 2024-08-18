@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.41.0
+                    0.42.0
                 </div>
             </div>
 
@@ -295,6 +295,12 @@
         </div>
         
         <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
+            <a href="https://docspell.org/docs/configure/custom-mapping/" class="w-full block">
+                Custom Mappings &amp; Cjk
+            </a>
+        </div>
+        
+        <div class="py-1 px-2 ml-8  hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800  border-l dark:border-stone-700 ">
             <a href="https://docspell.org/docs/configure/database/" class="w-full block">
                 Database
             </a>
@@ -500,6 +506,26 @@
     
 
     <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
+        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
+           title="The query language is a powerful way to search for documents."
+           class="block w-full"
+        >
+            Query Language
+        </a>
+    </div>
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
         <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;addons&#x2F;basics&#x2F;"
            title="Describes how addons work."
            class="block w-full"
@@ -534,26 +560,6 @@
             </a>
         </div>
         
-    </div>
-    
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-    <div class="w-full px-4 py-2 rounded-lg hover:bg-amber-600 hover:bg-opacity-10  dark:hover:bg-stone-800 dark:text-stone-300 font-medium text-lg dark:text-stone-200 ">
-        <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;query&#x2F;"
-           title="The query language is a powerful way to search for documents."
-           class="block w-full"
-        >
-            Query Language
-        </a>
     </div>
     
 
@@ -786,10 +792,10 @@
 <p>Download the two files:
 <ul>
     <li>
-        <a href="https://github.com/eikek/docspell/releases/download/v0.41.0/docspell-restserver-0.41.0.zip">docspell-restserver-0.41.0.zip</a>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.42.0/docspell-restserver-0.42.0.zip">docspell-restserver-0.42.0.zip</a>
     </li>
     <li>
-        <a href="https://github.com/eikek/docspell/releases/download/v0.41.0/docspell-joex-0.41.0.zip">docspell-joex-0.41.0.zip</a>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.42.0/docspell-joex-0.42.0.zip">docspell-joex-0.42.0.zip</a>
     </li>
 </ul>
 </p>
@@ -829,10 +835,10 @@ on a Debian system.</p>
 <p>Packages are also provided at the release page:</p>
 <ul>
     <li>
-        <a href="https://github.com/eikek/docspell/releases/download/v0.41.0/docspell-restserver_0.41.0_all.deb">docspell-restserver_0.41.0_all.deb</a>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.42.0/docspell-restserver_0.42.0_all.deb">docspell-restserver_0.42.0_all.deb</a>
     </li>
     <li>
-        <a href="https://github.com/eikek/docspell/releases/download/v0.41.0/docspell-joex_0.41.0_all.deb">docspell-joex_0.41.0_all.deb</a>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.42.0/docspell-joex_0.42.0_all.deb">docspell-joex_0.42.0_all.deb</a>
     </li>
 </ul>
 <p>The DEB packages can be installed on Debian, or Debian based Distros:</p>
@@ -846,7 +852,7 @@ autostart the services.</p>
 <p>Run the start script (in the corresponding <code>bin/</code> directory when using
 the zip files):</p>
 <pre class="z-code"><code><span class="z-text z-plain">$ ./docspell-restserver*/bin/docspell-restserver
-$ ./docspell-joex*/bin/docspell-joex
+</span><span class="z-text z-plain">$ ./docspell-joex*/bin/docspell-joex
 </span></code></pre>
 <p>This will startup both components using the default configuration.
 Please refer to the <a href="https://docspell.org/docs/configure/main/">configuration
@@ -854,7 +860,7 @@ page</a> for how to create a custom
 config file. Once you have your config file, simply pass it as
 argument to the command:</p>
 <pre class="z-code"><code><span class="z-text z-plain">$ ./docspell-restserver*/bin/docspell-restserver /path/to/server-config.conf
-$ ./docspell-joex*/bin/docspell-joex /path/to/joex-config.conf
+</span><span class="z-text z-plain">$ ./docspell-joex*/bin/docspell-joex /path/to/joex-config.conf
 </span></code></pre>
 <p>After starting the rest server, you can reach the web application
 <code>http://localhost:7880/</code>.</p>
@@ -877,7 +883,7 @@ shutdown <code>docspell-joex</code> and <code>docspell-restserver</code> system 
 before taking a database backup of Docspell. In order to stop Docspell, 
 you need to perform these on the system that docspell is running on.</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl stop docspell-joex</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl stop docspell-restserver</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl stop docspell-restserver</span>
 </span></code></pre>
 <p>Next, you can become the <code>postgres</code> user or database admin user on 
 your PostgreSQL server/microservice and backup the database.
@@ -908,7 +914,7 @@ This command will also take some time to complete.</p>
 <p>Now your database should be fully restored from your backup!
 Let's go to the Docspell server and restart the Docspell services.</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl start docspell-joex</span>
-<span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl start docspell-restserver</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl start docspell-restserver</span>
 </span></code></pre>
 <p>If your database and owner are the same as your initial configuration,
 and you see your docspell data restored, you have sucessfully restored
@@ -932,7 +938,7 @@ create a system service that runs the script in &quot;watch mode&quot;.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.41.0
+            Docspell 0.42.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
