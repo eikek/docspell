@@ -13,14 +13,14 @@
   integrity sha512-9woBFkQBhhuEyeHyy6s9IKokjyC8NKuwv+yUw7dqOw2E0zRzD6pxk/KYt+SzKHz5B77AkGKu7swp4dI6mptQkw==
 
 "@fontsource/source-code-pro@^5.0.0":
-  version "5.0.20"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.0.20.tgz#9c27465f834f9cf0f5d60b0c56b9912e27abdaee"
-  integrity sha512-NR5bxLZ+bNOZcSMqMQrDOuCrejVmBW12fWtFyETL6DXunhrvDSVKb4EN3nM1QuOgCgQGw+X5fUGz5z+PPG+JSQ==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.1.0.tgz#47a221555ea16cd97c261028fe1d4ee5d51db8cd"
+  integrity sha512-aT6pQbwEM/oGyK4Q8XOOknFcrXTAnP+GLVuEADBnB4avOYAOa4U5BG/D5JrTobwckuWyKrbMZ8EdcXPsqizfSw==
 
 "@fontsource/spectral@^5.0.0":
-  version "5.0.15"
-  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.0.15.tgz#d1a49407de05162934c85fc17edf21d53a72c825"
-  integrity sha512-14Mp0Ipoo5v/kLeEXqMMvoiKeihDGT454uLj3v8CBBhAzt/QT7AvfOUpj608+qgEh9TL60N55IU7/lXIxYcP/Q==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.1.0.tgz#1e5b7ae319d67fb4cfdfed3bfe07a1ab382304f0"
+  integrity sha512-9bvrjPRAZMvRq9aihAuFNomISoRRKtUUPgim+NZIXxPZ6CwDquo9C8SAcNhVQ0g4S7cavcw9uFThl1fbSfihxw==
 
 "@fortawesome/fontawesome-free@^6.0.0":
   version "6.6.0"
