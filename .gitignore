@@ -33,3 +33,4 @@ _site/
 sbt.json
 /yarn.lock
 .metals
+.vscode
