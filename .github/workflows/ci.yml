@@ -14,7 +14,7 @@ jobs:
           fetch-depth: 100
       - name: Fetch tags
         run: git fetch --depth=100 origin +refs/tags/*:refs/tags/*
-      - uses: cachix/install-nix-action@v27
+      - uses: cachix/install-nix-action@v29
       - name: sbt ci ${{ github.ref }}
         run: nix develop .#ci --command sbt ci
   ci:
