@@ -50,7 +50,7 @@ object Dependencies {
   val YamuscaVersion = "0.10.0"
   val SwaggerUIVersion = "5.17.14"
   val TestContainerVersion = "0.41.4"
-  val TwelveMonkeysVersion = "3.11.0"
+  val TwelveMonkeysVersion = "3.12.0"
   val JQueryVersion = "3.5.1"
 
   val scribe = Seq(
