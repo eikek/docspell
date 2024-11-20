@@ -23,9 +23,9 @@
   integrity sha512-9bvrjPRAZMvRq9aihAuFNomISoRRKtUUPgim+NZIXxPZ6CwDquo9C8SAcNhVQ0g4S7cavcw9uFThl1fbSfihxw==
 
 "@fortawesome/fontawesome-free@^6.0.0":
-  version "6.7.0"
-  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.7.0.tgz#c38f4c32970628e214626697edae34a7fe282dbd"
-  integrity sha512-lXTP8oiLGM97Aqjn47nod9awKe574HRfCngFizr7FiHTadKTiPkoVn0Mzg+tZBLD1XpE4CRvcF7/UM3g1jyVYw==
+  version "6.7.1"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.7.1.tgz#160a48730d533ec77578ed0141661a8f0150a71d"
+  integrity sha512-ALIk/MOh5gYe1TG/ieS5mVUsk7VUIJTJKPMK9rFFqOgfp0Q3d5QiBXbcOMwUvs37fyZVCz46YjOE6IFeOAXCHA==
 
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
