@@ -78,6 +78,12 @@ Other ways are documented
   module is available, too.
 - Use the [Kubernetes](./kubernetes/README.md) configuration.
 
+## Self Host
+
+### Elestio
+
+[![Deploy on Elestio](https://elest.io/images/logos/deploy-to-elestio-btn.png)](https://elest.io/open-source/docspell)
+
 
 ## Documentation
 
