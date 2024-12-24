@@ -32,3 +32,5 @@ _site/
 .idea/*
 sbt.json
 /yarn.lock
+.metals
+.vscode

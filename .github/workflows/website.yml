@@ -7,10 +7,10 @@ jobs:
   publish-website:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
-      - uses: cachix/install-nix-action@v27
+      - uses: cachix/install-nix-action@v30
       - name: Set current version
         run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
       - name: Build website (${{ env.DOCSPELL_VERSION }})

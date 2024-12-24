@@ -5,7 +5,7 @@ on:
 
 jobs:
   auto-approve:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: hmarr/auto-approve-action@v4.0.0
         if: github.actor == 'eikek-scala-steward'

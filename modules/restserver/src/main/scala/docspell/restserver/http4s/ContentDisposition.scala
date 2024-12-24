@@ -16,7 +16,6 @@ import org.http4s.internal.CharPredicate
 import org.http4s.multipart.Part
 import org.http4s.{Header, ParseFailure, ParseResult}
 import org.typelevel.ci.CIString
-import org.typelevel.ci._
 
 /** A replacement for `Content-Disposition` class with a slightly modified parser to allow
   * utf8 filenames.
@@ -32,8 +31,7 @@ case class ContentDisposition(dispositionType: String, parameters: Map[CIString,
 
 object ContentDisposition {
 
-  def getFileName[F[_]](part: Part[F]): Option[String] =
-    part.headers.get[ContentDisposition].flatMap(_.parameters.get(ci"filename"))
+  def getFileName[F[_]](part: Part[F]): Option[String] = part.filename
 
   private[http4s] val mimeValue: Parser[String] = {
     val value = Parser.anyChar.repUntilAs[String](Parser.char(';').orElse(Parser.end))
