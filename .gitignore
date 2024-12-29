@@ -34,3 +34,5 @@ sbt.json
 /yarn.lock
 .metals
 .vscode
+.bloop
+metals.sbt
