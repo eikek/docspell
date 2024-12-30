@@ -71,11 +71,11 @@ final class JoexAppImpl[F[_]: Async](
   private def scheduleBackgroundTasks: F[Unit] =
     HouseKeepingTask
       .periodicTask[F](cfg.houseKeeping.schedule)
-      .flatMap(t => uts.updateTask(UserTaskScope.system, t.summary, t)) *>
+      .flatMap(t => uts.updateOneTask(UserTaskScope.system, t.summary, t)) *>
       scheduleEmptyTrashTasks *>
       UpdateCheckTask
         .periodicTask(cfg.updateCheck)
-        .flatMap(t => uts.updateTask(UserTaskScope.system, t.summary, t)) *>
+        .flatMap(t => uts.updateOneTask(UserTaskScope.system, t.summary, t)) *>
       MigrationTask.job.flatMap(jobStore.insertIfNew) *>
       AllPreviewsTask
         .job(MakePreviewArgs.StoreMode.WhenMissing, None)
