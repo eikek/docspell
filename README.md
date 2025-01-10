@@ -56,8 +56,8 @@ page](https://docspell.org/#get-started). This is only three commands
 away:
 
 ``` shell
-git clone https://github.com/eikek/docspell
-cd docspell/docker/docker-compose
+git clone https://github.com/docspell/docker docspell-docker
+cd docspell-docker/docker-compose
 docker-compose up -d
 ```
 
@@ -76,7 +76,7 @@ Other ways are documented
 - Using the [nix](https://nixos.org/nix) package manager as [described
   here](https://docspell.org/docs/install/installing/#nix). A NixOS
   module is available, too.
-- Use the [Kubernetes](./kubernetes/README.md) configuration.
+- Use the [Helm Chart](https://github.com/docspell/docker/tree/main/charts/docspell).
 
 
 ## Documentation
