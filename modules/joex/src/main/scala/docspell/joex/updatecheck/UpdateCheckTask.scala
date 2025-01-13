@@ -20,6 +20,7 @@ import emil._
 
 object UpdateCheckTask {
   val taskName: Ident = Ident.unsafe("new-release-check")
+  val periodicId: Ident = Ident.unsafe("docspell-update-check")
 
   type Args = Unit
 
@@ -28,7 +29,7 @@ object UpdateCheckTask {
 
   def periodicTask[F[_]: Sync](cfg: UpdateCheckConfig): F[UserTask[Unit]] =
     UserTask(
-      Ident.unsafe("docspell-update-check"),
+      periodicId,
       taskName,
       cfg.enabled,
       cfg.schedule,
