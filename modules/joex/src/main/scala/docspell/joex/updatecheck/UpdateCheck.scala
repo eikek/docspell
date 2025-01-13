@@ -33,8 +33,7 @@ object UpdateCheck {
 
     def version: String = tag_name.replaceFirst("v", "")
 
-    /** Checks if `thisVersion` is either a SNAPSHOT version or the same as this release.
-      */
+    /** Checks if `thisVersion` is either a SNAPSHOT version or the same as this release. */
     def matchesVersion(tv: ThisVersion): Boolean = {
       val myVersion = tv.get
       myVersion.endsWith("SNAPSHOT") || myVersion == version

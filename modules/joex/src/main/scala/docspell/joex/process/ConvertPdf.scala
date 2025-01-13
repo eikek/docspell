@@ -28,7 +28,7 @@ import docspell.store.records._
   * been stored in the `attachment_source` record.
   *
   * If pdf conversion is not possible or if the input is already a pdf, both files are
-  * identical. That is, the `file_id`s point to the same file. Since the name of an
+  * identical. That is, the `file_id` s point to the same file. Since the name of an
   * attachment may be changed by the user, the `attachment_origin` record keeps that, too.
   *
   * This step assumes an existing premature item, it traverses its attachments.

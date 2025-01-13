@@ -58,8 +58,7 @@ object QLogin {
   def findUser(userId: Ident): ConnectionIO[Option[Data]] =
     findUser0((user, _) => user.uid === userId)
 
-  /** Finds the account given a combination of login/user-id and coll-id/coll-name pair.
-    */
+  /** Finds the account given a combination of login/user-id and coll-id/coll-name pair. */
   def findAccount(acc: AccountId): ConnectionIO[Option[AccountInfo]] = {
     // collective may be given as id or name and it is possible to have two collective
     // ids given. In that (not so nice) case, we need to lookup the collective name and

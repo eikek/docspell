@@ -16,8 +16,7 @@ import docspell.scheduler.msg.{JobDone, JobSubmitted}
 
 import io.circe.parser
 
-/** Subscribes to those events from docspell that are forwarded to the websocket endpoints
-  */
+/** Subscribes to those events from docspell that are forwarded to the websocket endpoints */
 object Subscriptions {
 
   def apply[F[_]: Async](

@@ -48,7 +48,7 @@ trait FtsClient[F[_]] {
       else Stream.emit(result) ++ searchAll(q.nextPage)
     }
 
-  /** Push all data to the index. Data with same `id' is replaced. Values that are `None'
+  /** Push all data to the index. Data with same `id' is replaced. Values that are ` None'
     * are removed from the index (or set to an empty string).
     */
   def indexData(logger: Logger[F], data: Stream[F, TextData]): F[Unit]

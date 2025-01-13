@@ -21,8 +21,7 @@ trait Totp {
   /** Generate the password for the given key and time. */
   def generate(key: Key, time: Instant): OnetimePassword
 
-  /** Generate a stream of passwords using the given key and starting at the given time.
-    */
+  /** Generate a stream of passwords using the given key and starting at the given time. */
   def generateStream[F[_]](key: Key, time: Instant): Stream[F, OnetimePassword]
 
   /** Checks whether the given password matches using the current time. */
