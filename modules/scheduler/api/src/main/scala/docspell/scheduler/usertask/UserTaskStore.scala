@@ -13,7 +13,7 @@ import docspell.common._
 
 import io.circe._
 
-/** User tasks are `RPeriodicTask`s that can be managed by the user. The user can change
+/** User tasks are `RPeriodicTask` s that can be managed by the user. The user can change
   * arguments, enable/disable it or run it just once.
   *
   * This class defines methods at a higher level, dealing with `UserTask` and

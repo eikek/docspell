@@ -33,8 +33,7 @@ import scodec.bits.ByteVector
 
 trait ODownloadAll[F[_]] {
 
-  /** Calculates what kind of zip file would be created and checks the server thresholds.
-    */
+  /** Calculates what kind of zip file would be created and checks the server thresholds. */
   def getSummary(account: AccountInfo, req: DownloadRequest): F[DownloadSummary]
 
   /** Same as `getSummary` but also submits the job to really create the zip file if

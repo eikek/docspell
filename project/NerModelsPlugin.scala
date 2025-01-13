@@ -29,14 +29,13 @@ object NerModelsPlugin extends AutoPlugin {
   def nerModelSettings: Seq[Setting[_]] =
     Seq(
       nerModelsFilter := (_ => false),
-      nerModelsRunFilter := {
+      nerModelsRunFilter :=
         filterArtifacts(
           streams.value.log,
           Classpaths.managedJars(NerModels, Set("jar", "zip"), update.value),
           nerModelsFilter.value,
           (Compile / resourceManaged).value
-        )
-      },
+        ),
       Compile / resourceGenerators += nerModelsRunFilter.taskValue
     )
 
