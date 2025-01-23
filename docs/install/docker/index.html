@@ -895,26 +895,15 @@ PostgreSQL database by using just one command. It's only a few steps
 to get started.</p>
 <h2 id="start-docspell">Start Docspell<a class="zola-anchor" href="#start-docspell" aria-label="Anchor link for: start-docspell">🔗</a></h2>
 <h3 id="1-get-the-docker-compose-files">1. Get the docker-compose files<a class="zola-anchor" href="#1-get-the-docker-compose-files" aria-label="Anchor link for: 1-get-the-docker-compose-files">🔗</a></h3>
-<p>There are two options. You can clone the whole repository:</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> git clone https://github.com/eikek/docspell</span>
+<p>You can clone this repository:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> git clone https://github.com/docspell/docker docspell-docker</span>
 </span></code></pre>
-<p>This downloads all sources. What you actually need is only 3 files. So
-if you don't have git or don't want to clone the whole repo, use these
-steps instead:</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> mkdir<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>p</span> docspell/docker/docker-compose</span>
-</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> cd docspell/docker/docker-compose</span>
-</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docker-compose.yml</span>
-</span></code></pre>
-<p>You can choose any directory instead of
-<code>docspell/docker/docker-compose</code>, of course. It's only this folder to
-make the rest of the guide work for both ways of obtaining the
-docker-compose file.</p>
-<h3 id="2-run-docker-compose-up">2. Run <code>docker-compose up</code><a class="zola-anchor" href="#2-run-docker-compose-up" aria-label="Anchor link for: 2-run-docker-compose-up">🔗</a></h3>
+<h3 id="2-run-docker-compose-up">2. Run <code>docker compose up</code><a class="zola-anchor" href="#2-run-docker-compose-up" aria-label="Anchor link for: 2-run-docker-compose-up">🔗</a></h3>
 <p>Change into the new <code>docker-compose</code> directory, for example:</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> cd docspell/docker/docker-compose</span>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> cd docspell-docker/docker-compose</span>
 </span></code></pre>
-<p>Then run <code>docker-compose</code>:</p>
-<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> docker-compose up<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span></span>
+<p>Then run <code>docker compose</code>:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">$</span></span><span class="z-meta z-function-call z-arguments z-shell"> docker compose up<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>d</span></span>
 </span></code></pre>
 <p>If you look at <code>docker-compose.yml</code>, there are several environment
 variables defined. A few that you should change, i.e. all &quot;secrets&quot;:</p>
