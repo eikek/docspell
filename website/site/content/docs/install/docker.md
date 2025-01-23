@@ -138,39 +138,25 @@ to get started.
 ## Start Docspell
 ### 1. Get the docker-compose files
 
-There are two options. You can clone the whole repository:
+You can clone this repository:
 
 ```bash
-$ git clone https://github.com/eikek/docspell
+$ git clone https://github.com/docspell/docker docspell-docker
 ```
 
-This downloads all sources. What you actually need is only 3 files. So
-if you don't have git or don't want to clone the whole repo, use these
-steps instead:
 
-``` bash
-$ mkdir -p docspell/docker/docker-compose
-$ cd docspell/docker/docker-compose
-$ wget https://raw.githubusercontent.com/eikek/docspell/master/docker/docker-compose/docker-compose.yml
-```
-
-You can choose any directory instead of
-`docspell/docker/docker-compose`, of course. It's only this folder to
-make the rest of the guide work for both ways of obtaining the
-docker-compose file.
-
-### 2. Run `docker-compose up`
+### 2. Run `docker compose up`
 
 Change into the new `docker-compose` directory, for example:
 
 ```bash
-$ cd docspell/docker/docker-compose
+$ cd docspell-docker/docker-compose
 ```
 
-Then run `docker-compose`:
+Then run `docker compose`:
 
 ```bash
-$ docker-compose up -d
+$ docker compose up -d
 ```
 
 If you look at `docker-compose.yml`, there are several environment

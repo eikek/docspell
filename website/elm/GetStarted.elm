@@ -14,16 +14,16 @@ getStarted _ =
         , Markdown.toHtml [ class "my-4 markdown-view " ]
             """1. Clone the github repository
    ```bash
-   $ git clone https://github.com/eikek/docspell
+   $ git clone https://github.com/docspell/docker docspell-docker
    ```
-   Alternatively, [download](https://github.com/eikek/docspell/archive/master.zip) the sources and extract the zip file.
+   Alternatively, [download](https://github.com/docspell/docker/archive/master.zip) the sources and extract the zip file.
 2. Change into the `docker-compose` directory:
    ```bash
-   $ cd docspell/docker/docker-compose
+   $ cd docspell-docker/docker-compose
    ```
 3. Run `docker-compose up`:
    ```bash
-   $ docker-compose up -d
+   $ docker compose up -d
    ```
 4. Goto <http://localhost:7880>, signup and login. When signing up,
    choose the same name for collective and user. Then login
