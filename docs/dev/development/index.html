@@ -996,9 +996,8 @@ git</a>, but github
 doesn't allow to create a release without a tag. So this tag moves
 (and is not really a tag then…). After the prerelease is created,
 the docker images are built and pushed to docker hub into the
-<a href="https://hub.docker.com/u/docspell">docspell</a> organization. The
-docker images are also tagged with <code>nightly</code> at docker hub. This is
-all done via the <code>realease-nightly.yml</code> workflow.</li>
+<a href="https://github.com/orgs/docspell/packages">docspell</a> organization.
+This repository will run after a release to build the images.</li>
 <li>A stable release is started by pushing a tag with pattern <code>v*</code> to
 github. This triggers the <code>release.yml</code> workflow which builds the
 packages and creates a release in <em>draft mode</em>. The <code>sbt ci</code> task
