@@ -9,6 +9,7 @@ package docspell.extract.pdfbox
 import cats.effect._
 import cats.effect.unsafe.implicits.global
 import fs2.Stream
+import fs2.hashing.{HashAlgorithm, Hashing}
 import fs2.io.file.Files
 import fs2.io.file.Path
 
@@ -33,8 +34,8 @@ class PdfboxPreviewTest extends FunSuite with TestLoggingConfig {
           .eval(PdfboxPreview[IO](PreviewConfig(48)))
           .evalMap(_.previewPNG(data))
           .flatMap(_.get)
-          .through(fs2.hash.sha256)
-          .chunks
+          .through(Hashing.forSync[IO].hash(HashAlgorithm.SHA256))
+          .map(_.bytes)
           .map(_.toByteVector)
           .fold1(_ ++ _)
           .compile

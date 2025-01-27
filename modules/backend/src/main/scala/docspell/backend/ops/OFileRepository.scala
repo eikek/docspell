@@ -9,6 +9,7 @@ package docspell.backend.ops
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+import fs2.hashing.{HashAlgorithm, Hashing}
 
 import docspell.backend.JobFactory
 import docspell.backend.ops.OFileRepository.IntegrityResult
@@ -73,9 +74,10 @@ object OFileRepository {
               ) *>
                 store.fileRepo
                   .getBytes(key)
-                  .through(fs2.hash.sha256)
+                  .through(Hashing.forSync[F].hash(HashAlgorithm.SHA256))
+                  .map(_.bytes)
                   .compile
-                  .foldChunks(ByteVector.empty)(_ ++ _.toByteVector)
+                  .fold(ByteVector.empty)(_ ++ _.toByteVector)
             )
           res = IntegrityResult(expectedHash == actualHash, key)
           _ <- OptionT.liftF {
