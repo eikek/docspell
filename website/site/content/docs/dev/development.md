@@ -292,9 +292,8 @@ is roughly like this:
   doesn't allow to create a release without a tag. So this tag moves
   (and is not really a tag then…). After the prerelease is created,
   the docker images are built and pushed to docker hub into the
-  [docspell](https://hub.docker.com/u/docspell) organization. The
-  docker images are also tagged with `nightly` at docker hub. This is
-  all done via the `realease-nightly.yml` workflow.
+  [docspell](https://github.com/orgs/docspell/packages) organization.
+  This repository will run after a release to build the images.
 - A stable release is started by pushing a tag with pattern `v*` to
   github. This triggers the `release.yml` workflow which builds the
   packages and creates a release in *draft mode*. The `sbt ci` task

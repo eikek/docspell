@@ -5,8 +5,8 @@ weight = 20
 
 # Docker Images
 
-The docker images are at
-[hub.docker.com](https://hub.docker.com/u/docspell). The `latest` tag
+The docker images are at the docspell organization at
+[GitHub](https://github.com/orgs/docspell/packages). The `latest` tag
 always points to the latest *release*. The releases are also tagged
 with their respective version number. Additionally, there are images
 tagged with `nightly` which are built from the `master` branch.
