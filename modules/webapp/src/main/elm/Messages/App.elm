@@ -8,6 +8,7 @@
 module Messages.App exposing
     ( Texts
     , de
+    , es
     , fr
     , gb
     )
@@ -60,6 +61,22 @@ de =
     , help = "Hilfe (English)"
     , newItemsArrived = "Neue Dokumente eingetroffen!"
     , dashboard = "Dashboard"
+    }
+    
+es : Texts
+es =
+    { collectiveProfile = "Perfil de grupo"
+    , userProfile = "Perfil de usuario"
+    , lightDark = "Claro/Oscuro"
+    , logout = "Desconectar"
+    , items = "Documentos"
+    , manageData = "Administrar datos"
+    , uploadFiles = "Subir documentos"
+    , processingQueue = "Cola de procesamiento"
+    , newInvites = "Nueva invitación"
+    , help = "Ayuda (Inglés)"
+    , newItemsArrived = "Nuevo(s) documento(s) disponibles!"
+    , dashboard = "Panel de control"
     }
 
 
