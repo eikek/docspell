@@ -17,6 +17,7 @@ import docspell.store.qb._
 import docspell.store.records.{RJob, RJobGroupUse}
 
 import doobie.ConnectionIO
+import doobie.implicits._
 
 object QJob {
   private[this] val cioLogger = docspell.logging.getLogger[ConnectionIO]

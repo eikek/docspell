@@ -15,6 +15,7 @@ import docspell.store.qb._
 import docspell.store.records._
 
 import doobie._
+import doobie.implicits._
 
 object QCustomField {
   private val f = RCustomField.as("f")

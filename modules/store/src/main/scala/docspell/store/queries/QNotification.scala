@@ -17,6 +17,7 @@ import docspell.store.qb.Select
 import docspell.store.records._
 
 import doobie._
+import doobie.implicits._
 
 object QNotification {
 

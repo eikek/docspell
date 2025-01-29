@@ -52,7 +52,7 @@ class FlywayMigrate[F[_]: Sync](
     if (!cfg.runMainMigrations)
       logger
         .info("Running main migrations is disabled!")
-        .as(new MigrateResult("", "", ""))
+        .as(new MigrateResult("", "", "", ""))
     else
       for {
         fw <- createFlyway(MigrationKind.Main)

@@ -14,6 +14,7 @@ import docspell.notification.api.{Channel, ChannelRef, ChannelType}
 import docspell.store.qb.DSL._
 
 import doobie._
+import doobie.implicits._
 
 sealed trait RNotificationChannel {
 
