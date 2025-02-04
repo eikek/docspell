@@ -33,11 +33,11 @@ trait DatabaseTest
   val cio: Sync[ConnectionIO] = Sync[ConnectionIO]
 
   lazy val mariadbCnt = ForAllContainerFixture(
-    MariaDBContainer.Def(DockerImageName.parse("mariadb:10.5")).createContainer()
+    MariaDBContainer.Def(DockerImageName.parse("mariadb:11")).createContainer()
   )
 
   lazy val postgresCnt = ForAllContainerFixture(
-    PostgreSQLContainer.Def(DockerImageName.parse("postgres:14")).createContainer()
+    PostgreSQLContainer.Def(DockerImageName.parse("postgres:17")).createContainer()
   )
 
   lazy val pgDataSource = ResourceSuiteLocalFixture(

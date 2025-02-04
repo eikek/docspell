@@ -18,6 +18,7 @@ import docspell.store.records.RPeriodicTask
 
 import com.github.eikek.calev.CalEvent
 import doobie._
+import doobie.implicits._
 import io.circe.{Decoder, Encoder}
 
 object QUserTask {

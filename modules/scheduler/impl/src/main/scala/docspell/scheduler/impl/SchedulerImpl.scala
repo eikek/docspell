@@ -120,10 +120,9 @@ final class SchedulerImpl[F[_]: Async](
       .flatMap { state =>
         if (state.getRunning.isEmpty) Stream.eval(logger.info("No jobs running."))
         else
-          Stream.eval(
-            logger.info(s"Waiting for ${state.getRunning.size} jobs to finish.")
-          ) ++
-            Stream.emit(state)
+          Stream
+            .eval(logger.info(s"Waiting for ${state.getRunning.size} jobs to finish."))
+            .drain ++ Stream.emit(state)
       }
 
     (wait.drain ++ Stream.emit(())).compile.lastOrError

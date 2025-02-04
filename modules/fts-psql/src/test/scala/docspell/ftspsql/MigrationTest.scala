@@ -24,7 +24,7 @@ class MigrationTest
     with TestContainerForAll
     with TestLoggingConfig {
   override val containerDef: PostgreSQLContainer.Def =
-    PostgreSQLContainer.Def(DockerImageName.parse("postgres:14"))
+    PostgreSQLContainer.Def(DockerImageName.parse("postgres:17"))
 
   override def docspellLogConfig: LogConfig =
     super.docspellLogConfig.docspellLevel(Level.Error)

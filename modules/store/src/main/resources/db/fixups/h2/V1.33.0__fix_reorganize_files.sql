@@ -34,14 +34,12 @@ create table obsolete_files(
   file_id varchar(254) not null
 );
 
-with
-  missing_ids as (
+insert into obsolete_files (file_id)
+  select file_id from filemeta
+  where file_id in (
     select file_id from filemeta
     except
     select file_id as file_id from valid_file_ids)
-insert into obsolete_files (file_id)
-  select file_id from filemeta
-  where file_id in (select file_id from missing_ids)
 ;
 
 

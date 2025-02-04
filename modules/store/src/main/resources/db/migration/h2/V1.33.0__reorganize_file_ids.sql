@@ -78,16 +78,13 @@ create table obsolete_files(
   created timestamp not null
 );
 
-with
-  missing_ids as (
-    select file_id from filemeta
-    except
-    select original_file as file_id from file_migration_temp)
 insert into obsolete_files (file_id, mimetype, length, checksum, created)
   select file_id, mimetype, length, checksum, created from filemeta
-  where file_id in (select file_id from missing_ids)
+  where file_id in (select file_id from (
+    select file_id from filemeta
+    except
+    select original_file as file_id from file_migration_temp))
 ;
-
 
 -- duplicate each filemeta with the new id
 insert into filemeta (file_id, mimetype, length, checksum, created)

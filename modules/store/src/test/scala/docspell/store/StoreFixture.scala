@@ -18,7 +18,7 @@ import docspell.store.migrate.FlywayMigrate
 
 import doobie._
 import munit._
-import org.h2.jdbcx.{JdbcConnectionPool, JdbcDataSource}
+import org.h2.jdbcx.JdbcDataSource
 import org.mariadb.jdbc.MariaDbDataSource
 import org.postgresql.ds.PGConnectionPoolDataSource
 
@@ -65,32 +65,35 @@ object StoreFixture {
       ""
     )
 
-  def dataSource(jdbc: JdbcConfig): Resource[IO, JdbcConnectionPool] = {
-    def jdbcConnPool =
+  def dataSource(jdbc: JdbcConfig): Resource[IO, DataSource] = {
+    def jdbcConnPool: DataSource =
       jdbc.dbms match {
         case Db.MariaDB =>
           val ds = new MariaDbDataSource()
           ds.setUrl(jdbc.url.asString)
           ds.setUser(jdbc.user)
           ds.setPassword(jdbc.password)
-          JdbcConnectionPool.create(ds)
+          ds
 
         case Db.PostgreSQL =>
-          val ds = new PGConnectionPoolDataSource()
+          val ds = new PGConnectionPoolDataSource() with DataSource {
+            def isWrapperFor(c: Class[_]): Boolean = false
+            def unwrap[T](c: Class[T]): T = ???
+          }
           ds.setURL(jdbc.url.asString)
           ds.setUser(jdbc.user)
           ds.setPassword(jdbc.password)
-          JdbcConnectionPool.create(ds)
+          ds
 
         case Db.H2 =>
           val ds = new JdbcDataSource()
           ds.setURL(jdbc.url.asString)
           ds.setUser(jdbc.user)
           ds.setPassword(jdbc.password)
-          JdbcConnectionPool.create(ds)
+          ds
       }
 
-    Resource.make(IO(jdbcConnPool))(cp => IO(cp.dispose()))
+    Resource.make(IO(jdbcConnPool))(_ => IO.unit)
   }
 
   def makeXA(ds: DataSource): Resource[IO, Transactor[IO]] =

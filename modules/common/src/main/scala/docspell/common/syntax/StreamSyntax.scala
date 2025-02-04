@@ -9,6 +9,7 @@ package docspell.common.syntax
 import cats.effect.Sync
 import cats.implicits._
 import fs2.Stream
+import fs2.hashing.{HashAlgorithm, Hashing}
 
 import io.circe._
 import io.circe.parser._
@@ -29,9 +30,10 @@ trait StreamSyntax {
   implicit final class ByteStreamSyntax[F[_]](self: Stream[F, Byte]) {
     def sha256Hex(implicit F: Sync[F]): F[String] =
       self
-        .through(fs2.hash.sha256)
+        .through(Hashing.forSync[F].hash(HashAlgorithm.SHA256))
+        .map(_.bytes)
         .compile
-        .foldChunks(ByteVector.empty)(_ ++ _.toByteVector)
+        .fold(ByteVector.empty)(_ ++ _.toByteVector)
         .map(_.toHex)
   }
 }

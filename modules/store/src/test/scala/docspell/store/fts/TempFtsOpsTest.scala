@@ -23,6 +23,7 @@ import docspell.store.queries.{QItem, QLogin, Query}
 import docspell.store.records.{RCollective, RItem, RUser}
 
 import doobie._
+import doobie.implicits._
 
 class TempFtsOpsTest extends DatabaseTest {
   private[this] val logger = docspell.logging.getLogger[IO]

@@ -15,6 +15,7 @@ import docspell.store.qb._
 import docspell.store.records.{RJob, RJobLog}
 
 import doobie.ConnectionIO
+import doobie.implicits._
 
 object QJobQueue {
 

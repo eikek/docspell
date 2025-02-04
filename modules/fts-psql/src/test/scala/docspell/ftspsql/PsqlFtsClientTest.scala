@@ -25,7 +25,7 @@ class PsqlFtsClientTest
     with TestContainerForAll
     with TestLoggingConfig {
   override val containerDef: PostgreSQLContainer.Def =
-    PostgreSQLContainer.Def(DockerImageName.parse("postgres:14"))
+    PostgreSQLContainer.Def(DockerImageName.parse("postgres:17"))
 
   val logger = docspell.logging.getLogger[IO]
 

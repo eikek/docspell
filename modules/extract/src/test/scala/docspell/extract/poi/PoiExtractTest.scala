@@ -18,7 +18,7 @@ import munit._
 class PoiExtractTest extends FunSuite with TestLoggingConfig {
 
   val officeFiles = List(
-    ExampleFiles.examples_sample_doc -> 6241,
+    ExampleFiles.examples_sample_doc -> 6245,
     ExampleFiles.examples_sample_docx -> 6179,
     ExampleFiles.examples_sample_xlsx -> 660,
     ExampleFiles.examples_sample_xls -> 660

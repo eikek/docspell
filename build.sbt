@@ -15,7 +15,7 @@ val scalafixSettings = Seq(
 
 val sharedSettings = Seq(
   organization := "com.github.eikek",
-  scalaVersion := "2.13.14",
+  scalaVersion := "2.13.16",
   organizationName := "Eike K. & Contributors",
   licenses += (
     "AGPL-3.0-or-later",
@@ -681,7 +681,7 @@ val restapi = project
     openapiPackage := Pkg("docspell.restapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "docspell-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc,
-    openapiRedoclyCmd := Seq("redocly-cli"),
+    openapiRedoclyCmd := Seq("redocly"),
     openapiRedoclyConfig := Some(
       (LocalRootProject / baseDirectory).value / "project" / "redocly.yml"
     )
@@ -705,7 +705,7 @@ val joexapi = project
     openapiPackage := Pkg("docspell.joexapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "joex-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc,
-    openapiRedoclyCmd := Seq("redocly-cli"),
+    openapiRedoclyCmd := Seq("redocly"),
     openapiRedoclyConfig := Some(
       (LocalRootProject / baseDirectory).value / "project" / "redocly.yml"
     )

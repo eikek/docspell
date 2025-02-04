@@ -2,7 +2,7 @@
   description = "Docspell";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     devshell-tools.url = "github:eikek/devshell-tools";
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -24,7 +24,7 @@
         zola
         yarn
         nodejs
-        redocly-cli
+        redocly
         tailwindcss
       ];
       devshellPkgs =

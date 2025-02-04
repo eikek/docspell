@@ -22,13 +22,9 @@ create table "temp_file_ids"(
   new_id varchar(255) not null
 );
 
-with ids_orig(old_id, prefix) as
-  (select file_id, substring(file_id, 0, position('/' in file_id))
-   from filemeta fm
-  )
 insert into "temp_file_ids"
 select fm.old_id, tp.old_prefix, tp.new_prefix, replace(fm.old_id, tp.old_prefix, tp.new_prefix) as new_id
-from ids_orig fm
+from (select file_id as old_id, substring(file_id, 0, position('/' in file_id)) as prefix from filemeta) fm
 inner join "temp_prefixes" tp on fm.prefix = tp.old_prefix;
 
 -- remove orphaned files and chunks
