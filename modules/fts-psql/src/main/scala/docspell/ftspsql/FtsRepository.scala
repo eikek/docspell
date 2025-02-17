@@ -33,7 +33,7 @@ object FtsRepository extends DoobieMeta {
 
     fr"""select count(id), coalesce(max($selectRank), 0)
         |from $table, $query
-        |where ${mkCondition(q)} AND query @@ text_index 
+        |where ${mkCondition(q)} AND query @@ text_index
         |""".stripMargin
       .query[SearchSummary]
       .unique
@@ -64,9 +64,9 @@ object FtsRepository extends DoobieMeta {
     val query = mkQueryPart(pq, q)
 
     val sqlFrag =
-      fr"""select $select 
+      fr"""select $select
           |from $table, $query
-          |where ${mkCondition(q)} AND query @@ text_index 
+          |where ${mkCondition(q)} AND query @@ text_index
           |order by rank desc
           |limit ${q.limit}
           |offset ${q.offset}
