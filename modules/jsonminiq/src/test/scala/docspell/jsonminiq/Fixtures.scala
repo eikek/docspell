@@ -50,7 +50,7 @@ trait Fixtures {
         |        "id": "7zaeU6pqVym-6Je3Q36XNG2-ZdBTFSVwNjc-pJRXciTMP3B",
         |        "name": "Grocery",
         |        "category": "expense"
-        |      }      
+        |      }
         |    ],
         |    "removed": [
         |      {
