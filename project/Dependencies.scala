@@ -43,7 +43,7 @@ object Dependencies {
   val ScalaJavaTimeVersion = "2.6.0"
   val ScodecBitsVersion = "1.2.1"
   val ScribeVersion = "3.16.0"
-  val Slf4jVersion = "2.0.16"
+  val Slf4jVersion = "2.0.17"
   val SourcecodeVersion = "0.4.2"
   val StanfordNlpVersion = "4.5.8"
   val TikaVersion = "3.1.0"
