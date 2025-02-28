@@ -188,7 +188,7 @@ with lib; let
 
       weasyprint = {
         command = {
-          program = "${pkgs.python310Packages.weasyprint}/bin/weasyprint";
+          program = "${pkgs.python3Packages.weasyprint}/bin/weasyprint";
           args = [
             "--optimize-images"
             "--encoding"
