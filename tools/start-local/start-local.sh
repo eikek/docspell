@@ -173,16 +173,17 @@ download_zip() {
         echo "Not downloading, files already exist"
     else
         echo "Downloading docspell..."
+        local tag_name="v${ds_version}"
         if [[ $ds_version == *SNAPSHOT ]]; then
-            curl -#Lo "$run_root/pkg/${joex}.zip" "https://github.com/eikek/docspell/releases/download/nightly/docspell-joex-${ds_version}.zip"
-        else
-            curl -#Lo "$run_root/pkg/${joex}.zip" "https://github.com/eikek/docspell/releases/download/v${ds_version}/docspell-joex-${ds_version}.zip"
+            tag_name="nightly"
         fi
-        if [[ $ds_version == *SNAPSHOT ]]; then
-            curl -#Lo "$run_root/pkg/${restserver}.zip" "https://github.com/eikek/docspell/releases/download/nightly/docspell-restserver-${ds_version}.zip"
-        else
-            curl -#Lo "$run_root/pkg/${restserver}.zip" "https://github.com/eikek/docspell/releases/download/v${ds_version}/docspell-restserver-${ds_version}.zip"
-        fi
+        local joex_dl_url="https://github.com/eikek/docspell/releases/download/${tag_name}/docspell-joex-${ds_version}.zip"
+        local rs_dl_url="https://github.com/eikek/docspell/releases/download/${tag_name}/docspell-restserver-${ds_version}.zip"
+
+        echo "--> $joex_dl_url"
+        curl -#Lo "$run_root/pkg/${joex}.zip" "$joex_dl_url"
+        echo "--> $rs_dl_url"
+        curl -#Lo "$run_root/pkg/${restserver}.zip" "$rs_dl_url"
     fi
 
     echo "Unzipping..."

@@ -17,16 +17,14 @@ jobs:
         run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
       - name: sbt make-pkg (${{ env.DOCSPELL_VERSION }})
         run: nix develop .#ci --command sbt make-pkg
-      - uses: meeDamian/github-release@2.0
+      - name: Upload artifacts
+        uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: Docspell ${{ env.DOCSPELL_VERSION }}
-          gzip: false
-          draft: true
-          prerelease: false
-          allow_override: false
-          files: >
-            modules/restserver/target/docspell-restserver_${{ env.DOCSPELL_VERSION }}_all.deb
-            modules/restserver/target/universal/docspell-restserver-${{ env.DOCSPELL_VERSION }}.zip
-            modules/joex/target/docspell-joex_${{ env.DOCSPELL_VERSION }}_all.deb
-            modules/joex/target/universal/docspell-joex-${{ env.DOCSPELL_VERSION }}.zip
+          with:
+            files: |
+              modules/restserver/target/docspell-restserver_${{ env.DOCSPELL_VERSION }}_all.deb
+              modules/restserver/target/universal/docspell-restserver-${{ env.DOCSPELL_VERSION }}.zip
+              modules/joex/target/docspell-joex_${{ env.DOCSPELL_VERSION }}_all.deb
+              modules/joex/target/universal/docspell-joex-${{ env.DOCSPELL_VERSION }}.zip
