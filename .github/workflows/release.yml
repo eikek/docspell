@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
-      - uses: cachix/install-nix-action@v30
+      - uses: cachix/install-nix-action@v31
       - name: Set current version
         run:  echo "DOCSPELL_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
       - name: sbt make-pkg (${{ env.DOCSPELL_VERSION }})
