@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -792,10 +792,10 @@
 <p>Download the two files:
 <ul>
     <li>
-        <a href="https://github.com/eikek/docspell/releases/download/v0.42.0/docspell-restserver-0.42.0.zip">docspell-restserver-0.42.0.zip</a>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.43.0/docspell-restserver-0.43.0.zip">docspell-restserver-0.43.0.zip</a>
     </li>
     <li>
-        <a href="https://github.com/eikek/docspell/releases/download/v0.42.0/docspell-joex-0.42.0.zip">docspell-joex-0.42.0.zip</a>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.43.0/docspell-joex-0.43.0.zip">docspell-joex-0.43.0.zip</a>
     </li>
 </ul>
 </p>
@@ -835,10 +835,10 @@ on a Debian system.</p>
 <p>Packages are also provided at the release page:</p>
 <ul>
     <li>
-        <a href="https://github.com/eikek/docspell/releases/download/v0.42.0/docspell-restserver_0.42.0_all.deb">docspell-restserver_0.42.0_all.deb</a>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.43.0/docspell-restserver_0.43.0_all.deb">docspell-restserver_0.43.0_all.deb</a>
     </li>
     <li>
-        <a href="https://github.com/eikek/docspell/releases/download/v0.42.0/docspell-joex_0.42.0_all.deb">docspell-joex_0.42.0_all.deb</a>
+        <a href="https://github.com/eikek/docspell/releases/download/v0.43.0/docspell-joex_0.43.0_all.deb">docspell-joex_0.43.0_all.deb</a>
     </li>
 </ul>
 <p>The DEB packages can be installed on Debian, or Debian based Distros:</p>
@@ -878,24 +878,24 @@ might want to have a look at the changelog, since it is sometimes
 necessary to modify the config file.</p>
 <h2 id="backup-restore">Backup &amp; Restore<a class="zola-anchor" href="#backup-restore" aria-label="Anchor link for: backup-restore">🔗</a></h2>
 <p>There are several supported <a href="https://docspell.org/docs/configure/database/">databases</a> but PostgreSQL is recommended for Docspell.</p>
-<p>First to prevent any currently queued data from being lost, it's good practice to 
+<p>First to prevent any currently queued data from being lost, it's good practice to
 shutdown <code>docspell-joex</code> and <code>docspell-restserver</code> system services
-before taking a database backup of Docspell. In order to stop Docspell, 
+before taking a database backup of Docspell. In order to stop Docspell,
 you need to perform these on the system that docspell is running on.</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl stop docspell-joex</span>
 </span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">sudo</span></span><span class="z-meta z-function-call z-arguments z-shell"> systemctl stop docspell-restserver</span>
 </span></code></pre>
-<p>Next, you can become the <code>postgres</code> user or database admin user on 
+<p>Next, you can become the <code>postgres</code> user or database admin user on
 your PostgreSQL server/microservice and backup the database.
 Note that this will take some time to complete depending on the size of your database.
 We'll assume in our guide example that <code>docspelldb</code> is the name of your database:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">pg_dump</span></span><span class="z-meta z-function-call z-arguments z-shell"> docspelldb <span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span> docspelldb_backup.sql</span>
 </span></code></pre>
-<p>Optionally, once the docspell backup is complete you can 
+<p>Optionally, once the docspell backup is complete you can
 use <code>rsync</code> or <code>scp</code> to send <code>docspelldb_backup.sql</code> to a backup server.
-Now that you have known backup(s) of Docspell's database, you may one day have to restore this backup. </p>
-<p>Let's test try restoring it. You can start a PostgreSQL shell by using 
-the <code>psql</code> command as the <code>postgres</code> user or a PostgreSQL admin account. 
+Now that you have known backup(s) of Docspell's database, you may one day have to restore this backup.</p>
+<p>Let's test try restoring it. You can start a PostgreSQL shell by using
+the <code>psql</code> command as the <code>postgres</code> user or a PostgreSQL admin account.
 If the database is corrupted or still exists, you will first need to remove it.
 Warning: By performing this next step you are <strong>deleting</strong> your database.</p>
 <pre data-lang="sql" class="language-sql z-code"><code class="language-sql" data-lang="sql"><span class="z-source z-sql"><span class="z-meta z-drop z-sql"><span class="z-keyword z-other z-create z-sql">DROP</span> <span class="z-keyword z-other z-sql">DATABASE</span></span> docspelldb;
@@ -920,14 +920,14 @@ Let's go to the Docspell server and restart the Docspell services.</p>
 and you see your docspell data restored, you have sucessfully restored
 your PostgreSQL backup of Docspell manually.</p>
 <h3 id="fulltext-search">Fulltext Search<a class="zola-anchor" href="#fulltext-search" aria-label="Anchor link for: fulltext-search">🔗</a></h3>
-<p>Fulltext search can also be powered by <a href="https://solr.apache.org">SOLR</a>. 
+<p>Fulltext search can also be powered by <a href="https://solr.apache.org">SOLR</a>.
 You need to install solr and create a core for docspell. Then cange the
 solr url for both components (restserver and joex) accordingly. See
 the relevant section in the <a href="https://docspell.org/docs/configure/fulltext-search/">config page</a>.</p>
 <h3 id="watching-a-directory">Watching a directory<a class="zola-anchor" href="#watching-a-directory" aria-label="Anchor link for: watching-a-directory">🔗</a></h3>
 <p>The <a href="https://docspell.org/docs/tools/cli/">dsc</a> tool with the <code>watch</code> subcommand can be
 used for this. Using systemd or something similar, it is possible to
-create a system service that runs the script in &quot;watch mode&quot;.</p>
+create a system service that runs the script in "watch mode".</p>
 
   
 
@@ -938,7 +938,7 @@ create a system service that runs the script in &quot;watch mode&quot;.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

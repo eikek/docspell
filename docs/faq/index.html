@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -798,7 +798,7 @@ the planned features. It is required to efficiently support a
 multi-user application: the account data, passwords and many other
 things (tags, metadata etc) must be stored and queried reliably. Very
 often a relational model emerges and a database is the best fit,
-otherwise one would just &quot;reinvent the wheel&quot;. So the options are to
+otherwise one would just "reinvent the wheel". So the options are to
 have a database <em>and</em> files in the filesystem or everything in one
 database. There are, of course, pros and cons for both ways, these
 were the reasons for the current decision:</p>
@@ -810,7 +810,7 @@ things. YMMV if you already have some backups system in place.</li>
 <li>Simpler, easier to maintain application: there is just one storage
 system used by the application and not two which reduces complexity
 in the code.</li>
-<li>Consistency: Both &quot;databases&quot; (filesystem + relational db) can
+<li>Consistency: Both "databases" (filesystem + relational db) can
 easily get out of sync and this will break the application. It's a
 very strong plus to be able to rely on the strong ACID guarantees of
 database systems.</li>
@@ -844,7 +844,7 @@ the future. It is important to know how to use your data then.</p>
 beer). That is, you can be sure to use the current version for as long
 as you want. So it is a good idea to backup the releases (or docker
 images) you are using alongside with your data. This ensures that you
-will be able to <em>use</em> your data &quot;forever&quot;. This also means that you
+will be able to <em>use</em> your data "forever". This also means that you
 can inspect the data model and use the api and/or standard SQL tools
 to get all the data. While this may be difficult/inconvenient, the
 point here is only that it is possible. It's not hidden or obscured,
@@ -895,7 +895,7 @@ you don't want to sign-up there, drop a mail to <code>info</code> at
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

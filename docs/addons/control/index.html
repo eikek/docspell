@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -800,7 +800,7 @@ and docker on the machine running joex.</p>
 <p>Please also look at addon section in the <a href="https://docspell.org/docs/configure/defaults/#joex">default
 configuration</a> for joex.</p>
 <p>You need to explicitly enable addons in the restserver config file.</p>
-<p>Docspell uses &quot;runners&quot; to execute an addon. This includes building it
+<p>Docspell uses "runners" to execute an addon. This includes building it
 if necessary. The following runner exist:</p>
 <ul>
 <li><code>docker</code>: uses docker to build an run the addon</li>
@@ -818,8 +818,8 @@ Additionally, the user running joex must be able to use these tools.
 For docker it usually means to add the user to some group. For
 systemd-nspawn you most likely want to configure <code>sudo</code> to run
 passwordless the <code>systemd-nspawn</code> command.</p>
-<p>Without this, an addon can only be run &quot;directly&quot; on the machine that
-hosts joex (which might be perfectly fine). The addon then &quot;sees&quot; all
+<p>Without this, an addon can only be run "directly" on the machine that
+hosts joex (which might be perfectly fine). The addon then "sees" all
 files on the machine and could potentially do harm.</p>
 <p>It is recommended to install <code>nix</code> and <code>docker</code>, if possible. Addons
 may only run with docker or only without, so supporting both leaves
@@ -852,17 +852,17 @@ them may not require a network connection.</p>
 runner (possibly in combination with <code>systemd-nspawn</code>) can be used.</p>
 <h1 id="runtime">Runtime<a class="zola-anchor" href="#runtime" aria-label="Anchor link for: runtime">🔗</a></h1>
 <h2 id="cache-directory">Cache directory<a class="zola-anchor" href="#cache-directory" aria-label="Anchor link for: cache-directory">🔗</a></h2>
-<p>Addons can use a &quot;cache directory&quot; to store data between runs. This
+<p>Addons can use a "cache directory" to store data between runs. This
 directory is not cleaned by docspell. If you have concerns about
 space, use a cron job or systemd-timer to periodically clean this
 directory.</p>
-<h2 id="pure-vs-impure">&quot;Pure&quot; vs &quot;Impure&quot;<a class="zola-anchor" href="#pure-vs-impure" aria-label="Anchor link for: pure-vs-impure">🔗</a></h2>
+<h2 id="pure-vs-impure">"Pure" vs "Impure"<a class="zola-anchor" href="#pure-vs-impure" aria-label="Anchor link for: pure-vs-impure">🔗</a></h2>
 <p>Addons can talk back to Docspell in these ways: they can use the http
 api, for example with <a href="https://docspell.org/docs/tools/cli/">dsc</a>, or they can return
 data to instruct Docspell to apply changes.</p>
 <p>The former requires the addon to be connected to the network to reach
 the Docspell <em>restserver</em>. This allows the addon to do arbitrary
-changes at any time - this is the &quot;impure&quot; variant.</p>
+changes at any time - this is the "impure" variant.</p>
 <p>The second approach can be run without network connectivity. When
 using docker or systemd-nspawn, Docspell will run these addons without
 any network. Thus they can't do anything really, except return data
@@ -1011,7 +1011,7 @@ configuration</a> for joex</li>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

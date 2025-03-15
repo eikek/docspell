@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -183,7 +183,7 @@ docs</a>
 open all the time - look at them for further details on the used
 functions.</p>
 <p>It's usually good to play around with the tools at first. For stt, we
-first need to download a <em>model</em>. This will be used to &quot;detect&quot; the
+first need to download a <em>model</em>. This will be used to "detect" the
 text in the audio data. They have a
 <a href="https://github.com/coqui-ai/STT-models/releases">page</a> where we can
 download model files for any supported language. For the addon, we
@@ -218,7 +218,7 @@ The following shows excerpts from it with some explanation.</p>
 </span></code></pre>
 <p>As this addon wants to pass data back to Docspell via stdout, we use
 the stderr for logging and printing general information. The function
-<code>errln</code> (short for &quot;error line&quot; :)) allows to conveniently print to
+<code>errln</code> (short for "error line" :)) allows to conveniently print to
 stderr and the second wraps the <code>system*</code> procedure such that the
 script fails whenever the external program fails. It is somewhat
 similar to <code>set -e</code> in bash.</p>
@@ -453,7 +453,7 @@ send to stdout.</p>
 </span></code></pre>
 <h1 id="packaging">Packaging<a class="zola-anchor" href="#packaging" aria-label="Anchor link for: packaging">🔗</a></h1>
 <p>Now with that script some additional plumbing is needed to make it an
-&quot;Addon&quot; for Docspell.</p>
+"Addon" for Docspell.</p>
 <p>The external tools - stt, ffmpeg, curl and wkhtmltopdf are required as
 well as guile to compile and interpret the script. Also the guile-json
 module must be installed.</p>
@@ -506,14 +506,14 @@ like this:</p>
 <p>First sad thing is, that only <code>x86_64</code> systems are supported. This is
 due to <code>stt</code> not being available on other platforms currently (as
 provided by nixpkgs).</p>
-<p>The rest is a bit magic: A package and &quot;defaultPackage&quot; is defined
+<p>The rest is a bit magic: A package and "defaultPackage" is defined
 with a reference to <code>nix/addon.nix</code>. The important part is the line</p>
 <pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix">  <span class="z-variable z-parameter z-name z-nix">inputs</span> <span class="z-invalid z-illegal">=</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
 </span><span class="z-source z-nix">    <span class="z-comment z-line z-number-sign z-nix"># Nixpkgs / NixOS version to use.</span>
 </span><span class="z-source z-nix">    <span class="z-entity z-other z-attribute-name z-multipart z-nix">nixpkgs</span>.<span class="z-entity z-other z-attribute-name z-multipart z-nix">url</span> <span class="z-keyword z-operator z-bind z-nix">=</span> <span class="z-string z-quoted z-double z-nix"><span class="z-punctuation z-definition z-string z-double z-start z-nix">&quot;</span>nixpkgs/nixos-21.11<span class="z-punctuation z-definition z-string z-double z-end z-nix">&quot;</span></span><span class="z-punctuation z-terminator z-bind z-nix">;</span>
 </span><span class="z-source z-nix">  <span class="z-punctuation z-definition z-attrset z-nix">}</span><span class="z-invalid z-illegal">;</span>
 </span></code></pre>
-<p>It says that as input for &quot;building&quot; the script, we take all of
+<p>It says that as input for "building" the script, we take all of
 <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> which is a package
 collection defined for (and in) nix - including thousands of software
 packages. We can pick and choose from these. No surprise, all external
@@ -522,7 +522,7 @@ tools we need are included!</p>
 nixpkgs as inputs, we can create a definition to elevate this script
 into a <em>package</em>.</p>
 <h2 id="package-definition">Package definition<a class="zola-anchor" href="#package-definition" aria-label="Anchor link for: package-definition">🔗</a></h2>
-<p>The definition for &quot;building&quot; the script is in <code>nix/addon.nix</code>:</p>
+<p>The definition for "building" the script is in <code>nix/addon.nix</code>:</p>
 <pre data-lang="nix" class="language-nix z-code"><code class="language-nix" data-lang="nix"><span class="z-source z-nix"><span class="z-punctuation z-definition z-entity z-function z-2 z-nix">{</span> <span class="z-variable z-parameter z-function z-1 z-nix">stdenv</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">bash</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">cacert</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">curl</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">stt</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">wkhtmltopdf</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">ffmpeg</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">guile</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">guile-json</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">lib</span><span class="z-keyword z-operator z-nix">,</span> <span class="z-variable z-parameter z-function z-1 z-nix">name</span> <span class="z-punctuation z-definition z-entity z-function z-nix">}</span><span class="z-punctuation z-definition z-function z-nix">:</span>
 </span><span class="z-source z-nix">
 </span><span class="z-source z-nix"><span class="z-variable z-parameter z-name z-nix">stdenv</span><span class="z-keyword z-operator z-nix">.</span><span class="z-variable z-parameter z-name z-nix">mkDerivation</span> <span class="z-punctuation z-definition z-attrset-or-function z-nix">{</span>
@@ -582,7 +582,7 @@ then <code>cat</code> the resulting file if you are curious.</p>
 <p>This way the script is completely isolated from the system it runs
 on - as long as the nix package manager is available. It includes all
 the external tools, as well as the underlying runtime (guile)! The
-result is a tiny wrapper bash script that can be run &quot;everywhere&quot;
+result is a tiny wrapper bash script that can be run "everywhere"
 (modulo all the restrictions, like non-x86_64 platforms, of course
 :)).</p>
 <h2 id="addon-descriptor">Addon Descriptor<a class="zola-anchor" href="#addon-descriptor" aria-label="Anchor link for: addon-descriptor">🔗</a></h2>
@@ -624,7 +624,7 @@ every file-processing job or a user can manually trigger it on an
 item.</p>
 <p>It also tells via <code>runner:</code> that it can be build and run via nix, but
 not via docker (I gave up after an hour to create a Dockerfile…). It
-could also be run &quot;as-is&quot; but the user then needs to install all these
+could also be run "as-is" but the user then needs to install all these
 tools and guile manually.</p>
 <h1 id="done">Done<a class="zola-anchor" href="#done" aria-label="Anchor link for: done">🔗</a></h1>
 <p>That's it. You can install this addon in Docspell and create a run
@@ -648,7 +648,7 @@ configuration to let it execute when you want.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

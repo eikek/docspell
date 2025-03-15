@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -788,7 +788,7 @@
 data. The REST api can be used to integrate docspell into your
 workflow.</p>
 <p><a href="/openapi/docspell-openapi.html">Docspell REST Api Doc</a></p>
-<p>The &quot;raw&quot; <code>openapi.yml</code> specification file can be found
+<p>The "raw" <code>openapi.yml</code> specification file can be found
 <a href="/openapi/docspell-openapi.yml">here</a>.</p>
 <p>The routes can be divided into protected, unprotected routes and admin
 routes. The unprotected, or open routes are at <code>/open/*</code> while the
@@ -808,7 +808,7 @@ restricted time which can be configured (default is 5 minutes).</p>
 protected route <code>/sec/auth/session</code>. This will return the same
 response as above, giving a new token.</p>
 <p>This token can be added to requests in two ways: as a cookie header or
-a &quot;normal&quot; http header. If a cookie header is used, the cookie name
+a "normal" http header. If a cookie header is used, the cookie name
 must be <code>docspell_auth</code> and a custom header must be named
 <code>X-Docspell-Auth</code>.</p>
 <p>The admin route (see below) <code>/admin/user/resetPassword</code> can be used to
@@ -956,7 +956,7 @@ url:</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

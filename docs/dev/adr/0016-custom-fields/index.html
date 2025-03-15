@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -851,7 +851,7 @@ etc?
 <li>making them different requires to fetch all fields first before
 running a query, in order to know which columns to check
 <ul>
-<li>usually the query would look like this: <code>my_field_1 == &quot;test&quot;</code>;
+<li>usually the query would look like this: <code>my_field_1 == "test"</code>;
 in order to know what column to check for <code>my_field_1</code>, a query
 to fetch the field must be done first. Only then the type is
 known and its clear what column to use for the value. This
@@ -895,8 +895,8 @@ and converts accordingly (e.g. string-&gt;date)</li>
 <li>con: setting all to <code>Nothing</code> is an error as well as using the wrong
 field with some type (e.g. setting <code>value_str</code> for setting a
 <code>numeric</code> field)</li>
-<li>con: very confusing – what to use for fields of type &quot;date&quot; or
-&quot;money&quot;?</li>
+<li>con: very confusing – what to use for fields of type "date" or
+"money"?</li>
 <li>client needs some parsing anyways to show errors</li>
 </ul>
 <p>Input 2:</p>
@@ -929,7 +929,7 @@ and specifies the value</li>
 <li>money: decimal number</li>
 <li>text: no restrictions</li>
 <li>date: a local date as iso string, e.g. <code>2011-10-09</code></li>
-<li>bool: either <code>&quot;true&quot;</code> or <code>&quot;false&quot;</code>, case insensitive</li>
+<li>bool: either <code>"true"</code> or <code>"false"</code>, case insensitive</li>
 </ul>
 </li>
 </ul>
@@ -953,7 +953,7 @@ fields</li>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

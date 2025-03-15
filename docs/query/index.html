@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -828,8 +828,8 @@ expressions into one of these:</p>
 <li><code>=</code> for equals</li>
 <li><code>&gt;</code> for greater-than</li>
 <li><code>&gt;=</code> for greater-equals</li>
-<li><code>~=</code> for &quot;in&quot; (a shorter way to say &quot;a or b or c or d&quot;)</li>
-<li><code>:</code> for &quot;like&quot;, this is used in a context-sensitive way</li>
+<li><code>~=</code> for "in" (a shorter way to say "a or b or c or d")</li>
+<li><code>:</code> for "like", this is used in a context-sensitive way</li>
 <li><code>&lt;</code> for lower than</li>
 <li><code>&lt;=</code> for lower-equal</li>
 <li><code>!=</code> for not-equals</li>
@@ -862,7 +862,7 @@ are only shortcuts to a longer form.</p>
 <li><code>conc.equip.id</code> id of equipment</li>
 <li><code>folder.id</code> id of a folder</li>
 <li><code>folder</code> name of a folder</li>
-<li><code>inbox</code> whether to return &quot;new&quot; items (boolean)</li>
+<li><code>inbox</code> whether to return "new" items (boolean)</li>
 <li><code>incoming</code> whether to return incoming items (boolean), <code>true</code> to
 show only incoming, <code>false</code> to show only outgoing.</li>
 </ul>
@@ -900,18 +900,18 @@ are shortcuts for a longer query.</p>
 of that, too: there are text values, numbers, boolean and dates. When
 multiple values are allowed, they must be separated by comma <code>,</code>.</p>
 <h3 id="text-values">Text Values<a class="zola-anchor" href="#text-values" aria-label="Anchor link for: text-values">🔗</a></h3>
-<p>Text values need to be put in quotes (<code>&quot;</code>) if they contain one of
+<p>Text values need to be put in quotes (<code>"</code>) if they contain one of
 these characters:</p>
 <ul>
 <li>whitespace <code> </code></li>
-<li>quotes <code>&quot;</code></li>
+<li>quotes <code>"</code></li>
 <li>backslash <code>\</code></li>
 <li>comma <code>,</code></li>
 <li>brackets <code>[]</code></li>
 <li>parens <code>()</code></li>
 </ul>
 <p>Any quotes inside a quoted string must be escaped with a backslash.</p>
-<p>Examples: <code>scan_123</code>, <code>a-b-c</code>, <code>x.y.z</code>, <code>&quot;scan from today&quot;</code>, <code>&quot;a \&quot;strange\&quot; name.pdf&quot;</code></p>
+<p>Examples: <code>scan_123</code>, <code>a-b-c</code>, <code>x.y.z</code>, <code>"scan from today"</code>, <code>"a \"strange\" name.pdf"</code></p>
 <h3 id="numeric-and-boolean-values">Numeric and Boolean Values<a class="zola-anchor" href="#numeric-and-boolean-values" aria-label="Anchor link for: numeric-and-boolean-values">🔗</a></h3>
 <p>Numeric values can be entered literally; an optional fraction part is
 separetd by a dot. Examples: <code>1</code>, <code>2.15</code>.</p>
@@ -982,7 +982,7 @@ quoting, each value must be quoted, not the whole list. So this is
 correct:</p>
 <pre class="z-code"><code><span class="z-text z-plain">source~=&quot;web app&quot;,&quot;mail box&quot;
 </span></code></pre>
-<p>This is not correct: <code>source~=&quot;web app,mail box&quot;</code> – it would be treated
+<p>This is not correct: <code>source~="web app,mail box"</code> – it would be treated
 as one single value and is then essentially the same as using <code>=</code>.</p>
 <hr />
 <p>The two fields <code>incoming</code> and <code>inbox</code> expect a boolean value: one of
@@ -1133,7 +1133,7 @@ items with a date in the specified year:</p>
 <ul>
 <li><code>year:2020</code>  →  <code>date&gt;=2020-01-01 date&lt;2021-01-01</code></li>
 </ul>
-<p>The last shortcut is <code>names</code>. It allows to search in many &quot;names&quot; of
+<p>The last shortcut is <code>names</code>. It allows to search in many "names" of
 related entities at once:</p>
 <h3 id="names">Names<a class="zola-anchor" href="#names" aria-label="Anchor link for: names">🔗</a></h3>
 <ul>
@@ -1153,10 +1153,10 @@ look into correspondent names and concerning names.</p>
 <p>Find items with at least both tags invoice and todo:</p>
 <pre class="z-code"><code><span class="z-text z-plain">tag=invoice,todo
 </span></code></pre>
-<p>Find items with a concerning person of name starting with &quot;Marcus&quot;:</p>
+<p>Find items with a concerning person of name starting with "Marcus":</p>
 <pre class="z-code"><code><span class="z-text z-plain">conc.pers.name:marcus*
 </span></code></pre>
-<p>Find items with at least a tag &quot;todo&quot; in year 2020:</p>
+<p>Find items with at least a tag "todo" in year 2020:</p>
 <pre class="z-code"><code><span class="z-text z-plain">tag:todo year:2020
 </span></code></pre>
 <p>Find items within the last 30 days:</p>
@@ -1180,7 +1180,7 @@ fields <code>paid</code> as a date and <code>usd</code> as money):</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -785,7 +785,7 @@
   
   <h1 id="file-processing">File Processing<a class="zola-anchor" href="#file-processing" aria-label="Anchor link for: file-processing">🔗</a></h1>
 <p>When uploading a file, it is only saved to the database together with
-the given meta information as a &quot;job&quot;. The file is not visible in the
+the given meta information as a "job". The file is not visible in the
 ui yet. Then joex takes the next such job and starts processing it.
 When processing finished, the item and its files will show up in the
 ui.</p>
@@ -896,7 +896,7 @@ listener by running <code>unoconv -l</code> in a separate process.</p>
 <h3 id="pdf">PDF<a class="zola-anchor" href="#pdf" aria-label="Anchor link for: pdf">🔗</a></h3>
 <p>PDFs can be converted into PDFs, which may sound silly at first. But
 PDFs come in many different flavors and may not contain a separate
-text layer, making it impossible to &quot;copy &amp; paste&quot; text in them. So
+text layer, making it impossible to "copy &amp; paste" text in them. So
 you can optionally use the tool
 <a href="https://github.com/jbarlow83/OCRmyPDF">ocrmypdf</a> to create a PDF/A
 type PDF file containing a text layer with the extracted text.</p>
@@ -904,7 +904,7 @@ type PDF file containing a text layer with the extracted text.</p>
 is enabled but fails, the error is not fatal and the processing will
 continue using the original pdf for extracting text. You can also
 disable it to remove the errors from the processing logs.</p>
-<p>The <code>--skip-text</code> option is necessary to not fail on &quot;text&quot; pdfs
+<p>The <code>--skip-text</code> option is necessary to not fail on "text" pdfs
 (where ocr is not necessary). In this case, the pdf will be converted
 to PDF/A.</p>
 <h2 id="text-extraction">Text Extraction<a class="zola-anchor" href="#text-extraction" aria-label="Anchor link for: text-extraction">🔗</a></h2>
@@ -929,7 +929,7 @@ different options).</p>
 <p>MS Office files are processed using a library without any external
 tool. It uses <a href="https://poi.apache.org/">apache poi</a> which is well
 known for these tasks.</p>
-<p>A rich text file (<code>.rtf</code>) is procssed by Java &quot;natively&quot; (using their
+<p>A rich text file (<code>.rtf</code>) is procssed by Java "natively" (using their
 standard library).</p>
 <p>OpenDocument files are proecessed using the ODS/ODT/ODF parser from
 tika.</p>
@@ -1055,7 +1055,7 @@ features if running on low-end machines.</p>
 <h2 id="classification">Classification<a class="zola-anchor" href="#classification" aria-label="Anchor link for: classification">🔗</a></h2>
 <p>If you enabled classification in the config file, a model is trained
 periodically from a collective's files. Very roughly speaking… this
-model contains the essence of &quot;patterns&quot; in the text that are likeley
+model contains the essence of "patterns" in the text that are likeley
 related to a tag, a corrpesondent etc.</p>
 <p>When a new document arrives, this model is used to ask for what
 metadata (tag, correspondent, etc) it thinks is likely to apply here.</p>
@@ -1100,7 +1100,7 @@ and person names. This does not depend on the document language.</p>
 model (if available for the given language) and then runs the
 address-book derived rules as a last step on so far unclassified
 terms. This allows for the best results. If more than one candidate is
-found, the &quot;most likely&quot; one is set on the item and others are stored
+found, the "most likely" one is set on the item and others are stored
 as suggestions.</p>
 <p>The statistical model approach works generally very well, i.e. for
 large address books. Normally, a document contains only very few
@@ -1158,7 +1158,7 @@ to disable it by setting it to <code>0</code>.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

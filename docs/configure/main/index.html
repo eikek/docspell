@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -838,7 +838,7 @@ key defines a full path into the tree. There are two ways:</p>
 <p>Both are exactly the same and these forms are both used at the same
 time. Usually the braces approach is used to group some more settings,
 for better readability.</p>
-<p>Strings that contain &quot;not-so-common&quot; characters should be enclosed in
+<p>Strings that contain "not-so-common" characters should be enclosed in
 quotes. It is possible to define values at the top of the file and
 reuse them on different locations via the <code>${full.path.to.key}</code>
 syntax. When using these variables, they <em>must not</em> be enclosed in
@@ -883,7 +883,7 @@ which can be configured:</p>
 you need to add an option to use G1GC (<code>-XX:+UseG1GC</code>), for java11
 this is not necessary (but doesn't hurt either). This could look like
 this:</p>
-<pre class="z-code"><code><span class="z-text z-plain">./docspell-joex-0.42.0
+<pre class="z-code"><code><span class="z-text z-plain">./docspell-joex-0.43.0
 </span><span class="z-text z-plain">/bin/docspell-joex -J-Xmx1596M -J-XX:+UseG1GC -- /path/to/joex.conf
 </span></code></pre>
 <p>Using these options you can define how much memory the JVM process is
@@ -920,7 +920,7 @@ configure a minimum level of <code>Warn</code> and override some loggers with
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

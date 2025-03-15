@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -787,14 +787,14 @@
 <p>This page describes, how files can get into docspell. Technically,
 there is just one way: via http multipart/form-data requests.</p>
 <h2 id="authenticated-upload">Authenticated Upload<a class="zola-anchor" href="#authenticated-upload" aria-label="Anchor link for: authenticated-upload">🔗</a></h2>
-<p>From within the web application there is the &quot;Upload Files&quot;
+<p>From within the web application there is the "Upload Files"
 page. There you can select multiple files to upload. You can also
 specify whether these files should become one item or if every file is
 a separate item.</p>
-<p>When you click &quot;Submit&quot; the files are uploaded and stored in the
+<p>When you click "Submit" the files are uploaded and stored in the
 database. Then the job executor(s) are notified which immediately
 start processing them.</p>
-<p>Go to the top-right menu and click &quot;Processing Queue&quot; to see the
+<p>Go to the top-right menu and click "Processing Queue" to see the
 current state.</p>
 <p>This obviously requires an authenticated user. While this is handy for
 ad-hoc uploads, it is very inconvenient for automating it by custom
@@ -804,7 +804,7 @@ scripts. For this the next variant exists.</p>
 should make tools that interact with docspell much easier to write.
 The <a href="https://docspell.org/docs/tools/android/">Android Client App</a> uses these urls to
 upload files.</p>
-<p>Go to &quot;Collective Settings&quot; and then to the &quot;Source&quot; tab. A <em>Source</em>
+<p>Go to "Collective Settings" and then to the "Source" tab. A <em>Source</em>
 identifies an endpoint where files can be uploaded anonymously.
 Creating a new source creates a long unique id which is part of an url
 that can be used to upload files. You can choose any time to
@@ -825,7 +825,7 @@ username is not visible.</p>
 <figure class="light-block" title="uploading-01.png">
     <img src="https://docspell.org/docs/webapp/uploading-01.png" >
 </figure>
-<p>This example shows a source with name &quot;test&quot;. Besides a description
+<p>This example shows a source with name "test". Besides a description
 and a name that is only used for displaying purposes, a priority and a
 <a href="https://docspell.org/docs/webapp/metadata/#folders">folder</a> can be specified.</p>
 <p>The priority is used for the processing jobs that are submitted when
@@ -883,7 +883,7 @@ can be found <a href="https://docspell.org/docs/api/upload/">here</a>.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

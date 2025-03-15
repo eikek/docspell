@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -784,6 +784,25 @@
   
   
   <h1 id="changelog">Changelog<a class="zola-anchor" href="#changelog" aria-label="Anchor link for: changelog">🔗</a></h1>
+<h2 id="v0-43-0">v0.43.0<a class="zola-anchor" href="#v0-43-0" aria-label="Anchor link for: v0-43-0">🔗</a></h2>
+<p><em>Mar 15, 2025</em></p>
+<h3 id="bug-bug-fixes">🐛 Bug Fixes<a class="zola-anchor" href="#bug-bug-fixes" aria-label="Anchor link for: bug-bug-fixes">🔗</a></h3>
+<ul>
+<li>Fix scrolling in side bar @eikek (#3002)</li>
+<li>nix: unpin weasyprint from python310Packages @VTimofeenko (#2981)</li>
+<li>replaced deprecated  "--optimize-size" with "--optimize-images" @jjkrone (#2972)</li>
+<li>Correction German Word Dokumene to Dokumente. @andbez (#2941)</li>
+<li>Fix duplicate task on reboot @tiborrr (#2902)</li>
+<li>Use http4s' new Part.filename method @pschichtel (#2853)</li>
+<li>Remove <code>--optimize-size</code> option from default weasyprint @eikek (#2784)</li>
+</ul>
+<h3 id="green-heart-maintenance">💚 Maintenance<a class="zola-anchor" href="#green-heart-maintenance" aria-label="Anchor link for: green-heart-maintenance">🔗</a></h3>
+<ul>
+<li>Remove docker workflows @eikek (#2956)</li>
+<li>These things live over at docspell/docker now @pschichtel (#2911)</li>
+<li>Add metals and bloop to gitignore @tiborrr (#2898)</li>
+<li>Update .gitignore for vscode users @tiborrr (#2778)</li>
+</ul>
 <h2 id="v0-42-0">v0.42.0<a class="zola-anchor" href="#v0-42-0" aria-label="Anchor link for: v0-42-0">🔗</a></h2>
 <p><em>Aug 18, 2024</em></p>
 <h3 id="rocket-features">🚀 Features<a class="zola-anchor" href="#rocket-features" aria-label="Anchor link for: rocket-features">🔗</a></h3>
@@ -795,7 +814,7 @@
 <li>Extend nix setup, including dev environments @eikek (#2539)</li>
 <li>Extend config for external commands @eikek (#2536)</li>
 </ul>
-<h3 id="bug-bug-fixes">🐛 Bug Fixes<a class="zola-anchor" href="#bug-bug-fixes" aria-label="Anchor link for: bug-bug-fixes">🔗</a></h3>
+<h3 id="bug-bug-fixes-1">🐛 Bug Fixes<a class="zola-anchor" href="#bug-bug-fixes-1" aria-label="Anchor link for: bug-bug-fixes-1">🔗</a></h3>
 <ul>
 <li>Honor default value <code>true</code> for <code>collectOutput</code> @eikek (#2663)</li>
 <li>FIx extracting addons with only a single file @eikek (#2660)</li>
@@ -805,7 +824,7 @@
 <li>Fix some Kubernetes Kustomize deployment issues @TheAnachronism (#2501)</li>
 <li>tesseract english data is now a separate package @programmerq (#2479)</li>
 </ul>
-<h3 id="green-heart-maintenance">💚 Maintenance<a class="zola-anchor" href="#green-heart-maintenance" aria-label="Anchor link for: green-heart-maintenance">🔗</a></h3>
+<h3 id="green-heart-maintenance-1">💚 Maintenance<a class="zola-anchor" href="#green-heart-maintenance-1" aria-label="Anchor link for: green-heart-maintenance-1">🔗</a></h3>
 <ul>
 <li>Update flake @eikek (#2736)</li>
 <li>Adding CJK and Custom Mapping Documentation @tenpai-git (#2669)</li>
@@ -1049,7 +1068,7 @@ the server and cached for a while.</li>
 utilises to access Docspell from Emacs.</li>
 <li>Increase size for password fields in the database (#1508)</li>
 <li>Hide the delete button in new notifciation channel forms (#1506)</li>
-<li>Fix logging (#1468), non-errors were logged as errors. </li>
+<li>Fix logging (#1468), non-errors were logged as errors.</li>
 <li>Apply the migration fix from last version only from 0.32.0 onwards
 (#1469)</li>
 <li>Fix typos in UI (#1510, @monnypython)</li>
@@ -1101,7 +1120,7 @@ windows has been improved by @arittner.</li>
 <li><code>ItemDetail</code> and <code>ItemLight</code> contain a new field to transport
 related/linked items</li>
 <li><code>ItemUploadMeta</code> has a new flag to specify whether zip files should
-be treated as a container only, and be &quot;flattened&quot; into the list of
+be treated as a container only, and be "flattened" into the list of
 uploaded files</li>
 </ul>
 <h3 id="configuration-changes-6">Configuration Changes<a class="zola-anchor" href="#configuration-changes-6" aria-label="Anchor link for: configuration-changes-6">🔗</a></h3>
@@ -1152,8 +1171,8 @@ entry to quickly see all items currently selected</li>
 </li>
 <li>Change logging format and backend
 <ul>
-<li>The logging format has changed again from logfmt to the &quot;classic&quot; one</li>
-<li>the configuration allows to use logfmt, json or two &quot;classic&quot; formats</li>
+<li>The logging format has changed again from logfmt to the "classic" one</li>
+<li>the configuration allows to use logfmt, json or two "classic" formats</li>
 <li>logback has been removed! If you used a custom <code>logback.xml</code>
 before, I'm sorry this is not possible anymore. There are two
 settings in the config file for now to control logging:
@@ -1164,7 +1183,7 @@ settings in the config file for now to control logging:
 <ul>
 <li>some browsers (e.g. safari and some mobile browsers) don't update
 the ui when the <code>src</code> attribute of the <code>embed</code> element changes</li>
-<li>for the &quot;fallback view&quot;, an <code>iframe</code> is now used - thus for mobile
+<li>for the "fallback view", an <code>iframe</code> is now used - thus for mobile
 it should work now. Safari on desktop would require to change the
 respective setting</li>
 </ul>
@@ -1243,9 +1262,9 @@ constrainted by clicking a category bubble.</li>
 when generating previews (#1183).</li>
 <li>Fix tearing down and initializing pubsub table to allow changing app
 ids (#1251)</li>
-<li>Fix switching between tile and list view when &quot;full width&quot; preview
+<li>Fix switching between tile and list view when "full width" preview
 is enabled (#1261)</li>
-<li>Disable &quot;group by month&quot; if there are no groups (#1255)</li>
+<li>Disable "group by month" if there are no groups (#1255)</li>
 <li>Fix deleting periodic queries (button was not working) (#1257)</li>
 </ul>
 <h3 id="rest-api-changes-8">Rest API Changes<a class="zola-anchor" href="#rest-api-changes-8" aria-label="Anchor link for: rest-api-changes-8">🔗</a></h3>
@@ -1260,7 +1279,7 @@ collective, the previous endpoint now returns a merged json</li>
 <p>None.</p>
 <h2 id="v0-30-1">v0.30.1<a class="zola-anchor" href="#v0-30-1" aria-label="Anchor link for: v0-30-1">🔗</a></h2>
 <p><em>Dec 22, 2021</em></p>
-<p>Bug fix release for #1229: notification mails could not be sent. </p>
+<p>Bug fix release for #1229: notification mails could not be sent.</p>
 <h2 id="v0-30-0">v0.30.0<a class="zola-anchor" href="#v0-30-0" aria-label="Anchor link for: v0-30-0">🔗</a></h2>
 <p><em>Dec 21, 2021</em></p>
 <ul>
@@ -1369,7 +1388,7 @@ authentication. (#762)</li>
 preparation to allow different storage backends for files in the
 future (maybe the filesystem or s3). (#1080)</li>
 <li>The license has changed from GPLv3+ to AGPLv3+ (#1078)</li>
-<li>Fixes a bug in the &quot;check for updates&quot; task that was added in the
+<li>Fixes a bug in the "check for updates" task that was added in the
 last release (#1068)</li>
 <li>Reduces the length of the startup command, which makes tools like
 <code>ps</code> much more readable and allows now to start docspell on Windows
@@ -1404,7 +1423,7 @@ provider</li>
 and merge them all into one. The first item in the list is the
 target item, all others are deleted after a successful merge. The
 webapp allows to reorder this list, of course.</li>
-<li>Add option to only import attachments of e-mails (#983). </li>
+<li>Add option to only import attachments of e-mails (#983).</li>
 <li>Improve <em>Manage Data</em> page by sorting the tables (#965, #538)</li>
 <li>Allow wildcard searches in queries using <code>attach.id</code> (#971). Before
 you would have to specify the complete id. This is inconvenient when
@@ -1450,12 +1469,12 @@ to order the list.</li>
 empty the trash immediately</li>
 <li>The search endpoints can now take an optional parameter <code>searchMode</code>
 that defines whether to search in trashed items or not</li>
-<li>Deleting an item via the api now only changes its state to <em>Trashed</em> </li>
+<li>Deleting an item via the api now only changes its state to <em>Trashed</em></li>
 <li>Added <code>/sec/item/{id}/restore</code> to restore a trashed item (unless it
 has been deleted from the database).</li>
 <li>Added <code>/sec/items/restoreAll</code> to restore multiple of trashed items</li>
 <li>Added <code>/sec/items/merge</code> that accepts a POST request with a list of
-items to merge. The first item is the &quot;target&quot; item. All other items
+items to merge. The first item is the "target" item. All other items
 are deleted after the merge was successful.</li>
 <li>The <code>ScanMailboxSettings</code>, <code>Source</code> and <code>ItemUploadMeta</code> structures
 now contains a boolean field <code>attachmentsOnly</code></li>
@@ -1633,7 +1652,7 @@ anonymous users shouldn't show a form to provide any metadata</li>
 <li>Bug: Tag category color (#835): the input field to specify colors
 for tag categories didn't show the category name</li>
 <li>Bug: Search in names (#822): a bug in the webui sent a broken query
-to the server, making the &quot;search in names&quot; field unusable</li>
+to the server, making the "search in names" field unusable</li>
 <li>Bug: Fulltext only search broken (#823): the fulltext only search
 didn't only consult the solr index, but also the database, making it
 a lot slower and presenting the results not in the order returned by
@@ -1800,7 +1819,7 @@ replaced by a <code>use</code> attribute</li>
 </ul>
 <h3 id="configuration-changes-19">Configuration Changes<a class="zola-anchor" href="#configuration-changes-19" aria-label="Anchor link for: configuration-changes-19">🔗</a></h3>
 <ul>
-<li>joex: 
+<li>joex:
 <ul>
 <li>additional section in <code>house-keeping</code> to configure the periodic
 node cleanup task</li>
@@ -1821,7 +1840,7 @@ Please open an issue if want more languages to be included.</p>
 <li>the detection for correspondents/concerned entities has been
 improved by using the classifier for this, too</li>
 <li>all text analysis steps are now configurable that makes it
-possible to adapt it better to your data and machine. </li>
+possible to adapt it better to your data and machine.</li>
 <li>The docs have been updated with some details
 <a href="https://docspell.org/docs/configure/file-processing/">here</a> and
 <a href="https://docspell.org/docs/joex/file-processing/#text-analysis">here</a>.</li>
@@ -1841,7 +1860,7 @@ models (as before)</li>
 <li>scan mailbox change (#576)
 <ul>
 <li>The change from last version (#551) has been moved behind a flag
-in the &quot;scan mailbox settings&quot;. Please review your scan mailbox
+in the "scan mailbox settings". Please review your scan mailbox
 tasks in your user settings.</li>
 <li>The scan mailbox settings form view has been organized into tabs,
 as it grew too large for a single form.</li>
@@ -2052,7 +2071,7 @@ tags, before tags with <code>count == 0</code> were excluded</li>
 <li>Rest Server:
 <ul>
 <li>adds <code>admin-endpoint.secret</code> (without any value) that is the
-secret for the new &quot;admin endpoint&quot;</li>
+secret for the new "admin endpoint"</li>
 <li>Removes <code>full-text-search.recreate-key</code>, the route that was using
 this key is now moved in the admin endpoint and therefore shares
 this secret now.</li>
@@ -2060,7 +2079,7 @@ this secret now.</li>
 </li>
 <li>Joex:
 <ul>
-<li>adds <code>clear-stanford-nlp-interval = &quot;15 minutes&quot;</code> which is the
+<li>adds <code>clear-stanford-nlp-interval = "15 minutes"</code> which is the
 joex idle time to clear the nlp cache</li>
 <li>The default <code>pool-size</code> is set to 1. You can increase it on
 stronger machines.</li>
@@ -2127,7 +2146,7 @@ tasks.</li>
 </ul>
 <h2 id="v0-16-0">v0.16.0<a class="zola-anchor" href="#v0-16-0" aria-label="Anchor link for: v0-16-0">🔗</a></h2>
 <p><em>Nov 28, 2020</em></p>
-<p>This release brings the &quot;custom metadata fields&quot; feature. It allows
+<p>This release brings the "custom metadata fields" feature. It allows
 you to define custom fields and associate values to your items.
 Additionally there are some ui and other fixes and improvements.</p>
 <ul>
@@ -2181,7 +2200,7 @@ set/remove custom field values for multiple items</li>
 <p>None.</p>
 <h2 id="v0-15-0">v0.15.0<a class="zola-anchor" href="#v0-15-0" aria-label="Anchor link for: v0-15-0">🔗</a></h2>
 <p><em>Nov 15, 2020</em></p>
-<p>This release adds the &quot;preview feature&quot;, where a thumbnail of the
+<p>This release adds the "preview feature", where a thumbnail of the
 first page of each attachment can be shown in the overview. Additional
 there are some bugfixes and UI improvements.</p>
 <ul>
@@ -2343,7 +2362,7 @@ written very fast</li>
 <li>Fix <code>content</code> column for MariaDB (#297)</li>
 <li>Fixe regarding retrying processing of files: attached files were not
 correctly found and the duplicate check must not run</li>
-<li>When &quot;home-page&quot; is rendered, do an initial search. This updates the
+<li>When "home-page" is rendered, do an initial search. This updates the
 view correctly if something changed when coming from item details.</li>
 <li>Reset upload page on init (#294)</li>
 <li>Fixes regarding <code>base-url</code> setting and auth cookie (#308)</li>
@@ -2371,7 +2390,7 @@ unchanged. (#250)</li>
 versa. (#254)</li>
 <li>Fix quick search component to keep search term between changes.
 (#261)</li>
-<li>Docspell now provides a valid manifest to be an installable &quot;pwa&quot;.</li>
+<li>Docspell now provides a valid manifest to be an installable "pwa".</li>
 <li>Fixes <code>consumedir.sh</code> script to work with whitespace in filenames.
 (#269)</li>
 <li>Fix hidden fields feature. Hidden fields are now resetted when
@@ -2421,7 +2440,7 @@ via the config file. Additionally each collective can enable/disable
 it. Learning is done periodically via a user-task that can be
 configured in the collective settings.</li>
 <li>Adds the language french, supported for text extraction and text
-analysis. </li>
+analysis.</li>
 <li>Fixes some build failures that produced artifcats with source files.</li>
 <li>Change the job priority of any waiting job from the <em>Processing</em>
 page.</li>
@@ -2533,7 +2552,7 @@ apply them to the item during processing. (See #175)</li>
 <li>Fix position of datepicker (see #186)</li>
 <li>Fix race condition when updating calendar-event field</li>
 <li>Sort tags by count in collective-insights view</li>
-<li>Simplify search bar </li>
+<li>Simplify search bar</li>
 </ul>
 </li>
 <li>New website</li>
@@ -2551,9 +2570,9 @@ the ocrmypdf tool.</li>
 <li>Add <code>/sec/item/{id}/folder</code> for updating an item folder.</li>
 <li>Change <code>ItemSearch</code> structure to be able to search for items in a
 specific folder.</li>
-<li>Change <code>ItemDetail</code> and <code>ItemLight</code> structure, adding the item folder </li>
-<li>Change <code>ItemUploadMeta</code> structure, adding a folder id field. </li>
-<li>Change <code>Source</code> structure, adding a folder id field. </li>
+<li>Change <code>ItemDetail</code> and <code>ItemLight</code> structure, adding the item folder</li>
+<li>Change <code>ItemUploadMeta</code> structure, adding a folder id field.</li>
+<li>Change <code>Source</code> structure, adding a folder id field.</li>
 <li>Change <code>User</code> structure, adding the user id</li>
 </ul>
 <h2 id="v0-8-0">v0.8.0<a class="zola-anchor" href="#v0-8-0" aria-label="Anchor link for: v0-8-0">🔗</a></h2>
@@ -2605,7 +2624,7 @@ only. This route returns the results as ordered by SOLR and not
 ordered by date.</li>
 <li>The <code>ItemSearch</code> input data is extended to support the new full-text
 search field.</li>
-<li>The <code>ItemLight</code> result structure now can contain &quot;highlighting&quot;
+<li>The <code>ItemLight</code> result structure now can contain "highlighting"
 information that is provided by the full-text search index.</li>
 </ul>
 <h2 id="v0-7-0">v0.7.0<a class="zola-anchor" href="#v0-7-0" aria-label="Anchor link for: v0-7-0">🔗</a></h2>
@@ -2635,7 +2654,7 @@ concerned entities. The search menu can be opened as before. The
 possible with the <em>allNames</em> search field.</li>
 <li>Fixes a bug where a search term was not lower-cased but compared to
 a lower-cased value (see #147).</li>
-<li>Allow to change names of attachments. </li>
+<li>Allow to change names of attachments.</li>
 <li>Document how to create a SMTP gateway to docspell and provide a
 simple docker based setup. This is a SMTP server that delivers mails
 to docspell instead of using a mbox or maildir. It utilises the
@@ -2681,9 +2700,9 @@ optional property <code>allNames</code> to provide the search term for the new
 <h2 id="v0-6-0">v0.6.0<a class="zola-anchor" href="#v0-6-0" aria-label="Anchor link for: v0-6-0">🔗</a></h2>
 <p><em>May 25th, 2020</em></p>
 <ul>
-<li>New feature &quot;Scan Mailboxes&quot;. Docspell can now read mailboxes
+<li>New feature "Scan Mailboxes". Docspell can now read mailboxes
 periodically to import your mails.</li>
-<li>New feature &quot;Integration Endpoint&quot;. Allows an admin to upload files
+<li>New feature "Integration Endpoint". Allows an admin to upload files
 to any collective using a separate endpoint.</li>
 <li>New feature: add files to existing items.</li>
 <li>New feature: reorder attachments via drag and drop.</li>
@@ -2722,7 +2741,7 @@ configure an endpoint for uploading files for admin users.</li>
 <li>Add <code>/sec/usertask/scanmailbox</code> routes to configure one or more
 scan-mailbox tasks</li>
 <li>The data used in <code>/sec/collective/settings</code> was extended with a
-boolean value to enable/disable the &quot;integration endpoint&quot; for a
+boolean value to enable/disable the "integration endpoint" for a
 collective.</li>
 <li>Add <code>/sec/item/{itemId}/attachment/movebefore</code> to move an attachment
 before another.</li>
@@ -2767,7 +2786,7 @@ they may contain multiple files (body and attachments).</li>
 </li>
 <li>Periodic Tasks framework: Docspell can now run tasks periodically
 based on a schedule. This is not yet exposed to the user, but there
-are some system cleanup jobs to start with. </li>
+are some system cleanup jobs to start with.</li>
 <li>Improvement of the text analysis. For my test files there was a
 increase in accuracy by about 10%.</li>
 <li>A due date that is found during text analysis is now set on the
@@ -2778,7 +2797,7 @@ viewer.</li>
 <li>Add a configurable length limit for text analysis</li>
 </ul>
 <h3 id="configuration-changes-34">Configuration Changes<a class="zola-anchor" href="#configuration-changes-34" aria-label="Anchor link for: configuration-changes-34">🔗</a></h3>
-<p>The configuration of the joex component has been changed. </p>
+<p>The configuration of the joex component has been changed.</p>
 <ul>
 <li>new section <code>docspell.joex.periodic-scheduler</code> for configuring the
 periodic scheduler</li>
@@ -2819,7 +2838,7 @@ equipments.</li>
 in docspell.</li>
 </ul>
 <h3 id="configuration-changes-35">Configuration Changes<a class="zola-anchor" href="#configuration-changes-35" aria-label="Anchor link for: configuration-changes-35">🔗</a></h3>
-<p>The configuration of the joex component has been changed. </p>
+<p>The configuration of the joex component has been changed.</p>
 <ul>
 <li>removed <code>docspell.joex.extraction.allowed-content-types</code></li>
 <li>other settings in <code>docspell.joex.extraction</code> have been moved to
@@ -2840,7 +2859,7 @@ the attachments</li>
 <h2 id="v0-2-0">v0.2.0<a class="zola-anchor" href="#v0-2-0" aria-label="Anchor link for: v0-2-0">🔗</a></h2>
 <p><em>Jan. 12, 2020</em></p>
 <p>The second release of Docspell addresses some annoying issues in the
-UI and adds a &quot;send by email&quot; feature.</p>
+UI and adds a "send by email" feature.</p>
 <ul>
 <li>Send an item and its attachments via E-Mail (requires to setup SMTP
 settings per user)</li>
@@ -2872,7 +2891,7 @@ Web UI:</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
@@ -2915,6 +2934,12 @@ Web UI:</p>
                         </a>
                         
                         <div class="pl-4 opacity-75">
+                            
+                            <div class="border-l-2 dark:border-stone-700 pl-1">
+                                <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;changelog&#x2F;#v0-43-0" class="hover:text-stone-900 dark:hover:text-stone-100">
+                                    v0.43.0
+                                </a>
+                            </div>
                             
                             <div class="border-l-2 dark:border-stone-700 pl-1">
                                 <a href="https:&#x2F;&#x2F;docspell.org&#x2F;docs&#x2F;install&#x2F;changelog&#x2F;#v0-42-0" class="hover:text-stone-900 dark:hover:text-stone-100">

@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -799,7 +799,7 @@ rest-server the user is using right now, all must be notified.</li>
 <li>JMS (ActiveMQ or similiar): Message Broker as another active
 component</li>
 <li>Akka: using a cluster</li>
-<li>DB: Register with &quot;call back urls&quot;</li>
+<li>DB: Register with "call back urls"</li>
 </ol>
 <h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
 <p>Choosing option 3: DB as central synchronisation point.</p>
@@ -834,7 +834,7 @@ possible. and it simply is another dependency that is not really
 required for the joex component</li>
 <li>the joex component cannot be in an untrusted environment (untrusted
 from the db's point of view). For example, it is not possible to
-create &quot;personal joex&quot; that only receive your own jobs…</li>
+create "personal joex" that only receive your own jobs…</li>
 <li>in order to know if a component is really active, one must run a
 ping against the call-back url</li>
 </ul>
@@ -848,7 +848,7 @@ ping against the call-back url</li>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

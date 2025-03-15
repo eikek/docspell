@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -783,14 +783,14 @@
                         
   
   <h1 id="json-miniquery">JSON Miniquery</h1>
-<p>A &quot;JSON mini query&quot; is a simple expression that evaluates to <code>true</code> or
+<p>A "JSON mini query" is a simple expression that evaluates to <code>true</code> or
 <code>false</code> for any given JSON value.</p>
 <p>It is used in docspell to filter notification events.</p>
 <p>The examples shown here assume the JSON at <a href="https://docspell.org/docs/jsonminiquery/#sample-json">the end of this
 page</a>.</p>
 <h1 id="structure">Structure</h1>
-<p>A json mini query is a sequence of &quot;segments&quot; where each one selects
-contents from the &quot;current result&quot;. The current result is always a
+<p>A json mini query is a sequence of "segments" where each one selects
+contents from the "current result". The current result is always a
 list of JSON values and starts out with a single element list
 containing the given root JSON document.</p>
 <p>When the expression is applied, it is read from left to right where
@@ -920,7 +920,7 @@ result after <code>content.added,removed</code> looks like this:</p>
 <p>At last, the remaining elements are filtered. It resolve all <code>name</code>
 fields and keeps only <code>invoice</code> values. It also resolves <code>category</code>
 and keeps only <code>expense</code> values. Both lists are then concatenated into
-one. The final result is then <code>[&quot;Invoice&quot;, &quot;expense&quot;]</code>, which matches
+one. The final result is then <code>["Invoice", "expense"]</code>, which matches
 the sample json data below.</p>
 <h1 id="sample-json">Sample JSON</h1>
 <p>Some examples assume the following JSON:</p>
@@ -984,7 +984,7 @@ the sample json data below.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

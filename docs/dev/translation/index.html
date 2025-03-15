@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -993,7 +993,7 @@ translation process.</p>
 <h2 id="translating">Translating<a class="zola-anchor" href="#translating" aria-label="Anchor link for: translating">🔗</a></h2>
 <p>Now translation can begin. If you look at the newly created value
 <code>de</code>, you'll see some entries in the record. Each corresponds to a
-page: <code>login</code> is for the login page, <code>home</code> for the &quot;home page&quot; etc;
+page: <code>login</code> is for the login page, <code>home</code> for the "home page" etc;
 and <code>app</code> is for the top menu.</p>
 <p>Take one of them and start translating. For the example, I use the
 first one which is <code>Messages.App</code>. The file to this is
@@ -1015,7 +1015,7 @@ find a file to an elm module. Open this file and you'll see again a
 </span><span class="z-source z-elm">    <span class="z-constant z-language z-delimiter z-elm"><span class="z-support z-function z-delimiter z-elm">}</span></span>
 </span></code></pre>
 <p>Then go to the beginning of the file and add the new <code>de</code> value to the
-list of &quot;exposed&quot; values. This is necessary so it can be used from
+list of "exposed" values. This is necessary so it can be used from
 within the <code>Messages.elm</code> module.</p>
 <pre data-lang="elm" class="language-elm z-code"><code class="language-elm" data-lang="elm"><span class="z-source z-elm"><span class="z-meta z-declaration z-module z-elm"><span class="z-keyword z-other z-elm">module</span> <span class="z-support z-other z-module z-elm">Messages.App</span> <span class="z-keyword z-other z-elm">exposing</span></span>
 </span><span class="z-source z-elm">    <span class="z-keyword z-other z-parenthesis z-elm">(</span> <span class="z-constant z-other z-elm">Texts</span>
@@ -1097,7 +1097,7 @@ work, try:</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

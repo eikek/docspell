@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -806,11 +806,11 @@ its log messages again. A running job displays the job executor id
 that executes the job.</p>
 <p>The jobs listed here are all long-running tasks for your collective.
 Most of the time it executes the document processing tasks. But user
-defined tasks, like &quot;import mailbox&quot;, are also visible here.</p>
+defined tasks, like "import mailbox", are also visible here.</p>
 <p>Since job executors are shared among all collectives, it may happen
 that a job is some time waiting until it is picked up by a job
 executor. You can always start more job executors to help out.</p>
-<p>If a job fails it first enters &quot;stuck&quot; state and is retried after some
+<p>If a job fails it first enters "stuck" state and is retried after some
 time. Only if it fails too often (can be configured), it then is
 finished with <em>failed</em> state.</p>
 <p>For the document-processing task, if processing finally fails or a job
@@ -825,7 +825,7 @@ is cancelled, the item is still created, just without suggestions.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

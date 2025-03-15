@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -784,14 +784,14 @@
   
   
   <h2 id="vertical-languages">Vertical Languages<a class="zola-anchor" href="#vertical-languages" aria-label="Anchor link for: vertical-languages">🔗</a></h2>
-<p>Many of the underlying tools that Docspell uses to recognize, read, and extract text from documents have mixed support for vertical languages and other specific situations, making a default implementation difficult for language specific use cases. </p>
+<p>Many of the underlying tools that Docspell uses to recognize, read, and extract text from documents have mixed support for vertical languages and other specific situations, making a default implementation difficult for language specific use cases.</p>
 <p>As a result, Docspell has implemented custom argument mappings for individual languages so Tessearct, OCRmyPDF, or any program can process documents with specific arguments for a given language. One of the biggests use cases for these custom mappings are vertical and CJK (Chinese, Japanese, Korean) languages.</p>
 <h3 id="custom-mappings-example-default">Custom Mappings Example (Default)<a class="zola-anchor" href="#custom-mappings-example-default" aria-label="Anchor link for: custom-mappings-example-default">🔗</a></h3>
-<p>For example, lets say you need to read a PDF in Japanese but you're unsure of what a specific kanji may be. If you insert this pdf into Docspell on Tesseract and OCRmyPDF defaults, or try to use these programs on their own, you may be greeted by encoding error outputs, resulting in something like the following: </p>
+<p>For example, lets say you need to read a PDF in Japanese but you're unsure of what a specific kanji may be. If you insert this pdf into Docspell on Tesseract and OCRmyPDF defaults, or try to use these programs on their own, you may be greeted by encoding error outputs, resulting in something like the following:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">ス¿ンÀーùßÝ�Ï項<span class="z-meta z-group z-expansion z-tilde"><span class="z-variable z-language z-tilde z-shell">~</span></span>t®ÿÝ�Ï®þĀ</span></span>
 </span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">イン¿ーネッø募Ö</span></span><span class="z-meta z-function-call z-shell"></span>}
 </span></code></pre>
-<p>Even if you don't speak Japanese, you have probably realized that this is not very helpful for you! </p>
+<p>Even if you don't speak Japanese, you have probably realized that this is not very helpful for you!</p>
 <p>To solve this problem, we need to make use of custom argument mappings. In the default docspell Joex file, there are two existing custom mappings for Japanese (<code>jpn</code>) and Vertical Japanese (<code>jpn_vert</code>). Let's take a look at the default OCRmyPDF mapping below:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">ocrmypdf</span></span><span class="z-meta z-function-call z-arguments z-shell"> = <span class="z-meta z-group z-expansion z-brace z-shell"><span class="z-punctuation z-section z-expansion z-brace z-begin z-shell">{</span>
 </span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-meta z-group z-expansion z-brace z-shell">      enabled = true
@@ -828,16 +828,16 @@
 <p>The result winds up that our above document winds up outputting the following:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">契約概要のご説明・注意喚起情報のご説明</span></span><span class="z-meta z-function-call z-arguments z-shell"> </span>
 </span></code></pre>
-<p>And now you can easily look up these words or use 3rd party translation tools to get the meaning. </p>
+<p>And now you can easily look up these words or use 3rd party translation tools to get the meaning.</p>
 <p>This is only one such example of the power of custom mappings, and advanced users of Tesseract, OCRmyPDF, or other tools will enjoy customizing Docspell with the defaults best for their use case.</p>
 <h3 id="converting-vertical-text-to-horizontal">Converting Vertical Text to Horizontal<a class="zola-anchor" href="#converting-vertical-text-to-horizontal" aria-label="Anchor link for: converting-vertical-text-to-horizontal">🔗</a></h3>
-<p>Currently, Vertical Japanese (JpnVert) supports converting vertical text from images directly to horizontal metadata. However, if you use a PDF or other format, OCRmyPDF will read the text as newlines, so you may wind up with an output from a vertical scan that has metadata like the following: </p>
+<p>Currently, Vertical Japanese (JpnVert) supports converting vertical text from images directly to horizontal metadata. However, if you use a PDF or other format, OCRmyPDF will read the text as newlines, so you may wind up with an output from a vertical scan that has metadata like the following:</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">や</span></span>
 </span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">さ</span></span>
 </span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">し</span></span>
 </span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">い</span></span>
 </span></code></pre>
-<p>Obviously we want that written out nicely <code>やさしい</code>, but the file could be much longer. There are multiple ways to accomplish this, but the easiest way on small scale is to run the extracted metadata through a script. </p>
+<p>Obviously we want that written out nicely <code>やさしい</code>, but the file could be much longer. There are multiple ways to accomplish this, but the easiest way on small scale is to run the extracted metadata through a script.</p>
 <p>Here's a simple bash script to very roughly convert vertical text to horizontal text, and adds in a new line if the line is empty to get you most of the way there. Take the text extracted from docspell, copy and paste it into something like <code>vertical.txt</code> and then run the following;</p>
 <pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">!/bin/bash</span><span class="z-comment z-line z-number-sign z-shell">
 </span></span><span class="z-source z-shell z-bash">
@@ -857,7 +857,7 @@
 <p>With the <code>cfg.file</code> content in the directory you run <code>ocrmypdf</code> being:</p>
 <pre class="z-code"><code><span class="z-text z-plain">preserve_interword_spaces 1
 </span></code></pre>
-<p>Your horizontal data will then be in <code>horizontal_ocr_output.txt</code> or whatever you named it above. </p>
+<p>Your horizontal data will then be in <code>horizontal_ocr_output.txt</code> or whatever you named it above.</p>
 <p>That should help anyone where ocrmypdf skips text in the docspell defaults if they desperately need the metadata out of a vertical file. Docspell may be able to directly support this <code>--sidecar</code> output in the future with additional open source contributions.</p>
 
   
@@ -869,7 +869,7 @@
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -885,7 +885,7 @@ notes about the used options (see <code>man curl</code>):</p>
 information and no output to stdout</li>
 <li><code>--fail</code> return non-zero if http status code is not success</li>
 <li><code>-F</code> use a multipart/form-data request (defaults to a POST request)</li>
-<li><code>&quot;file=@-;filename=\&quot;$_subject:\&quot;&quot;</code> add one part with name <code>file</code>
+<li><code>"file=@-;filename=\"$_subject:\""</code> add one part with name <code>file</code>
 and take the data from stdin (<code>@-</code>). Since there is no filename, we
 use the subject of the mail. This is <a href="http://exim.org/exim-html-current/doc/html/spec_html/ch-string_expansions.html">supported by
 exim</a>
@@ -895,7 +895,7 @@ required).</li>
 only the part until the <code>@</code> sign.</li>
 <li><code>${env{DS_HEADER}{$value} fail}</code> looks up an environment variable by
 key <code>DS_HEADER</code>. This is usually defined in <code>docker-compose.yml</code>.
-The value must be the &quot;secret&quot; header value as defined in docspell's
+The value must be the "secret" header value as defined in docspell's
 configuration file.</li>
 <li><code>${env{DS_URL}{$value} fail}</code> the url to docspell. It is looked up
 from the environment with key <code>DS_URL</code>, which is usually defined in
@@ -1005,7 +1005,7 @@ configured local domain, the server rejects it immediately:</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

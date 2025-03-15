@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -887,7 +887,7 @@ passwords</a> (you must, as of
 now, enable 2FA to make it available). These are separate unique
 passwords solely defined for one specific application. You can
 enable/disable this password any time at your google account page.</p>
-<p>This makes it possible to use &quot;standard&quot; authentication schemes with
+<p>This makes it possible to use "standard" authentication schemes with
 you gmail account via imap. That is, <em>do not</em> enable the <code>Enable OAuth2 authentication …</code> in your imap settings.</p>
 <h2 id="via-oauth2">via OAuth2<a class="zola-anchor" href="#via-oauth2" aria-label="Anchor link for: via-oauth2">🔗</a></h2>
 <p>If you don't want to use application specific passwords, you can use
@@ -898,8 +898,8 @@ which has support for XOAUTH2.</p>
 password is the OAuth2 access token.</p>
 <p>The following describes what you need to do at gmail to activate this
 for docspell. First you need to go to the <a href="https://console.developers.google.com">Google Developers
-Console</a> and create an &quot;App&quot; to
-get a Client-Id and a Client-Secret. This &quot;App&quot; will be your instance
+Console</a> and create an "App" to
+get a Client-Id and a Client-Secret. This "App" will be your instance
 of docspell. You tell google that this app may send and read your
 mails and then you get an <em>access token</em> that should be used instead
 of the password.</p>
@@ -918,7 +918,7 @@ an <em>oauth2-token</em>:</p>
 </span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">   --</span>client_secret</span><span class="z-keyword z-operator z-assignment z-option z-shell">=</span>5Z1...Kir_t <span class="z-punctuation z-separator z-continuation z-line z-shell">\
 </span></span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell">   --</span>generate_oauth2_token</span></span>
 </span></code></pre>
-<p>This will &quot;redirect you&quot; to an URL where you have to authenticate with
+<p>This will "redirect you" to an URL where you have to authenticate with
 google. Afterwards it lets you add permissions to the app for
 accessing your mail account. The result is another code you need to
 give to the script to proceed:</p>
@@ -1013,7 +1013,7 @@ access tokens and update your imap settings via a
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

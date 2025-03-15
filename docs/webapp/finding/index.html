@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -791,7 +791,7 @@ items. Items are displayed sorted by their date, newest first.</p>
 <p>The search bar let's you search in item and attachment names names and
 do fulltext search. The icon next to the search field can switch
 between these modes.</p>
-<p>In the user profile, you can switch this search bar to &quot;power search&quot;
+<p>In the user profile, you can switch this search bar to "power search"
 mode. This allows then to enter <a href="https://docspell.org/docs/query/">complex
 queries</a>.</p>
 <h2 id="names">The <em>Names</em> option<a class="zola-anchor" href="#names" aria-label="Anchor link for: names">🔗</a></h2>
@@ -815,15 +815,15 @@ unmodified.</p>
 <p>The search menu can be opened by clicking the left icon in the top
 bar. It shows some options to constrain the item list:</p>
 <h2 id="inbox">Inbox<a class="zola-anchor" href="#inbox" aria-label="Anchor link for: inbox">🔗</a></h2>
-<p>Clicking the checkbox &quot;Inbox&quot; shows items that have not been
-&quot;Confirmed&quot;. All items that have been created by docspell and not
-looked at are marked as &quot;new&quot; automatically.</p>
+<p>Clicking the checkbox "Inbox" shows items that have not been
+"Confirmed". All items that have been created by docspell and not
+looked at are marked as "new" automatically.</p>
 <h2 id="tags-tag-categories">Tags &amp; Tag Categories<a class="zola-anchor" href="#tags-tag-categories" aria-label="Anchor link for: tags-tag-categories">🔗</a></h2>
 <p>Click on a tag to show only items with this tag, the tag is marked
 with a check (✔) icon. Click again, to show only items that are not
 tagged with the tag. Then the tag is marked with a minus (–) icon.
 Clicking a third time deselects the tag and the icon goes back to a
-&quot;tag&quot; icon.</p>
+"tag" icon.</p>
 <p>By default, the most used tags are shown and you can click on <em>Show
 more…</em> to list all. How many tags are displayed can be changed in the
 ui settings (go to <em>User Settings</em> ‣ <em>Ui Settings</em>).</p>
@@ -876,7 +876,7 @@ within this range. Items without a due date are not shown.</p>
 <h1 id="customize-substring-search">Customize Substring Search<a class="zola-anchor" href="#customize-substring-search" aria-label="Anchor link for: customize-substring-search">🔗</a></h1>
 <p>The substring search of <em>Search in names</em> field can be customized in
 the following way: A wildcard <code>*</code> can be used at the start or end of a
-search term to do a substring match. A <code>*</code> means &quot;everything&quot;. So a
+search term to do a substring match. A <code>*</code> means "everything". So a
 term <code>*company</code> matches all names ending in <code>company</code> and <code>*company*</code>
 matches all names containing the word <code>company</code>. The matching is case
 insensitive.</p>
@@ -884,7 +884,7 @@ insensitive.</p>
 unless one of the following is true:</p>
 <ul>
 <li>The term already has a wildcard.</li>
-<li>The term is enclosed in quotes <code>&quot;</code>.</li>
+<li>The term is enclosed in quotes <code>"</code>.</li>
 </ul>
 <h1 id="full-text-search">Full Text Search<a class="zola-anchor" href="#full-text-search" aria-label="Anchor link for: full-text-search">🔗</a></h1>
 <h2 id="the-query">The Query<a class="zola-anchor" href="#the-query" aria-label="Anchor link for: the-query">🔗</a></h2>
@@ -904,8 +904,8 @@ about parsing queries, Docspell by default uses
 more characters</li>
 <li>Fuzzy search: Appending a <code>~</code> to a term, results in a fuzzy search
 (search this term and similiar spelled ones)</li>
-<li>Proximity Search: Search for terms that &quot;near&quot; each other, again
-using <code>~</code> appended to a search phrase. Example: <code>&quot;cheese cake&quot;~5</code>.</li>
+<li>Proximity Search: Search for terms that "near" each other, again
+using <code>~</code> appended to a search phrase. Example: <code>"cheese cake"~5</code>.</li>
 <li>Boosting: apply more weight to a term with <code>^</code>. Example: <code>cheese^4 cake</code> – cheese is 4x more important.</li>
 </ul>
 <p>Docspell will preprocess the search query to prepare a query for SOLR.
@@ -928,7 +928,7 @@ with the highlighted occurrence of the match.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -836,15 +836,15 @@ provide protection?</p>
 wanted features (document processing), the server must see the file
 contents. Then, it will receive and serve files in clear form, so it
 has access to them anyways.</p>
-<p>With that in mind, the &quot;only&quot; feature is to protect against &quot;stolen
-database&quot; attacks. If the database is somehow leaked, the attackers
+<p>With that in mind, the "only" feature is to protect against "stolen
+database" attacks. If the database is somehow leaked, the attackers
 would only see the metadata, but not real documents. It also protects
 against leakage, maybe caused by a pogramming error.</p>
 <p>But the downside is, that it increases complexity <em>a lot</em>. And since
 this is a personal tool for personal use, is it worth the effort?</p>
 <h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
 <p>No encryption, because of its complexity.</p>
-<p>For now, this tool is only meant for &quot;self deployment&quot; and personal
+<p>For now, this tool is only meant for "self deployment" and personal
 use. If this changes or there is enough time, this decision should be
 reconsidered.</p>
 
@@ -857,7 +857,7 @@ reconsidered.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

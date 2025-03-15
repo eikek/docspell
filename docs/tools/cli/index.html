@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -820,7 +820,7 @@ variable <code>DSC_CONFIG</code>.</p>
 <p>If you use the <a href="https://www.passwordstore.org">pass</a> password manager,
 you can add your password entry to the config file as well.</p>
 <h2 id="output-format">Output format<a class="zola-anchor" href="#output-format" aria-label="Anchor link for: output-format">🔗</a></h2>
-<p>The &quot;output format&quot; defines how the information is printed on screen.
+<p>The "output format" defines how the information is printed on screen.
 The default output format is <code>Tabular</code> which prints a simple table.
 This table can also be formatted as CSV using <code>csv</code> as output format.
 These two modes are intended for humans and they may not present all
@@ -993,10 +993,10 @@ some metadata, namely tags, folder, and the item's date.</p>
 the links created in the <code>by_*</code> folders. The default is the items' id,
 which is not very self-speaking and thus might not fit your needs. Using
 <code>--link-naming name</code> you can configure it to use the item's name instead.</p>
-<p>If you use path separators in your folder names, such as the &quot;/&quot; in
+<p>If you use path separators in your folder names, such as the "/" in
 <code>Finance/Institute</code>, you can configure export to unwrap your folder names
 into recursive paths (as shown in the example output above) using the
-<code>--folder-delimiter &quot;/&quot;</code> option. Otherwise, the name would be sanitized
+<code>--folder-delimiter "/"</code> option. Otherwise, the name would be sanitized
 resulting in <code>Finance-Institute</code>.</p>
 <p>Example run (producing output shown above):</p>
 <pre class="z-code"><code><span class="z-text z-plain">❯ dsc export --all --date-links --folder-links --folder-delimiter &quot;/&quot; --tag-links --target exports
@@ -1118,7 +1118,7 @@ the <code>consumedir</code> container will push it to docspell.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

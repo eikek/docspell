@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -788,23 +788,23 @@
 goal is to be able to have multiple rest servers/webapps and multiple
 document processor components working togehter.</p>
 <h1 id="decision-outcome">Decision Outcome<a class="zola-anchor" href="#decision-outcome" aria-label="Anchor link for: decision-outcome">🔗</a></h1>
-<p>The following are the &quot;main&quot; modules. There may be more helper modules
+<p>The following are the "main" modules. There may be more helper modules
 and libraries that support implementing a feature.</p>
 <h2 id="store">store<a class="zola-anchor" href="#store" aria-label="Anchor link for: store">🔗</a></h2>
 <p>The code related to database access. It also provides the job
 queue. It is designed as a library.</p>
 <h2 id="joex">joex<a class="zola-anchor" href="#joex" aria-label="Anchor link for: joex">🔗</a></h2>
-<p>Joex stands for &quot;job executor&quot;.</p>
+<p>Joex stands for "job executor".</p>
 <p>An application that executes jobs from the queue and therefore depends
 on the <code>store</code> module. It provides the code for all tasks that can be
-submitted as jobs. If no jobs are in the queue, the joex &quot;sleeps&quot;
+submitted as jobs. If no jobs are in the queue, the joex "sleeps"
 and must be waked via an external request.</p>
 <p>It provides the document processing code.</p>
 <p>It provides a http rest server to get insight into the joex state
 and also to be notified for new jobs.</p>
 <h2 id="backend">backend<a class="zola-anchor" href="#backend" aria-label="Anchor link for: backend">🔗</a></h2>
 <p>It provides all the logic, except document processing, as a set of
-&quot;operations&quot;. An operation can be directly mapped to a rest
+"operations". An operation can be directly mapped to a rest
 endpoint.</p>
 <p>It is designed as a library.</p>
 <h2 id="rest-api">rest api<a class="zola-anchor" href="#rest-api" aria-label="Anchor link for: rest-api">🔗</a></h2>
@@ -815,7 +815,7 @@ provides types and conversions to/from json.</p>
 rest clients.</p>
 <h2 id="rest-server">rest server<a class="zola-anchor" href="#rest-server" aria-label="Anchor link for: rest-server">🔗</a></h2>
 <p>This is the main application. It directly depends on the <code>backend</code>
-module, and each rest endpoint maps to a &quot;backend operation&quot;. It is
+module, and each rest endpoint maps to a "backend operation". It is
 also responsible for converting the json data inside http requests
 to/from types recognized by the <code>backend</code> module.</p>
 <h2 id="webapp">webapp<a class="zola-anchor" href="#webapp" aria-label="Anchor link for: webapp">🔗</a></h2>
@@ -830,7 +830,7 @@ to/from types recognized by the <code>backend</code> module.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>

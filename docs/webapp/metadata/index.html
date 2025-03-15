@@ -63,7 +63,7 @@
 
             <div class="flex items-center">
                 <div class="text-xs py-1 px-1 rounded-full border opacity-50">
-                    0.42.0
+                    0.43.0
                 </div>
             </div>
 
@@ -125,7 +125,7 @@
 
             
             <div id="sidebar"
-                 class ="mx-1 flex flex-col sm:flex-none w-full md:w-72 min-h-max overflow-none sm:overflow-y-auto transition-opacity transition-duration-200 "
+                 class ="mx-1 flex flex-col sm:flex-none md:w-72 overflow-none sm:overflow-y-auto  "
             >
 
                 
@@ -806,7 +806,7 @@ example, you may want to have a tag category <em>doctype</em> that is
 comprised of tags like <em>bill</em>, <em>contract</em>, <em>receipt</em> and so on. Or for
 workflows, a tag category <em>state</em> may exist that includes tags like
 <em>Todo</em> or <em>Waiting</em>. Or you can tag items with user names to provide
-&quot;assignment&quot; semantics. Docspell doesn't propose any workflow, but it
+"assignment" semantics. Docspell doesn't propose any workflow, but it
 can help to implement some.</p>
 <p>Docspell can try to predict a tag for new incoming documents
 automatically based on your existing data. This requires to train an
@@ -814,7 +814,7 @@ algorithm. There are some caveats: the more data you have correctly
 tagged, the better are the results. So it won't work well for maybe
 the first 100 documents. Then the tags must somehow relate to a
 pattern in the document text. Tags like <em>todo</em> or <em>waiting</em> probably
-won't work, obviously. But the typical &quot;document type&quot; tag, like
+won't work, obviously. But the typical "document type" tag, like
 <em>invoice</em> and <em>receipt</em> is a good fit! That is why you need to provide
 a tag category so only sensible tags are being learned. The algorithm
 goes through all your items and learns patterns in the text that
@@ -830,13 +830,13 @@ tags in the database. If they match, the item is tagged with them.</p>
 <h2 id="organization-and-person">Organization and Person<a class="zola-anchor" href="#organization-and-person" aria-label="Anchor link for: organization-and-person">🔗</a></h2>
 <p>The organization entity represents an non-personal (organization or
 company) correspondent of an item. Docspell will choose one or more
-organizations when processing documents and associate the &quot;best&quot; match
+organizations when processing documents and associate the "best" match
 with your item.</p>
 <p>The person entitiy can appear in two roles: It may be a correspondent
 or the person an item is about. So a person is either a correspondent
 or a concerning person. Docspell can not know which person is which,
-therefore you need to tell this by checking the box &quot;Use for
-concerning person suggestion only&quot;. If this is checked, docspell will
+therefore you need to tell this by checking the box "Use for
+concerning person suggestion only". If this is checked, docspell will
 use this person only to suggest a concerning person. Otherwise the
 person is used only for correspondent suggestions.</p>
 <p>Document processing uses the following properties:</p>
@@ -914,7 +914,7 @@ rules based on the address book.</p>
                     <footer class="w-full pt-8 pb-4 px-8 mt-4 bg-stone-50 dark:bg-stone-800 bg-opacity-80 dark:bg-opacity-50">
   <div class="text-center text-sm">
         <span>
-            Docspell 0.42.0
+            Docspell 0.43.0
         </span>
         <span class="ml-1 mr-1">•</span>
         <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html" target="_blank">AGPLv3+</a>
