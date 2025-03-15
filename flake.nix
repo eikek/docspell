@@ -36,6 +36,9 @@
           wget
           which
           inotifyTools
+          ocrmypdf
+          devshell-tools.packages.${system}.postgres-fg
+          python3Packages.weasyprint
         ]);
       docspellPkgs = pkgs.callPackage (import ./nix/pkg.nix) {};
       dockerAmd64 = pkgs.pkgsCross.gnu64.callPackage (import ./nix/docker.nix) {
@@ -92,19 +95,29 @@
             (builtins.attrValues devshell-tools.legacyPackages.${system}.cnt-scripts)
             ++ devshellPkgs;
 
+          PG_PASSWORD = "dev";
           DOCSPELL_ENV = "dev";
           DEV_CONTAINER = "docsp-dev";
           SBT_OPTS = "-Xmx2G -Xss4m";
+
+          # for the start-local.sh script
+          DOCSPELL_DB = "jdbc:postgresql://docsp-dev:5342/docspell";
+          DOCSPELL_SOLR_URL = "http://docsp-dev:8983/solr/docspell";
         };
         dev-vm = pkgs.mkShellNoCC {
           buildInputs =
             (builtins.attrValues devshell-tools.legacyPackages.${system}.vm-scripts)
             ++ devshellPkgs;
 
+          PG_PASSWORD = "dev";
           DOCSPELL_ENV = "dev";
           SBT_OPTS = "-Xmx2G -Xss4m";
           DEV_VM = "dev-vm";
           VM_SSH_PORT = "10022";
+
+          # for the start-local.sh script
+          DOCSPELL_DB = "jdbc:postgresql://localhost:6534/docspell";
+          DOCSPELL_SOLR_URL = "http://localhost:8983/solr/docspell";
         };
         ci = pkgs.mkShellNoCC {
           buildInputs = ciPkgs;
