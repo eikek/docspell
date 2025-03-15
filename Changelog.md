@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.43.0
+
+*Mar 15, 2025*
+
+### 🐛 Bug Fixes
+
+- Fix scrolling in side bar @eikek (#3002)
+- nix: unpin weasyprint from python310Packages @VTimofeenko (#2981)
+- replaced deprecated  "--optimize-size" with "--optimize-images" @jjkrone (#2972)
+- Correction German Word Dokumene to Dokumente. @andbez (#2941)
+- Fix duplicate task on reboot @tiborrr (#2902)
+- Use http4s' new Part.filename method @pschichtel (#2853)
+- Remove `--optimize-size` option from default weasyprint @eikek (#2784)
+
+### 💚 Maintenance
+
+- Remove docker workflows @eikek (#2956)
+- These things live over at docspell/docker now @pschichtel (#2911)
+- Add metals and bloop to gitignore @tiborrr (#2898)
+- Update .gitignore for vscode users @tiborrr (#2778)
+
+
 ## v0.42.0
 
 *Aug 18, 2024*
