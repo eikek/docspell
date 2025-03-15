@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-ds_version=${1:-0.32.0-SNAPSHOT}
+ds_version=${1:-0.43.0-SNAPSHOT}
 rest_nodes=${2:-1}
 joex_nodes=${3:-1}
 
@@ -119,6 +119,7 @@ docspell.joex {
       older-than = "10 days"
     }
   }
+  convert.html-converter = "weasyprint"
   #convert.ocrmypdf.command.program = "/some/path/bin/ocrmypdf"
 }
 EOF
@@ -166,26 +167,28 @@ prepare_project() {
 }
 
 download_zip() {
-    if [ -f "$run_root/pkg/joex.zip" ] && [ -f "$run_root/pkg/restserver.zip" ]; then
+    local joex="joex-${ds_version}"
+    local restserver="restserver-${ds_version}"
+    if [ -f "$run_root/pkg/$joex.zip" ] && [ -f "$run_root/pkg/$restserver.zip" ]; then
         echo "Not downloading, files already exist"
     else
         echo "Downloading docspell..."
         if [[ $ds_version == *SNAPSHOT ]]; then
-            curl -#Lo "$run_root/pkg/joex.zip" "https://github.com/eikek/docspell/releases/download/nightly/docspell-joex-${ds_version}.zip"
+            curl -#Lo "$run_root/pkg/${joex}.zip" "https://github.com/eikek/docspell/releases/download/nightly/docspell-joex-${ds_version}.zip"
         else
-            curl -#Lo "$run_root/pkg/joex.zip" "https://github.com/eikek/docspell/releases/download/v${ds_version}/docspell-joex-${ds_version}.zip"
+            curl -#Lo "$run_root/pkg/${joex}.zip" "https://github.com/eikek/docspell/releases/download/v${ds_version}/docspell-joex-${ds_version}.zip"
         fi
         if [[ $ds_version == *SNAPSHOT ]]; then
-            curl -#Lo "$run_root/pkg/restserver.zip" "https://github.com/eikek/docspell/releases/download/nightly/docspell-restserver-${ds_version}.zip"
+            curl -#Lo "$run_root/pkg/${restserver}.zip" "https://github.com/eikek/docspell/releases/download/nightly/docspell-restserver-${ds_version}.zip"
         else
-            curl -#Lo "$run_root/pkg/restserver.zip" "https://github.com/eikek/docspell/releases/download/v${ds_version}/docspell-restserver-${ds_version}.zip"
+            curl -#Lo "$run_root/pkg/${restserver}.zip" "https://github.com/eikek/docspell/releases/download/v${ds_version}/docspell-restserver-${ds_version}.zip"
         fi
     fi
 
     echo "Unzipping..."
-    rm -rf "$run_root/pkg"/docspell-joex-* "$run_root/pkg"/docspell-restserver-*
-    unzip -qq "$run_root/pkg/restserver.zip" -d "$run_root/pkg"
-    unzip -qq "$run_root/pkg/joex.zip" -d "$run_root/pkg"
+    rm -rf "$run_root/pkg"/docspell-joex* "$run_root/pkg"/docspell-restserver*
+    unzip -qq "$run_root/pkg/${restserver}.zip" -d "$run_root/pkg"
+    unzip -qq "$run_root/pkg/${joex}.zip" -d "$run_root/pkg"
 }
 
 start_project() {
