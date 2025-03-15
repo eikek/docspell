@@ -12,7 +12,7 @@ import Svg exposing (Svg)
 
 sidebar : String
 sidebar =
-    " flex flex-col flex-none md:w-80 w-full min-h-max px-2 dark:text-gray-200 overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
+    " flex flex-col flex-none md:w-80 w-full px-2 dark:text-gray-200 overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
 
 
 sidebarBg : String
