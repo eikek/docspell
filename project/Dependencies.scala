@@ -10,7 +10,7 @@ object Dependencies {
   val BinnyVersion = "0.11.0"
   val CalevVersion = "0.7.4"
   val CatsVersion = "2.10.0"
-  val CatsEffectVersion = "3.5.7"
+  val CatsEffectVersion = "3.6.0"
   val CatsParseVersion = "1.1.0"
   val CirceVersion = "0.15.0-M1"
   val CirceGenericExtrasVersion = "0.14.4"
