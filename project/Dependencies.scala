@@ -45,7 +45,7 @@ object Dependencies {
   val ScribeVersion = "3.16.0"
   val Slf4jVersion = "2.0.17"
   val SourcecodeVersion = "0.4.2"
-  val StanfordNlpVersion = "4.5.8"
+  val StanfordNlpVersion = "4.5.9"
   val TikaVersion = "3.1.0"
   val YamuscaVersion = "0.11.0"
   val SwaggerUIVersion = "5.20.1"
