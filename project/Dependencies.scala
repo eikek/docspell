@@ -35,7 +35,7 @@ object Dependencies {
   val MariaDbVersion = "3.5.3"
   val MUnitVersion = "1.1.0"
   val MUnitCatsEffectVersion = "2.1.0"
-  val PdfboxVersion = "3.0.4"
+  val PdfboxVersion = "3.0.5"
   val PdfjsViewerVersion = "2.12.313"
   val PoiVersion = "5.4.0"
   val PostgresVersion = "42.7.5"
