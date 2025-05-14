@@ -33,7 +33,7 @@ object Dependencies {
   val Log4sVersion = "1.10.0"
   val LogbackVersion = "1.2.10"
   val MariaDbVersion = "3.5.3"
-  val MUnitVersion = "1.1.0"
+  val MUnitVersion = "1.1.1"
   val MUnitCatsEffectVersion = "2.1.0"
   val PdfboxVersion = "3.0.4"
   val PdfjsViewerVersion = "2.12.313"
