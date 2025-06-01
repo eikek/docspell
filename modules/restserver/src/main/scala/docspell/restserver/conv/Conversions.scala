@@ -663,7 +663,7 @@ trait Conversions {
     ar match {
       case AddResult.Success           => IdResult(success = true, successMsg, id)
       case AddResult.EntityExists(msg) => IdResult(success = false, msg, Ident.unsafe(""))
-      case AddResult.Failure(ex) =>
+      case AddResult.Failure(ex)       =>
         IdResult(success = false, s"Internal error: ${ex.getMessage}", Ident.unsafe(""))
     }
 
@@ -671,14 +671,14 @@ trait Conversions {
     ar match {
       case AddResult.Success           => BasicResult(success = true, successMsg)
       case AddResult.EntityExists(msg) => BasicResult(success = false, msg)
-      case AddResult.Failure(ex) =>
+      case AddResult.Failure(ex)       =>
         BasicResult(success = false, s"Internal error: ${ex.getMessage}")
     }
 
   def basicResult(ar: UpdateResult, successMsg: String): BasicResult =
     ar match {
-      case UpdateResult.Success  => BasicResult(success = true, successMsg)
-      case UpdateResult.NotFound => BasicResult(success = false, "Not found")
+      case UpdateResult.Success     => BasicResult(success = true, successMsg)
+      case UpdateResult.NotFound    => BasicResult(success = false, "Not found")
       case UpdateResult.Failure(ex) =>
         BasicResult(success = false, s"Error: ${ex.getMessage}")
     }

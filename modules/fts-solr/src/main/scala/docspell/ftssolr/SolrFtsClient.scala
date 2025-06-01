@@ -58,7 +58,7 @@ final class SolrFtsClient[F[_]: Async](
       res <- Stream.eval(f(chunks.toList).attempt)
       _ <- res match {
         case Right(()) => Stream.emit(())
-        case Left(ex) =>
+        case Left(ex)  =>
           Stream.eval(logger.error(ex)("Error updating with chunk of data"))
       }
     } yield ()).compile.drain

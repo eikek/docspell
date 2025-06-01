@@ -118,7 +118,7 @@ object ONotification {
         } yield res).attempt
           .map {
             case Right(res) => res
-            case Left(ex) =>
+            case Left(ex)   =>
               val ev =
                 LogEvent.of(Level.Error, "Failed sending sample event").addError(ex)
               SendTestResult(success = false, Vector(ev))
