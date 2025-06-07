@@ -65,7 +65,7 @@ object EnvConfig {
       else
         v.charAt(current) match {
           case '_' => go(current + 1, underscores + 1)
-          case c =>
+          case c   =>
             if (underscores > 0) {
               buffer.append(underscoreMapping(underscores))
             }

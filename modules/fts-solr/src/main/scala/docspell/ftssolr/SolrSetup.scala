@@ -45,7 +45,7 @@ object SolrSetup {
         for {
           current <- SolrQuery(cfg, client).findVersionDoc(versionDocId)
           migs = current match {
-            case None => setupSchema
+            case None      => setupSchema
             case Some(ver) =>
               val verDoc =
                 VersionDoc(versionDocId, allMigrations.map(_.value.version).max)
