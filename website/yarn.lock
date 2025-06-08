@@ -8,9 +8,9 @@
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
 "@fontsource/montserrat@^5.0.0":
-  version "5.2.5"
-  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.2.5.tgz#1095d286c156a42a864ade432e2b094acfde3b0b"
-  integrity sha512-/OA+bdg1yqUArDUnEeCqDwgTDiIpvED56TxYskje8UKpsvjl/0A9eNod7IcdHz6/Osi70vo7briRO3la8/u+5Q==
+  version "5.2.6"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.2.6.tgz#083aba8d818c843cd2bb461c7f455680a12ad2ce"
+  integrity sha512-AfFxq1q5tgkOsjQfMFsh95uMXh39VbGOuBLlHLFg16/txv93lqK7Sr6jev0neuJzZy1kqRG16SH6xpUYnk4cZg==
 
 "@fontsource/source-code-pro@^5.0.0":
   version "5.2.6"
@@ -18,9 +18,9 @@
   integrity sha512-eIlEPWRXqnYwpQO7nONj2IsUpzwME+UwP2oVAgNuwXX5oyLNJqw1Jh0D2FyZWS5Zd0ddsxbz+nhgyVT4K/OgGQ==
 
 "@fontsource/spectral@^5.0.0":
-  version "5.2.5"
-  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.2.5.tgz#22e0b5866feab62b2e195111e85b8ec94c560536"
-  integrity sha512-h16JCDci+uPfg7zsgPG4iiHHUqA0e6Ff1QjTu1vWfKW/5tuGHtOLtUeCue82b5ib3NXCyjpduyEOaZgSENPjbA==
+  version "5.2.6"
+  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.2.6.tgz#75b578a48e3d39467d88ed293acb1b93ad3f588d"
+  integrity sha512-W1+UKOwcWMD3ykoInEi40h8zPIDjJcZOFX2yCUqci2tp0sGKRYlP4N6/Hzpa1SdFAfZnk3srl8paH4sO4qZMJQ==
 
 "@fortawesome/fontawesome-free@^6.0.0":
   version "6.7.2"
