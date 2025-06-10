@@ -42,7 +42,7 @@ object FileUrlReader {
             .evalMap(key => repo.findMeta(key).map(m => (key, m)))
             .flatMap {
               case _ -> Some(m) => repo.getBytes(m.id)
-              case key -> None =>
+              case key -> None  =>
                 Stream.raiseError(
                   new NoSuchElementException(
                     s"File not found for url '${url.asString}' (key=$key)"
