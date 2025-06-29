@@ -87,7 +87,7 @@ final class SchedulerImpl[F[_]: Async](
     logger.info(s"Scheduler requested to cancel job: ${jobId.id}") *>
       state.get.flatMap(_.cancelRequest(jobId) match {
         case Some(ct) => ct.map(_ => true)
-        case None =>
+        case None     =>
           (for {
             job <- OptionT(store.transact(RJob.findByIdAndWorker(jobId, config.name)))
             _ <- OptionT.liftF(
