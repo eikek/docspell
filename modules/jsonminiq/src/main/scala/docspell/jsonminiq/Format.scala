@@ -13,8 +13,8 @@ private[jsonminiq] object Format {
 
   def apply(q: JsonMiniQuery): Either[String, String] =
     q match {
-      case JsonMiniQuery.Empty    => Right("")
-      case JsonMiniQuery.Identity => Right("")
+      case JsonMiniQuery.Empty          => Right("")
+      case JsonMiniQuery.Identity       => Right("")
       case JsonMiniQuery.Fields(fields) =>
         Right(fields.toVector.mkString(","))
 

@@ -55,7 +55,7 @@ object PubSubT {
           .subscribe(NonEmptyList.of(topic.topic))
           .flatMap(m =>
             m.body.as[A](topic.codec) match {
-              case Right(a) => Stream.emit(Message(m.head, a))
+              case Right(a)  => Stream.emit(Message(m.head, a))
               case Left(err) =>
                 logger.stream
                   .error(err)(
