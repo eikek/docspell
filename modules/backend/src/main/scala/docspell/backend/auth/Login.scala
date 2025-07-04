@@ -315,7 +315,7 @@ object Login {
       )(sessionKey: String, rememberToken: Option[String]): F[Result] =
         loginSession(config)(sessionKey).flatMap {
           case success @ Result.Ok(_, _) => (success: Result).pure[F]
-          case fail =>
+          case fail                      =>
             rememberToken match {
               case Some(token) =>
                 loginRememberMe(config)(token)

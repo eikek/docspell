@@ -51,7 +51,7 @@ object AddonRunner {
     runners match {
       case Nil      => failWith("No runner available!")
       case a :: Nil => a
-      case _ =>
+      case _        =>
         new AddonRunner[F] {
           val runnerType: List[RunnerType] = runners.flatMap(_.runnerType).distinct
 
@@ -65,7 +65,7 @@ object AddonRunner {
               )
               .evalMap(_.run(logger, env, ctx))
               .flatMap {
-                case r @ AddonResult.Success(_) => Stream.emit(r.cast.some)
+                case r @ AddonResult.Success(_)          => Stream.emit(r.cast.some)
                 case r @ AddonResult.ExecutionFailed(ex) =>
                   if (ctx.meta.isPure) {
                     logger.stream
@@ -97,7 +97,7 @@ object AddonRunner {
               .last
               .flatMap {
                 case Some(r) => r.pure[F]
-                case None =>
+                case None    =>
                   AddonResult
                     .executionFailed(new NoSuchElementException("No runner left :("))
                     .pure[F]

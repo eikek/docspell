@@ -56,7 +56,7 @@ object RInternalSetting {
       s0 <- read.option
       s <- s0 match {
         case Some(a) => a.pure[ConnectionIO]
-        case None =>
+        case None    =>
           insert.attemptSql *> withoutTransaction(read.unique)
       }
     } yield s
