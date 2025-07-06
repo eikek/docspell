@@ -112,10 +112,10 @@ object EvalProposals {
 
   def nerTagFactor(tag: NerTag, mt: MetaProposalType): Double =
     tag match {
-      case NerTag.Date     => 1.0
-      case NerTag.Email    => 0.5
-      case NerTag.Location => 1.0
-      case NerTag.Misc     => 1.0
+      case NerTag.Date         => 1.0
+      case NerTag.Email        => 0.5
+      case NerTag.Location     => 1.0
+      case NerTag.Misc         => 1.0
       case NerTag.Organization =>
         if (mt == MetaProposalType.CorrOrg) 0.8
         else 1.0

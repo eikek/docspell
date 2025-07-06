@@ -31,7 +31,7 @@ trait MultiIdSupport {
   ): F[NonEmptyList[Ident]] =
     ids.traverse(readId[F]).map(NonEmptyList.fromList).flatMap {
       case Some(nel) => nel.pure[F]
-      case None =>
+      case None      =>
         F.raiseError(
           DecodingFailure("Empty list found, at least one element required", Nil)
         )
