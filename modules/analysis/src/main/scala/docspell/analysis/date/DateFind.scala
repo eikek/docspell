@@ -192,7 +192,7 @@ object DateFind {
 
       def readFirst[A](f: Word => Option[A]): Reader[A] =
         Reader {
-          case Nil => Result.Failure
+          case Nil     => Result.Failure
           case a :: as =>
             f(a).map(value => Result.Success(value, as)).getOrElse(Result.Failure)
         }

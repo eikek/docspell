@@ -68,7 +68,7 @@ object Config {
       val defaultStorePresent =
         enabledStores.get(defaultStore) match {
           case Some(_) => Validated.validNec(())
-          case None =>
+          case None    =>
             Validated.invalidNec(s"Default file store not present: ${defaultStore.id}")
         }
 

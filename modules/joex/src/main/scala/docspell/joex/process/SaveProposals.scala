@@ -41,7 +41,7 @@ object SaveProposals {
   ): F[Unit] = {
     def upsert(v: RItemProposal): F[Int] =
       store.add(RItemProposal.insert(v), RItemProposal.exists(v.itemId)).flatMap {
-        case AddResult.Success => 1.pure[F]
+        case AddResult.Success         => 1.pure[F]
         case AddResult.EntityExists(_) =>
           store.transact(RItemProposal.update(v))
         case AddResult.Failure(ex) =>

@@ -14,7 +14,7 @@ trait NonEmptyListSupport {
   def requireNonEmpty[F[_]: Sync, A](list: List[A]): F[NonEmptyList[A]] =
     NonEmptyList.fromList(list) match {
       case Some(nel) => Sync[F].pure(nel)
-      case None =>
+      case None      =>
         Sync[F].raiseError(new IllegalArgumentException("Empty list not allowed"))
     }
 }
