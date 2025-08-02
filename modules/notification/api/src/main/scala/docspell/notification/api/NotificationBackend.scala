@@ -76,7 +76,7 @@ object NotificationBackend {
       bes: NonEmptyList[NotificationBackend[F]]
   ): NotificationBackend[F] =
     bes.tail match {
-      case Nil => bes.head
+      case Nil         => bes.head
       case next :: Nil =>
         Combined(NonEmptyList.of(bes.head, next))
       case next :: more =>

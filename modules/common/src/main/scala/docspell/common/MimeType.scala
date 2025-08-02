@@ -190,7 +190,7 @@ object MimeType {
     private val charset: P[Option[Charset]] = in =>
       in.trim.toLowerCase.indexOf("charset=") match {
         case -1 => Right((None, in))
-        case n =>
+        case n  =>
           val csValueStart = in.substring(n + "charset=".length).trim
           val csName = csValueStart.indexOf(';') match {
             case -1 => unquote(csValueStart).trim

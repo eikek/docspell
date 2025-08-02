@@ -91,7 +91,7 @@ object Directory {
           nonEmpty(subdir)
             .flatMap {
               case false => false.pure[F]
-              case true =>
+              case true  =>
                 for {
                   _ <- Files[F]
                     .list(subdir)

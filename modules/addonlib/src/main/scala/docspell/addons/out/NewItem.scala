@@ -39,7 +39,7 @@ case class NewItem(metadata: Option[Meta], files: List[String]) {
       Files[F]
         .exists(file)
         .flatMap {
-          case true => file.some.pure[F]
+          case true  => file.some.pure[F]
           case false =>
             logger
               .warn(s"File $file doesn't exist. Ignoring it.")
