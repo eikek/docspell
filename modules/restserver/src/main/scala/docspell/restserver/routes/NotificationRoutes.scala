@@ -171,7 +171,7 @@ object NotificationRoutes extends NonEmptyListSupport {
           baseUrl.some
         )
         resp <- data.asJsonWithMessage match {
-          case Right(m) => Ok(m)
+          case Right(m)  => Ok(m)
           case Left(err) =>
             BadRequest(BasicResult(success = false, s"Unable to render message: $err"))
         }

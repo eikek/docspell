@@ -157,7 +157,7 @@ object ShareRoutes {
 
   def mkIdResult(r: OShare.ChangeResult, msg: => String): IdResult =
     r match {
-      case OShare.ChangeResult.Success(id) => IdResult(success = true, msg, id)
+      case OShare.ChangeResult.Success(id)        => IdResult(success = true, msg, id)
       case OShare.ChangeResult.PublishUntilInPast =>
         IdResult(success = false, "Until date must not be in the past", Ident.unsafe(""))
       case OShare.ChangeResult.NotFound =>
@@ -176,7 +176,7 @@ object ShareRoutes {
 
   def mkBasicResult(r: OShare.ChangeResult, msg: => String): BasicResult =
     r match {
-      case OShare.ChangeResult.Success(_) => BasicResult(success = true, msg)
+      case OShare.ChangeResult.Success(_)         => BasicResult(success = true, msg)
       case OShare.ChangeResult.PublishUntilInPast =>
         BasicResult(success = false, "Until date must not be in the past")
       case OShare.ChangeResult.NotFound =>

@@ -80,7 +80,7 @@ object PdfConvTask {
 
     if (cfg.convert.ocrmypdf.enabled)
       checkSameFiles.flatMap {
-        case true => existsPdf
+        case true  => existsPdf
         case false =>
           ctx.logger.info(
             s"The attachment ${ctx.args.attachId} already has been converted. Skipping."
