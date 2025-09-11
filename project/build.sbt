@@ -1,3 +1,3 @@
 libraryDependencies ++= Seq(
-  "com.typesafe" % "config" % "1.4.4"
+  "com.typesafe" % "config" % "1.4.5"
 )
