@@ -161,8 +161,8 @@ object LenientUri {
   def parse(str: String): Either[String, LenientUri] = {
     def makePath(str: String): Either[String, Path] =
       str.trim match {
-        case "/" => Right(RootPath)
-        case ""  => Right(EmptyPath)
+        case "/"    => Right(RootPath)
+        case ""     => Right(EmptyPath)
         case uriStr =>
           Either.fromOption(
             stripLeading(uriStr, '/')

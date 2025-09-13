@@ -94,7 +94,7 @@ object OItemLink {
         store.add(insert, exists).flatMap {
           case AddResult.Success         => ().pure[F]
           case AddResult.EntityExists(_) => ().pure[F]
-          case AddResult.Failure(ex) =>
+          case AddResult.Failure(ex)     =>
             Sync[F].raiseError(ex)
         }
       }

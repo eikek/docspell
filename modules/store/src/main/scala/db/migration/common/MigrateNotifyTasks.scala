@@ -74,7 +74,7 @@ object MigrateNotifyTasks extends TransactorSupport {
     val recs = old.recipients
       .map(MailAddress.parse)
       .flatMap {
-        case Right(m) => Some(m)
+        case Right(m)  => Some(m)
         case Left(err) =>
           logger.warn(s"Cannot read mail address: $err. Skip this while migrating.")
           None
