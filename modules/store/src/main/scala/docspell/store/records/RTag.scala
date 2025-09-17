@@ -171,7 +171,7 @@ object RTag {
   def sort(tags: List[RTag]): List[RTag] =
     tags match {
       case Nil => tags
-      case _ =>
+      case _   =>
         val byCat = tags
           .groupBy(_.category)
           .view

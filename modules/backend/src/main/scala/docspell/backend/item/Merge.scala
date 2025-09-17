@@ -137,8 +137,8 @@ object Merge {
 
   private def mergeFieldSameName(fields: NonEmptyList[FieldValue]): FieldValue =
     fields.head.field.ftype match {
-      case CustomFieldType.Bool => fields.head
-      case CustomFieldType.Date => fields.head
+      case CustomFieldType.Bool  => fields.head
+      case CustomFieldType.Date  => fields.head
       case CustomFieldType.Money =>
         val amount =
           fields.toList

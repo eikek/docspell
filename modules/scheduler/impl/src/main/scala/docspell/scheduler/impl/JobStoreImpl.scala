@@ -56,7 +56,7 @@ final class JobStoreImpl[F[_]: Sync](store: Store[F]) extends JobStore[F] {
         .traverse(j => insert0(j, now).attempt)
         .flatMap(_.traverse {
           case Right(()) => true.pure[F]
-          case Left(ex) =>
+          case Left(ex)  =>
             logger.error(ex)("Could not insert job. Skipping it.").as(false)
         })
     }
@@ -68,7 +68,7 @@ final class JobStoreImpl[F[_]: Sync](store: Store[F]) extends JobStore[F] {
         .flatMap(_.traverse {
           case Right(true)  => true.pure[F]
           case Right(false) => false.pure[F]
-          case Left(ex) =>
+          case Left(ex)     =>
             logger.error(ex)("Could not insert job. Skipping it.").as(false)
         })
     }

@@ -90,7 +90,7 @@ object RFolder {
     )
     sql.query[Ident].option.flatMap {
       case Some(id) => id.pure[ConnectionIO]
-      case None =>
+      case None     =>
         Sync[ConnectionIO].raiseError(
           new Exception(s"No folder found for: id=${folderId.id} or name=$name")
         )

@@ -141,7 +141,7 @@ object OUpload {
           _ <- checkFileList(files)
           lang <- data.meta.language match {
             case Some(lang) => right(lang.pure[F])
-            case None =>
+            case None       =>
               right(
                 store
                   .transact(RCollective.findLanguage(collectiveId))

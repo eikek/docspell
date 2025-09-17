@@ -508,7 +508,7 @@ object QItem extends FtsSupport {
 
     query.attemptSql.flatMap {
       case Right(res) => res.pure[ConnectionIO]
-      case Left(ex) =>
+      case Left(ex)   =>
         logger
           .error(ex)(
             s"Calculating custom field summary failed. You may have invalid custom field values according to their type."
