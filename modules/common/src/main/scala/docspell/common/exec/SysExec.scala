@@ -132,7 +132,7 @@ object SysExec {
       ): F[Int] =
         logOutputs(logger, basicName).use(_.waitFor(timeout).flatMap {
           case rc if rc == 0 => Sync[F].pure(0)
-          case rc =>
+          case rc            =>
             Sync[F].raiseError(
               new Exception(s"Command `${cmd.program}` returned non-zero exit code ${rc}")
             )
@@ -150,7 +150,7 @@ object SysExec {
           waitFor(timeout)
             .flatMap {
               case rc if rc == 0 => stdout.through(fs2.text.utf8.decode).compile.string
-              case rc =>
+              case rc            =>
                 Sync[F].raiseError[String](
                   new Exception(
                     s"Command `${cmd.program}` returned non-zero exit code ${rc}"

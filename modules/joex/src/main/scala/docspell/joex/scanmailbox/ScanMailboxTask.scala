@@ -64,7 +64,7 @@ object ScanMailboxTask {
       .transact(RUserImap.getByName(ctx.args.account.userId, ctx.args.imapConnection))
       .flatMap {
         case Some(c) => c.pure[F]
-        case None =>
+        case None    =>
           Sync[F].raiseError(
             new Exception(
               s"No imap configuration found for: ${ctx.args.imapConnection.id}"

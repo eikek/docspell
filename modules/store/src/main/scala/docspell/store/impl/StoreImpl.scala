@@ -55,7 +55,7 @@ final class StoreImpl[F[_]: Async: Files](
       save <- transact(insert).attempt
       exist <- save.swap.traverse(ex => transact(exists).map(b => (ex, b)))
     } yield exist.swap match {
-      case Right(_) => AddResult.Success
+      case Right(_)        => AddResult.Success
       case Left((_, true)) =>
         AddResult.EntityExists("Adding failed, because the entity already exists.")
       case Left((ex, _)) => AddResult.Failure(ex)

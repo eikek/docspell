@@ -299,7 +299,7 @@ object OMail {
 
           store.transact(save.value).attempt.map {
             case Right(Some(id)) => Right(id)
-            case Right(None) =>
+            case Right(None)     =>
               Left(
                 SendResult
                   .StoreFailure(new Exception(s"Could not find user to save mail."))
