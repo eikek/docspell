@@ -59,6 +59,7 @@ object Store {
         ds.setUsername(jdbc.user)
         ds.setPassword(jdbc.password)
         ds.setDriverClassName(jdbc.dbms.driverClass)
+        ds.setMaximumPoolSize(jdbc.maximumPoolSize)
       }
       logh = DoobieLogging[F](docspell.logging.getLogger[F])
       xa = HikariTransactor[F](ds, connectEC, Some(logh))
