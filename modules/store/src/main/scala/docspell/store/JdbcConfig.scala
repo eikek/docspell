@@ -8,7 +8,7 @@ package docspell.store
 
 import docspell.common.LenientUri
 
-case class JdbcConfig(url: LenientUri, user: String, password: String) {
+case class JdbcConfig(url: LenientUri, user: String, password: String, maximumPoolSize: Int = 10 ) {
 
   val dbms: Db =
     JdbcConfig.extractDbmsName(url).fold(sys.error, identity)
