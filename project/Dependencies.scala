@@ -49,7 +49,7 @@ object Dependencies {
   val TikaVersion = "3.2.3"
   val YamuscaVersion = "0.11.0"
   val SwaggerUIVersion = "5.29.3"
-  val TestContainerVersion = "0.43.0"
+  val TestContainerVersion = "0.43.6"
   val TwelveMonkeysVersion = "3.12.0"
   val JQueryVersion = "3.5.1"
 
