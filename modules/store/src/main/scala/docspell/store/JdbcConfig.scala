@@ -12,7 +12,7 @@ case class JdbcConfig(
     url: LenientUri,
     user: String,
     password: String,
-    maximumPoolSize: Int = 10
+    maximumPoolSize: Int
 ) {
 
   val dbms: Db =
