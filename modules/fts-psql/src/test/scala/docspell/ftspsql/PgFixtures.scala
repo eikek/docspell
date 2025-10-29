@@ -30,7 +30,7 @@ trait PgFixtures {
     )
 
   def jdbcConfig(cnt: PostgreSQLContainer): JdbcConfig =
-    JdbcConfig(LenientUri.unsafe(cnt.jdbcUrl), cnt.username, cnt.password)
+    JdbcConfig(LenientUri.unsafe(cnt.jdbcUrl), cnt.username, cnt.password, 10)
 
   def dataSource(cnt: PostgreSQLContainer): Resource[IO, DataSource] =
     StoreFixture.dataSource(jdbcConfig(cnt))
