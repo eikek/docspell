@@ -855,12 +855,12 @@ in {
                       options = {
                         begin = mkOption {
                           type = types.int;
-                          default = defaults.extraction.page-range.begin;
+                          default = defaults.extraction.ocr.page-range.begin;
                           description = "Specifies the first N pages of a file to process.";
                         };
                       };
                     };
-                    default = defaults.extraction.page-range;
+                    default = defaults.extraction.ocr.page-range;
                     description = ''
                       Defines what pages to process. If a PDF with 600 pages is
                       submitted, it is probably not necessary to scan through all of
@@ -880,7 +880,7 @@ in {
                       options = {
                         working-dir = mkOption {
                           type = types.str;
-                          default = defaults.extraction.ghostscript.working-dir;
+                          default = defaults.extraction.ocr.ghostscript.working-dir;
                           description = "Directory where the extraction processes can put their temp files";
                         };
                         command = mkOption {
@@ -888,27 +888,27 @@ in {
                             options = {
                               program = mkOption {
                                 type = types.str;
-                                default = defaults.extraction.ghostscript.command.program;
+                                default = defaults.extraction.ocr.ghostscript.command.program;
                                 description = "The path to the executable.";
                               };
                               args = mkOption {
                                 type = types.listOf types.str;
-                                default = defaults.extraction.ghostscript.command.args;
+                                default = defaults.extraction.ocr.ghostscript.command.args;
                                 description = "The arguments to the program";
                               };
                               timeout = mkOption {
                                 type = types.str;
-                                default = defaults.extraction.ghostscript.command.timeout;
+                                default = defaults.extraction.ocr.ghostscript.command.timeout;
                                 description = "The timeout when executing the command";
                               };
                             };
                           };
-                          default = defaults.extraction.ghostscript.command;
+                          default = defaults.extraction.ocr.ghostscript.command;
                           description = "The system command";
                         };
                       };
                     };
-                    default = defaults.extraction.ghostscript;
+                    default = defaults.extraction.ocr.ghostscript;
                     description = "The ghostscript command.";
                   };
                   unpaper = mkOption {
@@ -919,27 +919,27 @@ in {
                             options = {
                               program = mkOption {
                                 type = types.str;
-                                default = defaults.extraction.unpaper.command.program;
+                                default = defaults.extraction.ocr.unpaper.command.program;
                                 description = "The path to the executable.";
                               };
                               args = mkOption {
                                 type = types.listOf types.str;
-                                default = defaults.extraction.unpaper.command.args;
+                                default = defaults.extraction.ocr.unpaper.command.args;
                                 description = "The arguments to the program";
                               };
                               timeout = mkOption {
                                 type = types.str;
-                                default = defaults.extraction.unpaper.command.timeout;
+                                default = defaults.extraction.ocr.unpaper.command.timeout;
                                 description = "The timeout when executing the command";
                               };
                             };
                           };
-                          default = defaults.extraction.unpaper.command;
+                          default = defaults.extraction.ocr.unpaper.command;
                           description = "The system command";
                         };
                       };
                     };
-                    default = defaults.extraction.unpaper;
+                    default = defaults.extraction.ocr.unpaper;
                     description = "The unpaper command.";
                   };
                   tesseract = mkOption {
@@ -950,27 +950,27 @@ in {
                             options = {
                               program = mkOption {
                                 type = types.str;
-                                default = defaults.extraction.tesseract.command.program;
+                                default = defaults.extraction.ocr.tesseract.command.program;
                                 description = "The path to the executable.";
                               };
                               args = mkOption {
                                 type = types.listOf types.str;
-                                default = defaults.extraction.tesseract.command.args;
+                                default = defaults.extraction.ocr.tesseract.command.args;
                                 description = "The arguments to the program";
                               };
                               timeout = mkOption {
                                 type = types.str;
-                                default = defaults.extraction.tesseract.command.timeout;
+                                default = defaults.extraction.ocr.tesseract.command.timeout;
                                 description = "The timeout when executing the command";
                               };
                             };
                           };
-                          default = defaults.extraction.tesseract.command;
+                          default = defaults.extraction.ocr.tesseract.command;
                           description = "The system command";
                         };
                       };
                     };
-                    default = defaults.extraction.tesseract;
+                    default = defaults.extraction.ocr.tesseract;
                     description = "The tesseract command.";
                   };
                 };
