@@ -111,7 +111,7 @@ trait DatabaseTest
 
 object DatabaseTest {
   private def jdbcConfig(cnt: JdbcDatabaseContainer) =
-    JdbcConfig(LenientUri.unsafe(cnt.jdbcUrl), cnt.username, cnt.password)
+    JdbcConfig(LenientUri.unsafe(cnt.jdbcUrl), cnt.username, cnt.password, 10)
 
   private def makeDataSourceFixture(cnt: IO[JdbcDatabaseContainer]) =
     for {

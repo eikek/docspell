@@ -53,7 +53,8 @@ object StoreFixture {
         s"jdbc:h2:mem:$dbname;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1"
       ),
       "sa",
-      ""
+      "",
+      10
     )
 
   def fileDB(file: Path): JdbcConfig =
@@ -62,7 +63,8 @@ object StoreFixture {
         s"jdbc:h2:file://${file.absolute.toString};MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
       ),
       "sa",
-      ""
+      "",
+      10
     )
 
   def dataSource(jdbc: JdbcConfig): Resource[IO, DataSource] = {
