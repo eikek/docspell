@@ -33,7 +33,7 @@ final case class AddonArchive(url: LenientUri, name: String, version: String) {
     Files[F]
       .exists(target)
       .flatMap {
-        case true => target.pure[F]
+        case true  => target.pure[F]
         case false =>
           Files[F].createDirectories(target) *>
             reader(url)
