@@ -55,6 +55,9 @@ class EnvConfigTest extends FunSuite {
     assertEquals(cfg.getString("docspell.joex.addons.configs.0.name"), "postgres-addon")
     assertEquals(cfg.getBoolean("docspell.joex.addons.configs.0.enabled"), true)
     assertEquals(cfg.getString("docspell.joex.addons.configs.0.envs.0.name"), "PG_HOST")
-    assertEquals(cfg.getString("docspell.joex.addons.configs.0.envs.0.value"), "localhost")
+    assertEquals(
+      cfg.getString("docspell.joex.addons.configs.0.envs.0.value"),
+      "localhost"
+    )
   }
 }
