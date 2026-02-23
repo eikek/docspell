@@ -9,10 +9,9 @@ package docspell.backend.joex
 import docspell.common.exec.Env
 import docspell.config.Implicits._
 
+import munit.FunSuite
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
-
-import munit.FunSuite
 
 class AddonConfigTest extends FunSuite {
 

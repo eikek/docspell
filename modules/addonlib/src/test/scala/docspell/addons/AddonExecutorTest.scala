@@ -10,9 +10,9 @@ import cats.effect._
 import cats.syntax.all._
 
 import docspell.addons.out.AddonOutput
-import docspell.common.exec.Env
 import docspell.common.UrlReader
 import docspell.common.bc.{BackendCommand, ItemAction}
+import docspell.common.exec.Env
 import docspell.logging.{Level, TestLoggingConfig}
 
 import munit._
