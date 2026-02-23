@@ -8,8 +8,8 @@ package docspell.backend.joex
 
 import docspell.common.exec.Env
 
-/** Per-addon configuration for custom environment variables.
-  * Matched by addon name (AddonMeta.Meta.name).
+/** Per-addon configuration for custom environment variables. Matched by addon name
+  * (AddonMeta.Meta.name).
   */
 final case class AddonConfig(
     name: String,
@@ -20,9 +20,10 @@ final case class AddonConfig(
   /** Resolve all env vars to an Env map. Only applies when enabled. */
   def toEnv: Env =
     if (!enabled) Env.empty
-    else envs.foldLeft(Env.empty) { (acc, ev) =>
-      ev.resolve.fold(acc)(kv => acc.add(kv._1, kv._2))
-    }
+    else
+      envs.foldLeft(Env.empty) { (acc, ev) =>
+        ev.resolve.fold(acc)(kv => acc.add(kv._1, kv._2))
+      }
 }
 
 /** A single environment variable to inject, with either direct value or valueFrom. */

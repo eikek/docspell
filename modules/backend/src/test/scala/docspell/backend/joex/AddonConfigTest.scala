@@ -18,12 +18,12 @@ class AddonConfigTest extends FunSuite {
 
   test("parse AddonConfig from HOCON with value only") {
     val config = ConfigSource.string("""
-        |name = "my-addon"
-        |enabled = true
-        |envs = [
-        |  { name = "FOO", value = "bar" }
-        |]
-        |""".stripMargin)
+                                       |name = "my-addon"
+                                       |enabled = true
+                                       |envs = [
+                                       |  { name = "FOO", value = "bar" }
+                                       |]
+                                       |""".stripMargin)
     val result = config.at("").load[AddonConfig]
     assert(result.isRight, clue = result.left.map(_.toString))
     val cfg = result.toOption.get
@@ -36,27 +36,32 @@ class AddonConfigTest extends FunSuite {
   }
 
   test("parse AddonConfig from HOCON with valueFrom only") {
-    val config = ConfigSource.string("""
-        |name = "my-addon"
-        |enabled = true
-        |envs = [
-        |  {
-        |    name = "SECRET"
-        |    value-from = { env = "DS_SECRET", optional = true }
-        |  }
-        |]
-        |""".stripMargin)
+    val config =
+      ConfigSource.string("""
+                            |name = "my-addon"
+                            |enabled = true
+                            |envs = [
+                            |  {
+                            |    name = "SECRET"
+                            |    value-from = { env = "DS_SECRET", optional = true }
+                            |  }
+                            |]
+                            |""".stripMargin)
     val result = config.at("").load[AddonConfig]
     assert(result.isRight, clue = result.left.map(_.toString))
     val cfg = result.toOption.get
     assertEquals(cfg.envs.size, 1)
     assertEquals(cfg.envs.head.name, "SECRET")
     assertEquals(cfg.envs.head.value, None)
-    assertEquals(cfg.envs.head.valueFrom, Some(AddonEnvVarFrom(env = Some("DS_SECRET"), optional = true)))
+    assertEquals(
+      cfg.envs.head.valueFrom,
+      Some(AddonEnvVarFrom(env = Some("DS_SECRET"), optional = true))
+    )
   }
 
   test("parse AddonConfig with both value and valueFrom") {
-    val config = ConfigSource.string("""
+    val config = ConfigSource.string(
+      """
         |name = "my-addon"
         |envs = [
         |  {
@@ -65,16 +70,21 @@ class AddonConfigTest extends FunSuite {
         |    value-from = { env = "DS_MIXED", optional = false }
         |  }
         |]
-        |""".stripMargin)
+        |""".stripMargin
+    )
     val result = config.at("").load[AddonConfig]
     assert(result.isRight, clue = result.left.map(_.toString))
     val cfg = result.toOption.get
     assertEquals(cfg.envs.head.value, Some("direct"))
-    assertEquals(cfg.envs.head.valueFrom, Some(AddonEnvVarFrom(env = Some("DS_MIXED"), optional = false)))
+    assertEquals(
+      cfg.envs.head.valueFrom,
+      Some(AddonEnvVarFrom(env = Some("DS_MIXED"), optional = false))
+    )
   }
 
   test("parse AddonEnvConfig with empty addonConfigs") {
-    val config = ConfigSource.string("""
+    val config = ConfigSource.string(
+      """
         |working-dir = "/tmp/work"
         |cache-dir = "/tmp/cache"
         |executor-config {
@@ -85,7 +95,8 @@ class AddonConfigTest extends FunSuite {
         |  nix-runner = { nix-binary = "nix", build-timeout = "5 minutes" }
         |  docker-runner = { docker-binary = "docker", build-timeout = "5 minutes" }
         |}
-        |""".stripMargin)
+        |""".stripMargin
+    )
     val result = config.at("").load[AddonEnvConfig]
     assert(result.isRight, clue = result.left.map(_.toString))
     val cfg = result.toOption.get
@@ -93,7 +104,8 @@ class AddonConfigTest extends FunSuite {
   }
 
   test("parse AddonEnvConfig with non-empty addonConfigs") {
-    val config = ConfigSource.string("""
+    val config = ConfigSource.string(
+      """
         |working-dir = "/tmp/work"
         |cache-dir = "/tmp/cache"
         |executor-config {
@@ -113,7 +125,8 @@ class AddonConfigTest extends FunSuite {
         |    ]
         |  }
         |]
-        |""".stripMargin)
+        |""".stripMargin
+    )
     val result = config.at("").load[AddonEnvConfig]
     assert(result.isRight, clue = result.left.map(_.toString))
     val cfg = result.toOption.get
@@ -131,7 +144,9 @@ class AddonConfigTest extends FunSuite {
   test("AddonEnvVar.resolve with valueFrom, optional=true, env unset") {
     val ev = AddonEnvVar(
       name = "SECRET",
-      valueFrom = Some(AddonEnvVarFrom(env = Some("DOCSPELL_ADDON_TEST_UNLIKELY_12345"), optional = true))
+      valueFrom = Some(
+        AddonEnvVarFrom(env = Some("DOCSPELL_ADDON_TEST_UNLIKELY_12345"), optional = true)
+      )
     )
     assertEquals(ev.resolve, None)
   }
@@ -139,13 +154,22 @@ class AddonConfigTest extends FunSuite {
   test("AddonEnvVar.resolve with valueFrom, optional=false, env unset") {
     val ev = AddonEnvVar(
       name = "REQUIRED",
-      valueFrom = Some(AddonEnvVarFrom(env = Some("DOCSPELL_ADDON_TEST_UNLIKELY_67890"), optional = false))
+      valueFrom = Some(
+        AddonEnvVarFrom(
+          env = Some("DOCSPELL_ADDON_TEST_UNLIKELY_67890"),
+          optional = false
+        )
+      )
     )
     assertEquals(ev.resolve, Some("REQUIRED" -> ""))
   }
 
   test("AddonConfig.toEnv when disabled") {
-    val cfg = AddonConfig(name = "x", enabled = false, envs = List(AddonEnvVar("A", value = Some("a"))))
+    val cfg = AddonConfig(
+      name = "x",
+      enabled = false,
+      envs = List(AddonEnvVar("A", value = Some("a")))
+    )
     assertEquals(cfg.toEnv, Env.empty)
   }
 
