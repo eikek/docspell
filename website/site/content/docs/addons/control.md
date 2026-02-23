@@ -91,7 +91,7 @@ hardcoding them in run configurations.
 
 Example:
 
-```hocon
+```conf
 addons {
   configs = [
     {
