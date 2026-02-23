@@ -107,9 +107,13 @@ addons {
 ```
 
 For each variable use `value` for a literal string, or `value-from` to
-read from the process environment. With `value-from.env` and
-`optional = true`, the variable is skipped when unset; with
-`optional = false`, an empty string is injected when unset.
+read from the process environment. In `value-from`, `env` is the source
+variable name. The `optional` flag (default: `true`) controls behavior when
+the source is unset: `true` skips the variable; `false` injects an empty
+string. Use `optional = false` when the addon expects the variable to
+always exist.
+
+To try this out, use the [docspell-addon-example](https://github.com/tiborrr/docspell-addon-example). It logs all `DOCSPELL_TEST_*` env vars to stderr. Add a config for `docspell-addon-example` with env vars like `DOCSPELL_TEST_FOO` and `DOCSPELL_TEST_BAZ`, then run the addon and check the joex logs.
 
 ## Cache directory
 
