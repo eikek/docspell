@@ -81,6 +81,36 @@ runner (possibly in combination with `systemd-nspawn`) can be used.
 
 # Runtime
 
+## Environment variables
+
+You can inject custom environment variables into addons via
+`addons.configs` in the joex config. Each entry is matched by addon
+name (from the addon descriptor). This is useful for passing secrets
+(e.g. API keys) or connection details (e.g. database host) without
+hardcoding them in run configurations.
+
+Example:
+
+```hocon
+addons {
+  configs = [
+    {
+      name = "postgres-addon"
+      enabled = true
+      envs = [
+        { name = "PG_HOST", value = "localhost" }
+        { name = "PG_PASS", value-from = { env = "DS_PG_PASS", optional = true } }
+      ]
+    }
+  ]
+}
+```
+
+For each variable use `value` for a literal string, or `value-from` to
+read from the process environment. With `value-from.env` and
+`optional = true`, the variable is skipped when unset; with
+`optional = false`, an empty string is injected when unset.
+
 ## Cache directory
 
 Addons can use a "cache directory" to store data between runs. This
