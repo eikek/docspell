@@ -6,6 +6,7 @@
 
 package docspell.backend.joex
 
+import docspell.common.exec.Env
 import docspell.config.Implicits._
 
 import pureconfig.ConfigSource
@@ -120,5 +121,45 @@ class AddonConfigTest extends FunSuite {
     assertEquals(cfg.configs.head.name, "postgres-addon")
     assertEquals(cfg.configs.head.envs.head.name, "PG_HOST")
     assertEquals(cfg.configs.head.envs.head.value, Some("localhost"))
+  }
+
+  test("AddonEnvVar.resolve with value") {
+    val ev = AddonEnvVar(name = "FOO", value = Some("bar"))
+    assertEquals(ev.resolve, Some("FOO" -> "bar"))
+  }
+
+  test("AddonEnvVar.resolve with valueFrom, optional=true, env unset") {
+    val ev = AddonEnvVar(
+      name = "SECRET",
+      valueFrom = Some(AddonEnvVarFrom(env = Some("DOCSPELL_ADDON_TEST_UNLIKELY_12345"), optional = true))
+    )
+    assertEquals(ev.resolve, None)
+  }
+
+  test("AddonEnvVar.resolve with valueFrom, optional=false, env unset") {
+    val ev = AddonEnvVar(
+      name = "REQUIRED",
+      valueFrom = Some(AddonEnvVarFrom(env = Some("DOCSPELL_ADDON_TEST_UNLIKELY_67890"), optional = false))
+    )
+    assertEquals(ev.resolve, Some("REQUIRED" -> ""))
+  }
+
+  test("AddonConfig.toEnv when disabled") {
+    val cfg = AddonConfig(name = "x", enabled = false, envs = List(AddonEnvVar("A", value = Some("a"))))
+    assertEquals(cfg.toEnv, Env.empty)
+  }
+
+  test("AddonConfig.toEnv when enabled") {
+    val cfg = AddonConfig(
+      name = "x",
+      enabled = true,
+      envs = List(
+        AddonEnvVar("A", value = Some("a")),
+        AddonEnvVar("B", value = Some("b"))
+      )
+    )
+    val env = cfg.toEnv
+    assertEquals(env.values.get("A"), Some("a"))
+    assertEquals(env.values.get("B"), Some("b"))
   }
 }
