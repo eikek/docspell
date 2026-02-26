@@ -131,11 +131,12 @@ page](@/docs/webapp/customfields.md) for more information.
 
 An important setting is the language of your documents. This helps OCR
 and text analysis. You can select between various languages. The
-language can also specified with each [upload
-request](@/docs/api/upload.md).
+language can also be specified with each [upload
+request](@/docs/api/upload.md) using ISO 639-3 codes (e.g. `eng`,
+`deu`) or ISO 639-1 (e.g. `en`, `de`).
 
 Go to the *Collective Settings* page and click *Document
-Language*. This will set the lanugage for all your documents.
+Language*. This will set the language for all your documents.
 
 The language has effects in several areas: text extraction, fulltext
 search and text analysis. When extracting text from images, tesseract
