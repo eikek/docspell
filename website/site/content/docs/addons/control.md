@@ -81,6 +81,40 @@ runner (possibly in combination with `systemd-nspawn`) can be used.
 
 # Runtime
 
+## Environment variables
+
+You can inject custom environment variables into addons via
+`addons.configs` in the joex config. Each entry is matched by addon
+name (from the addon descriptor). This is useful for passing secrets
+(e.g. API keys) or connection details (e.g. database host) without
+hardcoding them in run configurations.
+
+Example:
+
+```conf
+addons {
+  configs = [
+    {
+      name = "postgres-addon"
+      enabled = true
+      envs = [
+        { name = "PG_HOST", value = "localhost" }
+        { name = "PG_PASS", value-from = { env = "DS_PG_PASS", optional = true } }
+      ]
+    }
+  ]
+}
+```
+
+For each variable use `value` for a literal string, or `value-from` to
+read from the process environment. In `value-from`, `env` is the source
+variable name. The `optional` flag (default: `true`) controls behavior when
+the source is unset: `true` skips the variable; `false` injects an empty
+string. Use `optional = false` when the addon expects the variable to
+always exist.
+
+To try this out, use the [docspell-addon-example](https://github.com/tiborrr/docspell-addon-example). It logs all `DOCSPELL_TEST_*` env vars to stderr. Add a config for `docspell-addon-example` with env vars like `DOCSPELL_TEST_FOO` and `DOCSPELL_TEST_BAZ`, then run the addon and check the joex logs.
+
 ## Cache directory
 
 Addons can use a "cache directory" to store data between runs. This

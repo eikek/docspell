@@ -12,6 +12,7 @@ import cats.syntax.all._
 import docspell.addons.out.AddonOutput
 import docspell.common.UrlReader
 import docspell.common.bc.{BackendCommand, ItemAction}
+import docspell.common.exec.Env
 import docspell.logging.{Level, TestLoggingConfig}
 
 import munit._
@@ -106,6 +107,23 @@ class AddonExecutorTest extends CatsEffectSuite with Fixtures with TestLoggingCo
       assertEquals(res.addonResults.size, 2)
       assertEquals(res.addonResults.head, AddonResult.executionError(1))
       assertEquals(res.addonResults(1), AddonResult.success(testOut))
+    }
+  }
+
+  tempDir.test("inject env vars from addonEnvResolver") { dir =>
+    val addonEnvResolver: String => Env = {
+      case "env-test-addon" => Env.of("ADDON_FOO" -> "injected-value")
+      case _                => Env.empty
+    }
+    val cfg = testExecutorConfig(RunnerType.Trivial)
+    val exec =
+      AddonExecutor[IO](cfg, UrlReader.defaultReader, addonEnvResolver).execute(logger)
+    val addon = AddonGenerator.generate("env-test-addon", "1.0", collectOutput = false)(
+      """if [ "$ADDON_FOO" = "injected-value" ]; then exit 0; else exit 1; fi"""
+    )
+    val result = createInputEnv(dir, addon).use(exec.run)
+    result.map { res =>
+      assert(res.isSuccess, clue = res)
     }
   }
 
