@@ -295,7 +295,7 @@ object OItem {
         ): F[AttachedEvent[UpdateResult]] =
           tags.distinct match {
             case Nil => AttachedEvent.only(UpdateResult.success).pure[F]
-            case ws =>
+            case ws  =>
               store
                 .transact {
                   (for {
@@ -347,7 +347,7 @@ object OItem {
         ): F[AttachedEvent[UpdateResult]] =
           tags.distinct match {
             case Nil => AttachedEvent.only(UpdateResult.success).pure[F]
-            case ws =>
+            case ws  =>
               store.transact {
                 (for {
                   itemIds <- OptionT
@@ -692,7 +692,7 @@ object OItem {
                   .attempt
                   .flatMap {
                     case Right(()) => ().pure[F]
-                    case Left(ex) =>
+                    case Left(ex)  =>
                       logger.warn(s"Error updating full-text index: ${ex.getMessage}")
                   }
                   .as(UpdateResult.success)
@@ -915,7 +915,7 @@ object OItem {
             case UpdateResult.Success =>
               update.attempt.flatMap {
                 case Right(()) => ().pure[F]
-                case Left(ex) =>
+                case Left(ex)  =>
                   logger.warn(s"Error updating full-text index: ${ex.getMessage}")
               }
             case UpdateResult.Failure(_) =>

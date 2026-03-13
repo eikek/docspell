@@ -14,7 +14,7 @@ final case class Validation[C](run: C => ValidatedNec[String, C]) {
 
   def validOrThrow(c: C): C =
     run(c) match {
-      case Validated.Valid(cfg) => cfg
+      case Validated.Valid(cfg)    => cfg
       case Validated.Invalid(errs) =>
         val msg = errs.toList.mkString("- ", "\n- ", "\n")
         throw sys.error(s"\n\n$msg")
@@ -23,10 +23,10 @@ final case class Validation[C](run: C => ValidatedNec[String, C]) {
   def andThen(next: Validation[C]): Validation[C] =
     Validation(c =>
       run(c) match {
-        case Validated.Valid(c2) => next.run(c2)
+        case Validated.Valid(c2)                         => next.run(c2)
         case f: Validated.Invalid[NonEmptyChain[String]] =>
           next.run(c) match {
-            case Validated.Valid(_) => f
+            case Validated.Valid(_)       => f
             case Validated.Invalid(errs2) =>
               Validation.invalid(f.e ++ errs2)
           }

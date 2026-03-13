@@ -26,7 +26,7 @@ object FileKeyPart {
 
   implicit val jsonEncoder: Encoder[FileKeyPart] =
     Encoder.instance {
-      case Empty => ().asJson
+      case Empty           => ().asJson
       case Collective(cid) =>
         Map("collective" -> cid.asJson).asJson
       case Category(cid, cat) =>
