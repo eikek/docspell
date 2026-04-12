@@ -18,7 +18,7 @@ jobs:
       - name: sbt make-pkg (${{ env.DOCSPELL_VERSION }})
         run: nix develop .#ci --command sbt make-pkg
       - name: Upload artifacts
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: Docspell ${{ env.DOCSPELL_VERSION }}
