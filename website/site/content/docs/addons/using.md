@@ -24,6 +24,10 @@ addon:
 
 - <https://github.com/docspell/rotate-pdf-addon/archive/refs/tags/v0.1.0.zip>
 
+The [docspell-addon-example](https://github.com/tiborrr/docspell-addon-example) is a minimal reference addon that logs all context Docspell provides (user input, env vars, item data). Useful for testing and as a template:
+
+- <https://github.com/tiborrr/docspell-addon-example/releases/latest/download/docspell-addon-example.zip>
+
 This url points to a fixed version. It is also possible to use urls
 that are "moving targets":
 

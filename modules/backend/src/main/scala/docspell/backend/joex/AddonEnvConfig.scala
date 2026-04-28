@@ -13,5 +13,6 @@ import docspell.addons.AddonExecutorConfig
 final case class AddonEnvConfig(
     workingDir: Path,
     cacheDir: Path,
-    executorConfig: AddonExecutorConfig
+    executorConfig: AddonExecutorConfig,
+    configs: List[AddonConfig] = Nil
 )

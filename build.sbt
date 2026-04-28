@@ -712,6 +712,19 @@ val joexapi = project
   )
   .dependsOn(common, loggingScribe, addonlib)
 
+val config = project
+  .in(file("modules/config"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .withTestSettings
+  .settings(
+    name := "docspell-config",
+    libraryDependencies ++=
+      Dependencies.fs2 ++
+        Dependencies.pureconfig
+  )
+  .dependsOn(common, loggingApi, ftspsql, store, addonlib)
+
 val backend = project
   .in(file("modules/backend"))
   .disablePlugins(RevolverPlugin)
@@ -723,10 +736,12 @@ val backend = project
       Dependencies.fs2 ++
         Dependencies.bcrypt ++
         Dependencies.http4sClient ++
-        Dependencies.emil
+        Dependencies.emil ++
+        Dependencies.pureconfig
   )
   .dependsOn(
     addonlib,
+    config,
     store,
     notificationApi,
     joexapi,
@@ -770,20 +785,6 @@ val webapp = project
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
   .dependsOn(query.js)
-
-// Config project shared among the two applications only
-val config = project
-  .in(file("modules/config"))
-  .disablePlugins(RevolverPlugin)
-  .settings(sharedSettings)
-  .withTestSettings
-  .settings(
-    name := "docspell-config",
-    libraryDependencies ++=
-      Dependencies.fs2 ++
-        Dependencies.pureconfig
-  )
-  .dependsOn(common, loggingApi, ftspsql, store, addonlib)
 
 // --- Application(s)
 

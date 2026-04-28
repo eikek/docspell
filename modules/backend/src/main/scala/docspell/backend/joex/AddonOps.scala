@@ -170,8 +170,11 @@ object AddonOps {
           .ephemeralRun[F]
       } yield mm
 
-      def getExecutor(cfg: AddonExecutorConfig): F[AddonExecutor[F]] =
-        Async[F].pure(AddonExecutor(cfg, urlReader))
+      def getExecutor(execCfg: AddonExecutorConfig): F[AddonExecutor[F]] = {
+        val addonEnvResolver: String => Env = name =>
+          cfg.configs.find(_.name == name).fold(Env.empty)(_.toEnv)
+        Async[F].pure(AddonExecutor(execCfg, urlReader, addonEnvResolver))
+      }
 
       def findAddonRefs(
           collective: CollectiveId,

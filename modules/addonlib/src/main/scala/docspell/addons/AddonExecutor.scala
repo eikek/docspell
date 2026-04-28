@@ -31,7 +31,8 @@ object AddonExecutor {
 
   def apply[F[_]: Async: Files](
       cfg: AddonExecutorConfig,
-      urlReader: UrlReader[F]
+      urlReader: UrlReader[F],
+      addonEnvResolver: String => Env = _ => Env.empty
   ): AddonExecutor[F] =
     new AddonExecutor[F] with AddonLoggerExtension {
       val config = cfg
@@ -99,8 +100,10 @@ object AddonExecutor {
             .compile
             .drain
 
+          addonEnv = addonEnvResolver(ctx.meta.meta.name)
+          mergedEnv = env.addAll(addonEnv)
           runner <- selectRunner(cfg, ctx.meta, ctx.addonDir)
-          result <- runner.run(logger, env, ctx)
+          result <- runner.run(logger, mergedEnv, ctx)
         } yield result
     }
 
