@@ -32,7 +32,7 @@ For example, here is a curl command uploading two files with meta
 data. Since `multiple` is `false`, both files are added to one item:
 
 ``` bash
-curl -XPOST -F meta='{"multiple":false, "direction": "outgoing", "tags": {"items":["Order"]}}' \
+curl -XPOST -F meta='{"multiple":false, "direction": "outgoing", "language": "eng", "tags": {"items":["Order"]}}' \
             -F file=@letter-en.pdf \
             -F file=@letter-de.pdf \
             http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
@@ -89,9 +89,11 @@ specified via a JSON structure in a part with name `meta`:
   files or `*.html|*.pdf` for selecting html and pdf files. This only
   applies to archive files, like zip or e-mails (where this is applied
   to the attachments).
-- The `language` is used for processing the document(s) contained in
-  the request. If not specified the collective's default language is
-  used.
+- The `language` specifies the document language for processing (OCR,
+  text extraction, analysis). If not specified, the collective's
+  default language is used. Use **ISO 639-3** (3-letter codes) such as
+  `eng`, `deu`, `fra`, `spa`. ISO 639-1 (2-letter) codes like `en`,
+  `de` and language names like `english`, `german` are also accepted.
 - The `attachmentsOnly` property only applies to e-mail files (usually
   `*.eml`). If this is `true`, then the e-mail body is discarded and
   only the attachments are imported. An e-mail without any attachments

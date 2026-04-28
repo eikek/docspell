@@ -7266,8 +7266,10 @@ components:
           format: glob
         language:
           description: |
-            The language used for text extraction and analysis when
-            processing mails.
+            The language for text extraction and analysis when
+            processing mails. Use **ISO 639-3** (3-letter codes) such
+            as `eng`, `deu`, `fra`; ISO 639-1 (2-letter) like `en`,
+            `de` and language names like `english` are also accepted.
           type: string
           format: language
         postHandleAll:
@@ -8242,8 +8244,18 @@ components:
           type: string
           format: language
           description: |
-            The `language` of the document may be specified, otherwise
-            the one from settings is used.
+            The language of the document for processing (OCR, text
+            extraction, analysis). If not specified, the collective's
+            default language is used.
+
+            Use **ISO 639-3** (3-letter codes) such as `eng`, `deu`,
+            `fra`, `spa`. ISO 639-1 (2-letter) codes like `en`, `de`
+            and language names like `english`, `german` are also
+            accepted. Supported languages include German, English,
+            French, Italian, Spanish, Portuguese, Czech, Danish,
+            Finnish, Norwegian, Swedish, Russian, Romanian, Dutch,
+            Latvian, Japanese, Hebrew, Hungarian, Lithuanian, Polish,
+            Estonian, Ukrainian, Khmer, Slovak.
         attachmentsOnly:
           type: boolean
           default: false
@@ -8292,6 +8304,11 @@ components:
         language:
           type: string
           format: language
+          description: |
+            Default document language for the collective. Use **ISO
+            639-3** (3-letter codes) like `eng`, `deu`, `fra`; ISO
+            639-1 (2-letter) like `en`, `de` and language names are
+            also accepted.
         integrationEnabled:
           type: boolean
           description: |
@@ -8401,6 +8418,10 @@ components:
         language:
           type: string
           format: language
+          description: |
+            Document language for uploads via this source. Use **ISO
+            639-3** (3-letter codes) like `eng`, `deu`, `fra`; ISO
+            639-1 (2-letter) and language names are also accepted.
         created:
           description: DateTime
           type: integer
