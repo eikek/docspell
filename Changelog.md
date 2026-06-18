@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🚀 Features
+
+- Add optional `priority` field to upload metadata (`ItemUploadMeta`) for setting job processing priority per upload
+
 ## v0.43.0
 
 *Mar 15, 2025*

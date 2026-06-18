@@ -72,7 +72,8 @@ object OUpload {
       language: Option[Language],
       attachmentsOnly: Option[Boolean],
       flattenArchives: Option[Boolean],
-      customData: Option[Json]
+      customData: Option[Json],
+      priority: Option[Priority]
   )
 
   case class UploadData[F[_]](
@@ -199,7 +200,7 @@ object OUpload {
               attachmentsOnly =
                 data.meta.attachmentsOnly.orElse(src.source.attachmentsOnly.some)
             ),
-            priority = src.source.priority
+            priority = data.meta.priority.getOrElse(src.source.priority)
           )
           result <- OptionT.liftF(submit(updata, src.source.cid, None, itemId))
         } yield result).getOrElse(UploadResult.noSource)

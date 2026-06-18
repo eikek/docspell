@@ -54,6 +54,7 @@ specified via a JSON structure in a part with name `meta`:
 , language: Maybe String
 , attachmentsOnly: Maybe Bool
 , flattenArchives: Maybe Bool
+, priority: Maybe String
 }
 ```
 
@@ -109,6 +110,13 @@ specified via a JSON structure in a part with name `meta`:
   only its contents are. Also note that only the uploaded archive
   files are extracted once (not recursively), so if it contains other
   archive files, they are treated as normal.
+- The `priority` field sets the processing priority for the upload
+  jobs. It can be `high` or `low` and controls how soon the scheduler
+  picks up the jobs relative to other work. If omitted, the endpoint
+  default applies: `high` for authenticated (webapp) uploads, the
+  source's configured priority for open uploads via a source URL, and
+  the server configuration for the integration endpoint. When
+  specified, it overrides the source's default priority.
 
 # Endpoints
 
