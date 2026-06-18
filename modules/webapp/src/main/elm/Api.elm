@@ -123,6 +123,9 @@ module Api exposing
     , itemSearchBookmark
     , itemSearchStats
     , itemSearchStatsBookmark
+    , itemSearchStatsGeneral
+    , itemSearchStatsFields
+    , itemSearchStatsBookmarkAt
     , login
     , loginSession
     , logout
@@ -2128,10 +2131,13 @@ itemSearchBookmark flags bmSearch receive =
         |> Task.attempt receive
 
 
-itemSearchStatsTask : Flags -> ItemQuery -> Task.Task Http.Error SearchStats
-itemSearchStatsTask flags search =
+itemSearchStatsAt : String -> Flags -> ItemQuery -> Task.Task Http.Error SearchStats
+itemSearchStatsAt profile flags search =
     Http2.authTask
-        { url = flags.config.baseUrl ++ "/api/v1/sec/item/searchStats"
+        { url =
+            flags.config.baseUrl
+                ++ "/api/v1/sec/item/searchStats/"
+                ++ profile
         , method = "POST"
         , headers = []
         , account = getAccount flags
@@ -2141,20 +2147,55 @@ itemSearchStatsTask flags search =
         }
 
 
+{-| Legacy search stats endpoint (defaults to full profile on the server).
+Use `itemSearchStatsAt "full"` for the canonical path URL.
+-}
+itemSearchStatsTask : Flags -> ItemQuery -> Task.Task Http.Error SearchStats
+itemSearchStatsTask flags search =
+    itemSearchStatsAt "full" flags search
+
+
 itemSearchStats : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
 itemSearchStats flags search receive =
     itemSearchStatsTask flags search |> Task.attempt receive
 
 
-itemSearchStatsBookmark : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
-itemSearchStatsBookmark flags search receive =
+itemSearchStatsGeneral : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+itemSearchStatsGeneral flags search receive =
+    itemSearchStatsAt "general" flags search |> Task.attempt receive
+
+
+itemSearchStatsFields : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+itemSearchStatsFields flags search receive =
+    itemSearchStatsAt "fields" flags search |> Task.attempt receive
+
+
+itemSearchStatsBookmarkAt : String -> Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+itemSearchStatsBookmarkAt profile flags search receive =
     let
         getBookmark =
             getBookmarkByIdTask flags search.query
                 |> Task.map (\bm -> { search | query = bm.query })
 
         getStats q =
-            itemSearchStatsTask flags q
+            itemSearchStatsAt profile flags q
+    in
+    Task.andThen getStats getBookmark
+        |> Task.attempt receive
+
+
+itemSearchStatsBookmark : Flags -> ItemQuery -> (Result Http.Error SearchStats -> msg) -> Cmd msg
+itemSearchStatsBookmark flags search receive =
+    let
+        profile =
+            Maybe.withDefault "full" search.statsProfile
+
+        getBookmark =
+            getBookmarkByIdTask flags search.query
+                |> Task.map (\bm -> { search | query = bm.query })
+
+        getStats q =
+            itemSearchStatsAt profile flags q
     in
     Task.andThen getStats getBookmark
         |> Task.attempt receive

@@ -83,6 +83,7 @@ request smode mq =
     , withDetails = Just True
     , query = renderMaybe mq
     , searchMode = Data.SearchMode.asString smode |> Just
+    , statsProfile = Nothing
     }
 
 

@@ -20,6 +20,8 @@ module Data.BoxContent exposing
     , emptyQueryData
     , emptyStatsData
     , emptyUploadData
+    , searchQueryAsString
+    , searchQueryFromString
     )
 
 import Data.ItemColumn exposing (ItemColumn)

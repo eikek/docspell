@@ -8,9 +8,11 @@
 module Comp.BoxView exposing (..)
 
 import Comp.BoxQueryView
-import Comp.BoxStatsView
+import Api.Model.SearchStats exposing (SearchStats)
+import Comp.BoxStatsView exposing (ViewResult(..))
 import Comp.BoxUploadView
 import Data.Box exposing (Box)
+import Http
 import Data.BoxContent exposing (BoxContent(..), MessageData)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
@@ -42,11 +44,11 @@ type Msg
     | ReloadData
 
 
-init : Flags -> Box -> ( Model, Cmd Msg )
-init flags box =
+init : Flags -> Box -> Maybe (Result Http.Error SearchStats) -> Bool -> ( Model, Cmd Msg )
+init flags box statsCached parentManaged =
     let
         ( cm, cc ) =
-            contentInit flags box.content
+            contentInit flags box.content statsCached parentManaged
     in
     ( { box = box
       , content = cm
@@ -61,8 +63,30 @@ reloadData =
     ReloadData
 
 
-contentInit : Flags -> BoxContent -> ( ContentModel, Cmd Msg )
-contentInit flags content =
+applyStatsResult : Result Http.Error SearchStats -> Model -> Model
+applyStatsResult result model =
+    case model.content of
+        ContentStats sm ->
+            { model
+                | content =
+                    ContentStats
+                        { sm
+                            | results =
+                                case result of
+                                    Ok stats ->
+                                        Loaded stats
+
+                                    Err err ->
+                                        Failed err
+                        }
+            }
+
+        _ ->
+            model
+
+
+contentInit : Flags -> BoxContent -> Maybe (Result Http.Error SearchStats) -> Bool -> ( ContentModel, Cmd Msg )
+contentInit flags content statsCached parentManaged =
     case content of
         BoxMessage data ->
             ( ContentMessage data, Cmd.none )
@@ -84,7 +108,7 @@ contentInit flags content =
         BoxStats data ->
             let
                 ( sm, sc ) =
-                    Comp.BoxStatsView.init flags data
+                    Comp.BoxStatsView.init flags data statsCached parentManaged
             in
             ( ContentStats sm, Cmd.map StatsMsg sc )
 

@@ -230,6 +230,7 @@ mkQuery q meta =
     , offset = Nothing
     , searchMode = Just <| Data.SearchMode.asString Data.SearchMode.Normal
     , withDetails = Just meta.details
+    , statsProfile = Nothing
     }
 
 
