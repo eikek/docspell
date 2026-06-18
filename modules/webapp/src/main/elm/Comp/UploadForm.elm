@@ -16,6 +16,7 @@ import Comp.Progress
 import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.Language exposing (Language)
+import Data.Priority exposing (Priority)
 import Data.UiSettings exposing (UiSettings)
 import Dict exposing (Dict)
 import File exposing (File)
@@ -43,6 +44,8 @@ type alias Model =
     , skipDuplicates : Bool
     , languageModel : Comp.FixedDropdown.Model Language
     , language : Maybe Language
+    , priorityModel : Comp.FixedDropdown.Model Priority
+    , priority : Priority
     , flattenArchives : Bool
     , uploadDone : Maybe Bool
     }
@@ -58,6 +61,7 @@ type Msg
     | DropzoneMsg Comp.Dropzone.Msg
     | ToggleSkipDuplicates
     | LanguageMsg (Comp.FixedDropdown.Msg Language)
+    | PrioDropdownMsg (Comp.FixedDropdown.Msg Priority)
     | ToggleFlattenArchives
 
 
@@ -74,6 +78,9 @@ init =
     , languageModel =
         Comp.FixedDropdown.init Data.Language.all
     , language = Nothing
+    , priorityModel =
+        Comp.FixedDropdown.init Data.Priority.all
+    , priority = Data.Priority.High
     , flattenArchives = False
     , uploadDone = Nothing
     }
@@ -192,6 +199,7 @@ update sourceId flags msg model =
                                 Just "outgoing"
                         , language = Maybe.map Data.Language.toIso3 model.language
                         , flattenArchives = Just model.flattenArchives
+                        , priority = Just (Data.Priority.toName model.priority)
                     }
 
                 fileids =
@@ -342,6 +350,19 @@ update sourceId flags msg model =
             , Sub.none
             )
 
+        PrioDropdownMsg pm ->
+            let
+                ( m2, p2 ) =
+                    Comp.FixedDropdown.update pm model.priorityModel
+            in
+            ( { model
+                | priorityModel = m2
+                , priority = Maybe.withDefault model.priority p2
+              }
+            , Cmd.none
+            , Sub.none
+            )
+
 
 setCompleted : Model -> String -> Set String
 setCompleted model fileid =
@@ -428,6 +449,13 @@ renderForm texts model =
             , style = DS.mainStyleWith "w-40"
             , selectPlaceholder = texts.basics.selectPlaceholder
             }
+
+        priorityCfg =
+            { display = Data.Priority.toName
+            , icon = \_ -> Nothing
+            , style = DS.mainStyleWith "w-40"
+            , selectPlaceholder = texts.basics.selectPlaceholder
+            }
     in
     div [ class "row" ]
         [ Html.form [ action "#" ]
@@ -508,6 +536,21 @@ renderForm texts model =
                     ]
                 , div [ class "text-gray-400 text-xs" ]
                     [ text texts.languageInfo
+                    ]
+                ]
+            , div [ class "flex flex-col mb-3" ]
+                [ label [ class "inline-flex items-center mb-2" ]
+                    [ span [ class "mr-2" ] [ text (texts.priority ++ ":") ]
+                    , Html.map PrioDropdownMsg
+                        (Comp.FixedDropdown.viewStyled2
+                            priorityCfg
+                            False
+                            (Just model.priority)
+                            model.priorityModel
+                        )
+                    ]
+                , div [ class "text-gray-400 text-xs" ]
+                    [ text texts.priorityInfo
                     ]
                 ]
             ]
