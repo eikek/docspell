@@ -298,8 +298,16 @@ object QItem extends FtsSupport {
       today: LocalDate,
       coll: CollectiveId,
       q: ItemQuery.Expr
+  ): Condition =
+    queryCondFromExprFor(i, today, coll, q)
+
+  private[queries] def queryCondFromExprFor(
+      item: RItem.Table,
+      today: LocalDate,
+      coll: CollectiveId,
+      q: ItemQuery.Expr
   ): Condition = {
-    val tables = Tables(i, org, pers0, pers1, equip, f, a, m)
+    val tables = Tables(item, org, pers0, pers1, equip, f, a, m)
     ItemQueryGenerator.fromExpr(today, tables, coll)(q)
   }
 
@@ -308,9 +316,17 @@ object QItem extends FtsSupport {
       coll: CollectiveId,
       cond: Query.QueryCond
   ): Condition =
+    queryConditionFor(i, today, coll, cond)
+
+  private[queries] def queryConditionFor(
+      item: RItem.Table,
+      today: LocalDate,
+      coll: CollectiveId,
+      cond: Query.QueryCond
+  ): Condition =
     cond match {
       case Query.QueryExpr(Some(expr)) =>
-        queryCondFromExpr(today, coll, expr)
+        queryCondFromExprFor(item, today, coll, expr)
       case Query.QueryExpr(None) =>
         Condition.unit
     }
@@ -343,32 +359,40 @@ object QItem extends FtsSupport {
   def searchStatsGeneral(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
   ): ConnectionIO[SearchSummary] =
-    QItemFieldStats.resolveStatsItemContext(q.fix, today, q.cond, ftsTable).flatMap {
-      ctx =>
-        val folderIds = Some(ctx.folderIds)
-        for {
-          count <- searchCountSummary(today, ftsTable, folderIds)(q)
-          tags <- searchTagSummary(today, ftsTable)(q)
-          fieldCount <- QItemFieldStats.searchFieldDefinitionCount(ctx)(q)
-          orgCount <- searchDistinctOrgCount(today, ftsTable, folderIds)(q)
-          personCount <- searchDistinctPersonCount(today, ftsTable, folderIds)(q)
-          equipCount <- searchDistinctEquipCount(today, ftsTable, folderIds)(q)
-        } yield SearchSummary(
-          count = count,
-          tags = tags,
-          cats = Nil,
-          fields = Nil,
-          folders = Nil,
-          corrOrgs = Nil,
-          corrPers = Nil,
-          concPers = Nil,
-          concEquip = Nil,
-          fieldCount = fieldCount.some,
-          orgCount = orgCount.some,
-          personCount = personCount.some,
-          equipCount = equipCount.some
-        )
-    }
+    for {
+      folderIds <- QFolder.getMemberFolders(
+        q.fix.account.collectiveId,
+        q.fix.account.userId
+      )
+      folderIdsOpt = Some(folderIds)
+      count <- searchCountSummary(today, ftsTable, folderIdsOpt)(q)
+      tags <- searchTagSummary(today, ftsTable)(q)
+      fieldCount <- QItemFieldStats.searchFieldDefinitionCountForQuery(
+        q.fix,
+        today,
+        q.cond,
+        ftsTable,
+        folderIds,
+        count
+      )
+      orgCount <- searchDistinctOrgCount(today, ftsTable, folderIdsOpt)(q)
+      personCount <- searchDistinctPersonCount(today, ftsTable, folderIdsOpt)(q)
+      equipCount <- searchDistinctEquipCount(today, ftsTable, folderIdsOpt)(q)
+    } yield SearchSummary(
+      count = count,
+      tags = tags,
+      cats = Nil,
+      fields = Nil,
+      folders = Nil,
+      corrOrgs = Nil,
+      corrPers = Nil,
+      concPers = Nil,
+      concEquip = Nil,
+      fieldCount = fieldCount.some,
+      orgCount = orgCount.some,
+      personCount = personCount.some,
+      equipCount = equipCount.some
+    )
 
   def searchStatsFields(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
@@ -418,12 +442,15 @@ object QItem extends FtsSupport {
       .query[Int]
       .unique
 
-  private def statsItemFolderCondition(folderIds: Set[Ident]): Condition =
+  private def statsItemFolderConditionFor(
+      item: RItem.Table,
+      folderIds: Set[Ident]
+  ): Condition =
     Nel.fromList(folderIds.toList) match {
       case None =>
-        i.folder.isNull
+        item.folder.isNull
       case Some(nel) =>
-        or(i.folder.isNull, i.folder.in(nel))
+        or(item.folder.isNull, item.folder.in(nel))
     }
 
   private def statsItemWhere(
@@ -432,21 +459,33 @@ object QItem extends FtsSupport {
       coll: CollectiveId,
       cond: Query.QueryCond,
       folderIds: Option[Set[Ident]]
+  ): Condition =
+    statsItemWhereFor(i, fix, today, coll, cond, folderIds)
+
+  private[queries] def statsItemWhereFor(
+      item: RItem.Table,
+      fix: Query.Fix,
+      today: LocalDate,
+      coll: CollectiveId,
+      cond: Query.QueryCond,
+      folderIds: Option[Set[Ident]]
   ): Condition = {
     val folderCond = folderIds match {
       case Some(ids) =>
-        statsItemFolderCondition(ids)
+        statsItemFolderConditionFor(item, ids)
       case None =>
         or(
-          i.folder.isNull,
-          i.folder.in(
+          item.folder.isNull,
+          item.folder.in(
             QFolder.findMemberFolderIds(fix.account.collectiveId, fix.account.userId)
           )
         )
     }
-    i.cid === coll &&? fix.query.map(qs => queryCondFromExpr(today, coll, qs)) &&
+    item.cid === coll &&? fix.query.map(qs =>
+      queryCondFromExprFor(item, today, coll, qs)
+    ) &&
     folderCond &&
-    queryCondition(today, coll, cond)
+    queryConditionFor(item, today, coll, cond)
   }
 
   private def statsItemSelect(

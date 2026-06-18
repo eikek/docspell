@@ -20,11 +20,12 @@ import docspell.store.records._
 import doobie.implicits._
 import doobie.{Query => _, _}
 
-private[queries] object QItemFieldStats {
+private[queries] object QItemFieldStats extends FtsSupport {
   private[this] val logger = docspell.logging.getLogger[ConnectionIO]
 
   private val cf = RCustomField.as("cf")
   private val cv = RCustomFieldValue.as("cvf")
+  private val si = RItem.as("si")
 
   final case class StatsItemContext(
       folderIds: Set[Ident],
@@ -68,6 +69,62 @@ private[queries] object QItemFieldStats {
           matchingSubselect.build.query[Ident].to[List]
         else Nil.pure[ConnectionIO]
     } yield StatsItemContext(folderIds, matchingSubselect, matchingItemIds, matchCount)
+
+  def searchFieldDefinitionCountForQuery(
+      fix: Query.Fix,
+      today: LocalDate,
+      cond: Query.QueryCond,
+      ftsTable: Option[RFtsResult.Table],
+      folderIds: Set[Ident],
+      itemCount: Int
+  ): ConnectionIO[Int] = {
+    val coll = fix.account.collectiveId
+    if (itemCount == 0)
+      0.pure[ConnectionIO]
+    else if (itemCount <= fieldStatsItemIdLiteralMax)
+      resolveStatsItemContext(fix, today, cond, ftsTable).flatMap(
+        searchFieldDefinitionCount(_)(Query(fix, cond))
+      )
+    else
+      fieldDefinitionCountCfFirst(coll, fix, today, cond, ftsTable, folderIds)
+  }
+
+  /** Count non-numeric custom fields that have at least one value on a matching item.
+    * Iterates `custom_field` (typically few rows) and uses `EXISTS` with the
+    * `custom_field_value.field` index instead of `cvf.item_id IN (large subselect)`.
+    */
+  private def fieldDefinitionCountCfFirst(
+      coll: CollectiveId,
+      fix: Query.Fix,
+      today: LocalDate,
+      cond: Query.QueryCond,
+      ftsTable: Option[RFtsResult.Table],
+      folderIds: Set[Ident]
+  ): ConnectionIO[Int] =
+    Select(
+      select(count(cf.id).as("num")),
+      from(cf),
+      cf.cid === coll &&
+        cf.ftype.notIn(fieldStatsNumTypes) &&
+        fieldHasMatchingValue(fix, today, coll, cond, ftsTable, folderIds)
+    ).build.query[Int].unique
+
+  private def fieldHasMatchingValue(
+      fix: Query.Fix,
+      today: LocalDate,
+      coll: CollectiveId,
+      cond: Query.QueryCond,
+      ftsTable: Option[RFtsResult.Table],
+      folderIds: Set[Ident]
+  ): Condition = {
+    val probe = Select(
+      select(const(1)),
+      from(si).innerJoin(cv, cv.itemId === si.id),
+      cv.field === cf.id &&
+        QItem.statsItemWhereFor(si, fix, today, coll, cond, Some(folderIds))
+    ).joinFtsIdOnly(si, ftsTable).limit(1)
+    Condition.CompareSelect(const(1), Operator.Eq, probe)
+  }
 
   private def cvItemFilter(ctx: StatsItemContext): Option[Condition] =
     if (ctx.matchCount == 0) None
