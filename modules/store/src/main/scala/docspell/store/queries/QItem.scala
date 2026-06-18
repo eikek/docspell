@@ -322,7 +322,7 @@ object QItem extends FtsSupport {
       count <- searchCountSummary(today, ftsTable)(q)
       tags <- searchTagSummary(today, ftsTable)(q)
       cats <- searchTagCategorySummary(today, ftsTable)(q)
-      fields <- searchFieldSummary(today, ftsTable)(q)
+      fields <- QItemFieldStats.searchFieldSummary(today, ftsTable)(q)
       folders <- searchFolderSummary(today, ftsTable)(q)
       orgs <- searchCorrOrgSummary(today, ftsTable)(q)
       corrPers <- searchCorrPersonSummary(today, ftsTable)(q)
@@ -338,6 +338,127 @@ object QItem extends FtsSupport {
       corrPers,
       concPers,
       concEquip
+    )
+
+  def searchStatsGeneral(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
+      q: Query
+  ): ConnectionIO[SearchSummary] =
+    QItemFieldStats.resolveStatsItemContext(q.fix, today, q.cond, ftsTable).flatMap {
+      ctx =>
+        val folderIds = Some(ctx.folderIds)
+        for {
+          count <- searchCountSummary(today, ftsTable, folderIds)(q)
+          tags <- searchTagSummary(today, ftsTable)(q)
+          fieldCount <- QItemFieldStats.searchFieldDefinitionCount(ctx)(q)
+          orgCount <- searchDistinctOrgCount(today, ftsTable, folderIds)(q)
+          personCount <- searchDistinctPersonCount(today, ftsTable, folderIds)(q)
+          equipCount <- searchDistinctEquipCount(today, ftsTable, folderIds)(q)
+        } yield SearchSummary(
+          count = count,
+          tags = tags,
+          cats = Nil,
+          fields = Nil,
+          folders = Nil,
+          corrOrgs = Nil,
+          corrPers = Nil,
+          concPers = Nil,
+          concEquip = Nil,
+          fieldCount = fieldCount.some,
+          orgCount = orgCount.some,
+          personCount = personCount.some,
+          equipCount = equipCount.some
+        )
+    }
+
+  def searchStatsFields(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
+      q: Query
+  ): ConnectionIO[SearchSummary] =
+    QItemFieldStats.resolveStatsItemContext(q.fix, today, q.cond, ftsTable).flatMap {
+      ctx =>
+        val folderIds = Some(ctx.folderIds)
+        val coll = q.fix.account.collectiveId
+        for {
+          count <- searchCountSummary(today, ftsTable, folderIds)(q)
+          fields <- QItemFieldStats.searchFieldSummaryFromContext(coll, ctx)
+        } yield SearchSummary(
+          count = count,
+          tags = Nil,
+          cats = Nil,
+          fields = fields,
+          folders = Nil,
+          corrOrgs = Nil,
+          corrPers = Nil,
+          concPers = Nil,
+          concEquip = Nil
+        )
+    }
+
+  private[queries] def statsItemMatchingIdsSelect(
+      fix: Query.Fix,
+      today: LocalDate,
+      cond: Query.QueryCond,
+      ftsTable: Option[RFtsResult.Table],
+      folderIds: Option[Set[Ident]]
+  ): Select =
+    statsItemSelect(fix, today, cond, folderIds)
+      .joinFtsIdOnly(i, ftsTable)
+      .withSelect(Nel.of(i.id.s))
+
+  private[queries] def statsItemMatchCount(
+      fix: Query.Fix,
+      today: LocalDate,
+      cond: Query.QueryCond,
+      ftsTable: Option[RFtsResult.Table],
+      folderIds: Option[Set[Ident]]
+  ): ConnectionIO[Int] =
+    statsItemSelect(fix, today, cond, folderIds)
+      .joinFtsIdOnly(i, ftsTable)
+      .withSelect(Nel.of(count(i.id).as("num")))
+      .build
+      .query[Int]
+      .unique
+
+  private def statsItemFolderCondition(folderIds: Set[Ident]): Condition =
+    Nel.fromList(folderIds.toList) match {
+      case None =>
+        i.folder.isNull
+      case Some(nel) =>
+        or(i.folder.isNull, i.folder.in(nel))
+    }
+
+  private def statsItemWhere(
+      fix: Query.Fix,
+      today: LocalDate,
+      coll: CollectiveId,
+      cond: Query.QueryCond,
+      folderIds: Option[Set[Ident]]
+  ): Condition = {
+    val folderCond = folderIds match {
+      case Some(ids) =>
+        statsItemFolderCondition(ids)
+      case None =>
+        or(
+          i.folder.isNull,
+          i.folder.in(
+            QFolder.findMemberFolderIds(fix.account.collectiveId, fix.account.userId)
+          )
+        )
+    }
+    i.cid === coll &&? fix.query.map(qs => queryCondFromExpr(today, coll, qs)) &&
+    folderCond &&
+    queryCondition(today, coll, cond)
+  }
+
+  private def statsItemSelect(
+      fix: Query.Fix,
+      today: LocalDate,
+      cond: Query.QueryCond,
+      folderIds: Option[Set[Ident]]
+  ): Select.SimpleSelect =
+    Select(
+      select(i.id),
+      from(i),
+      statsItemWhere(fix, today, fix.account.collectiveId, cond, folderIds)
     )
 
   def searchTagCategorySummary(
@@ -394,16 +515,66 @@ object QItem extends FtsSupport {
     } yield existing ++ other.map(TagCount(_, 0))
   }
 
-  def searchCountSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
-      q: Query
-  ): ConnectionIO[Int] =
-    findItemsBase(q.fix, today, 0, None).unwrap
+  def searchCountSummary(
+      today: LocalDate,
+      ftsTable: Option[RFtsResult.Table],
+      folderIds: Option[Set[Ident]] = None
+  )(q: Query): ConnectionIO[Int] =
+    statsItemSelect(q.fix, today, q.cond, folderIds)
       .joinFtsIdOnly(i, ftsTable)
       .withSelect(Nel.of(count(i.id).as("num")))
-      .changeWhere(c => c && queryCondition(today, q.fix.account.collectiveId, q.cond))
       .build
       .query[Int]
       .unique
+
+  private def searchDistinctOrgCount(
+      today: LocalDate,
+      ftsTable: Option[RFtsResult.Table],
+      folderIds: Option[Set[Ident]]
+  )(q: Query): ConnectionIO[Int] =
+    statsItemSelect(q.fix, today, q.cond, folderIds)
+      .joinFtsIdOnly(i, ftsTable)
+      .changeWhere(c => c && i.corrOrg.isNotNull)
+      .withSelect(Nel.of(countDistinct(i.corrOrg).as("num")))
+      .build
+      .query[Int]
+      .unique
+
+  private def searchDistinctEquipCount(
+      today: LocalDate,
+      ftsTable: Option[RFtsResult.Table],
+      folderIds: Option[Set[Ident]]
+  )(q: Query): ConnectionIO[Int] =
+    statsItemSelect(q.fix, today, q.cond, folderIds)
+      .joinFtsIdOnly(i, ftsTable)
+      .changeWhere(c => c && i.concEquipment.isNotNull)
+      .withSelect(Nel.of(countDistinct(i.concEquipment).as("num")))
+      .build
+      .query[Int]
+      .unique
+
+  private def searchDistinctPersonCount(
+      today: LocalDate,
+      ftsTable: Option[RFtsResult.Table],
+      folderIds: Option[Set[Ident]]
+  )(q: Query): ConnectionIO[Int] = {
+    val where =
+      statsItemWhere(q.fix, today, q.fix.account.collectiveId, q.cond, folderIds)
+    val corr0: Select =
+      Select(select(i.corrPerson), from(i), where && i.corrPerson.isNotNull)
+    val conc0: Select =
+      Select(select(i.concPerson), from(i), where && i.concPerson.isNotNull)
+    val corr =
+      if (ftsTable.isDefined) corr0.joinFtsIdOnly(i, ftsTable) else corr0
+    val conc =
+      if (ftsTable.isDefined) conc0.joinFtsIdOnly(i, ftsTable) else conc0
+    val persItem = RItem.as("pers")
+    Select(
+      select(countDistinct(persItem.corrPerson).as("num")),
+      from(union(corr, conc), "pers"),
+      Condition.unit
+    ).build.query[Int].unique
+  }
 
   def searchCorrOrgSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
@@ -460,62 +631,8 @@ object QItem extends FtsSupport {
 
   def searchFieldSummary(today: LocalDate, ftsTable: Option[RFtsResult.Table])(
       q: Query
-  ): ConnectionIO[List[FieldStats]] = {
-    val fieldJoin =
-      from(cv)
-        .innerJoin(cf, cf.id === cv.field)
-        .innerJoin(i, i.id === cv.itemId)
-
-    val base =
-      findItemsBase(q.fix, today, 0, None).unwrap
-        .changeFrom(_.prepend(fieldJoin))
-        .changeWhere(c => c && queryCondition(today, q.fix.account.collectiveId, q.cond))
-        .ftsCondition(i, ftsTable)
-        .groupBy(GroupBy(cf.all))
-
-    val basicFields = Nel.of(
-      count(i.id).as("fc"),
-      const(0).as("favg"),
-      const(0).as("fsum"),
-      const(0).as("fmax"),
-      const(0).as("fmin")
-    )
-    val valueNum = cast(cv.value.s, "decimal").s
-    val numericFields = Nel.of(
-      count(i.id).as("fc"),
-      avg(valueNum).as("favg"),
-      sum(valueNum).as("fsum"),
-      max(valueNum).as("fmax"),
-      min(valueNum).as("fmin")
-    )
-
-    val numTypes = Nel.of(CustomFieldType.money, CustomFieldType.numeric)
-    val query =
-      union(
-        base
-          .withSelect(select(cf.all).concatNel(basicFields))
-          .changeWhere(c => c && cf.ftype.notIn(numTypes)),
-        base
-          .withSelect(select(cf.all).concatNel(numericFields))
-          .changeWhere(c => c && cf.ftype.in(numTypes))
-      ).build.query[FieldStats].to[List]
-
-    val fallback = base
-      .withSelect(select(cf.all).concatNel(basicFields))
-      .build
-      .query[FieldStats]
-      .to[List]
-
-    query.attemptSql.flatMap {
-      case Right(res) => res.pure[ConnectionIO]
-      case Left(ex) =>
-        logger
-          .error(ex)(
-            s"Calculating custom field summary failed. You may have invalid custom field values according to their type."
-          ) *>
-          fallback
-    }
-  }
+  ): ConnectionIO[List[FieldStats]] =
+    QItemFieldStats.searchFieldSummary(today, ftsTable)(q)
 
   /** Same as `findItems` but resolves the tags for each item. Note that this is
     * implemented by running an additional query per item.

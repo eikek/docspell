@@ -26,7 +26,7 @@ import docspell.store.queries.{ListItemWithTags, SearchSummary}
 
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{HttpRoutes, Response}
+import org.http4s.{HttpRoutes, Request, Response}
 
 final class ItemSearchPart[F[_]: Async](
     searchOps: OSearch[F],
@@ -45,7 +45,7 @@ final class ItemSearchPart[F[_]: Async](
           QP.Offset(offset) :? QP.WithDetails(detailFlag) :?
           QP.SearchKind(searchMode) =>
         val userQuery =
-          ItemQuery(offset, limit, detailFlag, searchMode, q.getOrElse(""))
+          ItemQuery(offset, limit, detailFlag, searchMode, q.getOrElse(""), None)
         for {
           today <- Timestamp.current[F].map(_.toUtcDate)
           resp <- search(userQuery, today)
@@ -62,34 +62,58 @@ final class ItemSearchPart[F[_]: Async](
         } yield resp
 
       case GET -> Root / `searchStatsPath` :? QP.Query(q) :?
-          QP.SearchKind(searchMode) =>
-        val userQuery = ItemQuery(None, None, None, searchMode, q.getOrElse(""))
+          QP.SearchKind(searchMode) :? QP.StatsProfileOpt(qpProfile) =>
+        val userQuery =
+          ItemQuery(None, None, None, searchMode, q.getOrElse(""), qpProfile)
         for {
           today <- Timestamp.current[F].map(_.toUtcDate)
-          resp <- searchStats(userQuery, today)
+          resp <- searchStats(userQuery, today, qpProfile)
         } yield resp
 
-      case req @ POST -> Root / `searchStatsPath` =>
-        for {
-          timed <- Duration.stopTime[F]
-          userQuery <- req.as[ItemQuery]
-          today <- Timestamp.current[F].map(_.toUtcDate)
-          resp <- searchStats(userQuery, today)
-          dur <- timed
-          _ <- logger.debug(s"Search stats request: ${dur.formatExact}")
-        } yield resp
+      case req @ POST -> Root / `searchStatsPath` / "general" =>
+        postSearchStats(req, StatsProfile.General.some)
+
+      case req @ POST -> Root / `searchStatsPath` / "fields" =>
+        postSearchStats(req, StatsProfile.Fields.some)
+
+      case req @ POST -> Root / `searchStatsPath` / "full" =>
+        postSearchStats(req, StatsProfile.Full.some)
+
+      case req @ POST -> Root / `searchStatsPath` :? QP.StatsProfileOpt(qpProfile) =>
+        postSearchStats(req, qpProfile)
     }
 
-  def searchStats(userQuery: ItemQuery, today: LocalDate): F[Response[F]] = {
+  private def postSearchStats(
+      req: Request[F],
+      pathProfile: Option[StatsProfile]
+  ): F[Response[F]] =
+    for {
+      timed <- Duration.stopTime[F]
+      userQuery <- req.as[ItemQuery]
+      today <- Timestamp.current[F].map(_.toUtcDate)
+      resp <- searchStats(userQuery, today, pathProfile)
+      dur <- timed
+      _ <- logger.debug(s"Search stats request: ${dur.formatExact}")
+    } yield resp
+
+  def searchStats(
+      userQuery: ItemQuery,
+      today: LocalDate,
+      qpProfile: Option[StatsProfile] = None
+  ): F[Response[F]] = {
     val mode = userQuery.searchMode.getOrElse(SearchMode.Normal)
     parsedQuery(userQuery, mode)
       .fold(
         identity,
-        res =>
+        res => {
+          // Profile precedence: path segment, then body statsProfile, then default full.
+          val profile =
+            qpProfile.orElse(userQuery.statsProfile).getOrElse(StatsProfile.default)
           for {
-            summary <- searchOps.searchSummary(today.some)(res.q, res.ftq)
+            summary <- searchOps.searchSummary(today.some, profile)(res.q, res.ftq)
             resp <- Ok(Conversions.mkSearchStats(changeSummary(summary)))
           } yield resp
+        }
       )
   }
 

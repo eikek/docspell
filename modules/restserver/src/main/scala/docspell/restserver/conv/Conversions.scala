@@ -48,7 +48,11 @@ trait Conversions {
       sum.corrOrgs.map(mkIdRefStats),
       sum.corrPers.map(mkIdRefStats),
       sum.concPers.map(mkIdRefStats),
-      sum.concEquip.map(mkIdRefStats)
+      sum.concEquip.map(mkIdRefStats),
+      sum.fieldCount,
+      sum.orgCount,
+      sum.personCount,
+      sum.equipCount
     )
 
   def mkIdRefStats(s: IdRefCount): IdRefStats =

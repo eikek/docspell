@@ -15,7 +15,11 @@ case class SearchSummary(
     corrOrgs: List[IdRefCount],
     corrPers: List[IdRefCount],
     concPers: List[IdRefCount],
-    concEquip: List[IdRefCount]
+    concEquip: List[IdRefCount],
+    fieldCount: Option[Int] = None,
+    orgCount: Option[Int] = None,
+    personCount: Option[Int] = None,
+    equipCount: Option[Int] = None
 ) {
 
   def onlyExisting: SearchSummary =
@@ -28,6 +32,10 @@ case class SearchSummary(
       corrOrgs = corrOrgs.filter(_.count > 0),
       corrPers = corrPers.filter(_.count > 0),
       concPers = concPers.filter(_.count > 0),
-      concEquip = concEquip.filter(_.count > 0)
+      concEquip = concEquip.filter(_.count > 0),
+      fieldCount,
+      orgCount,
+      personCount,
+      equipCount
     )
 }
