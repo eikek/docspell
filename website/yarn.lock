@@ -13,24 +13,24 @@
   integrity sha512-kIxYSfA5T8HXjav55UaaH/o/cKivF6jCCGIb8eqtcsfI46wsvlSiT8jMDyrl779qLec3c2c2oHBZo4oAhvbjrQ==
 
 "@fontsource/montserrat@^5.0.0":
-  version "5.2.8"
-  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.2.8.tgz#4be164061dbab2b81bc803e9ceed47f5bd9c9f88"
-  integrity sha512-xTjLxSbSfCycDB0pwmNsfNvdfWPaDaRQ2LC6yt/ZI7SdvXG52zHnzNYC/09mzuAuWNJyShkteutfCoDgym56hQ==
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/montserrat/-/montserrat-5.3.0.tgz#218a998a485d41f358d6bacf9edb70e282fadf7a"
+  integrity sha512-iQPDtZOnmM5ih4JBGaMSXisRap0ixb9bAUw2hDtY7EjVfaqiiNlKtVuJl9XclxUwtwMMHNcWXfQR6zI9x05+Tg==
 
 "@fontsource/source-code-pro@^5.0.0":
-  version "5.2.7"
-  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.2.7.tgz#ab5cd5882e21cdc38076e12939ddf01424139f61"
-  integrity sha512-7papq9TH94KT+S5VSY8cU7tFmwuGkIe3qxXRMscuAXH6AjMU+KJI75f28FzgBVDrlMfA0jjlTV4/x5+H5o/5EQ==
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/source-code-pro/-/source-code-pro-5.3.0.tgz#62730689b21657c2309b7bf9a992b1fbc62b4b12"
+  integrity sha512-JxaCODU69HDS3mVra9u96nyBF911La6IvtGLgpQD+PZLxJ1i9IxooNfLR6Y37kx06IFjVGkvoUmg3WPwh/8gBg==
 
 "@fontsource/spectral@^5.0.0":
-  version "5.2.8"
-  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.2.8.tgz#2b39b309dff15d56ae548c4e886c4a62acbaf2bc"
-  integrity sha512-0CqZ8/z8A38BdeSz5t2NSd5tCO1R9P1k7SF2VpRLMbZTMSSR6+2Dk0ZBMfEQK/IrBLQS1HgHLMqpdTwRpnKpGQ==
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/spectral/-/spectral-5.3.0.tgz#cf7c54f5313a261c011f5ba4397df02e73eecde1"
+  integrity sha512-2TL5WWGOZj4SIsBmPFEzKeA60tXXd1Qp1OqaaVEWkJL8IfSGLk6YmiusmC441iFkdJDIuFelu1r8lhCmQUU3mw==
 
 "@fortawesome/fontawesome-free@^7.0.0":
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-7.2.0.tgz#188c1053ce422ad1f934d7df242a973fcb89636d"
-  integrity sha512-3DguDv/oUE+7vjMeTSOjCSG+KeawgVQOHrKRnvUuqYh1mfArrh7s+s8hXW3e4RerBA1+Wh+hBqf8sJNpqNrBWg==
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-7.3.1.tgz#9d7d7df8f850637e001d24e6cd901422b4b09099"
+  integrity sha512-wmglKKPDIkgV3aWlZzWECCPoGIkYCulzBwxG9+w7rc5BGapZ6cPMpoPOT8k36J0Ni7PPX6c/rsoMWfS4d1MUMg==
 
 "@jridgewell/gen-mapping@^0.3.2":
   version "0.3.13"
