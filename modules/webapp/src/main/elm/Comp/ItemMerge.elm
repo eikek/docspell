@@ -68,6 +68,7 @@ initQuery flags searchMode query =
             , withDetails = Just True
             , searchMode = Just (Data.SearchMode.asString searchMode)
             , query = Data.ItemQuery.render query
+            , statsProfile = Nothing
             }
     in
     ( init [], Api.itemSearch flags itemQuery ItemResp )

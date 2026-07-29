@@ -91,22 +91,15 @@ type Msg
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    let
-        ( dm, dc ) =
-            Comp.DashboardView.init flags Data.Dashboard.empty
-    in
     ( { sideMenu =
             { bookmarkChooser = Comp.BookmarkChooser.init Data.Bookmarks.empty
             }
-      , content = Home dm
+      , content = Home (Comp.DashboardView.emptyModel Data.Dashboard.empty)
       , pageError = Nothing
       , dashboards = Data.Dashboards.emptyAll
       , isPredefined = True
       }
-    , Cmd.batch
-        [ initCmd flags
-        , Cmd.map DashboardMsg dc
-        ]
+    , initCmd flags
     )
 
 

@@ -3038,8 +3038,45 @@ paths:
       description: |
         Instead of returning the results of a query, uses it to return
         a summary.
+
+        The default stats profile is `full`, which preserves the
+        behavior of existing API clients. Prefer
+        `POST /sec/item/searchStats/{profile}` to select a profile
+        explicitly.
+
+        Profile precedence: path segment, then `statsProfile` in the
+        JSON body, then `full`.
+
+        | Profile | count | tagCloud | fieldStats | folderStats | dimension lists | fieldCount etc. |
+        |---------|-------|----------|------------|-------------|-----------------|-----------------|
+        | full | yes | yes | yes | yes | yes | no |
+        | general | yes | yes | empty | empty | empty | yes |
+        | fields | yes | empty | yes | empty | empty | no |
+
+        Empty arrays in the response do not imply zero items in the
+        database; they indicate that the selected profile does not
+        populate that section.
+
+        The optional `statsProfile` query parameter on this POST route
+        is deprecated; use a path segment instead. The query parameter
+        remains supported on GET.
       security:
         - authTokenHeader: []
+      parameters:
+        - name: statsProfile
+          in: query
+          required: false
+          deprecated: true
+          description: |
+            Deprecated on POST. Use `POST /sec/item/searchStats/{profile}`
+            or the `statsProfile` property in the request body instead.
+          schema:
+            type: string
+            format: statsprofile
+            enum:
+              - full
+              - general
+              - fields
       requestBody:
         content:
           application/json:
@@ -3060,12 +3097,64 @@ paths:
       summary: Get basic statistics about search results.
       description: |
         Instead of returning the results of a query, uses it to return
-        a summary.
+        a summary. Use the optional `statsProfile` query parameter to
+        select `full`, `general`, or `fields`. Defaults to `full`.
       security:
         - authTokenHeader: []
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/searchMode"
+        - name: statsProfile
+          in: query
+          required: false
+          schema:
+            type: string
+            format: statsprofile
+            enum:
+              - full
+              - general
+              - fields
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchStats"
+
+  /sec/item/searchStats/{profile}:
+    post:
+      operationId: "sec-item-search-stats-profile-post"
+      tags: [ Item Search ]
+      summary: Get search statistics for a specific profile.
+      description: |
+        Same as `POST /sec/item/searchStats`, but the stats profile is
+        selected by path segment (`full`, `general`, or `fields`). The
+        path profile takes precedence over `statsProfile` in the JSON
+        body.
+
+        See `POST /sec/item/searchStats` for a description of what each
+        profile populates in the `SearchStats` response.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - name: profile
+          in: path
+          required: true
+          schema:
+            type: string
+            format: statsprofile
+            enum:
+              - full
+              - general
+              - fields
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemQuery"
       responses:
         422:
           description: BadRequest
@@ -7167,6 +7256,19 @@ components:
           type: string
           description: |
             A query searching the contents of documents.
+        statsProfile:
+          type: string
+          format: statsprofile
+          enum:
+            - full
+            - general
+            - fields
+          default: full
+          description: |
+            Controls how much work searchStats performs. The full
+            profile returns all statistics; general returns counts
+            suitable for dashboard summaries; fields returns only
+            custom field statistics.
     MoveAttachment:
       description: |
         Data to move an attachment to another position.
@@ -7568,7 +7670,10 @@ components:
           format: ident
     SearchStats:
       description: |
-        A summary of search results.
+        A summary of search results. All profiles return the same schema
+        shape, but only populate the sections relevant to the selected
+        stats profile. Empty arrays do not imply zero items in the
+        database.
       required:
         - count
         - tagCloud
@@ -7611,6 +7716,31 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/IdRefStats"
+        fieldCount:
+          type: integer
+          format: int32
+          description: |
+            Number of distinct non-numeric custom fields that have at
+            least one value on items matching the query. Only set by
+            the `general` stats profile.
+        orgCount:
+          type: integer
+          format: int32
+          description: |
+            Number of distinct correspondent organizations in results.
+            Populated by the general stats profile.
+        personCount:
+          type: integer
+          format: int32
+          description: |
+            Number of distinct persons (correspondent or concerned) in
+            results. Populated by the general stats profile.
+        equipCount:
+          type: integer
+          format: int32
+          description: |
+            Number of distinct equipment references in results.
+            Populated by the general stats profile.
 
     ItemInsights:
       description: |

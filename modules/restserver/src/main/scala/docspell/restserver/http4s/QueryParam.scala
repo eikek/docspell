@@ -12,7 +12,7 @@ import docspell.backend.ops.OFolder.FolderOrder
 import docspell.backend.ops.OOrganization.{OrganizationOrder, PersonOrder}
 import docspell.backend.ops.OTag.TagOrder
 import docspell.common.ContactKind
-import docspell.common.SearchMode
+import docspell.common.{SearchMode, StatsProfile}
 
 import org.http4s.ParseFailure
 import org.http4s.QueryParamDecoder
@@ -32,6 +32,11 @@ object QueryParam {
   implicit val searchModeDecoder: QueryParamDecoder[SearchMode] =
     QueryParamDecoder[String].emap(str =>
       SearchMode.fromString(str).left.map(s => ParseFailure(str, s))
+    )
+
+  implicit val statsProfileDecoder: QueryParamDecoder[StatsProfile] =
+    QueryParamDecoder[String].emap(str =>
+      StatsProfile.fromString(str).left.map(s => ParseFailure(str, s))
     )
 
   implicit val tagOrderDecoder: QueryParamDecoder[TagOrder] =
@@ -78,6 +83,8 @@ object QueryParam {
   object Offset extends OptionalQueryParamDecoderMatcher[Int]("offset")
   object WithDetails extends OptionalQueryParamDecoderMatcher[Boolean]("withDetails")
   object SearchKind extends OptionalQueryParamDecoderMatcher[SearchMode]("searchMode")
+  object StatsProfileOpt
+      extends OptionalQueryParamDecoderMatcher[StatsProfile]("statsProfile")
   object TagSort extends OptionalQueryParamDecoderMatcher[TagOrder]("sort")
   object EquipSort extends OptionalQueryParamDecoderMatcher[EquipmentOrder]("sort")
   object OrgSort extends OptionalQueryParamDecoderMatcher[OrganizationOrder]("sort")

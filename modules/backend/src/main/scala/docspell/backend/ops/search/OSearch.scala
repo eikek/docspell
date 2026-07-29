@@ -69,7 +69,8 @@ trait OSearch[F[_]] {
 
   /** Run multiple database calls with the give query to collect a summary. */
   def searchSummary(
-      today: Option[LocalDate]
+      today: Option[LocalDate],
+      profile: StatsProfile = StatsProfile.Full
   )(q: Query, fulltextQuery: Option[String]): F[SearchSummary]
 
   /** Parses a query string and creates a `Query` object, to be used with the other
@@ -208,7 +209,8 @@ object OSearch {
         } yield resolved
 
       def searchSummary(
-          today: Option[LocalDate]
+          today: Option[LocalDate],
+          profile: StatsProfile
       )(q: Query, fulltextQuery: Option[String]): F[SearchSummary] =
         fulltextQuery match {
           case Some(ftq) =>
@@ -220,7 +222,7 @@ object OSearch {
               results <- WeakAsync.liftK[F, ConnectionIO].use { nat =>
                 val tempTable = temporaryFtsTable(ftq, nat)
                 store.transact(
-                  tempTable.flatMap(tt => QItem.searchStats(date, tt.some)(q))
+                  tempTable.flatMap(tt => runSearchStats(profile, date, tt.some)(q))
                 )
               }
             } yield results
@@ -229,7 +231,18 @@ object OSearch {
             OptionT
               .fromOption(today)
               .getOrElseF(Timestamp.current[F].map(_.toUtcDate))
-              .flatMap(date => store.transact(QItem.searchStats(date, None)(q)))
+              .flatMap(date => store.transact(runSearchStats(profile, date, None)(q)))
+        }
+
+      private def runSearchStats(
+          profile: StatsProfile,
+          date: LocalDate,
+          ftsTable: Option[RFtsResult.Table]
+      )(q: Query): ConnectionIO[SearchSummary] =
+        profile match {
+          case StatsProfile.Full    => QItem.searchStats(date, ftsTable)(q)
+          case StatsProfile.General => QItem.searchStatsGeneral(date, ftsTable)(q)
+          case StatsProfile.Fields  => QItem.searchStatsFields(date, ftsTable)(q)
         }
 
       private def createFtsQuery(

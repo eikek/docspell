@@ -5,7 +5,7 @@
 -}
 
 
-module Comp.BoxStatsView exposing (Model, Msg, init, reloadData, update, view)
+module Comp.BoxStatsView exposing (Model, Msg, ViewResult(..), init, reloadData, update, view)
 
 import Api
 import Api.Model.ItemQuery exposing (ItemQuery)
@@ -25,6 +25,7 @@ import Util.List
 type alias Model =
     { results : ViewResult
     , meta : StatsData
+    , parentManaged : Bool
     }
 
 
@@ -39,13 +40,23 @@ type Msg
     | ReloadData
 
 
-init : Flags -> StatsData -> ( Model, Cmd Msg )
-init flags data =
-    ( { results = Loading
-      , meta = data
-      }
-    , dataCmd flags data
-    )
+init : Flags -> StatsData -> Maybe (Result Http.Error SearchStats) -> Bool -> ( Model, Cmd Msg )
+init flags data cached parentManaged =
+    case cached of
+        Just (Ok stats) ->
+            ( { results = Loaded stats, meta = data, parentManaged = parentManaged }, Cmd.none )
+
+        Just (Err err) ->
+            ( { results = Failed err, meta = data, parentManaged = parentManaged }, Cmd.none )
+
+        Nothing ->
+            if parentManaged then
+                ( { results = Loading, meta = data, parentManaged = parentManaged }, Cmd.none )
+
+            else
+                ( { results = Loading, meta = data, parentManaged = parentManaged }
+                , dataCmd flags data
+                )
 
 
 reloadData : Msg
@@ -67,7 +78,11 @@ update flags msg model =
             ( { model | results = Failed err }, Cmd.none, False )
 
         ReloadData ->
-            ( model, dataCmd flags model.meta, True )
+            if model.parentManaged then
+                ( model, Cmd.none, True )
+
+            else
+                ( model, dataCmd flags model.meta, True )
 
 
 
@@ -120,19 +135,22 @@ viewGeneral texts stats =
             List.length stats.tagCloud.items
 
         fieldCount =
-            List.length stats.fieldStats
+            Maybe.withDefault (List.length stats.fieldStats) stats.fieldCount
 
         orgCount =
-            List.length stats.corrOrgStats
+            Maybe.withDefault (List.length stats.corrOrgStats) stats.orgCount
 
         persCount =
-            (stats.corrPersStats ++ stats.concPersStats)
-                |> List.map (.ref >> .id)
-                |> Util.List.distinct
-                |> List.length
+            Maybe.withDefault
+                ((stats.corrPersStats ++ stats.concPersStats)
+                    |> List.map (.ref >> .id)
+                    |> Util.List.distinct
+                    |> List.length
+                )
+                stats.personCount
 
         equipCount =
-            List.length stats.concEquipStats
+            Maybe.withDefault (List.length stats.concEquipStats) stats.equipCount
 
         mklabel name =
             div [ class "py-0.5 text-lg" ] [ text name ]
@@ -166,21 +184,50 @@ viewGeneral texts stats =
 --- Helpers
 
 
-mkQuery : String -> ItemQuery
-mkQuery query =
+mkQuery : String -> Maybe String -> ItemQuery
+mkQuery query profile =
     { query = query
     , limit = Nothing
     , offset = Nothing
     , searchMode = Nothing
     , withDetails = Nothing
+    , statsProfile = profile
     }
+
+
+statsProfileFor : SummaryShow -> Maybe String
+statsProfileFor show =
+    case show of
+        SummaryShowGeneral ->
+            Just "general"
+
+        SummaryShowFields _ ->
+            Just "fields"
 
 
 dataCmd : Flags -> StatsData -> Cmd Msg
 dataCmd flags data =
-    case data.query of
-        SearchQueryString q ->
-            Api.itemSearchStats flags (mkQuery q) StatsResp
+    let
+        profile =
+            statsProfileFor data.show
 
-        SearchQueryBookmark bmId ->
-            Api.itemSearchStatsBookmark flags (mkQuery bmId) StatsResp
+        query =
+            case data.query of
+                SearchQueryString q ->
+                    mkQuery q profile
+
+                SearchQueryBookmark bmId ->
+                    mkQuery bmId profile
+    in
+    case ( data.query, profile ) of
+        ( SearchQueryString _, Just "general" ) ->
+            Api.itemSearchStatsGeneral flags query StatsResp
+
+        ( SearchQueryString _, _ ) ->
+            Api.itemSearchStatsFields flags query StatsResp
+
+        ( SearchQueryBookmark _, Just "general" ) ->
+            Api.itemSearchStatsBookmarkAt "general" flags query StatsResp
+
+        ( SearchQueryBookmark _, _ ) ->
+            Api.itemSearchStatsBookmarkAt "fields" flags query StatsResp

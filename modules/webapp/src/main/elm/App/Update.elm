@@ -411,8 +411,12 @@ applyClientSettings texts model settings =
             , setTheme
             , Sub.none
             )
-        , updateDashboard texts Page.Dashboard.Data.reloadUiSettings
-        , updateSearch texts Page.Search.Data.UiSettingsUpdated
+        , \m ->
+            if Page.isSearchPage m.page then
+                updateSearch texts Page.Search.Data.UiSettingsUpdated m
+
+            else
+                ( m, Cmd.none, Sub.none )
         , updateItemDetail texts Page.ItemDetail.Data.UiSettingsUpdated
         ]
         { model | uiSettings = settings }
@@ -771,4 +775,4 @@ initPage model_ page =
                     ( model, Cmd.none, Sub.none )
 
         DashboardPage ->
-            ( model, Cmd.map DashboardMsg (Page.Dashboard.Data.reinitCmd model.flags), Sub.none )
+            ( model, Cmd.none, Sub.none )

@@ -32,7 +32,7 @@ import Api.Model.EquipmentList exposing (EquipmentList)
 import Api.Model.FolderStats exposing (FolderStats)
 import Api.Model.IdName exposing (IdName)
 import Api.Model.ItemFieldValue exposing (ItemFieldValue)
-import Api.Model.ItemQuery exposing (ItemQuery)
+import Api.Model.ItemQuery as RQ
 import Api.Model.PersonList exposing (PersonList)
 import Api.Model.ReferenceList exposing (ReferenceList)
 import Api.Model.SearchStats exposing (SearchStats)
@@ -114,6 +114,17 @@ type alias Model =
 type TextSearchModel
     = Fulltext (Maybe String)
     | Names (Maybe String)
+
+
+tagsStatsQuery : RQ.ItemQuery
+tagsStatsQuery =
+    { offset = Nothing
+    , limit = Nothing
+    , withDetails = Nothing
+    , searchMode = Nothing
+    , query = ""
+    , statsProfile = Just "general"
+    }
 
 
 init : Flags -> Model
@@ -541,7 +552,7 @@ updateDrop ddm flags settings msg model =
             { model = mdp
             , cmd =
                 Cmd.batch
-                    [ Api.itemSearchStats flags Api.Model.ItemQuery.empty GetAllTagsResp
+                    [ Api.itemSearchStatsGeneral flags tagsStatsQuery GetAllTagsResp
                     , Api.getOrgLight flags GetOrgResp
                     , Api.getEquipments flags "" Data.EquipmentOrder.NameAsc GetEquipResp
                     , Api.getPersons flags "" Data.PersonOrder.NameAsc GetPersonResp
@@ -557,7 +568,7 @@ updateDrop ddm flags settings msg model =
 
         ResetForm ->
             { model = resetModel model
-            , cmd = Api.itemSearchStats flags Api.Model.ItemQuery.empty GetAllTagsResp
+            , cmd = Api.itemSearchStatsGeneral flags tagsStatsQuery GetAllTagsResp
             , sub = Sub.none
             , stateChange = True
             , dragDrop = DD.DragDropData ddm Nothing

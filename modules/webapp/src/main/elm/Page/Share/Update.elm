@@ -425,6 +425,7 @@ makeSearchCmd flags doInit addResults model =
             , withDetails = Just True
             , query = Q.renderMaybe mq
             , searchMode = Just (Data.SearchMode.asString Data.SearchMode.Normal)
+            , statsProfile = Nothing
             }
 
         searchCmd =

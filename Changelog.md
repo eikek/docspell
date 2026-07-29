@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.44.0
+
+*Unreleased*
+
+### 🚀 Features
+
+- Add `statsProfile` to search stats (`full`, `general`, `fields`). The
+  dashboard uses lighter `general` and `fields` requests instead of
+  repeating the full statistics query.
+
+### 🐛 Bug Fixes
+
+- Improve performance of custom field statistics on large databases by
+  scoping `custom_field_value` lookups to matching items only.
+
+### 💚 Maintenance
+
+- Document search stats profiles in the OpenAPI spec. The `general`
+  profile still computes tag clouds; it omits dimension list aggregates
+  and heavy field statistics.
+
 ## v0.43.0
 
 *Mar 15, 2025*

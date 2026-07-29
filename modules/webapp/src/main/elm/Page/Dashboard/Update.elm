@@ -110,9 +110,12 @@ update texts settings navKey flags msg model =
                             dm.dashboard
 
                         ( dm_, dc ) =
-                            Comp.DashboardView.init flags board
+                            Comp.DashboardView.reload flags dm
                     in
-                    ( { model | content = Home dm_ }, Cmd.map DashboardMsg dc, Sub.none )
+                    ( { model | content = Home dm_ }
+                    , Cmd.map DashboardMsg dc
+                    , Sub.none
+                    )
 
                 _ ->
                     unit model
