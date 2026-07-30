@@ -6,6 +6,10 @@
 
 ### 🚀 Features
 
+- Upload endpoints now return `fileKeys` and `jobIds` so clients can track
+  submitted files and processing jobs immediately.
+- Add secured endpoint to download files by file key for retrieving uploaded
+  bytes before processing finishes.
 - Add `statsProfile` to search stats (`full`, `general`, `fields`). The
   dashboard uses lighter `general` and `fields` requests instead of
   repeating the full statistics query.

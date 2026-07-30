@@ -4716,6 +4716,71 @@ paths:
               schema:
                 type: string
                 format: binary
+  /sec/file/{collectiveId}/{category}/{id}:
+    head:
+      operationId: "sec-file-check"
+      tags: [ Attachment ]
+      summary: Get headers for a file by its file key.
+      description: |
+        Get information about a binary file identified by its file
+        key parts (`collectiveId`, `category`, `id`). The collective
+        in the key must match the authenticated user's collective.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/collectiveId"
+        - $ref: "#/components/parameters/category"
+        - $ref: "#/components/parameters/id"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          headers:
+            Content-Type:
+              schema:
+                type: string
+            Content-Length:
+              schema:
+                type: integer
+                format: int64
+            ETag:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+        404:
+          description: Not Found
+    get:
+      operationId: "sec-file-get"
+      tags: [ Attachment ]
+      summary: Download a file by its file key.
+      description: |
+        Get the binary file identified by its file key parts
+        (`collectiveId`, `category`, `id`). The collective in the key
+        must match the authenticated user's collective. This can be
+        used with file keys returned from the upload endpoints to
+        retrieve the original uploaded bytes before processing
+        finishes.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/collectiveId"
+        - $ref: "#/components/parameters/category"
+        - $ref: "#/components/parameters/id"
+      responses:
+        422:
+          description: BadRequest
+        200:
+          description: Ok
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        404:
+          description: Not Found
   /sec/attachment/{id}/archive:
     head:
       operationId: "sec-attach-check-archive"
@@ -9106,6 +9171,22 @@ components:
       name: id
       in: path
       description: An identifier
+      required: true
+      schema:
+        type: string
+    collectiveId:
+      name: collectiveId
+      in: path
+      description: The numeric collective id
+      required: true
+      schema:
+        type: string
+    category:
+      name: category
+      in: path
+      description: |
+        File category (e.g. attachmentsource, attachmentconvert,
+        previewimage)
       required: true
       schema:
         type: string
