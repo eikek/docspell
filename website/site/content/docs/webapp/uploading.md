@@ -77,9 +77,14 @@ line::
 
 ``` bash
 $ curl -XPOST -F file=@test.pdf http://192.168.1.95:7880/api/v1/open/upload/item/3H7hvJcDJuk-NrAW4zxsdfj-K6TMPyb6BGP-xKptVxUdqWa
-{"success":true,"message":"Files submitted."}
+{"success":true,"message":"Files submitted.","fileKeys":["1/attachmentsource/…"],"jobIds":["…"]}
 ```
 
+On success the response includes `fileKeys` (stored file identifiers) and
+`jobIds` (submitted processing jobs). Authenticated clients can download
+an original upload immediately via
+`/api/v1/sec/file/{collectiveId}/{category}/{id}` using a returned file
+key.
 There is a [cli](@/docs/tools/cli.md) to upload files from the command
 line more conveniently.
 

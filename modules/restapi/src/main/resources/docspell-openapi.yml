@@ -219,7 +219,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BasicResult"
+                $ref: "#/components/schemas/UploadSubmitResult"
   /open/upload/item/{itemId}/{id}:
     post:
       operationId: "open-upload-to-item-by-source"
@@ -264,7 +264,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BasicResult"
+                $ref: "#/components/schemas/UploadSubmitResult"
 
   /admin/fts/reIndexAll:
     post:
@@ -380,7 +380,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BasicResult"
+                $ref: "#/components/schemas/UploadSubmitResult"
   /sec/upload/{itemId}:
     post:
       operationId: "sec-upload-to-item"
@@ -427,7 +427,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BasicResult"
+                $ref: "#/components/schemas/UploadSubmitResult"
 
   /sec/downloadAll/prefetch:
     post:
@@ -628,7 +628,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BasicResult"
+                $ref: "#/components/schemas/UploadSubmitResult"
   /open/integration/checkfile/{id}/{checksum}:
     get:
       operationId: "open-integration-checkfile-by-checksum"
@@ -8949,6 +8949,31 @@ components:
           type: boolean
         message:
           type: string
+    UploadSubmitResult:
+      description: |
+        Result of an upload. On success, `fileKeys` and `jobIds`
+        identify the stored files and submitted processing jobs. On
+        failure both lists are empty and not usable. File keys use the
+        form `collectiveId/category/fileId` (same as FileKey.toString).
+      required:
+        - success
+        - message
+        - fileKeys
+        - jobIds
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        fileKeys:
+          type: array
+          items:
+            type: string
+        jobIds:
+          type: array
+          items:
+            type: string
+            format: ident
     IdResult:
       description: |
         Some basic result of an operation with an ID as payload, if

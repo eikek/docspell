@@ -87,9 +87,10 @@ object OUpload {
   object UploadResult {
 
     /** File(s) have been successfully submitted. */
-    case object Success extends UploadResult
+    case class Success(files: List[FileKey], jobs: List[Ident]) extends UploadResult
 
-    def success: UploadResult = Success
+    def success(files: List[FileKey], jobs: List[Ident]): UploadResult =
+      Success(files, jobs)
 
     /** There were no files to submit. */
     case object NoFiles extends UploadResult
@@ -172,7 +173,9 @@ object OUpload {
             )
           )
           _ <- right(logger.debug(s"Storing jobs: $jobs"))
-          res <- right(submitJobs(jobs.map(_.encode)))
+          res <- right(
+            submitJobs(files.map(_.fileMetaId).toList, jobs.map(_.encode))
+          )
           _ <- right(
             store.transact(
               RSource.incrementCounter(data.meta.sourceAbbrev, collectiveId)
@@ -204,11 +207,14 @@ object OUpload {
           result <- OptionT.liftF(submit(updata, src.source.cid, None, itemId))
         } yield result).getOrElse(UploadResult.noSource)
 
-      private def submitJobs(jobs: List[Job[String]]): F[OUpload.UploadResult] =
+      private def submitJobs(
+          files: List[FileKey],
+          jobs: List[Job[String]]
+      ): F[OUpload.UploadResult] =
         for {
           _ <- logger.debug(s"Storing jobs: $jobs")
           _ <- jobStore.insertAll(jobs)
-        } yield UploadResult.Success
+        } yield UploadResult.Success(files, jobs.map(_.id))
 
       /** Saves the file into the database. */
       private def saveFile(
