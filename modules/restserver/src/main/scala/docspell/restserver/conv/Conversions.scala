@@ -320,7 +320,8 @@ trait Conversions {
               m.language,
               m.attachmentsOnly,
               m.flattenArchives,
-              m.customData
+              m.customData,
+              m.priority
             )
           )
         )
@@ -336,6 +337,7 @@ trait Conversions {
             skipDuplicates = false,
             Glob.all,
             Nil,
+            None,
             None,
             None,
             None,
@@ -359,7 +361,13 @@ trait Conversions {
       metaData <- meta
       _ <- Async[F].delay(logger.debug(s"Parsed upload meta data: $metaData"))
       tracker <- Ident.randomId[F]
-    } yield UploadData(metaData._1, metaData._2, files, prio, Some(tracker))
+    } yield UploadData(
+      metaData._1,
+      metaData._2,
+      files,
+      metaData._2.priority.getOrElse(prio),
+      Some(tracker)
+    )
   }
 
   // organization and person

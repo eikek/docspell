@@ -38,7 +38,8 @@ class OUploadTest extends DatabaseTest {
             language = Some(Language.English),
             attachmentsOnly = None,
             flattenArchives = None,
-            customData = None
+            customData = None,
+            priority = None
           ),
           files = Vector(
             OUpload.File(
@@ -84,7 +85,8 @@ class OUploadTest extends DatabaseTest {
               language = Some(Language.English),
               attachmentsOnly = None,
               flattenArchives = None,
-              customData = None
+              customData = None,
+              priority = None
             ),
             files = Vector(
               OUpload.File(
@@ -97,12 +99,17 @@ class OUploadTest extends DatabaseTest {
             tracker = None
           )
           result <- upload.submit(data, cid, None, None)
-          loaded <- result match {
-            case OUpload.UploadResult.Success(file :: _, _) =>
-              search.findFile(file, cid)
+          file <- result match {
+            case OUpload.UploadResult.Success(files, _) =>
+              files.headOption match {
+                case Some(f) => IO.pure(f)
+                case None =>
+                  IO.raiseError(new Exception("expected at least one file key"))
+              }
             case other =>
               IO.raiseError(new Exception(s"expected Success, got $other"))
           }
+          loaded <- search.findFile(file, cid)
           bytes <- loaded match {
             case Some(bin) => bin.data.compile.to(Array)
             case None      => IO.raiseError(new Exception("file not found via findFile"))

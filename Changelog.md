@@ -10,6 +10,8 @@
   submitted files and processing jobs immediately.
 - Add secured endpoint to download files by file key for retrieving uploaded
   bytes before processing finishes.
+- Add optional `priority` field to upload metadata (`ItemUploadMeta`) for
+  setting job processing priority per upload
 - Add `statsProfile` to search stats (`full`, `general`, `fields`). The
   dashboard uses lighter `general` and `fields` requests instead of
   repeating the full statistics query.

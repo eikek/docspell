@@ -36,6 +36,8 @@ type alias Texts =
     , selectedFiles : String
     , languageLabel : Language -> String
     , flattenArchives : String
+    , priority : String
+    , priorityInfo : String
     }
 
 
@@ -67,6 +69,8 @@ gb =
     , selectedFiles = "Selected Files"
     , languageLabel = Messages.Data.Language.gb
     , flattenArchives = "Extract zip file contents into separate items, in contrast to a single document with multiple attachments."
+    , priority = "Priority"
+    , priorityInfo = "The priority used by the scheduler when processing uploaded files."
     }
 
 
@@ -98,6 +102,8 @@ de =
     , selectedFiles = "Ausgewählte Dateien"
     , languageLabel = Messages.Data.Language.de
     , flattenArchives = "ZIP Dateien in separate Dokumente entpacken, anstatt ein Dokument mit mehreren Anhängen."
+    , priority = "Priorität"
+    , priorityInfo = "Die Priorität, die für die Hintergrundaufgabe zur Verarbeitung verwendet wird."
     }
 
 
@@ -129,4 +135,6 @@ fr =
     , selectedFiles = "Fichiers séléctionnés"
     , languageLabel = Messages.Data.Language.fr
     , flattenArchives = "Décompresser les fichiers ZIP dans des documents séparés au lieu de créer un document avec plusieurs pièces jointes."
+    , priority = "Priorité"
+    , priorityInfo = "Ordre de priorité utilisé par le programmateur lors du traitement des fichiers envoyés."
     }
