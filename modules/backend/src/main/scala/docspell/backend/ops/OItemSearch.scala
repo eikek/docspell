@@ -53,6 +53,8 @@ trait OItemSearch[F[_]] {
 
   def findAttachmentMeta(id: Ident, collective: CollectiveId): F[Option[RAttachmentMeta]]
 
+  def findFile(key: FileKey, collective: CollectiveId): F[Option[BinaryData[F]]]
+
   def findByFileCollective(checksum: String, collective: CollectiveId): F[Vector[RItem]]
 
   def findByFileSource(checksum: String, sourceId: Ident): F[Option[Vector[RItem]]]
@@ -116,6 +118,14 @@ object OItemSearch {
   ) extends BinaryData[F] {
     val name = rs.name
     val fileId = rs.fileId
+  }
+
+  case class FileData[F[_]](
+      meta: FileMetadata,
+      data: Stream[F, Byte]
+  ) extends BinaryData[F] {
+    val name = None
+    val fileId = meta.id
   }
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OItemSearch[F]] =
@@ -249,6 +259,13 @@ object OItemSearch {
           collective: CollectiveId
       ): F[Option[RAttachmentMeta]] =
         store.transact(QAttachment.getAttachmentMeta(id, collective))
+
+      def findFile(key: FileKey, collective: CollectiveId): F[Option[BinaryData[F]]] =
+        if (key.collective != collective) (None: Option[BinaryData[F]]).pure[F]
+        else
+          makeBinaryData(key) { m =>
+            FileData[F](m, store.fileRepo.getBytes(m.id)): BinaryData[F]
+          }
 
       def findByFileCollective(
           checksum: String,

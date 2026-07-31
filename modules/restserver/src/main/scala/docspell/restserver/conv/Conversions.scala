@@ -320,7 +320,8 @@ trait Conversions {
               m.language,
               m.attachmentsOnly,
               m.flattenArchives,
-              m.customData
+              m.customData,
+              m.priority
             )
           )
         )
@@ -336,6 +337,7 @@ trait Conversions {
             skipDuplicates = false,
             Glob.all,
             Nil,
+            None,
             None,
             None,
             None,
@@ -359,7 +361,13 @@ trait Conversions {
       metaData <- meta
       _ <- Async[F].delay(logger.debug(s"Parsed upload meta data: $metaData"))
       tracker <- Ident.randomId[F]
-    } yield UploadData(metaData._1, metaData._2, files, prio, Some(tracker))
+    } yield UploadData(
+      metaData._1,
+      metaData._2,
+      files,
+      metaData._2.priority.getOrElse(prio),
+      Some(tracker)
+    )
   }
 
   // organization and person
@@ -689,7 +697,7 @@ trait Conversions {
 
   def basicResult(ur: OUpload.UploadResult): BasicResult =
     ur match {
-      case UploadResult.Success => BasicResult(success = true, "Files submitted.")
+      case UploadResult.Success(_, _) => BasicResult(success = true, "Files submitted.")
       case UploadResult.NoFiles =>
         BasicResult(success = false, "There were no files to submit.")
       case UploadResult.NoSource =>
@@ -702,6 +710,52 @@ trait Conversions {
         BasicResult(
           success = false,
           "There were errors storing a file! See the server logs for details."
+        )
+    }
+
+  def uploadSubmitResult(ur: OUpload.UploadResult): UploadSubmitResult =
+    ur match {
+      case UploadResult.Success(files, jobs) =>
+        UploadSubmitResult(
+          success = true,
+          "Files submitted.",
+          files.map(_.toString),
+          jobs
+        )
+      case UploadResult.NoFiles =>
+        UploadSubmitResult(
+          success = false,
+          "There were no files to submit.",
+          Nil,
+          Nil
+        )
+      case UploadResult.NoSource =>
+        UploadSubmitResult(
+          success = false,
+          "The source id is not valid.",
+          Nil,
+          Nil
+        )
+      case UploadResult.NoItem =>
+        UploadSubmitResult(
+          success = false,
+          "The item could not be found.",
+          Nil,
+          Nil
+        )
+      case UploadResult.NoCollective =>
+        UploadSubmitResult(
+          success = false,
+          "The collective could not be found.",
+          Nil,
+          Nil
+        )
+      case UploadResult.StoreFailure(_) =>
+        UploadSubmitResult(
+          success = false,
+          "There were errors storing a file! See the server logs for details.",
+          Nil,
+          Nil
         )
     }
 

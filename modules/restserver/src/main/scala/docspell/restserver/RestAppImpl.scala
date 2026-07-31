@@ -138,6 +138,7 @@ final class RestAppImpl[F[_]: Async: Files](
       "itemlink" -> ItemLinkRoutes(token.account, backend.itemLink),
       "attachment" -> AttachmentRoutes(backend, token),
       "attachments" -> AttachmentMultiRoutes(backend, token),
+      "file" -> FileRoutes(backend, token),
       "upload" -> UploadRoutes.secured(backend, config, token),
       "checkfile" -> CheckFileRoutes.secured(backend, token),
       "email/send" -> MailSendRoutes(backend, token),

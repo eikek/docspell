@@ -110,7 +110,7 @@ object IntegrationEndpointRoutes {
         cfg.backend.files.validMimeTypes
       )
       result <- backend.upload.submit(updata, cid, None, None)
-      res <- Ok(basicResult(result))
+      res <- Ok(uploadSubmitResult(result))
     } yield res
   }
 
