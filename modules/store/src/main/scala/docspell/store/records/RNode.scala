@@ -75,6 +75,7 @@ object RNode {
           t.nodeType.setTo(v.nodeType),
           t.url.setTo(v.url),
           t.serverSecret.setTo(v.serverSecret),
+          t.notFound.setTo(0),
           t.updated.setTo(v.updated)
         )
       )
