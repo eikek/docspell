@@ -102,7 +102,7 @@ object RestServer {
       _ <- nodes.withRegistered(
         cfg.appId,
         NodeType.Restserver,
-        cfg.baseUrl,
+        cfg.internalUrl,
         cfg.auth.serverSecret.some
       )
 
