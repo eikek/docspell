@@ -67,13 +67,21 @@ private[joex] class AddonPrepare[F[_]: Sync](store: Store[F]) extends LoggerExte
           .findAll(NodeType.Restserver)
           .map(_.sortBy(_.updated).lastOption)
       )
+      secret <- serverNode.flatMap(_.serverSecret) match {
+        case Some(value) =>
+          value.pure[F]
+        case None =>
+          val msg =
+            "No restserver node with server secret found. " +
+              "Ensure the restserver is running and registered in the node table."
+          Sync[F].raiseError[ByteVector](new IllegalStateException(msg))
+      }
       url = serverNode.map(_.url).map(u => "DSC_DOCSPELL_URL" -> u.asString)
-      secret = serverNode.flatMap(_.serverSecret)
 
       token <- AuthToken.user(
         account,
         requireSecondFactor = false,
-        secret.getOrElse(ByteVector.empty),
+        secret,
         tokenValidity.some
       )
       session = ("DSC_SESSION" -> token.asString).some
