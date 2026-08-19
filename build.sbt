@@ -748,14 +748,15 @@ val backend = project
   .dependsOn(
     addonlib,
     config,
-    store,
+    store % "compile->compile;test->test",
     notificationApi,
     joexapi,
     ftsclient,
     totp,
     pubsubApi,
     loggingApi,
-    schedulerApi
+    schedulerApi,
+    schedulerImpl % "test->test"
   )
 
 val oidc = project
