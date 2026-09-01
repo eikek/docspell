@@ -20,7 +20,7 @@ release page. The images contain all the necessary
 
 - `docspell/restserver` this images contains the http server
 - `docspell/joex` this image contains the job executor and all
-  required software (ocrmypdf, unoconv etc) mentioned in
+  required software (ocrmypdf, unoserver/unoconvert, etc) mentioned in
   [prerequisites](@/docs/install/prereq.md).
 - `docspell/dsc` this is an image containing a
   [cli](@/docs/tools/cli.md) for docspell that can be used to watch

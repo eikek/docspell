@@ -55,14 +55,14 @@ class ExternConvTest extends FunSuite with FileChecks with TestLoggingConfig {
 
   test("convert office to pdf") {
     val cfg = ExternalCommand(
-      "unoconv",
-      Seq("-f", "pdf", "-o", "{{outfile}}", "{{infile}}"),
+      "unoconvert",
+      Seq("{{infile}}", "{{outfile}}", "--convert-to", "pdf"),
       Duration.seconds(20)
     )
 
     assume(commandExists(cfg.program), s"Command ${cfg.program} not found. Ignore tests.")
     File
-      .withTempDir[IO](target, "unoconv")
+      .withTempDir[IO](target, "unoconvert")
       .use(dir =>
         IO {
           val ucCfg = UnoconvConfig(cfg, target)

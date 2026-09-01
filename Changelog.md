@@ -20,6 +20,13 @@
 
 - Improve performance of custom field statistics on large databases by
   scoping `custom_field_value` lookups to matching items only.
+- Migrate office conversion from deprecated `unoconv` to
+  [unoserver](https://github.com/unoconv/unoserver/) / `unoconvert`
+  (#3345, #3293). The HOCON key `docspell.joex.convert.unoconv` is
+  kept for compatibility; the default program/args now call
+  `unoconvert`. **Breaking:** joex must run a `unoserver` daemon
+  (official Docker images start it in the entrypoint). Custom images
+  that relied on `unoconv -l` need the same change.
 
 ### 💚 Maintenance
 

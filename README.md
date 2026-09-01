@@ -115,7 +115,7 @@ There are more libraries and technologies used, of course. Docspell is
 only a orchestration of great tools and libs. One important is the
 [Stanford-NLP](https://nlp.stanford.edu/software/), that provides the
 ML features. Furthermore, file processing relies on external tools
-like tesseract, unoconv and ocrmypdf. All dependencies can be looked
+like tesseract, unoserver/unoconvert and ocrmypdf. All dependencies can be looked
 up in `project/Dependencies.scala`.
 
 
