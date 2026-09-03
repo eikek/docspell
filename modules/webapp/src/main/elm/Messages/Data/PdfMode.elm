@@ -8,6 +8,7 @@
 module Messages.Data.PdfMode exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -51,3 +52,16 @@ fr st =
 
         Server ->
             "Utiliser le mode compatibilité"
+
+
+ja : PdfMode -> String
+ja st =
+    case st of
+        Detect ->
+            "自動検出"
+
+        Native ->
+            "ブラウザ標準のPDFビューアを使用"
+
+        Server ->
+            "クロスブラウザ用のフォールバックを使用"

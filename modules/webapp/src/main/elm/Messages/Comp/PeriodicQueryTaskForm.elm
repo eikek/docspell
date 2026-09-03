@@ -9,6 +9,7 @@ module Messages.Comp.PeriodicQueryTaskForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -150,4 +151,38 @@ fr tz =
     , messageContentLabel = "Début du message"
     , messageContentInfo = "Texte ajouté au message généré"
     , messageContentPlaceholder = "Bonjour, docspell vous informe de l'arrivée de nouveaux documents."
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , calEventInput = Messages.Comp.CalEventInput.ja tz
+    , channelForm = Messages.Comp.ChannelForm.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , bookmarkDropdown = Messages.Comp.BookmarkDropdown.ja
+    , channelRef = Messages.Comp.ChannelRefInput.ja
+    , reallyDeleteTask = "この通知タスクを本当に削除しますか？"
+    , startOnce = "一度だけ実行"
+    , startTaskNow = "このタスクを今すぐ開始"
+    , deleteThisTask = "このタスクを削除"
+    , enableDisable = "このタスクを有効または無効にします。"
+    , summary = "概要"
+    , summaryInfo = "表示用の人間が読める名前"
+    , schedule = "スケジュール"
+    , scheduleClickForHelp = "ヘルプはこちらをクリック"
+    , scheduleInfo =
+        "このタスクを実行する頻度と時間を指定します。 "
+            ++ "英語の3文字の曜日を使用します。単一の値、または "
+            ++ "リスト（例：1,2,3）、範囲（例：1..3）、または「*」（すべてを意味する） "
+            ++ "各パートに対して許可されます。"
+    , invalidCalEvent = "カレンダーイベントが無効です。"
+    , queryLabel = "クエリ"
+    , channelRequired = "有効なチャンネルを指定してください。"
+    , queryStringRequired = "クエリ文字列またはブックマークを入力してください"
+    , channelHeader = "チャンネル"
+    , messageContentTitle = "メッセージをカスタマイズ"
+    , messageContentLabel = "メッセージの冒頭"
+    , messageContentInfo = "生成されるメッセージの先頭に追加するテキストを入力してください。"
+    , messageContentPlaceholder = "Docspellから新しいアイテムに関するお知らせです …"
     }

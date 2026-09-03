@@ -9,6 +9,7 @@ module Messages.Comp.CollectiveSettingsForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -153,4 +154,39 @@ fr tz =
     , emptyTrash = "Vider la corbeille"
     , passwords = "Mots de passe"
     , passwordsInfo = "Ces mots de passes sont utilisés pour le traitement des PDF encryptés. Veuillez noter qu'ils sont stockés dans la base de donnée en **clair**!"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.ja tz
+    , emptyTrashForm = Messages.Comp.EmptyTrashForm.ja tz
+    , httpError = Messages.Comp.HttpError.ja
+    , save = "保存"
+    , saveSettings = "設定を保存"
+    , documentLanguage = "文書の言語"
+    , documentLanguageHelp = "ドキュメントの言語です。これはテキスト認識 (OCR) やテキスト分析に役立ちます。"
+    , integrationEndpoint = "統合エンドポイント"
+    , integrationEndpointLabel = "統合エンドポイントを有効にする"
+    , integrationEndpointHelp =
+        "統合エンドポイントにより、(ローカル)アプリケーションからファイルの送信が可能になります。 "
+            ++ "コレクティブに対して無効にすることができます。"
+    , fulltextSearch = "全文検索"
+    , reindexAllData = "全データの再インデックス"
+    , reindexAllDataHelp =
+        "全文インデックスをクリアし、すべてのデータを再インデックスするタスクを開始します。"
+            ++ "誤った再インデックスを防ぐため、ボタンをクリックする前にOKと入力する必要があります。"
+    , autoTagging = "自動タグ付け"
+    , startNow = "今すぐ開始"
+    , languageLabel = Messages.Data.Language.ja
+    , classifierTaskStarted = "分類タスクを開始しました。"
+    , emptyTrashTaskStarted = "ゴミ箱の削除タスクを開始しました。"
+    , emptyTrashStartInvalidForm = "ゴミ箱を空にするフォームにエラーがあります。"
+    , fulltextReindexSubmitted = "全文の再インデックスを開始しました。"
+    , fulltextReindexOkMissing =
+        "データの再インデックスを開始する場合は、フィールドにOKと入力してください。"
+    , emptyTrash = "ゴミ箱を空にする"
+    , passwords = "パスワード"
+    , passwordsInfo = "これらのパスワードは、暗号化されたPDFを処理する際に使用されます。これらはデータベースに**プレーンテキスト**として保存されることに注意してください！"
     }

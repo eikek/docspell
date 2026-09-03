@@ -9,6 +9,7 @@ module Messages.Comp.ScanMailboxTable exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -51,4 +52,14 @@ fr =
     , connection = "Connexion"
     , folders = "Dossiers"
     , receivedSince = "Reçu depuis"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , summary = "概要"
+    , connection = "接続"
+    , folders = "フォルダ"
+    , receivedSince = "受信日:"
     }

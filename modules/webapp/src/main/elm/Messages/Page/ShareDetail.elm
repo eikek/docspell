@@ -75,3 +75,18 @@ fr tz =
     , noName = "Aucun nom"
     , unconfirmed = "Non validé"
     }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { passwordForm = Messages.Comp.SharePasswordForm.ja
+    , basics = Messages.Basics.ja
+    , field = Messages.Data.Fields.ja
+    , formatDateLong = Messages.DateFormat.formatDateLong Japanese tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Japanese tz
+    , authFailed = "この共有リンクは存在しません。"
+    , httpError = Messages.Comp.HttpError.ja
+    , tagsAndFields = "タグとフィールド"
+    , noName = "名前なし"
+    , unconfirmed = "未確認"
+    }

@@ -9,6 +9,7 @@ module Messages.Comp.ChannelRefInput exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -48,4 +49,13 @@ fr =
     , channelType = Messages.Data.ChannelType.fr
     , placeholder = "Choisir..."
     , noCategory = "Pas de canal"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , channelType = Messages.Data.ChannelType.ja
+    , placeholder = "選択..."
+    , noCategory = "チャンネルなし"
     }

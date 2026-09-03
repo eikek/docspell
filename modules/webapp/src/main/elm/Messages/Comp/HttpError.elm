@@ -8,6 +8,7 @@
 module Messages.Comp.HttpError exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -123,3 +124,22 @@ errorToString texts error =
                 texts.invalidResponseStatus sc
     in
     errorToStringStatus texts error f
+
+
+ja : Http.Error -> String
+ja err =
+    let
+        texts =
+            { badUrl = \url -> "このURLに問題があります: " ++ url
+            , timeout = "ネットワークタイムアウトが発生しました。"
+            , networkError = "ネットワークエラーが発生しました。"
+            , invalidResponseStatus =
+                \status ->
+                    "無効なレスポンスステータスです: " ++ String.fromInt status ++ "."
+            , invalidInput = "リクエストの処理中に無効な入力がありました。"
+            , notFound = "リクエストされたリソースが存在しません。"
+            , invalidBody = \str -> "レスポンスのデコード中にエラーが発生しました: " ++ str
+            , accessDenied = "アクセス拒否"
+            }
+    in
+    errorToString texts err

@@ -9,6 +9,7 @@ module Messages.Comp.BookmarkQueryForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -59,4 +60,16 @@ fr =
     , collectiveLocation = "Favoris du groupe"
     , collectiveLocationText = "Utilisé et édité par tous les utilisateurs du groupe"
     , nameExistsWarning = "Un favoris avec ce nom existe déjà !"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , queryLabel = "検索"
+    , userLocation = "ユーザー範囲"
+    , userLocationText = "ブックマークした検索はあなたのみが利用できます"
+    , collectiveLocation = "共通範囲"
+    , collectiveLocationText = "ブックマークした検索はすべてのユーザーが利用および編集できます"
+    , nameExistsWarning = "この名前のブックマークは既に存在します。別の名前を選択してください。"
     }

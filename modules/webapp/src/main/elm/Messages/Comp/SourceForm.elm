@@ -9,6 +9,7 @@ module Messages.Comp.SourceForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -135,4 +136,34 @@ Les filtre 'glob' peuvent être combinés avec OR, comme cela:
             ++ "par défaut du groupe est utilisée, si rien n'est spécifié ici."
     , languageLabel = Messages.Data.Language.fr
     , attachmentsOnly = "Importer uniquement les pièces-jointes pour les mails."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , tagDropdown = Messages.Comp.TagDropdown.ja
+    , description = "説明"
+    , enabled = "有効"
+    , priority = "優先度"
+    , priorityInfo = "アップロードされたファイルを処理する際にスケジューラで使用される優先度です。"
+    , metadata = "メタデータ"
+    , metadataInfoText = "ここに指定したメタデータは、アップロードされる各アイテムに自動的に付与されます。 "
+            ++ "through this source, unless it is overriden in the upload request meta data. "
+            ++ "Tags from the request are added to those defined here."
+    , folderInfo = "アイテムを自動的に格納するフォルダを選択してください。"
+    , tagsInfo = "アイテムに適用するタグを選択してください。"
+    , fileFilter = "ファイルフィルター"
+    , fileFilterInfo = """
+
+Specify a file glob to filter files when uploading archives
+(e.g. for email and zip). For example, to only extract pdf files:
+`*.pdf`. Globs can be combined via OR, like this: `*.pdf|mail.html`.
+
+"""
+    , language = "言語"
+    , languageInfo = "テキストの抽出と分析に使用されます。コレクションの "
+            ++ "指定しない場合は、コレクションの既定言語が使われます。"
+    , languageLabel = Messages.Data.Language.ja
+    , attachmentsOnly = "メールの添付ファイルのみをインポート"
     }

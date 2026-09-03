@@ -102,3 +102,25 @@ fr tz =
     , loadMore = "Charger plus..."
     , thatsAll = "C'est tout !"
     }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { searchMenu = Messages.Comp.SearchMenu.ja
+    , basics = Messages.Basics.ja
+    , itemCardList = Messages.Comp.ItemCardList.ja tz
+    , passwordForm = Messages.Comp.SharePasswordForm.ja
+    , downloadAll = Messages.Comp.DownloadAll.ja
+    , authFailed = "この共有リンクは存在しません。"
+    , httpError = Messages.Comp.HttpError.ja
+    , fulltextPlaceholder = "全文検索中…"
+    , powerSearchPlaceholder = "詳細検索…"
+    , extendedSearch = "詳細検索クエリ"
+    , normalSearchPlaceholder = "検索…"
+    , showItemGroups = "月ごとにグループ化"
+    , listView = "リスト表示"
+    , tileView = "タイル表示"
+    , downloadAllLabel = "すべてダウンロード"
+    , loadMore = "さらに読み込む…"
+    , thatsAll = "以上です"
+    }

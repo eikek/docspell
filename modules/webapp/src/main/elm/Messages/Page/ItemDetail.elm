@@ -9,6 +9,7 @@ module Messages.Page.ItemDetail exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -49,4 +50,13 @@ fr tz =
     , editForm = Messages.Comp.ItemDetail.EditForm.fr tz
     , editMetadata = "Editer les métadonnées"
     , collapseExpand = "Réduire/Etendre"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { itemDetail = Messages.Comp.ItemDetail.ja tz
+    , editForm = Messages.Comp.ItemDetail.EditForm.ja tz
+    , editMetadata = "メタデータを編集"
+    , collapseExpand = "折りたたみ/展開"
     }

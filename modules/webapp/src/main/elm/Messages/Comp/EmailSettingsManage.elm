@@ -9,6 +9,7 @@ module Messages.Comp.EmailSettingsManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -71,4 +72,18 @@ fr =
     , reallyDeleteConnection = "Confirmer la suppression de cette connexion ?"
     , deleteThisEntry = "Supprimer cette connexion"
     , fillRequiredFields = "Veuillez compléter les champs requis."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , settingsForm = Messages.Comp.EmailSettingsForm.ja
+    , settingsTable = Messages.Comp.EmailSettingsTable.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , newSettings = "新規接続"
+    , addNewSmtpSettings = "新しいSMTP設定を追加"
+    , reallyDeleteConnection = "本当にこの接続を削除しますか？"
+    , deleteThisEntry = "この接続を削除"
+    , fillRequiredFields = "必須項目を入力してください。"
     }

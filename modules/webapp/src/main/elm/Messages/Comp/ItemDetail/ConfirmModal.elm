@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.ConfirmModal exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -106,4 +107,31 @@ fr =
         "Confirmer la suppression du document ? Il pourra être récupéré via la corbeille pendant un temps."
     , confirmDeleteFile = "Confirmer la suppresion de ce fichier ?"
     , confirmDeleteAllFiles = "Confirmer la suppresion de tous ces fichiers ?"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , confirmReprocessItem =
+        \state ->
+            if state == "created" then
+                "Reprocessing this item may change its metadata, "
+                    ++ "since it is unconfirmed. Do you want to proceed?"
+
+            else
+                "Reprocessing this item will not change its metadata, "
+                    ++ "since it has been confirmed. Do you want to proceed?"
+    , confirmReprocessFile =
+        \state ->
+            if state == "created" then
+                "Reprocessing this file may change metadata of "
+                    ++ "this item, since it is unconfirmed. Do you want to proceed?"
+
+            else
+                "Reprocessing this file will not change metadata of "
+                    ++ "this item, since it has been confirmed. Do you want to proceed?"
+    , confirmDeleteItem = "本当にこの項目をゴミ箱に移動しますか？一定期間内であればゴミ箱から復元可能です。"
+    , confirmDeleteFile = "本当にこのファイルを削除しますか？"
+    , confirmDeleteAllFiles = "本当にこれらのファイルをすべて削除しますか？"
     }

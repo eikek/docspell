@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.BoxStatsView exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxStatsView exposing (Texts, de, fr
+    , ja, gb)
 
 import Http
 import Messages.Basics
@@ -45,4 +46,13 @@ fr =
     , errorOccurred = "Erreur en récupérant les données."
     , statsView = Messages.Comp.SearchStatsView.fr
     , basics = Messages.Basics.fr
+    }
+
+
+ja : Texts
+ja =
+    { httpError = Messages.Comp.HttpError.ja
+    , errorOccurred = "データの取得中にエラーが発生しました。"
+    , statsView = Messages.Comp.SearchStatsView.ja
+    , basics = Messages.Basics.ja
     }

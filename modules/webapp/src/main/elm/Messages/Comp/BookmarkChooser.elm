@@ -9,6 +9,7 @@ module Messages.Comp.BookmarkChooser exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -49,4 +50,13 @@ fr =
     , userLabel = Messages.Data.AccountScope.fr User
     , collectiveLabel = Messages.Data.AccountScope.fr Collective
     , shareLabel = "Partages"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , userLabel = Messages.Data.AccountScope.ja User
+    , collectiveLabel = Messages.Data.AccountScope.ja Collective
+    , shareLabel = "共有"
     }

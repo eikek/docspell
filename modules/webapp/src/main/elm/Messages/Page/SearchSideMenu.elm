@@ -9,6 +9,7 @@ module Messages.Page.SearchSideMenu exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -60,4 +61,16 @@ fr =
     , multiEditHeader = "Multi-Edit"
     , multiEditInfo = "Veuillez noter qu'un changement ici, affecte immédiatement tous les documents sélectionnés à droite !"
     , close = "Fermer"
+    }
+
+
+ja : Texts
+ja =
+    { searchMenu = Messages.Comp.SearchMenu.ja
+    , multiEdit = Messages.Comp.ItemDetail.MultiEditMenu.ja
+    , editMode = "編集モード"
+    , resetSearchForm = "検索フォームをリセット"
+    , multiEditHeader = "一括編集"
+    , multiEditInfo = "注意：ここでの変更は、右側の選択されたすべてのアイテムに即座に反映されます！"
+    , close = "閉じる"
     }
