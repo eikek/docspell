@@ -8476,6 +8476,15 @@ components:
             Processing priority for the upload jobs. If omitted, the endpoint
             default applies (high for secured upload, source priority for open
             upload, server config for integration).
+        process:
+          type: boolean
+          default: true
+          description: |
+            Whether to run the processing pipeline (conversion, text
+            extraction/OCR, preview, analysis). Defaults to `true`. If
+            `false`, an item is still created and given metadata is
+            applied, but these stages are skipped. Processing can be
+            started later via the reprocess endpoints.
 
     Collective:
       description: |
