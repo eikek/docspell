@@ -9,6 +9,7 @@ module Messages.Comp.ItemMail exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -89,4 +90,23 @@ fr =
     , sendLabel = "Envoyer"
     , moreRecipients = "Plus…"
     , lessRecipients = "Moins…"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , selectConnection = "接続を選択..."
+    , sendVia = "送信方法"
+    , recipients = "宛先"
+    , ccRecipients = "CC"
+    , bccRecipients = "BCC"
+    , subject = "件名"
+    , body = "本文"
+    , includeAllAttachments = "すべての項目の添付ファイルを含める"
+    , connectionMissing = "E-Mail接続が設定されていません。ユーザー設定から追加してください。"
+    , sendLabel = "送信"
+    , moreRecipients = "もっと見る…"
+    , lessRecipients = "閉じる…"
     }

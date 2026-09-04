@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.BoxMessageEdit exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxMessageEdit exposing (Texts, de, fr
+    , ja, gb)
 
 
 type alias Texts =
@@ -44,4 +45,14 @@ fr =
     , bodyLabel = "Corps"
     , bodyPlaceholder = "Cors du message…"
     , infoText = "Markdown peut être utilisé dans les deux champs pour le formatage simple."
+    }
+
+
+ja : Texts
+ja =
+    { titleLabel = "タイトル"
+    , titlePlaceholder = "メッセージのタイトル…"
+    , bodyLabel = "本文"
+    , bodyPlaceholder = "メッセージの本文…"
+    , infoText = "簡単な書式設定には、両方のフィールドでMarkdownを使用できます。"
     }

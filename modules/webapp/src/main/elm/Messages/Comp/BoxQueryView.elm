@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.BoxQueryView exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxQueryView exposing (Texts, de, fr
+    , ja, gb)
 
 import Data.ItemTemplate as IT
 import Data.TimeZone exposing (TimeZone)
@@ -70,4 +71,19 @@ fr tz =
         , directionLabel = Messages.Data.Direction.fr
         }
     , itemColumn = Messages.Data.ItemColumn.fr
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { httpError = Messages.Comp.HttpError.ja
+    , errorOccurred = "データの取得中にエラーが発生しました。"
+    , basics = Messages.Basics.ja
+    , noResults = "アイテムが見つかりません。"
+    , templateCtx =
+        { dateFormatLong = DF.formatDateLong Messages.UiLanguage.Japanese tz
+        , dateFormatShort = DF.formatDateShort Messages.UiLanguage.Japanese tz
+        , directionLabel = Messages.Data.Direction.ja
+        }
+    , itemColumn = Messages.Data.ItemColumn.ja
     }

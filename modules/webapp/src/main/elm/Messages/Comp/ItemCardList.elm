@@ -9,6 +9,7 @@ module Messages.Comp.ItemCardList exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -36,4 +37,10 @@ de tz =
 fr : TimeZone -> Texts
 fr tz =
     { itemCard = Messages.Comp.ItemCard.fr tz
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { itemCard = Messages.Comp.ItemCard.ja tz
     }
