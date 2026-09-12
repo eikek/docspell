@@ -823,10 +823,10 @@ postcss-import@^15.1.0:
     read-cache "^1.0.0"
     resolve "^1.1.7"
 
-postcss-import@^16.0.0:
-  version "16.2.0"
-  resolved "https://registry.yarnpkg.com/postcss-import/-/postcss-import-16.2.0.tgz#29e6873196d196578aafa135c440a2a856230583"
-  integrity sha512-0mQUGlSp87Zl70K58RNwQAN1WS9plFE6KWGui9nyK6ninduMyjW/Khaoy/BpBoFTBh7ndAvAKrSKVbwy6vd/BA==
+postcss-import@^17.0.0:
+  version "17.0.0"
+  resolved "https://registry.yarnpkg.com/postcss-import/-/postcss-import-17.0.0.tgz#b545e9c4cfd48791e7090b3ff232b7b93d075139"
+  integrity sha512-qzVMJhcq39KweT7Fp0HcjE5YxL5yI854Q3CtufxDuZKO9HLQUp2rptB9+U0MIj3pT1ZEVXoqnpeC1mSkfYuz4Q==
   dependencies:
     postcss-value-parser "^4.0.0"
     read-cache "^1.0.0"
