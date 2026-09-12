@@ -20,7 +20,8 @@ object ItemArgsExample extends Helper {
     tags = List("given-tag-1").some,
     reprocess = false,
     attachmentsOnly = None,
-    customData = Some(Json.obj("my-id" -> Json.fromInt(42)))
+    customData = Some(Json.obj("my-id" -> Json.fromInt(42))),
+    process = None
   )
 
   val exampleJson = example.asJson.spaces2

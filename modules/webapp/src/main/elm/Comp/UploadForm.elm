@@ -47,6 +47,7 @@ type alias Model =
     , priorityModel : Comp.FixedDropdown.Model Priority
     , priority : Priority
     , flattenArchives : Bool
+    , process : Bool
     , uploadDone : Maybe Bool
     }
 
@@ -63,6 +64,7 @@ type Msg
     | LanguageMsg (Comp.FixedDropdown.Msg Language)
     | PrioDropdownMsg (Comp.FixedDropdown.Msg Priority)
     | ToggleFlattenArchives
+    | ToggleProcess
 
 
 init : Model
@@ -82,6 +84,7 @@ init =
         Comp.FixedDropdown.init Data.Priority.all
     , priority = Data.Priority.High
     , flattenArchives = False
+    , process = True
     , uploadDone = Nothing
     }
 
@@ -182,6 +185,9 @@ update sourceId flags msg model =
             , Sub.none
             )
 
+        ToggleProcess ->
+            ( { model | process = not model.process }, Cmd.none, Sub.none )
+
         SubmitUpload ->
             let
                 emptyMeta =
@@ -200,6 +206,7 @@ update sourceId flags msg model =
                         , language = Maybe.map Data.Language.toIso3 model.language
                         , flattenArchives = Just model.flattenArchives
                         , priority = Just (Data.Priority.toName model.priority)
+                        , process = Just model.process
                     }
 
                 fileids =
@@ -524,6 +531,23 @@ renderForm texts model =
                     ]
                 ]
             , div [ class "flex flex-col mb-3" ]
+                [ label [ class "inline-flex items-center" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , checked model.process
+                        , onCheck (\_ -> ToggleProcess)
+                        , class Styles.checkboxInput
+                        ]
+                        []
+                    , span [ class "ml-2" ]
+                        [ text texts.processFiles
+                        ]
+                    ]
+                , div [ class "text-gray-400 text-xs mt-1" ]
+                    [ text texts.processFilesInfo
+                    ]
+                ]
+            , div [ class "flex flex-col mb-3" ]
                 [ label [ class "inline-flex items-center mb-2" ]
                     [ span [ class "mr-2" ] [ text (texts.language ++ ":") ]
                     , Html.map LanguageMsg
@@ -573,6 +597,17 @@ renderErrorMsg texts model =
 
 renderSuccessMsg : Texts -> Bool -> Model -> Html Msg
 renderSuccessMsg texts public model =
+    let
+        sb =
+            texts.successBox
+
+        ( line1, line2, line3 ) =
+            if model.process then
+                ( sb.line1, sb.line2, sb.line3 )
+
+            else
+                ( sb.storeOnlyLine1, sb.storeOnlyLine2, sb.storeOnlyLine3 )
+    in
     div
         [ class "row"
         , classList [ ( "hidden", Maybe.map not model.uploadDone |> Maybe.withDefault True ) ]
@@ -582,38 +617,39 @@ renderSuccessMsg texts public model =
                 [ h3 [ class Styles.header2, class "text-green-800 dark:text-lime-800" ]
                     [ i [ class "fa fa-smile font-thin" ] []
                     , span [ class "ml-2" ]
-                        [ text texts.successBox.allFilesUploaded
+                        [ text sb.allFilesUploaded
                         ]
                     ]
                 , p
                     [ classList [ ( "hidden", public ) ]
                     ]
-                    [ text texts.successBox.line1
+                    [ text line1
                     , a
                         [ class Styles.successMessageLink
                         , Page.href (SearchPage Nothing)
                         ]
-                        [ text texts.successBox.itemsPage
+                        [ text sb.itemsPage
                         ]
-                    , text texts.successBox.line2
+                    , text line2
                     , a
                         [ class Styles.successMessageLink
+                        , classList [ ( "hidden", not model.process ) ]
                         , Page.href QueuePage
                         ]
-                        [ text texts.successBox.processingPage
+                        [ text sb.processingPage
                         ]
-                    , text texts.successBox.line3
+                    , text line3
                     ]
                 , p []
-                    [ text texts.successBox.resetLine1
+                    [ text sb.resetLine1
                     , a
                         [ class Styles.successMessageLink
                         , href "#"
                         , onClick Clear
                         ]
-                        [ text texts.successBox.reset
+                        [ text sb.reset
                         ]
-                    , text texts.successBox.resetLine2
+                    , text sb.resetLine2
                     ]
                 ]
             ]

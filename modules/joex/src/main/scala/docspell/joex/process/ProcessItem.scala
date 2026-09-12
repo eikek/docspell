@@ -22,6 +22,7 @@ import docspell.scheduler.Task
 import docspell.store.Store
 
 object ProcessItem {
+  type Args = ProcessItemArgs
 
   def apply[F[_]: Async: Files](
       cfg: Config,
@@ -31,15 +32,22 @@ object ProcessItem {
       regexNer: RegexNerFile[F],
       addonOps: AddonOps[F],
       store: Store[F]
-  )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
-    ExtractArchive(store)(item)
-      .flatMap(Task.setProgress(20))
-      .flatMap(processAttachments0(cfg, fts, analyser, regexNer, store, (40, 60, 80)))
-      .flatMap(LinkProposal.onlyNew[F](store))
-      .flatMap(SetGivenData.onlyNew[F](itemOps))
-      .flatMap(Task.setProgress(99))
-      .flatMap(RemoveEmptyItem(itemOps))
-      .flatMap(RunAddons(addonOps, store, AddonTriggerType.FinalProcessItem))
+  )(item: ItemData): Task[F, Args, ItemData] =
+    isProcessingEnabled[F].flatMap {
+      case true =>
+        ExtractArchive(store)(item)
+          .flatMap(Task.setProgress(20))
+          .flatMap(processAttachments0(cfg, fts, analyser, regexNer, store, (40, 60, 80)))
+          .flatMap(LinkProposal.onlyNew[F](store))
+          .flatMap(SetGivenData.onlyNew[F](itemOps))
+          .flatMap(Task.setProgress(99))
+          .flatMap(RemoveEmptyItem(itemOps))
+          .flatMap(RunAddons(addonOps, store, AddonTriggerType.FinalProcessItem))
+      case false =>
+        logStoreOnly[F]
+          .flatMap(_ => SetGivenData.onlyNew[F](itemOps)(item))
+          .flatMap(Task.setProgress(99))
+    }
 
   def processAttachments[F[_]: Async: Files](
       cfg: Config,
@@ -47,7 +55,7 @@ object ProcessItem {
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F],
       store: Store[F]
-  )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  )(item: ItemData): Task[F, Args, ItemData] =
     processAttachments0[F](cfg, fts, analyser, regexNer, store, (30, 60, 90))(item)
 
   def analysisOnly[F[_]: Async: Files](
@@ -55,7 +63,7 @@ object ProcessItem {
       analyser: TextAnalyser[F],
       regexNer: RegexNerFile[F],
       store: Store[F]
-  )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  )(item: ItemData): Task[F, Args, ItemData] =
     TextAnalysis[F](cfg.textAnalysis, analyser, regexNer, store)(item)
       .flatMap(FindProposal[F](cfg.textAnalysis, store))
       .flatMap(EvalProposals[F](store))
@@ -69,7 +77,7 @@ object ProcessItem {
       regexNer: RegexNerFile[F],
       store: Store[F],
       progress: (Int, Int, Int)
-  )(item: ItemData): Task[F, ProcessItemArgs, ItemData] =
+  )(item: ItemData): Task[F, Args, ItemData] =
     ConvertPdf(cfg.convert, store, item)
       .flatMap(Task.setProgress(progress._1))
       .flatMap(TextExtraction(cfg.extraction, fts, store))
@@ -78,4 +86,10 @@ object ProcessItem {
       .flatMap(Task.setProgress(progress._2))
       .flatMap(analysisOnly[F](cfg, analyser, regexNer, store))
       .flatMap(Task.setProgress(progress._3))
+
+  private def isProcessingEnabled[F[_]: Sync]: Task[F, Args, Boolean] =
+    Task(ctx => ctx.args.isProcessingEnabled.pure[F])
+
+  private def logStoreOnly[F[_]]: Task[F, Args, Unit] =
+    Task.log(_.info("Not processing files. Only storing the item."))
 }

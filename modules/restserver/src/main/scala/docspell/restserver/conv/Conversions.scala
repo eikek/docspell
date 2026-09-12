@@ -321,7 +321,8 @@ trait Conversions {
               m.attachmentsOnly,
               m.flattenArchives,
               m.customData,
-              m.priority
+              m.priority,
+              m.process
             )
           )
         )
@@ -337,6 +338,7 @@ trait Conversions {
             skipDuplicates = false,
             Glob.all,
             Nil,
+            None,
             None,
             None,
             None,
