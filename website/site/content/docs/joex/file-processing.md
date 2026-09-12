@@ -154,12 +154,14 @@ as described above.
 
 ### Office
 
-To convert office files, [Libreoffice](https://www.libreoffice.org/)
-is required and used via the command line tool
-[unoconv](https://github.com/unoconv/unoconv).
+To convert office files, [LibreOffice](https://www.libreoffice.org/)
+is required and used via
+[unoserver](https://github.com/unoconv/unoserver/) / `unoconvert`.
 
-To improve performance, it is recommended to start a libreoffice
-listener by running `unoconv -l` in a separate process.
+Start a `unoserver` daemon separately (Docker joex images do this in
+the entrypoint). The server queues convert requests, which avoids
+LibreOffice deadlocks when joex runs with `scheduler.pool-size > 1`
+(see [#3345](https://github.com/eikek/docspell/issues/3345)).
 
 
 ### PDF

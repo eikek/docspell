@@ -63,8 +63,8 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
     ),
     UnoconvConfig(
       ExternalCommand(
-        "unoconv",
-        Seq("-f", "pdf", "-o", "{{outfile}}", "{{infile}}"),
+        "unoconvert",
+        Seq("{{infile}}", "{{outfile}}", "--convert-to", "pdf"),
         Duration.seconds(20)
       ),
       target

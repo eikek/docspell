@@ -26,7 +26,7 @@ object Unoconv {
     val cmd = cfg.command.withVars(Map.empty)
 
     ExternConv.toPDF[F, A](
-      "unoconv",
+      "unoconvert",
       cmd,
       cfg.workingDir,
       useStdin = false,

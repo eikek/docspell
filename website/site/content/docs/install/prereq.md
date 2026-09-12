@@ -46,8 +46,9 @@ component.
   images into pdf files. It is a widely used open source OCR engine.
   Tesseract 3 and 4 should work with docspell; you can adopt the
   command line in the configuration file, if necessary.
-- [Unoconv](https://github.com/unoconv/unoconv) is used to convert
-  office documents into PDF files. It uses libreoffice/openoffice.
+- [Unoserver](https://github.com/unoconv/unoserver/) provides
+  `unoconvert`, used to convert office documents into PDF files via a
+  running LibreOffice listener (`unoserver` daemon).
 - [wkhtmltopdf](https://wkhtmltopdf.org/) is used to convert HTML into
   PDF files.
 - [OCRmyPDF](https://github.com/jbarlow83/OCRmyPDF) can be optionally
@@ -55,18 +56,27 @@ component.
   PDF files to make them searchable. It also creates PDF/A files from
   the input pdf.
 
-The performance of `unoconv` can be improved by starting `unoconv -l`
-in a separate process. This runs a libreoffice/openoffice listener and
-therefore avoids starting one each time `unoconv` is called.
+Start a `unoserver` daemon on machines that run joex (the official
+Docker joex image does this in the entrypoint). Concurrent convert
+requests are queued by the server, which avoids LibreOffice listener
+deadlocks (see [#3345](https://github.com/eikek/docspell/issues/3345)).
 
 ### Example Debian
 
-On Debian this should install all joex requirements:
+On Debian this should install most joex requirements. Install
+`unoserver` separately with the LibreOffice-compatible Python (see the
+[unoserver README](https://github.com/unoconv/unoserver/)):
 
 ``` bash
-sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng unpaper unoconv wkhtmltopdf ocrmypdf
+sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng unpaper libreoffice wkhtmltopdf ocrmypdf
+sudo -H pip install unoserver
 ```
 
+Then start the daemon before joex, for example:
+
+``` bash
+unoserver &
+```
 # Apache SOLR
 
 SOLR is a very powerful fulltext search engine and can be used to
