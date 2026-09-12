@@ -9,6 +9,7 @@ module Messages.Comp.OtpSetup exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -126,4 +127,31 @@ fr tz =
     , reloadToTryAgain = "Pour recommencer, merci de recharger la page."
     , twoFactorNowActive = "L'authentification deux facteurs est désormais active !"
     , revertInfo = "Il est possible de revenir à l'authentification par mot de passe seul à tout moment (recharger la page)."
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { httpError = Messages.Comp.HttpError.ja
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.Japanese tz
+    , errorTitle = "エラー"
+    , stateErrorInfoText = "2要素認証スキームの現在の状態を特定できませんでした:"
+    , errorGeneratingQR = "QR Codeの生成エラー"
+    , initErrorInfo = "二要素認証の初期化中にエラーが発生しました。"
+    , confirmErrorInfo = "セットアップの確認中にエラーが発生しました！"
+    , disableErrorInfo = "2FAの無効化中にエラーが発生しました！"
+    , twoFaActiveSince = "2要素認証は以下から有効です： "
+    , revert2FAText = "パスワード認証のみに戻したい場合は、こちらから実行できます。いつでもセットアップをやり直して、二要素認証を再度有効にすることが可能です。"
+    , disableButton = "2FAを無効にする"
+    , disableConfirmBoxInfo = "TOTPコードを入力し、ボタンをクリックして2FAを無効にしてください。"
+    , setupTwoFactorAuth = "二要素認証を設定"
+    , setupTwoFactorAuthInfo = "ワンタイムパスワードを使用した二要素認証を設定できます。ボタンをクリックするとシークレットが生成されるので、モバイルデバイスのアプリに読み込めます。その後、アプリに表示される6桁のコードを入力して設定を確定します。"
+    , activateButton = "2要素認証を有効にする"
+    , setupConfirmLabel = "確認"
+    , scanQRCode = "デバイスでこのQRコードをスキャンし、6桁のコードを入力してください："
+    , codeInvalid = "コードが無効です！"
+    , ifNotQRCode = "QRコードを使用できない場合は、この秘密のコードを入力してください："
+    , reloadToTryAgain = "もう一度試すには、ページを再読み込みしてください。"
+    , twoFactorNowActive = "2要素認証が有効になりました！"
+    , revertInfo = "いつでもパスワード認証のみに戻すことができます（このページを再読み込みしてください）。"
     }

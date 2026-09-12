@@ -9,6 +9,7 @@ module Messages.Comp.ShareManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -118,4 +119,29 @@ fr tz =
     , sendViaMail = "Envoyer par E-Mail"
     , notOwnerInfo = "Seul l'utilisateur ayant créé ce partage peut modifier ses propiétés."
     , showOwningSharesOnly = "Montrer seulement mes partages"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , shareTable = Messages.Comp.ShareTable.ja tz
+    , shareForm = Messages.Comp.ShareForm.ja
+    , shareView = Messages.Comp.ShareView.ja tz
+    , shareMail = Messages.Comp.ShareMail.ja
+    , newShare = "新しい共有"
+    , copyToClipboard = "クリップボードにコピー"
+    , openInNewTab = "新しいタブ/ウィンドウで開く"
+    , publicUrl = "公開URL"
+    , reallyDeleteShare = "この共有を本当に削除しますか？"
+    , createNewShare = "新しい共有を作成"
+    , deleteThisShare = "この共有を削除"
+    , errorGeneratingQR = "QR Codeの生成エラー"
+    , correctFormErrors = "フォームの誤りを修正してください。"
+    , noName = "名前なし"
+    , shareInformation = "共有情報"
+    , sendViaMail = "E-Mailで送信"
+    , notOwnerInfo = "この共有を作成したユーザーのみが、そのプロパティを編集できます。"
+    , showOwningSharesOnly = "自分の共有のみを表示"
     }

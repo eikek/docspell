@@ -9,6 +9,7 @@ module Messages.Comp.ItemMerge exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -56,4 +57,14 @@ fr tz =
     , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.French tz
     , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.French tz
     , cancelView = "Annuler"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.Japanese tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.Japanese tz
+    , cancelView = "キャンセル"
     }

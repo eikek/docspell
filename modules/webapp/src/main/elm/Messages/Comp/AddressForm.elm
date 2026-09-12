@@ -9,6 +9,7 @@ module Messages.Comp.AddressForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -49,4 +50,14 @@ fr =
     , zipCode = "Code Postal"
     , city = "Ville"
     , country = "Pays"
+    }
+
+
+ja : Texts
+ja =
+    { selectCountry = "国を選択"
+    , street = "通り"
+    , zipCode = "郵便番号"
+    , city = "市区町村"
+    , country = "国"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.ExpandCollapse exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -37,4 +38,11 @@ fr : Texts
 fr =
     { showMoreLabel = "Voir plus..."
     , showLessLabel = "Voir moins..."
+    }
+
+
+ja : Texts
+ja =
+    { showMoreLabel = "もっと見る …"
+    , showLessLabel = "閉じる …"
     }

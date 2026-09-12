@@ -8,6 +8,7 @@
 module Messages.Data.Color exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -141,3 +142,46 @@ fr color =
 
         Black ->
             "Noir"
+
+
+ja : Color -> String
+ja color =
+    case color of
+        Red ->
+            "赤"
+
+        Orange ->
+            "オレンジ"
+
+        Yellow ->
+            "黄色"
+
+        Olive ->
+            "オリーブ"
+
+        Green ->
+            "緑"
+
+        Teal ->
+            "ティール"
+
+        Blue ->
+            "青"
+
+        Violet ->
+            "バイオレット"
+
+        Purple ->
+            "紫"
+
+        Pink ->
+            "ピンク"
+
+        Brown ->
+            "茶色"
+
+        Grey ->
+            "グレー"
+
+        Black ->
+            "黒"

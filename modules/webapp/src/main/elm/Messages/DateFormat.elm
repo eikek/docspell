@@ -47,6 +47,9 @@ get lang =
         French ->
             fr
 
+        Japanese ->
+            ja
+
 
 format : UiLanguage -> TimeZone -> (DateTimeMsg -> List Token) -> Int -> String
 format lang zone pattern millis =
@@ -476,3 +479,132 @@ toEnglishAmPm hour =
 
     else
         "am"
+
+
+ja : DateTimeMsg
+ja =
+    { dateLong =
+        [ DateFormat.yearNumber
+        , DateFormat.text "年"
+        , DateFormat.monthNumber
+        , DateFormat.text "月"
+        , DateFormat.dayOfMonthNumber
+        , DateFormat.text "日("
+        , DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text ")"
+        ]
+    , dateShort =
+        [ DateFormat.yearNumber
+        , DateFormat.text "/"
+        , DateFormat.monthFixed
+        , DateFormat.text "/"
+        , DateFormat.dayOfMonthFixed
+        ]
+    , dateTimeLong =
+        [ DateFormat.yearNumber
+        , DateFormat.text "年"
+        , DateFormat.monthNumber
+        , DateFormat.text "月"
+        , DateFormat.dayOfMonthNumber
+        , DateFormat.text "日("
+        , DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text ") "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , dateTimeShort =
+        [ DateFormat.yearNumber
+        , DateFormat.text "/"
+        , DateFormat.monthFixed
+        , DateFormat.text "/"
+        , DateFormat.dayOfMonthFixed
+        , DateFormat.text " "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , lang = japanese
+    }
+
+
+
+-- Japanese
+
+
+{-| The Japanese language.
+-}
+japanese : DL.Language
+japanese =
+    DL.Language
+        toJapaneseMonthName
+        toJapaneseMonthName
+        toJapaneseWeekdayName
+        toJapaneseWeekdayName
+        toEnglishAmPm
+        (\_ -> "")
+
+
+toJapaneseMonthName : Month -> String
+toJapaneseMonthName month =
+    case month of
+        Jan ->
+            "1月"
+
+        Feb ->
+            "2月"
+
+        Mar ->
+            "3月"
+
+        Apr ->
+            "4月"
+
+        May ->
+            "5月"
+
+        Jun ->
+            "6月"
+
+        Jul ->
+            "7月"
+
+        Aug ->
+            "8月"
+
+        Sep ->
+            "9月"
+
+        Oct ->
+            "10月"
+
+        Nov ->
+            "11月"
+
+        Dec ->
+            "12月"
+
+
+toJapaneseWeekdayName : Weekday -> String
+toJapaneseWeekdayName weekday =
+    case weekday of
+        Mon ->
+            "月"
+
+        Tue ->
+            "火"
+
+        Wed ->
+            "水"
+
+        Thu ->
+            "木"
+
+        Fri ->
+            "金"
+
+        Sat ->
+            "土"
+
+        Sun ->
+            "日"

@@ -9,6 +9,7 @@ module Messages.Comp.PersonForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -88,4 +89,22 @@ fr =
     , contacts = "Contacts"
     , contactTypeLabel = Messages.Data.ContactType.fr
     , notes = "Notes"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , addressForm = Messages.Comp.AddressForm.ja
+    , personUseLabel = Messages.Data.PersonUse.ja
+    , useOfPerson = "この人物の使用目的"
+    , useAsConcerningOnly = "関係者としてのみ使用"
+    , useAsCorrespondentOnly = "通信相手としてのみ使用"
+    , useAsBoth = "関係者および通信相手の両方として使用"
+    , dontUseForSuggestions = "提案には使用しないでください。"
+    , chooseAnOrg = "組織を選択してください"
+    , address = "住所"
+    , contacts = "連絡先"
+    , contactTypeLabel = Messages.Data.ContactType.ja
+    , notes = "備考"
     }

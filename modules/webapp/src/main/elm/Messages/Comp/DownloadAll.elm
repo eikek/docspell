@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.DownloadAll exposing (Texts, de, fr, gb)
+module Messages.Comp.DownloadAll exposing (Texts, de, fr
+    , ja, gb)
 
 import Messages.Data.DownloadFileType
 import Util.Size
@@ -110,4 +111,31 @@ fr =
     , downloadCreateText = "Vous pouvez créer le téléchargement sur le serveur. Une fois qu'il est prêt, le bouton téléchargera le fichier zip."
     , downloadCreate = "Créer Télécharger"
     , downloadNow = "Télécharger l'archive!"
+    }
+
+
+ja : Texts
+ja =
+    { downloadFileType = Messages.Data.DownloadFileType.ja
+    , downloadFileTypeLabel = "ファイル形式"
+    , noResults = "ダウンロード可能な結果はありません。"
+    , summary = \files -> \size -> "Download consists of " ++ String.fromInt files ++ " files (" ++ size ++ ")."
+    , close = "閉じる"
+    , downloadPreparing = "ダウンロードの準備中です…"
+    , downloadTooLarge = "ファイルサイズが大きすぎます。"
+    , downloadConfigText =
+        \maxNum ->
+            \maxSize ->
+                \curSize ->
+                    "The maximum number of files allowed is "
+                        ++ String.fromInt maxNum
+                        ++ " and maximum size is "
+                        ++ byteStr maxSize
+                        ++ " (current size would be "
+                        ++ byteStr curSize
+                        ++ "). "
+    , downloadReady = "ダウンロードの準備が完了しました！"
+    , downloadCreateText = "サーバー上でダウンロードファイルを生成します。準備ができると、ボタンからzipファイルをダウンロードできます。"
+    , downloadCreate = "ダウンロードを作成"
+    , downloadNow = "今すぐダウンロード"
     }

@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Page.Dashboard exposing (Texts, de, fr, gb)
+module Messages.Page.Dashboard exposing (Texts, de, fr
+    , ja, gb)
 
 import Data.TimeZone exposing (TimeZone)
 import Messages.Basics
@@ -146,4 +147,35 @@ fr tz =
     , editDashboard = "Éditer le Tableau de Bord"
     , dashboards = "Tableaux de bord"
     , predefinedMessage = "Ce tableau de bord est prédéfini et ne peut être supprimer. Il est remplacé par le premier que vous enregistrez."
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , bookmarkChooser = Messages.Comp.BookmarkChooser.ja
+    , notificationHookManage = Messages.Comp.NotificationHookManage.ja
+    , periodicQueryManage = Messages.Comp.PeriodicQueryTaskManage.ja tz
+    , sourceManage = Messages.Comp.SourceManage.ja
+    , shareManage = Messages.Comp.ShareManage.ja tz
+    , organizationManage = Messages.Comp.OrgManage.ja
+    , personManage = Messages.Comp.PersonManage.ja
+    , equipManage = Messages.Comp.EquipmentManage.ja
+    , tagManage = Messages.Comp.TagManage.ja
+    , folderManage = Messages.Comp.FolderManage.ja tz
+    , uploadForm = Messages.Comp.UploadForm.ja
+    , dashboard = Messages.Comp.DashboardView.ja tz
+    , dashboardManage = Messages.Comp.DashboardManage.ja
+    , defaultDashboard = Messages.Page.DefaultDashboard.ja
+    , accountScope = Messages.Data.AccountScope.ja
+    , manage = "管理"
+    , dashboardLink = "ダッシュボード"
+    , bookmarks = "ブックマーク"
+    , misc = "その他"
+    , settings = "設定"
+    , documentation = "ドキュメント"
+    , uploadFiles = "ドキュメントをアップロード"
+    , editDashboard = "ダッシュボードを編集"
+    , dashboards = "ダッシュボード"
+    , predefinedMessage = "このダッシュボードは削除できない事前定義されたものです。最初に保存したダッシュボードで置き換えられます。"
     }

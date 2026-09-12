@@ -9,6 +9,7 @@ module Messages.Comp.FolderDetail exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -89,4 +90,23 @@ fr =
     , folderCreated = "Dossier créé"
     , nameChangeSuccessful = "Nom modifié"
     , deleteSuccessful = "Dossier supprimé"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , reallyDeleteThisFolder = "このフォルダを本当に削除しますか？"
+    , autoOwnerInfo = "新しいフォルダの所有者は自動的にあなたに設定されました。"
+    , modifyInfo = "名前の変更やメンバーの追加・削除で、このフォルダを編集できます。"
+    , notOwnerInfo = "あなたは acest フォルダの所有者ではないため、編集できません。"
+    , members = "メンバー"
+    , addMember = "新しいメンバーを追加"
+    , add = "追加"
+    , removeMember = "このメンバーを削除"
+    , deleteThisFolder = "このフォルダを削除"
+    , folderCreated = "フォルダを作成しました。"
+    , nameChangeSuccessful = "名前を変更しました。"
+    , deleteSuccessful = "フォルダを削除しました。"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.AttachmentMeta exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -88,4 +89,22 @@ fr tz =
     , itemDate = "Date du document"
     , itemDueDate = "Date d'échéance"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.French tz
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , extractedMetadata = "抽出されたメタデータ"
+    , content = "内容"
+    , labels = "ラベル"
+    , proposals = "提案"
+    , correspondentOrg = "対応組織"
+    , correspondentPerson = "対応者"
+    , concerningPerson = "人物に関する"
+    , concerningEquipment = "機器に関する"
+    , itemDate = "アイテム日付"
+    , itemDueDate = "アイテム期限"
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.Japanese tz
     }

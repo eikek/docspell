@@ -9,6 +9,7 @@ module Messages.Basics exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -189,4 +190,50 @@ afin de rendre ce document visible. Ce message sera ainsi masqué.
     , sources = "Sources"
     , periodicQueries = "Requêtes Périodiques"
     , notificationHooks = "Webhooks"
+    }
+
+
+ja : Texts
+ja =
+    { incoming = "受信"
+    , outgoing = "送信"
+    , deleted = "削除済み"
+    , tags = "タグ"
+    , items = "アイテム"
+    , submit = "送信"
+    , submitThisForm = "このフォームを送信する"
+    , cancel = "キャンセル"
+    , delete = "削除"
+    , created = "作成日"
+    , edit = "編集"
+    , back = "戻る"
+    , backToList = "リストに戻る"
+    , searchPlaceholder = "検索…"
+    , selectPlaceholder = "選択…"
+    , id = "ID"
+    , ok = "OK"
+    , yes = "はい"
+    , no = "いいえ"
+    , chooseTag = "タグを選択…"
+    , loading = "読み込み中…"
+    , name = "名称"
+    , organization = "組織"
+    , person = "人物"
+    , equipment = "機器"
+    , folder = "フォルダ"
+    , date = "日付"
+    , correspondent = "対応者"
+    , concerning = "件名"
+    , customFields = "カスタムフィールド"
+    , direction = "方向"
+    , folderNotOwnerWarning =
+        """
+You are **not a member** of this folder. This item will be **hidden**
+from any search now. Use a folder where you are a member of to make this
+item visible. This message will disappear then.
+                      """
+    , shares = "共有"
+    , sources = "ソース"
+    , periodicQueries = "定期クエリ"
+    , notificationHooks = "Webhook"
     }

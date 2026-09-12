@@ -8,6 +8,7 @@
 module Messages.Data.Fields exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -132,3 +133,43 @@ fr field =
 
         SourceName ->
             "Source du document"
+
+
+ja : Field -> String
+ja field =
+    case field of
+        Tag ->
+            "タグ"
+
+        Folder ->
+            "フォルダ"
+
+        CorrOrg ->
+            "対応組織"
+
+        CorrPerson ->
+            "対応者"
+
+        ConcPerson ->
+            "人物に関する"
+
+        ConcEquip ->
+            "関連機器"
+
+        Date ->
+            "日付"
+
+        DueDate ->
+            "期限"
+
+        Direction ->
+            "方向"
+
+        PreviewImage ->
+            "画像のプレビュー"
+
+        CustomFields ->
+            "カスタムフィールド"
+
+        SourceName ->
+            "アイテムソース"

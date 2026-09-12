@@ -9,6 +9,7 @@ module Messages.Comp.SearchStatsView exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -53,4 +54,15 @@ fr =
     , avg = "Moyenne"
     , min = "Min"
     , max = "Max"
+    }
+
+
+ja : Texts
+ja =
+    { items = "アイテム"
+    , count = "件数"
+    , sum = "合計"
+    , avg = "平均"
+    , min = "最小"
+    , max = "最大"
     }

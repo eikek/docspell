@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.DashboardEdit exposing (Texts, de, fr, gb)
+module Messages.Comp.DashboardEdit exposing (Texts, de, fr
+    , ja, gb)
 
 import Messages.Basics
 import Messages.Comp.BoxEdit
@@ -69,4 +70,19 @@ fr =
     , newBox = "Nouvelle boite"
     , defaultDashboard = "Tableau de bord par défaut"
     , gap = "Espace"
+    }
+
+
+ja : Texts
+ja =
+    { boxView = Messages.Comp.BoxEdit.ja
+    , boxContent = Messages.Data.BoxContent.ja
+    , basics = Messages.Basics.ja
+    , accountScope = Messages.Data.AccountScope.ja
+    , namePlaceholder = "ダッシュボード名"
+    , columns = "列"
+    , dashboardBoxes = "ダッシュボードボックス"
+    , newBox = "新規ボックス"
+    , defaultDashboard = "デフォルトのダッシュボード"
+    , gap = "間隔"
     }

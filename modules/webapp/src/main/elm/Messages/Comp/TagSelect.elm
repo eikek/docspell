@@ -9,6 +9,7 @@ module Messages.Comp.TagSelect exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -47,4 +48,13 @@ fr =
     , hideEmpty = "Cacher si vide"
     , showEmpty = "Montrer si vide"
     , filterPlaceholder = "Filtrer …"
+    }
+
+
+ja : Texts
+ja =
+    { expandCollapse = Messages.Comp.ExpandCollapse.ja
+    , hideEmpty = "空の項目を非表示"
+    , showEmpty = "空の項目を表示"
+    , filterPlaceholder = "フィルター…"
     }

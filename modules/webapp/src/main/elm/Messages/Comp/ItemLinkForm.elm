@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.ItemLinkForm exposing (Texts, de, fr, gb)
+module Messages.Comp.ItemLinkForm exposing (Texts, de, fr
+    , ja, gb)
 
 import Data.Direction exposing (Direction)
 import Data.TimeZone exposing (TimeZone)
@@ -53,4 +54,14 @@ fr tz =
     , directionLabel = Messages.Data.Direction.fr
     , itemSearchInput = Messages.Comp.ItemSearchInput.fr
     , httpError = Messages.Comp.HttpError.fr
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { dateFormatLong = DF.formatDateLong Japanese tz
+    , dateFormatShort = DF.formatDateShort Japanese tz
+    , directionLabel = Messages.Data.Direction.ja
+    , itemSearchInput = Messages.Comp.ItemSearchInput.ja
+    , httpError = Messages.Comp.HttpError.ja
     }

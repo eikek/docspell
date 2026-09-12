@@ -9,6 +9,7 @@ module Messages.Comp.DetailEdit exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -94,4 +95,23 @@ fr =
     , addOrgHeader = "Ajouter une organisation"
     , addEquipmentHeader = "Ajouter un équipement"
     , addCustomFieldHeader = "Ajouter un champs personnalisé"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , tagForm = Messages.Comp.TagForm.ja
+    , personForm = Messages.Comp.PersonForm.ja
+    , orgForm = Messages.Comp.OrgForm.ja
+    , equipmentForm = Messages.Comp.EquipmentForm.ja
+    , customFieldForm = Messages.Comp.CustomFieldForm.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , submitSuccessful = "保存に成功しました。"
+    , missingRequiredFields = "必須項目を入力してください。"
+    , addTagHeader = "タグを追加"
+    , addPersonHeader = "人物を追加"
+    , addOrgHeader = "組織を追加"
+    , addEquipmentHeader = "機器を追加"
+    , addCustomFieldHeader = "カスタムフィールドを追加"
     }

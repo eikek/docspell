@@ -9,6 +9,7 @@ module Messages.Comp.DueItemsTaskList exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -52,4 +53,14 @@ fr =
     , summary = "Résumé"
     , schedule = "Programmation"
     , connection = "Canal"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , channelType = Messages.Data.ChannelType.ja
+    , summary = "概要"
+    , schedule = "スケジュール"
+    , connection = "接続"
     }

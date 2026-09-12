@@ -9,6 +9,7 @@ module Messages.Comp.SentMails exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -61,4 +62,16 @@ fr tz =
     , sent = "Envoyé"
     , sender = "Expéditeur"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { from = "差出人"
+    , date = "日付"
+    , recipients = "受信者"
+    , subject = "件名"
+    , sent = "送信済み"
+    , sender = "送信者"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.Japanese tz
     }

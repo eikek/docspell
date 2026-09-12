@@ -9,6 +9,7 @@ module Messages.Comp.AddonRunConfigManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -76,4 +77,18 @@ fr tz =
     , createNewAddonRunConfig = "Créer un nouveau favori"
     , deleteThisAddonRunConfig = "Supprimer ce favori"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , addonArchiveTable = Messages.Comp.AddonRunConfigTable.ja
+    , addonArchiveForm = Messages.Comp.AddonRunConfigForm.ja tz
+    , httpError = Messages.Comp.HttpError.ja
+    , newAddonRunConfig = "新規"
+    , reallyDeleteAddonRunConfig = "この実行設定を本当に削除しますか？"
+    , createNewAddonRunConfig = "新しい実行設定を作成"
+    , deleteThisAddonRunConfig = "この実行構成を削除"
+    , correctFormErrors = "フォームの誤りを修正してください。"
     }

@@ -9,6 +9,7 @@ module Messages.App exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -77,4 +78,21 @@ fr =
     , help = "Aide"
     , newItemsArrived = "De nouveaux documents sont arrivés!"
     , dashboard = "Tableau de bord"
+    }
+
+
+ja : Texts
+ja =
+    { collectiveProfile = "団体プロフィール"
+    , userProfile = "ユーザープロフィール"
+    , lightDark = "ライト/ダーク"
+    , logout = "ログアウト"
+    , items = "アイテム"
+    , manageData = "データの管理"
+    , uploadFiles = "ファイルのアップロード"
+    , processingQueue = "処理キュー"
+    , newInvites = "新しい招待"
+    , help = "ヘルプ"
+    , newItemsArrived = "新しいアイテムが届きました！"
+    , dashboard = "ダッシュボード"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.Dropzone exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -53,4 +54,14 @@ fr =
     , selectInfo =
         "Choisir un fichier (pdf, docx, txt, html, ...)."
             ++ "Les archives (zip et eml) seront extraites."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , dropFilesHere = "ここにファイルをドロップ"
+    , or = "または"
+    , selectInfo = "文書ファイル（pdf, docx, txt, html, …）を選択してください。 "
+            ++ "Archives (zip and eml) are extracted."
     }
