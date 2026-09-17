@@ -67,7 +67,9 @@ class ConversionTest extends FunSuite with FileChecks with TestLoggingConfig {
         Seq("{{infile}}", "{{outfile}}", "--convert-to", "pdf"),
         Duration.seconds(20)
       ),
-      target
+      target,
+      host = "",
+      port = 2003
     ),
     OcrMyPdfConfig(
       enabled = true,

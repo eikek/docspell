@@ -24,9 +24,11 @@
   [unoserver](https://github.com/unoconv/unoserver/) / `unoconvert`
   (#3345, #3293). The HOCON key `docspell.joex.convert.unoconv` is
   kept for compatibility; the default program/args now call
-  `unoconvert`. **Breaking:** joex must run a `unoserver` daemon
-  (official Docker images start it in the entrypoint). Custom images
-  that relied on `unoconv -l` need the same change.
+  `unoconvert`. Optional `host`/`port` point the client at a remote
+  or sidecar unoserver. **Breaking:** joex no longer expects
+  `unoconv -l`; run `unoserver` out of band (systemd, Compose, Helm)
+  and install `unoconvert` on the joex host. Official Docker provides
+  a separate unoserver service.
 
 ### 💚 Maintenance
 

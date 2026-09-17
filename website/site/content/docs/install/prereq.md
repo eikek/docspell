@@ -48,7 +48,8 @@ component.
   command line in the configuration file, if necessary.
 - [Unoserver](https://github.com/unoconv/unoserver/) provides
   `unoconvert`, used to convert office documents into PDF files via a
-  running LibreOffice listener (`unoserver` daemon).
+  running LibreOffice listener (`unoserver` daemon). Joex only needs
+  the `unoconvert` client; LibreOffice and the daemon run separately.
 - [wkhtmltopdf](https://wkhtmltopdf.org/) is used to convert HTML into
   PDF files.
 - [OCRmyPDF](https://github.com/jbarlow83/OCRmyPDF) can be optionally
@@ -56,10 +57,14 @@ component.
   PDF files to make them searchable. It also creates PDF/A files from
   the input pdf.
 
-Start a `unoserver` daemon on machines that run joex (the official
-Docker joex image does this in the entrypoint). Concurrent convert
-requests are queued by the server, which avoids LibreOffice listener
-deadlocks (see [#3345](https://github.com/eikek/docspell/issues/3345)).
+Run a `unoserver` daemon out of band (systemd, a separate process, or
+the official Docker Compose / Helm unoserver service). Concurrent
+convert requests are queued by the server, which avoids LibreOffice
+listener deadlocks (see
+[#3345](https://github.com/eikek/docspell/issues/3345)). If unoserver
+is not on the same machine / filesystem defaults, set
+`docspell.joex.convert.unoconv.host` (and optionally `port`) so
+`unoconvert` connects remotely.
 
 ### Example Debian
 
@@ -72,10 +77,27 @@ sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-e
 sudo -H pip install unoserver
 ```
 
-Then start the daemon before joex, for example:
+On the joex host you only need `unoconvert` on `PATH` (from the
+unoserver package). LibreOffice can live on another machine if you set
+`convert.unoconv.host`. Start the daemon before joex, for example:
 
 ``` bash
 unoserver &
+```
+
+A simple systemd unit sketch:
+
+``` ini
+[Unit]
+Description=unoserver for Docspell joex
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/unoserver --port 2003 --conversion-timeout 120
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
 ```
 # Apache SOLR
 

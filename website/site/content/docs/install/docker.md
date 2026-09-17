@@ -19,9 +19,12 @@ release page. The images contain all the necessary
 [prerequisites](@/docs/install/prereq.md).
 
 - `docspell/restserver` this images contains the http server
-- `docspell/joex` this image contains the job executor and all
-  required software (ocrmypdf, unoserver/unoconvert, etc) mentioned in
-  [prerequisites](@/docs/install/prereq.md).
+- `docspell/joex` this image contains the job executor and most
+  required software (ocrmypdf, `unoconvert` client, etc) mentioned in
+  [prerequisites](@/docs/install/prereq.md). Office conversion uses a
+  separate `unoserver` service from the
+  [docspell/docker](https://github.com/docspell/docker) Compose/Helm
+  setup.
 - `docspell/dsc` this is an image containing a
   [cli](@/docs/tools/cli.md) for docspell that can be used to watch
   directories for new files. It doesn't specify a `CMD` or

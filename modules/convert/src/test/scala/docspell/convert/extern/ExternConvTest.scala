@@ -65,7 +65,7 @@ class ExternConvTest extends FunSuite with FileChecks with TestLoggingConfig {
       .withTempDir[IO](target, "unoconvert")
       .use(dir =>
         IO {
-          val ucCfg = UnoconvConfig(cfg, target)
+          val ucCfg = UnoconvConfig(cfg, target, host = "", port = 2003)
           val p =
             Unoconv
               .toPDF[IO, Path](ucCfg, 8192, logger)(

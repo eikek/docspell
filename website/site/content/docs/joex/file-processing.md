@@ -158,10 +158,13 @@ To convert office files, [LibreOffice](https://www.libreoffice.org/)
 is required and used via
 [unoserver](https://github.com/unoconv/unoserver/) / `unoconvert`.
 
-Start a `unoserver` daemon separately (Docker joex images do this in
-the entrypoint). The server queues convert requests, which avoids
-LibreOffice deadlocks when joex runs with `scheduler.pool-size > 1`
-(see [#3345](https://github.com/eikek/docspell/issues/3345)).
+Joex does not start the daemon. Run `unoserver` out of band (systemd,
+Docker Compose service, or Helm sidecar). The server queues convert
+requests, which avoids LibreOffice deadlocks when joex runs with
+`scheduler.pool-size > 1` (see
+[#3345](https://github.com/eikek/docspell/issues/3345)). When the
+daemon is not on the local defaults, set
+`docspell.joex.convert.unoconv.host` / `port`.
 
 
 ### PDF
