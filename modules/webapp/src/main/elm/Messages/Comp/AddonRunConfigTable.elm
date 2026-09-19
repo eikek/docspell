@@ -9,6 +9,7 @@ module Messages.Comp.AddonRunConfigTable exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -47,4 +48,12 @@ fr =
     { basics = Messages.Basics.fr
     , enabled = "Enabled"
     , trigger = "Triggered"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , enabled = "有効"
+    , trigger = "トリガー済み"
     }

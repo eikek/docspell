@@ -9,6 +9,7 @@ module Messages.Comp.AddonArchiveManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -83,4 +84,21 @@ fr =
     , installNow = "Installation de l'addon"
     , updateNow = "Actualiser l'addon"
     , description = "Description"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , addonArchiveTable = Messages.Comp.AddonArchiveTable.ja
+    , addonArchiveForm = Messages.Comp.AddonArchiveForm.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , newAddonArchive = "新しいアドオン"
+    , reallyDeleteAddonArchive = "このアドオンを本当に削除しますか？"
+    , createNewAddonArchive = "新しいアドオンをインストール"
+    , deleteThisAddonArchive = "このアドオンを削除"
+    , correctFormErrors = "フォーム内のエラーを修正してください。"
+    , installNow = "アドオンをインストール"
+    , updateNow = "アドオンを更新"
+    , description = "説明"
     }

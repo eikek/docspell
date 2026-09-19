@@ -9,6 +9,7 @@ module Messages.Comp.OrgTable exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -53,4 +54,14 @@ fr =
     , contact = "Contact"
     , use = "Utiliser"
     , orgUseLabel = Messages.Data.OrgUse.fr
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , address = "住所"
+    , contact = "連絡先"
+    , use = "使用状況"
+    , orgUseLabel = Messages.Data.OrgUse.ja
     }

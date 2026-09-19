@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.ItemInfoHeader exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -58,4 +59,15 @@ fr tz =
     , source = "Source"
     , new = "Nouveau"
     , formatDate = DF.formatDateLong Messages.UiLanguage.French tz
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , itemDate = "アイテム日付"
+    , dueDate = "期限"
+    , source = "ソース"
+    , new = "新規"
+    , formatDate = DF.formatDateLong Messages.UiLanguage.Japanese tz
     }

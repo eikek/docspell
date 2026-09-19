@@ -9,6 +9,7 @@ module Messages.Comp.TagDropdown exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -43,4 +44,12 @@ fr =
     { basics = Messages.Basics.fr
     , placeholder = "Rechercher…"
     , noCategory = "Aucune catégorie"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , placeholder = "検索…"
+    , noCategory = "カテゴリなし"
     }

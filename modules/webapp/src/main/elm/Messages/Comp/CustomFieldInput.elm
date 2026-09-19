@@ -9,6 +9,7 @@ module Messages.Comp.CustomFieldInput exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -45,4 +46,13 @@ fr =
     , errorNoNumber = "Pas de nombre donné"
     , errorNoAmount = "Pas de montant donné"
     , errorNotANumber = \str -> "Pas un nombre: " ++ str
+    }
+
+
+ja : Texts
+ja =
+    { errorNoValue = "値を入力してください"
+    , errorNoNumber = "番号が指定されていません"
+    , errorNoAmount = "金額が指定されていません"
+    , errorNotANumber = \str -> "Not a number: " ++ str
     }

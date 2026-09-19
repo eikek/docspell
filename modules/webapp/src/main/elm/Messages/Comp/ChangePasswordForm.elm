@@ -9,6 +9,7 @@ module Messages.Comp.ChangePasswordForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -77,4 +78,20 @@ fr =
     , passwordMismatch = "Les mots de passe ne correspondent pas."
     , fillRequiredFields = "Veuillez compléter les champs requis."
     , passwordChangeSuccessful = "Le mot de passe a été mis à jour."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , currentPassword = "現在のパスワード"
+    , newPassword = "新しいパスワード"
+    , repeatPassword = "新しいパスワード（再入力）"
+    , currentPasswordPlaceholder = "パスワード"
+    , newPasswordPlaceholder = "パスワード"
+    , repeatPasswordPlaceholder = "パスワード"
+    , passwordMismatch = "パスワードが一致しません。"
+    , fillRequiredFields = "必須項目を入力してください。"
+    , passwordChangeSuccessful = "パスワードを変更しました。"
     }

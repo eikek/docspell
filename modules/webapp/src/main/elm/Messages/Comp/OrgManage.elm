@@ -9,6 +9,7 @@ module Messages.Comp.OrgManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -71,4 +72,18 @@ fr =
     , reallyDeleteOrg = "Confirmer la suppression de cette organisation"
     , deleteThisOrg = "Supprimer cette organisation"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , orgForm = Messages.Comp.OrgForm.ja
+    , orgTable = Messages.Comp.OrgTable.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , newOrganization = "新しい組織"
+    , createNewOrganization = "新しい組織を作成する"
+    , reallyDeleteOrg = "本当にこの組織を削除しますか？"
+    , deleteThisOrg = "この組織を削除"
+    , correctFormErrors = "フォームの誤りを修正してください。"
     }
