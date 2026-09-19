@@ -19,6 +19,8 @@ type alias Texts =
     , reset : String
     , allFilesOneItem : String
     , skipExistingFiles : String
+    , processFiles : String
+    , processFilesInfo : String
     , language : String
     , languageInfo : String
     , uploadErrorMessage : String
@@ -29,6 +31,9 @@ type alias Texts =
         , line2 : String
         , processingPage : String
         , line3 : String
+        , storeOnlyLine1 : String
+        , storeOnlyLine2 : String
+        , storeOnlyLine3 : String
         , resetLine1 : String
         , reset : String
         , resetLine2 : String
@@ -48,6 +53,10 @@ gb =
     , reset = "Reset"
     , allFilesOneItem = "All files are one single item"
     , skipExistingFiles = "Skip files already present in docspell"
+    , processFiles = "Process files"
+    , processFilesInfo =
+        "If unchecked, files are stored as items without conversion, OCR or analysis. "
+            ++ "Processing can be started later from the item."
     , language = "Language"
     , languageInfo =
         "Used for text extraction and analysis. The collective's "
@@ -62,6 +71,10 @@ gb =
         , line2 = " later where the files will arrive eventually. Or go to the "
         , processingPage = "Processing Page"
         , line3 = " to view the current processing state."
+        , storeOnlyLine1 =
+            "Your files have been successfully uploaded and stored without processing. Check the "
+        , storeOnlyLine2 = " where they are available."
+        , storeOnlyLine3 = ""
         , resetLine1 = " Click "
         , reset = "Reset"
         , resetLine2 = " to upload more files."
@@ -81,6 +94,10 @@ de =
     , reset = "Zurücksetzen"
     , allFilesOneItem = "Alle Dateien sind ein Dokument"
     , skipExistingFiles = "Lasse Dateien aus, die schon in Docspell sind"
+    , processFiles = "Dateien verarbeiten"
+    , processFilesInfo =
+        "Wenn deaktiviert, werden Dateien als Dokumente gespeichert ohne Konvertierung, OCR oder Analyse. "
+            ++ "Die Verarbeitung kann später am Dokument gestartet werden."
     , language = "Sprache"
     , languageInfo =
         "Wird für Texterkennung und -analyse verwendet. Die Standardsprache des Kollektivs "
@@ -95,6 +112,10 @@ de =
         , line2 = " wo die Dateien als Dokumente erscheinen werden oder gehe zur "
         , processingPage = "Verarbeitungsseite,"
         , line3 = " welche einen Einblick in den aktuellen Status gibt."
+        , storeOnlyLine1 =
+            "Deine Dateien wurden erfolgreich hochgeladen und ohne Verarbeitung gespeichert. Gehe zur "
+        , storeOnlyLine2 = " wo sie als Dokumente verfügbar sind."
+        , storeOnlyLine3 = ""
         , resetLine1 = " Klicke "
         , reset = "Zurücksetzen"
         , resetLine2 = " um weitere Dateien hochzuladen."
@@ -114,6 +135,10 @@ fr =
     , reset = "Recommencer"
     , allFilesOneItem = "Tous les fichiers ne sont qu'un seul document"
     , skipExistingFiles = "Ignorer les fichiers déjà présents dans docspell"
+    , processFiles = "Traiter les fichiers"
+    , processFilesInfo =
+        "Si décoché, les fichiers sont enregistrés comme documents sans conversion, OCR ni analyse. "
+            ++ "Le traitement peut être démarré plus tard depuis le document."
     , language = "Langue"
     , languageInfo =
         "Utilisé pour l'extraction et l'analyse. Le langage par défaut"
@@ -128,6 +153,10 @@ fr =
         , line2 = " plus tard où les fichiers arrivent. Où rendez-vous à la "
         , processingPage = "File de traitement"
         , line3 = " afin de voir l'état du traitement."
+        , storeOnlyLine1 =
+            "Les fichiers ont bien été envoyés et enregistrés sans traitement. Rendez-vous aux "
+        , storeOnlyLine2 = " où ils sont disponibles."
+        , storeOnlyLine3 = ""
         , resetLine1 = " Cliquer sur "
         , reset = "Recommencer"
         , resetLine2 = " pour envoyer plus de fichier."

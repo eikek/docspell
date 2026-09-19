@@ -39,7 +39,8 @@ class OUploadTest extends DatabaseTest {
             attachmentsOnly = None,
             flattenArchives = None,
             customData = None,
-            priority = None
+            priority = None,
+            process = None
           ),
           files = Vector(
             OUpload.File(
@@ -60,6 +61,60 @@ class OUploadTest extends DatabaseTest {
           assertEquals(files.head.category, FileCategory.AttachmentSource)
         case other =>
           fail(s"expected Success, got $other")
+      }
+    }
+  }
+
+  test("submit with process=false stores flag on process-item job args") {
+    val store = h2Store()
+    val content = "store-only".getBytes("UTF-8")
+
+    OUpload[IO](store, JobStoreImpl(store)).use { upload =>
+      for {
+        cid <- prepareCollective(store)
+        data = OUpload.UploadData(
+          multiple = true,
+          meta = OUpload.UploadMeta(
+            direction = None,
+            sourceAbbrev = "webapp",
+            folderId = None,
+            validFileTypes = Seq.empty,
+            skipDuplicates = false,
+            fileFilter = Glob.all,
+            tags = Nil,
+            language = Some(Language.English),
+            attachmentsOnly = None,
+            flattenArchives = None,
+            customData = None,
+            priority = None,
+            process = Some(false)
+          ),
+          files = Vector(
+            OUpload.File(
+              Some("big.xlsx"),
+              None,
+              Stream.emits(content).covary[IO]
+            )
+          ),
+          priority = Priority.Low,
+          tracker = None
+        )
+        result <- upload.submit(data, cid, None, None)
+        jobId <- result match {
+          case OUpload.UploadResult.Success(_, jobs) =>
+            jobs.headOption match {
+              case Some(id) => IO.pure(id)
+              case None     => IO.raiseError(new Exception("expected a job id"))
+            }
+          case other =>
+            IO.raiseError(new Exception(s"expected Success, got $other"))
+        }
+        job <- store.transact(docspell.store.records.RJob.findById(jobId))
+        j <- IO.fromOption(job)(new Exception("job missing"))
+        args <- IO.fromEither(ProcessItemArgs.parse(j.args))
+      } yield {
+        assertEquals(args.meta.process, Some(false))
+        assert(!args.isProcessingEnabled)
       }
     }
   }
@@ -86,7 +141,8 @@ class OUploadTest extends DatabaseTest {
               attachmentsOnly = None,
               flattenArchives = None,
               customData = None,
-              priority = None
+              priority = None,
+              process = None
             ),
             files = Vector(
               OUpload.File(

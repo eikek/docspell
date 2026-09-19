@@ -55,6 +55,7 @@ specified via a JSON structure in a part with name `meta`:
 , attachmentsOnly: Maybe Bool
 , flattenArchives: Maybe Bool
 , priority: Maybe String
+, process: Maybe Bool
 }
 ```
 
@@ -117,6 +118,11 @@ specified via a JSON structure in a part with name `meta`:
   source's configured priority for open uploads via a source URL, and
   the server configuration for the integration endpoint. When
   specified, it overrides the source's default priority.
+- The `process` field controls whether the processing pipeline runs. It
+  defaults to `true`. When set to `false`, an item is still created and
+  given metadata is applied, but conversion, text extraction/OCR,
+  preview generation and analysis are skipped. Processing can be
+  started later via the item reprocess endpoints.
 
 # Endpoints
 
