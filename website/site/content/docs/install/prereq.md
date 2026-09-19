@@ -46,8 +46,10 @@ component.
   images into pdf files. It is a widely used open source OCR engine.
   Tesseract 3 and 4 should work with docspell; you can adopt the
   command line in the configuration file, if necessary.
-- [Unoconv](https://github.com/unoconv/unoconv) is used to convert
-  office documents into PDF files. It uses libreoffice/openoffice.
+- [Unoserver](https://github.com/unoconv/unoserver/) provides
+  `unoconvert`, used to convert office documents into PDF files via a
+  running LibreOffice listener (`unoserver` daemon). Joex only needs
+  the `unoconvert` client; LibreOffice and the daemon run separately.
 - [wkhtmltopdf](https://wkhtmltopdf.org/) is used to convert HTML into
   PDF files.
 - [OCRmyPDF](https://github.com/jbarlow83/OCRmyPDF) can be optionally
@@ -55,18 +57,48 @@ component.
   PDF files to make them searchable. It also creates PDF/A files from
   the input pdf.
 
-The performance of `unoconv` can be improved by starting `unoconv -l`
-in a separate process. This runs a libreoffice/openoffice listener and
-therefore avoids starting one each time `unoconv` is called.
+Run a `unoserver` daemon out of band (systemd, a separate process, or
+the official Docker Compose / Helm unoserver service). Concurrent
+convert requests are queued by the server, which avoids LibreOffice
+listener deadlocks (see
+[#3345](https://github.com/eikek/docspell/issues/3345)). If unoserver
+is not on the same machine / filesystem defaults, set
+`docspell.joex.convert.unoconv.host` (and optionally `port`) so
+`unoconvert` connects remotely.
 
 ### Example Debian
 
-On Debian this should install all joex requirements:
+On Debian this should install most joex requirements. Install
+`unoserver` separately with the LibreOffice-compatible Python (see the
+[unoserver README](https://github.com/unoconv/unoserver/)):
 
 ``` bash
-sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng unpaper unoconv wkhtmltopdf ocrmypdf
+sudo apt-get install ghostscript tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng unpaper libreoffice wkhtmltopdf ocrmypdf
+sudo -H pip install unoserver
 ```
 
+On the joex host you only need `unoconvert` on `PATH` (from the
+unoserver package). LibreOffice can live on another machine if you set
+`convert.unoconv.host`. Start the daemon before joex, for example:
+
+``` bash
+unoserver &
+```
+
+A simple systemd unit sketch:
+
+``` ini
+[Unit]
+Description=unoserver for Docspell joex
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/unoserver --port 2003 --conversion-timeout 120
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
 # Apache SOLR
 
 SOLR is a very powerful fulltext search engine and can be used to

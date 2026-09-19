@@ -23,10 +23,23 @@ object Unoconv {
   )(in: Stream[F, Byte], handler: Handler[F, A]): F[A] = {
     val reader: (Path, Int) => F[ConversionResult[F]] =
       ExternConv.readResult[F](chunkSize, logger)
-    val cmd = cfg.command.withVars(Map.empty)
+
+    val serverArgs =
+      if (cfg.host.trim.isEmpty) Seq.empty
+      else
+        Seq(
+          "--host",
+          cfg.host.trim,
+          "--port",
+          cfg.port.toString,
+          "--host-location",
+          "remote"
+        )
+
+    val cmd = cfg.command.copy(args = serverArgs ++ cfg.command.args).withVars(Map.empty)
 
     ExternConv.toPDF[F, A](
-      "unoconv",
+      "unoconvert",
       cmd,
       cfg.workingDir,
       useStdin = false,
