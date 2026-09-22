@@ -9,6 +9,7 @@ module Messages.Comp.OrgForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -80,4 +81,20 @@ fr =
     , contacts = "Contacts"
     , contactTypeLabel = Messages.Data.ContactType.fr
     , notes = "Notes"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , addressForm = Messages.Comp.AddressForm.ja
+    , orgUseLabel = Messages.Data.OrgUse.ja
+    , shortName = "略称"
+    , use = "使用する"
+    , useAsCorrespondent = "連絡先として使用する"
+    , dontUseForSuggestions = "提案には使用しないでください。"
+    , address = "住所"
+    , contacts = "連絡先"
+    , contactTypeLabel = Messages.Data.ContactType.ja
+    , notes = "備考"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.PersonManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -71,4 +72,18 @@ fr =
     , reallyDeletePerson = "Confirmer la suppression de cette personne ?"
     , deleteThisPerson = "Supprimer cette personne"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , personForm = Messages.Comp.PersonForm.ja
+    , personTable = Messages.Comp.PersonTable.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , newPerson = "新規ユーザー"
+    , createNewPerson = "新しいユーザーを作成"
+    , reallyDeletePerson = "このユーザーを本当に削除しますか？"
+    , deleteThisPerson = "このユーザーを削除"
+    , correctFormErrors = "フォームの入力内容を修正してください。"
     }

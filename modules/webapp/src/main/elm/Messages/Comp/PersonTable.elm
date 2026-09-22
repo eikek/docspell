@@ -9,6 +9,7 @@ module Messages.Comp.PersonTable exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -53,4 +54,14 @@ fr =
     , contact = "Contact"
     , use = "Utiliser"
     , personUseLabel = Messages.Data.PersonUse.fr
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , address = "住所"
+    , contact = "連絡先"
+    , use = "使用方法"
+    , personUseLabel = Messages.Data.PersonUse.ja
     }

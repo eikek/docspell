@@ -9,6 +9,7 @@ module Messages.Page.Upload exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -35,4 +36,10 @@ de =
 fr : Texts
 fr =
     { uploadForm = Messages.Comp.UploadForm.fr
+    }
+
+
+ja : Texts
+ja =
+    { uploadForm = Messages.Comp.UploadForm.ja
     }

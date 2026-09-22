@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.AddFilesForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -62,4 +63,16 @@ fr =
         "Tous les fichiers ont été importés. Ils sont en cours de traitement, certains"
             ++ "peuvent ne pas être immédiatement disponible. "
     , refreshNow = "Rafraichir maintenant"
+    }
+
+
+ja : Texts
+ja =
+    { dropzone = Messages.Comp.Dropzone.ja
+    , basics = Messages.Basics.ja
+    , addMoreFilesToItem = "このアイテムにさらにファイルを追加する"
+    , reset = "リセット"
+    , filesSubmittedInfo = "すべてのファイルのアップロードが完了しました。現在処理中です。一部のデータ "
+            ++ "may not be available immediately. "
+    , refreshNow = "今すぐ更新"
     }

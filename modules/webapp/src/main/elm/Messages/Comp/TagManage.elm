@@ -9,6 +9,7 @@ module Messages.Comp.TagManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -71,4 +72,18 @@ fr =
     , reallyDeleteTag = "Confirmer la suppression du tag ?"
     , deleteThisTag = "Supprimer ce tag"
     , correctFormErrors = "Merci de corriger les erreurs du formulaire"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , tagTable = Messages.Comp.TagTable.ja
+    , tagForm = Messages.Comp.TagForm.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , createNewTag = "新しいタグを作成する"
+    , newTag = "新規タグ"
+    , reallyDeleteTag = "このタグを本当に削除しますか？"
+    , deleteThisTag = "このタグを削除"
+    , correctFormErrors = "フォームの入力内容を修正してください。"
     }

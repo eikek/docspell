@@ -9,6 +9,7 @@ module Messages.Comp.ShareMail exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -79,4 +80,22 @@ Ci-joints les documents:
 Cordialement
 """
     , mailSent = "Mail envoyé."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , itemMail = Messages.Comp.ItemMail.ja
+    , subjectTemplate = \mt -> "Shared Documents" ++ (Maybe.map (\n -> ": " ++ n) mt |> Maybe.withDefault "")
+    , bodyTemplate = \url -> """Hi,
+
+you can find the documents here:
+
+    """ ++ url ++ """
+
+Kind regards
+"""
+    , mailSent = "メールを送信しました。"
     }

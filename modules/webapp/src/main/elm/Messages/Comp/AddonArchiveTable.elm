@@ -9,6 +9,7 @@ module Messages.Comp.AddonArchiveTable exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -39,4 +40,11 @@ fr : Texts
 fr =
     { basics = Messages.Basics.fr
     , version = "Version"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , version = "バージョン"
     }

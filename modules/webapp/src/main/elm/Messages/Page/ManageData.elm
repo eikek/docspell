@@ -9,6 +9,7 @@ module Messages.Page.ManageData exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -97,4 +98,23 @@ fr tz =
     , bookmarks = "Favoris"
     , addonArchives = "Addons"
     , addonRunConfigs = "Addon Run Configurations"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , tagManage = Messages.Comp.TagManage.ja
+    , equipmentManage = Messages.Comp.EquipmentManage.ja
+    , orgManage = Messages.Comp.OrgManage.ja
+    , personManage = Messages.Comp.PersonManage.ja
+    , folderManage = Messages.Comp.FolderManage.ja tz
+    , customFieldManage = Messages.Comp.CustomFieldManage.ja tz
+    , bookmarkManage = Messages.Comp.BookmarkManage.ja
+    , addonArchiveManage = Messages.Comp.AddonArchiveManage.ja
+    , addonRunConfigManage = Messages.Comp.AddonRunConfigManage.ja tz
+    , manageData = "データを管理"
+    , bookmarks = "ブックマーク"
+    , addonArchives = "アドオン"
+    , addonRunConfigs = "アドオン実行設定"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.NotificationHookForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -103,4 +104,26 @@ fr =
     , jsonPayload = "JSON"
     , messagePayload = "Message"
     , payloadInfo = "Les messages sont envoyés à gotify, email and matrix. Le JSON est envoyé au canal HTTP."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , channelRef = Messages.Comp.ChannelRefInput.ja
+    , eventType = Messages.Data.EventType.ja
+    , eventSample = Messages.Comp.EventSample.ja
+    , channelHeader = "チャンネルを選択"
+    , enableDisable = "有効 / 無効"
+    , eventsInfo = "このWebhookをトリガーするイベントを選択してください"
+    , selectEvents = "選択…"
+    , events = "イベント"
+    , samplePayload = "サンプルペイロード"
+    , toggleAllEvents = "すべてのイベントで通知"
+    , eventFilter = "イベントフィルター式"
+    , eventFilterInfo = "JSON構造に基づいてイベントをフィルタリングするための式を任意に指定できます。"
+    , eventFilterClickForHelp = "ヘルプはこちらをクリック"
+    , jsonPayload = "JSON"
+    , messagePayload = "メッセージ"
+    , payloadInfo = "メッセージペイロードはgotify、メール、matrixに送信されます。JSONはhttpチャンネルに送信されます。"
     }

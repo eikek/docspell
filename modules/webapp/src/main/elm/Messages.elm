@@ -67,6 +67,9 @@ get lang tz =
         French ->
             fr tz
 
+        Japanese ->
+            ja tz
+
 
 {-| Get a ISO-3166-1 code of the given lanugage.
 -}
@@ -172,4 +175,28 @@ fr tz =
     , share = Messages.Page.Share.fr tz
     , shareDetail = Messages.Page.ShareDetail.fr tz
     , dashboard = Messages.Page.Dashboard.fr tz
+    }
+
+
+ja : TimeZone -> Messages
+ja tz =
+    { lang = Japanese
+    , timeZone = tz
+    , iso2 = "ja"
+    , label = "日本語"
+    , flagIcon = "fi fi-jp"
+    , app = Messages.App.ja
+    , collectiveSettings = Messages.Page.CollectiveSettings.ja tz
+    , login = Messages.Page.Login.ja
+    , register = Messages.Page.Register.ja
+    , newInvite = Messages.Page.NewInvite.ja
+    , upload = Messages.Page.Upload.ja
+    , itemDetail = Messages.Page.ItemDetail.ja tz
+    , queue = Messages.Page.Queue.ja tz
+    , userSettings = Messages.Page.UserSettings.ja tz
+    , manageData = Messages.Page.ManageData.ja tz
+    , search = Messages.Page.Search.ja tz
+    , share = Messages.Page.Share.ja tz
+    , shareDetail = Messages.Page.ShareDetail.ja tz
+    , dashboard = Messages.Page.Dashboard.ja tz
     }

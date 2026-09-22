@@ -9,6 +9,7 @@ module Messages.Page.CollectiveSettings exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -98,4 +99,24 @@ fr tz =
     , size = "Taille"
     , items = "Documents"
     , submitSuccessful = "Configuration sauvegardée."
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , userManage = Messages.Comp.UserManage.ja tz
+    , collectiveSettingsForm = Messages.Comp.CollectiveSettingsForm.ja tz
+    , sourceManage = Messages.Comp.SourceManage.ja
+    , shareManage = Messages.Comp.ShareManage.ja tz
+    , httpError = Messages.Comp.HttpError.ja
+    , collectiveSettings = "コレクション設定"
+    , insights = "インサイト"
+    , settings = "設定"
+    , users = "ユーザー"
+    , user = "ユーザー"
+    , collective = "コレクション"
+    , size = "サイズ"
+    , items = "アイテム"
+    , submitSuccessful = "設定を保存しました。"
     }
