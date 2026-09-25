@@ -38,7 +38,9 @@ object ProcessItem {
         case true =>
           ExtractArchive(store)(item)
             .flatMap(Task.setProgress(20))
-            .flatMap(processAttachments0(cfg, fts, analyser, regexNer, store, (40, 60, 80)))
+            .flatMap(
+              processAttachments0(cfg, fts, analyser, regexNer, store, (40, 60, 80))
+            )
             .flatMap(LinkProposal.onlyNew[F](store))
             .flatMap(SetGivenData.onlyNew[F](itemOps))
             .flatMap(Task.setProgress(99))
