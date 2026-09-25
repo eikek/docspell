@@ -6,9 +6,11 @@
 
 ### 🚀 Features
 
-- Add optional `process` field to upload metadata. When `false`, create
-  the item without conversion/OCR/analysis; reprocess later if needed
-  (#3344). The upload form exposes this as "Process files".
+- Add optional `process` and `runAddons` fields to upload metadata
+  (#3344). When `process` is `false`, create the item without
+  conversion/OCR/analysis; final-process-item addons still run unless
+  `runAddons` is `false`. Reprocess later if needed. The upload form
+  exposes both as checkboxes.
 - Upload endpoints now return `fileKeys` and `jobIds` so clients can track
   submitted files and processing jobs immediately.
 - Add secured endpoint to download files by file key for retrieving uploaded

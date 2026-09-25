@@ -56,6 +56,7 @@ specified via a JSON structure in a part with name `meta`:
 , flattenArchives: Maybe Bool
 , priority: Maybe String
 , process: Maybe Bool
+, runAddons: Maybe Bool
 }
 ```
 
@@ -118,11 +119,16 @@ specified via a JSON structure in a part with name `meta`:
   source's configured priority for open uploads via a source URL, and
   the server configuration for the integration endpoint. When
   specified, it overrides the source's default priority.
-- The `process` field controls whether the processing pipeline runs. It
-  defaults to `true`. When set to `false`, an item is still created and
-  given metadata is applied, but conversion, text extraction/OCR,
-  preview generation and analysis are skipped. Processing can be
-  started later via the item reprocess endpoints.
+- The `process` field controls whether the **file** processing pipeline
+  runs (conversion, text extraction/OCR, preview, analysis). It defaults
+  to `true`. When set to `false`, an item is still created and given
+  metadata is applied, but those stages are skipped. File processing can
+  be started later via the item reprocess endpoints.
+- The `runAddons` field controls whether final-process-item addons run
+  after the item is created. It defaults to `true`, including when
+  `process` is `false`, so addons can still react to `customData`. Set
+  both `process` and `runAddons` to `false` for a fully inert store-only
+  upload.
 
 # Endpoints
 

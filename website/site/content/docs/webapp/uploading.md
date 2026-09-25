@@ -20,7 +20,8 @@ When you click "Submit" the files are uploaded and stored in the
 database. Then the job executor(s) are notified which immediately
 start processing them. On the upload form you can uncheck *Process
 files* to only store the item and skip conversion, OCR and analysis;
-processing can be started later from the item.
+addons still run unless you also uncheck *Run addons*. File processing
+can be started later from the item.
 
 Go to the top-right menu and click "Processing Queue" to see the
 current state.

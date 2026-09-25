@@ -21,6 +21,8 @@ type alias Texts =
     , skipExistingFiles : String
     , processFiles : String
     , processFilesInfo : String
+    , runAddons : String
+    , runAddonsInfo : String
     , language : String
     , languageInfo : String
     , uploadErrorMessage : String
@@ -56,7 +58,11 @@ gb =
     , processFiles = "Process files"
     , processFilesInfo =
         "If unchecked, files are stored as items without conversion, OCR or analysis. "
-            ++ "Processing can be started later from the item."
+            ++ "Addons still run unless disabled below. File processing can be started later from the item."
+    , runAddons = "Run addons"
+    , runAddonsInfo =
+        "Run final-process-item addons after upload. Addons can use custom data from the upload. "
+            ++ "Uncheck together with Process files for a fully inert store-only upload."
     , language = "Language"
     , languageInfo =
         "Used for text extraction and analysis. The collective's "
@@ -97,7 +103,11 @@ de =
     , processFiles = "Dateien verarbeiten"
     , processFilesInfo =
         "Wenn deaktiviert, werden Dateien als Dokumente gespeichert ohne Konvertierung, OCR oder Analyse. "
-            ++ "Die Verarbeitung kann später am Dokument gestartet werden."
+            ++ "Addons laufen weiterhin, sofern unten nicht deaktiviert. Die Dateiverarbeitung kann später am Dokument gestartet werden."
+    , runAddons = "Addons ausführen"
+    , runAddonsInfo =
+        "Führt final-process-item Addons nach dem Upload aus. Addons können custom data aus dem Upload nutzen. "
+            ++ "Zusammen mit deaktiviertem Dateien verarbeiten für ein rein speicherndes Upload."
     , language = "Sprache"
     , languageInfo =
         "Wird für Texterkennung und -analyse verwendet. Die Standardsprache des Kollektivs "
@@ -138,7 +148,11 @@ fr =
     , processFiles = "Traiter les fichiers"
     , processFilesInfo =
         "Si décoché, les fichiers sont enregistrés comme documents sans conversion, OCR ni analyse. "
-            ++ "Le traitement peut être démarré plus tard depuis le document."
+            ++ "Les addons s'exécutent toujours sauf s'ils sont désactivés ci-dessous. Le traitement des fichiers peut être démarré plus tard depuis le document."
+    , runAddons = "Exécuter les addons"
+    , runAddonsInfo =
+        "Exécute les addons final-process-item après l'envoi. Les addons peuvent utiliser les données personnalisées de l'envoi. "
+            ++ "Décochez avec Traiter les fichiers pour un envoi purement en stockage."
     , language = "Langue"
     , languageInfo =
         "Utilisé pour l'extraction et l'analyse. Le langage par défaut"

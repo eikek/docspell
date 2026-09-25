@@ -21,7 +21,8 @@ object ItemArgsExample extends Helper {
     reprocess = false,
     attachmentsOnly = None,
     customData = Some(Json.obj("my-id" -> Json.fromInt(42))),
-    process = None
+    process = None,
+    runAddons = None
   )
 
   val exampleJson = example.asJson.spaces2

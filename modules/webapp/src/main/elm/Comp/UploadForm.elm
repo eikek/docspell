@@ -48,6 +48,7 @@ type alias Model =
     , priority : Priority
     , flattenArchives : Bool
     , process : Bool
+    , runAddons : Bool
     , uploadDone : Maybe Bool
     }
 
@@ -65,6 +66,7 @@ type Msg
     | PrioDropdownMsg (Comp.FixedDropdown.Msg Priority)
     | ToggleFlattenArchives
     | ToggleProcess
+    | ToggleRunAddons
 
 
 init : Model
@@ -85,6 +87,7 @@ init =
     , priority = Data.Priority.High
     , flattenArchives = False
     , process = True
+    , runAddons = True
     , uploadDone = Nothing
     }
 
@@ -188,6 +191,9 @@ update sourceId flags msg model =
         ToggleProcess ->
             ( { model | process = not model.process }, Cmd.none, Sub.none )
 
+        ToggleRunAddons ->
+            ( { model | runAddons = not model.runAddons }, Cmd.none, Sub.none )
+
         SubmitUpload ->
             let
                 emptyMeta =
@@ -207,6 +213,7 @@ update sourceId flags msg model =
                         , flattenArchives = Just model.flattenArchives
                         , priority = Just (Data.Priority.toName model.priority)
                         , process = Just model.process
+                        , runAddons = Just model.runAddons
                     }
 
                 fileids =
@@ -545,6 +552,23 @@ renderForm texts model =
                     ]
                 , div [ class "text-gray-400 text-xs mt-1" ]
                     [ text texts.processFilesInfo
+                    ]
+                ]
+            , div [ class "flex flex-col mb-3" ]
+                [ label [ class "inline-flex items-center" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , checked model.runAddons
+                        , onCheck (\_ -> ToggleRunAddons)
+                        , class Styles.checkboxInput
+                        ]
+                        []
+                    , span [ class "ml-2" ]
+                        [ text texts.runAddons
+                        ]
+                    ]
+                , div [ class "text-gray-400 text-xs mt-1" ]
+                    [ text texts.runAddonsInfo
                     ]
                 ]
             , div [ class "flex flex-col mb-3" ]

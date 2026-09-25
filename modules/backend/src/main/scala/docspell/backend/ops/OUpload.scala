@@ -74,7 +74,8 @@ object OUpload {
       flattenArchives: Option[Boolean],
       customData: Option[Json],
       priority: Option[Priority],
-      process: Option[Boolean]
+      process: Option[Boolean],
+      runAddons: Option[Boolean]
   )
 
   case class UploadData[F[_]](
@@ -165,7 +166,8 @@ object OUpload {
             reprocess = false,
             data.meta.attachmentsOnly,
             data.meta.customData,
-            data.meta.process
+            data.meta.process,
+            data.meta.runAddons
           )
           args = ProcessItemArgs(meta, files.toList)
           jobs <- right(

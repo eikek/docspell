@@ -37,6 +37,9 @@ case class ProcessItemArgs(meta: ProcessMeta, files: List[File]) extends TaskArg
 
   def isProcessingEnabled: Boolean =
     meta.process.getOrElse(true)
+
+  def isRunAddonsEnabled: Boolean =
+    meta.runAddons.getOrElse(true)
 }
 
 object ProcessItemArgs {
@@ -59,7 +62,8 @@ object ProcessItemArgs {
       reprocess: Boolean,
       attachmentsOnly: Option[Boolean],
       customData: Option[Json],
-      process: Option[Boolean]
+      process: Option[Boolean],
+      runAddons: Option[Boolean]
   )
 
   object ProcessMeta {

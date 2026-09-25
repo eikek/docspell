@@ -33,21 +33,22 @@ object ProcessItem {
       addonOps: AddonOps[F],
       store: Store[F]
   )(item: ItemData): Task[F, Args, ItemData] =
-    isProcessingEnabled[F].flatMap {
-      case true =>
-        ExtractArchive(store)(item)
-          .flatMap(Task.setProgress(20))
-          .flatMap(processAttachments0(cfg, fts, analyser, regexNer, store, (40, 60, 80)))
-          .flatMap(LinkProposal.onlyNew[F](store))
-          .flatMap(SetGivenData.onlyNew[F](itemOps))
-          .flatMap(Task.setProgress(99))
-          .flatMap(RemoveEmptyItem(itemOps))
-          .flatMap(RunAddons(addonOps, store, AddonTriggerType.FinalProcessItem))
-      case false =>
-        logStoreOnly[F]
-          .flatMap(_ => SetGivenData.onlyNew[F](itemOps)(item))
-          .flatMap(Task.setProgress(99))
-    }
+    isProcessingEnabled[F]
+      .flatMap {
+        case true =>
+          ExtractArchive(store)(item)
+            .flatMap(Task.setProgress(20))
+            .flatMap(processAttachments0(cfg, fts, analyser, regexNer, store, (40, 60, 80)))
+            .flatMap(LinkProposal.onlyNew[F](store))
+            .flatMap(SetGivenData.onlyNew[F](itemOps))
+            .flatMap(Task.setProgress(99))
+            .flatMap(RemoveEmptyItem(itemOps))
+        case false =>
+          logStoreOnly[F]
+            .flatMap(_ => SetGivenData.onlyNew[F](itemOps)(item))
+            .flatMap(Task.setProgress(99))
+      }
+      .flatMap(maybeRunAddons(addonOps, store))
 
   def processAttachments[F[_]: Async: Files](
       cfg: Config,
@@ -89,6 +90,18 @@ object ProcessItem {
 
   private def isProcessingEnabled[F[_]: Sync]: Task[F, Args, Boolean] =
     Task(ctx => ctx.args.isProcessingEnabled.pure[F])
+
+  private def isRunAddonsEnabled[F[_]: Sync]: Task[F, Args, Boolean] =
+    Task(ctx => ctx.args.isRunAddonsEnabled.pure[F])
+
+  private def maybeRunAddons[F[_]: Async: Files](
+      addonOps: AddonOps[F],
+      store: Store[F]
+  )(data: ItemData): Task[F, Args, ItemData] =
+    isRunAddonsEnabled[F].flatMap {
+      case true  => RunAddons(addonOps, store, AddonTriggerType.FinalProcessItem)(data)
+      case false => Task.pure(data)
+    }
 
   private def logStoreOnly[F[_]]: Task[F, Args, Unit] =
     Task.log(_.info("Not processing files. Only storing the item."))

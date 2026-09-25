@@ -21,8 +21,9 @@ may not be available.
 
 Uploads may set `process: false` in the upload metadata. In that case
 an item is still created and given metadata is applied, but the heavy
-stages below are skipped. Processing can be started later via the
-reprocess endpoints.
+file stages below are skipped. Final-process-item addons still run
+unless `runAddons` is also set to `false`. File processing can be
+started later via the reprocess endpoints.
 
 Processing files may require some resources, like memory and cpu. Many
 things can be configured in the config file to adapt it to the machine

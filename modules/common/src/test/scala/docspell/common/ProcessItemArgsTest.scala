@@ -11,7 +11,10 @@ import munit.FunSuite
 
 class ProcessItemArgsTest extends FunSuite {
 
-  private def meta(process: Option[Boolean]): ProcessItemArgs.ProcessMeta =
+  private def meta(
+      process: Option[Boolean],
+      runAddons: Option[Boolean] = None
+  ): ProcessItemArgs.ProcessMeta =
     ProcessItemArgs.ProcessMeta(
       collective = CollectiveId(1),
       itemId = None,
@@ -26,7 +29,8 @@ class ProcessItemArgsTest extends FunSuite {
       reprocess = false,
       attachmentsOnly = None,
       customData = None,
-      process = process
+      process = process,
+      runAddons = runAddons
     )
 
   test("isProcessingEnabled defaults to true") {
@@ -39,7 +43,17 @@ class ProcessItemArgsTest extends FunSuite {
     assert(!args.isProcessingEnabled)
   }
 
-  test("decode ProcessMeta without process field") {
+  test("isRunAddonsEnabled defaults to true") {
+    val args = ProcessItemArgs(meta(Some(false)), Nil)
+    assert(args.isRunAddonsEnabled)
+  }
+
+  test("isRunAddonsEnabled respects runAddons=false") {
+    val args = ProcessItemArgs(meta(Some(false), Some(false)), Nil)
+    assert(!args.isRunAddonsEnabled)
+  }
+
+  test("decode ProcessMeta without process/runAddons fields") {
     val json =
       """{
         |  "collective": 1,
@@ -59,11 +73,13 @@ class ProcessItemArgsTest extends FunSuite {
 
     val decoded = io.circe.parser.decode[ProcessItemArgs.ProcessMeta](json).toOption.get
     assertEquals(decoded.process, None)
+    assertEquals(decoded.runAddons, None)
     assert(ProcessItemArgs(decoded, Nil).isProcessingEnabled)
+    assert(ProcessItemArgs(decoded, Nil).isRunAddonsEnabled)
   }
 
-  test("roundtrip process=false") {
-    val m = meta(Some(false))
+  test("roundtrip process=false and runAddons=false") {
+    val m = meta(Some(false), Some(false))
     assertEquals(m.asJson.as[ProcessItemArgs.ProcessMeta], Right(m))
   }
 }
