@@ -9,6 +9,7 @@ module Messages.Comp.ShareView exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -82,4 +83,21 @@ fr tz =
     , passwordProtected = "Protégé par mot de passe"
     , views = "Vues"
     , lastAccess = "Dernier accès"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , date = DF.formatDateLong Messages.UiLanguage.Japanese tz
+    , qrCodeError = "QR Codeの生成中にエラーが発生しました。"
+    , expiredInfo = "この共有リンクの期限が切れています。"
+    , disabledInfo = "この共有リンクは無効です。"
+    , noName = "名前なし"
+    , copyToClipboard = "クリップボードにコピー"
+    , openInNewTab = "新しいタブ/ウィンドウで開く"
+    , publishUntil = "公開期限"
+    , passwordProtected = "パスワード保護あり"
+    , views = "ビュー"
+    , lastAccess = "最終アクセス"
     }

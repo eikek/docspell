@@ -9,6 +9,7 @@ module Messages.Comp.CustomFieldForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -119,4 +120,28 @@ fr =
     , fieldNameRequired = "Nom  requis."
     , fieldTypeRequired = "Type requis."
     , updateSuccessful = "Champs enregistré."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , reallyDeleteField = "このカスタムフィールドを本当に削除しますか？"
+    , fieldTypeLabel = Messages.Data.CustomFieldType.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , createCustomField = "新しいカスタムフィールドを作成します。"
+    , modifyTypeWarning = "形式を変更すると、 "
+            ++ "result in invisible values in the ui, if they don't comply to the new format!"
+    , nameInfo = "名前はこのフィールドを一意に識別します。有効な "
+            ++ "identifier, not contain spaces or weird characters."
+    , fieldFormat = "フィールド形式"
+    , fieldFormatInfo = "フィールドには形式が必要です。値は以下で検証されます： "
+            ++ "according to this format."
+    , label = "ラベル"
+    , labelInfo = "このフィールドのユーザー定義ラベルです。これは、 "
+            ++ "this field in the ui. If not present, the name is used."
+    , deleteThisField = "このフィールドを削除"
+    , fieldNameRequired = "名前を入力してください。"
+    , fieldTypeRequired = "タイプを選択してください。"
+    , updateSuccessful = "フィールドを保存しました。"
     }

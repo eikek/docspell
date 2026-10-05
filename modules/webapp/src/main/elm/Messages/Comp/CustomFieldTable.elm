@@ -9,6 +9,7 @@ module Messages.Comp.CustomFieldTable exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -54,4 +55,14 @@ fr tz =
     , format = "Format"
     , usageCount = "#Utilisations"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.French tz
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , nameLabel = "名前/ラベル"
+    , format = "形式"
+    , usageCount = "#使用状況"
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.Japanese tz
     }

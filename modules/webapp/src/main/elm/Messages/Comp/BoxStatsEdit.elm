@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.BoxStatsEdit exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxStatsEdit exposing (Texts, de, fr
+    , ja, gb)
 
 import Messages.Comp.BoxSearchQueryInput
 
@@ -46,4 +47,14 @@ fr =
     , basicNumbers = "Résultats simples"
     , showLabel = "Afficher"
     , showItemCount = "Afficher le nombre de documents"
+    }
+
+
+ja : Texts
+ja =
+    { searchQuery = Messages.Comp.BoxSearchQueryInput.ja
+    , fieldStatistics = "フィールド統計"
+    , basicNumbers = "基本数値"
+    , showLabel = "表示"
+    , showItemCount = "アイテム数を表示"
     }

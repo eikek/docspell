@@ -9,6 +9,7 @@ module Messages.Comp.CustomFieldManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -54,4 +55,14 @@ fr tz =
     , fieldTable = Messages.Comp.CustomFieldTable.fr tz
     , addCustomField = "Ajouter un champs personnalisé"
     , newCustomField = "Nouveau champs personnalisé"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , fieldForm = Messages.Comp.CustomFieldForm.ja
+    , fieldTable = Messages.Comp.CustomFieldTable.ja tz
+    , addCustomField = "新しいカスタムフィールドを追加"
+    , newCustomField = "新しいカスタムフィールド"
     }

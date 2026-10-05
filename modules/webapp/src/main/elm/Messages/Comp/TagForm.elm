@@ -9,6 +9,7 @@ module Messages.Comp.TagForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -43,4 +44,12 @@ fr =
     { basics = Messages.Basics.fr
     , selectDefineCategory = "Choisir ou définir une catégorie..."
     , category = "Catégorie"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , selectDefineCategory = "カテゴリを選択または定義..."
+    , category = "カテゴリ"
     }

@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.BoxQueryEdit exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxQueryEdit exposing (Texts, de, fr
+    , ja, gb)
 
 import Messages.Comp.BoxSearchQueryInput
 import Messages.Comp.ItemColumnDropdown
@@ -39,4 +40,12 @@ fr =
     { columnDropdown = Messages.Comp.ItemColumnDropdown.fr
     , searchQuery = Messages.Comp.BoxSearchQueryInput.fr
     , showColumnHeaders = "Voir les entêtes des colonnes"
+    }
+
+
+ja : Texts
+ja =
+    { columnDropdown = Messages.Comp.ItemColumnDropdown.ja
+    , searchQuery = Messages.Comp.BoxSearchQueryInput.ja
+    , showColumnHeaders = "列ヘッダーを表示"
     }

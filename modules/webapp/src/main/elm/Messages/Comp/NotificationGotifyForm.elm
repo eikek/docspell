@@ -9,6 +9,7 @@ module Messages.Comp.NotificationGotifyForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -51,4 +52,14 @@ fr =
     , appKey = "App Key"
     , priority = "Priorité"
     , priorityInfo = "A number denoting the importance of a message controlling notification behaviour. The higher the more important."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , gotifyUrl = "Gotify URL"
+    , appKey = "App Key"
+    , priority = "優先度"
+    , priorityInfo = "通知の挙動を制御するメッセージの重要度を示す数値です。数値が高いほど重要度が高くなります。"
     }

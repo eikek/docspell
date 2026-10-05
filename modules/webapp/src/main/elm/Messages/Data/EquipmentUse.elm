@@ -8,6 +8,7 @@
 module Messages.Data.EquipmentUse exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -42,3 +43,13 @@ fr pu =
 
         Disabled ->
             "Inactif"
+
+
+ja : EquipmentUse -> String
+ja pu =
+    case pu of
+        Concerning ->
+            "に関する"
+
+        Disabled ->
+            "無効"

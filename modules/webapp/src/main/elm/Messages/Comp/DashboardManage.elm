@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.DashboardManage exposing (Texts, de, fr, gb)
+module Messages.Comp.DashboardManage exposing (Texts, de, fr
+    , ja, gb)
 
 import Http
 import Messages.Basics
@@ -61,4 +62,17 @@ fr =
     , nameExists = "Ce nom est déjà utilisé."
     , createDashboard = "Nouveau"
     , copyDashboard = "Copier"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , dashboardEdit = Messages.Comp.DashboardEdit.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , reallyDeleteDashboard = "このダッシュボードを本当に削除しますか？"
+    , nameEmpty = "名前を入力してください。"
+    , nameExists = "その名前は既に使用されています。"
+    , createDashboard = "新規作成"
+    , copyDashboard = "コピー"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.CustomFieldMultiInput exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -35,4 +36,10 @@ de =
 fr : Texts
 fr =
     { customFieldInput = Messages.Comp.CustomFieldInput.fr
+    }
+
+
+ja : Texts
+ja =
+    { customFieldInput = Messages.Comp.CustomFieldInput.ja
     }

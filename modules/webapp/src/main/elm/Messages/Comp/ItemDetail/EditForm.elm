@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.EditForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -114,4 +115,28 @@ fr tz =
     , noSuggestions = "Aucune suggestion"
     , formatDate = DF.formatDateLong Messages.UiLanguage.French tz
     , direction = Messages.Data.Direction.fr
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , customFieldInput = Messages.Comp.CustomFieldMultiInput.ja
+    , tagDropdown = Messages.Comp.TagDropdown.ja
+    , createNewCustomField = "新しいカスタムフィールドを作成"
+    , chooseDirection = "方向を選択…"
+    , dueDateTab = "期限"
+    , addNewOrg = "新しい組織の追加"
+    , editOrg = "組織を編集"
+    , chooseOrg = "組織を選択"
+    , addNewCorrespondentPerson = "新しい通信相手の追加"
+    , editPerson = "人物を編集"
+    , personOrgInfo = "選択したユーザーは、選択した組織に属していません。"
+    , addNewConcerningPerson = "新しい関係者の追加"
+    , addNewEquipment = "新しい機器の追加"
+    , editEquipment = "機器を編集"
+    , suggestions = "提案"
+    , noSuggestions = "提案はありません"
+    , formatDate = DF.formatDateLong Messages.UiLanguage.Japanese tz
+    , direction = Messages.Data.Direction.ja
     }

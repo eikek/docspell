@@ -8,6 +8,7 @@
 module Messages.Data.ContactType exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -69,3 +70,22 @@ fr ct =
 
         Website ->
             "Web"
+
+
+ja : ContactType -> String
+ja ct =
+    case ct of
+        Phone ->
+            "電話"
+
+        Mobile ->
+            "モバイル"
+
+        Fax ->
+            "ファックス"
+
+        Email ->
+            "メール"
+
+        Website ->
+            "ウェブサイト"

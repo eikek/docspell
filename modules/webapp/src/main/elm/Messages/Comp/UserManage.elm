@@ -9,6 +9,7 @@ module Messages.Comp.UserManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -100,4 +101,25 @@ fr tz =
     , sentMails = "mails envoyés"
     , shares = "partages"
     , deleteFollowingData = "Les éléments suivants seront supprimés"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { userTable = Messages.Comp.UserTable.ja tz
+    , userForm = Messages.Comp.UserForm.ja
+    , basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , users = "ユーザー"
+    , newUser = "新しいユーザー"
+    , addNewUser = "新しいユーザーの追加"
+    , reallyDeleteUser = "このユーザーを本当に削除しますか？"
+    , createNewUser = "新しいユーザーを作成"
+    , deleteThisUser = "このユーザーを削除"
+    , pleaseCorrectErrors = "フォームの誤りを修正してください。"
+    , notDeleteCurrentUser = "現在ログインしているユーザーは削除できません。"
+    , folders = "フォルダ"
+    , sentMails = "送信済みメール"
+    , shares = "共有"
+    , deleteFollowingData = "以下のデータが削除されます"
     }

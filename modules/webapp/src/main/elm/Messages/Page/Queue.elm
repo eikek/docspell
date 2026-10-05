@@ -9,6 +9,7 @@ module Messages.Page.Queue exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -124,4 +125,31 @@ fr tz =
     , prio = "Prio"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
     , sidebarTitle = "En cours"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , currentlyRunning = "実行中"
+    , queue = "ジョブ"
+    , waiting = "待機中"
+    , errored = "エラー"
+    , success = "成功"
+    , cancelled = "キャンセル済み"
+    , noJobsRunning = "現在実行中のジョブはありません。"
+    , noJobsDisplay = "表示するジョブはありません。"
+    , noJobsWaiting = "待機中のジョブはありません。"
+    , noJobsFailed = "表示する失敗したジョブはありません。"
+    , noJobsSuccess = "成功したジョブはありません。"
+    , noJobsCancelled = "表示するキャンセルされたジョブはありません。"
+    , deleteThisJob = "このジョブをキャンセル/削除しますか？"
+    , showLog = "ログを表示"
+    , remove = "削除"
+    , retries = "再試行回数"
+    , changePriority = "このジョブの優先度を変更"
+    , prio = "優先度"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.Japanese tz
+    , sidebarTitle = "処理中"
     }

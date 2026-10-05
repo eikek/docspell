@@ -9,6 +9,7 @@ module Messages.Comp.BookmarkDropdown exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -51,4 +52,14 @@ fr =
     , personal = "Personnel"
     , collective = "Groupe"
     , share = "Partage"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , placeholder = "ブックマーク..."
+    , personal = "個人用"
+    , collective = "共有用"
+    , share = "共有"
     }

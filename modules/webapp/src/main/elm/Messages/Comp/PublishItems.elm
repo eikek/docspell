@@ -9,6 +9,7 @@ module Messages.Comp.PublishItems exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -111,4 +112,27 @@ fr tz =
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire"
     , doneLabel = "Terminé"
     , sendViaMail = "Envoyer par mail"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , shareForm = Messages.Comp.ShareForm.ja
+    , shareView = Messages.Comp.ShareView.ja tz
+    , shareMail = Messages.Comp.ShareMail.ja
+    , title = "アイテムを公開"
+    , infoText = "アイテムを公開すると、誰でも選択したドキュメントを閲覧できる専用のリンクが作成されます。このリンクは推測することはできませんが、公開情報です！一定期間のみ有効で、パスワードによる保護も可能です。"
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.Japanese tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.Japanese tz
+    , submitPublish = "公開"
+    , submitPublishTitle = "今すぐドキュメントを公開"
+    , cancelPublish = "キャンセル"
+    , cancelPublishTitle = "ビュー選択に戻る"
+    , publishSuccessful = "アイテムを正常に公開しました"
+    , publishInProcess = "アイテムを公開中 …"
+    , correctFormErrors = "フォームの誤りを修正してください。"
+    , doneLabel = "完了"
+    , sendViaMail = "E-Mailで送信"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.DueItemsTaskManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -81,4 +82,20 @@ fr tz =
     , taskUpdated = "Tâche mise à jours"
     , taskStarted = "Tâche démarrée"
     , taskDeleted = "Tache supprimée"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , notificationForm = Messages.Comp.DueItemsTaskForm.ja tz
+    , notificationTable = Messages.Comp.DueItemsTaskList.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , channelType = Messages.Data.ChannelType.ja
+    , newTask = "新しいタスク"
+    , createNewTask = "新しい通知タスクを作成"
+    , taskCreated = "タスクを作成しました。"
+    , taskUpdated = "タスクを更新しました。"
+    , taskStarted = "タスクを開始しました。"
+    , taskDeleted = "タスクを削除しました。"
     }

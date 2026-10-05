@@ -9,6 +9,7 @@ module Messages.Comp.ImapSettingsForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -93,4 +94,24 @@ fr =
     , ignoreCertCheck = "Ignorer la vérification des certificats"
     , enableOAuth2 = "Activer l'authentification OAuth2"
     , oauth2Info = "Ceci permet la connexion via XOAuth en utilisant le mot de passe comme token d'accès"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , sslTypeLabel = Messages.Data.SSLType.ja
+    , connectionNamePlaceholder = "接続名（例: 'gmail.com'）"
+    , connectionNameInfo = "接続名には空白や特殊文字を含めないでください。"
+    , imapHost = "IMAPホスト"
+    , imapHostPlaceholder = "IMAPホスト名（例: 'mail.gmail.com'）"
+    , imapPort = "IMAPポート"
+    , imapUser = "IMAPユーザー"
+    , imapUserPlaceholder = "IMAPユーザー名（例: 'your.name@gmail.com'）"
+    , imapPassword = "IMAPパスワード"
+    , imapPasswordPlaceholder = "パスワード"
+    , ssl = "SSL"
+    , ignoreCertCheck = "証明書チェックを無視する"
+    , enableOAuth2 = "OAuth2認証を有効にする"
+    , oauth2Info = "これを有効にすると、パスワードをアクセストークンとして使用してXOAuth経由で接続できるようになります。"
     }

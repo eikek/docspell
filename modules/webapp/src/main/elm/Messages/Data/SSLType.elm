@@ -8,6 +8,7 @@
 module Messages.Data.SSLType exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -45,6 +46,19 @@ fr st =
     case st of
         None ->
             "Aucun"
+
+        SSL ->
+            "SSL/TLS"
+
+        StartTLS ->
+            "StartTLS"
+
+
+ja : SSLType -> String
+ja st =
+    case st of
+        None ->
+            "なし"
 
         SSL ->
             "SSL/TLS"

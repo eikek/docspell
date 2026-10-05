@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.MultiEditMenu exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -87,4 +88,22 @@ fr =
     , changeTagMode = "Changer le mode d'édition des tags"
     , dueDateTab = "Date d'échéance"
     , direction = Messages.Data.Direction.fr
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.ja
+    , tagDropdown = Messages.Comp.TagDropdown.ja
+    , tagModeAddInfo = "選択したすべてのアイテムに、ここで選んだタグが*追加*されます。"
+    , tagModeRemoveInfo = "選択したすべてのアイテムから、ここで選んだタグが*削除*されます。"
+    , tagModeReplaceInfo = "選択したアイテムのタグを、ここで選んだタグに*置き換えます*。"
+    , chooseDirection = "方向を選択…"
+    , confirmUnconfirm = "メタデータの確定/未確定"
+    , confirm = "確定"
+    , unconfirm = "未確定"
+    , changeTagMode = "タグ編集モードの変更"
+    , dueDateTab = "期限"
+    , direction = Messages.Data.Direction.ja
     }
