@@ -109,22 +109,29 @@ object SysExec {
           closeAfterUse = false
         )
 
-      def cancel = Sync[F].blocking(proc.destroy())
+      def cancel: F[Unit] =
+        destroyProcess(proc)
 
       def waitFor(timeout: Option[Duration]): F[Int] = {
         val to = timeout.getOrElse(cmd.timeout)
+        def awaitLogFibers: F[Unit] =
+          fibers.get.flatMap(_.traverse_(_.attempt.void))
+
         logger.trace("Waiting for command to terminate…") *>
           Sync[F]
             .blocking(proc.waitFor(to.millis, TimeUnit.MILLISECONDS))
-            .flatTap(_ => fibers.get.flatMap(_.traverse_(identity)))
-            .flatMap(terminated =>
-              if (terminated) proc.exitValue().pure[F]
-              else
-                Sync[F]
-                  .raiseError(
+            .flatMap {
+              case true =>
+                awaitLogFibers *> Sync[F].blocking(proc.exitValue())
+              case false =>
+                // Destroy before joining log fibers. Those fibers only finish when the
+                // child closes its pipes; joining first on timeout deadlocks forever.
+                destroyProcess(proc) *>
+                  awaitLogFibers *>
+                  Sync[F].raiseError(
                     new TimeoutException(s"Timed out after: ${to.formatExact}")
                   )
-            )
+            }
       }
 
       def runToSuccess(logger: Logger[F], timeout: Option[Duration])(implicit
@@ -196,7 +203,7 @@ object SysExec {
 
     Resource
       .make(proc)(p =>
-        logger.debug(s"Closing process: `${cmd.cmdString}`").map(_ => p.destroy())
+        logger.debug(s"Closing process: `${cmd.cmdString}`") *> destroyProcess(p)
       )
       .evalMap(p =>
         stdin match {
@@ -207,6 +214,19 @@ object SysExec {
         }
       )
   }
+
+  private def destroyProcess[F[_]: Sync](proc: Process): F[Unit] =
+    Sync[F].blocking {
+      if (proc.isAlive) {
+        proc.destroy()
+        val stopped = proc.waitFor(5, TimeUnit.SECONDS)
+        if (!stopped) {
+          proc.destroyForcibly()
+          proc.waitFor(5, TimeUnit.SECONDS)
+          ()
+        }
+      }
+    }
 
   private def writeToProcess[F[_]: Sync](
       data: Stream[F, Byte],
