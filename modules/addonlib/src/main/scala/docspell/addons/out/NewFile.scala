@@ -64,7 +64,9 @@ object NewFile {
         tags = None,
         reprocess = false,
         attachmentsOnly = attachmentsOnly,
-        customData = customData
+        customData = customData,
+        process = None,
+        runAddons = None
       )
   }
 

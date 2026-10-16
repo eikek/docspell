@@ -136,7 +136,9 @@ object ReProcessItem {
               None,
               reprocess = true,
               None, // attachOnly (not used when reprocessing attachments)
-              None // cannot retain customData from an already existing item
+              None, // cannot retain customData from an already existing item
+              None, // process (full attachment path always runs)
+              None // runAddons (FinalReprocessItem addons always run below)
             ),
             Nil
           ).pure[F]

@@ -8476,6 +8476,24 @@ components:
             Processing priority for the upload jobs. If omitted, the endpoint
             default applies (high for secured upload, source priority for open
             upload, server config for integration).
+        process:
+          type: boolean
+          default: true
+          description: |
+            Whether to run the file processing pipeline (conversion, text
+            extraction/OCR, preview, analysis). Defaults to `true`. If
+            `false`, an item is still created and given metadata is
+            applied, but these stages are skipped. Final-process-item
+            addons still run unless `runAddons` is `false`. File
+            processing can be started later via the reprocess endpoints.
+        runAddons:
+          type: boolean
+          default: true
+          description: |
+            Whether to run final-process-item addons after creating the
+            item. Defaults to `true`. Addons receive `customData` from
+            the upload metadata. Set to `false` together with
+            `process: false` for a fully inert store-only upload.
 
     Collective:
       description: |

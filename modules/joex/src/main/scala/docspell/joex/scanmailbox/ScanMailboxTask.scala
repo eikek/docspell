@@ -330,6 +330,8 @@ object ScanMailboxTask {
           args.attachmentsOnly,
           None,
           None,
+          None,
+          None,
           None
         )
         data = OUpload.UploadData(
