@@ -9,6 +9,7 @@ module Messages.Comp.SearchMenu exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -165,4 +166,41 @@ fr =
     , selection = "Sélection"
     , showSelection = "Afficher la sélection"
     , clearSelection = "Effacer la sélection"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.ja
+    , tagSelect = Messages.Comp.TagSelect.ja
+    , folderSelect = Messages.Comp.FolderSelect.ja
+    , bookmarkChooser = Messages.Comp.BookmarkChooser.ja
+    , chooseDirection = "方向を選択…"
+    , choosePerson = "担当者を選択"
+    , chooseEquipment = "機器を選択"
+    , inbox = "受信トレイ"
+    , fulltextSearch = "全文検索"
+    , searchInNames = "名称で検索"
+    , switchSearchModes = "テキスト検索モードの切り替え"
+    , contentSearch = "内容を検索…"
+    , searchInNamesPlaceholder = "各種名称を検索…"
+    , fulltextSearchInfo = "文書の内容およびメモ内を全文検索します。"
+    , nameSearchInfo = "対応者、関連組織、項目名、およびメモ内を検索します。"
+    , tagCategoryTab = "タグカテゴリ"
+    , chooseOrganization = "組織を選択"
+    , createCustomFieldTitle = "新しいカスタムフィールドを作成"
+    , from = "差出人"
+    , to = "宛先"
+    , dueDateTab = "期限"
+    , dueFrom = "開始日"
+    , dueTo = "終了日"
+    , sourceTab = "ソース"
+    , searchInItemSource = "アイテムのソースを検索…"
+    , direction = Messages.Data.Direction.ja
+    , trashcan = "ゴミ箱"
+    , bookmarks = "ブックマーク"
+    , selection = "選択範囲"
+    , showSelection = "選択範囲を表示"
+    , clearSelection = "選択範囲をクリア"
     }

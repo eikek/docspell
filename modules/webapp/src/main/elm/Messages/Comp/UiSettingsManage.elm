@@ -9,6 +9,7 @@ module Messages.Comp.UiSettingsManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -87,4 +88,22 @@ fr =
     , collectiveHeader = "Paramètres de groupe"
     , collectiveInfo = "Ces paramètres s'appliquent à tous les utilisateurs à moins d'être écrasés par les paramètres personnels. En cas de remise à zéro, les paramètres par défaut de l'application sont utilisés."
     , expandCollapse = "Étendre/Réduire tout"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , uiSettingsForm = Messages.Comp.UiSettingsForm.ja
+    , accountScope = Messages.Data.AccountScope.ja
+    , saveSettings = "設定を保存"
+    , settingsUnchanged = "設定が変更されていないか、無効です。"
+    , settingsSaved = "設定を保存しました。"
+    , unknownSaveError = "設定の保存中に不明なエラーが発生しました。"
+    , httpError = Messages.Comp.HttpError.ja
+    , userHeader = "個人設定"
+    , userInfo = "個人の設定は組織の設定よりも優先されます。リセットすると、組織の設定が適用されます。"
+    , collectiveHeader = "組織設定"
+    , collectiveInfo = "これらの設定はすべてのユーザーに適用されます（個人の設定で上書きされている場合を除く）。リセットすると、アプリケーションのデフォルト値が読み込まれます。"
+    , expandCollapse = "すべて展開/折りたたみ"
     }

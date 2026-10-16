@@ -9,6 +9,7 @@ module Messages.Comp.PeriodicQueryTaskList exposing
     ( Texts
     , de
     , gb
+    , ja
     )
 
 import Messages.Basics
@@ -41,4 +42,14 @@ de =
     , summary = "Kurzbeschreibung"
     , schedule = "Zeitplan"
     , connection = "Kanal"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , channelType = Messages.Data.ChannelType.ja
+    , summary = "概要"
+    , schedule = "スケジュール"
+    , connection = "接続"
     }

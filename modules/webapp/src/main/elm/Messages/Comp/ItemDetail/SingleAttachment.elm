@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.SingleAttachment exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -97,4 +98,25 @@ fr tz =
     , exitSelectMode = "Quitter le mode sélection"
     , deleteAttachments = "Supprimer les pièces-jointes"
     , showQrCode = "Afficher l'URL en QR code"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { attachmentMeta = Messages.Comp.AttachmentMeta.ja tz
+    , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.ja
+    , noName = "名前なし"
+    , openFileInNewTab = "新しいタブでファイルを開く"
+    , downloadFile = "ファイルをダウンロード"
+    , renameFile = "ファイル名を変更"
+    , downloadOriginalArchiveFile = "オリジナルアーカイブをダウンロード"
+    , originalFile = "元のファイル"
+    , renderPdfByBrowser = "ブラウザでPDFをレンダリング"
+    , viewExtractedData = "抽出データの表示"
+    , reprocessFile = "このファイルを再処理"
+    , deleteThisFile = "このファイルを削除"
+    , selectModeTitle = "モードを選択"
+    , exitSelectMode = "選択モードを終了"
+    , deleteAttachments = "添付ファイルを削除"
+    , showQrCode = "URLをQRコードで表示"
     }

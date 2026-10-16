@@ -9,6 +9,7 @@ module Messages.Comp.ClassifierSettingsForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -101,4 +102,29 @@ Laisser liste blanche vide  désactive l'Auto-Tagging.
     , itemCount = "Nombre maximum de documents à utiliser"
     , schedule = "Programmation"
     , itemCountHelp = "Le nombre de maximum de documents à utilser pour l'apprentissage, classés pas date (le plus récent en premier). Laisser 0 si pas de limite."
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , calEventInput = Messages.Comp.CalEventInput.ja tz
+    , autoTaggingText =
+        """
+
+Auto-tagging works by learning from existing documents. The more
+documents you have correctly tagged, the better. Learning is done
+periodically based on a schedule. You can specify tag-groups that
+should either be used (whitelist) or not used (blacklist) for
+learning.
+
+Use an empty whitelist to disable auto tagging.
+
+            """
+    , blacklistOrWhitelist = "Is the following a blacklist or whitelist?"
+    , whitelistLabel = "Include tag categories for learning"
+    , blacklistLabel = "Exclude tag categories from learning"
+    , itemCount = "Item Count"
+    , schedule = "スケジュール"
+    , itemCountHelp = "The maximum number of items to learn from, order by date newest first. Use 0 to mean all."
     }

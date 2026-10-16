@@ -9,6 +9,7 @@ module Messages.Comp.NotificationMatrixForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -47,4 +48,13 @@ fr =
     , homeServer = "URL du homeserver"
     , roomId = "Room ID"
     , accessKey = "Token d'accès"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , homeServer = "Homeserver URL"
+    , roomId = "ルームID"
+    , accessKey = "アクセストークン"
     }

@@ -8,6 +8,7 @@
 module Messages.Data.Language exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -249,3 +250,82 @@ fr lang =
 
         Slovak ->
             "Slovaquie"
+
+
+ja : Language -> String
+ja lang =
+    case lang of
+        German ->
+            "ドイツ語"
+
+        English ->
+            "英語"
+
+        French ->
+            "フランス語"
+
+        Italian ->
+            "イタリア語"
+
+        Spanish ->
+            "スペイン語"
+
+        Portuguese ->
+            "ポルトガル語"
+
+        Czech ->
+            "チェコ語"
+
+        Danish ->
+            "デンマーク語"
+
+        Finnish ->
+            "フィンランド語"
+
+        Norwegian ->
+            "ノルウェー語"
+
+        Swedish ->
+            "スウェーデン語"
+
+        Russian ->
+            "ロシア語"
+
+        Romanian ->
+            "ルーマニア語"
+
+        Dutch ->
+            "オランダ語"
+
+        Latvian ->
+            "ラトビア語"
+
+        Japanese ->
+            "日本語"
+
+        JpnVert ->
+            "JpnVert"
+
+        Hebrew ->
+            "ヘブライ語"
+
+        Hungarian ->
+            "ハンガリー語"
+
+        Lithuanian ->
+            "リトアニア語"
+
+        Polish ->
+            "ポーランド語"
+
+        Estonian ->
+            "エストニア語"
+
+        Ukrainian ->
+            "ウクライナ語"
+
+        Khmer ->
+            "クメール語"
+
+        Slovak ->
+            "スロバキア語"

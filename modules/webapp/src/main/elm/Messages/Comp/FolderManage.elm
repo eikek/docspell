@@ -9,6 +9,7 @@ module Messages.Comp.FolderManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -58,4 +59,15 @@ fr tz =
     , showOwningFoldersOnly = "Afficher seulement les dossiers dont vous êtes propriétaire"
     , createNewFolder = "Créer un nouveau dossier"
     , newFolder = "Nouveau dossier"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , folderDetail = Messages.Comp.FolderDetail.ja
+    , folderTable = Messages.Comp.FolderTable.ja tz
+    , showOwningFoldersOnly = "所有フォルダーのみを表示"
+    , createNewFolder = "新しいフォルダを作成"
+    , newFolder = "新しいフォルダ"
     }

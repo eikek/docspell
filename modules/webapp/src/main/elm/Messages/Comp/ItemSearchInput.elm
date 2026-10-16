@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.ItemSearchInput exposing (Texts, de, fr, gb)
+module Messages.Comp.ItemSearchInput exposing (Texts, de, fr
+    , ja, gb)
 
 import Http
 import Messages.Basics
@@ -40,4 +41,12 @@ fr =
     { noResults = "Aucun document trouvé"
     , placeholder = Messages.Basics.fr.searchPlaceholder
     , httpError = Messages.Comp.HttpError.fr
+    }
+
+
+ja : Texts
+ja =
+    { noResults = "結果なし"
+    , placeholder = Messages.Basics.ja.searchPlaceholder
+    , httpError = Messages.Comp.HttpError.ja
     }
