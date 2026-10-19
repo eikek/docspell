@@ -79,6 +79,11 @@ Other ways are documented
 - Use the [Helm Chart](https://github.com/docspell/docker/tree/main/charts/docspell).
 
 
+## ☁️ One-Click Deploy
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/Docspell/)
+
+
 ## Documentation
 
 The [project page](https://docspell.org) has lots of information on
