@@ -9,6 +9,7 @@ module Messages.Comp.SourceManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -128,4 +129,33 @@ fr =
     , deleteThisSource = "Supprimer cette source"
     , errorGeneratingQR = "Erreur lors de la génération du  QR Code"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , sourceTable = Messages.Comp.SourceTable.ja
+    , sourceForm = Messages.Comp.SourceForm.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , addSourceUrl = "ソースURLを追加"
+    , newSource = "新規ソース"
+    , publicUploads = "公開アップロード"
+    , sourceInfoText = "このソースは、誰でもファイルを送信するために使用できるURLを定義します： "
+            ++ "you. There is a web page that you can share or the API url can be used "
+            ++ "with other clients."
+    , itemsCreatedInfo =
+        \n ->
+            "There have been "
+                ++ String.fromInt n
+                ++ " items created through this source."
+    , publicUploadPage = "公開アップロードページ"
+    , copyToClipboard = "クリップボードにコピー"
+    , openInNewTab = "新しいタブ/ウィンドウで開く"
+    , publicUploadUrl = "公開APIアップロードURL"
+    , reallyDeleteSource = "本当にこのソースを削除しますか？"
+    , createNewSource = "新規ソースを作成"
+    , deleteThisSource = "このソースを削除"
+    , errorGeneratingQR = "QRコードの生成エラー"
+    , correctFormErrors = "フォーム内のエラーを修正してください。"
     }

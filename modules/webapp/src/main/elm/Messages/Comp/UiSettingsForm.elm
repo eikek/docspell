@@ -9,6 +9,7 @@ module Messages.Comp.UiSettingsForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -287,4 +288,80 @@ si organisation est absente et enfin `-` si les 2 sont absentes.
 """
     , pdfMode = Messages.Data.PdfMode.fr
     , resetLabel = "Remise à zéro"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , general = "全般"
+    , showSideMenuByDefault = "サイドメニューをデフォルトで表示"
+    , uiLanguage = "UI 言語"
+    , itemSearch = "アイテム検索"
+    , maxResultsPerPageInfo =
+        \max ->
+            "Maximum results in one page when searching items. At most "
+                ++ String.fromInt max
+                ++ "."
+    , maxResultsPerPage = "ページあたりの件数"
+    , showBasicSearchStatsByDefault = "基本検索統計をデフォルトで表示"
+    , enablePowerSearch = "パワーユーザー用検索バーを有効にする"
+    , itemCards = "アイテムカード"
+    , maxNoteSize = "最大ノートの長さ"
+    , maxNoteSizeInfo =
+        \max ->
+            "Maximum size of the item notes to display in card view. Between 0 - "
+                ++ String.fromInt max
+                ++ "."
+    , sizeOfItemPreview = "アイテムプレビューのサイズ"
+    , cardTitlePattern = "カードタイトルのパターン"
+    , togglePatternHelpText = "パターンのヘルプテキストを切り替え"
+    , cardSubtitlePattern = "カードサブタイトルのパターン"
+    , searchMenu = "検索メニュー"
+    , searchMenuTagCount = "検索メニュー内のタグ数"
+    , searchMenuTagCountInfo = "検索メニューに一度に表示するタグの数です。それ以外は展開して表示されます。すべて常に表示する場合は0を使用してください。"
+    , searchMenuCatCount = "検索メニューのカテゴリ数"
+    , searchMenuCatCountInfo = "検索メニューに同時に表示するカテゴリ数です。それ以外は展開して表示されます。0を指定すると常にすべてを表示します。"
+    , searchMenuFolderCount = "検索メニューのフォルダ数"
+    , searchMenuFolderCountInfo = "検索メニューに同時に表示するフォルダ数です。その他のフォルダは展開して表示されます。0を指定すると常にすべてを表示します。"
+    , itemDetail = "アイテム詳細"
+    , browserNativePdfView = "ブラウザ標準のPDFプレビュー"
+    , keyboardShortcutLabel = "ナビゲーションにはキーボードショートカットを使用し、編集メニューを開いた状態で確定または取消を行ってください。"
+    , tagCategoryColors = "タグカテゴリの色"
+    , colorLabel = Messages.Data.Color.ja
+    , chooseTagColorLabel = "タグカテゴリの色を選択"
+    , tagColorDescription = "タグはカテゴリに基づいて異なる表示になる場合があります。"
+    , fields = "フィールド"
+    , fieldsInfo = "検索および編集メニューに表示するフィールドを選択します。"
+    , fieldLabel = Messages.Data.Fields.ja
+    , templateHelpMessage =
+        """
+A pattern allows to customize the title and subtitle of each card.
+Variables expressions are enclosed in `{{` and `}}`, other text is
+used as-is. The following variables are available:
+
+- `{{name}}` the item name
+- `{{source}}` the source the item was created from
+- `{{folder}}` the items folder
+- `{{corrOrg}}` the correspondent organization
+- `{{corrPerson}}` the correspondent person
+- `{{correspondent}}` both organization and person separated by a comma
+- `{{concPerson}}` the concerning person
+- `{{concEquip}}` the concerning equipment
+- `{{concerning}}` both person and equipment separated by a comma
+- `{{fileCount}}` the number of attachments of this item
+- `{{dateLong}}` the item date as full formatted date
+- `{{dateShort}}` the item date as short formatted date (yyyy/mm/dd)
+- `{{dueDateLong}}` the item due date as full formatted date
+- `{{dueDateShort}}` the item due date as short formatted date (yyyy/mm/dd)
+- `{{direction}}` the items direction values as string
+
+If some variable is not present, an empty string is rendered. You can
+combine multiple variables with `|` to use the first non-empty one,
+for example `{{corrOrg|corrPerson|-}}` would render the organization
+and if that is not present the person. If both are absent a dash `-`
+is rendered.
+"""
+    , pdfMode = Messages.Data.PdfMode.ja
+    , resetLabel = "リセット"
     }

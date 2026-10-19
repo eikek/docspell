@@ -41,3 +41,11 @@ fr =
     , eventType = Messages.Data.EventType.fr
     , channelType = "Type de canal"
     }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , eventType = Messages.Data.EventType.ja
+    , channelType = "チャネルの種類"
+    }

@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Data.ItemColumn exposing (Texts, de, fr, gb)
+module Messages.Data.ItemColumn exposing (Texts, de, fr
+    , ja, gb)
 
 import Data.ItemColumn exposing (ItemColumn(..))
 
@@ -166,6 +167,59 @@ fr =
 
                 DueDateShort ->
                     headerName col ++ " (court)"
+
+                DueDateLong ->
+                    headerName col ++ " (long)"
+
+                _ ->
+                    headerName col
+    }
+
+
+ja : Texts
+ja =
+    let
+        headerName col =
+            case col of
+                Name ->
+                    "Name"
+
+                DateLong ->
+                    "日付"
+
+                DateShort ->
+                    "日付"
+
+                DueDateLong ->
+                    "Due date"
+
+                DueDateShort ->
+                    "Due date"
+
+                Folder ->
+                    "フォルダ"
+
+                Correspondent ->
+                    "対応者"
+
+                Concerning ->
+                    "に関する"
+
+                Tags ->
+                    "Tags"
+    in
+    { header = headerName
+    , label =
+        \col ->
+            case col of
+                DateShort ->
+                    headerName col ++ " (short)"
+
+                DateLong ->
+                    headerName col ++ " (long)"
+
+                DueDateShort ->
+                    headerName col ++ " (short)"
 
                 DueDateLong ->
                     headerName col ++ " (long)"

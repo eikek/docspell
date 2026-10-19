@@ -9,6 +9,7 @@ module Messages.Comp.EmptyTrashForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -53,4 +54,14 @@ fr tz =
     , schedule = "Programmation"
     , minAge = "Durée minimum (jours)"
     , minAgeInfo = "Durée minimum en jours avant qu'un document soit supprimé. L'heure de la dernière mise à jour est utilisée."
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , calEventInput = Messages.Comp.CalEventInput.ja tz
+    , schedule = "スケジュール"
+    , minAge = "最小期間（日）"
+    , minAgeInfo = "削除対象となるアイテムの最小経過日数（日）。最終更新日時が使用されます。"
     }

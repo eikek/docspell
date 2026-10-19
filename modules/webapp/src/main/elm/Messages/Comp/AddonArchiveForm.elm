@@ -9,6 +9,7 @@ module Messages.Comp.AddonArchiveForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -51,4 +52,13 @@ fr =
     , addonUrl = "Addon URL"
     , addonUrlPlaceholder = "p.e. https://github.com/some-user/project/refs/tags/1.0.zip"
     , installInfoText = "Only urls to remote addon zip files are supported."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , addonUrl = "アドオンURL"
+    , addonUrlPlaceholder = "例: https://github.com/some-user/project/refs/tags/1.0.zip"
+    , installInfoText = "リモートのアドオンZIPファイルのURLのみ対応しています。"
     }

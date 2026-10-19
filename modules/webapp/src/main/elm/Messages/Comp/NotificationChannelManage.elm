@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.NotificationChannelManage exposing (Texts, de, fr, gb)
+module Messages.Comp.NotificationChannelManage exposing (Texts, de, fr
+    , ja, gb)
 
 import Http
 import Messages.Basics
@@ -103,4 +104,27 @@ fr =
     , updateChannel = "Mettre à jour le canal"
     , deleteThisChannel = "Supprimer ce canal"
     , reallyDeleteChannel = "Confirmer la suppression de ce canal ?"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , notificationForm = Messages.Comp.ChannelForm.ja
+    , notificationTable = Messages.Comp.NotificationChannelTable.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , channelType = Messages.Data.ChannelType.ja
+    , newChannel = "新規チャネル"
+    , channelCreated = "チャネルを作成しました"
+    , channelUpdated = "チャネルを更新しました"
+    , channelDeleted = "チャネルを削除しました"
+    , formInvalid = "必須項目をすべて入力してください"
+    , integrate = "連携"
+    , intoDocspell = "Docspellへ"
+    , postRequestInfo = "DocspellはJSONペイロードを含むPOSTリクエストを送信します。"
+    , notifyEmailInfo = "メールで通知を受け取ります。"
+    , addChannel = "新しいチャネルを追加"
+    , updateChannel = "チャネルを更新"
+    , deleteThisChannel = "このチャネルを削除"
+    , reallyDeleteChannel = "本当にこのチャネルを削除しますか？"
     }

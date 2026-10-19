@@ -8,6 +8,7 @@
 module Messages.Data.PersonUse exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -60,3 +61,19 @@ fr pu =
 
         Disabled ->
             "inactif"
+
+
+ja : PersonUse -> String
+ja pu =
+    case pu of
+        Correspondent ->
+            "対応者"
+
+        Concerning ->
+            "に関する"
+
+        Both ->
+            "両方"
+
+        Disabled ->
+            "無効"

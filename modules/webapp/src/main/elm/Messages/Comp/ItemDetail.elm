@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -202,3 +203,46 @@ fr tz =
 
 
 -- TODO translate-fr
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { addFilesForm = Messages.Comp.ItemDetail.AddFilesForm.ja
+    , itemInfoHeader = Messages.Comp.ItemDetail.ItemInfoHeader.ja tz
+    , singleAttachment = Messages.Comp.ItemDetail.SingleAttachment.ja tz
+    , sentMails = Messages.Comp.SentMails.ja tz
+    , notes = Messages.Comp.ItemDetail.Notes.ja
+    , itemMail = Messages.Comp.ItemMail.ja
+    , detailEdit = Messages.Comp.DetailEdit.ja
+    , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.ja
+    , itemLinkForm = Messages.Comp.ItemLinkForm.ja tz
+    , runAddonForm = Messages.Comp.ItemDetail.RunAddonForm.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , key = "キー"
+    , backToSearchResults = "検索結果に戻る"
+    , previousItem = "前のアイテム"
+    , nextItem = "次のアイテム"
+    , sendMail = "メールを送信"
+    , addMoreFiles = "このアイテムにさらにファイルを追加"
+    , confirmItemMetadata = "メタデータの確認"
+    , confirm = "確認"
+    , unconfirmItemMetadata = "アイテムのメタデータを未確認にする"
+    , reprocessItem = "このアイテムを再処理する"
+    , deleteThisItem = "このアイテムを削除"
+    , undeleteThisItem = "このアイテムを復元する"
+    , sentEmails = "送信済みE-Mail"
+    , sendThisItemViaEmail = "この項目をE-Mailで送信"
+    , itemId = "アイテムID"
+    , createdOn = "作成日"
+    , lastUpdateOn = "最終更新日:"
+    , sendingMailNow = "E-Mailを送信中…"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.Japanese tz
+    , mailSendSuccessful = "メールを送信しました。"
+    , showQrCode = "URLをQRコードで表示"
+    , close = "閉じる"
+    , selectItem = "この項目を選択"
+    , deselectItem = "このアイテムの選択を解除"
+    , relatedItems = "リンク済みアイテム"
+    , runAddonLabel = "アドオンを実行"
+    , runAddonTitle = "このアイテムにアドオンを実行"
+    }

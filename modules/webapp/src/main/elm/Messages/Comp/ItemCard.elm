@@ -9,6 +9,7 @@ module Messages.Comp.ItemCard exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -76,4 +77,19 @@ fr tz =
     , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.French tz
     , directionLabel = Messages.Data.Direction.fr
     , showRelatedItems = "Afficher les documents liés"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , dueOn = "期限："
+    , new = "新規"
+    , openAttachmentFile = "添付ファイルを開く"
+    , gotoDetail = "詳細表示へ移動"
+    , cycleAttachments = "添付ファイルのサイクル"
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.Japanese tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.Japanese tz
+    , directionLabel = Messages.Data.Direction.ja
+    , showRelatedItems = "リンクされたアイテムを表示"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.ShareForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -55,4 +56,15 @@ fr =
     , password = "Mot de passe"
     , publishUntil = "Publié jusqu'au"
     , clearPassword = "Supprimer le mot de passe"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , queryLabel = "検索"
+    , enabled = "有効"
+    , password = "パスワード"
+    , publishUntil = "公開期限"
+    , clearPassword = "パスワードを削除"
     }

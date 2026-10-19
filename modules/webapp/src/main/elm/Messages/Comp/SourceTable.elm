@@ -9,6 +9,7 @@ module Messages.Comp.SourceTable exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -59,4 +60,16 @@ fr =
     , priority = "Priorité"
     , id = "Id"
     , show = "Montrer"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , abbrev = "略称"
+    , enabled = "有効"
+    , counter = "カウンター"
+    , priority = "優先度"
+    , id = "ID"
+    , show = "表示"
     }
