@@ -349,7 +349,9 @@ object MigrateCollectiveIdTaskArgs extends TransactorSupport {
             tags = oldArgs.meta.tags,
             reprocess = oldArgs.meta.reprocess,
             attachmentsOnly = oldArgs.meta.attachmentsOnly,
-            customData = None
+            customData = None,
+            process = None,
+            runAddons = None
           ),
           oldArgs.files.map(f =>
             ProcessItemArgs
