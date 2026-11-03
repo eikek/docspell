@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.UploadForm exposing (Texts, de, fr, gb)
+module Messages.Comp.UploadForm exposing (Texts, de, fr
+    , ja, gb)
 
 import Data.Language exposing (Language)
 import Messages.Basics
@@ -137,4 +138,35 @@ fr =
     , flattenArchives = "Décompresser les fichiers ZIP dans des documents séparés au lieu de créer un document avec plusieurs pièces jointes."
     , priority = "Priorité"
     , priorityInfo = "Ordre de priorité utilisé par le programmateur lors du traitement des fichiers envoyés."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , dropzone = Messages.Comp.Dropzone.ja
+    , reset = "リセット"
+    , allFilesOneItem = "すべてのファイルが1つのアイテムとして扱われます"
+    , skipExistingFiles = "Docspellに既に存在するファイルはスキップします"
+    , language = "言語"
+    , languageInfo = "テキスト抽出および分析に使用されます。コレクションの "
+            ++ "指定しない場合は、コレクションの既定言語が使われます。"
+    , uploadErrorMessage = "一部のファイルのアップロード中にエラーが発生しました。"
+    , successBox =
+        { allFilesUploaded = "すべてのファイルをアップロードしました"
+        , line1 = "ファイルのアップロードが完了しました。 "
+                ++ "They are now being processed. Check the "
+        , itemsPage = "アイテムページ"
+        , line2 = " 後でファイルが届く場所です。または "
+        , processingPage = "処理ページ"
+        , line3 = " で現在の処理状況を確認してください。"
+        , resetLine1 = " をクリックして "
+        , reset = "リセット"
+        , resetLine2 = " 追加のファイルをアップロードします。"
+        }
+    , selectedFiles = "選択したファイル"
+    , languageLabel = Messages.Data.Language.ja
+    , flattenArchives = "zipファイルの内容を個別のアイテムとして展開します。複数の添付ファイルを含む単一のドキュメントとは異なります。"
+    , priority = "優先度"
+    , priorityInfo = "アップロードされたファイルの処理時にスケジューラーで使用される優先度です。"
     }

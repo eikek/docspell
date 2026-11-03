@@ -9,6 +9,7 @@ module Messages.Comp.NotificationMailForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -59,4 +60,16 @@ fr =
     , recipients = "Destinataire(s)"
     , recipientsInfo = "Une ou plusieurs adresses mail, confirmer chacune en pressant 'Entrée'"
     , recipientsRequired = "Au moins un destinataire est requis"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , selectConnection = "接続を選択..."
+    , sendVia = "送信方法"
+    , sendViaInfo = "通知メールを送信する際に使用するSMTP接続です。"
+    , recipients = "宛先"
+    , recipientsInfo = "1つ以上のメールアドレスを入力してください。各アドレスの入力後は「Return」キーを押して確定します。"
+    , recipientsRequired = "少なくとも1つの宛先が必要です。"
     }

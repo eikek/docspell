@@ -9,6 +9,7 @@ module Messages.Page.Register exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -93,4 +94,24 @@ fr =
     , registrationSuccessful = "Inscription accomplie."
     , passwordsDontMatch = "Les mots de passe ne correspondent pas."
     , allFieldsRequired = "Tous les champs sont requis !"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , signupToDocspell = "Docspellに登録する"
+    , collectiveId = "Collective ID"
+    , collective = "コレクション"
+    , userLogin = "ユーザーログイン"
+    , username = "ユーザー名"
+    , password = "パスワード"
+    , passwordRepeat = "パスワード（再入力）"
+    , invitationKey = "招待キー"
+    , alreadySignedUp = "すでに登録済みですか？"
+    , signIn = "サインイン"
+    , registrationSuccessful = "登録が完了しました。"
+    , passwordsDontMatch = "パスワードが一致しません。"
+    , allFieldsRequired = "すべての項目を入力してください！"
     }

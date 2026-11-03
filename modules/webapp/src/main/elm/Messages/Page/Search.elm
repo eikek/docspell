@@ -9,6 +9,7 @@ module Messages.Page.Search exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -263,4 +264,65 @@ fr tz =
     , linkItemsHeader = "Lier des documents"
     , downloadAll = "Télécharger tout"
     , downloadAllQueryNeeded = "Tout ne peut pas être téléchargé, il faut chercher quelque chose."
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , itemCardList = Messages.Comp.ItemCardList.ja tz
+    , searchStatsView = Messages.Comp.SearchStatsView.ja
+    , sideMenu = Messages.Page.SearchSideMenu.ja
+    , itemMerge = Messages.Comp.ItemMerge.ja tz
+    , publishItems = Messages.Comp.PublishItems.ja tz
+    , bookmarkManage = Messages.Comp.BookmarkQueryManage.ja
+    , downloadAllComp = Messages.Comp.DownloadAll.ja
+    , contentSearch = "内容検索…"
+    , searchInNames = "名前から検索…"
+    , selectModeTitle = "モードを選択"
+    , fullHeightPreviewTitle = "全画面プレビュー"
+    , fullWidthPreviewTitle = "横幅最大プレビュー"
+    , powerSearchPlaceholder = "検索クエリ …"
+    , reallyReprocessQuestion = "選択したすべてのアイテムを再処理しますか？未確認のアイテムのメタデータが変更される可能性があります。"
+    , reallyDeleteQuestion = "選択したすべてのアイテムを本当に削除しますか？"
+    , reallyRestoreQuestion = "選択したすべてのアイテムを本当に復元しますか？"
+    , editSelectedItems = \n -> "編集 " ++ String.fromInt n ++ " 選択済みアイテム"
+    , reprocessSelectedItems = \n -> "再処理 " ++ String.fromInt n ++ " 選択済みアイテム"
+    , deleteSelectedItems = \n -> "削除 " ++ String.fromInt n ++ " 選択済みアイテム"
+    , undeleteSelectedItems = \n -> "復元 " ++ String.fromInt n ++ " 選択済みアイテム"
+    , selectAllVisible = "表示されているものをすべて選択"
+    , selectNone = "なしを選択"
+    , resetSearchForm = "検索フォームをリセット"
+    , exitSelectMode = "選択モードを終了"
+    , mergeItemsTitle = \n -> "マージ " ++ String.fromInt n ++ " 選択済みアイテム"
+    , publishItemsTitle = \n -> "公開 " ++ String.fromInt n ++ " 選択済みアイテム"
+    , publishCurrentQueryTitle = "現在の結果を公開"
+    , shareResults = "共有結果"
+    , nothingSelectedToShare = "すべてを共有することはできません。条件を指定してください。"
+    , loadMore = "さらに読み込む…"
+    , thatsAll = "以上です"
+    , showItemGroups = "月ごとにグループ化"
+    , listView = "リスト表示"
+    , tileView = "タイル表示"
+    , expandCollapseRows = "すべて展開/折りたたみ"
+    , bookmarkQuery = "クエリをブックマーク"
+    , nothingToBookmark = "ブックマークする項目が選択されていません"
+    , submitMerge = "マージ"
+    , mergeInfoText = "アイテムをマージする場合、リストの最初のアイテムがターゲットとなります。その他のすべてのアイテムのメタデータはターゲットアイテムにコピーされます。単一の値のプロパティ（対応者など）については、まだ設定されていない場合のみ上書きされます。タグ、カスタムフィールド、添付ファイルは追加されます。アイテムはドラッグ&ドロップで並べ替えることができます。"
+    , mergeDeleteWarn = "マージに成功すると、最初の項目以外のすべてが削除されることに注意してください！"
+    , submitMergeTitle = "今すぐドキュメントをマージします"
+    , cancelMergeTitle = "ビュー選択に戻る"
+    , mergeSuccessful = "アイテムを正常に統合しました"
+    , mergeInProcess = "アイテムを統合中 …"
+    , linkItemsTitle = \n -> "リンク " ++ String.fromInt n ++ " アイテム"
+    , linkItemsMessage = "リストには少なくとも2つのアイテムが必要です。最初のものが対象アイテムとなり、残りのすべてがその関連アイテムリストに追加されます。"
+    , submitLinkItems = "リンク"
+    , submitLinkItemsTitle = ""
+    , cancelLinkItemsTitle = ""
+    , linkItemsSuccessful = "アイテムのリンクに成功しました"
+    , linkItemsInProcess = "アイテムをリンク中 ..."
+    , mergeHeader = "アイテムをマージ"
+    , linkItemsHeader = "アイテムをリンク"
+    , downloadAll = "すべてダウンロード"
+    , downloadAllQueryNeeded = "ダウンロード対象を絞り込むための条件を適用します。"
     }

@@ -9,6 +9,7 @@ module Messages.Comp.ChannelForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -55,4 +56,14 @@ fr =
     , gotifyForm = Messages.Comp.NotificationGotifyForm.fr
     , mailForm = Messages.Comp.NotificationMailForm.fr
     , httpForm = Messages.Comp.NotificationHttpForm.fr
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , matrixForm = Messages.Comp.NotificationMatrixForm.ja
+    , gotifyForm = Messages.Comp.NotificationGotifyForm.ja
+    , mailForm = Messages.Comp.NotificationMailForm.ja
+    , httpForm = Messages.Comp.NotificationHttpForm.ja
     }

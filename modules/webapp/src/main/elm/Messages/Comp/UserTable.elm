@@ -9,6 +9,7 @@ module Messages.Comp.UserTable exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -66,4 +67,17 @@ fr tz =
     , logins = "Connexions"
     , lastLogin = "Dernière connexion"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , login = "ログイン"
+    , state = "状態"
+    , source = "タイプ"
+    , email = "E-Mail"
+    , logins = "ログイン情報"
+    , lastLogin = "最終ログイン"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.Japanese tz
     }

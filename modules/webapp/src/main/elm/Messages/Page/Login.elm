@@ -9,6 +9,7 @@ module Messages.Page.Login exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -96,4 +97,24 @@ fr =
     , otpCode = "Code d'authentification"
     , or = "Ou"
     , oidcLogoutPending = "You have been logged out from Docspell, but you may still be logged in at your authentication provider! Make sure to logout there as well, or login again by clicking the link below."
+    }
+
+
+ja : Texts
+ja =
+    { httpError = Messages.Comp.HttpError.ja
+    , loginToDocspell = "Docspellにログイン"
+    , username = "ユーザー名"
+    , collectiveSlashLogin = "Collective / ログイン"
+    , password = "パスワード"
+    , rememberMe = "ログイン状態を保持する"
+    , loginPlaceholder = "ログイン"
+    , passwordPlaceholder = "パスワード"
+    , loginButton = "ログイン"
+    , loginSuccessful = "ログインに成功しました"
+    , noAccount = "アカウントをお持ちでないですか？"
+    , signupLink = "新規登録！"
+    , otpCode = "認証コード"
+    , or = "または"
+    , oidcLogoutPending = "Docspellからログアウトしましたが、認証プロバイダー側でログイン状態が維持されている可能性があります。そちらでもログアウトするか、下のリンクをクリックして再度ログインしてください。"
     }

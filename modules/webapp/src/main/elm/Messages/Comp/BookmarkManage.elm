@@ -9,6 +9,7 @@ module Messages.Comp.BookmarkManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -79,4 +80,20 @@ fr =
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire"
     , userBookmarks = "Favoris personnels"
     , collectiveBookmarks = "Favoris de groupe"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , bookmarkTable = Messages.Comp.BookmarkTable.ja
+    , bookmarkForm = Messages.Comp.BookmarkQueryForm.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , newBookmark = "新しいブックマーク"
+    , reallyDeleteBookmark = "このブックマークを本当に削除しますか？"
+    , createNewBookmark = "新しいブックマークを作成"
+    , deleteThisBookmark = "このブックマークを削除"
+    , correctFormErrors = "フォームの入力内容を修正してください。"
+    , userBookmarks = "個人のブックマーク"
+    , collectiveBookmarks = "共有のブックマーク"
     }

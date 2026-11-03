@@ -9,6 +9,7 @@ module Messages.Comp.DueItemsTaskForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -179,4 +180,45 @@ fr tz =
     , queryLabel = "Requête"
     , channelRequired = "Un canal valide doit être entré."
     , channelHeader = "Canaux"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , calEventInput = Messages.Comp.CalEventInput.ja tz
+    , httpError = Messages.Comp.HttpError.ja
+    , channelForm = Messages.Comp.ChannelForm.ja
+    , tagDropdown = Messages.Comp.TagDropdown.ja
+    , channelType = Messages.Data.ChannelType.ja
+    , channelRef = Messages.Comp.ChannelRefInput.ja
+    , reallyDeleteTask = "この通知タスクを本当に削除しますか？"
+    , startOnce = "一度だけ実行"
+    , startTaskNow = "このタスクを今すぐ開始"
+    , deleteThisTask = "このタスクを削除"
+    , enableDisable = "このタスクを有効または無効にします。"
+    , summary = "概要"
+    , summaryInfo = "表示用の人間が読める名前"
+    , tagsInclude = "含めるタグ (AND)"
+    , tagsIncludeInfo = "アイテムにはここに指定されたすべてのタグが含まれている必要があります。"
+    , tagsExclude = "除外するタグ (OR)"
+    , tagsExcludeInfo = "アイテムにはここに指定されたタグが含まれていてはいけません。"
+    , remindDaysLabel = "リマインド日数"
+    , remindDaysInfo = "`today+remindDays` より*前の*期限のアイテムを選択"
+    , capOverdue = "期限切れのアイテムをキャプチャ"
+    , capOverdueInfo = "チェックを入れると、期限が `今日 - remindDays` より*大きい*アイテムのみが対象となります。"
+    , schedule = "スケジュール"
+    , scheduleClickForHelp = "ヘルプはこちらをクリック"
+    , scheduleInfo =
+        "このタスクを実行する頻度と時間を指定します。 "
+            ++ "英語の3文字の曜日を使用します。単一の値、または "
+            ++ "リスト（例：1,2,3）、範囲（例：1..3）、または「*」（すべてを意味する） "
+            ++ "各パートに対して許可されます。"
+    , connectionMissing = "E-Mail接続が設定されていません。E-Mail設定から追加してください。"
+    , invalidCalEvent = "カレンダーイベントが無効です。"
+    , remindDaysRequired = "Remind-Daysは必須項目です。"
+    , recipientsRequired = "少なくとも1人の受信者が必要です。"
+    , queryLabel = "クエリ"
+    , channelRequired = "有効なチャンネルを指定してください。"
+    , channelHeader = "チャンネル"
     }

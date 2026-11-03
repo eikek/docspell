@@ -9,6 +9,7 @@ module Messages.Comp.ShareTable exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -54,4 +55,14 @@ fr tz =
     , active = "Actif"
     , publishUntil = "Publié jusqu'au"
     , user = "Utilisateur"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.Japanese tz
+    , active = "アクティブ"
+    , publishUntil = "公開期限"
+    , user = "ユーザー"
     }

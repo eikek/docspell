@@ -9,6 +9,7 @@ module Messages.Comp.PeriodicQueryTaskManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -97,4 +98,24 @@ fr tz =
     , gotify = "Gotify"
     , email = "E-Mail"
     , httpRequest = "Requête HTTP"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , notificationForm = Messages.Comp.PeriodicQueryTaskForm.ja tz
+    , notificationTable = Messages.Comp.PeriodicQueryTaskList.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , channelType = Messages.Data.ChannelType.ja
+    , newTask = "新しいタスク"
+    , createNewTask = "新しい通知タスクを作成"
+    , taskCreated = "タスクを作成しました。"
+    , taskUpdated = "タスクを更新しました。"
+    , taskStarted = "タスクを開始しました。"
+    , taskDeleted = "タスクを削除しました。"
+    , matrix = "Matrix"
+    , gotify = "Gotify"
+    , email = "E-Mail"
+    , httpRequest = "HTTPリクエスト"
     }

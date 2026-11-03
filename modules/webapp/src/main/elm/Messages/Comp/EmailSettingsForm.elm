@@ -9,6 +9,7 @@ module Messages.Comp.EmailSettingsForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -101,4 +102,26 @@ fr =
     , replyToPlaceholder = "Adresse de réponse optionnelle"
     , ssl = "SSL"
     , ignoreCertCheck = "Ignorer la vérification des certificats"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , sslTypeLabel = Messages.Data.SSLType.ja
+    , connectionPlaceholder = "接続名（例: 'gmail.com'）"
+    , connectionNameInfo = "接続名には空白や特殊文字を含めないでください。"
+    , smtpHost = "SMTPホスト"
+    , smtpHostPlaceholder = "SMTPホスト名（例: 'mail.gmail.com'）"
+    , smtpPort = "SMTPポート"
+    , smtpUser = "SMTPユーザー"
+    , smtpUserPlaceholder = "SMTPユーザー名（例: 'your.name@gmail.com'）"
+    , smtpPassword = "SMTPパスワード"
+    , smtpPasswordPlaceholder = "パスワード"
+    , fromAddress = "送信元アドレス"
+    , fromAddressPlaceholder = "送信元Eメールアドレス"
+    , replyTo = "返信先"
+    , replyToPlaceholder = "任意：返信先Eメールアドレス"
+    , ssl = "SSL"
+    , ignoreCertCheck = "証明書チェックを無視する"
     }

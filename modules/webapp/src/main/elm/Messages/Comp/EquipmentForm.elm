@@ -9,6 +9,7 @@ module Messages.Comp.EquipmentForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -57,4 +58,15 @@ fr =
     , useNotSuggestions = "Ignorer dans les suggestions."
     , equipmentUseLabel = Messages.Data.EquipmentUse.fr
     , notes = "Notes"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , use = "使用"
+    , useAsConcerning = "関連機器として使用"
+    , useNotSuggestions = "提案には使用しないでください。"
+    , equipmentUseLabel = Messages.Data.EquipmentUse.ja
+    , notes = "備考"
     }

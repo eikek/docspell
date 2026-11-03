@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Comp.BoxEdit exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxEdit exposing (Texts, de, fr
+    , ja, gb)
 
 import Messages.Basics
 import Messages.Comp.BoxMessageEdit
@@ -91,4 +92,24 @@ fr =
     , moveToLeft = "Déplacer à gauche"
     , moveToRight = "Déplacer à droite"
     , deleteBox = "Supprimer la boite"
+    }
+
+
+ja : Texts
+ja =
+    { messageEdit = Messages.Comp.BoxMessageEdit.ja
+    , uploadEdit = Messages.Comp.BoxUploadEdit.ja
+    , queryEdit = Messages.Comp.BoxQueryEdit.ja
+    , statsEdit = Messages.Comp.BoxStatsEdit.ja
+    , boxContent = Messages.Data.BoxContent.ja
+    , basics = Messages.Basics.ja
+    , namePlaceholder = "ボックス名"
+    , visible = "表示"
+    , decorations = "ボックスの装飾"
+    , colspan = "列の幅"
+    , contentProperties = "コンテンツ"
+    , reallyDeleteBox = "このボックスを本当に削除しますか？"
+    , moveToLeft = "左へ移動"
+    , moveToRight = "右へ移動"
+    , deleteBox = "ボックスを削除"
     }

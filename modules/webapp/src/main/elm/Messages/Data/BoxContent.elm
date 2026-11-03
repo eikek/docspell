@@ -5,7 +5,8 @@
 -}
 
 
-module Messages.Data.BoxContent exposing (Texts, de, fr, gb)
+module Messages.Data.BoxContent exposing (Texts, de, fr
+    , ja, gb)
 
 import Data.BoxContent exposing (BoxContent(..))
 
@@ -69,4 +70,15 @@ fr =
         , statsBox = "Boite de statistique"
         , messageBox = "Boite de message"
         , uploadBox = "Boite d'envoi"
+        }
+
+
+ja : Texts
+ja =
+    updateForContent
+        { forContent = \_ -> ""
+        , queryBox = "検索ボックス"
+        , statsBox = "統計ボックス"
+        , messageBox = "メッセージボックス"
+        , uploadBox = "アップロードボックス"
         }

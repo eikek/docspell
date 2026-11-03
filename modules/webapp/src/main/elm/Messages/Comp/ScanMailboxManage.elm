@@ -9,6 +9,7 @@ module Messages.Comp.ScanMailboxManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -76,4 +77,19 @@ fr tb =
     , taskUpdated = "Tâche mise à jour"
     , taskStarted = "Tâche démarrée."
     , taskDeleted = "Tâche supprimée."
+    }
+
+
+ja : TimeZone -> Texts
+ja tb =
+    { basics = Messages.Basics.ja
+    , form = Messages.Comp.ScanMailboxForm.ja tb
+    , table = Messages.Comp.ScanMailboxTable.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , newTask = "新しいタスク"
+    , createNewTask = "新しいスキャンメールボックスタスクを作成"
+    , taskCreated = "タスクを作成しました。"
+    , taskUpdated = "タスクを更新しました。"
+    , taskStarted = "タスクを開始しました。"
+    , taskDeleted = "タスクを削除しました。"
     }

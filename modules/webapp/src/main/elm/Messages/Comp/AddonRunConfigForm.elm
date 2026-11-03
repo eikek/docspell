@@ -9,6 +9,7 @@ module Messages.Comp.AddonRunConfigForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -105,4 +106,26 @@ fr tz =
     , argumentsUpdated = "Arguments updated"
     , configureTitle = "Configure this addon"
     , configureLabel = "Configure"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , calEventInput = Messages.Comp.CalEventInput.ja tz
+    , enableDisable = "この実行構成を有効または無効にします。"
+    , chooseName = "名前を選択…"
+    , impersonateUser = "ユーザーの代わりに実行"
+    , triggerRun = "実行"
+    , schedule = "スケジュール"
+    , addons = "アドオン"
+    , includedAddons = "含まれるアドオン"
+    , add = "追加"
+    , readMore = "もっと見る"
+    , readLess = "表示を減らす"
+    , arguments = "引数"
+    , update = "更新"
+    , argumentsUpdated = "引数を更新しました"
+    , configureTitle = "このアドオンを設定する"
+    , configureLabel = "設定"
     }

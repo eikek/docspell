@@ -9,6 +9,7 @@ module Messages.Page.UserSettings exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -247,4 +248,59 @@ moins un canal de communication.
     , periodicQueryInfoText = "Des requêtes périodiques peuvent être définies."
     , channels = "Canaux de notification"
     , channelInfoText = "Les canaux sont utilisés pour envoyer des messages de notification."
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , changePasswordForm = Messages.Comp.ChangePasswordForm.ja
+    , uiSettingsManage = Messages.Comp.UiSettingsManage.ja
+    , emailSettingsManage = Messages.Comp.EmailSettingsManage.ja
+    , imapSettingsManage = Messages.Comp.ImapSettingsManage.ja
+    , notificationManage = Messages.Comp.DueItemsTaskManage.ja tz
+    , scanMailboxManage = Messages.Comp.ScanMailboxManage.ja tz
+    , notificationHookManage = Messages.Comp.NotificationHookManage.ja
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.ja tz
+    , channelManage = Messages.Comp.NotificationChannelManage.ja
+    , otpSetup = Messages.Comp.OtpSetup.ja tz
+    , userSettings = "ユーザー設定"
+    , uiSettings = "UI設定"
+    , notifications = "通知"
+    , scanMailbox = "メールボックスをスキャン"
+    , emailSettingSmtp = "E-Mail設定 (SMTP)"
+    , emailSettingImap = "E-Mail設定 (IMAP)"
+    , changePassword = "パスワードの変更"
+    , channelSettings = "通知チャンネル"
+    , uiSettingsInfo =
+        "これらの設定はWeb UIのみに影響します。設定はコレクティブまたは個人のユーザーに保存できます。両方の値が存在する場合、個人の設定が優先されます。"
+    , scanMailboxInfo1 =
+        "Docspellはメールボックスのフォルダをスキャンして、メールをインポートできます。 "
+            ++ "接続情報を入力してください： "
+            ++ "お使いのe-mail（IMAP）設定"
+    , scanMailboxInfo2 =
+        """\n            Docspellは、設定されたすべてのフォルダをスキャンし、検索条件に\n            一致するメールをインポートします。以前の実行ですでにインポートされ、\n            対応するアイテムがまだ存在する場合、そのメールはスキップされます。\n            Docspellへのメール送信後、別のフォルダへの移動、削除、またはそのまま\n            にするかを選択できます。後者の場合、同じメールを再度読み込まないよう\n            スケジュールを調整する必要があります。"""
+    , otpMenu = "2要素認証"
+    , dueItems = "期限切れアイテムの照会"
+    , notificationInfoText = """
+
+Docspell can send notification messages on various events. You can
+choose from these channels to send messages:
+[Matrix](https://matrix.org), [Gotify](https://gotify.net) or E-Mail.
+At last you can send a plain http request with the event details in
+its payload.
+
+Additionally, you can setup queries that are executed periodically.
+The results are send as a notification message.
+
+A notification setting needs at least one communication channel, which
+must be created before.
+
+"""
+    , webhookInfoText = """Webhooks execute http request upon certain events in docspell.
+"""
+    , dueItemsInfoText = """Docspell can notify you once the due dates of your items come closer.  """
+    , periodicQueryInfoText = "You can define a custom query that gets executed periodically."
+    , channels = "通知チャンネル"
+    , channelInfoText = "Channels are used to send notification messages."
     }

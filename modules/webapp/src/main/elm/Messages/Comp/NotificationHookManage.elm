@@ -9,6 +9,7 @@ module Messages.Comp.NotificationHookManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -104,4 +105,26 @@ fr =
     , invalidJsonFilter = \m -> "Filtre d'événement invalide " ++ m
     , updateWebhook = "Mettre à jour le webhook"
     , addWebhook = "Ajouter un webhook"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , notificationForm = Messages.Comp.NotificationHookForm.ja
+    , notificationTable = Messages.Comp.NotificationHookTable.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , channelType = Messages.Data.ChannelType.ja
+    , newHook = "新しいWebhook"
+    , httpRequest = "HTTPリクエスト"
+    , hookCreated = "Webhookを作成しました"
+    , hookUpdated = "Webhookを更新しました"
+    , hookStarted = "Webhookを実行しました"
+    , hookDeleted = "Webhookを削除しました"
+    , deleteThisHook = "このWebhookを削除する"
+    , reallyDeleteHook = "本当にこのWebhookを削除しますか？"
+    , formInvalid = "必須項目をすべて入力してください"
+    , invalidJsonFilter = \m -> "Event filter invalid: " ++ m
+    , updateWebhook = "Webhookを更新"
+    , addWebhook = "新しいWebhookを追加"
     }

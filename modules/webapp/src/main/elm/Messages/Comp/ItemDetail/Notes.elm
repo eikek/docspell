@@ -9,6 +9,7 @@ module Messages.Comp.ItemDetail.Notes exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -47,4 +48,13 @@ fr =
     , notes = "Notes"
     , preview = "Aperçu"
     , supportsMarkdown = "Markdown supporté"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , notes = "メモ"
+    , preview = "プレビュー"
+    , supportsMarkdown = "Markdown対応"
     }

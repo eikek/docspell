@@ -9,6 +9,7 @@ module Messages.Comp.BookmarkQueryManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -54,4 +55,14 @@ fr =
     , httpError = Messages.Comp.HttpError.fr
     , formInvalid = "Veuillez corriger les erreurs du formulaire"
     , saved = "Favori enregistré"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , form = Messages.Comp.BookmarkQueryForm.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , formInvalid = "フォームの入力内容を修正してください"
+    , saved = "ブックマークを保存しました"
     }

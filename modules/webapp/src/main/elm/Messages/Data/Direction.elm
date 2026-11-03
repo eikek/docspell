@@ -8,6 +8,7 @@
 module Messages.Data.Direction exposing
     ( de
     , fr
+    , ja
     , gb
     )
 
@@ -42,3 +43,13 @@ fr dir =
 
         Outgoing ->
             "Sortant"
+
+
+ja : Direction -> String
+ja dir =
+    case dir of
+        Incoming ->
+            "受信"
+
+        Outgoing ->
+            "送信済み"

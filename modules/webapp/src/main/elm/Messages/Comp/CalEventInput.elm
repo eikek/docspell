@@ -9,6 +9,7 @@ module Messages.Comp.CalEventInput exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -79,4 +80,20 @@ fr tz =
     , next = "Suivant"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
     , httpError = Messages.Comp.HttpError.fr
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { weekday = "曜日"
+    , year = "年"
+    , month = "月"
+    , day = "曜日"
+    , hour = "時"
+    , minute = "分"
+    , error = "エラー"
+    , schedule = "スケジュール"
+    , next = "次へ"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.Japanese tz
+    , httpError = Messages.Comp.HttpError.ja
     }

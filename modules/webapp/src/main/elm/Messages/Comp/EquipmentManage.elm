@@ -9,6 +9,7 @@ module Messages.Comp.EquipmentManage exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -71,4 +72,18 @@ fr =
     , reallyDeleteEquipment = "Confirmer la suppression de l'équipement ?"
     , deleteThisEquipment = "Supprimer cet équipement"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , equipmentTable = Messages.Comp.EquipmentTable.ja
+    , equipmentForm = Messages.Comp.EquipmentForm.ja
+    , httpError = Messages.Comp.HttpError.ja
+    , createNewEquipment = "新しい機器を作成する"
+    , newEquipment = "新規機器"
+    , reallyDeleteEquipment = "この機器を本当に削除しますか？"
+    , deleteThisEquipment = "この機器を削除"
+    , correctFormErrors = "フォームの誤りを修正してください。"
     }

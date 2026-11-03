@@ -9,6 +9,7 @@ module Messages.Data.EventType exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -105,4 +106,33 @@ fr et =
         JobDone ->
             { name = "Tâche terminée"
             , info = "Quand une tâche est terminée"
+            }
+
+
+ja : EventType -> Texts
+ja et =
+    case et of
+        TagsChanged ->
+            { name = "タグを変更しました"
+            , info = "アイテムのタグが追加または削除されるたびに"
+            }
+
+        SetFieldValue ->
+            { name = "フィールド値を設定"
+            , info = "カスタムフィールドに値が設定されるたびに"
+            }
+
+        DeleteFieldValue ->
+            { name = "フィールド値を削除"
+            , info = "カスタムフィールドが削除されるたびに"
+            }
+
+        JobSubmitted ->
+            { name = "送信済み"
+            , info = "新しいジョブが送信されるたびに"
+            }
+
+        JobDone ->
+            { name = "完了しました"
+            , info = "新しいジョブが完了するたびに"
             }

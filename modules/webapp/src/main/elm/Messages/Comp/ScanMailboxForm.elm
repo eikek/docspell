@@ -9,6 +9,7 @@ module Messages.Comp.ScanMailboxForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -334,4 +335,91 @@ fr tz =
     , save = "Enregistrer"
     , saveNewTitle = "Enregistrer une nouvelle tâche"
     , updateTitle = "Mettre à jour la tâche"
+    }
+
+
+ja : TimeZone -> Texts
+ja tz =
+    { basics = Messages.Basics.ja
+    , calEventInput = Messages.Comp.CalEventInput.ja tz
+    , httpError = Messages.Comp.HttpError.ja
+    , tagDropdown = Messages.Comp.TagDropdown.ja
+    , reallyDeleteTask = "このスキャンメールボックスタスクを本当に削除しますか？"
+    , startOnce = "一度だけ実行"
+    , startNow = "このタスクを今すぐ開始"
+    , deleteThisTask = "このタスクを削除"
+    , generalTab = "全般"
+    , processingTab = "処理中"
+    , additionalFilterTab = "追加フィルタ"
+    , postProcessingTab = "後処理"
+    , metadataTab = "メタデータ"
+    , scheduleTab = "スケジュール"
+    , processingTabInfo = "これらの設定は、メールサーバーからどのメールを取得するかを定義します。"
+    , additionalFilterTabInfo = "これらのフィルターは、インポートするメールを選択するために、メールボックスから取得されたメールに適用されます。"
+    , postProcessingTabInfo = "これはダウンロードされたメールの処理内容を定義します。"
+    , metadataTabInfo = "このタスクで作成されるすべてのアイテムに付与するメタデータを定義します。"
+    , scheduleTabInfo = "メールのインポート時間を定義します。"
+    , selectConnection = "接続を選択..."
+    , enableDisable = "このタスクを有効または無効にします。"
+    , mailbox = "メールボックス"
+    , summary = "概要"
+    , summaryInfo = "表示用の人間が読める名前"
+    , connectionInfo = "メール取得に使用するIMAP接続です。"
+    , folders = "フォルダ"
+    , foldersInfo = "メールを検索するフォルダ。"
+    , receivedHoursInfo = "`now - receivedHours` より新しいメールを選択"
+    , receivedHoursLabel = "受信からの時間"
+    , fileFilter = "ファイルフィルター"
+    , fileFilterInfo =
+        "添付ファイルをフィルタリングするためのファイルグロブを指定してください。例：pdfファイルのみを抽出する場合： "
+            ++ "`*.pdf`。メール本文を含める場合は、htmlファイルまたは "
+            ++ "`mail.html`です。ワイルドカードは次のようにORで結合できます： "
+            ++ "`*.pdf|mail.html`を許可します。ファイルフィルタを指定しない場合のデフォルトは "
+            ++ "すべてを含む `*` "
+    , subjectFilter = "件名フィルタ"
+    , subjectFilterInfo =
+        "件名でメールをフィルタリングするためのファイルグロブを指定します。例: "
+            ++ "`*Scanned Document*`です。ファイルフィルタを指定しない場合のデフォルトはすべてを含む `*` です。"
+    , postProcessingLabel = "取得したすべてのメールに後処理を適用します。"
+    , postProcessingInfo =
+        "メールは取得されたが「追加フィルター」によりインポートされなかった場合、このフラグを "
+            ++ "これらをターゲットフォルダに移動するか削除するか（ここで定義された内容を） "
+            ++ "制御します。チェックを外している場合、インポートされたメールのみ "
+            ++ "が後処理され、それ以外は元の場所に残ります。"
+    , targetFolder = "対象フォルダ"
+    , targetFolderInfo = "メールをこのフォルダに移動します。"
+    , deleteMailLabel = "インポートしたメールを削除"
+    , deleteMailInfo =
+        "Docspellによって取得されたすべてのメールを削除するかどうか。これは…にのみ適用されます。 "
+            ++ "*対象フォルダ*が設定されていません。"
+    , itemDirection = "アイテム方向"
+    , automatic = "自動"
+    , itemDirectionInfo =
+        "項目の方向を設定します。すべてのメールが受信のみ、または "
+            ++ "送信時については、ここで設定できます。それ以外の場合は、内容から推測されます。 "
+            ++ "送信者と受信者の両方で。"
+    , itemFolder = "アイテムフォルダ"
+    , itemFolderInfo = "このメールボックスのすべてのアイテムを選択したフォルダに移動"
+    , tagsInfo = "アイテムに適用するタグを選択してください。"
+    , documentLanguage = "言語"
+    , documentLanguageInfo =
+        "テキスト抽出およびテキスト分析に使用されます。この "
+            ++ "ここで指定されない場合は、組織のデフォルト言語が使用されます。"
+    , scanRecursivelyInfo = "指定されたフォルダのサブフォルダ内もスキャンします。"
+    , scanRecursivelyLabel = "フォルダを再帰的にスキャン"
+    , schedule = "スケジュール"
+    , scheduleClickForHelp = "ヘルプはこちらをクリック"
+    , scheduleInfo =
+        "このタスクを実行する頻度と時間を指定します。 "
+            ++ "英語の3文字の曜日を使用します。単一の値、または "
+            ++ "リスト（例：1,2,3）、範囲（例：1..3）、または「*」（すべてを意味する） "
+            ++ "各パートに対して許可されます。"
+    , connectionMissing = "E-Mail接続が設定されていません。E-Mail設定から追加してください。"
+    , noProcessingFolders = "処理対象のフォルダが指定されていません。"
+    , invalidCalEvent = "カレンダーイベントが無効です。"
+    , attachmentsOnlyLabel = "メールの添付ファイルのみをインポート"
+    , attachmentsOnlyInfo = "メール本文を破棄し、添付ファイルのみをインポートします。"
+    , save = "保存"
+    , saveNewTitle = "新しいタスクを保存"
+    , updateTitle = "タスクを更新する"
     }

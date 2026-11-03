@@ -9,6 +9,7 @@ module Messages.Comp.UserForm exposing
     ( Texts
     , de
     , fr
+    , ja
     , gb
     )
 
@@ -51,4 +52,14 @@ fr =
     , state = "Etat"
     , email = "E-Mail"
     , password = "Mot de passe"
+    }
+
+
+ja : Texts
+ja =
+    { basics = Messages.Basics.ja
+    , login = "ログイン"
+    , state = "状態"
+    , email = "メールアドレス"
+    , password = "パスワード"
     }
