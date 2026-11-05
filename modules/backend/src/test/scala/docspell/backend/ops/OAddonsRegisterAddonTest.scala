@@ -29,7 +29,8 @@ class OAddonsRegisterAddonTest extends DatabaseTest {
     val store = h2Store()
     // Closed port: a download-first bug would surface as DownloadFailed, not UrlUntrusted.
     val url = LenientUri.unsafe("http://127.0.0.1:1/internal/metadata/secret.zip")
-    val addons = OAddons[IO](restrictedAddons, store, unusedUserTasks, unusedJobStore, unusedJoex)
+    val addons =
+      OAddons[IO](restrictedAddons, store, unusedUserTasks, unusedJobStore, unusedJoex)
 
     for {
       cid <- prepareCollective(store)
@@ -86,8 +87,12 @@ class OAddonsRegisterAddonTest extends DatabaseTest {
         OptionT.liftF(IO.raiseError(new Exception("user tasks must not be used")))
       def getOneByName[A](scope: UserTaskScope, name: Ident)(implicit D: Decoder[A]) =
         OptionT.liftF(IO.raiseError(new Exception("user tasks must not be used")))
-      def updateOneTask[A](scope: UserTaskScope, subject: Option[String], ut: UserTask[A])(
-          implicit E: Encoder[A]
+      def updateOneTask[A](
+          scope: UserTaskScope,
+          subject: Option[String],
+          ut: UserTask[A]
+      )(implicit
+          E: Encoder[A]
       ) = IO.raiseError(new Exception("user tasks must not be used"))
       def deleteAll(scope: UserTaskScope, name: Ident) =
         IO.raiseError(new Exception("user tasks must not be used"))

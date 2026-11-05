@@ -28,7 +28,8 @@ class AddonValidateTest extends CatsEffectSuite {
   }
 
   test("checkTrusted accepts allowed urls") {
-    val url = LenientUri.unsafe("https://github.com/eikek/docspell-addons/archive/main.zip")
+    val url =
+      LenientUri.unsafe("https://github.com/eikek/docspell-addons/archive/main.zip")
     val validate = new AddonValidate[IO](restrictedAddons, unusedStore, unusedJoex)
     validate.checkTrusted(url).map { res =>
       assertEquals(res, Right(()))
@@ -54,7 +55,8 @@ class AddonValidateTest extends CatsEffectSuite {
   }
 
   test("checkTrusted rejects when addons are disabled") {
-    val url = LenientUri.unsafe("https://github.com/eikek/docspell-addons/archive/main.zip")
+    val url =
+      LenientUri.unsafe("https://github.com/eikek/docspell-addons/archive/main.zip")
     val cfg = restrictedAddons.copy(enabled = false)
     val validate = new AddonValidate[IO](cfg, unusedStore, unusedJoex)
     validate.checkTrusted(url).map { res =>
@@ -74,7 +76,9 @@ class AddonValidateTest extends CatsEffectSuite {
     new Store[IO] {
       def transform = fail("store must not be used")
       def transact[A](prg: doobie.ConnectionIO[A]) = fail("store must not be used")
-      def transact[A](prg: Stream[doobie.ConnectionIO, A]) = fail("store must not be used")
+      def transact[A](prg: Stream[doobie.ConnectionIO, A]) = fail(
+        "store must not be used"
+      )
       def fileRepo = fail("store must not be used")
       def createFileRepository(
           cfg: docspell.store.file.FileRepositoryConfig,
