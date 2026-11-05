@@ -28,6 +28,12 @@ final class AddonValidate[F[_]: Async: Files](
 ) {
   private[this] val logger = docspell.logging.getLogger[F]
 
+  /** Checks whether addons are enabled and the URL is trusted. Does not read the URL. */
+  def checkTrusted(url: LenientUri): F[AddonValidationResult[Unit]] =
+    if (!cfg.enabled) AddonsDisabled.toLeft[Unit].pure[F]
+    else if (cfg.isDenied(url)) UrlUntrusted(url).toLeft[Unit].pure[F]
+    else ().asRight[AddonValidationError].pure[F]
+
   def fromUrl(
       collective: CollectiveId,
       url: LenientUri,
@@ -35,16 +41,18 @@ final class AddonValidate[F[_]: Async: Files](
       localUrl: Option[LenientUri] = None,
       checkExisting: Boolean = true
   ): F[AddonValidationResult[AddonMeta]] =
-    if (!cfg.enabled) AddonsDisabled.resultF
-    else if (cfg.isDenied(url)) UrlUntrusted(url).resultF
-    else if (checkExisting)
-      store.transact(RAddonArchive.findByUrl(collective, url)).flatMap {
-        case Some(ar) =>
-          AddonExists("An addon with this url already exists!", ar).resultF
-        case None =>
-          archive(collective, reader(localUrl.getOrElse(url)).asRight, checkExisting)
-      }
-    else archive(collective, reader(localUrl.getOrElse(url)).asRight, checkExisting)
+    checkTrusted(url).flatMap {
+      case Left(err) => err.toLeft[AddonMeta].pure[F]
+      case Right(_) =>
+        if (checkExisting)
+          store.transact(RAddonArchive.findByUrl(collective, url)).flatMap {
+            case Some(ar) =>
+              AddonExists("An addon with this url already exists!", ar).resultF
+            case None =>
+              archive(collective, reader(localUrl.getOrElse(url)).asRight, checkExisting)
+          }
+        else archive(collective, reader(localUrl.getOrElse(url)).asRight, checkExisting)
+    }
 
   def archive(
       collective: CollectiveId,

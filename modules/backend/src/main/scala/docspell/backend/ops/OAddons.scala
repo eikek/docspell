@@ -299,17 +299,23 @@ object OAddons {
                 .as(AddonValidationResult.failure[(RAddonArchive, AddonMeta)](error))
           }
 
-        log.info(
-          s"Store addon file from '${url.asString} for collective ${collective.value}"
-        ) *>
-          storeAddonFromUrl(collective, url).flatMapF { file =>
-            val localUrl = FileUrlReader.url(file)
-            for {
-              _ <- log.info(s"Validating addon…")
-              res <- validateAndInsert(file, localUrl)
-              _ <- log.info(s"Validation result: $res")
-            } yield res
-          }.value
+        // Check allow/deny lists before any outbound request (see refreshAddon / inspectAddon).
+        addonValidate.checkTrusted(url).flatMap {
+          case Left(err) =>
+            AddonValidationResult.failure[(RAddonArchive, AddonMeta)](err).pure[F]
+          case Right(_) =>
+            log.info(
+              s"Store addon file from '${url.asString} for collective ${collective.value}"
+            ) *>
+              storeAddonFromUrl(collective, url).flatMapF { file =>
+                val localUrl = FileUrlReader.url(file)
+                for {
+                  _ <- log.info(s"Validating addon…")
+                  res <- validateAndInsert(file, localUrl)
+                  _ <- log.info(s"Validation result: $res")
+                } yield res
+              }.value
+        }
       }
 
       def refreshAddon(
