@@ -19,7 +19,6 @@ function extend() {
     return result;
 }
 
-
 var elmApp = Elm.Main.init({
     node: document.getElementById("docspell-app"),
     flags: elmFlags

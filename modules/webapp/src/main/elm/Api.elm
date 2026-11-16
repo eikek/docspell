@@ -337,6 +337,7 @@ import File exposing (File)
 import Http
 import Json.Decode as JsonDecode
 import Json.Encode as JsonEncode
+import Messages
 import Set exposing (Set)
 import Task
 import Url
@@ -2444,6 +2445,7 @@ getClientSettings flags receive =
     let
         defaults =
             Data.UiSettings.defaults
+                |> (\d -> { d | uiLang = Messages.fromIso2 flags.browserLang })
 
         decoder =
             JsonDecode.map (\s -> Data.UiSettings.merge s defaults)
@@ -2920,6 +2922,7 @@ clientSettingsShare flags token receive =
     let
         defaults =
             Data.UiSettings.defaults
+                |> (\d -> { d | uiLang = Messages.fromIso2 flags.browserLang })
 
         decoder =
             JsonDecode.map (\s -> Data.UiSettings.merge s defaults)

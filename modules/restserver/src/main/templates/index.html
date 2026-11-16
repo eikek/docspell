@@ -59,7 +59,8 @@
              "account": account,
              "pdfSupported": pdfSupported,
              "innerWidth": window.innerWidth,
-             "config": {{{flagsJson}}}
+             "config": {{{flagsJson}}},
+             "browserLang": navigator.language || navigator.userLanguage || 'en'
          };
         </script>
         <script type="application/javascript" src="{{appExtraJs}}"></script>

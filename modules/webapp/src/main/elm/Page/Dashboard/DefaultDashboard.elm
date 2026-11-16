@@ -38,7 +38,7 @@ getDefaultDashboard : Flags -> UiSettings -> Dashboard
 getDefaultDashboard flags settings =
     let
         lang =
-            Data.UiSettings.getUiLanguage flags settings Messages.UiLanguage.English
+            Data.UiSettings.getUiLanguage flags settings (Messages.fromIso2 flags.browserLang)
 
         texts =
             Messages.get lang settings.timeZone

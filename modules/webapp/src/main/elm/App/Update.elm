@@ -126,7 +126,18 @@ updateWithSub msg model =
             )
 
         SetLanguage lang ->
-            ( { model | anonymousUiLang = lang, langMenuOpen = False }, Cmd.none, Sub.none )
+            let
+                currentSettings =
+                    model.uiSettings
+            in
+            ( { model
+                | anonymousUiLang = lang
+                , uiSettings = { currentSettings | uiLang = lang }
+                , langMenuOpen = False
+              }
+            , Cmd.none
+            , Sub.none
+            )
 
         SearchMsg lm ->
             updateSearch texts lm model

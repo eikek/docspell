@@ -259,7 +259,7 @@ resultMessage texts model =
 
         AuthFailed r ->
             div [ class ("my-2" ++ S.errorMessage) ]
-                [ text r.message
+                [ text texts.loginFailed
                 ]
 
         HttpError err ->
