@@ -10,6 +10,7 @@ module Messages.Page.SearchSideMenu exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Comp.ItemDetail.MultiEditMenu
@@ -60,4 +61,16 @@ fr =
     , multiEditHeader = "Multi-Edit"
     , multiEditInfo = "Veuillez noter qu'un changement ici, affecte immédiatement tous les documents sélectionnés à droite !"
     , close = "Fermer"
+    }
+
+
+pt : Texts
+pt =
+    { searchMenu = Messages.Comp.SearchMenu.pt
+    , multiEdit = Messages.Comp.ItemDetail.MultiEditMenu.pt
+    , editMode = "Modo de edição"
+    , resetSearchForm = "Redefinir formulário de busca"
+    , multiEditHeader = "Edição múltipla"
+    , multiEditInfo = "Note que uma alteração aqui afeta imediatamente todos os itens selecionados à direita!"
+    , close = "Fechar"
     }

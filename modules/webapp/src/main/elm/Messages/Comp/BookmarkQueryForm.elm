@@ -10,6 +10,7 @@ module Messages.Comp.BookmarkQueryForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -59,4 +60,16 @@ fr =
     , collectiveLocation = "Favoris du groupe"
     , collectiveLocationText = "Utilisé et édité par tous les utilisateurs du groupe"
     , nameExistsWarning = "Un favoris avec ce nom existe déjà !"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , queryLabel = "Consulta"
+    , userLocation = "Escopo do usuário"
+    , userLocationText = "A consulta favoritada é apenas para você"
+    , collectiveLocation = "Escopo do coletivo"
+    , collectiveLocationText = "A consulta favoritada pode ser usada e editada por todos os usuários"
+    , nameExistsWarning = "Já existe um favorito com este nome! Escolha outro nome."
     }

@@ -10,6 +10,7 @@ module Messages.Comp.NotificationHookManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -104,4 +105,26 @@ fr =
     , invalidJsonFilter = \m -> "Filtre d'événement invalide " ++ m
     , updateWebhook = "Mettre à jour le webhook"
     , addWebhook = "Ajouter un webhook"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , notificationForm = Messages.Comp.NotificationHookForm.pt
+    , notificationTable = Messages.Comp.NotificationHookTable.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , channelType = Messages.Data.ChannelType.pt
+    , newHook = "Novo webhook"
+    , httpRequest = "Requisição HTTP"
+    , hookCreated = "Webhook criado"
+    , hookUpdated = "Webhook atualizado"
+    , hookStarted = "Webhook executado"
+    , hookDeleted = "Webhook excluído"
+    , deleteThisHook = "Excluir este webhook"
+    , reallyDeleteHook = "Realmente excluir este webhook?"
+    , formInvalid = "Por favor, preencha todos os campos obrigatórios"
+    , invalidJsonFilter = \m -> "Filtro de evento inválido: " ++ m
+    , updateWebhook = "Atualizar webhook"
+    , addWebhook = "Adicionar novo webhook"
     }

@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.NotificationChannelManage exposing (Texts, de, fr, gb)
+module Messages.Comp.NotificationChannelManage exposing (Texts, de, fr, gb, pt)
 
 import Http
 import Messages.Basics
@@ -103,4 +103,27 @@ fr =
     , updateChannel = "Mettre à jour le canal"
     , deleteThisChannel = "Supprimer ce canal"
     , reallyDeleteChannel = "Confirmer la suppression de ce canal ?"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , notificationForm = Messages.Comp.ChannelForm.pt
+    , notificationTable = Messages.Comp.NotificationChannelTable.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , channelType = Messages.Data.ChannelType.pt
+    , newChannel = "Novo canal"
+    , channelCreated = "Canal criado"
+    , channelUpdated = "Canal atualizado"
+    , channelDeleted = "Canal excluído"
+    , formInvalid = "Por favor, preencha todos os campos obrigatórios"
+    , integrate = "Integrar"
+    , intoDocspell = "ao Docspell"
+    , postRequestInfo = "O Docspell enviará requisições POST com payload JSON."
+    , notifyEmailInfo = "Receba notificações por e-mail."
+    , addChannel = "Adicionar novo canal"
+    , updateChannel = "Atualizar canal"
+    , deleteThisChannel = "Excluir este canal"
+    , reallyDeleteChannel = "Deseja realmente excluir este canal?"
     }

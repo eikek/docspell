@@ -9,6 +9,7 @@ module Messages.Data.Color exposing
     ( de
     , fr
     , gb
+    , pt
     )
 
 import Data.Color exposing (Color(..))
@@ -141,3 +142,46 @@ fr color =
 
         Black ->
             "Noir"
+
+
+pt : Color -> String
+pt color =
+    case color of
+        Red ->
+            "Vermelho"
+
+        Orange ->
+            "Laranja"
+
+        Yellow ->
+            "Amarelo"
+
+        Olive ->
+            "Oliva"
+
+        Green ->
+            "Verde"
+
+        Teal ->
+            "Azul-petróleo"
+
+        Blue ->
+            "Azul"
+
+        Violet ->
+            "Violeta"
+
+        Purple ->
+            "Roxo"
+
+        Pink ->
+            "Rosa"
+
+        Brown ->
+            "Marrom"
+
+        Grey ->
+            "Cinza"
+
+        Black ->
+            "Preto"

@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.DashboardView exposing (Texts, de, fr, gb)
+module Messages.Comp.DashboardView exposing (Texts, de, fr, gb, pt)
 
 import Data.TimeZone exposing (TimeZone)
 import Messages.Comp.BoxView
@@ -31,4 +31,10 @@ de tz =
 fr : TimeZone -> Texts
 fr tz =
     { boxView = Messages.Comp.BoxView.fr tz
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { boxView = Messages.Comp.BoxView.pt tz
     }

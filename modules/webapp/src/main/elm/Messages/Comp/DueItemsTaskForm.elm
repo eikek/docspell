@@ -10,6 +10,7 @@ module Messages.Comp.DueItemsTaskForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -179,4 +180,45 @@ fr tz =
     , queryLabel = "Requête"
     , channelRequired = "Un canal valide doit être entré."
     , channelHeader = "Canaux"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , calEventInput = Messages.Comp.CalEventInput.pt tz
+    , httpError = Messages.Comp.HttpError.pt
+    , channelForm = Messages.Comp.ChannelForm.pt
+    , tagDropdown = Messages.Comp.TagDropdown.pt
+    , channelType = Messages.Data.ChannelType.pt
+    , channelRef = Messages.Comp.ChannelRefInput.pt
+    , reallyDeleteTask = "Deseja realmente excluir esta tarefa de notificação?"
+    , startOnce = "Executar uma vez"
+    , startTaskNow = "Iniciar esta tarefa agora"
+    , deleteThisTask = "Excluir esta tarefa"
+    , enableDisable = "Ativar ou desativar esta tarefa."
+    , summary = "Resumo"
+    , summaryInfo = "Um nome legível para identificação, apenas para exibição"
+    , tagsInclude = "Incluir etiquetas (e)"
+    , tagsIncludeInfo = "Os itens devem ter todas as etiquetas especificadas aqui."
+    , tagsExclude = "Excluir etiquetas (ou)"
+    , tagsExcludeInfo = "Os itens não devem ter nenhuma etiqueta especificada aqui."
+    , remindDaysLabel = "Dias do lembrete"
+    , remindDaysInfo = "Selecionar itens com uma data de vencimento *menor que* `today+remindDays`"
+    , capOverdue = "Limitar itens em atraso"
+    , capOverdueInfo = "Se marcado, apenas itens com uma data de vencimento *maior que* `today - remindDays` são considerados."
+    , schedule = "Agendamento"
+    , scheduleClickForHelp = "Clique aqui para obter ajuda"
+    , scheduleInfo =
+        "Especifique a frequência e quando esta tarefa deve ser executada. "
+            ++ "Use English 3-letter weekdays. Either a single value, "
+            ++ "a list (ex. 1,2,3), a range (ex. 1..3) or a '*' (meaning all) "
+            ++ "is allowed for each part."
+    , connectionMissing = "Nenhuma conexão de e-mail configurada. Vá para as Configurações de e-mail para adicionar uma."
+    , invalidCalEvent = "O evento do calendário não é válido."
+    , remindDaysRequired = "Dias para lembrete é obrigatório."
+    , recipientsRequired = "Pelo menos um destinatário é obrigatório."
+    , queryLabel = "Consulta"
+    , channelRequired = "Um canal válido deve ser informado."
+    , channelHeader = "Canais"
     }

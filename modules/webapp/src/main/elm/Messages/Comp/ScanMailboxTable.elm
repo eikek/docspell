@@ -10,6 +10,7 @@ module Messages.Comp.ScanMailboxTable exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -51,4 +52,14 @@ fr =
     , connection = "Connexion"
     , folders = "Dossiers"
     , receivedSince = "Reçu depuis"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , summary = "Resumo"
+    , connection = "Conexão"
+    , folders = "Pastas"
+    , receivedSince = "Recebidos desde"
     }

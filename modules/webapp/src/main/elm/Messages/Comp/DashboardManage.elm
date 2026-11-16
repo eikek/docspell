@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.DashboardManage exposing (Texts, de, fr, gb)
+module Messages.Comp.DashboardManage exposing (Texts, de, fr, gb, pt)
 
 import Http
 import Messages.Basics
@@ -61,4 +61,17 @@ fr =
     , nameExists = "Ce nom est déjà utilisé."
     , createDashboard = "Nouveau"
     , copyDashboard = "Copier"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , dashboardEdit = Messages.Comp.DashboardEdit.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , reallyDeleteDashboard = "Deseja realmente excluir este painel?"
+    , nameEmpty = "O nome não pode ficar em branco."
+    , nameExists = "O nome já está em uso."
+    , createDashboard = "Novo"
+    , copyDashboard = "Copiar"
     }

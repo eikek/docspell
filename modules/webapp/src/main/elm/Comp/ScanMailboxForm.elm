@@ -979,7 +979,7 @@ viewProcessing2 texts model =
                 , label = texts.scanRecursivelyLabel
                 , tagger = \_ -> ToggleScanRecursively
                 }
-            , span [ class "opacity-50 text-sm mt-1" ]
+        , span [ class "opacity-50 text-sm mt-1" ]
             [ Markdown.toHtml [] texts.scanRecursivelyInfo ]
         ]
     , div [ class "mb-4" ]

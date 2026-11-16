@@ -10,6 +10,7 @@ module Messages.Comp.DetailEdit exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -94,4 +95,23 @@ fr =
     , addOrgHeader = "Ajouter une organisation"
     , addEquipmentHeader = "Ajouter un équipement"
     , addCustomFieldHeader = "Ajouter un champs personnalisé"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , tagForm = Messages.Comp.TagForm.pt
+    , personForm = Messages.Comp.PersonForm.pt
+    , orgForm = Messages.Comp.OrgForm.pt
+    , equipmentForm = Messages.Comp.EquipmentForm.pt
+    , customFieldForm = Messages.Comp.CustomFieldForm.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , submitSuccessful = "Salvo com sucesso."
+    , missingRequiredFields = "Por favor, preencha os campos obrigatórios."
+    , addTagHeader = "Adicionar etiqueta"
+    , addPersonHeader = "Adicionar pessoa"
+    , addOrgHeader = "Adicionar organização"
+    , addEquipmentHeader = "Adicionar equipamento"
+    , addCustomFieldHeader = "Adicionar campo personalizado"
     }

@@ -89,7 +89,6 @@ initWithCache flags db cache =
 
         statsCmds =
             fetchStatsCmds flags db cache
-
     in
     ( { dashboard = db
       , boxModels = Dict.fromList boxModels
@@ -186,6 +185,7 @@ update flags msg model =
             , Cmd.none
             , Sub.none
             )
+
 
 unit : Model -> ( Model, Cmd Msg, Sub Msg )
 unit model =

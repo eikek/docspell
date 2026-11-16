@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxQueryView exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxQueryView exposing (Texts, de, fr, gb, pt)
 
 import Data.ItemTemplate as IT
 import Data.TimeZone exposing (TimeZone)
@@ -70,4 +70,19 @@ fr tz =
         , directionLabel = Messages.Data.Direction.fr
         }
     , itemColumn = Messages.Data.ItemColumn.fr
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { httpError = Messages.Comp.HttpError.pt
+    , errorOccurred = "Erro ao recuperar dados."
+    , basics = Messages.Basics.pt
+    , noResults = "Nenhum item encontrado."
+    , templateCtx =
+        { dateFormatLong = DF.formatDateLong Messages.UiLanguage.Portuguese tz
+        , dateFormatShort = DF.formatDateShort Messages.UiLanguage.Portuguese tz
+        , directionLabel = Messages.Data.Direction.pt
+        }
+    , itemColumn = Messages.Data.ItemColumn.pt
     }

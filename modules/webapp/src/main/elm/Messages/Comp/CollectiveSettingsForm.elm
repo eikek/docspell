@@ -10,6 +10,7 @@ module Messages.Comp.CollectiveSettingsForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.Language exposing (Language)
@@ -153,4 +154,39 @@ fr tz =
     , emptyTrash = "Vider la corbeille"
     , passwords = "Mots de passe"
     , passwordsInfo = "Ces mots de passes sont utilisés pour le traitement des PDF encryptés. Veuillez noter qu'ils sont stockés dans la base de donnée en **clair**!"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , classifierSettingsForm = Messages.Comp.ClassifierSettingsForm.pt tz
+    , emptyTrashForm = Messages.Comp.EmptyTrashForm.pt tz
+    , httpError = Messages.Comp.HttpError.pt
+    , save = "Salvar"
+    , saveSettings = "Salvar configurações"
+    , documentLanguage = "Idioma do documento"
+    , documentLanguageHelp = "O idioma dos seus documentos. Isso auxilia no reconhecimento de texto (OCR) e na análise de texto."
+    , integrationEndpoint = "Endpoint de integração"
+    , integrationEndpointLabel = "Habilitar endpoint de integração"
+    , integrationEndpointHelp =
+        "O endpoint de integração permite que aplicativos (locais) enviem arquivos. "
+            ++ "You can choose to disable it for your collective."
+    , fulltextSearch = "Busca em texto completo"
+    , reindexAllData = "Reindexar todos os dados"
+    , reindexAllDataHelp =
+        "Isso inicia uma tarefa que limpa o índice de texto completo e reindexa todos os seus dados novamente."
+            ++ "You must type OK before clicking the button to avoid accidental re-indexing."
+    , autoTagging = "Etiquetagem automática"
+    , startNow = "Iniciar agora"
+    , languageLabel = Messages.Data.Language.pt
+    , classifierTaskStarted = "Tarefa do classificador iniciada."
+    , emptyTrashTaskStarted = "Tarefa de esvaziamento da lixeira iniciada."
+    , emptyTrashStartInvalidForm = "O formulário para esvaziar a lixeira contém erros."
+    , fulltextReindexSubmitted = "Reindexação de texto completo iniciada."
+    , fulltextReindexOkMissing =
+        "Por favor, digite OK no campo se realmente deseja iniciar a reindexação dos seus dados."
+    , emptyTrash = "Esvaziar lixeira"
+    , passwords = "Senhas"
+    , passwordsInfo = "Estas senhas são usadas quando PDFs criptografados estão sendo processados. Observe que elas são armazenadas no banco de dados como **texto sem formatação**!"
     }

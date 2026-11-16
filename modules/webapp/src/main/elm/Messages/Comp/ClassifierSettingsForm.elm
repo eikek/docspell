@@ -10,6 +10,7 @@ module Messages.Comp.ClassifierSettingsForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -101,4 +102,29 @@ Laisser liste blanche vide  désactive l'Auto-Tagging.
     , itemCount = "Nombre maximum de documents à utiliser"
     , schedule = "Programmation"
     , itemCountHelp = "Le nombre de maximum de documents à utilser pour l'apprentissage, classés pas date (le plus récent en premier). Laisser 0 si pas de limite."
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , calEventInput = Messages.Comp.CalEventInput.pt tz
+    , autoTaggingText =
+        """
+
+A etiquetação automática funciona aprendendo com documentos existentes. Quanto
+mais documentos você tiver etiquetado corretamente, melhor. O aprendizado é feito
+periodicamente com base em um agendamento. Você pode especificar grupos de
+etiquetas que devem ser usados (whitelist) ou não usados (blacklist) para o
+aprendizado.
+
+Use uma whitelist vazia para desativar a etiquetação automática.
+
+            """
+    , blacklistOrWhitelist = "A lista a seguir é uma blacklist ou whitelist?"
+    , whitelistLabel = "Incluir categorias de etiquetas no aprendizado"
+    , blacklistLabel = "Excluir categorias de etiquetas do aprendizado"
+    , itemCount = "Quantidade de itens"
+    , schedule = "Agendamento"
+    , itemCountHelp = "O número máximo de itens para aprendizagem, ordenados pela data mais recente primeiro. Use 0 para todos."
     }

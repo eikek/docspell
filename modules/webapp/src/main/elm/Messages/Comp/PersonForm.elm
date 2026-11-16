@@ -10,6 +10,7 @@ module Messages.Comp.PersonForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.ContactType exposing (ContactType)
@@ -88,4 +89,22 @@ fr =
     , contacts = "Contacts"
     , contactTypeLabel = Messages.Data.ContactType.fr
     , notes = "Notes"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , addressForm = Messages.Comp.AddressForm.pt
+    , personUseLabel = Messages.Data.PersonUse.pt
+    , useOfPerson = "Uso desta pessoa"
+    , useAsConcerningOnly = "Usar apenas como pessoa referenciada"
+    , useAsCorrespondentOnly = "Usar apenas como correspondente"
+    , useAsBoth = "Usar como ambas (pessoa referenciada e correspondente)"
+    , dontUseForSuggestions = "Não usar para sugestões."
+    , chooseAnOrg = "Escolha uma organização"
+    , address = "Endereço"
+    , contacts = "Contatos"
+    , contactTypeLabel = Messages.Data.ContactType.pt
+    , notes = "Notas"
     }

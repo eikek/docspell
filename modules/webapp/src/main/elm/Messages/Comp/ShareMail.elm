@@ -10,6 +10,7 @@ module Messages.Comp.ShareMail exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -79,4 +80,22 @@ Ci-joints les documents:
 Cordialement
 """
     , mailSent = "Mail envoyé."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , itemMail = Messages.Comp.ItemMail.pt
+    , subjectTemplate = \mt -> "Documentos compartilhados:" ++ (Maybe.map (\n -> ": " ++ n) mt |> Maybe.withDefault "")
+    , bodyTemplate = \url -> """Olá,
+
+ você pode encontrar os documentos aqui:
+
+    """ ++ url ++ """
+
+ Atenciosamente,
+"""
+    , mailSent = "E-mail enviado."
     }

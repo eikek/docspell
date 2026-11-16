@@ -10,6 +10,7 @@ module Messages.Comp.OtpSetup exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -126,4 +127,31 @@ fr tz =
     , reloadToTryAgain = "Pour recommencer, merci de recharger la page."
     , twoFactorNowActive = "L'authentification deux facteurs est désormais active !"
     , revertInfo = "Il est possible de revenir à l'authentification par mot de passe seul à tout moment (recharger la page)."
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { httpError = Messages.Comp.HttpError.pt
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.Portuguese tz
+    , errorTitle = "Erro"
+    , stateErrorInfoText = "Ocorreu um problema ao determinar o estado atual do seu esquema de autenticação de dois fatores:"
+    , errorGeneratingQR = "Erro ao gerar o código QR"
+    , initErrorInfo = "Ocorreu um erro ao inicializar a autenticação de dois fatores."
+    , confirmErrorInfo = "Ocorreu um erro ao confirmar a configuração!"
+    , disableErrorInfo = "Ocorreu um erro ao desativar o 2FA!"
+    , twoFaActiveSince = "A autenticação de dois fatores está ativa desde "
+    , revert2FAText = "Se você realmente deseja voltar para a autenticação apenas por senha, você pode fazer isso aqui. Você pode refazer a configuração a qualquer momento para ativar o segundo fator novamente."
+    , disableButton = "Desativar 2FA"
+    , disableConfirmBoxInfo = "Insira um código TOTP e clique no botão para desativar o 2FA."
+    , setupTwoFactorAuth = "Configurar autenticação de dois fatores"
+    , setupTwoFactorAuthInfo = "Você pode configurar um segundo fator de autenticação usando uma senha de uso único. Ao clicar no botão, uma chave secreta será gerada para que você possa adicioná-la a um aplicativo em seu dispositivo móvel. O aplicativo fornecerá um código de 6 dígitos que você precisa inserir no campo para confirmar e finalizar a configuração."
+    , activateButton = "Ativar autenticação de dois fatores"
+    , setupConfirmLabel = "Confirmar"
+    , scanQRCode = "Escaneie este código QR com seu dispositivo e insira o código de 6 dígitos:"
+    , codeInvalid = "O código é inválido!"
+    , ifNotQRCode = "Se não for possível usar o código QR, insira esta chave secreta:"
+    , reloadToTryAgain = "Se quiser tentar novamente, recarregue a página."
+    , twoFactorNowActive = "A autenticação de dois fatores agora está ativa!"
+    , revertInfo = "Você pode voltar para a autenticação apenas por senha a qualquer momento (recarregue esta página)."
     }

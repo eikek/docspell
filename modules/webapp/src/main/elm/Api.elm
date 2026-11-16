@@ -123,9 +123,9 @@ module Api exposing
     , itemSearchBookmark
     , itemSearchStats
     , itemSearchStatsBookmark
-    , itemSearchStatsGeneral
-    , itemSearchStatsFields
     , itemSearchStatsBookmarkAt
+    , itemSearchStatsFields
+    , itemSearchStatsGeneral
     , login
     , loginSession
     , logout

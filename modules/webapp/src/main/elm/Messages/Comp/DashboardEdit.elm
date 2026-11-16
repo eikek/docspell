@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.DashboardEdit exposing (Texts, de, fr, gb)
+module Messages.Comp.DashboardEdit exposing (Texts, de, fr, gb, pt)
 
 import Messages.Basics
 import Messages.Comp.BoxEdit
@@ -69,4 +69,19 @@ fr =
     , newBox = "Nouvelle boite"
     , defaultDashboard = "Tableau de bord par défaut"
     , gap = "Espace"
+    }
+
+
+pt : Texts
+pt =
+    { boxView = Messages.Comp.BoxEdit.pt
+    , boxContent = Messages.Data.BoxContent.pt
+    , basics = Messages.Basics.pt
+    , accountScope = Messages.Data.AccountScope.pt
+    , namePlaceholder = "Nome do dashboard"
+    , columns = "Colunas"
+    , dashboardBoxes = "Blocos do dashboard"
+    , newBox = "Novo bloco"
+    , defaultDashboard = "Dashboard padrão"
+    , gap = "Espaçamento"
     }

@@ -10,6 +10,7 @@ module Messages.Comp.SearchStatsView exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 
@@ -53,4 +54,15 @@ fr =
     , avg = "Moyenne"
     , min = "Min"
     , max = "Max"
+    }
+
+
+pt : Texts
+pt =
+    { items = "Itens"
+    , count = "Contagem"
+    , sum = "Soma"
+    , avg = "Média"
+    , min = "Mín"
+    , max = "Máx"
     }

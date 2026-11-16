@@ -10,6 +10,7 @@ module Messages.Comp.ItemDetail exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -202,3 +203,46 @@ fr tz =
 
 
 -- TODO translate-fr
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { addFilesForm = Messages.Comp.ItemDetail.AddFilesForm.pt
+    , itemInfoHeader = Messages.Comp.ItemDetail.ItemInfoHeader.pt tz
+    , singleAttachment = Messages.Comp.ItemDetail.SingleAttachment.pt tz
+    , sentMails = Messages.Comp.SentMails.pt tz
+    , notes = Messages.Comp.ItemDetail.Notes.pt
+    , itemMail = Messages.Comp.ItemMail.pt
+    , detailEdit = Messages.Comp.DetailEdit.pt
+    , confirmModal = Messages.Comp.ItemDetail.ConfirmModal.pt
+    , itemLinkForm = Messages.Comp.ItemLinkForm.pt tz
+    , runAddonForm = Messages.Comp.ItemDetail.RunAddonForm.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , key = "Chave"
+    , backToSearchResults = "Voltar aos resultados da busca"
+    , previousItem = "Item anterior"
+    , nextItem = "Próximo item"
+    , sendMail = "Enviar e-mail"
+    , addMoreFiles = "Adicionar mais arquivos a este item"
+    , confirmItemMetadata = "Confirmar metadados"
+    , confirm = "Confirmar"
+    , unconfirmItemMetadata = "Desfazer confirmação dos metadados do item"
+    , reprocessItem = "Reprocessar este item"
+    , deleteThisItem = "Excluir este item"
+    , undeleteThisItem = "Restaurar este item"
+    , sentEmails = "E-mails enviados"
+    , sendThisItemViaEmail = "Enviar este item por e-mail"
+    , itemId = "ID do item"
+    , createdOn = "Criado em"
+    , lastUpdateOn = "Última atualização em"
+    , sendingMailNow = "Enviando e-mail…"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.Portuguese tz
+    , mailSendSuccessful = "E-mail enviado."
+    , showQrCode = "Exibir URL como código QR"
+    , close = "Fechar"
+    , selectItem = "Selecionar este item"
+    , deselectItem = "Desmarcar este item"
+    , relatedItems = "Itens vinculados"
+    , runAddonLabel = "Executar complemento"
+    , runAddonTitle = "Executar um complemento neste item"
+    }

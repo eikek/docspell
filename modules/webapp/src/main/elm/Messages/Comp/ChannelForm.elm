@@ -10,6 +10,7 @@ module Messages.Comp.ChannelForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -55,4 +56,14 @@ fr =
     , gotifyForm = Messages.Comp.NotificationGotifyForm.fr
     , mailForm = Messages.Comp.NotificationMailForm.fr
     , httpForm = Messages.Comp.NotificationHttpForm.fr
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , matrixForm = Messages.Comp.NotificationMatrixForm.pt
+    , gotifyForm = Messages.Comp.NotificationGotifyForm.pt
+    , mailForm = Messages.Comp.NotificationMailForm.pt
+    , httpForm = Messages.Comp.NotificationHttpForm.pt
     }

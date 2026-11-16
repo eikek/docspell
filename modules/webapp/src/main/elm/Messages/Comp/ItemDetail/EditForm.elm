@@ -10,6 +10,7 @@ module Messages.Comp.ItemDetail.EditForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.Direction exposing (Direction)
@@ -114,4 +115,28 @@ fr tz =
     , noSuggestions = "Aucune suggestion"
     , formatDate = DF.formatDateLong Messages.UiLanguage.French tz
     , direction = Messages.Data.Direction.fr
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , customFieldInput = Messages.Comp.CustomFieldMultiInput.pt
+    , tagDropdown = Messages.Comp.TagDropdown.pt
+    , createNewCustomField = "Criar novo campo personalizado"
+    , chooseDirection = "Escolha uma direção…"
+    , dueDateTab = "Data de vencimento"
+    , addNewOrg = "Adicionar nova organização"
+    , editOrg = "Editar organização"
+    , chooseOrg = "Escolha uma organização"
+    , addNewCorrespondentPerson = "Adicionar nova pessoa correspondente"
+    , editPerson = "Editar pessoa"
+    , personOrgInfo = "A pessoa selecionada não pertence à organização selecionada."
+    , addNewConcerningPerson = "Adicionar nova pessoa interessada"
+    , addNewEquipment = "Adicionar novo equipamento"
+    , editEquipment = "Editar equipamento"
+    , suggestions = "Sugestões"
+    , noSuggestions = "Nenhuma sugestão"
+    , formatDate = DF.formatDateLong Messages.UiLanguage.Portuguese tz
+    , direction = Messages.Data.Direction.pt
     }

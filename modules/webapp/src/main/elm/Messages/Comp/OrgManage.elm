@@ -10,6 +10,7 @@ module Messages.Comp.OrgManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -71,4 +72,18 @@ fr =
     , reallyDeleteOrg = "Confirmer la suppression de cette organisation"
     , deleteThisOrg = "Supprimer cette organisation"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , orgForm = Messages.Comp.OrgForm.pt
+    , orgTable = Messages.Comp.OrgTable.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , newOrganization = "Nova organização"
+    , createNewOrganization = "Criar uma nova organização"
+    , reallyDeleteOrg = "Deseja realmente excluir esta organização?"
+    , deleteThisOrg = "Excluir esta organização"
+    , correctFormErrors = "Por favor, corrija os erros no formulário."
     }

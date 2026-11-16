@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxEdit exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxEdit exposing (Texts, de, fr, gb, pt)
 
 import Messages.Basics
 import Messages.Comp.BoxMessageEdit
@@ -91,4 +91,24 @@ fr =
     , moveToLeft = "Déplacer à gauche"
     , moveToRight = "Déplacer à droite"
     , deleteBox = "Supprimer la boite"
+    }
+
+
+pt : Texts
+pt =
+    { messageEdit = Messages.Comp.BoxMessageEdit.pt
+    , uploadEdit = Messages.Comp.BoxUploadEdit.pt
+    , queryEdit = Messages.Comp.BoxQueryEdit.pt
+    , statsEdit = Messages.Comp.BoxStatsEdit.pt
+    , boxContent = Messages.Data.BoxContent.pt
+    , basics = Messages.Basics.pt
+    , namePlaceholder = "Nome da caixa"
+    , visible = "Visível"
+    , decorations = "Decorações da caixa"
+    , colspan = "Extensão de colunas"
+    , contentProperties = "Conteúdo"
+    , reallyDeleteBox = "Realmente excluir esta caixa?"
+    , moveToLeft = "Mover para a esquerda"
+    , moveToRight = "Mover para a direita"
+    , deleteBox = "Excluir caixa"
     }

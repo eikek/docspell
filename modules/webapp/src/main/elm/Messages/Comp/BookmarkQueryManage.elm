@@ -10,6 +10,7 @@ module Messages.Comp.BookmarkQueryManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -54,4 +55,14 @@ fr =
     , httpError = Messages.Comp.HttpError.fr
     , formInvalid = "Veuillez corriger les erreurs du formulaire"
     , saved = "Favori enregistré"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , form = Messages.Comp.BookmarkQueryForm.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , formInvalid = "Por favor, corrija os erros no formulário"
+    , saved = "Marcador salvo"
     }

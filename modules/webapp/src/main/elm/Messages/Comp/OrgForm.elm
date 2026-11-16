@@ -10,6 +10,7 @@ module Messages.Comp.OrgForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.ContactType exposing (ContactType)
@@ -80,4 +81,20 @@ fr =
     , contacts = "Contacts"
     , contactTypeLabel = Messages.Data.ContactType.fr
     , notes = "Notes"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , addressForm = Messages.Comp.AddressForm.pt
+    , orgUseLabel = Messages.Data.OrgUse.pt
+    , shortName = "Nome abreviado"
+    , use = "Uso"
+    , useAsCorrespondent = "Usar como correspondente"
+    , dontUseForSuggestions = "Não usar para sugestões."
+    , address = "Endereço"
+    , contacts = "Contatos"
+    , contactTypeLabel = Messages.Data.ContactType.pt
+    , notes = "Notas"
     }

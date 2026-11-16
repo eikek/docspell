@@ -10,6 +10,7 @@ module Messages.Comp.PeriodicQueryTaskManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -97,4 +98,24 @@ fr tz =
     , gotify = "Gotify"
     , email = "E-Mail"
     , httpRequest = "Requête HTTP"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , notificationForm = Messages.Comp.PeriodicQueryTaskForm.pt tz
+    , notificationTable = Messages.Comp.PeriodicQueryTaskList.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , channelType = Messages.Data.ChannelType.pt
+    , newTask = "Nova Tarefa"
+    , createNewTask = "Criar uma nova tarefa de notificação"
+    , taskCreated = "Tarefa criada."
+    , taskUpdated = "Tarefa atualizada."
+    , taskStarted = "Tarefa iniciada."
+    , taskDeleted = "Tarefa excluída."
+    , matrix = "Matrix"
+    , gotify = "Gotify"
+    , email = "E-mail"
+    , httpRequest = "Requisição HTTP"
     }

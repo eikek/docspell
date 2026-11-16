@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxMessageEdit exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxMessageEdit exposing (Texts, de, fr, gb, pt)
 
 
 type alias Texts =
@@ -44,4 +44,14 @@ fr =
     , bodyLabel = "Corps"
     , bodyPlaceholder = "Cors du message…"
     , infoText = "Markdown peut être utilisé dans les deux champs pour le formatage simple."
+    }
+
+
+pt : Texts
+pt =
+    { titleLabel = "Título"
+    , titlePlaceholder = "Título da mensagem…"
+    , bodyLabel = "Corpo"
+    , bodyPlaceholder = "Corpo da mensagem…"
+    , infoText = "O Markdown pode ser usado em ambos os campos para formatação simples."
     }

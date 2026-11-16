@@ -10,6 +10,7 @@ module Messages.Comp.TagForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -43,4 +44,12 @@ fr =
     { basics = Messages.Basics.fr
     , selectDefineCategory = "Choisir ou définir une catégorie..."
     , category = "Catégorie"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , selectDefineCategory = "Selecionar ou definir categoria..."
+    , category = "Categoria"
     }

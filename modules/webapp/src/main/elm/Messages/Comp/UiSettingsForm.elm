@@ -10,6 +10,7 @@ module Messages.Comp.UiSettingsForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.Color exposing (Color)
@@ -287,4 +288,79 @@ si organisation est absente et enfin `-` si les 2 sont absentes.
 """
     , pdfMode = Messages.Data.PdfMode.fr
     , resetLabel = "Remise à zéro"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , general = "Geral"
+    , showSideMenuByDefault = "Exibir menu lateral por padrão"
+    , uiLanguage = "Idioma da interface"
+    , itemSearch = "Busca de itens"
+    , maxResultsPerPageInfo =
+        \max ->
+            "Resultados máximos em uma página ao buscar itens. No máximo "
+                ++ String.fromInt max
+                ++ "."
+    , maxResultsPerPage = "Tamanho da página"
+    , showBasicSearchStatsByDefault = "Exibir estatísticas básicas de busca por padrão"
+    , enablePowerSearch = "Habilitar barra de busca avançada"
+    , itemCards = "Cartões de itens"
+    , maxNoteSize = "Tamanho máx. da nota"
+    , maxNoteSizeInfo =
+        \max ->
+            "Tamanho máximo das notas do item para exibir na visualização em cartão. Entre 0 - "
+                ++ String.fromInt max
+                ++ "."
+    , sizeOfItemPreview = "Tamanho da prévia do item"
+    , cardTitlePattern = "Padrão do título do cartão"
+    , togglePatternHelpText = "Alternar texto de ajuda do padrão"
+    , cardSubtitlePattern = "Padrão do subtítulo do cartão"
+    , searchMenu = "Menu de busca"
+    , searchMenuTagCount = "Número de etiquetas no menu de busca"
+    , searchMenuTagCountInfo = "Quantas etiquetas exibir no menu de busca de uma só vez. Outras podem ser expandidas. Use 0 para sempre exibir todas."
+    , searchMenuCatCount = "Número de categorias no menu de busca"
+    , searchMenuCatCountInfo = "Quantas categorias exibir no menu de busca de uma só vez. Outras podem ser expandidas. Use 0 para sempre mostrar todas."
+    , searchMenuFolderCount = "Número de pastas no menu de busca"
+    , searchMenuFolderCountInfo = "Quantas pastas exibir no menu de busca de uma só vez. Outras pastas podem ser expandidas. Use 0 para sempre mostrar todas."
+    , itemDetail = "Detalhes do Item"
+    , browserNativePdfView = "Pré-visualização de PDF nativa do navegador"
+    , keyboardShortcutLabel = "Usar atalhos de teclado para navegação e confirmar/desconfirmar com o menu de edição aberto."
+    , tagCategoryColors = "Cores das categorias de etiquetas"
+    , colorLabel = Messages.Data.Color.pt
+    , chooseTagColorLabel = "Escolha a cor para as categorias de etiquetas"
+    , tagColorDescription = "As etiquetas podem ser representadas de forma diferente com base em sua categoria."
+    , fields = "Campos"
+    , fieldsInfo = "Escolha quais campos exibir nos menus de busca e edição."
+    , fieldLabel = Messages.Data.Fields.pt
+    , templateHelpMessage =
+        """
+Um padrão permite personalizar o título e o subtítulo de cada cartão.
+Expressões de variáveis são envolvidas por `{{` e `}}`, outros textos são
+usados como estão. As seguintes variáveis estão disponíveis:
+
+- `{{name}}` o nome do item
+- `{{source}}` a origem a partir da qual o item foi criado
+- `{{folder}}` a pasta do item
+- `{{corrOrg}}` a organização correspondente
+- `{{corrPerson}}` a pessoa correspondente
+- `{{correspondent}}` ambas a organização e a pessoa separadas por vírgula
+- `{{concPerson}}` a pessoa referente
+- `{{concEquip}}` o equipamento referente
+- `{{concerning}}` ambos a pessoa e o equipamento separados por vírgula
+- `{{fileCount}}` o número de anexos deste item
+- `{{dateLong}}` a data do item formatada por extenso
+- `{{dateShort}}` a data do item formatada de forma curta (aaaa/mm/dd)
+- `{{dueDateLong}}` a data de vencimento do item formatada por extenso
+- `{{dueDateShort}}` a data de vencimento do item formatada de forma curta (aaaa/mm/dd)
+- `{{direction}}` os valores de direção do item como texto
+
+Se alguma variável não estiver presente, uma string vazia é exibida. Você pode
+combinar múltiplas variáveis com `|` para usar a primeira não vazia, por exemplo 
+`{{corrOrg|corrPerson|-}}` exibirá a organização e, se ela não estiver presente,
+ a pessoa. Se ambas estiverem ausentes, um hífen `-` será exibido.
+"""
+    , pdfMode = Messages.Data.PdfMode.pt
+    , resetLabel = "Redefinir"
     }

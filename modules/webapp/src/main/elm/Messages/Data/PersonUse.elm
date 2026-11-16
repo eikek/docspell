@@ -9,6 +9,7 @@ module Messages.Data.PersonUse exposing
     ( de
     , fr
     , gb
+    , pt
     )
 
 import Data.PersonUse exposing (PersonUse(..))
@@ -60,3 +61,19 @@ fr pu =
 
         Disabled ->
             "inactif"
+
+
+pt : PersonUse -> String
+pt pu =
+    case pu of
+        Correspondent ->
+            "Correspondente"
+
+        Concerning ->
+            "Interessada"
+
+        Both ->
+            "Ambas"
+
+        Disabled ->
+            "Desativada"

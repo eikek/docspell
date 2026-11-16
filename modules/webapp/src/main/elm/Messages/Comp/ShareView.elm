@@ -10,6 +10,7 @@ module Messages.Comp.ShareView exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -82,4 +83,21 @@ fr tz =
     , passwordProtected = "Protégé par mot de passe"
     , views = "Vues"
     , lastAccess = "Dernier accès"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , date = DF.formatDateLong Messages.UiLanguage.Portuguese tz
+    , qrCodeError = "Erro ao gerar o código QR."
+    , expiredInfo = "Este compartilhamento expirou."
+    , disabledInfo = "Este compartilhamento está desativado."
+    , noName = "Sem nome"
+    , copyToClipboard = "Copiar para a área de transferência"
+    , openInNewTab = "Abrir em nova aba/janela"
+    , publishUntil = "Publicado até"
+    , passwordProtected = "Protegido por senha"
+    , views = "Visualizações"
+    , lastAccess = "Último acesso"
     }

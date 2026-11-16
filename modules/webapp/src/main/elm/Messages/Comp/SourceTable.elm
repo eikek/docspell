@@ -10,6 +10,7 @@ module Messages.Comp.SourceTable exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -59,4 +60,16 @@ fr =
     , priority = "Priorité"
     , id = "Id"
     , show = "Montrer"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , abbrev = "Abrev."
+    , enabled = "Ativado"
+    , counter = "Contador"
+    , priority = "Prioridade"
+    , id = "ID"
+    , show = "Exibir"
     }

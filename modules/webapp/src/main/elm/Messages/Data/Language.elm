@@ -9,6 +9,7 @@ module Messages.Data.Language exposing
     ( de
     , fr
     , gb
+    , pt
     )
 
 import Data.Language exposing (Language(..))
@@ -249,3 +250,82 @@ fr lang =
 
         Slovak ->
             "Slovaquie"
+
+
+pt : Language -> String
+pt lang =
+    case lang of
+        German ->
+            "Alemão"
+
+        English ->
+            "Inglês"
+
+        French ->
+            "Francês"
+
+        Italian ->
+            "Italiano"
+
+        Spanish ->
+            "Espanhol"
+
+        Portuguese ->
+            "Português"
+
+        Czech ->
+            "Tcheco"
+
+        Danish ->
+            "Dinamarquês"
+
+        Finnish ->
+            "Finlandês"
+
+        Norwegian ->
+            "Norueguês"
+
+        Swedish ->
+            "Sueco"
+
+        Russian ->
+            "Russo"
+
+        Romanian ->
+            "Romeno"
+
+        Dutch ->
+            "Holandês"
+
+        Latvian ->
+            "Letão"
+
+        Japanese ->
+            "Japonês"
+
+        JpnVert ->
+            "JpnVert"
+
+        Hebrew ->
+            "Hebraico"
+
+        Hungarian ->
+            "Húngaro"
+
+        Lithuanian ->
+            "Lituano"
+
+        Polish ->
+            "Polonês"
+
+        Estonian ->
+            "Estoniano"
+
+        Ukrainian ->
+            "Ucraniano"
+
+        Khmer ->
+            "Khmer"
+
+        Slovak ->
+            "Eslovaco"
