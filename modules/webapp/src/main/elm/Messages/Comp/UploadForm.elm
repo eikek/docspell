@@ -171,34 +171,3 @@ pt =
     , priority = "Prioridade"
     , priorityInfo = "A prioridade utilizada pelo agendador ao processar arquivos enviados."
     }
-
-
-pt : Texts
-pt =
-    { basics = Messages.Basics.pt
-    , dropzone = Messages.Comp.Dropzone.pt
-    , reset = "Redefinir"
-    , allFilesOneItem = "Todos os arquivos são um único item"
-    , skipExistingFiles = "Ignorar arquivos já presentes no docspell"
-    , language = "Idioma"
-    , languageInfo =
-        "Usado para extração de texto e análise. O idioma padrão "
-            ++ "do coletivo será usado se não for especificado aqui."
-    , uploadErrorMessage = "Ocorreram erros ao enviar alguns arquivos."
-    , successBox =
-        { allFilesUploaded = "Todos os arquivos foram enviados"
-        , line1 =
-            "Seus arquivos foram enviados com sucesso. "
-                ++ "Eles estão sendo processados agora. Verifique a "
-        , itemsPage = "Página de itens"
-        , line2 = " mais tarde, para onde os arquivos irão eventualmente. Ou vá para a "
-        , processingPage = "Página de processamento"
-        , line3 = " para ver o estado atual do processamento."
-        , resetLine1 = " Clique em "
-        , reset = "Redefinir"
-        , resetLine2 = " para enviar mais arquivos."
-        }
-    , selectedFiles = "Arquivos selecionados"
-    , languageLabel = Messages.Data.Language.pt
-    , flattenArchives = "Extrair o conteúdo do arquivo zip em itens separados, em vez de criar um único item com vários anexos."
-    }

@@ -52,6 +52,7 @@ type alias Model =
     , pageError : Maybe PageError
     , dashboards : AllDashboards
     , isPredefined : Bool
+    , loading : Bool
     }
 
 
@@ -98,6 +99,7 @@ init flags =
       , pageError = Nothing
       , dashboards = Data.Dashboards.emptyAll
       , isPredefined = True
+      , loading = True
       }
     , initCmd flags
     )

@@ -56,10 +56,14 @@ viewContent texts flags settings model =
         ]
         [ case model.content of
             Home m ->
-                div [ class "mt-1" ]
-                    [ Html.map DashboardMsg
-                        (Comp.DashboardView.view texts.dashboard flags settings m)
-                    ]
+                if model.loading then
+                    viewDashboardSkeleton
+
+                else
+                    div [ class "mt-1 transition-opacity duration-300 ease-in-out motion-reduce:transition-none opacity-100" ]
+                        [ Html.map DashboardMsg
+                            (Comp.DashboardView.view texts.dashboard flags settings m)
+                        ]
 
             Edit m ->
                 div [ class "mt-1" ]
@@ -107,6 +111,45 @@ viewContent texts flags settings model =
 
 
 --- Helpers
+
+
+viewDashboardSkeleton : Html Msg
+viewDashboardSkeleton =
+    div
+        [ class "grid grid-cols-1 gap-2 md:grid-cols-4 animate-pulse mt-2"
+        , attribute "aria-busy" "true"
+        , attribute "aria-hidden" "true"
+        ]
+        [ div [ class "col-span-1 md:col-span-4 py-2 space-y-2" ]
+            [ div [ class "h-7 bg-gray-200 dark:bg-slate-700 rounded w-1/3" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-2/3" ] []
+            ]
+        , div [ class "col-span-1 md:col-span-4 flex flex-wrap gap-2 py-2" ]
+            (List.repeat 5
+                (div [ class "h-8 w-28 bg-gray-200 dark:bg-slate-700 rounded" ] [])
+            )
+        , div [ class ("col-span-1 md:col-span-2 rounded p-4 space-y-3 " ++ S.box) ]
+            [ div [ class "h-5 bg-gray-200 dark:bg-slate-700 rounded w-1/3" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-full" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-5/6" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-4/6" ] []
+            ]
+        , div [ class ("col-span-1 md:col-span-2 rounded p-4 space-y-3 " ++ S.box) ]
+            [ div [ class "h-5 bg-gray-200 dark:bg-slate-700 rounded w-1/3" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-full" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-5/6" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-4/6" ] []
+            ]
+        , div [ class ("col-span-1 md:col-span-3 rounded p-4 space-y-3 " ++ S.box) ]
+            [ div [ class "h-32 bg-gray-200 dark:bg-slate-700 rounded w-full" ] []
+            ]
+        , div [ class ("col-span-1 rounded p-4 space-y-3 " ++ S.box) ]
+            [ div [ class "h-5 bg-gray-200 dark:bg-slate-700 rounded w-1/2" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-2/3" ] []
+            , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4" ] []
+            ]
+        ]
 
 
 viewUplod : Texts -> Flags -> UiSettings -> Comp.UploadForm.Model -> Html Msg

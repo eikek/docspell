@@ -61,10 +61,11 @@ update texts settings navKey flags msg model =
                                     Page.Dashboard.DefaultDashboard.value texts.defaultDashboard
                             , isPredefined = True
                             , pageError = Nothing
+                            , loading = False
                         }
 
                     else
-                        { model | dashboards = boards, isPredefined = False, pageError = Nothing }
+                        { model | dashboards = boards, isPredefined = False, pageError = Nothing, loading = False }
             in
             case next of
                 Just nextMsg ->
@@ -74,7 +75,7 @@ update texts settings navKey flags msg model =
                     unit nextModel
 
         GetAllDashboardsResp _ (Err err) ->
-            unit { model | pageError = Just <| PageErrorHttp err }
+            unit { model | pageError = Just <| PageErrorHttp err, loading = False }
 
         BookmarkMsg lm ->
             let

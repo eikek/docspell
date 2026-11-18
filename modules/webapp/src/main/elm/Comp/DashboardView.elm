@@ -199,7 +199,7 @@ unit model =
 view : Texts -> Flags -> UiSettings -> Model -> Html Msg
 view texts flags settings model =
     div
-        [ class (gridStyle model.dashboard)
+        [ class (gridStyle model.dashboard ++ " transition-opacity duration-300 ease-in-out motion-reduce:transition-none opacity-100")
         ]
         (Dict.toList model.boxModels
             |> List.map (\( index, box ) -> viewBox texts flags settings index box)
