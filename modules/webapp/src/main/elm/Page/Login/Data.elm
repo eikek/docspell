@@ -10,6 +10,7 @@ module Page.Login.Data exposing
     , FormState(..)
     , Model
     , Msg(..)
+    , ToastState(..)
     , emptyModel
     , init
     )
@@ -28,6 +29,9 @@ type alias Model =
     , rememberMe : Bool
     , formState : FormState
     , authStep : AuthStep
+    , authenticating : Bool
+    , toastState : ToastState
+    , toastGen : Int
     }
 
 
@@ -37,6 +41,12 @@ type FormState
     | HttpError Http.Error
     | FormInitial
     | OidcLogoutPending
+
+
+type ToastState
+    = ToastHidden
+    | ToastVisible
+    | ToastFadingOut
 
 
 type AuthStep
@@ -52,6 +62,9 @@ emptyModel =
     , rememberMe = False
     , formState = FormInitial
     , authStep = StepLogin
+    , authenticating = False
+    , toastState = ToastHidden
+    , toastGen = 0
     }
 
 
@@ -76,3 +89,6 @@ type Msg
     | AuthResp (Result Http.Error AuthResult)
     | SetOtp String
     | AuthOtp String
+    | StartToastFadeOut Int
+    | HideToast Int
+    | CompleteLoginRedirect

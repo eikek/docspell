@@ -135,12 +135,7 @@ otpForm texts flags model token =
                     []
                 ]
             , div [ class "flex flex-col my-3" ]
-                [ button
-                    [ type_ "submit"
-                    , class S.primaryButton
-                    ]
-                    [ text texts.loginButton
-                    ]
+                [ submitButton texts model
                 ]
             , resultMessage texts model
             ]
@@ -223,12 +218,7 @@ loginForm texts flags model =
                 ]
             ]
         , div [ class "flex flex-col my-3" ]
-            [ button
-                [ type_ "submit"
-                , class S.primaryButton
-                ]
-                [ text texts.loginButton
-                ]
+            [ submitButton texts model
             ]
         , resultMessage texts model
         , div
@@ -249,21 +239,64 @@ loginForm texts flags model =
         ]
 
 
+submitButton : Texts -> Model -> Html Msg
+submitButton texts model =
+    button
+        [ type_ "submit"
+        , disabled model.authenticating
+        , class S.primaryButton
+        , classList
+            [ ( "disabled", model.authenticating )
+            , ( "inline-flex items-center justify-center", True )
+            ]
+        ]
+        [ i
+            [ class "fa fa-spinner fa-spin mr-2"
+            , classList [ ( "hidden", not model.authenticating ) ]
+            , attribute "aria-hidden" "true"
+            ]
+            []
+        , span [] [ text texts.loginButton ]
+        ]
+
+
 resultMessage : Texts -> Model -> Html Msg
 resultMessage texts model =
+    let
+        fadeClasses =
+            case model.toastState of
+                ToastVisible ->
+                    " transition-opacity duration-300 ease-in-out motion-reduce:transition-none opacity-100 "
+
+                ToastFadingOut ->
+                    " transition-opacity duration-300 ease-in-out motion-reduce:transition-none opacity-0 pointer-events-none "
+
+                ToastHidden ->
+                    " hidden opacity-0 "
+    in
     case model.formState of
         AuthSuccess _ ->
-            div [ class ("my-2" ++ S.successMessage) ]
+            div
+                [ class ("my-2" ++ S.successMessage ++ fadeClasses)
+                , attribute "role" "status"
+                , attribute "aria-live" "polite"
+                ]
                 [ text texts.loginSuccessful
                 ]
 
-        AuthFailed r ->
-            div [ class ("my-2" ++ S.errorMessage) ]
+        AuthFailed _ ->
+            div
+                [ class ("my-2" ++ S.errorMessage ++ fadeClasses)
+                , attribute "role" "alert"
+                ]
                 [ text texts.loginFailed
                 ]
 
         HttpError err ->
-            div [ class ("my-2" ++ S.errorMessage) ]
+            div
+                [ class ("my-2" ++ S.errorMessage ++ fadeClasses)
+                , attribute "role" "alert"
+                ]
                 [ text (texts.httpError err)
                 ]
 
