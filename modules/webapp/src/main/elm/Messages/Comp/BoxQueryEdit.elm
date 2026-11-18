@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.BoxQueryEdit exposing (Texts, de, fr, gb)
+module Messages.Comp.BoxQueryEdit exposing (Texts, de, fr, gb, pt)
 
 import Messages.Comp.BoxSearchQueryInput
 import Messages.Comp.ItemColumnDropdown
@@ -39,4 +39,12 @@ fr =
     { columnDropdown = Messages.Comp.ItemColumnDropdown.fr
     , searchQuery = Messages.Comp.BoxSearchQueryInput.fr
     , showColumnHeaders = "Voir les entêtes des colonnes"
+    }
+
+
+pt : Texts
+pt =
+    { columnDropdown = Messages.Comp.ItemColumnDropdown.pt
+    , searchQuery = Messages.Comp.BoxSearchQueryInput.pt
+    , showColumnHeaders = "Mostrar cabeçalhos das colunas"
     }

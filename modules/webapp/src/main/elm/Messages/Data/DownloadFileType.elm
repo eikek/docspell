@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Data.DownloadFileType exposing (Texts, de, fr, gb)
+module Messages.Data.DownloadFileType exposing (Texts, de, fr, gb, pt)
 
 import Data.DownloadFileType exposing (DownloadFileType(..))
 
@@ -42,3 +42,13 @@ fr ft =
 
         Originals ->
             "Fichiers originaux"
+
+
+pt : Texts
+pt ft =
+    case ft of
+        Converted ->
+            "Arquivos PDF convertidos"
+
+        Originals ->
+            "Arquivos originais"

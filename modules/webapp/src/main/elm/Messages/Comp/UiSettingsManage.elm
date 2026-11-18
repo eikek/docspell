@@ -10,6 +10,7 @@ module Messages.Comp.UiSettingsManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -87,4 +88,22 @@ fr =
     , collectiveHeader = "Paramètres de groupe"
     , collectiveInfo = "Ces paramètres s'appliquent à tous les utilisateurs à moins d'être écrasés par les paramètres personnels. En cas de remise à zéro, les paramètres par défaut de l'application sont utilisés."
     , expandCollapse = "Étendre/Réduire tout"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , uiSettingsForm = Messages.Comp.UiSettingsForm.pt
+    , accountScope = Messages.Data.AccountScope.pt
+    , saveSettings = "Salvar configurações"
+    , settingsUnchanged = "Configurações inalteradas ou inválidas."
+    , settingsSaved = "Configurações salvas."
+    , unknownSaveError = "Erro desconhecido ao tentar salvar as configurações."
+    , httpError = Messages.Comp.HttpError.pt
+    , userHeader = "Configurações pessoais"
+    , userInfo = "Suas configurações pessoais se sobrepõem às do coletivo. Ao redefinir, as configurações são restauradas a partir das configurações do coletivo."
+    , collectiveHeader = "Configurações do coletivo"
+    , collectiveInfo = "Estas configurações se aplicam a todos os usuários, a menos que sejam sobrepostas por configurações pessoais. A redefinição carrega os valores padrão fornecidos pelo aplicativo."
+    , expandCollapse = "Expandir/recolher tudo"
     }

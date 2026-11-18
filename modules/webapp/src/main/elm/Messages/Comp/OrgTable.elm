@@ -10,6 +10,7 @@ module Messages.Comp.OrgTable exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.OrgUse exposing (OrgUse)
@@ -53,4 +54,14 @@ fr =
     , contact = "Contact"
     , use = "Utiliser"
     , orgUseLabel = Messages.Data.OrgUse.fr
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , address = "Endereço"
+    , contact = "Contato"
+    , use = "Uso"
+    , orgUseLabel = Messages.Data.OrgUse.pt
     }

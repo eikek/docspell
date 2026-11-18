@@ -10,6 +10,7 @@ module Messages.Comp.NotificationHookTable exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.EventType exposing (EventType)
@@ -62,4 +63,16 @@ fr =
     , channel = "Canal"
     , events = "Événements"
     , allEvents = "Tout"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , eventType = Messages.Data.EventType.pt
+    , channelType = Messages.Data.ChannelType.pt
+    , enabled = "Ativado"
+    , channel = "Canal"
+    , events = "Eventos"
+    , allEvents = "Todos"
     }

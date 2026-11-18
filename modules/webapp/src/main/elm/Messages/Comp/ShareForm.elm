@@ -10,6 +10,7 @@ module Messages.Comp.ShareForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -55,4 +56,15 @@ fr =
     , password = "Mot de passe"
     , publishUntil = "Publié jusqu'au"
     , clearPassword = "Supprimer le mot de passe"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , queryLabel = "Consulta"
+    , enabled = "Habilitado"
+    , password = "Senha"
+    , publishUntil = "Publicar até"
+    , clearPassword = "Remover senha"
     }

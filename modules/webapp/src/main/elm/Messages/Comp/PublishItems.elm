@@ -10,6 +10,7 @@ module Messages.Comp.PublishItems exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -111,4 +112,27 @@ fr tz =
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire"
     , doneLabel = "Terminé"
     , sendViaMail = "Envoyer par mail"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , shareForm = Messages.Comp.ShareForm.pt
+    , shareView = Messages.Comp.ShareView.pt tz
+    , shareMail = Messages.Comp.ShareMail.pt
+    , title = "Publicar Itens"
+    , infoText = "Publicar itens cria um link codificado, que pode ser usado por qualquer pessoa para ver os documentos selecionados. Este link não pode ser adivinhado, mas é público! Ele existe por um determinado período e pode ser protegido adicionalmente com uma senha."
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.Portuguese tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.Portuguese tz
+    , submitPublish = "Publicar"
+    , submitPublishTitle = "Publicar os documentos agora"
+    , cancelPublish = "Cancelar"
+    , cancelPublishTitle = "Voltar para a visualização de seleção"
+    , publishSuccessful = "Itens publicados com sucesso"
+    , publishInProcess = "Os itens estão sendo publicados…"
+    , correctFormErrors = "Corrija os erros no formulário."
+    , doneLabel = "Concluir"
+    , sendViaMail = "Enviar por E-mail"
     }

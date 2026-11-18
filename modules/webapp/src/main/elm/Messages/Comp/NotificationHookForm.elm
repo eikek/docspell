@@ -10,6 +10,7 @@ module Messages.Comp.NotificationHookForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.EventType exposing (EventType)
@@ -103,4 +104,26 @@ fr =
     , jsonPayload = "JSON"
     , messagePayload = "Message"
     , payloadInfo = "Les messages sont envoyés à gotify, email and matrix. Le JSON est envoyé au canal HTTP."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , channelRef = Messages.Comp.ChannelRefInput.pt
+    , eventType = Messages.Data.EventType.pt
+    , eventSample = Messages.Comp.EventSample.pt
+    , channelHeader = "Selecionar canais"
+    , enableDisable = "Ativado / Desativado"
+    , eventsInfo = "Selecione os eventos que acionam este webhook"
+    , selectEvents = "Selecionar…"
+    , events = "Eventos"
+    , samplePayload = "Exemplo de payload"
+    , toggleAllEvents = "Notificar em todos os eventos"
+    , eventFilter = "Expressão de filtro de eventos"
+    , eventFilterInfo = "Opcionalmente, especifique uma expressão para filtrar eventos com base na sua estrutura JSON."
+    , eventFilterClickForHelp = "Clique aqui para obter ajuda"
+    , jsonPayload = "JSON"
+    , messagePayload = "Mensagem"
+    , payloadInfo = "Payloads de mensagem são enviados para gotify, e-mail e matrix. O JSON é enviado para o canal http."
     }

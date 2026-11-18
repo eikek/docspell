@@ -10,6 +10,7 @@ module Messages.Comp.ItemMail exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -89,4 +90,23 @@ fr =
     , sendLabel = "Envoyer"
     , moreRecipients = "Plus…"
     , lessRecipients = "Moins…"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , selectConnection = "Selecionar conexão..."
+    , sendVia = "Enviar via"
+    , recipients = "Destinatário(s)"
+    , ccRecipients = "CC"
+    , bccRecipients = "CCO"
+    , subject = "Assunto"
+    , body = "Corpo da mensagem"
+    , includeAllAttachments = "Incluir todos os anexos do item"
+    , connectionMissing = "Nenhuma conexão de e-mail configurada. Vá para as configurações do usuário para adicionar uma."
+    , sendLabel = "Enviar"
+    , moreRecipients = "Mais…"
+    , lessRecipients = "Menos…"
     }

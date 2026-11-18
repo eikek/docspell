@@ -10,6 +10,7 @@ module Messages.Page.Search exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -263,4 +264,65 @@ fr tz =
     , linkItemsHeader = "Lier des documents"
     , downloadAll = "Télécharger tout"
     , downloadAllQueryNeeded = "Tout ne peut pas être téléchargé, il faut chercher quelque chose."
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , itemCardList = Messages.Comp.ItemCardList.pt tz
+    , searchStatsView = Messages.Comp.SearchStatsView.pt
+    , sideMenu = Messages.Page.SearchSideMenu.pt
+    , itemMerge = Messages.Comp.ItemMerge.pt tz
+    , publishItems = Messages.Comp.PublishItems.pt tz
+    , bookmarkManage = Messages.Comp.BookmarkQueryManage.pt
+    , downloadAllComp = Messages.Comp.DownloadAll.pt
+    , contentSearch = "Pesquisar no conteúdo…"
+    , searchInNames = "Pesquisar nos nomes…"
+    , selectModeTitle = "Modo de seleção"
+    , fullHeightPreviewTitle = "Pré-visualização em altura total"
+    , fullWidthPreviewTitle = "Pré-visualização em largura total"
+    , powerSearchPlaceholder = "Consulta de busca …"
+    , reallyReprocessQuestion = "Deseja realmente reprocessar todos os itens selecionados? Os metadados de itens não confirmados podem mudar."
+    , reallyDeleteQuestion = "Deseja realmente excluir todos os itens selecionados?"
+    , reallyRestoreQuestion = "Deseja realmente restaurar todos os itens selecionados?"
+    , editSelectedItems = \n -> "Editar " ++ String.fromInt n ++ " itens selecionados"
+    , reprocessSelectedItems = \n -> "Reprocessar " ++ String.fromInt n ++ " itens selecionados"
+    , deleteSelectedItems = \n -> "Deletar " ++ String.fromInt n ++ " itens selecionados"
+    , undeleteSelectedItems = \n -> "Restaurar " ++ String.fromInt n ++ " itens selecionados"
+    , selectAllVisible = "Selecionar todos os visíveis"
+    , selectNone = "Desmarcar todos"
+    , resetSearchForm = "Redefinir formulário de busca"
+    , exitSelectMode = "Sair do modo de seleção"
+    , mergeItemsTitle = \n -> "Mesclar " ++ String.fromInt n ++ " itens selecionados"
+    , publishItemsTitle = \n -> "Publicar " ++ String.fromInt n ++ " itens selecionados"
+    , publishCurrentQueryTitle = "Publicar resultados atuais"
+    , shareResults = "Compartilhar resultados"
+    , nothingSelectedToShare = "Não é possível compartilhar tudo. Você precisa aplicar alguns critérios."
+    , loadMore = "Carregar mais…"
+    , thatsAll = "Isso é tudo"
+    , showItemGroups = "Agrupar por mês"
+    , listView = "Visualização em lista"
+    , tileView = "Visualização em blocos"
+    , expandCollapseRows = "Expandir/Recolher tudo"
+    , bookmarkQuery = "Salvar consulta nos favoritos"
+    , nothingToBookmark = "Nada selecionado para salvar nos favoritos"
+    , submitMerge = "Mesclar"
+    , mergeInfoText = "Ao mesclar itens, o primeiro item da lista atua como destino. Os metadados de todos os outros itens são copiados para o item de destino. Se a propriedade for um valor único (como correspondente), ela só será definida se ainda não estiver presente. Etiquetas, campos personalizados e anexos são adicionados. Os itens podem ser reordenados usando arrastar e soltar."
+    , mergeDeleteWarn = "Observe que todos os itens, exceto o primeiro, serão excluídos após uma mesclagem bem-sucedida!"
+    , submitMergeTitle = "Mesclar os documentos agora"
+    , cancelMergeTitle = "Voltar para a visualização de seleção"
+    , mergeSuccessful = "Itens mesclados com sucesso"
+    , mergeInProcess = "Mesclando itens…"
+    , linkItemsTitle = \n -> "Link " ++ String.fromInt n ++ " items"
+    , linkItemsMessage = "A lista precisa ter pelo menos 2 itens. O primeiro será o item de destino e todos os demais serão adicionados à sua lista de itens relacionados."
+    , submitLinkItems = "Vincular"
+    , submitLinkItemsTitle = "Vincular itens agora"
+    , cancelLinkItemsTitle = "Voltar para a visualização de seleção"
+    , linkItemsSuccessful = "Itens vinculados com sucesso"
+    , linkItemsInProcess = "Vinculando itens..."
+    , mergeHeader = "Mesclar itens"
+    , linkItemsHeader = "Vincular itens"
+    , downloadAll = "Baixar tudo"
+    , downloadAllQueryNeeded = "Aplique um critério para reduzir o que baixar."
     }

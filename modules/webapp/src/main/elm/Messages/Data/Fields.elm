@@ -9,6 +9,7 @@ module Messages.Data.Fields exposing
     ( de
     , fr
     , gb
+    , pt
     )
 
 import Data.Fields exposing (Field(..))
@@ -132,3 +133,43 @@ fr field =
 
         SourceName ->
             "Source du document"
+
+
+pt : Field -> String
+pt field =
+    case field of
+        Tag ->
+            "Etiqueta"
+
+        Folder ->
+            "Pasta"
+
+        CorrOrg ->
+            "Organização correspondente"
+
+        CorrPerson ->
+            "Pessoa correspondente"
+
+        ConcPerson ->
+            "Pessoa interessada"
+
+        ConcEquip ->
+            "Equipamento relacionado"
+
+        Date ->
+            "Data"
+
+        DueDate ->
+            "Data de vencimento"
+
+        Direction ->
+            "Direção"
+
+        PreviewImage ->
+            "Imagem de visualização"
+
+        CustomFields ->
+            "Campos personalizados"
+
+        SourceName ->
+            "Origem do item"

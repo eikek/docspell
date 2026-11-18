@@ -10,6 +10,7 @@ module Messages.Comp.ScanMailboxManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -76,4 +77,19 @@ fr tb =
     , taskUpdated = "Tâche mise à jour"
     , taskStarted = "Tâche démarrée."
     , taskDeleted = "Tâche supprimée."
+    }
+
+
+pt : TimeZone -> Texts
+pt tb =
+    { basics = Messages.Basics.pt
+    , form = Messages.Comp.ScanMailboxForm.pt tb
+    , table = Messages.Comp.ScanMailboxTable.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , newTask = "Nova tarefa"
+    , createNewTask = "Criar uma nova tarefa de verificação de caixa de e-mail"
+    , taskCreated = "Tarefa criada."
+    , taskUpdated = "Tarefa atualizada."
+    , taskStarted = "Tarefa iniciada."
+    , taskDeleted = "Tarefa excluída."
     }

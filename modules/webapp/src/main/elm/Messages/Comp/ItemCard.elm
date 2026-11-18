@@ -10,6 +10,7 @@ module Messages.Comp.ItemCard exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.Direction exposing (Direction)
@@ -76,4 +77,19 @@ fr tz =
     , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.French tz
     , directionLabel = Messages.Data.Direction.fr
     , showRelatedItems = "Afficher les documents liés"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , dueOn = "Vence em"
+    , new = "Novo"
+    , openAttachmentFile = "Abrir arquivo anexo"
+    , gotoDetail = "Ir para a visualização de detalhes"
+    , cycleAttachments = "Alternar anexos"
+    , formatDateLong = Messages.DateFormat.formatDateLong Messages.UiLanguage.Portuguese tz
+    , formatDateShort = Messages.DateFormat.formatDateShort Messages.UiLanguage.Portuguese tz
+    , directionLabel = Messages.Data.Direction.pt
+    , showRelatedItems = "Exibir itens vinculados"
     }

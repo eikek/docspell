@@ -10,6 +10,7 @@ module Messages.Page.UserSettings exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -247,4 +248,67 @@ moins un canal de communication.
     , periodicQueryInfoText = "Des requêtes périodiques peuvent être définies."
     , channels = "Canaux de notification"
     , channelInfoText = "Les canaux sont utilisés pour envoyer des messages de notification."
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , changePasswordForm = Messages.Comp.ChangePasswordForm.pt
+    , uiSettingsManage = Messages.Comp.UiSettingsManage.pt
+    , emailSettingsManage = Messages.Comp.EmailSettingsManage.pt
+    , imapSettingsManage = Messages.Comp.ImapSettingsManage.pt
+    , notificationManage = Messages.Comp.DueItemsTaskManage.pt tz
+    , scanMailboxManage = Messages.Comp.ScanMailboxManage.pt tz
+    , notificationHookManage = Messages.Comp.NotificationHookManage.pt
+    , periodicQueryTask = Messages.Comp.PeriodicQueryTaskManage.pt tz
+    , channelManage = Messages.Comp.NotificationChannelManage.pt
+    , otpSetup = Messages.Comp.OtpSetup.pt tz
+    , userSettings = "Configurações do Usuário"
+    , uiSettings = "Configurações da Interface"
+    , notifications = "Notificações"
+    , scanMailbox = "Varredura da Caixa de E-mail"
+    , emailSettingSmtp = "Configurações de E-Mail (SMTP)"
+    , emailSettingImap = "Configurações de E-Mail (IMAP)"
+    , changePassword = "Alterar Senha"
+    , channelSettings = "Canais de Notificação"
+    , uiSettingsInfo =
+        "Estas configurações afetam apenas a interface web. As configurações podem ser salvas no coletivo ou no seu usuário pessoal. As configurações pessoais têm preferência quando ambos os valores existirem."
+    , scanMailboxInfo1 =
+        "O Docspell pode varrer pastas da sua caixa de e-mail para importar seus e-mails. "
+            ++ "You need to provide a connection in "
+            ++ "your e-mail (imap) settings."
+    , scanMailboxInfo2 =
+        """
+            O Docspell percorre todas as pastas configuradas e importa
+            os e-mails que correspondem aos critérios de busca. Os e-mails são ignorados se
+            tiverem sido importados em uma execução anterior e os itens
+            correspondentes ainda existirem. Após enviar um e-mail para o Docspell,
+            você pode optar por movê-lo para outra pasta, excluí-lo
+            ou simplesmente deixá-lo lá. Neste último caso, você deve
+            ajustar o agendamento para evitar ler os mesmos e-mails
+            novamente."""
+    , otpMenu = "Autenticação de Dois Fatores"
+    , dueItems = "Consulta de Itens Pendentes"
+    , notificationInfoText = """
+
+O Docspell pode enviar mensagens de notificação em vários eventos. Você pode
+escolher entre estes canais para enviar mensagens:
+[Matrix](https://matrix.org), [Gotify](https://gotify.net) ou E-Mail.
+Por fim, você pode enviar uma requisição http simples com os detalhes do evento em
+seu payload.
+
+Além disso, você pode configurar consultas que são executadas periodicamente.
+Os resultados são enviados como uma mensagem de notificação.
+
+Uma configuração de notificação precisa de pelo menos um canal de comunicação, que
+deve ser criado previamente.
+
+"""
+    , webhookInfoText = """Os Webhooks executam requisições http mediante determinados eventos no docspell.
+"""
+    , dueItemsInfoText = """O Docspell pode notificar você quando as datas de vencimento dos seus itens se aproximarem.  """
+    , periodicQueryInfoText = "Você pode definir uma consulta personalizada que é executada periodicamente."
+    , channels = "Canais de notificação"
+    , channelInfoText = "Os canais são usados para enviar mensagens de notificação."
     }

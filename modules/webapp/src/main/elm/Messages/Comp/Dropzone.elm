@@ -10,6 +10,7 @@ module Messages.Comp.Dropzone exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -53,4 +54,15 @@ fr =
     , selectInfo =
         "Choisir un fichier (pdf, docx, txt, html, ...)."
             ++ "Les archives (zip et eml) seront extraites."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , dropFilesHere = "Solte os arquivos aqui"
+    , or = "Ou"
+    , selectInfo =
+        "Escolha arquivos de documento (pdf, docx, txt, html, …). Arquivos (zip e eml) serão extraídos."
+            ++ "Archives (zip and eml) are extracted."
     }

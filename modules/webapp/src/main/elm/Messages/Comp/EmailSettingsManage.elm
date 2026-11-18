@@ -10,6 +10,7 @@ module Messages.Comp.EmailSettingsManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -71,4 +72,18 @@ fr =
     , reallyDeleteConnection = "Confirmer la suppression de cette connexion ?"
     , deleteThisEntry = "Supprimer cette connexion"
     , fillRequiredFields = "Veuillez compléter les champs requis."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , settingsForm = Messages.Comp.EmailSettingsForm.pt
+    , settingsTable = Messages.Comp.EmailSettingsTable.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , newSettings = "Nova conexão"
+    , addNewSmtpSettings = "Adicionar novas configurações de SMTP"
+    , reallyDeleteConnection = "Realmente excluir esta conexão?"
+    , deleteThisEntry = "Excluir esta conexão"
+    , fillRequiredFields = "Por favor, preencha os campos obrigatórios."
     }

@@ -21,6 +21,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
+import Messages.Comp.MarkdownInput exposing (Texts)
 import Styles as S
 
 
@@ -62,17 +63,17 @@ update txt msg model =
 --- View2
 
 
-viewContent2 : String -> Model -> Html Msg
-viewContent2 txt model =
+viewContent2 : Texts -> String -> Model -> Html Msg
+viewContent2 texts txt model =
     case model.display of
         Edit ->
-            editDisplay2 txt
+            editDisplay2 texts txt
 
         Preview ->
             previewDisplay2 txt
 
         Split ->
-            splitDisplay2 txt
+            splitDisplay2 texts txt
 
 
 viewEditLink2 : String -> (Bool -> Attribute Msg) -> Model -> Html Msg
@@ -120,13 +121,13 @@ viewCheatLink2 label classes model =
         ]
 
 
-editDisplay2 : String -> Html Msg
-editDisplay2 txt =
+editDisplay2 : Texts -> String -> Html Msg
+editDisplay2 texts txt =
     textarea
         [ class S.textAreaInput
         , class "h-full"
         , onInput SetText
-        , placeholder "Add notes here…"
+        , placeholder texts.placeholder
         , value txt
         ]
         []
@@ -137,11 +138,11 @@ previewDisplay2 txt =
     Markdown.toHtml [ class "markdown-preview" ] txt
 
 
-splitDisplay2 : String -> Html Msg
-splitDisplay2 txt =
+splitDisplay2 : Texts -> String -> Html Msg
+splitDisplay2 texts txt =
     div [ class "flex flex-row justify-evenly" ]
         [ div [ class "w-1/2" ]
-            [ editDisplay2 txt
+            [ editDisplay2 texts txt
             ]
         , div [ class "w-1/2" ]
             [ previewDisplay2 txt

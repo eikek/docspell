@@ -10,6 +10,7 @@ module Messages.Comp.EmailSettingsForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.SSLType exposing (SSLType)
@@ -101,4 +102,26 @@ fr =
     , replyToPlaceholder = "Adresse de réponse optionnelle"
     , ssl = "SSL"
     , ignoreCertCheck = "Ignorer la vérification des certificats"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , sslTypeLabel = Messages.Data.SSLType.pt
+    , connectionPlaceholder = "Nome da conexão, ex.: 'gmail.com'"
+    , connectionNameInfo = "O nome da conexão não deve conter espaços em branco ou caracteres especiais."
+    , smtpHost = "Host SMTP"
+    , smtpHostPlaceholder = "Nome do host SMTP, ex.: 'mail.gmail.com'"
+    , smtpPort = "Porta SMTP"
+    , smtpUser = "Usuário SMTP"
+    , smtpUserPlaceholder = "Nome de usuário SMTP, ex.: 'seu.nome@gmail.com'"
+    , smtpPassword = "Senha SMTP"
+    , smtpPasswordPlaceholder = "Senha"
+    , fromAddress = "Endereço do remetente"
+    , fromAddressPlaceholder = "Endereço de e-mail do remetente"
+    , replyTo = "Responder a"
+    , replyToPlaceholder = "Endereço de e-mail de resposta opcional"
+    , ssl = "SSL"
+    , ignoreCertCheck = "Ignorar verificação de certificado"
     }

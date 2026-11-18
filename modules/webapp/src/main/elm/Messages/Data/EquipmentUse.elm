@@ -9,6 +9,7 @@ module Messages.Data.EquipmentUse exposing
     ( de
     , fr
     , gb
+    , pt
     )
 
 import Data.EquipmentUse exposing (EquipmentUse(..))
@@ -42,3 +43,13 @@ fr pu =
 
         Disabled ->
             "Inactif"
+
+
+pt : EquipmentUse -> String
+pt pu =
+    case pu of
+        Concerning ->
+            "Relacionado"
+
+        Disabled ->
+            "Desativado"

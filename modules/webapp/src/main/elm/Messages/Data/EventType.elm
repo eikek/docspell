@@ -10,6 +10,7 @@ module Messages.Data.EventType exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.EventType exposing (EventType(..))
@@ -105,4 +106,33 @@ fr et =
         JobDone ->
             { name = "Tâche terminée"
             , info = "Quand une tâche est terminée"
+            }
+
+
+pt : EventType -> Texts
+pt et =
+    case et of
+        TagsChanged ->
+            { name = "Tarefa concluída"
+            , info = "Sempre que uma nova tarefa for concluída"
+            }
+
+        SetFieldValue ->
+            { name = "Tarefa concluída"
+            , info = "Sempre que uma nova tarefa for concluída"
+            }
+
+        DeleteFieldValue ->
+            { name = "Tarefa concluída"
+            , info = "Sempre que uma nova tarefa for concluída"
+            }
+
+        JobSubmitted ->
+            { name = "Tarefa concluída"
+            , info = "Sempre que uma nova tarefa for concluída"
+            }
+
+        JobDone ->
+            { name = "Tarefa concluída"
+            , info = "Sempre que uma nova tarefa for concluída"
             }

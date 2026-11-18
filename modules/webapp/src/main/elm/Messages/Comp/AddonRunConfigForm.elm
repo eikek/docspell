@@ -10,6 +10,7 @@ module Messages.Comp.AddonRunConfigForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -105,4 +106,26 @@ fr tz =
     , argumentsUpdated = "Arguments updated"
     , configureTitle = "Configure this addon"
     , configureLabel = "Configure"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , calEventInput = Messages.Comp.CalEventInput.pt tz
+    , enableDisable = "Ative ou desative esta configuração de execução."
+    , chooseName = "Escolha um nome…"
+    , impersonateUser = "Executar em nome do usuário"
+    , triggerRun = "Disparar execução"
+    , schedule = "Agendamento"
+    , addons = "Addons"
+    , includedAddons = "Addons incluídos"
+    , add = "Adicionar"
+    , readMore = "Ler mais"
+    , readLess = "Ler menos"
+    , arguments = "Argumentos"
+    , update = "Atualizar"
+    , argumentsUpdated = "Argumentos atualizados"
+    , configureTitle = "Configurar este complemento"
+    , configureLabel = "Configurar"
     }

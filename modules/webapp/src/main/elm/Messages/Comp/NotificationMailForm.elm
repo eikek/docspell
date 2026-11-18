@@ -10,6 +10,7 @@ module Messages.Comp.NotificationMailForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -59,4 +60,16 @@ fr =
     , recipients = "Destinataire(s)"
     , recipientsInfo = "Une ou plusieurs adresses mail, confirmer chacune en pressant 'Entrée'"
     , recipientsRequired = "Au moins un destinataire est requis"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , selectConnection = "Selecionar conexão..."
+    , sendVia = "Enviar via"
+    , sendViaInfo = "A conexão SMTP a ser usada ao enviar e-mails de notificação."
+    , recipients = "Destinatário(s)"
+    , recipientsInfo = "Um ou mais endereços de e-mail, confirme cada um pressionando 'Enter'."
+    , recipientsRequired = "É necessário pelo menos um destinatário."
     }

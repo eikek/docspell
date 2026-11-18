@@ -10,6 +10,7 @@ module Messages.Comp.UserTable exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -66,4 +67,17 @@ fr tz =
     , logins = "Connexions"
     , lastLogin = "Dernière connexion"
     , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.French tz
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , login = "Login"
+    , state = "Status"
+    , source = "Tipo"
+    , email = "E-mail"
+    , logins = "Acessos"
+    , lastLogin = "Último acesso"
+    , formatDateTime = DF.formatDateTimeLong Messages.UiLanguage.Portuguese tz
     }

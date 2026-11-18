@@ -48,6 +48,7 @@ type alias Config =
 type alias Flags =
     { account : Maybe AuthResult
     , pdfSupported : Bool
+    , browserLang : String
     , innerWidth : Int
     , config : Config
     }

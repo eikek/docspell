@@ -10,6 +10,7 @@ module Messages.Comp.SearchMenu exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.Direction exposing (Direction)
@@ -165,4 +166,41 @@ fr =
     , selection = "Sélection"
     , showSelection = "Afficher la sélection"
     , clearSelection = "Effacer la sélection"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.pt
+    , tagSelect = Messages.Comp.TagSelect.pt
+    , folderSelect = Messages.Comp.FolderSelect.pt
+    , bookmarkChooser = Messages.Comp.BookmarkChooser.pt
+    , chooseDirection = "Escolha uma direção…"
+    , choosePerson = "Escolha uma pessoa"
+    , chooseEquipment = "Escolha um equipamento"
+    , inbox = "Caixa de entrada"
+    , fulltextSearch = "Busca por texto completo"
+    , searchInNames = "Buscar nos nomes"
+    , switchSearchModes = "Alternar modos de busca de texto"
+    , contentSearch = "Busca de conteúdo…"
+    , searchInNamesPlaceholder = "Buscar em vários nomes…"
+    , fulltextSearchInfo = "Busca por texto completo no conteúdo dos documentos e notas."
+    , nameSearchInfo = "Busca em correspondentes, entidades envolvidas, nome do item e notas."
+    , tagCategoryTab = "Categorias de etiquetas"
+    , chooseOrganization = "Escolha uma organização"
+    , createCustomFieldTitle = "Criar um novo campo personalizado"
+    , from = "De"
+    , to = "Até"
+    , dueDateTab = "Data de vencimento"
+    , dueFrom = "Vencimento a partir de"
+    , dueTo = "Vencimento até"
+    , sourceTab = "Origem"
+    , searchInItemSource = "Buscar na origem do item…"
+    , direction = Messages.Data.Direction.pt
+    , trashcan = "Lixeira"
+    , bookmarks = "Marcadores"
+    , selection = "Seleção"
+    , showSelection = "Exibir seleção"
+    , clearSelection = "Limpar seleção"
     }

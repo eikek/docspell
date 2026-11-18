@@ -10,6 +10,7 @@ module Messages.Page.ManageData exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -97,4 +98,23 @@ fr tz =
     , bookmarks = "Favoris"
     , addonArchives = "Addons"
     , addonRunConfigs = "Addon Run Configurations"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , tagManage = Messages.Comp.TagManage.pt
+    , equipmentManage = Messages.Comp.EquipmentManage.pt
+    , orgManage = Messages.Comp.OrgManage.pt
+    , personManage = Messages.Comp.PersonManage.pt
+    , folderManage = Messages.Comp.FolderManage.pt tz
+    , customFieldManage = Messages.Comp.CustomFieldManage.pt tz
+    , bookmarkManage = Messages.Comp.BookmarkManage.pt
+    , addonArchiveManage = Messages.Comp.AddonArchiveManage.pt
+    , addonRunConfigManage = Messages.Comp.AddonRunConfigManage.pt tz
+    , manageData = "Gerenciar dados"
+    , bookmarks = "Favoritos"
+    , addonArchives = "Extensões"
+    , addonRunConfigs = "Configurações de execução de extensões"
     }

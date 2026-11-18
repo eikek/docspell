@@ -10,6 +10,7 @@ module Messages.Comp.ScanMailboxForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -334,4 +335,91 @@ fr tz =
     , save = "Enregistrer"
     , saveNewTitle = "Enregistrer une nouvelle tâche"
     , updateTitle = "Mettre à jour la tâche"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , calEventInput = Messages.Comp.CalEventInput.pt tz
+    , httpError = Messages.Comp.HttpError.pt
+    , tagDropdown = Messages.Comp.TagDropdown.pt
+    , reallyDeleteTask = "Deseja realmente excluir esta tarefa de varredura da caixa de e-mail?"
+    , startOnce = "Iniciar uma vez"
+    , startNow = "Iniciar esta tarefa agora"
+    , deleteThisTask = "Excluir esta tarefa"
+    , generalTab = "Geral"
+    , processingTab = "Processamento"
+    , additionalFilterTab = "Filtro adicional"
+    , postProcessingTab = "Pós-processamento"
+    , metadataTab = "Metadados"
+    , scheduleTab = "Agendamento"
+    , processingTabInfo = "Estas configurações definem quais e-mails são buscados do servidor de e-mail."
+    , additionalFilterTabInfo = "Estes filtros são aplicados aos e-mails buscados da caixa de correio para selecionar os que devem ser importados."
+    , postProcessingTabInfo = "Isto define o que acontece com os e-mails que foram baixados."
+    , metadataTabInfo = "Defina os metadados que devem ser vinculados a todos os itens criados por esta tarefa."
+    , scheduleTabInfo = "Defina quando os e-mails devem ser importados."
+    , selectConnection = "Selecionar conexão..."
+    , enableDisable = "Ativar ou desativar esta tarefa."
+    , mailbox = "Caixa de correio"
+    , summary = "Resumo"
+    , summaryInfo = "Um nome legível, apenas para exibição"
+    , connectionInfo = "A conexão IMAP a ser usada para buscar e-mails."
+    , folders = "Pastas"
+    , foldersInfo = "As pastas onde procurar e-mails."
+    , receivedHoursInfo = "Selecionar e-mails mais recentes que `now - receivedHours`"
+    , receivedHoursLabel = "Recebidos nas últimas horas"
+    , fileFilter = "Filtro de arquivo"
+    , fileFilterInfo =
+        "Especifique um padrão glob de arquivo para filtrar anexos. Por exemplo, para extrair apenas arquivos pdf: "
+            ++ "`*.pdf`. Se desejar incluir o corpo do e-mail, permita arquivos html ou "
+            ++ "`mail.html`. Padrões glob podem ser combinados com OR, assim: "
+            ++ "`*.pdf|mail.html`. Sem filtro de arquivo, o padrão é "
+            ++ "`*`, que inclui tudo."
+    , subjectFilter = "Filtro de assunto"
+    , subjectFilterInfo =
+        "Especifique um padrão glob para filtrar e-mails por assunto. Por exemplo: "
+            ++ "`*Scanned Document*`. Sem filtro definido, o padrão é `*`, que inclui tudo."
+    , postProcessingLabel = "Aplicar pós-processamento a todos os e-mails obtidos."
+    , postProcessingInfo =
+        "Quando e-mails são obtidos mas não importados devido aos 'Filtros adicionais', esta opção pode "
+            ++ "controlar se, ainda assim, eles devem ser movidos para uma pasta de destino ou excluídos "
+            ++ "(o que estiver definido aqui). Se desmarcado, apenas os e-mails importados "
+            ++ "são pós-processados; os demais permanecem onde estão."
+    , targetFolder = "Pasta de destino"
+    , targetFolderInfo = "Mover e-mails para esta pasta."
+    , deleteMailLabel = "Excluir e-mails importados"
+    , deleteMailInfo =
+        "Se todos os e-mails obtidos pelo docspell devem ser excluídos. Isso se aplica apenas se "
+            ++ "a *pasta de destino* não estiver definida."
+    , itemDirection = "Direção do item"
+    , automatic = "Automático"
+    , itemDirectionInfo =
+        "Define a direção para um item. Se você sabe que todos os e-mails são de entrada ou "
+            ++ "de saída, você pode definir isso aqui. Caso contrário, a direção será deduzida "
+            ++ "observando o remetente e o destinatário."
+    , itemFolder = "Pasta do item"
+    , itemFolderInfo = "Colocar todos os itens desta caixa postal na pasta selecionada"
+    , tagsInfo = "Escolha as etiquetas que devem ser aplicadas aos itens."
+    , documentLanguage = "Idioma"
+    , documentLanguageInfo =
+        "Usado para extração e análise de texto. O "
+            ++ "idioma padrão do coletivo será usado se não for especificado aqui."
+    , scanRecursivelyInfo = "Escanear também as subpastas das pastas informadas em busca de e-mails."
+    , scanRecursivelyLabel = "Varrer pastas recursivamente"
+    , schedule = "Agendamento"
+    , scheduleClickForHelp = "Clique aqui para obter ajuda"
+    , scheduleInfo =
+        "Especifique com que frequência e quando esta tarefa deve ser executada. "
+            ++ "Use as 3 letras iniciais dos dias da semana em inglês. É permitido usar um único valor, "
+            ++ "uma lista (ex: 1,2,3), um intervalo (ex: 1..3) ou um '*' (significando todos) "
+            ++ "para cada parte."
+    , connectionMissing = "Nenhuma conexão de e-mail configurada. Vá para Configurações de e-mail para adicionar uma."
+    , noProcessingFolders = "Nenhuma pasta de processamento informada."
+    , invalidCalEvent = "O evento de calendário não é válido."
+    , attachmentsOnlyLabel = "Importar apenas anexos de e-mail"
+    , attachmentsOnlyInfo = "Descarta o corpo do e-mail e importa apenas os anexos."
+    , save = "Salvar"
+    , saveNewTitle = "Salvar nova tarefa"
+    , updateTitle = "Atualizar tarefa"
     }

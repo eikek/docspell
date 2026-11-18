@@ -102,3 +102,25 @@ fr tz =
     , loadMore = "Charger plus..."
     , thatsAll = "C'est tout !"
     }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { searchMenu = Messages.Comp.SearchMenu.pt
+    , basics = Messages.Basics.pt
+    , itemCardList = Messages.Comp.ItemCardList.pt tz
+    , passwordForm = Messages.Comp.SharePasswordForm.pt
+    , downloadAll = Messages.Comp.DownloadAll.pt
+    , authFailed = "Este compartilhamento não existe."
+    , httpError = Messages.Comp.HttpError.pt
+    , fulltextPlaceholder = "Busca por texto completo…"
+    , powerSearchPlaceholder = "Busca avançada…"
+    , extendedSearch = "Consulta de busca avançada"
+    , normalSearchPlaceholder = "Buscar…"
+    , showItemGroups = "Agrupar por mês"
+    , listView = "Visualização em lista"
+    , tileView = "Visualização em mosaico"
+    , downloadAllLabel = "Baixar tudo"
+    , loadMore = "Carregar mais…"
+    , thatsAll = "Isso é tudo"
+    }

@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.ItemDetail.RunAddonForm exposing (Texts, de, fr, gb)
+module Messages.Comp.ItemDetail.RunAddonForm exposing (Texts, de, fr, gb, pt)
 
 import Messages.Basics
 
@@ -46,4 +46,13 @@ fr =
     , runAddon = "Run an addon"
     , addonRunConfig = "Addon run configuration"
     , runAddonTitle = "Run the selected addon on this item."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , runAddon = "Executar um addon"
+    , addonRunConfig = "Configuração de execução do addon"
+    , runAddonTitle = "Executar o addon selecionado neste item."
     }

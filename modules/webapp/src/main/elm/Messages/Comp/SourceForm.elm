@@ -10,6 +10,7 @@ module Messages.Comp.SourceForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.Language exposing (Language)
@@ -135,4 +136,36 @@ Les filtre 'glob' peuvent être combinés avec OR, comme cela:
             ++ "par défaut du groupe est utilisée, si rien n'est spécifié ici."
     , languageLabel = Messages.Data.Language.fr
     , attachmentsOnly = "Importer uniquement les pièces-jointes pour les mails."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , tagDropdown = Messages.Comp.TagDropdown.pt
+    , description = "Descrição"
+    , enabled = "Habilitado"
+    , priority = "Prioridade"
+    , priorityInfo = "A prioridade usada pelo agendador ao processar arquivos enviados."
+    , metadata = "Metadados"
+    , metadataInfoText =
+        "Os metadados especificados aqui são anexados automaticamente a cada item enviado por "
+            ++ "esta fonte, a menos que sejam sobrescritos nos metadados da solicitação de envio. "
+            ++ "As etiquetas da solicitação são adicionadas às definidas aqui."
+    , folderInfo = "Escolha uma pasta para colocar os itens automaticamente."
+    , tagsInfo = "Escolha as etiquetas que devem ser aplicadas aos itens."
+    , fileFilter = "Filtro de arquivos"
+    , fileFilterInfo = """
+
+Especifique um padrão de arquivo (glob) para filtrar arquivos ao enviar arquivos compactados
+(ex.: para e-mail e zip). Por exemplo, para extrair apenas arquivos pdf:
+`*.pdf`. Os padrões podem ser combinados via OU, assim: `*.pdf|mail.html`.
+
+"""
+    , language = "Idioma"
+    , languageInfo =
+        "Usado para extração e análise de texto. O idioma padrão "
+            ++ "do coletivo será usado se não for especificado aqui."
+    , languageLabel = Messages.Data.Language.pt
+    , attachmentsOnly = "Importar somente anexos de e-mails"
     }

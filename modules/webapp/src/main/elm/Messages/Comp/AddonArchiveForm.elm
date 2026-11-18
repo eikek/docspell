@@ -10,6 +10,7 @@ module Messages.Comp.AddonArchiveForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -51,4 +52,13 @@ fr =
     , addonUrl = "Addon URL"
     , addonUrlPlaceholder = "p.e. https://github.com/some-user/project/refs/tags/1.0.zip"
     , installInfoText = "Only urls to remote addon zip files are supported."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , addonUrl = "URL do addon"
+    , addonUrlPlaceholder = "ex: https://github.com/some-user/project/refs/tags/1.0.zip"
+    , installInfoText = "Apenas URLs para arquivos zip de addons remotos são suportadas."
     }

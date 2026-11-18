@@ -10,6 +10,7 @@ module Messages.Comp.ImapSettingsForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.SSLType exposing (SSLType)
@@ -93,4 +94,24 @@ fr =
     , ignoreCertCheck = "Ignorer la vérification des certificats"
     , enableOAuth2 = "Activer l'authentification OAuth2"
     , oauth2Info = "Ceci permet la connexion via XOAuth en utilisant le mot de passe comme token d'accès"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , sslTypeLabel = Messages.Data.SSLType.pt
+    , connectionNamePlaceholder = "Nome da conexão, ex.: 'gmail.com'"
+    , connectionNameInfo = "O nome da conexão não pode conter espaços em branco nem caracteres especiais."
+    , imapHost = "Host IMAP"
+    , imapHostPlaceholder = "Nome do host IMAP, ex.: 'mail.gmail.com'"
+    , imapPort = "Porta IMAP"
+    , imapUser = "Usuário IMAP"
+    , imapUserPlaceholder = "Nome de usuário IMAP, ex.: 'seu.nome@gmail.com'"
+    , imapPassword = "Senha IMAP"
+    , imapPasswordPlaceholder = "Senha"
+    , ssl = "SSL"
+    , ignoreCertCheck = "Ignorar verificação de certificado"
+    , enableOAuth2 = "Habilitar autenticação OAuth2"
+    , oauth2Info = "Ativar esta opção permite conectar via XOAuth usando a senha como token de acesso."
     }

@@ -10,6 +10,7 @@ module Messages.Comp.CustomFieldForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.CustomFieldType exposing (CustomFieldType)
@@ -119,4 +120,32 @@ fr =
     , fieldNameRequired = "Nom  requis."
     , fieldTypeRequired = "Type requis."
     , updateSuccessful = "Champs enregistré."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , reallyDeleteField = "Deseja realmente excluir este campo personalizado?"
+    , fieldTypeLabel = Messages.Data.CustomFieldType.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , createCustomField = "Criar um novo campo personalizado."
+    , modifyTypeWarning =
+        "Observe que alterar o formato pode resultar em valores invisíveis na interface, caso eles não estejam de acordo com o novo formato!"
+            ++ "result in invisible values in the ui, if they don't comply to the new format!"
+    , nameInfo =
+        "O nome identifica este campo de forma exclusiva. Ele deve ser um identificador válido e não conter espaços nem caracteres especiais."
+            ++ "identifier, not contain spaces or weird characters."
+    , fieldFormat = "Formato do campo"
+    , fieldFormatInfo =
+        "Um campo deve ter um formato. Os valores são validados de acordo com este formato."
+            ++ "according to this format."
+    , label = "Rótulo"
+    , labelInfo =
+        "O rótulo definido pelo usuário para este campo. É usado para representar este campo na interface. Se não estiver presente, o nome será usado."
+            ++ "this field in the ui. If not present, the name is used."
+    , deleteThisField = "Excluir este campo"
+    , fieldNameRequired = "Um nome é obrigatório."
+    , fieldTypeRequired = "Um tipo é obrigatório."
+    , updateSuccessful = "O campo foi salvo."
     }

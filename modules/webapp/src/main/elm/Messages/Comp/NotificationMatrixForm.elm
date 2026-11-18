@@ -10,6 +10,7 @@ module Messages.Comp.NotificationMatrixForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -47,4 +48,13 @@ fr =
     , homeServer = "URL du homeserver"
     , roomId = "Room ID"
     , accessKey = "Token d'accès"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , homeServer = "URL do homeserver"
+    , roomId = "ID da sala"
+    , accessKey = "Token de acesso"
     }

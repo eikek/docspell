@@ -10,6 +10,7 @@ module Messages.Comp.DueItemsTaskList exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -51,5 +52,15 @@ fr =
     , channelType = Messages.Data.ChannelType.fr
     , summary = "Résumé"
     , schedule = "Programmation"
+    , connection = "Canal"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , channelType = Messages.Data.ChannelType.pt
+    , summary = "Resumo"
+    , schedule = "Agendamento"
     , connection = "Canal"
     }

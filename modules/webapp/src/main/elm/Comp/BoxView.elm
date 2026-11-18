@@ -7,17 +7,17 @@
 
 module Comp.BoxView exposing (..)
 
-import Comp.BoxQueryView
 import Api.Model.SearchStats exposing (SearchStats)
+import Comp.BoxQueryView
 import Comp.BoxStatsView exposing (ViewResult(..))
 import Comp.BoxUploadView
 import Data.Box exposing (Box)
-import Http
 import Data.BoxContent exposing (BoxContent(..), MessageData)
 import Data.Flags exposing (Flags)
 import Data.UiSettings exposing (UiSettings)
 import Html exposing (Html, div, i, text)
 import Html.Attributes exposing (class, classList)
+import Http
 import Markdown
 import Messages.Comp.BoxView exposing (Texts)
 import Styles as S

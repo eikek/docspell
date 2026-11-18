@@ -10,6 +10,7 @@ module Messages.Page.NewInvite exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -102,4 +103,26 @@ la création d'une nouvelle clé.
 La création d'invitation requiert de fournir le mot 
 de passe configuré.
 """
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , createNewInvitations = "Criar novos convites"
+    , invitationKey = "Chave do convite"
+    , password = "Senha"
+    , reset = "Redefinir"
+    , newInvitationCreated = "Novo convite criado."
+    , inviteInfo =
+        """O Docspell exige um convite para o cadastro. Você pode
+criar esses convites aqui e enviá-los a amigos para que
+eles possam se cadastrar no Docspell.
+
+Cada convite só pode ser usado uma vez. Você precisará
+criar uma chave para cada pessoa que desejar convidar.
+
+A criação de um convite exige o fornecimento da senha
+da configuração."""
     }

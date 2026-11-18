@@ -10,9 +10,11 @@ module Messages.Comp.ItemDetail.Notes exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
+import Messages.Comp.MarkdownInput
 
 
 type alias Texts =
@@ -20,6 +22,7 @@ type alias Texts =
     , notes : String
     , preview : String
     , supportsMarkdown : String
+    , markdownInput : Messages.Comp.MarkdownInput.Texts
     }
 
 
@@ -29,6 +32,7 @@ gb =
     , notes = "Notes"
     , preview = "Preview"
     , supportsMarkdown = "Supports Markdown"
+    , markdownInput = Messages.Comp.MarkdownInput.gb
     }
 
 
@@ -38,6 +42,7 @@ de =
     , notes = "Notizen"
     , preview = "Vorschau"
     , supportsMarkdown = "Unterstützt Markdown"
+    , markdownInput = Messages.Comp.MarkdownInput.de
     }
 
 
@@ -47,4 +52,15 @@ fr =
     , notes = "Notes"
     , preview = "Aperçu"
     , supportsMarkdown = "Markdown supporté"
+    , markdownInput = Messages.Comp.MarkdownInput.fr
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , notes = "Notas"
+    , preview = "Pré-visualização"
+    , supportsMarkdown = "Suporta Markdown"
+    , markdownInput = Messages.Comp.MarkdownInput.pt
     }

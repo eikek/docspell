@@ -10,6 +10,7 @@ module Messages.Comp.EquipmentForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.EquipmentUse exposing (EquipmentUse)
@@ -57,4 +58,15 @@ fr =
     , useNotSuggestions = "Ignorer dans les suggestions."
     , equipmentUseLabel = Messages.Data.EquipmentUse.fr
     , notes = "Notes"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , use = "Uso"
+    , useAsConcerning = "Usar como equipamento referenciado"
+    , useNotSuggestions = "Não usar para sugestões."
+    , equipmentUseLabel = Messages.Data.EquipmentUse.pt
+    , notes = "Observações"
     }

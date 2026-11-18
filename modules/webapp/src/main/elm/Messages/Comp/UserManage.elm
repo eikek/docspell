@@ -10,6 +10,7 @@ module Messages.Comp.UserManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -100,4 +101,25 @@ fr tz =
     , sentMails = "mails envoyés"
     , shares = "partages"
     , deleteFollowingData = "Les éléments suivants seront supprimés"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { userTable = Messages.Comp.UserTable.pt tz
+    , userForm = Messages.Comp.UserForm.pt
+    , basics = Messages.Basics.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , users = "Usuários"
+    , newUser = "Novo usuário"
+    , addNewUser = "Adicionar novo usuário"
+    , reallyDeleteUser = "Deseja realmente excluir este usuário?"
+    , createNewUser = "Criar novo usuário"
+    , deleteThisUser = "Excluir este usuário"
+    , pleaseCorrectErrors = "Por favor, corrija os erros no formulário."
+    , notDeleteCurrentUser = "Você não pode excluir o usuário atualmente conectado."
+    , folders = "Pastas"
+    , sentMails = "e-mails enviados"
+    , shares = "compartilhamentos"
+    , deleteFollowingData = "Os seguintes dados serão excluídos"
     }

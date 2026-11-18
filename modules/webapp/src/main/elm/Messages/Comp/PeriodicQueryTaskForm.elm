@@ -10,6 +10,7 @@ module Messages.Comp.PeriodicQueryTaskForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -150,4 +151,38 @@ fr tz =
     , messageContentLabel = "Début du message"
     , messageContentInfo = "Texte ajouté au message généré"
     , messageContentPlaceholder = "Bonjour, docspell vous informe de l'arrivée de nouveaux documents."
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , calEventInput = Messages.Comp.CalEventInput.pt tz
+    , channelForm = Messages.Comp.ChannelForm.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , bookmarkDropdown = Messages.Comp.BookmarkDropdown.pt
+    , channelRef = Messages.Comp.ChannelRefInput.pt
+    , reallyDeleteTask = "Deseja realmente excluir esta tarefa de notificação?"
+    , startOnce = "Executar uma vez"
+    , startTaskNow = "Executar esta tarefa agora"
+    , deleteThisTask = "Excluir esta tarefa"
+    , enableDisable = "Ative ou desative esta tarefa."
+    , summary = "Resumo"
+    , summaryInfo = "Um nome legível para exibição"
+    , schedule = "Agendamento"
+    , scheduleClickForHelp = "Clique aqui para obter ajuda"
+    , scheduleInfo =
+        "Especifique a frequência e quando esta tarefa deve ser executada. "
+            ++ "Use English 3-letter weekdays. Either a single value, "
+            ++ "a list (ex. 1,2,3), a range (ex. 1..3) or a '*' (meaning all) "
+            ++ "is allowed for each part."
+    , invalidCalEvent = "O evento de calendário não é válido."
+    , queryLabel = "Consulta"
+    , channelRequired = "Um canal válido deve ser informado."
+    , queryStringRequired = "Uma consulta de busca e/ou marcador deve ser informado"
+    , channelHeader = "Canais"
+    , messageContentTitle = "Personalizar mensagem"
+    , messageContentLabel = "Início da mensagem"
+    , messageContentInfo = "Insira o texto que será adicionado ao início da mensagem gerada."
+    , messageContentPlaceholder = "Olá, aqui é o Docspell informando sobre novos itens …"
     }

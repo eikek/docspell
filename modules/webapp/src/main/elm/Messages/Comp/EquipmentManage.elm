@@ -10,6 +10,7 @@ module Messages.Comp.EquipmentManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -71,4 +72,18 @@ fr =
     , reallyDeleteEquipment = "Confirmer la suppression de l'équipement ?"
     , deleteThisEquipment = "Supprimer cet équipement"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , equipmentTable = Messages.Comp.EquipmentTable.pt
+    , equipmentForm = Messages.Comp.EquipmentForm.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , createNewEquipment = "Criar novo equipamento"
+    , newEquipment = "Novo equipamento"
+    , reallyDeleteEquipment = "Realmente excluir este equipamento?"
+    , deleteThisEquipment = "Excluir este equipamento"
+    , correctFormErrors = "Por favor, corrija os erros no formulário."
     }

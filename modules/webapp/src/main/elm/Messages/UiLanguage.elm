@@ -18,6 +18,7 @@ type UiLanguage
     = English
     | German
     | French
+    | Portuguese
 
 
 all : List UiLanguage
@@ -25,4 +26,5 @@ all =
     [ English
     , German
     , French
+    , Portuguese
     ]

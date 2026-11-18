@@ -24,6 +24,7 @@ import Data.ServerEvent exposing (ServerEvent)
 import Data.UiSettings exposing (UiSettings)
 import Data.UiTheme exposing (UiTheme)
 import Http
+import Messages
 import Messages.UiLanguage exposing (UiLanguage)
 import Page exposing (Page(..))
 import Page.CollectiveSettings.Data
@@ -75,10 +76,16 @@ type alias Model =
 
 
 init : Key -> Url -> Flags -> UiSettings -> ( Model, Cmd Msg )
-init key url flags_ settings =
+init key url flags_ settings_ =
     let
         flags =
             initBaseUrl url flags_
+
+        initLang =
+            Messages.fromIso2 flags.browserLang
+
+        settings =
+            { settings_ | uiLang = initLang }
 
         page =
             Page.fromUrl url
@@ -131,7 +138,7 @@ init key url flags_ settings =
       , uiSettings = settings
       , sidebarVisible = flags.innerWidth > 768 && settings.sideMenuVisible
       , anonymousTheme = Data.UiTheme.Light
-      , anonymousUiLang = Messages.UiLanguage.English
+      , anonymousUiLang = initLang
       , langMenuOpen = False
       , showNewItemsArrived = False
       , jobsWaiting = 0
