@@ -10,6 +10,7 @@ module Messages.Comp.SourceManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -128,4 +129,34 @@ fr =
     , deleteThisSource = "Supprimer cette source"
     , errorGeneratingQR = "Erreur lors de la génération du  QR Code"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , sourceTable = Messages.Comp.SourceTable.pt
+    , sourceForm = Messages.Comp.SourceForm.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , addSourceUrl = "Adicionar uma URL de fonte"
+    , newSource = "Nova fonte"
+    , publicUploads = "Uploads Públicos"
+    , sourceInfoText =
+        "Esta fonte define URLs que podem ser usadas por qualquer pessoa para "
+            ++ "lhe enviar arquivos. Existe uma página web que pode ser compartilhada, "
+            ++ "ou a URL da API pode ser usada com outros clientes."
+    , itemsCreatedInfo =
+        \n ->
+            "Foram criados "
+                ++ String.fromInt n
+                ++ " itens por meio desta fonte."
+    , publicUploadPage = "Página de Upload Público"
+    , copyToClipboard = "Copiar para a área de transferência"
+    , openInNewTab = "Abrir em nova aba/janela"
+    , publicUploadUrl = "URL da API de Upload Público"
+    , reallyDeleteSource = "Deseja realmente excluir esta fonte?"
+    , createNewSource = "Criar nova fonte"
+    , deleteThisSource = "Excluir esta fonte"
+    , errorGeneratingQR = "Erro ao gerar QR Code"
+    , correctFormErrors = "Por favor, corrija os erros no formulário."
     }

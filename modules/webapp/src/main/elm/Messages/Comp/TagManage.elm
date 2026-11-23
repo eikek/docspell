@@ -10,6 +10,7 @@ module Messages.Comp.TagManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -71,4 +72,18 @@ fr =
     , reallyDeleteTag = "Confirmer la suppression du tag ?"
     , deleteThisTag = "Supprimer ce tag"
     , correctFormErrors = "Merci de corriger les erreurs du formulaire"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , tagTable = Messages.Comp.TagTable.pt
+    , tagForm = Messages.Comp.TagForm.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , createNewTag = "Criar uma nova etiqueta"
+    , newTag = "Nova etiqueta"
+    , reallyDeleteTag = "Deseja realmente excluir esta etiqueta?"
+    , deleteThisTag = "Excluir esta etiqueta"
+    , correctFormErrors = "Por favor, corrija os erros no formulário."
     }

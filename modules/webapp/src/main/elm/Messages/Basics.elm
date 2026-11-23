@@ -10,6 +10,7 @@ module Messages.Basics exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 
@@ -188,5 +189,51 @@ afin de rendre ce document visible. Ce message sera ainsi masqué.
     , shares = "Partages"
     , sources = "Sources"
     , periodicQueries = "Requêtes Périodiques"
+    , notificationHooks = "Webhooks"
+    }
+
+
+pt : Texts
+pt =
+    { incoming = "Entrada"
+    , outgoing = "Saída"
+    , deleted = "Excluídos"
+    , tags = "Etiquetas"
+    , items = "Itens"
+    , submit = "Enviar"
+    , submitThisForm = "Enviar este formulário"
+    , cancel = "Cancelar"
+    , delete = "Excluir"
+    , created = "Criado"
+    , edit = "Editar"
+    , back = "Voltar"
+    , backToList = "Voltar para a lista"
+    , searchPlaceholder = "Buscar…"
+    , selectPlaceholder = "Selecionar…"
+    , id = "ID"
+    , ok = "Ok"
+    , yes = "Sim"
+    , no = "Não"
+    , chooseTag = "Escolha uma etiqueta…"
+    , loading = "Carregando…"
+    , name = "Nome"
+    , organization = "Organização"
+    , person = "Pessoa"
+    , equipment = "Equipamento"
+    , folder = "Pasta"
+    , date = "Data"
+    , correspondent = "Correspondente"
+    , concerning = "Assunto"
+    , customFields = "Campos personalizados"
+    , direction = "Direção"
+    , folderNotOwnerWarning =
+        """
+Você **não é membro** desta pasta. Este item ficará **oculto**
+de qualquer busca agora. Use uma pasta da qual você seja membro para tornar este
+item visível. Esta mensagem desaparecerá depois.
+                      """
+    , shares = "Compartilhamentos"
+    , sources = "Fontes"
+    , periodicQueries = "Consultas periódicas"
     , notificationHooks = "Webhooks"
     }

@@ -67,6 +67,9 @@ get lang tz =
         French ->
             fr tz
 
+        Portuguese ->
+            pt tz
+
 
 {-| Get a ISO-3166-1 code of the given lanugage.
 -}
@@ -82,7 +85,7 @@ readIso2 : String -> Maybe UiLanguage
 readIso2 iso =
     let
         isIso lang =
-            iso == toIso2 lang
+            String.startsWith (toIso2 lang) (String.toLower iso)
     in
     List.filter isIso Messages.UiLanguage.all
         |> List.head
@@ -172,4 +175,28 @@ fr tz =
     , share = Messages.Page.Share.fr tz
     , shareDetail = Messages.Page.ShareDetail.fr tz
     , dashboard = Messages.Page.Dashboard.fr tz
+    }
+
+
+pt : TimeZone -> Messages
+pt tz =
+    { lang = Portuguese
+    , timeZone = tz
+    , iso2 = "pt"
+    , label = "Português (BR)"
+    , flagIcon = "fi fi-br"
+    , app = Messages.App.pt
+    , collectiveSettings = Messages.Page.CollectiveSettings.pt tz
+    , login = Messages.Page.Login.pt
+    , register = Messages.Page.Register.pt
+    , newInvite = Messages.Page.NewInvite.pt
+    , upload = Messages.Page.Upload.pt
+    , itemDetail = Messages.Page.ItemDetail.pt tz
+    , queue = Messages.Page.Queue.pt tz
+    , userSettings = Messages.Page.UserSettings.pt tz
+    , manageData = Messages.Page.ManageData.pt tz
+    , search = Messages.Page.Search.pt tz
+    , share = Messages.Page.Share.pt tz
+    , shareDetail = Messages.Page.ShareDetail.pt tz
+    , dashboard = Messages.Page.Dashboard.pt tz
     }

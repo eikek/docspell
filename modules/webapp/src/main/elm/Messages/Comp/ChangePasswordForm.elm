@@ -10,6 +10,7 @@ module Messages.Comp.ChangePasswordForm exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -77,4 +78,20 @@ fr =
     , passwordMismatch = "Les mots de passe ne correspondent pas."
     , fillRequiredFields = "Veuillez compléter les champs requis."
     , passwordChangeSuccessful = "Le mot de passe a été mis à jour."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , currentPassword = "Senha atual"
+    , newPassword = "Nova senha"
+    , repeatPassword = "Nova senha (repetir)"
+    , currentPasswordPlaceholder = "Senha"
+    , newPasswordPlaceholder = "Senha"
+    , repeatPasswordPlaceholder = "Senha"
+    , passwordMismatch = "As senhas não coincidem."
+    , fillRequiredFields = "Por favor, preencha os campos obrigatórios."
+    , passwordChangeSuccessful = "A senha foi alterada."
     }

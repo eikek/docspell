@@ -10,6 +10,7 @@ module Messages.Comp.CustomFieldTable exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -54,4 +55,14 @@ fr tz =
     , format = "Format"
     , usageCount = "#Utilisations"
     , formatDateShort = DF.formatDateShort Messages.UiLanguage.French tz
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , nameLabel = "Nome/Rótulo"
+    , format = "Formato"
+    , usageCount = "Nº de usos"
+    , formatDateShort = DF.formatDateShort Messages.UiLanguage.Portuguese tz
     }

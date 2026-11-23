@@ -10,6 +10,7 @@ module Messages.Comp.ItemDetail.ConfirmModal exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -106,4 +107,32 @@ fr =
         "Confirmer la suppression du document ? Il pourra être récupéré via la corbeille pendant un temps."
     , confirmDeleteFile = "Confirmer la suppresion de ce fichier ?"
     , confirmDeleteAllFiles = "Confirmer la suppresion de tous ces fichiers ?"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , confirmReprocessItem =
+        \state ->
+            if state == "created" then
+                "Reprocessar este item pode alterar seus metadados, "
+                    ++ "pois ele não está confirmado. Deseja prosseguir?"
+
+            else
+                "Reprocessar este item não alterará seus metadados, "
+                    ++ "pois ele já foi confirmado. Deseja prosseguir?"
+    , confirmReprocessFile =
+        \state ->
+            if state == "created" then
+                "Reprocessar este arquivo pode alterar os metadados "
+                    ++ "deste item, pois ele não está confirmado. Deseja prosseguir?"
+
+            else
+                "Reprocessar este arquivo não alterará os metadados "
+                    ++ "deste item, pois ele já foi confirmado. Deseja prosseguir?"
+    , confirmDeleteItem =
+        "Deseja realmente mover este item para a lixeira? Ele poderá ser restaurado por algum tempo."
+    , confirmDeleteFile = "Deseja realmente excluir este arquivo?"
+    , confirmDeleteAllFiles = "Deseja realmente excluir estes arquivos?"
     }

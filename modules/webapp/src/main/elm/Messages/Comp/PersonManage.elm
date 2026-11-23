@@ -10,6 +10,7 @@ module Messages.Comp.PersonManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -71,4 +72,18 @@ fr =
     , reallyDeletePerson = "Confirmer la suppression de cette personne ?"
     , deleteThisPerson = "Supprimer cette personne"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire."
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , personForm = Messages.Comp.PersonForm.pt
+    , personTable = Messages.Comp.PersonTable.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , newPerson = "Nova pessoa"
+    , createNewPerson = "Criar uma nova pessoa"
+    , reallyDeletePerson = "Realmente excluir esta pessoa?"
+    , deleteThisPerson = "Excluir esta pessoa"
+    , correctFormErrors = "Por favor, corrija os erros no formulário."
     }

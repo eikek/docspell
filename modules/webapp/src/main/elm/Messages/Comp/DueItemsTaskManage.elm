@@ -10,6 +10,7 @@ module Messages.Comp.DueItemsTaskManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -81,4 +82,20 @@ fr tz =
     , taskUpdated = "Tâche mise à jours"
     , taskStarted = "Tâche démarrée"
     , taskDeleted = "Tache supprimée"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , notificationForm = Messages.Comp.DueItemsTaskForm.pt tz
+    , notificationTable = Messages.Comp.DueItemsTaskList.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , channelType = Messages.Data.ChannelType.pt
+    , newTask = "Nova tarefa"
+    , createNewTask = "Criar nova tarefa de notificação"
+    , taskCreated = "Tarefa criada."
+    , taskUpdated = "Tarefa atualizada."
+    , taskStarted = "Tarefa iniciada."
+    , taskDeleted = "Tarefa excluída."
     }

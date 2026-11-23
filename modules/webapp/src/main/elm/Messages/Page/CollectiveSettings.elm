@@ -10,6 +10,7 @@ module Messages.Page.CollectiveSettings exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -98,4 +99,24 @@ fr tz =
     , size = "Taille"
     , items = "Documents"
     , submitSuccessful = "Configuration sauvegardée."
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , userManage = Messages.Comp.UserManage.pt tz
+    , collectiveSettingsForm = Messages.Comp.CollectiveSettingsForm.pt tz
+    , sourceManage = Messages.Comp.SourceManage.pt
+    , shareManage = Messages.Comp.ShareManage.pt tz
+    , httpError = Messages.Comp.HttpError.pt
+    , collectiveSettings = "Configurações do Coletivo"
+    , insights = "Insights"
+    , settings = "Configurações"
+    , users = "Usuários"
+    , user = "Usuário"
+    , collective = "Coletivo"
+    , size = "Tamanho"
+    , items = "Itens"
+    , submitSuccessful = "Configurações salvas."
     }

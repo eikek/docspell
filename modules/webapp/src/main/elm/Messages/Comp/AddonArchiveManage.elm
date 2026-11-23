@@ -10,6 +10,7 @@ module Messages.Comp.AddonArchiveManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -83,4 +84,21 @@ fr =
     , installNow = "Installation de l'addon"
     , updateNow = "Actualiser l'addon"
     , description = "Description"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , addonArchiveTable = Messages.Comp.AddonArchiveTable.pt
+    , addonArchiveForm = Messages.Comp.AddonArchiveForm.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , newAddonArchive = "Novo addon"
+    , reallyDeleteAddonArchive = "Deseja realmente excluir este addon?"
+    , createNewAddonArchive = "Instalar novo addon"
+    , deleteThisAddonArchive = "Excluir este addon"
+    , correctFormErrors = "Por favor, corrija os erros no formulário."
+    , installNow = "Instalar addon"
+    , updateNow = "Atualizar addon"
+    , description = "Descrição"
     }

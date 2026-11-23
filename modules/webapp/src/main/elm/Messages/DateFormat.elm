@@ -47,6 +47,9 @@ get lang =
         French ->
             fr
 
+        Portuguese ->
+            pt
+
 
 format : UiLanguage -> TimeZone -> (DateTimeMsg -> List Token) -> Int -> String
 format lang zone pattern millis =
@@ -476,3 +479,172 @@ toEnglishAmPm hour =
 
     else
         "am"
+
+
+pt : DateTimeMsg
+pt =
+    { dateLong =
+        [ DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text ", "
+        , DateFormat.dayOfMonthFixed
+        , DateFormat.text " de "
+        , DateFormat.monthNameFull
+        , DateFormat.text " de "
+        , DateFormat.yearNumber
+        ]
+    , dateShort =
+        [ DateFormat.dayOfMonthFixed
+        , DateFormat.text "/"
+        , DateFormat.monthFixed
+        , DateFormat.text "/"
+        , DateFormat.yearNumber
+        ]
+    , dateTimeLong =
+        [ DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text ", "
+        , DateFormat.dayOfMonthFixed
+        , DateFormat.text " de "
+        , DateFormat.monthNameFull
+        , DateFormat.text " de "
+        , DateFormat.yearNumber
+        , DateFormat.text " "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , dateTimeShort =
+        [ DateFormat.dayOfMonthFixed
+        , DateFormat.text "/"
+        , DateFormat.monthFixed
+        , DateFormat.text "/"
+        , DateFormat.yearNumber
+        , DateFormat.text " "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , lang = portuguese
+    }
+
+
+{-| The Portuguese language!
+-}
+portuguese : DL.Language
+portuguese =
+    DL.Language
+        toPortugueseMonthName
+        toPortugueseMonthAbbreviation
+        toPortugueseWeekdayName
+        (toPortugueseWeekdayName >> String.left 3)
+        toEnglishAmPm
+        toPortugueseOrdinalSuffix
+
+
+toPortugueseMonthName : Month -> String
+toPortugueseMonthName month =
+    case month of
+        Jan ->
+            "Janeiro"
+
+        Feb ->
+            "Fevereiro"
+
+        Mar ->
+            "Março"
+
+        Apr ->
+            "Abril"
+
+        May ->
+            "Maio"
+
+        Jun ->
+            "Junho"
+
+        Jul ->
+            "Julho"
+
+        Aug ->
+            "Agosto"
+
+        Sep ->
+            "Setembro"
+
+        Oct ->
+            "Outubro"
+
+        Nov ->
+            "Novembro"
+
+        Dec ->
+            "Dezembro"
+
+
+toPortugueseMonthAbbreviation : Month -> String
+toPortugueseMonthAbbreviation month =
+    case month of
+        Jan ->
+            "Jan"
+
+        Feb ->
+            "Fev"
+
+        Mar ->
+            "Mar"
+
+        Apr ->
+            "Abr"
+
+        May ->
+            "Mai"
+
+        Jun ->
+            "Jun"
+
+        Jul ->
+            "Jul"
+
+        Aug ->
+            "Ago"
+
+        Sep ->
+            "Set"
+
+        Oct ->
+            "Out"
+
+        Nov ->
+            "Nov"
+
+        Dec ->
+            "Dez"
+
+
+toPortugueseWeekdayName : Weekday -> String
+toPortugueseWeekdayName weekday =
+    case weekday of
+        Mon ->
+            "Segunda-feira"
+
+        Tue ->
+            "Terça-feira"
+
+        Wed ->
+            "Quarta-feira"
+
+        Thu ->
+            "Quinta-feira"
+
+        Fri ->
+            "Sexta-feira"
+
+        Sat ->
+            "Sábado"
+
+        Sun ->
+            "Domingo"
+
+
+toPortugueseOrdinalSuffix : Int -> String
+toPortugueseOrdinalSuffix n =
+    "º"

@@ -10,6 +10,7 @@ module Messages.Comp.AddonRunConfigManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -76,4 +77,18 @@ fr tz =
     , createNewAddonRunConfig = "Créer un nouveau favori"
     , deleteThisAddonRunConfig = "Supprimer ce favori"
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , addonArchiveTable = Messages.Comp.AddonRunConfigTable.pt
+    , addonArchiveForm = Messages.Comp.AddonRunConfigForm.pt tz
+    , httpError = Messages.Comp.HttpError.pt
+    , newAddonRunConfig = "Novo"
+    , reallyDeleteAddonRunConfig = "Deseja realmente excluir esta configuração de execução?"
+    , createNewAddonRunConfig = "Criar uma nova configuração de execução"
+    , deleteThisAddonRunConfig = "Excluir esta configuração de execução"
+    , correctFormErrors = "Por favor, corrija os erros no formulário."
     }

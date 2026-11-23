@@ -10,6 +10,7 @@ module Messages.Comp.ItemColumnDropdown exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -44,4 +45,12 @@ fr =
     { basics = Messages.Basics.fr
     , column = Messages.Data.ItemColumn.fr
     , placeholder = "Choisir …"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , column = Messages.Data.ItemColumn.pt
+    , placeholder = "Selecionar…"
     }

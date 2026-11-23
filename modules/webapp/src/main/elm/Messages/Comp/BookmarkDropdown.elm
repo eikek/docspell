@@ -10,6 +10,7 @@ module Messages.Comp.BookmarkDropdown exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -51,4 +52,14 @@ fr =
     , personal = "Personnel"
     , collective = "Groupe"
     , share = "Partage"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , placeholder = "Favorito…"
+    , personal = "Pessoal"
+    , collective = "Coletivo"
+    , share = "Compartilhar"
     }

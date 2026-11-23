@@ -10,6 +10,7 @@ module Messages.Comp.BookmarkManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -79,4 +80,20 @@ fr =
     , correctFormErrors = "Veuillez corriger les erreurs du formulaire"
     , userBookmarks = "Favoris personnels"
     , collectiveBookmarks = "Favoris de groupe"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , bookmarkTable = Messages.Comp.BookmarkTable.pt
+    , bookmarkForm = Messages.Comp.BookmarkQueryForm.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , newBookmark = "Novo favorito"
+    , reallyDeleteBookmark = "Deseja realmente excluir este favorito?"
+    , createNewBookmark = "Criar novo favorito"
+    , deleteThisBookmark = "Excluir este favorito"
+    , correctFormErrors = "Por favor, corrija os erros no formulário."
+    , userBookmarks = "Favoritos pessoais"
+    , collectiveBookmarks = "Favoritos do coletivo"
     }

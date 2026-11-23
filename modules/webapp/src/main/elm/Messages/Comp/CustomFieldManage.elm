@@ -10,6 +10,7 @@ module Messages.Comp.CustomFieldManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -54,4 +55,14 @@ fr tz =
     , fieldTable = Messages.Comp.CustomFieldTable.fr tz
     , addCustomField = "Ajouter un champs personnalisé"
     , newCustomField = "Nouveau champs personnalisé"
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , fieldForm = Messages.Comp.CustomFieldForm.pt
+    , fieldTable = Messages.Comp.CustomFieldTable.pt tz
+    , addCustomField = "Adicionar campo personalizado"
+    , newCustomField = "Novo campo personalizado"
     }

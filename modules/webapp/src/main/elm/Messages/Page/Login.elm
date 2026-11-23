@@ -10,6 +10,7 @@ module Messages.Page.Login exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -27,6 +28,7 @@ type alias Texts =
     , passwordPlaceholder : String
     , loginButton : String
     , loginSuccessful : String
+    , loginFailed : String
     , noAccount : String
     , signupLink : String
     , otpCode : String
@@ -47,6 +49,7 @@ gb =
     , passwordPlaceholder = "Password"
     , loginButton = "Login"
     , loginSuccessful = "Login successful"
+    , loginFailed = "Login failed."
     , noAccount = "No account?"
     , signupLink = "Sign up!"
     , otpCode = "Authentication code"
@@ -67,6 +70,7 @@ de =
     , passwordPlaceholder = "Passwort"
     , loginButton = "Anmelden"
     , loginSuccessful = "Anmeldung erfolgreich"
+    , loginFailed = "Anmeldung fehlgeschlagen."
     , noAccount = "Kein Konto?"
     , signupLink = "Hier registrieren!"
     , otpCode = "Authentifizierungscode"
@@ -91,9 +95,31 @@ fr =
     , passwordPlaceholder = "Mot de passe"
     , loginButton = "Identifiant"
     , loginSuccessful = "Identification réussie"
+    , loginFailed = "Échec de la connexion."
     , noAccount = "Pas de compte ?"
     , signupLink = "S'incrire!"
     , otpCode = "Code d'authentification"
     , or = "Ou"
     , oidcLogoutPending = "You have been logged out from Docspell, but you may still be logged in at your authentication provider! Make sure to logout there as well, or login again by clicking the link below."
+    }
+
+
+pt : Texts
+pt =
+    { httpError = Messages.Comp.HttpError.pt
+    , loginToDocspell = "Entrar no Docspell"
+    , username = "Nome de usuário"
+    , collectiveSlashLogin = "Coletivo / Login"
+    , password = "Senha"
+    , rememberMe = "Lembre-se de mim"
+    , loginPlaceholder = "Login"
+    , passwordPlaceholder = "Senha"
+    , loginButton = "Entrar"
+    , loginSuccessful = "Login realizado com sucesso"
+    , loginFailed = "Falha no login."
+    , noAccount = "Não tem uma conta?"
+    , signupLink = "Cadastre-se!"
+    , otpCode = "Código de autenticação"
+    , or = "Ou"
+    , oidcLogoutPending = "Você saiu do Docspell, mas ainda pode estar conectado ao seu provedor de autenticação! Certifique-se de sair de lá também ou faça login novamente clicando no link abaixo."
     }

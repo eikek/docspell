@@ -10,6 +10,7 @@ module Messages.Comp.ImapSettingsManage exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -71,4 +72,18 @@ fr =
     , reallyDeleteSettings = "Confirmer la suppression de cette connexion ?"
     , deleteThisEntry = "Supprimer cette entrée"
     , fillRequiredFields = "Veuillez compléter les champs requis"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , imapForm = Messages.Comp.ImapSettingsForm.pt
+    , imapTable = Messages.Comp.ImapSettingsTable.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , addNewImapSettings = "Adicionar novas configurações de IMAP"
+    , newSettings = "Nova conexão"
+    , reallyDeleteSettings = "Deseja realmente excluir esta conexão de caixa postal?"
+    , deleteThisEntry = "Excluir esta entrada de configurações"
+    , fillRequiredFields = "Por favor, preencha os campos obrigatórios."
     }

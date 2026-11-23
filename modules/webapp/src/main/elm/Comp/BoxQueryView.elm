@@ -83,11 +83,10 @@ view : Texts -> UiSettings -> Model -> Html Msg
 view texts settings model =
     case model.results of
         Loading ->
-            div [ class "h-24 " ]
-                [ Comp.Basic.loadingDimmer
-                    { label = ""
-                    , active = True
-                    }
+            div [ class "py-3 px-2 space-y-3 animate-pulse" ]
+                [ div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4" ] []
+                , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-full" ] []
+                , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-5/6" ] []
                 ]
 
         Failed err ->
@@ -101,11 +100,13 @@ view texts settings model =
                 ]
 
         Loaded list ->
-            if list.groups == [] then
-                viewEmpty texts
+            div [ class "transition-opacity duration-300 ease-in-out motion-reduce:transition-none opacity-100 h-full" ]
+                [ if list.groups == [] then
+                    viewEmpty texts
 
-            else
-                viewItems texts settings model.meta list
+                  else
+                    viewItems texts settings model.meta list
+                ]
 
 
 viewItems : Texts -> UiSettings -> QueryData -> ItemLightList -> Html Msg

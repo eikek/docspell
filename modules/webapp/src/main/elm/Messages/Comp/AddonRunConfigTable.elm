@@ -10,6 +10,7 @@ module Messages.Comp.AddonRunConfigTable exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -47,4 +48,12 @@ fr =
     { basics = Messages.Basics.fr
     , enabled = "Enabled"
     , trigger = "Triggered"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , enabled = "Ativado"
+    , trigger = "Acionado"
     }

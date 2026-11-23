@@ -10,6 +10,7 @@ module Messages.Comp.ItemDetail.ItemInfoHeader exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.TimeZone exposing (TimeZone)
@@ -58,4 +59,15 @@ fr tz =
     , source = "Source"
     , new = "Nouveau"
     , formatDate = DF.formatDateLong Messages.UiLanguage.French tz
+    }
+
+
+pt : TimeZone -> Texts
+pt tz =
+    { basics = Messages.Basics.pt
+    , itemDate = "Data do item"
+    , dueDate = "Data de vencimento"
+    , source = "Origem"
+    , new = "Novo"
+    , formatDate = DF.formatDateLong Messages.UiLanguage.Portuguese tz
     }

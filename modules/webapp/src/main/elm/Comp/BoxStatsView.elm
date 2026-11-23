@@ -93,12 +93,20 @@ view : Texts -> Model -> Html Msg
 view texts model =
     case model.results of
         Loading ->
-            div [ class "h-24 " ]
-                [ Comp.Basic.loadingDimmer
-                    { label = ""
-                    , active = True
-                    }
-                ]
+            case model.meta.show of
+                SummaryShowFields _ ->
+                    div [ class "flex flex-wrap gap-2 py-2 animate-pulse" ]
+                        (List.repeat 5
+                            (div [ class "h-7 w-28 bg-gray-200 dark:bg-slate-700 rounded" ] [])
+                        )
+
+                SummaryShowGeneral ->
+                    div [ class "py-2 space-y-2 animate-pulse" ]
+                        [ div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4" ] []
+                        , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-2/3" ] []
+                        , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-4/5" ] []
+                        , div [ class "h-4 bg-gray-200 dark:bg-slate-700 rounded w-1/2" ] []
+                        ]
 
         Failed err ->
             div
@@ -111,7 +119,9 @@ view texts model =
                 ]
 
         Loaded stats ->
-            viewStats texts model stats
+            div [ class "transition-opacity duration-300 ease-in-out motion-reduce:transition-none opacity-100" ]
+                [ viewStats texts model stats
+                ]
 
 
 viewStats : Texts -> Model -> SearchStats -> Html Msg

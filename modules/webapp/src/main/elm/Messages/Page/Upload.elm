@@ -10,6 +10,7 @@ module Messages.Page.Upload exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Comp.UploadForm
@@ -35,4 +36,10 @@ de =
 fr : Texts
 fr =
     { uploadForm = Messages.Comp.UploadForm.fr
+    }
+
+
+pt : Texts
+pt =
+    { uploadForm = Messages.Comp.UploadForm.pt
     }

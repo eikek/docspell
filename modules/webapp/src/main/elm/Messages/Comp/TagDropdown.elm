@@ -10,6 +10,7 @@ module Messages.Comp.TagDropdown exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Messages.Basics
@@ -43,4 +44,12 @@ fr =
     { basics = Messages.Basics.fr
     , placeholder = "Rechercher…"
     , noCategory = "Aucune catégorie"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , placeholder = "Buscar…"
+    , noCategory = "Sem categoria"
     }

@@ -77,6 +77,7 @@ view texts model =
                 , div [ class "flex flex-col h-64" ]
                     [ Html.map NotesEditMsg
                         (Comp.MarkdownInput.viewContent2
+                            texts.markdownInput
                             (Maybe.withDefault "" model.notesModel)
                             mm
                         )

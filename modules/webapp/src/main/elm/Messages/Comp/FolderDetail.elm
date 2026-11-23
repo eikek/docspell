@@ -10,6 +10,7 @@ module Messages.Comp.FolderDetail exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Http
@@ -89,4 +90,23 @@ fr =
     , folderCreated = "Dossier créé"
     , nameChangeSuccessful = "Nom modifié"
     , deleteSuccessful = "Dossier supprimé"
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , httpError = Messages.Comp.HttpError.pt
+    , reallyDeleteThisFolder = "Deseja realmente excluir esta pasta?"
+    , autoOwnerInfo = "Você foi definido automaticamente como proprietário desta nova pasta."
+    , modifyInfo = "Modifique esta pasta alterando o nome ou adicionando/removendo membros."
+    , notOwnerInfo = "Você não é o proprietário desta pasta e, portanto, não tem permissão para editá-la."
+    , members = "Membros"
+    , addMember = "Adicionar novo membro"
+    , add = "Adicionar"
+    , removeMember = "Remover este membro"
+    , deleteThisFolder = "Excluir esta pasta"
+    , folderCreated = "A pasta foi criada."
+    , nameChangeSuccessful = "O nome foi alterado."
+    , deleteSuccessful = "A pasta foi excluída."
     }

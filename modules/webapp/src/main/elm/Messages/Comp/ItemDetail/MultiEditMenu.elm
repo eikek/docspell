@@ -10,6 +10,7 @@ module Messages.Comp.ItemDetail.MultiEditMenu exposing
     , de
     , fr
     , gb
+    , pt
     )
 
 import Data.Direction exposing (Direction)
@@ -87,4 +88,22 @@ fr =
     , changeTagMode = "Changer le mode d'édition des tags"
     , dueDateTab = "Date d'échéance"
     , direction = Messages.Data.Direction.fr
+    }
+
+
+pt : Texts
+pt =
+    { basics = Messages.Basics.pt
+    , customFieldMultiInput = Messages.Comp.CustomFieldMultiInput.pt
+    , tagDropdown = Messages.Comp.TagDropdown.pt
+    , tagModeAddInfo = "As etiquetas escolhidas aqui são *adicionadas* a todos os itens selecionados."
+    , tagModeRemoveInfo = "As etiquetas escolhidas aqui são *removidas* de todos os itens selecionados."
+    , tagModeReplaceInfo = "As etiquetas escolhidas aqui *substituem* as dos itens selecionados."
+    , chooseDirection = "Escolha uma direção…"
+    , confirmUnconfirm = "Confirmar/Desfazer confirmar metadados"
+    , confirm = "Confirmar"
+    , unconfirm = "Reverter"
+    , changeTagMode = "Alterar modo de edição de etiquetas"
+    , dueDateTab = "Data de vencimento"
+    , direction = Messages.Data.Direction.pt
     }

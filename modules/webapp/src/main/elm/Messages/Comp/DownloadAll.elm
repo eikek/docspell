@@ -5,7 +5,7 @@
 -}
 
 
-module Messages.Comp.DownloadAll exposing (Texts, de, fr, gb)
+module Messages.Comp.DownloadAll exposing (Texts, de, fr, gb, pt)
 
 import Messages.Data.DownloadFileType
 import Util.Size
@@ -110,4 +110,31 @@ fr =
     , downloadCreateText = "Vous pouvez créer le téléchargement sur le serveur. Une fois qu'il est prêt, le bouton téléchargera le fichier zip."
     , downloadCreate = "Créer Télécharger"
     , downloadNow = "Télécharger l'archive!"
+    }
+
+
+pt : Texts
+pt =
+    { downloadFileType = Messages.Data.DownloadFileType.pt
+    , downloadFileTypeLabel = "Quais arquivos"
+    , noResults = "Nenhum resultado para baixar."
+    , summary = \files -> \size -> "O download consiste em " ++ String.fromInt files ++ " arquivos (" ++ size ++ ")."
+    , close = "Fechar"
+    , downloadPreparing = "O download está sendo preparado…"
+    , downloadTooLarge = "O download é grande demais."
+    , downloadConfigText =
+        \maxNum ->
+            \maxSize ->
+                \curSize ->
+                    "O número máximo de arquivos permitido é "
+                        ++ String.fromInt maxNum
+                        ++ " e o tamanho máximo é "
+                        ++ byteStr maxSize
+                        ++ " (o tamanho atual seria "
+                        ++ byteStr curSize
+                        ++ "). "
+    , downloadReady = "O donwload está pronto!"
+    , downloadCreateText = "Você pode criar o download no servidor. Assim que estiver pronto, o botão baixará o arquivo zip."
+    , downloadCreate = "Criar download"
+    , downloadNow = "Baixar agora!"
     }
