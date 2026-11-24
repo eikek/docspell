@@ -18,6 +18,10 @@
 
 ### 🐛 Bug Fixes
 
+- Cap fulltext search materialization into the temp `fts_result` table
+  relative to the requested page size (hard max 5000). Broad
+  `content:` queries no longer pull hundreds of thousands of Solr hits
+  into Postgres before paging (#3377).
 - Improve performance of custom field statistics on large databases by
   scoping `custom_field_value` lookups to matching items only.
 - Migrate office conversion from deprecated `unoconv` to
