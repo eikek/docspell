@@ -36,6 +36,8 @@
 
 ### 💚 Maintenance
 
+- Pin docker-java API version to 1.44 in store test resources so
+  Testcontainers works against Docker Engine 29 on CI runners.
 - Document search stats profiles in the OpenAPI spec. The `general`
   profile still computes tag clouds; it omits dimension list aggregates
   and heavy field statistics.
