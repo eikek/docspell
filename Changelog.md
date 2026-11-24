@@ -18,6 +18,10 @@
 
 ### 🐛 Bug Fixes
 
+- Cap fulltext search materialization into the temp `fts_result` table
+  relative to the requested page size (hard max 5000). Broad
+  `content:` queries no longer pull hundreds of thousands of Solr hits
+  into Postgres before paging (#3377).
 - Improve performance of custom field statistics on large databases by
   scoping `custom_field_value` lookups to matching items only.
 - Migrate office conversion from deprecated `unoconv` to
@@ -32,6 +36,8 @@
 
 ### 💚 Maintenance
 
+- Pin docker-java API version to 1.44 in store test resources so
+  Testcontainers works against Docker Engine 29 on CI runners.
 - Document search stats profiles in the OpenAPI spec. The `general`
   profile still computes tag clouds; it omits dimension list aggregates
   and heavy field statistics.

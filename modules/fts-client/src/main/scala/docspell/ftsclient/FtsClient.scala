@@ -43,10 +43,25 @@ trait FtsClient[F[_]] {
 
   /** Continually run a full-text search and concatenate the results. */
   def searchAll(q: FtsQuery): Stream[F, FtsResult] =
-    Stream.eval(search(q)).flatMap { result =>
-      if (result.results.size < q.limit) Stream.emit(result)
-      else Stream.emit(result) ++ searchAll(q.nextPage)
-    }
+    searchMax(q, Int.MaxValue)
+
+  /** Page through full-text search results until exhausted or `maxResults` matches have
+    * been collected. Page size stays `q.limit` (or less on the final page).
+    */
+  def searchMax(q: FtsQuery, maxResults: Int): Stream[F, FtsResult] = {
+    def go(current: FtsQuery, remaining: Int): Stream[F, FtsResult] =
+      if (remaining <= 0) Stream.empty
+      else {
+        val page = current.copy(limit = math.min(current.limit, remaining))
+        Stream.eval(search(page)).flatMap { result =>
+          val n = result.results.size
+          if (n <= 0 || n < page.limit) Stream.emit(result)
+          else Stream.emit(result) ++ go(page.nextPage, remaining - n)
+        }
+      }
+
+    go(q, maxResults)
+  }
 
   /** Push all data to the index. Data with same `id' is replaced. Values that are ` None'
     * are removed from the index (or set to an empty string).

@@ -87,6 +87,27 @@ trait OSearch[F[_]] {
 }
 
 object OSearch {
+
+  /** Page size used when talking to the FTS engine. */
+  val FtsPageSize: Int = 500
+
+  /** Absolute ceiling on FTS hits written into the temp `fts_result` table. Keeps broad
+    * queries (hundreds of thousands of Solr hits) from hanging the restserver. Roughly
+    * `max-item-page-size` (200) × 25.
+    */
+  val MaxFtsMaterialization: Int = 5000
+
+  /** Extra FTS matches per requested item: Solr may return attachment-level hits, and SQL
+    * filters applied after materialization can discard some rows.
+    */
+  val FtsMaterializationFactor: Int = 10
+
+  /** How many FTS matches to materialize for the given SQL page window. */
+  def ftsMaterializationLimit(batch: Batch): Int = {
+    val window = math.max(1, batch.offset + batch.limit)
+    math.min(MaxFtsMaterialization, window * FtsMaterializationFactor)
+  }
+
   def apply[F[_]: Async](
       store: Store[F],
       ftsClient: FtsClient[F]
@@ -150,13 +171,14 @@ object OSearch {
           case Some(ftq) =>
             for {
               timed <- Duration.stopTime[F]
-              ftq <- createFtsQuery(q.fix.account, ftq)
+              maxRows = ftsMaterializationLimit(batch)
+              ftq <- createFtsQuery(q.fix.account, ftq, maxRows)
               date <- OptionT
                 .fromOption(today)
                 .getOrElseF(Timestamp.current[F].map(_.toUtcDate))
 
               results <- WeakAsync.liftK[F, ConnectionIO].use { nat =>
-                val tempTable = temporaryFtsTable(ftq, nat)
+                val tempTable = temporaryFtsTable(ftq, maxRows, nat)
                 store
                   .transact(
                     Stream
@@ -215,12 +237,12 @@ object OSearch {
         fulltextQuery match {
           case Some(ftq) =>
             for {
-              ftq <- createFtsQuery(q.fix.account, ftq)
+              ftq <- createFtsQuery(q.fix.account, ftq, MaxFtsMaterialization)
               date <- OptionT
                 .fromOption(today)
                 .getOrElseF(Timestamp.current[F].map(_.toUtcDate))
               results <- WeakAsync.liftK[F, ConnectionIO].use { nat =>
-                val tempTable = temporaryFtsTable(ftq, nat)
+                val tempTable = temporaryFtsTable(ftq, MaxFtsMaterialization, nat)
                 store.transact(
                   tempTable.flatMap(tt => runSearchStats(profile, date, tt.some)(q))
                 )
@@ -247,21 +269,23 @@ object OSearch {
 
       private def createFtsQuery(
           account: AccountInfo,
-          ftq: String
+          ftq: String,
+          maxRows: Int
       ): F[FtsQuery] =
         store
           .transact(QFolder.getMemberFolders(account.collectiveId, account.userId))
           .map(folders =>
-            FtsQuery(ftq, account.collectiveId, 500, 0)
+            FtsQuery(ftq, account.collectiveId, math.min(FtsPageSize, maxRows), 0)
               .withFolders(folders)
           )
 
       def temporaryFtsTable(
           ftq: FtsQuery,
+          maxRows: Int,
           nat: F ~> ConnectionIO
       ): ConnectionIO[RFtsResult.Table] =
         ftsClient
-          .searchAll(ftq)
+          .searchMax(ftq, maxRows)
           .translate(nat)
           .through(RFtsResult.prepareTable(store.dbms, "fts_result"))
           .compile
